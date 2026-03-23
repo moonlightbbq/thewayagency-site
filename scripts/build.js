@@ -231,9 +231,9 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
 
   // Cross-line suggestion
   const crossLines = {
-    personal: { text: 'Need business coverage?', link: '/commercial/', label: 'Explore Commercial Insurance' },
-    commercial: { text: 'Need personal coverage?', link: '/personal/', label: 'Explore Personal Insurance' },
-    life_health: { text: 'Need property or liability coverage?', link: '/personal/', label: 'Explore Personal Insurance' },
+    personal: { text: 'Own a business? We can help with that too.', link: '/commercial/', label: 'Explore Commercial Insurance' },
+    commercial: { text: 'We also protect your family at home.', link: '/personal/', label: 'Explore Personal Insurance' },
+    life_health: { text: 'Need home, auto, or business coverage?', link: '/personal/', label: 'Explore Personal Insurance' },
   };
   const crossLine = crossLines[lineKey] || crossLines.personal;
 
@@ -382,6 +382,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
   <main id="main">
     <article class="product-content">
       ${directAnswerSection}
+      <p style="color:var(--slate);font-weight:300;font-style:italic;margin-bottom:var(--space-2xl);">We're not just selling insurance. We're here to make sure you understand your options, feel confident in your coverage, and have someone in your corner when it matters most.</p>
       ${whoNeedsSection}
       ${coversSection}
       ${doesntCoverSection}
@@ -389,8 +390,8 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
       ${faqSection}
       <!-- Inline Quote Form -->
       <div class="inline-quote-section">
-        <h3>Get a ${product.name.toLowerCase()} quote</h3>
-        <p>Tell us your name and email and we'll come back with options from 17+ carriers.</p>
+        <h3>Let's find the right ${product.name.toLowerCase()} for you</h3>
+        <p>Tell us a little about yourself and we'll come back with options from 17+ carriers. No pressure, no jargon, just clear answers.</p>
         <form class="inline-quote-form" novalidate>
           <input type="hidden" name="product" value="${product.id}">
           <input type="hidden" name="lineOfBusiness" value="${lineSlug}">
@@ -426,8 +427,8 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
 
     <section class="cta-banner">
       <div class="container">
-        <h2 class="cta-banner__title">Get a ${product.name.toLowerCase()} quote</h2>
-        <p class="cta-banner__text">We'll shop 17+ carriers and come back with clear options.</p>
+        <h2 class="cta-banner__title">Ready to talk about ${product.name.toLowerCase()}?</h2>
+        <p class="cta-banner__text">We'll listen, shop 17+ carriers, and come back with clear options. No pressure. It's all about you.</p>
         <div class="cta-banner__actions">
           <a href="/quote.html" class="btn btn--primary btn--lg">Get a Quote</a>
           <a href="/contact.html" class="btn btn--outline-white btn--lg">Request a Review</a>
