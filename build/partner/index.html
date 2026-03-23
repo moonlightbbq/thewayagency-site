@@ -59,8 +59,8 @@
   <div class="partner-info" id="partner-info"></div>
 
   <div class="tabs">
-    <button class="tab active" onclick="showTab('refer', event)">Submit Referral</button>
-    <button class="tab" onclick="showTab('history', event)">My Referrals</button>
+    <button class="tab active" data-action="show-tab" data-tab="refer">Submit Referral</button>
+    <button class="tab" data-action="show-tab" data-tab="history">My Referrals</button>
   </div>
 
   <!-- Referral Form -->
@@ -87,24 +87,24 @@
     <div class="form-group">
       <label>Products Needed *</label>
       <div class="product-grid" id="p-product-grid">
-        <div class="product-opt" data-pid="homeowners" onclick="toggleProd(this)">🏠 Homeowners</div>
-        <div class="product-opt" data-pid="auto" onclick="toggleProd(this)">🚗 Auto</div>
-        <div class="product-opt" data-pid="umbrella" onclick="toggleProd(this)">☂️ Umbrella</div>
-        <div class="product-opt" data-pid="flood" onclick="toggleProd(this)">🌊 Flood</div>
-        <div class="product-opt" data-pid="life" onclick="toggleProd(this)">❤️ Life</div>
-        <div class="product-opt" data-pid="renters" onclick="toggleProd(this)">🏢 Renters</div>
+        <div class="product-opt" data-pid="homeowners" data-action="toggle-prod">🏠 Homeowners</div>
+        <div class="product-opt" data-pid="auto" data-action="toggle-prod">🚗 Auto</div>
+        <div class="product-opt" data-pid="umbrella" data-action="toggle-prod">☂️ Umbrella</div>
+        <div class="product-opt" data-pid="flood" data-action="toggle-prod">🌊 Flood</div>
+        <div class="product-opt" data-pid="life" data-action="toggle-prod">❤️ Life</div>
+        <div class="product-opt" data-pid="renters" data-action="toggle-prod">🏢 Renters</div>
       </div>
     </div>
     <div class="form-group"><label>Notes</label><textarea id="p_notes" rows="3" placeholder="Any additional details..."></textarea></div>
     <div id="refer-error" class="error hidden"></div>
-    <button class="btn btn-primary" id="refer-btn" onclick="submitReferral()" style="width:100%">Submit Referral</button>
+    <button class="btn btn-primary" id="refer-btn" data-action="submit-referral" style="width:100%">Submit Referral</button>
 
     <div id="refer-success" class="success hidden">
       <div class="check">✅</div>
       <h3>Referral Submitted!</h3>
       <p>Reference: <strong id="refer-ref"></strong></p>
       <p style="margin-top:8px;font-size:13px;color:#64748b">We'll be in touch with your client shortly.</p>
-      <button class="btn btn-primary" onclick="resetForm()" style="margin-top:12px">Submit Another</button>
+      <button class="btn btn-primary" data-action="reset-form" style="margin-top:12px">Submit Another</button>
     </div>
   </div>
 
@@ -235,6 +235,16 @@ async function loadHistory(){
 }
 
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+document.addEventListener('click', function(e) {
+  var el = e.target.closest('[data-action]');
+  if (!el) return;
+  var action = el.dataset.action;
+  if (action === 'show-tab') showTab(el.dataset.tab, e);
+  else if (action === 'toggle-prod') toggleProd(el);
+  else if (action === 'submit-referral') submitReferral();
+  else if (action === 'reset-form') resetForm();
+});
 </script>
 </body>
 </html>

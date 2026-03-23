@@ -788,8 +788,8 @@ function renderStep() {
       <div class="step active">
         ${fieldsHtml}
         <div class="btn-row">
-          ${STEP > 0 ? '<button class="btn btn-secondary" onclick="prevStep()">Back</button>' : ''}
-          <button class="btn btn-primary" onclick="nextStep()">Continue</button>
+          ${STEP > 0 ? '<button class="btn btn-secondary" data-action="prev-step">Back</button>' : ''}
+          <button class="btn btn-primary" data-action="next-step">Continue</button>
         </div>
       </div>
     </div>`;
@@ -835,14 +835,14 @@ function renderVerifyStep(fields) {
             oninput="saveField('phone',this.value); checkVerifyReady()"
             ${phoneVerified ? 'disabled' : ''}>
           <button class="verify-btn ${phoneVerified?'verified':''}" id="btn-verify-phone"
-            onclick="sendVerification('phone')" ${phoneVerified?'disabled':''}>
+            data-action="send-verify" data-channel="phone" ${phoneVerified?'disabled':''}>
             ${phoneVerified ? '&#10003; Verified' : 'Verify'}
           </button>
         </div>
         <div class="code-input-wrap" id="code-wrap-phone">
           <input id="code-phone" type="text" maxlength="6" placeholder="------"
             oninput="checkCode('phone',this.value)">
-          <button class="verify-btn" onclick="sendVerification('phone')" style="font-size:11px;padding:8px 12px">Resend</button>
+          <button class="verify-btn" data-action="send-verify" data-channel="phone" style="font-size:11px;padding:8px 12px">Resend</button>
         </div>
         <div class="verify-status" id="status-phone"></div>
       </div>`;
@@ -859,14 +859,14 @@ function renderVerifyStep(fields) {
             oninput="saveField('email',this.value); checkVerifyReady()"
             ${emailVerified ? 'disabled' : ''}>
           <button class="verify-btn ${emailVerified?'verified':''}" id="btn-verify-email"
-            onclick="sendVerification('email')" ${emailVerified?'disabled':''}>
+            data-action="send-verify" data-channel="email" ${emailVerified?'disabled':''}>
             ${emailVerified ? '&#10003; Verified' : 'Verify'}
           </button>
         </div>
         <div class="code-input-wrap" id="code-wrap-email">
           <input id="code-email" type="text" maxlength="6" placeholder="------"
             oninput="checkCode('email',this.value)">
-          <button class="verify-btn" onclick="sendVerification('email')" style="font-size:11px;padding:8px 12px">Resend</button>
+          <button class="verify-btn" data-action="send-verify" data-channel="email" style="font-size:11px;padding:8px 12px">Resend</button>
         </div>
         <div class="verify-status" id="status-email"></div>
       </div>`;
@@ -874,7 +874,7 @@ function renderVerifyStep(fields) {
 
   html += `
       <div class="btn-row">
-        <button class="btn btn-primary" id="btn-verify-continue" onclick="nextStep()" disabled>
+        <button class="btn btn-primary" id="btn-verify-continue" data-action="next-step" disabled>
           Continue
         </button>
       </div>
@@ -1054,8 +1054,8 @@ function renderReview() {
           ${VERIFIED.email ? '<span style="font-size:11px;padding:4px 10px;background:#f0fdf8;color:#16a34a;border-radius:20px;font-weight:600">&#10003; Email verified</span>' : ''}
         </div>` : ''}
         <div class="btn-row">
-          <button class="btn btn-secondary" onclick="prevStep()">Back</button>
-          <button class="btn btn-primary" id="submit-btn" onclick="submitPortal()">Submit</button>
+          <button class="btn btn-secondary" data-action="prev-step">Back</button>
+          <button class="btn btn-primary" id="submit-btn" data-action="submit-portal">Submit</button>
         </div>
       </div>
     </div>`;
@@ -1068,7 +1068,7 @@ function buildDocUploadPage(name) {
       <h2 style="font-size:18px;font-weight:600;color:var(--dark);margin-bottom:4px">Upload Documents</h2>
       <p style="font-size:13px;color:var(--muted);margin-bottom:20px">Hi ${esc(name)}! Please upload the requested documents below.</p>
       <div class="step active">
-        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()" ondrop="handleDrop(event)" ondragover="event.preventDefault();this.classList.add('active')" ondragleave="this.classList.remove('active')">
+        <div class="upload-zone" id="upload-zone" data-action="trigger-upload">
           <div class="upload-icon">&#128196;</div>
           <div class="upload-text">Tap to take a photo or choose a file</div>
           <div style="font-size:11px;color:#94a3b8;margin-top:4px">Supports images (JPG, PNG) and PDFs</div>
@@ -1373,6 +1373,26 @@ function loadGoogleMaps() {
 window._gmReady = function() { initAddressAutocomplete(); };
 
 init();
+
+// Event delegation (CSP-compliant — no inline handlers)
+document.addEventListener('click', function(e) {
+  var el = e.target.closest('[data-action]');
+  if (!el) return;
+  var action = el.dataset.action;
+  if (action === 'prev-step') prevStep();
+  else if (action === 'next-step') nextStep();
+  else if (action === 'send-verify') sendVerification(el.dataset.channel);
+  else if (action === 'submit-portal') submitPortal();
+  else if (action === 'trigger-upload') document.getElementById('file-input').click();
+});
+
+// Upload zone drag-and-drop
+var uploadZone = document.getElementById('upload-zone');
+if (uploadZone) {
+  uploadZone.addEventListener('drop', function(e) { handleDrop(e); });
+  uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('active'); });
+  uploadZone.addEventListener('dragleave', function() { this.classList.remove('active'); });
+}
 </script>
 </body>
 </html>

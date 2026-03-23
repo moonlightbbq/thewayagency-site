@@ -247,15 +247,15 @@
         transition: 'transform 0.3s ease',
       }
     }, `
-      <a href="tel:${CONFIG.phoneRaw}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:transparent;border:1.5px solid rgba(255,255,255,0.3);border-radius:6px;color:white;font-size:13px;font-weight:600;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;" onclick="trackEvent('click','cta','mobile-call')">
+      <a href="tel:${CONFIG.phoneRaw}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:transparent;border:1.5px solid rgba(255,255,255,0.3);border-radius:6px;color:white;font-size:13px;font-weight:600;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
         Call
       </a>
-      <a href="sms:${CONFIG.phoneRaw}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:transparent;border:1.5px solid rgba(255,255,255,0.3);border-radius:6px;color:white;font-size:13px;font-weight:600;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;" onclick="trackEvent('click','cta','mobile-text')">
+      <a href="sms:${CONFIG.phoneRaw}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:transparent;border:1.5px solid rgba(255,255,255,0.3);border-radius:6px;color:white;font-size:13px;font-weight:600;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         Text
       </a>
-      <a href="${intakeUrl}" style="flex:1.5;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:var(--cyan);border:1.5px solid var(--cyan);border-radius:6px;color:var(--navy-dark);font-size:13px;font-weight:600;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;" onclick="trackEvent('click','cta','mobile-quote')">
+      <a href="${intakeUrl}" style="flex:1.5;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:var(--cyan);border:1.5px solid var(--cyan);border-radius:6px;color:var(--navy-dark);font-size:13px;font-weight:600;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;">
         Get a Quote
       </a>
     `);
@@ -614,7 +614,5 @@
     initScrollAnimations();
   });
 
-  // Expose trackEvent globally for inline onclick handlers
-  window.trackEvent = trackEvent;
 
 })();

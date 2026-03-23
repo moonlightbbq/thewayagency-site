@@ -481,6 +481,7 @@
     border-color: var(--blue);
   }
   .bundle-pill.added:hover { background: #1565a0 }
+  [data-action]:active { transform: scale(0.97); }
   .bundle-done {
     font-size: 13px;
     color: var(--mint);
@@ -631,7 +632,7 @@
     <div id="step1-error" class="error hidden"></div>
     <div class="btn-row">
       <span></span>
-      <button class="btn btn-primary" id="step1-btn" onclick="nextStep(1)">Continue</button>
+      <button class="btn btn-primary" id="step1-btn" data-action="next-step" data-step="1">Continue</button>
     </div>
   </div>
 
@@ -646,7 +647,7 @@
     </div>
     <div class="product-grid" id="product-grid"></div>
     <div style="margin-top:12px">
-      <button type="button" class="add-vehicle-btn" id="show-other-btn" onclick="toggleOtherProducts()" style="width:100%;justify-content:center">
+      <button type="button" class="add-vehicle-btn" id="show-other-btn" data-action="toggle-other-products" style="width:100%;justify-content:center">
         <span>+</span> Need something else? See all products
       </button>
       <div class="other-products" id="other-products">
@@ -656,8 +657,8 @@
     </div>
     <div id="step2-error" class="error hidden"></div>
     <div class="btn-row">
-      <button class="btn btn-outline" onclick="prevStep(2)">Back</button>
-      <button class="btn btn-primary" onclick="nextStep(2)">Continue</button>
+      <button class="btn btn-outline" data-action="prev-step" data-step="2">Back</button>
+      <button class="btn btn-primary" data-action="next-step" data-step="2">Continue</button>
     </div>
   </div>
 
@@ -672,8 +673,8 @@
     </div>
     <div id="step3-error" class="error hidden"></div>
     <div class="btn-row">
-      <button class="btn btn-outline" onclick="prevStep(3)">Back</button>
-      <button class="btn btn-primary" onclick="nextStep(3)">Review</button>
+      <button class="btn btn-outline" data-action="prev-step" data-step="3">Back</button>
+      <button class="btn btn-primary" data-action="next-step" data-step="3">Review</button>
     </div>
   </div>
 
@@ -690,8 +691,8 @@
     <div id="turnstile-container" style="margin:12px 0"></div>
     <div id="step4-error" class="error hidden"></div>
     <div class="btn-row">
-      <button class="btn btn-outline" onclick="prevStep(4)">Back</button>
-      <button class="btn btn-primary" id="submit-btn" onclick="submitIntake()">Submit Quote Request</button>
+      <button class="btn btn-outline" data-action="prev-step" data-step="4">Back</button>
+      <button class="btn btn-primary" id="submit-btn" data-action="submit-intake">Submit Quote Request</button>
     </div>
   </div>
 
@@ -714,8 +715,8 @@
       <p id="takeover-desc"><strong id="takeover-agent-name">An agent</strong> from The Way Agency is ready to help finish your quote over the phone!</p>
       <div class="ref-badge" id="takeover-ref"></div>
       <div id="takeover-buttons" style="margin-top:24px;display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;max-width:320px;margin-left:auto;margin-right:auto">
-        <button onclick="respondToOffer('call_me')" style="width:100%;padding:14px 24px;border-radius:12px;border:none;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(34,197,94,.4);transition:transform .15s" onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''">&#128222; Call Me</button>
-        <button onclick="respondToOffer('online')" style="width:100%;padding:12px 24px;border-radius:12px;border:1px solid #d1d5db;background:#fff;color:#374151;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='#fff'">No Thanks, I'll Finish Online</button>
+        <button data-action="respond-offer" data-choice="call_me" style="width:100%;padding:14px 24px;border-radius:12px;border:none;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(34,197,94,.4);transition:transform .15s">&#128222; Call Me</button>
+        <button data-action="respond-offer" data-choice="online" style="width:100%;padding:12px 24px;border-radius:12px;border:1px solid #d1d5db;background:#fff;color:#374151;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s">No Thanks, I'll Finish Online</button>
       </div>
       <div id="takeover-status" style="display:none;margin-top:20px;text-align:center"></div>
     </div>
@@ -805,7 +806,7 @@ function renderProductGrid(priorityLine) {
 
   const renderOpt = (p) => {
     const selected = selectedProducts.includes(p.id) ? ' selected' : '';
-    return `<div class="product-opt${selected}" data-pid="${p.id}" onclick="toggleProd(this)"><span class="icon">${p.icon}</span>${p.label}</div>`;
+    return `<div class="product-opt${selected}" data-pid="${p.id}" data-action="toggle-prod"><span class="icon">${p.icon}</span>${p.label}</div>`;
   };
 
   mainGrid.innerHTML = sorted.slice(0, MAIN_GRID_SIZE).map(renderOpt).join('');
@@ -865,7 +866,7 @@ function renderBundleBanner(pid) {
   msg.textContent = bundle.msg;
 
   pills.innerHTML = bundle.products.map(p =>
-    `<button type="button" class="bundle-pill" data-bpid="${p}" onclick="toggleBundlePill('${p}')">+ ${PRODUCT_NAMES[p] || p}</button>`
+    `<button type="button" class="bundle-pill" data-bpid="${p}" data-action="toggle-bundle-pill" data-pid="${p}">+ ${PRODUCT_NAMES[p] || p}</button>`
   ).join('');
 
   banner.classList.remove('hidden');
@@ -938,33 +939,56 @@ function syncBundlePills() {
 })();
 
 // ── Pre-fill form fields from URL params (from inline forms, geo pages, etc.) ─
+// ── Input sanitization helpers ───────────────────────────────────────────────
+function sanitizeText(val, maxLen) {
+  if (!val) return '';
+  return val.replace(/<[^>]*>/g, '').replace(/[^\w\s@.+\-'(),]/g, '').trim().slice(0, maxLen || 100);
+}
+function sanitizeAlpha(val, maxLen) {
+  if (!val) return '';
+  return val.replace(/[^a-zA-Z\s.\-']/g, '').trim().slice(0, maxLen || 50);
+}
+function sanitizeSlug(val, maxLen) {
+  if (!val) return '';
+  return val.replace(/[^a-z0-9\-_]/gi, '').slice(0, maxLen || 50);
+}
+function sanitizeEmail(val) {
+  if (!val) return '';
+  const clean = val.replace(/[<>'";\s]/g, '').slice(0, 254);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean) ? clean : '';
+}
+function sanitizePhone(val) {
+  if (!val) return '';
+  return val.replace(/[^\d()\-\s+.]/g, '').slice(0, 20);
+}
+
 (function prefillFromParams() {
   const params = new URLSearchParams(window.location.search);
-  const fill = (paramKey, fieldId) => {
-    const val = params.get(paramKey);
+  const fill = (paramKey, fieldId, sanitizer) => {
+    const val = sanitizer(params.get(paramKey));
     if (!val) return;
     const el = document.getElementById(fieldId);
     if (el) { el.value = val; el.classList.add('filled'); }
   };
 
   // Contact fields (from inline forms)
-  const name = params.get('name');
-  if (name) {
-    const parts = name.trim().split(/\s+/);
+  const rawName = sanitizeText(params.get('name'), 100);
+  if (rawName) {
+    const parts = rawName.split(/\s+/);
     const fname = document.getElementById('i_fname');
     const lname = document.getElementById('i_lname');
     if (fname) { fname.value = parts[0] || ''; if (fname.value) fname.classList.add('filled'); }
     if (lname) { lname.value = parts.slice(1).join(' ') || ''; if (lname.value) lname.classList.add('filled'); }
   }
-  fill('email', 'i_email');
-  fill('phone', 'i_phone');
+  fill('email', 'i_email', sanitizeEmail);
+  fill('phone', 'i_phone', sanitizePhone);
 
   // Geo context (from city/industry pages)
-  fill('city', 'i_city');
-  fill('state', 'i_state');
+  fill('city', 'i_city', sanitizeAlpha);
+  fill('state', 'i_state', (v) => sanitizeAlpha(v, 2).toUpperCase());
 
-  // Industry tag — store for submission
-  const industry = params.get('industry');
+  // Industry tag — store for submission (slug format only)
+  const industry = sanitizeSlug(params.get('industry'));
   if (industry) {
     window._intakeIndustry = industry;
   }
@@ -1349,8 +1373,8 @@ function renderProductQuestions() {
       <div class="section-header"><span class="section-icon">&#127968;</span> Homeowners</div>
       <div class="toggle-row">
         <span class="toggle-label">Property is at the same address as mailing?</span>
-        <button type="button" class="toggle-btn active" id="ho-same-y" onclick="setHomeSameAddr(true)">Yes</button>
-        <button type="button" class="toggle-btn" id="ho-same-n" onclick="setHomeSameAddr(false)">No</button>
+        <button type="button" class="toggle-btn active" id="ho-same-y" data-action="set-ho-addr" data-same="true">Yes</button>
+        <button type="button" class="toggle-btn" id="ho-same-n" data-action="set-ho-addr" data-same="false">No</button>
       </div>
       ${addr ? `<div id="ho-addr-display" style="font-size:13px;color:var(--muted);margin-bottom:12px;padding:8px 12px;background:var(--light);border-radius:8px">${esc(addr)}</div>` : ''}
       <div id="ho-diff-addr" class="hidden" style="margin-bottom:12px">
@@ -1374,7 +1398,7 @@ function renderProductQuestions() {
     html += `<div style="margin-bottom:20px">
       <div class="section-header"><span class="section-icon">&#128663;</span> Auto Details</div>
       <div id="vehicles-container"></div>
-      <button type="button" class="add-vehicle-btn" onclick="addVehicle()"><span>+</span> Add Another Vehicle</button>
+      <button type="button" class="add-vehicle-btn" data-action="add-vehicle"><span>+</span> Add Another Vehicle</button>
     </div>`;
   }
 
@@ -1631,7 +1655,7 @@ function addVehicle() {
   block.className = 'vehicle-block';
   block.id = `vehicle-${n}`;
   block.innerHTML = `
-    ${n > 1 ? `<button type="button" class="remove-vehicle" onclick="removeVehicle(${n})" title="Remove vehicle">&times;</button>` : ''}
+    ${n > 1 ? `<button type="button" class="remove-vehicle" data-action="remove-vehicle" data-vehicle="${n}" title="Remove vehicle">&times;</button>` : ''}
     <div class="vehicle-label">Vehicle ${n}</div>
     <div class="form-row-3">
       <div class="form-group"><label>Year</label><input type="text" class="vh-year" maxlength="4" placeholder="e.g. 2022"></div>
@@ -1954,6 +1978,27 @@ document.querySelectorAll('.form-group input').forEach(inp => {
     document.head.appendChild(s);
   } catch (e) { console.error('[Maps] Setup error:', e); }
 })();
+
+// ── Event delegation (replaces all inline onclick handlers) ──
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+
+  const action = el.dataset.action;
+  switch (action) {
+    case 'toggle-prod': toggleProd(el); break;
+    case 'next-step': nextStep(parseInt(el.dataset.step)); break;
+    case 'prev-step': prevStep(parseInt(el.dataset.step)); break;
+    case 'toggle-other-products': toggleOtherProducts(); break;
+    case 'remove-vehicle': removeVehicle(parseInt(el.dataset.vehicle)); break;
+    case 'respond-offer': respondToOffer(el.dataset.choice); break;
+    case 'submit-intake': submitIntake(); break;
+    case 'add-vehicle': addVehicle(); break;
+    case 'toggle-bundle-pill': toggleBundlePill(el.dataset.pid); break;
+    case 'return-to-form': returnToForm(); break;
+    case 'set-ho-addr': setHomeSameAddr(el.dataset.same === 'true'); break;
+  }
+});
 </script>
 </body>
 </html>
