@@ -803,8 +803,16 @@ function renderProductGrid(priorityLine) {
   otherGrid.innerHTML = sorted.slice(MAIN_GRID_SIZE).map(renderOpt).join('');
 }
 
-// Render default grid (personal first) immediately
-renderProductGrid(null);
+// Render grid — check for ?line= param first, otherwise default (personal first)
+(function initGrid() {
+  const params = new URLSearchParams(window.location.search);
+  const line = params.get('line');
+  if (line === 'personal' || line === 'commercial') {
+    renderProductGrid(line);
+  } else {
+    renderProductGrid(null);
+  }
+})();
 
 // ── Bundle suggestion map ────────────────────────────────────────────────────
 const BUNDLE_MAP = {
