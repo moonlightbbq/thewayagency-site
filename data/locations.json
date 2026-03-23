@@ -2,10 +2,10 @@
   "offices": [
     {
       "name": "Owensboro Office",
-      "street": "4501 Stonegate Dr",
+      "street": "PO Box 187",
       "city": "Owensboro",
       "state": "KY",
-      "zip": "42303",
+      "zip": "42302",
       "phone": "(502) 413-5335",
       "email": "hello@thewayagency.com",
       "latitude": 37.7510,
