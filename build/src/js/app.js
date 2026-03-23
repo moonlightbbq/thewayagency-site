@@ -221,7 +221,7 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         Text
       </a>
-      <a href="/quote.html" style="flex:1.5;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:var(--cyan);border:1.5px solid var(--cyan);border-radius:6px;color:var(--navy-dark);font-size:13px;font-weight:600;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;" onclick="trackEvent('click','cta','mobile-quote')">
+      <a href="/intake/" style="flex:1.5;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:var(--cyan);border:1.5px solid var(--cyan);border-radius:6px;color:var(--navy-dark);font-size:13px;font-weight:600;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;" onclick="trackEvent('click','cta','mobile-quote')">
         Get a Quote
       </a>
     `);

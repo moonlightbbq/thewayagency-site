@@ -358,7 +358,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
           </div>
         </div>
         <a href="/blog/" class="nav__link">Blog</a>
-        <a href="/quote.html" class="btn btn--primary">Get a Quote</a>
+        <a href="/intake/" class="btn btn--primary">Get a Quote</a>
       </div>
       <button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
     </div>
@@ -371,7 +371,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
       <p class="hero__eyebrow">${lineName}</p>
       <h1 class="hero__title">${product.h1 || product.name}</h1>
       <div class="hero__actions">
-        <a href="/quote.html" class="btn btn--primary btn--lg">Get a ${product.name} Quote</a>
+        <a href="/intake/" class="btn btn--primary btn--lg">Get a ${product.name} Quote</a>
       </div>
     </div>
     <div class="hero__accent"></div>
@@ -431,7 +431,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
         <h2 class="cta-banner__title">Ready to talk about ${product.name.toLowerCase()}?</h2>
         <p class="cta-banner__text">We'll listen, shop 17+ carriers, and come back with clear options. No pressure. It's all about you.</p>
         <div class="cta-banner__actions">
-          <a href="/quote.html" class="btn btn--primary btn--lg">Get a Quote</a>
+          <a href="/intake/" class="btn btn--primary btn--lg">Get a Quote</a>
           <a href="/contact.html" class="btn btn--outline-white btn--lg">Request a Review</a>
         </div>
         <div class="contact-methods">
@@ -498,7 +498,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
           <a href="/about/team.html">Our Team</a>
           <a href="/about/locations.html">Locations</a>
           <a href="/blog/">Blog</a>
-          <a href="/quote.html">Get a Quote</a>
+          <a href="/intake/">Get a Quote</a>
           <a href="/contact.html">Contact</a>
         </div>
       </div>
@@ -637,7 +637,7 @@ for (const city of landingData.cities) {
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
-  <nav class="nav" id="nav"><div class="nav__inner"><a href="/" class="nav__logo"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></a><div class="nav__links" id="navLinks"><div class="nav__dropdown"><a href="/personal/" class="nav__link">Personal</a><div class="nav__dropdown-menu"><a href="/personal/home.html" class="nav__dropdown-item">Home</a><a href="/personal/auto.html" class="nav__dropdown-item">Auto</a><a href="/personal/renters.html" class="nav__dropdown-item">Renters</a><a href="/personal/umbrella.html" class="nav__dropdown-item">Umbrella</a><a href="/personal/flood.html" class="nav__dropdown-item">Flood</a></div></div><div class="nav__dropdown"><a href="/commercial/" class="nav__link">Commercial</a><div class="nav__dropdown-menu"><a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a><a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a><a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Commercial Auto</a><a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a></div></div><div class="nav__dropdown"><a href="/life-health/" class="nav__link">Life &amp; Health</a><div class="nav__dropdown-menu"><a href="/life-health/medicare.html" class="nav__dropdown-item">Medicare</a><a href="/life-health/term-life.html" class="nav__dropdown-item">Term Life</a><a href="/life-health/group-health.html" class="nav__dropdown-item">Group Health</a></div></div><a href="/about/" class="nav__link">About</a><a href="/quote.html" class="btn btn--primary">Get a Quote</a></div><button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button></div></nav>
+  <nav class="nav" id="nav"><div class="nav__inner"><a href="/" class="nav__logo"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></a><div class="nav__links" id="navLinks"><div class="nav__dropdown"><a href="/personal/" class="nav__link">Personal</a><div class="nav__dropdown-menu"><a href="/personal/home.html" class="nav__dropdown-item">Home</a><a href="/personal/auto.html" class="nav__dropdown-item">Auto</a><a href="/personal/renters.html" class="nav__dropdown-item">Renters</a><a href="/personal/umbrella.html" class="nav__dropdown-item">Umbrella</a><a href="/personal/flood.html" class="nav__dropdown-item">Flood</a></div></div><div class="nav__dropdown"><a href="/commercial/" class="nav__link">Commercial</a><div class="nav__dropdown-menu"><a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a><a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a><a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Commercial Auto</a><a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a></div></div><div class="nav__dropdown"><a href="/life-health/" class="nav__link">Life &amp; Health</a><div class="nav__dropdown-menu"><a href="/life-health/medicare.html" class="nav__dropdown-item">Medicare</a><a href="/life-health/term-life.html" class="nav__dropdown-item">Term Life</a><a href="/life-health/group-health.html" class="nav__dropdown-item">Group Health</a></div></div><a href="/about/" class="nav__link">About</a><a href="/intake/" class="btn btn--primary">Get a Quote</a></div><button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button></div></nav>
 
   <section class="hero" style="min-height:45vh;">
     <div class="hero__bg"></div><div class="hero__texture"></div>
@@ -646,7 +646,7 @@ for (const city of landingData.cities) {
       <h1 class="hero__title">Insurance in ${city.city}, ${city.state}</h1>
       <p class="hero__subtitle">Independent agency. 17+ carriers. Personal, commercial, and life insurance for ${city.city} families and businesses.</p>
       <div class="hero__actions">
-        <a href="/quote.html" class="btn btn--primary btn--lg">Get a Free Quote</a>
+        <a href="/intake/" class="btn btn--primary btn--lg">Get a Free Quote</a>
         <a href="tel:+15024135335" class="btn btn--outline-white btn--lg">Call ${office.phone}</a>
       </div>
     </div>
@@ -702,7 +702,7 @@ for (const city of landingData.cities) {
         <h2 class="cta-banner__title">Ready to get started in ${city.city}?</h2>
         <p class="cta-banner__text">Request a quote or call us directly. We're here to help.</p>
         <div class="cta-banner__actions">
-          <a href="/quote.html" class="btn btn--primary btn--lg">Get a Quote</a>
+          <a href="/intake/" class="btn btn--primary btn--lg">Get a Quote</a>
           <a href="tel:+15024135335" class="btn btn--outline-white btn--lg">Call ${office.phone}</a>
         </div>
         <div class="contact-methods">
@@ -714,7 +714,7 @@ for (const city of landingData.cities) {
     </section>
   </main>
 
-  <footer class="footer"><div class="footer__grid"><div class="footer__brand"><img class="footer__logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:36px;width:auto;filter:brightness(0) invert(1);"><address class="footer__address">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address><p style="font-size:var(--text-sm);margin-top:var(--space-sm);"><a href="tel:+15024135335">${office.phone}</a></p><p style="font-size:var(--text-sm);"><a href="mailto:${office.email}">${office.email}</a></p><p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p></div><div><h4 class="footer__heading">Personal</h4><div class="footer__link-list"><a href="/personal/home.html">Home</a><a href="/personal/auto.html">Auto</a><a href="/personal/renters.html">Renters</a><a href="/personal/umbrella.html">Umbrella</a><a href="/personal/flood.html">Flood</a></div></div><div><h4 class="footer__heading">Commercial</h4><div class="footer__link-list"><a href="/commercial/general-liability.html">General Liability</a><a href="/commercial/commercial-property.html">Property</a><a href="/commercial/commercial-auto.html">Auto</a><a href="/commercial/workers-compensation.html">Workers Comp</a><a href="/commercial/cyber.html">Cyber</a></div></div><div><h4 class="footer__heading">Company</h4><div class="footer__link-list"><a href="/about/">About Us</a><a href="/about/team.html">Our Team</a><a href="/about/locations.html">Locations</a><a href="/blog/">Blog</a><a href="/quote.html">Get a Quote</a><a href="/contact.html">Contact</a></div></div></div><div class="footer__bottom"><p>&copy; 2026 The Way Agency.</p><div class="footer__legal-links"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div></div><p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p></footer>
+  <footer class="footer"><div class="footer__grid"><div class="footer__brand"><img class="footer__logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:36px;width:auto;filter:brightness(0) invert(1);"><address class="footer__address">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address><p style="font-size:var(--text-sm);margin-top:var(--space-sm);"><a href="tel:+15024135335">${office.phone}</a></p><p style="font-size:var(--text-sm);"><a href="mailto:${office.email}">${office.email}</a></p><p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p></div><div><h4 class="footer__heading">Personal</h4><div class="footer__link-list"><a href="/personal/home.html">Home</a><a href="/personal/auto.html">Auto</a><a href="/personal/renters.html">Renters</a><a href="/personal/umbrella.html">Umbrella</a><a href="/personal/flood.html">Flood</a></div></div><div><h4 class="footer__heading">Commercial</h4><div class="footer__link-list"><a href="/commercial/general-liability.html">General Liability</a><a href="/commercial/commercial-property.html">Property</a><a href="/commercial/commercial-auto.html">Auto</a><a href="/commercial/workers-compensation.html">Workers Comp</a><a href="/commercial/cyber.html">Cyber</a></div></div><div><h4 class="footer__heading">Company</h4><div class="footer__link-list"><a href="/about/">About Us</a><a href="/about/team.html">Our Team</a><a href="/about/locations.html">Locations</a><a href="/blog/">Blog</a><a href="/intake/">Get a Quote</a><a href="/contact.html">Contact</a></div></div></div><div class="footer__bottom"><p>&copy; 2026 The Way Agency.</p><div class="footer__legal-links"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div></div><p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p></footer>
   <div id="ai-chat-root"></div>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
   <script src="/src/js/app.js"></script>
@@ -754,7 +754,7 @@ for (const ind of landingData.industries) {
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
-  <nav class="nav" id="nav"><div class="nav__inner"><a href="/" class="nav__logo"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></a><div class="nav__links" id="navLinks"><a href="/personal/" class="nav__link">Personal</a><div class="nav__dropdown"><a href="/commercial/" class="nav__link">Commercial</a><div class="nav__dropdown-menu"><a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a><a href="/commercial/commercial-property.html" class="nav__dropdown-item">Property</a><a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Auto</a><a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a><a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a><a href="/commercial/bonds.html" class="nav__dropdown-item">Bonds</a></div></div><a href="/life-health/" class="nav__link">Life &amp; Health</a><a href="/about/" class="nav__link">About</a><a href="/quote.html" class="btn btn--primary">Get a Quote</a></div><button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button></div></nav>
+  <nav class="nav" id="nav"><div class="nav__inner"><a href="/" class="nav__logo"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></a><div class="nav__links" id="navLinks"><a href="/personal/" class="nav__link">Personal</a><div class="nav__dropdown"><a href="/commercial/" class="nav__link">Commercial</a><div class="nav__dropdown-menu"><a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a><a href="/commercial/commercial-property.html" class="nav__dropdown-item">Property</a><a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Auto</a><a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a><a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a><a href="/commercial/bonds.html" class="nav__dropdown-item">Bonds</a></div></div><a href="/life-health/" class="nav__link">Life &amp; Health</a><a href="/about/" class="nav__link">About</a><a href="/intake/" class="btn btn--primary">Get a Quote</a></div><button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button></div></nav>
 
   <section class="hero" style="min-height:45vh;">
     <div class="hero__bg" style="background:linear-gradient(135deg, #0F2240 0%, #173358 40%, #2680B5 100%);"></div><div class="hero__texture"></div>
@@ -763,7 +763,7 @@ for (const ind of landingData.industries) {
       <h1 class="hero__title">Insurance for<br>${ind.name}</h1>
       <p class="hero__subtitle">${ind.description}</p>
       <div class="hero__actions">
-        <a href="/quote.html" class="btn btn--primary btn--lg">Get a Quote</a>
+        <a href="/intake/" class="btn btn--primary btn--lg">Get a Quote</a>
         <a href="tel:+15024135335" class="btn btn--outline-white btn--lg">Call ${office.phone}</a>
       </div>
     </div>
@@ -810,7 +810,7 @@ for (const ind of landingData.industries) {
         <h2 class="cta-banner__title">Get coverage for your ${ind.name.toLowerCase().replace(/s$/, '')} business</h2>
         <p class="cta-banner__text">We'll build a program that matches your operations, contracts, and budget.</p>
         <div class="cta-banner__actions">
-          <a href="/quote.html" class="btn btn--primary btn--lg">Get a Quote</a>
+          <a href="/intake/" class="btn btn--primary btn--lg">Get a Quote</a>
           <a href="tel:+15024135335" class="btn btn--outline-white btn--lg">Call ${office.phone}</a>
         </div>
         <div class="contact-methods">
@@ -821,7 +821,7 @@ for (const ind of landingData.industries) {
     </section>
   </main>
 
-  <footer class="footer"><div class="footer__grid"><div class="footer__brand"><img class="footer__logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:36px;width:auto;filter:brightness(0) invert(1);"><address class="footer__address">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address><p style="font-size:var(--text-sm);margin-top:var(--space-sm);"><a href="tel:+15024135335">${office.phone}</a></p><p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p></div><div><h4 class="footer__heading">Coverage</h4><div class="footer__link-list"><a href="/personal/">Personal</a><a href="/commercial/">Commercial</a><a href="/life-health/">Life &amp; Health</a></div></div><div><h4 class="footer__heading">Company</h4><div class="footer__link-list"><a href="/about/">About Us</a><a href="/about/team.html">Our Team</a><a href="/blog/">Blog</a><a href="/quote.html">Quote</a></div></div><div></div></div><div class="footer__bottom"><p>&copy; 2026 The Way Agency.</p><div class="footer__legal-links"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div></div><p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p></footer>
+  <footer class="footer"><div class="footer__grid"><div class="footer__brand"><img class="footer__logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:36px;width:auto;filter:brightness(0) invert(1);"><address class="footer__address">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address><p style="font-size:var(--text-sm);margin-top:var(--space-sm);"><a href="tel:+15024135335">${office.phone}</a></p><p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p></div><div><h4 class="footer__heading">Coverage</h4><div class="footer__link-list"><a href="/personal/">Personal</a><a href="/commercial/">Commercial</a><a href="/life-health/">Life &amp; Health</a></div></div><div><h4 class="footer__heading">Company</h4><div class="footer__link-list"><a href="/about/">About Us</a><a href="/about/team.html">Our Team</a><a href="/blog/">Blog</a><a href="/intake/">Quote</a></div></div><div></div></div><div class="footer__bottom"><p>&copy; 2026 The Way Agency.</p><div class="footer__legal-links"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div></div><p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p></footer>
   <div id="ai-chat-root"></div>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
   <script src="/src/js/app.js"></script>
