@@ -39,6 +39,8 @@ const products = JSON.parse(fs.readFileSync(path.join(DATA, 'products.json'), 'u
 const locations = JSON.parse(fs.readFileSync(path.join(DATA, 'locations.json'), 'utf8'));
 const team = JSON.parse(fs.readFileSync(path.join(DATA, 'team.json'), 'utf8'));
 const knowledgeBase = JSON.parse(fs.readFileSync(path.join(DATA, 'knowledge-base.json'), 'utf8'));
+const carriers = JSON.parse(fs.readFileSync(path.join(DATA, 'carriers.json'), 'utf8'));
+const testimonials = JSON.parse(fs.readFileSync(path.join(DATA, 'testimonials.json'), 'utf8'));
 const agency = locations.agency;
 const office = locations.offices[0];
 
@@ -54,6 +56,75 @@ for (const file of ['content-personal.json', 'content-commercial.json', 'content
 // Get FAQ entries for a product from knowledge-base.json
 function getFAQsForProduct(productId) {
   return (knowledgeBase.entries || []).filter(e => e.product === productId).slice(0, 5);
+}
+
+// Get carriers for a product line
+function getCarriersForLine(lineKey) {
+  const key = lineKey === 'life_health' ? 'personal' : lineKey; // life/health uses personal carriers
+  return carriers[key] || carriers.personal || [];
+}
+
+// Generate carrier marquee HTML
+function generateCarrierMarquee(lineKey) {
+  const lineCarriers = getCarriersForLine(lineKey);
+  if (!lineCarriers.length) return '';
+  // Duplicate for seamless scroll
+  const carrierItems = lineCarriers.map(c =>
+    `<span class="carriers__logo">${c.name}${c.am_best_rating ? ' <span style="font-size:11px;opacity:0.7;">(${c.am_best_rating})</span>' : ''}</span>`
+  ).join('\n          ');
+  return `
+    <section class="carriers">
+      <p class="carriers__label">We shop ${lineCarriers.length}+ carriers for you</p>
+      <div style="overflow:hidden;">
+        <div class="carriers__track">
+          ${carrierItems}
+          ${carrierItems}
+        </div>
+      </div>
+    </section>`;
+}
+
+// Get testimonials for a product line, with fallback
+function getTestimonialsForLine(lineKey) {
+  const lineMap = { personal: 'personal', commercial: 'commercial', life_health: 'life_health' };
+  const lineName = lineMap[lineKey] || 'personal';
+  let filtered = testimonials.testimonials.filter(t => t.product_lines.includes(lineName));
+  // If fewer than 2 matches, add general ones
+  if (filtered.length < 2) {
+    const others = testimonials.testimonials.filter(t => !filtered.includes(t));
+    filtered = [...filtered, ...others].slice(0, 3);
+  }
+  return filtered.slice(0, 3);
+}
+
+// Generate testimonial HTML
+const starSvg = '<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+function generateTestimonials(lineKey) {
+  const reviews = getTestimonialsForLine(lineKey);
+  if (!reviews.length) return '';
+  return `
+    <section class="section section--light">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-header__eyebrow">What Clients Say</p>
+          <h2>Real reviews from real clients</h2>
+          <a href="https://g.page/r/CSHCy85xJ8VOEBM/review" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:var(--space-sm);font-size:var(--text-sm);color:var(--charcoal);text-decoration:none;">
+            <span style="color:#FBBC05;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            <strong>5.0</strong> <span style="color:var(--slate);">(19 Google reviews)</span>
+          </a>
+        </div>
+        <div class="grid grid--3">
+          ${reviews.map(r => `
+          <div class="testimonial-card">
+            <span class="testimonial-card__quote-mark">&ldquo;</span>
+            <div class="testimonial-card__stars">${starSvg.repeat(r.rating)}</div>
+            <p class="testimonial-card__text">${r.text}</p>
+            <p class="testimonial-card__author">${r.name}</p>
+            <p class="testimonial-card__source">${r.source === 'google' ? 'Google Review' : r.source}</p>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>`;
 }
 
 // ─── Author Attribution ─────────────────────────
@@ -306,6 +377,8 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
     <div class="hero__accent"></div>
   </section>
 
+  ${generateCarrierMarquee(lineKey)}
+
   <main id="main">
     <article class="product-content">
       ${directAnswerSection}
@@ -357,6 +430,8 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
 </div>`;
     })()}
 
+    ${generateTestimonials(lineKey)}
+
     <section class="cta-banner">
       <div class="container">
         <h2 class="cta-banner__title">Get a ${product.name.toLowerCase()} quote</h2>
@@ -386,10 +461,16 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
   <footer class="footer">
     <div class="footer__grid">
       <div class="footer__brand">
-        <img class="footer__logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:36px;width:auto;filter:brightness(0) invert(1);">
+        <p class="footer__logo" style="font-family:var(--font-heading);font-size:var(--text-xl);font-weight:700;color:var(--white);margin-bottom:var(--space-lg);">The Way Agency</p>
         <address class="footer__address" style="font-style:normal;">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address>
-        <p style="font-size:var(--text-sm);margin-top:var(--space-sm);"><a href="tel:+15024135335">${office.phone}</a></p>
-        <p style="font-size:var(--text-sm);"><a href="mailto:${office.email}">${office.email}</a></p>
+        <div class="footer__contact-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
+          <a href="tel:+15024135335">${office.phone}</a>
+        </div>
+        <div class="footer__contact-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <a href="mailto:${office.email}">${office.email}</a>
+        </div>
         <p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p>
         <a href="https://g.page/r/CSHCy85xJ8VOEBM/review" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:var(--space-sm);font-size:11px;color:rgba(255,255,255,0.7);text-decoration:none;">
           <span style="color:#FBBC05;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
@@ -435,7 +516,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
         <a href="/terms.html">Terms</a>
       </div>
     </div>
-    <p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Insurance LLC dba The Way Agency.</p>
+    <p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p>
   </footer>
   <div id="ai-chat-root"></div>
   <script src="/src/js/app.js"></script>
@@ -638,7 +719,7 @@ for (const city of landingData.cities) {
     </section>
   </main>
 
-  <footer class="footer"><div class="footer__grid"><div class="footer__brand"><img class="footer__logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:36px;width:auto;filter:brightness(0) invert(1);"><address class="footer__address">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address><p style="font-size:var(--text-sm);margin-top:var(--space-sm);"><a href="tel:+15024135335">${office.phone}</a></p><p style="font-size:var(--text-sm);"><a href="mailto:${office.email}">${office.email}</a></p><p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p></div><div><h4 class="footer__heading">Personal</h4><div class="footer__link-list"><a href="/personal/home.html">Home</a><a href="/personal/auto.html">Auto</a><a href="/personal/renters.html">Renters</a><a href="/personal/umbrella.html">Umbrella</a><a href="/personal/flood.html">Flood</a></div></div><div><h4 class="footer__heading">Commercial</h4><div class="footer__link-list"><a href="/commercial/general-liability.html">General Liability</a><a href="/commercial/commercial-property.html">Property</a><a href="/commercial/commercial-auto.html">Auto</a><a href="/commercial/workers-compensation.html">Workers Comp</a><a href="/commercial/cyber.html">Cyber</a></div></div><div><h4 class="footer__heading">Company</h4><div class="footer__link-list"><a href="/about/">About Us</a><a href="/about/team.html">Our Team</a><a href="/about/locations.html">Locations</a><a href="/blog/">Blog</a><a href="/quote.html">Get a Quote</a><a href="/contact.html">Contact</a></div></div></div><div class="footer__bottom"><p>&copy; 2026 The Way Agency.</p><div class="footer__legal-links"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div></div><p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Insurance LLC dba The Way Agency.</p></footer>
+  <footer class="footer"><div class="footer__grid"><div class="footer__brand"><img class="footer__logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:36px;width:auto;filter:brightness(0) invert(1);"><address class="footer__address">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address><p style="font-size:var(--text-sm);margin-top:var(--space-sm);"><a href="tel:+15024135335">${office.phone}</a></p><p style="font-size:var(--text-sm);"><a href="mailto:${office.email}">${office.email}</a></p><p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p></div><div><h4 class="footer__heading">Personal</h4><div class="footer__link-list"><a href="/personal/home.html">Home</a><a href="/personal/auto.html">Auto</a><a href="/personal/renters.html">Renters</a><a href="/personal/umbrella.html">Umbrella</a><a href="/personal/flood.html">Flood</a></div></div><div><h4 class="footer__heading">Commercial</h4><div class="footer__link-list"><a href="/commercial/general-liability.html">General Liability</a><a href="/commercial/commercial-property.html">Property</a><a href="/commercial/commercial-auto.html">Auto</a><a href="/commercial/workers-compensation.html">Workers Comp</a><a href="/commercial/cyber.html">Cyber</a></div></div><div><h4 class="footer__heading">Company</h4><div class="footer__link-list"><a href="/about/">About Us</a><a href="/about/team.html">Our Team</a><a href="/about/locations.html">Locations</a><a href="/blog/">Blog</a><a href="/quote.html">Get a Quote</a><a href="/contact.html">Contact</a></div></div></div><div class="footer__bottom"><p>&copy; 2026 The Way Agency.</p><div class="footer__legal-links"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div></div><p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p></footer>
   <div id="ai-chat-root"></div>
   <script src="/src/js/app.js"></script>
 </body>
@@ -744,7 +825,7 @@ for (const ind of landingData.industries) {
     </section>
   </main>
 
-  <footer class="footer"><div class="footer__grid"><div class="footer__brand"><img class="footer__logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:36px;width:auto;filter:brightness(0) invert(1);"><address class="footer__address">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address><p style="font-size:var(--text-sm);margin-top:var(--space-sm);"><a href="tel:+15024135335">${office.phone}</a></p><p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p></div><div><h4 class="footer__heading">Coverage</h4><div class="footer__link-list"><a href="/personal/">Personal</a><a href="/commercial/">Commercial</a><a href="/life-health/">Life &amp; Health</a></div></div><div><h4 class="footer__heading">Company</h4><div class="footer__link-list"><a href="/about/">About Us</a><a href="/about/team.html">Our Team</a><a href="/blog/">Blog</a><a href="/quote.html">Quote</a></div></div><div></div></div><div class="footer__bottom"><p>&copy; 2026 The Way Agency.</p><div class="footer__legal-links"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div></div><p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Insurance LLC dba The Way Agency.</p></footer>
+  <footer class="footer"><div class="footer__grid"><div class="footer__brand"><img class="footer__logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:36px;width:auto;filter:brightness(0) invert(1);"><address class="footer__address">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address><p style="font-size:var(--text-sm);margin-top:var(--space-sm);"><a href="tel:+15024135335">${office.phone}</a></p><p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p></div><div><h4 class="footer__heading">Coverage</h4><div class="footer__link-list"><a href="/personal/">Personal</a><a href="/commercial/">Commercial</a><a href="/life-health/">Life &amp; Health</a></div></div><div><h4 class="footer__heading">Company</h4><div class="footer__link-list"><a href="/about/">About Us</a><a href="/about/team.html">Our Team</a><a href="/blog/">Blog</a><a href="/quote.html">Quote</a></div></div><div></div></div><div class="footer__bottom"><p>&copy; 2026 The Way Agency.</p><div class="footer__legal-links"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div></div><p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p></footer>
   <div id="ai-chat-root"></div>
   <script src="/src/js/app.js"></script>
 </body>
