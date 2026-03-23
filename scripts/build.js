@@ -401,7 +401,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
           <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off">
           <button type="submit">Get Quote</button>
         </form>
-        <div class="form-social-proof"></div>
+        <p style="font-size:11px;color:var(--slate,#64748b);margin-top:8px;text-align:center;">We never sell your data. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
       </div>
 
       ${relatedSection}
@@ -682,7 +682,7 @@ for (const city of landingData.cities) {
             <input type="tel" name="phone" placeholder="Phone (optional)" autocomplete="tel">
             <button type="submit">Get Quote</button>
           </form>
-          <div class="form-social-proof"></div>
+          <p style="font-size:11px;color:var(--slate,#64748b);margin-top:8px;text-align:center;">We never sell your data. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
         </div>
 
         <h2>How it works</h2>
@@ -790,7 +790,7 @@ for (const ind of landingData.industries) {
             <input type="tel" name="phone" placeholder="Phone (optional)" autocomplete="tel">
             <button type="submit">Get Quote</button>
           </form>
-          <div class="form-social-proof"></div>
+          <p style="font-size:11px;color:var(--slate,#64748b);margin-top:8px;text-align:center;">We never sell your data. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
         </div>
 
         <h2>Why choose The Way Agency for ${ind.name.toLowerCase()} insurance?</h2>

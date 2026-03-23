@@ -329,7 +329,7 @@
             <input type="email" name="email" placeholder="Email address" required style="flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-body);font-size:14px;font-weight:300;">
           </div>
           <button type="submit" style="width:100%;padding:12px;background:var(--cyan);color:var(--navy-dark);border:none;border-radius:6px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em;">Get a Free Coverage Review</button>
-          <p style="font-size:11px;color:var(--gray);margin-top:8px;text-align:center;">No spam. A licensed agent will follow up within 1 business day.</p>
+          <p style="font-size:11px;color:var(--gray);margin-top:8px;text-align:center;">We never sell your data. A licensed agent will follow up within 1 business day.</p>
         </form>
       </div>
     `);
