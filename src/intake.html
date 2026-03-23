@@ -431,6 +431,61 @@
     .header-tagline { font-size: 16px }
     .container { padding: 12px 10px 28px }
   }
+
+  /* ─── Bundle suggestion banner ─── */
+  .bundle-banner {
+    background: #eff6ff;
+    border-left: 4px solid var(--blue);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    animation: fadeIn .3s ease-out;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px) } to { opacity: 1; transform: translateY(0) } }
+  .bundle-banner .bundle-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 6px;
+  }
+  .bundle-banner .bundle-msg {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .bundle-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .bundle-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 14px;
+    border: 1.5px solid var(--blue);
+    border-radius: 20px;
+    background: transparent;
+    color: var(--blue);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .bundle-pill:hover { background: #dbeafe }
+  .bundle-pill.added {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+  }
+  .bundle-pill.added:hover { background: #1565a0 }
+  .bundle-done {
+    font-size: 13px;
+    color: var(--mint);
+    font-weight: 600;
+  }
 </style>
 </head>
 <body>
@@ -584,6 +639,11 @@
   <div id="step-2" class="card hidden">
     <h2>What coverage do you need?</h2>
     <p class="card-desc">Select all that apply — we'll tailor your quote accordingly.</p>
+    <div id="bundle-banner" class="bundle-banner hidden">
+      <div class="bundle-title" id="bundle-title"></div>
+      <div class="bundle-msg" id="bundle-msg"></div>
+      <div class="bundle-pills" id="bundle-pills"></div>
+    </div>
     <div class="product-grid" id="product-grid">
       <div class="product-opt" data-pid="homeowners" onclick="toggleProd(this)">
         <span class="icon">&#127968;</span>Homeowners
@@ -722,6 +782,90 @@ let pollTimer = null;          // Polls for agent takeover
 let turnstileToken = null;     // Cloudflare Turnstile token
 let turnstileWidgetId = null;  // Widget ID for reset
 
+// ── Bundle suggestion map ────────────────────────────────────────────────────
+const BUNDLE_MAP = {
+  homeowners:      { products: ['auto', 'umbrella'],        msg: "Customers who add auto and umbrella coverage typically save 15-25% with multi-policy discounts." },
+  auto:            { products: ['homeowners', 'umbrella'],  msg: "Customers who bundle home and umbrella with auto typically save 15-25%." },
+  renters:         { products: ['auto', 'umbrella'],        msg: "Bundle with auto and umbrella for multi-policy savings of 10-20%." },
+  motorcycle:      { products: ['auto', 'homeowners'],      msg: "Bundle with auto and home for multi-policy savings of 10-15%." },
+  boat:            { products: ['homeowners', 'auto'],      msg: "Bundle with home and auto for multi-policy savings." },
+  flood:           { products: ['homeowners'],              msg: "Most carriers offer a discount when flood is paired with homeowners." },
+  umbrella:        { products: ['homeowners', 'auto'],      msg: "Umbrella requires underlying home and auto policies \u2014 we\u2019ll bundle all three." },
+  life:            { products: ['homeowners', 'auto'],      msg: "Some carriers discount life when bundled with home and auto." },
+  bop:             { products: ['commercial_auto', 'workers_comp'], msg: "Bundle with commercial auto and workers comp for a full business package." },
+  cgl:             { products: ['bop', 'commercial_auto'],  msg: "A BOP bundles GL + property at 10-20% less than standalone policies." },
+  commercial_auto: { products: ['cgl', 'workers_comp'],     msg: "Bundle with general liability and workers comp for fleet coverage." },
+  workers_comp:    { products: ['cgl', 'commercial_auto'],  msg: "Bundle with general liability and commercial auto for a complete package." },
+  cyber:           { products: ['bop', 'eo'],               msg: "Bundle with BOP and professional liability for full digital protection." },
+};
+
+const PRODUCT_NAMES = {
+  homeowners:'Homeowners', auto:'Auto', umbrella:'Umbrella', flood:'Flood', life:'Life',
+  renters:'Renters', bop:'Business', motorcycle:'Motorcycle', dwelling_fire:'Dwelling Fire',
+  cgl:'General Liability', commercial_auto:'Commercial Auto', workers_comp:'Workers Comp',
+  cyber:'Cyber', eo:'Professional Liability', boat:'Boat', rv:'RV', earthquake:'Earthquake',
+  farm_ranch:'Farm / Ranch', bonds:'Bonds', other:'Other',
+};
+
+let bundleSourceProduct = null; // The product that triggered the bundle banner
+
+function renderBundleBanner(pid) {
+  const bundle = BUNDLE_MAP[pid];
+  const banner = document.getElementById('bundle-banner');
+  if (!bundle || !banner) return;
+
+  bundleSourceProduct = pid;
+  const title = document.getElementById('bundle-title');
+  const msg = document.getElementById('bundle-msg');
+  const pills = document.getElementById('bundle-pills');
+
+  title.textContent = 'Save more by bundling';
+  msg.textContent = bundle.msg;
+
+  pills.innerHTML = bundle.products.map(p =>
+    `<button type="button" class="bundle-pill" data-bpid="${p}" onclick="toggleBundlePill('${p}')">+ ${PRODUCT_NAMES[p] || p}</button>`
+  ).join('');
+
+  banner.classList.remove('hidden');
+  syncBundlePills();
+}
+
+function toggleBundlePill(pid) {
+  const el = document.querySelector(`.product-opt[data-pid="${pid}"]`);
+  if (!el) return;
+  // If it's in the collapsed "other products" panel, expand it first
+  if (el.closest('.other-products')) {
+    const panel = document.getElementById('other-products');
+    if (panel && !panel.classList.contains('show')) panel.classList.add('show');
+  }
+  toggleProd(el);
+}
+
+function syncBundlePills() {
+  const banner = document.getElementById('bundle-banner');
+  if (!banner || banner.classList.contains('hidden')) return;
+
+  const bundle = BUNDLE_MAP[bundleSourceProduct];
+  if (!bundle) return;
+
+  let allAdded = true;
+  document.querySelectorAll('.bundle-pill').forEach(pill => {
+    const pid = pill.dataset.bpid;
+    const isSelected = selectedProducts.includes(pid);
+    pill.classList.toggle('added', isSelected);
+    pill.textContent = isSelected ? '\u2713 ' + (PRODUCT_NAMES[pid] || pid) : '+ ' + (PRODUCT_NAMES[pid] || pid);
+    if (!isSelected) allAdded = false;
+  });
+
+  // If all bundle products selected, show success message
+  const msg = document.getElementById('bundle-msg');
+  if (allAdded && bundle.products.length > 0) {
+    msg.innerHTML = '<span class="bundle-done">\u2713 Great \u2014 you\'re bundling for maximum savings!</span>';
+  } else {
+    msg.textContent = bundle.msg;
+  }
+}
+
 // ── Pre-select product from URL parameter (e.g. /intake/?product=homeowners) ─
 (function preSelectProduct() {
   const params = new URLSearchParams(window.location.search);
@@ -737,6 +881,8 @@ let turnstileWidgetId = null;  // Widget ID for reset
       const panel = document.getElementById('other-products');
       if (panel) panel.classList.add('show');
     }
+    // Show bundle suggestion banner
+    renderBundleBanner(pid);
   }
 })();
 
@@ -895,6 +1041,14 @@ function returnToForm() {
 function toggleProd(el) {
   el.classList.toggle('selected');
   selectedProducts = [...document.querySelectorAll('.product-opt.selected')].map(e => e.dataset.pid);
+  // If source product was deselected, hide bundle banner
+  if (bundleSourceProduct && !selectedProducts.includes(bundleSourceProduct)) {
+    const banner = document.getElementById('bundle-banner');
+    if (banner) banner.classList.add('hidden');
+    bundleSourceProduct = null;
+  }
+  // Sync bundle pill states
+  syncBundlePills();
 }
 
 function toggleOtherProducts() {
