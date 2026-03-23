@@ -31,7 +31,7 @@
     {
       "name": "Kelly McCallister",
       "slug": "kelly-mccallister",
-      "title": "Licensed Agent",
+      "title": "Client Care Specialist",
       "photo": "/src/assets/images/team/kelly-mccallister.webp",
       "years_experience": 10,
       "license_states": ["KY", "IN", "TN"],
@@ -55,6 +55,20 @@
       "fun_fact": "",
       "email": "jill@thewayagency.com",
       "phone": "(502) 413-5335 ext 4"
+    },
+    {
+      "name": "Allison Sommers",
+      "slug": "allison-sommers",
+      "title": "College Intern",
+      "photo": "/src/assets/images/team/allison-sommers.webp",
+      "years_experience": 0,
+      "license_states": [],
+      "designations": [],
+      "specialties": [],
+      "bio": "",
+      "fun_fact": "",
+      "email": "",
+      "phone": ""
     }
   ]
 }
