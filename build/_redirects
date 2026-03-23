@@ -59,6 +59,16 @@
 /privacy-policy /privacy.html 301
 /t-c /terms.html 301
 
+# Portal pages (SPA — serve index.html for all sub-paths)
+/intake/* /intake/index.html 200
+/portal/* /portal/index.html 200
+/partner/* /partner/index.html 200
+
+# Old sage URLs (in case anyone bookmarked them)
+/intake.html /intake/ 301
+/portal.html /portal/ 301
+/partner.html /partner/ 301
+
 # Blog (individual posts — add as discovered)
 /post/cyber-safety-for-small-businesses-prevention-checklist /blog/cyber-safety.html 301
 /post/kentucky-tornado-season-prep-safety-insurance-checklist /blog/tornado-season.html 301

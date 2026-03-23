@@ -398,6 +398,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
           <input type="text" name="name" placeholder="Your name" required autocomplete="name">
           <input type="email" name="email" placeholder="Email address" required autocomplete="email">
           <input type="tel" name="phone" placeholder="Phone (optional)" autocomplete="tel">
+          <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off">
           <button type="submit">Get Quote</button>
         </form>
         <div class="form-social-proof"></div>
@@ -512,6 +513,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
     <p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p>
   </footer>
   <div id="ai-chat-root"></div>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
   <script src="/src/js/app.js"></script>
 </body>
 </html>`;
@@ -714,6 +716,7 @@ for (const city of landingData.cities) {
 
   <footer class="footer"><div class="footer__grid"><div class="footer__brand"><img class="footer__logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:36px;width:auto;filter:brightness(0) invert(1);"><address class="footer__address">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address><p style="font-size:var(--text-sm);margin-top:var(--space-sm);"><a href="tel:+15024135335">${office.phone}</a></p><p style="font-size:var(--text-sm);"><a href="mailto:${office.email}">${office.email}</a></p><p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p></div><div><h4 class="footer__heading">Personal</h4><div class="footer__link-list"><a href="/personal/home.html">Home</a><a href="/personal/auto.html">Auto</a><a href="/personal/renters.html">Renters</a><a href="/personal/umbrella.html">Umbrella</a><a href="/personal/flood.html">Flood</a></div></div><div><h4 class="footer__heading">Commercial</h4><div class="footer__link-list"><a href="/commercial/general-liability.html">General Liability</a><a href="/commercial/commercial-property.html">Property</a><a href="/commercial/commercial-auto.html">Auto</a><a href="/commercial/workers-compensation.html">Workers Comp</a><a href="/commercial/cyber.html">Cyber</a></div></div><div><h4 class="footer__heading">Company</h4><div class="footer__link-list"><a href="/about/">About Us</a><a href="/about/team.html">Our Team</a><a href="/about/locations.html">Locations</a><a href="/blog/">Blog</a><a href="/quote.html">Get a Quote</a><a href="/contact.html">Contact</a></div></div></div><div class="footer__bottom"><p>&copy; 2026 The Way Agency.</p><div class="footer__legal-links"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div></div><p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p></footer>
   <div id="ai-chat-root"></div>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
   <script src="/src/js/app.js"></script>
 </body>
 </html>`.replace(/CONFIG_PHONE_RAW/g, '+15024135335');
@@ -820,6 +823,7 @@ for (const ind of landingData.industries) {
 
   <footer class="footer"><div class="footer__grid"><div class="footer__brand"><img class="footer__logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:36px;width:auto;filter:brightness(0) invert(1);"><address class="footer__address">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address><p style="font-size:var(--text-sm);margin-top:var(--space-sm);"><a href="tel:+15024135335">${office.phone}</a></p><p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p></div><div><h4 class="footer__heading">Coverage</h4><div class="footer__link-list"><a href="/personal/">Personal</a><a href="/commercial/">Commercial</a><a href="/life-health/">Life &amp; Health</a></div></div><div><h4 class="footer__heading">Company</h4><div class="footer__link-list"><a href="/about/">About Us</a><a href="/about/team.html">Our Team</a><a href="/blog/">Blog</a><a href="/quote.html">Quote</a></div></div><div></div></div><div class="footer__bottom"><p>&copy; 2026 The Way Agency.</p><div class="footer__legal-links"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div></div><p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p></footer>
   <div id="ai-chat-root"></div>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
   <script src="/src/js/app.js"></script>
 </body>
 </html>`;
@@ -894,5 +898,36 @@ for (const file of ['_redirects', '_headers', 'robots.txt']) {
   }
 }
 
-console.log(`\n✅ Build complete! ${generatedCount + rootPages.length + subPages.length} pages in build/`);
+// 9. Copy customer-facing portal pages (migrated from sage-server)
+const portalPages = [
+  { src: 'intake.html', dest: 'intake/index.html', sitemap: '/intake/' },
+  { src: 'portal.html', dest: 'portal/index.html', sitemap: null },  // Token-based, not indexable
+  { src: 'partner.html', dest: 'partner/index.html', sitemap: null }, // Token-based, not indexable
+];
+for (const page of portalPages) {
+  const srcFile = path.join(SRC, page.src);
+  if (fs.existsSync(srcFile)) {
+    const destDir = path.join(BUILD, path.dirname(page.dest));
+    ensureDir(destDir);
+    fs.copyFileSync(srcFile, path.join(BUILD, page.dest));
+    if (page.sitemap) {
+      sitemapUrls.push({ url: page.sitemap, priority: '0.8', freq: 'monthly' });
+    }
+    console.log(`  ✓ ${page.dest}`);
+  }
+}
+
+// Regenerate sitemap with portal pages included
+const finalSitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${sitemapUrls.map(u => `  <url>
+    <loc>${baseUrl}${u.url}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>${u.freq}</changefreq>
+    <priority>${u.priority}</priority>
+  </url>`).join('\n')}
+</urlset>`;
+fs.writeFileSync(path.join(BUILD, 'sitemap.xml'), finalSitemapXml);
+
+console.log(`\n✅ Build complete! ${generatedCount + rootPages.length + subPages.length + portalPages.length} pages in build/`);
 console.log(`   Total files: ${sitemapUrls.length} indexable URLs`);

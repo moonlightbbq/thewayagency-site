@@ -8,7 +8,8 @@
 
   // ─── Configuration ───────────────────────────
   const CONFIG = {
-    webhookUrl: '', // Set to Cloudflare Worker or form endpoint
+    webhookUrl: 'https://sage.thewayagency.com/api/intake/lead',
+    turnstileSiteKey: '0x4AAAAAACuOvP2DfWPQJz9W',
     phone: '(502) 413-5335',
     phoneRaw: '+15024135335',
     email: 'hello@thewayagency.com',
@@ -56,29 +57,60 @@
     console.log('[TWA Track]', action, category, label);
   }
 
+  // ─── Turnstile Helper ───────────────────────
+  let _turnstileReady = false;
+  function getTurnstileToken() {
+    return new Promise((resolve) => {
+      if (!CONFIG.turnstileSiteKey || !window.turnstile) { resolve(''); return; }
+      // Create a temporary invisible container
+      const container = document.createElement('div');
+      container.style.display = 'none';
+      document.body.appendChild(container);
+      window.turnstile.render(container, {
+        sitekey: CONFIG.turnstileSiteKey,
+        size: 'invisible',
+        callback: (token) => { container.remove(); resolve(token); },
+        'error-callback': () => { container.remove(); resolve(''); },
+        'expired-callback': () => { container.remove(); resolve(''); },
+      });
+    });
+  }
+
   // ─── Form Submission Handler ─────────────────
   async function submitLead(data, source) {
     data.timestamp = new Date().toISOString();
     data.source = source || 'website';
     data.page = window.location.pathname;
     data.referrer = document.referrer || 'direct';
+    data._hp_company = ''; // Honeypot — bots will fill this, humans won't
+
+    // Get Turnstile token if configured
+    if (CONFIG.turnstileSiteKey) {
+      data.cfToken = await getTurnstileToken();
+    }
 
     trackEvent('form_submit', 'lead', source);
 
     if (CONFIG.webhookUrl) {
       try {
-        await fetch(CONFIG.webhookUrl, {
+        const res = await fetch(CONFIG.webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
+        const result = await res.json();
+        if (result.sessionId) {
+          // Store sessionId for status checking
+          try { localStorage.setItem('twa_last_session', result.sessionId); } catch(e) {}
+        }
+        return result;
       } catch (err) {
         console.error('[TWA] Submission error:', err);
       }
     } else {
       console.log('[TWA] Lead data (no webhook):', data);
     }
-    return true;
+    return { ok: true };
   }
 
   // ═══════════════════════════════════════════════
@@ -257,6 +289,7 @@
         <h3 style="font-family:var(--font-heading);font-size:1.5rem;font-weight:600;color:var(--navy);margin-bottom:8px;">Before you go</h3>
         <p style="color:var(--slate);font-size:0.95rem;font-weight:300;margin-bottom:20px;">Get a free coverage review  -  we'll look at what you have and tell you if there's a better option. No commitment, no pressure.</p>
         <form id="exitForm">
+          <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off">
           <div style="display:flex;gap:8px;margin-bottom:10px;">
             <input type="text" name="name" placeholder="Your name" required style="flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-body);font-size:14px;font-weight:300;">
             <input type="email" name="email" placeholder="Email address" required style="flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-body);font-size:14px;font-weight:300;">
