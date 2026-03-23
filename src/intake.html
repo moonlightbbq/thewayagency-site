@@ -730,6 +730,14 @@
 
 <script>
 const SAGE_API = 'https://sage.thewayagency.com';
+
+// ── Conversion tracking ─────────────────────────────────────────────────────
+function trackIntake(action, label, value) {
+  if (window.gtag) gtag('event', action, { event_category: 'intake', event_label: label, value });
+  if (window.fbq) fbq('track', action === 'intake_submitted' ? 'Lead' : 'ViewContent', { content_name: label, content_category: 'intake' });
+  console.log('[Intake Track]', action, label, value || '');
+}
+
 // Show version in footer
 fetch(SAGE_API + '/api/health').then(r=>r.json()).then(d=>{ const el=document.getElementById('intake-version'); if(el&&d.version) el.textContent='v'+d.version; }).catch(()=>{});
 
@@ -845,6 +853,7 @@ function renderBundleBanner(pid) {
   const bundle = BUNDLE_MAP[pid];
   const banner = document.getElementById('bundle-banner');
   if (!bundle || !banner) return;
+  trackIntake('bundle_shown', pid);
 
   bundleSourceProduct = pid;
   const title = document.getElementById('bundle-title');
@@ -863,6 +872,7 @@ function renderBundleBanner(pid) {
 }
 
 function toggleBundlePill(pid) {
+  trackIntake('bundle_product_toggled', pid);
   const el = document.querySelector(`.product-opt[data-pid="${pid}"]`);
   if (!el) return;
   // If it's in the collapsed "other products" panel, expand it first
@@ -1195,6 +1205,9 @@ function showStep(n) {
   if (n === 3) renderProductQuestions();
   if (n === 4) renderReview();
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Track step progression
+  const stepNames = { 1: 'contact_info', 2: 'products', 3: 'details', 4: 'review' };
+  trackIntake('intake_step', stepNames[n] || 'step_' + n, n);
   // Auto-save step progress
   scheduleTrack();
 }
@@ -1865,6 +1878,7 @@ async function submitIntake() {
       document.getElementById('step-confirm').classList.remove('hidden');
       document.getElementById('ref-number').textContent = 'Reference: #' + data.reference;
       document.getElementById('progress-wrap').classList.add('hidden');
+      trackIntake('intake_submitted', selectedProducts.join(','), selectedProducts.length);
     } else {
       err.textContent = data.error || 'Submission failed. Please try again.';
       err.classList.remove('hidden');
