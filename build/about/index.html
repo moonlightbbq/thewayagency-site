@@ -10,703 +10,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   
-  <style>
-/* ═══════════════════════════════════════════════
-   THE WAY AGENCY — Design System
-   Brand: Blue #3097D3, Cyan #20BCEE, Green #65C5B3, Navy #173358
-   Type: Montserrat Semi Bold (headings) + Montserrat Light (body)
-   ═══════════════════════════════════════════════ */
-
-:root {
-  --blue: #3097D3;
-  --blue-dark: #2680B5;
-  --blue-light: #4AABDE;
-  --cyan: #20BCEE;
-  --cyan-light: #5FD0F3;
-  --green: #65C5B3;
-  --green-light: #8AD4C7;
-  --navy: #173358;
-  --navy-dark: #0F2240;
-  --navy-light: #1E4470;
-  --charcoal: #1A1A1A;
-  --slate: #555555;
-  --gray: #888888;
-  --border: #D8DDE3;
-  --light-bg: #F4F7FA;
-  --white: #FFFFFF;
-  --black: #000000;
-  --error: #D94040;
-  --success: #2EAD6B;
-
-  --font-heading: 'Montserrat', 'Segoe UI', sans-serif;
-  --font-body: 'Montserrat', 'Segoe UI', sans-serif;
-  --text-xs: 0.75rem; --text-sm: 0.875rem; --text-base: 1rem;
-  --text-lg: 1.125rem; --text-xl: 1.25rem; --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem; --text-4xl: 2.25rem; --text-5xl: 3rem;
-  --text-hero: clamp(2.5rem, 5vw, 4rem);
-
-  --space-xs: 0.25rem; --space-sm: 0.5rem; --space-md: 1rem;
-  --space-lg: 1.5rem; --space-xl: 2rem; --space-2xl: 3rem;
-  --space-3xl: 4rem; --space-4xl: 6rem;
-  --space-section: clamp(3rem, 6vw, 6rem);
-
-  --max-width: 1200px; --max-width-narrow: 800px;
-  --nav-height: 76px; --border-radius: 6px; --border-radius-lg: 10px;
-  --shadow-sm: 0 1px 3px rgba(23,51,88,.06);
-  --shadow-md: 0 4px 14px rgba(23,51,88,.08);
-  --shadow-lg: 0 8px 30px rgba(23,51,88,.1);
-  --shadow-card: 0 2px 10px rgba(23,51,88,.06);
-  --transition-fast: 150ms ease; --transition-base: 250ms ease; --transition-slow: 400ms ease;
-}
-
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:16px;scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
-body{font-family:var(--font-body);font-weight:300;font-size:var(--text-base);line-height:1.7;color:var(--charcoal);background:var(--white);overflow-x:hidden}
-img,video{max-width:100%;height:auto;display:block}
-a{color:var(--blue);text-decoration:none;transition:color var(--transition-fast)}
-a:hover{color:var(--navy)}
-ul,ol{list-style:none}
-
-h1,h2,h3,h4,h5{font-family:var(--font-heading);font-weight:600;line-height:1.2;color:var(--navy)}
-h1{font-size:var(--text-hero);margin-bottom:var(--space-lg);letter-spacing:-0.01em}
-h2{font-size:var(--text-4xl);margin-bottom:var(--space-lg)}
-h3{font-size:var(--text-2xl);margin-bottom:var(--space-md)}
-h4{font-size:var(--text-xl);margin-bottom:var(--space-sm)}
-p{margin-bottom:var(--space-md);max-width:72ch}
-strong{font-weight:600}
-
-.text-center{text-align:center} .text-sm{font-size:var(--text-sm)}
-.text-lg{font-size:var(--text-lg);line-height:1.8}
-.text-slate{color:var(--slate)} .text-white{color:var(--white)}
-
-.container{width:100%;max-width:var(--max-width);margin:0 auto;padding:0 var(--space-xl)}
-.container--narrow{max-width:var(--max-width-narrow)}
-.section{padding:var(--space-section) 0}
-.section--light{background:var(--light-bg)}
-.section--navy{background:var(--navy);color:var(--white)}
-.section--navy h2,.section--navy h3{color:var(--white)}
-
-.grid{display:grid;gap:var(--space-xl)}
-.grid--2{grid-template-columns:repeat(2,1fr)}
-.grid--3{grid-template-columns:repeat(3,1fr)}
-.grid--4{grid-template-columns:repeat(4,1fr)}
-@media(max-width:768px){.grid--2,.grid--3,.grid--4{grid-template-columns:1fr}}
-@media(min-width:769px) and (max-width:1024px){.grid--3,.grid--4{grid-template-columns:repeat(2,1fr)}}
-
-/* ═══════════════════════════════════════════════
-   COMPONENTS — The Way Agency Brand
-   ═══════════════════════════════════════════════ */
-
-/* ── Buttons ── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--space-sm);padding:.8rem 1.8rem;font-family:var(--font-body);font-size:var(--text-sm);font-weight:600;letter-spacing:.05em;text-transform:uppercase;border:2px solid transparent;border-radius:var(--border-radius);cursor:pointer;transition:all var(--transition-base);text-decoration:none;line-height:1}
-.btn--primary{background:var(--cyan);color:var(--navy-dark);border-color:var(--cyan)}
-.btn--primary:hover{background:var(--blue);border-color:var(--blue);color:var(--white);transform:translateY(-1px);box-shadow:var(--shadow-md)}
-.btn--outline{background:transparent;color:var(--navy);border-color:var(--navy)}
-.btn--outline:hover{background:var(--navy);color:var(--white)}
-.btn--outline-white{background:transparent;color:var(--white);border-color:rgba(255,255,255,.5)}
-.btn--outline-white:hover{background:var(--white);color:var(--navy);border-color:var(--white)}
-.btn--lg{padding:1rem 2.2rem;font-size:var(--text-base)}
-
-/* ── Navigation ── */
-.nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--white);border-bottom:1px solid var(--border);height:var(--nav-height);transition:box-shadow var(--transition-base)}
-.nav--scrolled{box-shadow:var(--shadow-md)}
-.nav__inner{max-width:var(--max-width);margin:0 auto;padding:0 var(--space-xl);height:100%;display:flex;align-items:center;justify-content:space-between}
-.nav__logo{height:44px;display:flex;align-items:center}
-.nav__logo img{height:100%;width:auto}
-.nav__links{display:flex;align-items:center;gap:var(--space-xl)}
-.nav__link{font-family:var(--font-body);font-size:var(--text-sm);font-weight:500;color:var(--charcoal);text-transform:uppercase;letter-spacing:.04em;padding:var(--space-sm) 0;position:relative;transition:color var(--transition-fast)}
-.nav__link:hover{color:var(--blue)}
-.nav__link::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--cyan);transition:width var(--transition-base)}
-.nav__link:hover::after{width:100%}
-
-.nav__dropdown{position:relative}
-.nav__dropdown-menu{position:absolute;top:calc(100% + var(--space-sm));left:50%;transform:translateX(-50%) translateY(8px);background:var(--white);border:1px solid var(--border);border-radius:var(--border-radius-lg);box-shadow:var(--shadow-lg);padding:var(--space-lg);min-width:280px;opacity:0;visibility:hidden;transition:all var(--transition-base);display:grid;grid-template-columns:1fr 1fr;gap:var(--space-xs)}
-.nav__dropdown:hover .nav__dropdown-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
-.nav__dropdown-item{display:block;padding:var(--space-sm) var(--space-md);font-size:var(--text-sm);color:var(--charcoal);border-radius:var(--border-radius);transition:all var(--transition-fast)}
-.nav__dropdown-item:hover{background:var(--light-bg);color:var(--blue)}
-
-.nav__toggle{display:none;background:none;border:none;cursor:pointer;padding:var(--space-sm)}
-.nav__toggle span{display:block;width:24px;height:2px;background:var(--charcoal);margin:5px 0;transition:all var(--transition-base)}
-
-@media(max-width:968px){
-  .nav__toggle{display:block}
-  .nav__links{position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;background:var(--white);flex-direction:column;align-items:flex-start;padding:var(--space-xl);gap:var(--space-md);transform:translateX(100%);transition:transform var(--transition-slow);overflow-y:auto}
-  .nav__links--open{transform:translateX(0)}
-  .nav__dropdown-menu{position:static;transform:none;opacity:1;visibility:visible;box-shadow:none;border:none;padding:0 0 0 var(--space-md);min-width:auto;display:none;grid-template-columns:1fr}
-  .nav__dropdown--open .nav__dropdown-menu{display:grid}
-}
-
-/* ── Hero ── */
-.hero{position:relative;min-height:70vh;display:flex;align-items:center;overflow:hidden;margin-top:var(--nav-height);background:var(--navy-dark)}
-.hero__bg{position:absolute;inset:0;background:linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 40%, var(--blue-dark) 100%);z-index:0}
-.hero__bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 30%,rgba(32,188,238,.12) 0%,transparent 60%),radial-gradient(ellipse at 20% 70%,rgba(101,197,179,.08) 0%,transparent 50%)}
-.hero__texture{position:absolute;inset:0;opacity:.02;background-image:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h1v1H0z' fill='%23fff' fill-opacity='1'/%3E%3C/svg%3E");z-index:1}
-.hero__content{position:relative;z-index:2;max-width:var(--max-width);margin:0 auto;padding:var(--space-4xl) var(--space-xl);color:var(--white)}
-.hero__eyebrow{font-size:var(--text-sm);font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:var(--space-md);opacity:0;animation:fadeUp .6s ease .2s forwards}
-.hero__title{color:var(--white);max-width:700px;margin-bottom:var(--space-lg);opacity:0;animation:fadeUp .6s ease .4s forwards}
-.hero__subtitle{font-size:var(--text-lg);font-weight:300;line-height:1.8;max-width:560px;color:rgba(255,255,255,.8);margin-bottom:var(--space-2xl);opacity:0;animation:fadeUp .6s ease .6s forwards}
-.hero__actions{display:flex;gap:var(--space-md);flex-wrap:wrap;opacity:0;animation:fadeUp .6s ease .8s forwards}
-.hero__accent{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--blue) 0%,var(--cyan) 40%,var(--green) 100%);z-index:2}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:768px){.hero{min-height:60vh}.hero__content{padding:var(--space-3xl) var(--space-xl)}}
-
-/* ── Trust Bar ── */
-.trust-bar{background:var(--light-bg);border-bottom:1px solid var(--border);padding:var(--space-lg) 0}
-.trust-bar__inner{max-width:var(--max-width);margin:0 auto;padding:0 var(--space-xl);display:flex;justify-content:center;align-items:center;gap:var(--space-2xl);flex-wrap:wrap}
-.trust-bar__item{display:flex;align-items:center;gap:var(--space-sm);font-size:var(--text-sm);font-weight:600;color:var(--navy);letter-spacing:.02em}
-.trust-bar__item svg{width:20px;height:20px;flex-shrink:0;color:var(--cyan)}
-.trust-bar__divider{width:1px;height:20px;background:var(--border)}
-@media(max-width:768px){.trust-bar__inner{gap:var(--space-lg)}.trust-bar__divider{display:none}}
-
-/* ── Cards ── */
-.card{background:var(--white);border:1px solid var(--border);border-radius:var(--border-radius-lg);padding:var(--space-2xl);transition:all var(--transition-base)}
-.card:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px);border-color:var(--cyan)}
-.card__title{font-size:var(--text-2xl);font-weight:600;color:var(--navy);margin-bottom:var(--space-md)}
-.card__text{color:var(--slate);font-size:var(--text-base);font-weight:300;line-height:1.7;margin-bottom:var(--space-lg)}
-.card__link{font-size:var(--text-sm);font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);display:inline-flex;align-items:center;gap:var(--space-sm)}
-.card__link:hover{color:var(--navy)}
-.card__link svg{width:16px;height:16px;transition:transform var(--transition-fast)}
-.card__link:hover svg{transform:translateX(4px)}
-
-/* LOB Cards */
-.lob-card{position:relative;border-radius:var(--border-radius-lg);overflow:hidden;min-height:380px;display:flex;flex-direction:column;justify-content:flex-end;padding:var(--space-2xl);transition:all var(--transition-base);color:var(--white)}
-.lob-card::before{content:'';position:absolute;inset:0;z-index:1;transition:background var(--transition-base)}
-.lob-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
-.lob-card__content{position:relative;z-index:2}
-.lob-card__title{color:var(--white);font-size:var(--text-3xl);margin-bottom:var(--space-sm)}
-.lob-card__text{color:rgba(255,255,255,.8);margin-bottom:var(--space-lg);font-weight:300}
-
-/* LOB card gradients using brand colors */
-.lob-card--personal{background:linear-gradient(135deg,var(--navy) 0%,var(--blue) 100%)}
-.lob-card--personal::before{background:linear-gradient(to top,rgba(23,51,88,.9) 0%,rgba(48,151,211,.3) 100%)}
-.lob-card--commercial{background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 100%)}
-.lob-card--commercial::before{background:linear-gradient(to top,rgba(15,34,64,.95) 0%,rgba(23,51,88,.4) 100%)}
-.lob-card--life{background:linear-gradient(135deg,var(--blue) 0%,var(--green) 100%)}
-.lob-card--life::before{background:linear-gradient(to top,rgba(23,51,88,.85) 0%,rgba(101,197,179,.3) 100%)}
-
-/* ── Carrier Marquee ── */
-.carriers{padding:var(--space-2xl) 0;overflow:hidden;background:var(--white);border-bottom:1px solid var(--border)}
-.carriers__label{text-align:center;font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.15em;color:var(--gray);margin-bottom:var(--space-lg)}
-.carriers__track{display:flex;gap:var(--space-3xl);animation:scroll-left 40s linear infinite;width:max-content}
-.carriers__track:hover{animation-play-state:paused}
-.carriers__logo{height:36px;width:auto;opacity:.45;filter:grayscale(100%);transition:all var(--transition-base);flex-shrink:0;display:flex;align-items:center;font-size:14px;font-weight:600;color:var(--gray);white-space:nowrap}
-.carriers__logo:hover{opacity:1;filter:grayscale(0%);color:var(--blue)}
-@keyframes scroll-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-
-/* ── Testimonials ── */
-.testimonial-card{background:var(--white);border:1px solid var(--border);border-radius:var(--border-radius-lg);padding:var(--space-2xl);position:relative}
-.testimonial-card__stars{display:flex;gap:2px;margin-bottom:var(--space-md);color:var(--cyan)}
-.testimonial-card__stars svg{width:18px;height:18px}
-.testimonial-card__text{font-size:var(--text-lg);font-weight:300;font-style:italic;line-height:1.7;color:var(--charcoal);margin-bottom:var(--space-lg)}
-.testimonial-card__author{font-weight:600;font-size:var(--text-sm);color:var(--navy)}
-.testimonial-card__source{font-size:var(--text-xs);color:var(--gray)}
-.testimonial-card__quote-mark{position:absolute;top:var(--space-lg);right:var(--space-xl);font-size:5rem;color:var(--light-bg);line-height:1;pointer-events:none;font-weight:600}
-
-/* ── Steps ── */
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-2xl);counter-reset:step}
-.step{text-align:center;position:relative}
-.step__number{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--cyan));color:var(--white);font-size:var(--text-2xl);font-weight:600;margin-bottom:var(--space-lg)}
-.step__title{font-size:var(--text-xl);font-weight:600;color:var(--navy);margin-bottom:var(--space-sm)}
-.step__text{color:var(--slate);font-weight:300;max-width:300px;margin:0 auto}
-.step:not(:last-child)::after{content:'';position:absolute;top:28px;left:calc(50% + 40px);width:calc(100% - 80px);height:2px;background:var(--border)}
-@media(max-width:768px){.steps{grid-template-columns:1fr;gap:var(--space-xl)}.step:not(:last-child)::after{display:none}}
-
-/* ── CTA Banner ── */
-.cta-banner{background:var(--navy);padding:var(--space-3xl) 0;text-align:center;position:relative;overflow:hidden}
-.cta-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(32,188,238,.08) 0%,transparent 60%)}
-.cta-banner__title{color:var(--white);font-size:var(--text-4xl);margin-bottom:var(--space-md);position:relative}
-.cta-banner__text{color:rgba(255,255,255,.75);font-size:var(--text-lg);font-weight:300;margin-bottom:var(--space-2xl);max-width:600px;margin-left:auto;margin-right:auto;position:relative}
-.cta-banner__actions{display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;position:relative}
-
-/* ── Forms ── */
-.form-group{margin-bottom:var(--space-lg)}
-.form-group label{display:block;font-size:var(--text-sm);font-weight:600;color:var(--navy);margin-bottom:var(--space-xs)}
-.form-group input,.form-group select,.form-group textarea{width:100%;padding:.75rem 1rem;border:1px solid var(--border);border-radius:var(--border-radius);font-family:var(--font-body);font-size:var(--text-base);font-weight:300;color:var(--charcoal);background:var(--white);transition:border-color var(--transition-fast)}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(48,151,211,.12)}
-.form-group textarea{min-height:120px;resize:vertical}
-.form-privacy{font-size:var(--text-xs);color:var(--gray);margin-top:var(--space-md);line-height:1.6}
-.form-privacy a{color:var(--blue);text-decoration:underline}
-
-/* ── FAQ ── */
-.faq-item{border-bottom:1px solid var(--border)}
-.faq-item__question{width:100%;background:none;border:none;padding:var(--space-lg) 0;font-family:var(--font-heading);font-size:var(--text-xl);font-weight:600;color:var(--navy);text-align:left;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:color var(--transition-fast)}
-.faq-item__question:hover{color:var(--blue)}
-.faq-item__icon{width:24px;height:24px;flex-shrink:0;transition:transform var(--transition-base);color:var(--cyan)}
-.faq-item--open .faq-item__icon{transform:rotate(45deg)}
-.faq-item__answer{max-height:0;overflow:hidden;transition:max-height var(--transition-slow)}
-.faq-item--open .faq-item__answer{max-height:500px}
-.faq-item__answer-inner{padding-bottom:var(--space-lg);color:var(--slate);font-weight:300;line-height:1.8}
-
-/* ── Footer ── */
-.footer{background:var(--navy-dark);color:rgba(255,255,255,.75);padding:var(--space-3xl) 0 var(--space-xl)}
-.footer a{color:rgba(255,255,255,.75)}
-.footer a:hover{color:var(--cyan)}
-.footer__grid{max-width:var(--max-width);margin:0 auto;padding:0 var(--space-xl);display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:var(--space-2xl)}
-.footer__brand{max-width:320px}
-.footer__logo{height:36px;margin-bottom:var(--space-lg)}
-.footer__address{font-size:var(--text-sm);font-weight:300;line-height:1.8;margin-bottom:var(--space-md);font-style:normal}
-.footer__heading{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--white);margin-bottom:var(--space-lg)}
-.footer__link-list{display:flex;flex-direction:column;gap:var(--space-sm)}
-.footer__link-list a{font-size:var(--text-sm);font-weight:300}
-.footer__socials{display:flex;gap:var(--space-md);margin-top:var(--space-lg)}
-.footer__socials a{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);transition:background var(--transition-fast)}
-.footer__socials a:hover{background:var(--cyan);color:var(--navy-dark)}
-.footer__socials svg{width:16px;height:16px}
-.footer__bottom{max-width:var(--max-width);margin:var(--space-2xl) auto 0;padding:var(--space-lg) var(--space-xl) 0;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-md);font-size:var(--text-xs);color:rgba(255,255,255,.5)}
-.footer__legal-links{display:flex;gap:var(--space-lg)}
-.footer__legal-links a{color:rgba(255,255,255,.5);font-size:var(--text-xs)}
-@media(max-width:768px){.footer__grid{grid-template-columns:1fr;gap:var(--space-xl)}.footer__bottom{flex-direction:column;text-align:center}}
-
-/* ── Product pages ── */
-.product-content{max-width:var(--max-width-narrow);margin:0 auto;padding:var(--space-section) var(--space-xl)}
-.product-content h2{margin-top:var(--space-2xl)}
-.product-content ul{list-style:disc;padding-left:var(--space-xl);margin-bottom:var(--space-md)}
-.product-content li{margin-bottom:var(--space-sm);line-height:1.7;color:var(--slate);font-weight:300}
-.product-meta{display:flex;align-items:center;gap:var(--space-lg);padding:var(--space-lg) 0;margin-top:var(--space-2xl);border-top:1px solid var(--border);font-size:var(--text-sm);color:var(--gray);font-weight:300}
-
-/* ── Section Header ── */
-.section-header{text-align:center;max-width:640px;margin:0 auto var(--space-2xl)}
-.section-header__eyebrow{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:var(--cyan);margin-bottom:var(--space-sm)}
-.section-header h2{margin-bottom:var(--space-md)}
-.section-header p{color:var(--slate);font-weight:300;margin:0 auto}
-
-/* ── Skip link ── */
-.skip-link{position:absolute;top:-40px;left:0;background:var(--navy);color:var(--white);padding:var(--space-sm) var(--space-md);z-index:9999;transition:top var(--transition-fast)}
-.skip-link:focus{top:0}
-
-/* ═══════════════════════════════════════════════
-   LEAD GENERATION COMPONENTS
-   ═══════════════════════════════════════════════ */
-
-/* ── Inline Quote Form (Product Pages) ── */
-.inline-quote-section {
-  background: var(--light-bg);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius-lg);
-  padding: var(--space-2xl);
-  margin: var(--space-2xl) 0;
-}
-
-.inline-quote-section h3 {
-  font-size: var(--text-xl);
-  margin-bottom: var(--space-xs);
-}
-
-.inline-quote-section p {
-  font-size: var(--text-sm);
-  color: var(--slate);
-  font-weight: 300;
-  margin-bottom: var(--space-lg);
-}
-
-.inline-quote-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
-  gap: var(--space-sm);
-  align-items: end;
-}
-
-.inline-quote-form input {
-  padding: 10px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius);
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: 300;
-  color: var(--charcoal);
-  transition: border-color var(--transition-fast);
-}
-
-.inline-quote-form input:focus {
-  outline: none;
-  border-color: var(--blue);
-  box-shadow: 0 0 0 3px rgba(48, 151, 211, 0.1);
-}
-
-.inline-quote-form input::placeholder {
-  color: var(--gray);
-}
-
-.inline-quote-form button {
-  padding: 10px 20px;
-  background: var(--cyan);
-  color: var(--navy-dark);
-  border: none;
-  border-radius: var(--border-radius);
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  transition: all var(--transition-base);
-}
-
-.inline-quote-form button:hover {
-  background: var(--blue);
-  color: var(--white);
-}
-
-@media (max-width: 768px) {
-  .inline-quote-form {
-    grid-template-columns: 1fr;
-  }
-  .inline-quote-form button {
-    width: 100%;
-  }
-}
-
-/* ── Multi-Step Quote Wizard ── */
-.wizard-progress {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-md);
-  margin-bottom: var(--space-2xl);
-}
-
-.wizard-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--border);
-  transition: all var(--transition-base);
-}
-
-.wizard-dot--active {
-  background: var(--cyan);
-  transform: scale(1.3);
-}
-
-.wizard-dot--done {
-  background: var(--green);
-}
-
-.wizard-step {
-  display: none;
-  animation: fadeUp 0.3s ease;
-}
-
-.wizard-step h3 {
-  text-align: center;
-  margin-bottom: var(--space-xs);
-}
-
-.wizard-step p.wizard-subtitle {
-  text-align: center;
-  color: var(--slate);
-  font-size: var(--text-sm);
-  font-weight: 300;
-  margin-bottom: var(--space-xl);
-}
-
-/* Line-of-business selector cards */
-.lob-selector {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-md);
-  margin-bottom: var(--space-xl);
-}
-
-.lob-selector label {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-xl) var(--space-md);
-  border: 2px solid var(--border);
-  border-radius: var(--border-radius-lg);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  text-align: center;
-}
-
-.lob-selector label:hover {
-  border-color: var(--cyan);
-}
-
-.lob-selector input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.lob-selector input:checked + span {
-  color: var(--blue);
-}
-
-.lob-selector input:checked ~ * {
-  color: var(--blue);
-}
-
-.lob-selector label:has(input:checked) {
-  border-color: var(--cyan);
-  background: rgba(32, 188, 238, 0.05);
-}
-
-.lob-selector .lob-icon {
-  width: 40px;
-  height: 40px;
-  color: var(--gray);
-  transition: color var(--transition-base);
-}
-
-.lob-selector label:has(input:checked) .lob-icon {
-  color: var(--cyan);
-}
-
-.lob-selector .lob-label {
-  font-weight: 600;
-  font-size: var(--text-sm);
-  color: var(--navy);
-}
-
-.lob-selector .lob-sublabel {
-  font-size: var(--text-xs);
-  color: var(--slate);
-  font-weight: 300;
-}
-
-@media (max-width: 640px) {
-  .lob-selector {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Wizard navigation buttons */
-.wizard-actions {
-  display: flex;
-  gap: var(--space-md);
-  justify-content: center;
-  margin-top: var(--space-xl);
-}
-
-.wizard-back {
-  padding: 12px 28px;
-  background: transparent;
-  color: var(--slate);
-  border: 1px solid var(--border);
-  border-radius: var(--border-radius);
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-base);
-}
-
-.wizard-back:hover {
-  border-color: var(--navy);
-  color: var(--navy);
-}
-
-.wizard-next {
-  padding: 12px 28px;
-  background: var(--cyan);
-  color: var(--navy-dark);
-  border: none;
-  border-radius: var(--border-radius);
-  font-family: var(--font-body);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  transition: all var(--transition-base);
-}
-
-.wizard-next:hover {
-  background: var(--blue);
-  color: var(--white);
-}
-
-/* ── Contact Methods Strip ── */
-.contact-strip {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-xl);
-  flex-wrap: wrap;
-  padding: var(--space-lg) 0;
-  margin: var(--space-lg) 0;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-
-.contact-strip__item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--navy);
-  text-decoration: none;
-  transition: color var(--transition-fast);
-}
-
-.contact-strip__item:hover {
-  color: var(--blue);
-}
-
-.contact-strip__item svg {
-  width: 18px;
-  height: 18px;
-  color: var(--cyan);
-}
-
-/* ── Social Proof Near Forms ── */
-.form-social-proof {
-  margin-top: var(--space-lg);
-  padding-top: var(--space-lg);
-  border-top: 1px solid var(--border);
-}
-
-/* ── Callback Scheduler ── */
-.callback-option {
-  text-align: center;
-  padding: var(--space-lg) 0;
-  font-size: var(--text-sm);
-  color: var(--slate);
-}
-
-.callback-option a {
-  font-weight: 600;
-  color: var(--blue);
-}
-
-/* ── CTA Banner Enhanced ── */
-.cta-banner .contact-methods {
-  display: flex;
-  justify-content: center;
-  gap: var(--space-xl);
-  margin-top: var(--space-lg);
-  font-size: var(--text-sm);
-}
-
-.cta-banner .contact-methods a {
-  color: rgba(255, 255, 255, 0.7);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  text-decoration: none;
-}
-
-.cta-banner .contact-methods a:hover {
-  color: var(--cyan);
-}
-
-.cta-banner .contact-methods svg {
-  width: 16px;
-  height: 16px;
-}
-
-/* ── Badge / Pill ── */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 10px;
-  font-size: 11px;
-  font-weight: 600;
-  border-radius: 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.badge--required {
-  background: rgba(32, 188, 238, 0.1);
-  color: var(--blue);
-}
-
-.badge--recommended {
-  background: rgba(101, 197, 179, 0.1);
-  color: #0F6E56;
-}
-
-/* ── Response Time Indicator ── */
-.response-time {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--text-xs);
-  color: var(--green);
-  font-weight: 500;
-}
-
-.response-time::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--green);
-  animation: pulse-dot 2s infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-/* ── Product Page Layout Enhancement ── */
-.product-sidebar {
-  position: sticky;
-  top: calc(var(--nav-height) + var(--space-xl));
-}
-
-.product-layout {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: var(--space-3xl);
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: var(--space-section) var(--space-xl);
-}
-
-@media (max-width: 1024px) {
-  .product-layout {
-    grid-template-columns: 1fr;
-  }
-  .product-sidebar {
-    position: static;
-  }
-}
-
-/* ── Geo Landing Page ── */
-.geo-hero {
-  text-align: center;
-  padding: var(--space-3xl) 0;
-}
-
-.geo-hero h1 span {
-  color: var(--cyan);
-}
-
-.geo-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-md);
-  margin: var(--space-2xl) 0;
-}
-
-.geo-stat {
-  text-align: center;
-  padding: var(--space-xl);
-  border-radius: var(--border-radius-lg);
-  background: var(--light-bg);
-}
-
-.geo-stat__number {
-  font-size: var(--text-3xl);
-  font-weight: 600;
-  color: var(--navy);
-}
-
-.geo-stat__label {
-  font-size: var(--text-sm);
-  color: var(--slate);
-  font-weight: 300;
-}
-
-</style>
+  <link rel="stylesheet" href="/src/css/base.css">
+  <link rel="stylesheet" href="/src/css/components.css">
+  <link rel="stylesheet" href="/src/css/leadgen.css">
 
   <!-- Open Graph -->
   <meta property="og:title" content="About The Way Agency | Independent Insurance in Kentucky">
@@ -793,11 +99,43 @@ strong{font-weight:600}
         <p>Being independent means we work for you, not one insurance company. We represent 17+ carriers and shop your coverage across all of them to find the best combination of protection and price. Our job is to understand your situation, explain your options in plain language, and help you make a confident decision.</p>
         <p>We've been doing this since 1998. Our team has deep experience in home, auto, commercial liability, workers compensation, life insurance, Medicare, and employee benefits. We specialize in serving contractors, trade businesses, professional services firms, and families throughout the tri-state area.</p>
 
-        <h2>Why choose an independent agent?</h2>
-        <p>When you buy insurance directly from a company like GEICO, Progressive, or State Farm, you're working with someone who can only sell you that one company's products. If that company's price is high or their coverage doesn't fit, your only option is to leave and start over somewhere else.</p>
-        <p>An independent agent works differently. We have appointments with 17+ insurance carriers. When you come to us for a home and auto quote, we can compare options across Travelers, Safeco, Progressive, Allstate, Chubb, and many others — all at once. Same coverage, different carriers, often very different prices.</p>
-        <p>The cost to you is the same. Insurance premiums are set by the carriers, not the agent. You pay the same premium whether you buy direct or through us. The difference is that we do the shopping for you, we help you understand what you're buying, and we're here to advocate for you when you need to file a claim.</p>
-        <p>After you have a policy, an independent agent stays with you. If your carrier raises your rate at renewal, we can re-shop it across our other carriers without you having to start from scratch. If you have a claim, we help you navigate the process and push back when needed.</p>
+        <h2>Why choose an independent insurance agent?</h2>
+
+        <p>If you have ever shopped for insurance, you have probably noticed there are a lot of ways to buy it. You can go directly to a big national brand like GEICO or Progressive, you can work with a captive agent at State Farm or Allstate, or you can work with an independent agent like The Way Agency. These are genuinely different experiences, and the choice matters more than most people realize.</p>
+
+        <p>A <strong>captive agent</strong> works for one insurance company. State Farm agents sell State Farm. Allstate agents sell Allstate. They may be great people who know their products well, but they can only offer what their one carrier provides. If their company's rate is not competitive for your situation, or if their coverage options do not fit your needs, they cannot do anything about it. Your only option is to leave that agent entirely and start the process over somewhere else.</p>
+
+        <p><strong>Buying direct</strong> from a company like GEICO or Progressive means you handle everything yourself. You go to a website, answer questions, and get a quote. There is no one sitting across from you explaining what each coverage does or helping you think through how much liability protection you actually need. The price might look good on screen, but you may be underinsured without realizing it. And if you need to file a claim, you are calling a 1-800 number and hoping for the best.</p>
+
+        <p>An <strong>independent agent</strong> is different. We are not employees of any insurance company. We are licensed professionals who hold appointments with multiple carriers, and we represent you, the client, not the insurance company. When you ask us for a quote, we shop your coverage across all the carriers we work with and bring back the options that make the most sense for your situation.</p>
+
+        <h3>How carrier access works</h3>
+
+        <p>The Way Agency works with 17+ carriers including Travelers, Progressive, Safeco, Chubb, The Hartford, and more. Each of these carriers has different strengths. Some are more competitive for newer homes. Some offer better rates for drivers with a clean record. Some have stronger commercial coverage or more flexible underwriting for contractors. Because we work with all of them, we can match you with the carrier that fits your specific profile rather than forcing you into a one-size-fits-all solution.</p>
+
+        <p>When we quote your insurance, we are comparing real rates from real carriers. We see the same prices you would see if you went to each company individually, but we can pull them all at once and present them side by side. This saves you hours of time and gives you a much clearer picture of what your options actually are.</p>
+
+        <p>Here is something many people do not realize: the cost is the same whether you buy through us or go direct. Insurance premiums are set by the carrier and filed with the state. An independent agent does not add a markup. You pay the same premium either way. The difference is that with us, someone is doing the comparison work for you, explaining the trade-offs, and making sure you are not leaving money on the table or gaps in your coverage.</p>
+
+        <h3>Better coverage, better pricing</h3>
+
+        <p>Going direct to one company means you get one quote. That quote might be great, or it might be hundreds of dollars more than what another carrier would charge for the same coverage. You have no way to know unless you spend hours getting quotes from five or six other companies on your own.</p>
+
+        <p>With an independent agent, one phone call or email gets you multiple quotes. We do the legwork. We also know which carriers to check first based on your situation, which speeds up the process even further. Clients regularly save money simply because we have access to carriers they never would have found on their own.</p>
+
+        <p>But it is not just about price. Coverage quality matters. Some carriers include broader water damage protection. Some have better claim service reputations. Some offer endorsements that others do not. We know these differences because we work with these carriers every day, and we steer you toward the combination that actually protects you, not just the one with the lowest number on the page.</p>
+
+        <h3>The advantages that matter most</h3>
+
+        <p><strong>Multiple quotes from one call.</strong> Instead of filling out forms on five different websites, you give us your information once and we come back with options from several carriers. Same effort for you, far better results.</p>
+
+        <p><strong>Advocacy during claims.</strong> When you file a claim through an independent agent, you have someone in your corner. We know the process, we know the carrier's expectations, and we help make sure your claim is handled fairly. If something is not going right, we can escalate it through our direct relationships with the company.</p>
+
+        <p><strong>Annual reviews.</strong> Insurance is not something you should set and forget. Your life changes, your property values change, and carrier rates shift every year. We proactively review your policies at renewal to make sure your coverage still fits and your price is still competitive. If it is not, we re-shop it.</p>
+
+        <p><strong>A local relationship.</strong> We live and work in Kentucky. You can call our office and talk to a real person who knows your name, your history, and your policies. When something goes wrong, that relationship matters more than any app or chatbot.</p>
+
+        <p>Choosing an independent insurance agent is not about paying more or less. It is about having someone who genuinely works for you, who has the tools and access to find the right coverage, and who stays with you long after the policy is signed. That is what The Way Agency has been doing since 1998, and it is what we will keep doing for every client we serve.</p>
 
         <h2>Our values</h2>
         <p><strong>People first.</strong> There is a person behind every policy. We listen well, communicate clearly, and serve with genuine care.</p>
@@ -812,6 +150,28 @@ strong{font-weight:600}
         <h2>Community involvement</h2>
         <p>We are local at heart and invested in the places we live and work. We believe strong communities matter and we look for meaningful ways to serve beyond the policy.</p>
         <p><a href="/about/community.html">Learn about our community involvement</a></p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container container--narrow">
+        <h2>Coverage in Action</h2>
+        <p>Insurance works best when you see it do its job. Here are a few real situations where having the right coverage and the right agent made all the difference. Details have been changed to protect our clients' privacy, but the outcomes are real.</p>
+
+        <h3>A tornado, a roof, and a fight worth having</h3>
+        <p>A Kentucky homeowner came to us after a spring tornado tore through their neighborhood and ripped shingles off half the roof. They had filed a claim with their carrier, but the initial adjuster assessment came back low. The estimate covered a patch job, not the full replacement the roof clearly needed.</p>
+        <p>Our team got involved immediately. We reviewed the adjuster's report, documented the full extent of the damage with photos and contractor estimates, and pushed back through the carrier's internal review process. We requested a second inspection, which we attended alongside the homeowner. The re-inspection confirmed what we already knew: the roof needed full replacement, not a band-aid.</p>
+        <p>The carrier approved the full replacement. The homeowner did not pay a dime beyond their deductible. Without an agent advocating on their behalf, they likely would have accepted the first lowball estimate and been left with a roof that would fail again in the next storm. This is exactly why having someone in your corner matters during a claim.</p>
+
+        <h3>The contractor who did not know what he was missing</h3>
+        <p>A small electrical contractor in western Kentucky came to us for a routine quote. He had been with the same carrier for years and thought his coverage was fine. When we reviewed his existing policies, we found significant gaps. His general liability limits were too low for the commercial contracts he was bidding on, he had no inland marine coverage for his tools and equipment, and his workers compensation policy had classification errors that could have triggered an audit penalty.</p>
+        <p>We restructured his entire program. We moved his general liability to a carrier with better contractor appetite and higher available limits. We added an inland marine policy that covered his tools both on the job site and in transit. We corrected his workers comp classifications and found a carrier whose rates were more competitive for his specific trade.</p>
+        <p>The total premium was actually lower than what he had been paying, and his coverage was dramatically better. More importantly, he was now properly insured for the work he was actually doing. If a claim had come in under his old policy, the gaps we found could have left him personally liable for hundreds of thousands of dollars. He told us later that he had no idea how exposed he had been.</p>
+
+        <h3>The family that saved by bundling smarter</h3>
+        <p>A young family in the Louisville area had their home insurance with one company and their two auto policies with another. They were paying a combined premium that seemed normal to them because they had never compared. When they came to us for a second opinion, we ran their information across several of our carriers.</p>
+        <p>By bundling their home and auto with a single carrier that offered a strong multi-policy discount, we cut their total annual premium by over 20 percent. But the savings were only part of the story. The new carrier also offered broader coverage on their home policy, including better water backup protection and a higher replacement cost estimate that more accurately reflected what it would cost to rebuild in today's market.</p>
+        <p>The family had been underinsured on their home without knowing it. Their previous policy had a replacement cost limit that was set when they bought the house five years earlier and had never been updated. We corrected that, improved their liability limits, and still saved them money. That is what happens when you have an agent who shops the full market and pays attention to the details, not just the price.</p>
       </div>
     </section>
 

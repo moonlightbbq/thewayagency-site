@@ -409,13 +409,7 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://www.thewayagency.com/blog/tornado-season.html</loc>
-    <lastmod>2026-03-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>https://www.thewayagency.com/blog/winter-storm.html</loc>
+    <loc>https://www.thewayagency.com/blog/earthquake-insurance.html</loc>
     <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -433,7 +427,13 @@
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://www.thewayagency.com/blog/earthquake-insurance.html</loc>
+    <loc>https://www.thewayagency.com/blog/tornado-season.html</loc>
+    <lastmod>2026-03-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.thewayagency.com/blog/winter-storm.html</loc>
     <lastmod>2026-03-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>

@@ -38,8 +38,23 @@ function copyDir(src, dest) {
 const products = JSON.parse(fs.readFileSync(path.join(DATA, 'products.json'), 'utf8'));
 const locations = JSON.parse(fs.readFileSync(path.join(DATA, 'locations.json'), 'utf8'));
 const team = JSON.parse(fs.readFileSync(path.join(DATA, 'team.json'), 'utf8'));
+const knowledgeBase = JSON.parse(fs.readFileSync(path.join(DATA, 'knowledge-base.json'), 'utf8'));
 const agency = locations.agency;
 const office = locations.offices[0];
+
+// Load rich content files (optional — graceful fallback if not yet created)
+let richContent = {};
+for (const file of ['content-personal.json', 'content-commercial.json', 'content-life-health.json']) {
+  const fp = path.join(DATA, file);
+  if (fs.existsSync(fp)) {
+    Object.assign(richContent, JSON.parse(fs.readFileSync(fp, 'utf8')));
+  }
+}
+
+// Get FAQ entries for a product from knowledge-base.json
+function getFAQsForProduct(productId) {
+  return (knowledgeBase.entries || []).filter(e => e.product === productId).slice(0, 5);
+}
 
 // ─── Author Attribution ─────────────────────────
 function findReviewerForProduct(product, lineKey) {
@@ -52,23 +67,88 @@ function findReviewerForProduct(product, lineKey) {
 
 // ─── Product Page Template ─────────────────────
 function generateProductPage(product, lineName, lineSlug, lineKey) {
-  const costSection = product.typical_cost_range ? `
+  const rc = richContent[product.id] || {};
+  const faqs = rc.faqs || [];
+  const kbFaqs = getFAQsForProduct(product.id);
+  // Merge: use rich content FAQs first, then knowledge base FAQs (deduplicate)
+  const allFaqs = [...faqs];
+  for (const kb of kbFaqs) {
+    if (!allFaqs.some(f => f.question === kb.question)) {
+      allFaqs.push({ question: kb.question, answer: kb.answer });
+    }
+  }
+  const displayFaqs = allFaqs.slice(0, 5);
+
+  // Rich content sections (if available)
+  const directAnswerSection = rc.direct_answer ? `
+      <p class="text-lg" style="font-size:var(--text-lg);line-height:1.8;margin-bottom:var(--space-xl);">${rc.direct_answer}</p>` : `
+      <p class="text-lg" style="font-size:var(--text-lg);line-height:1.8;margin-bottom:var(--space-xl);">${product.summary}</p>`;
+
+  const whoNeedsSection = rc.who_needs_it ? `
+      <h2>Who needs ${product.name.toLowerCase()} in Kentucky?</h2>
+      <p>${rc.who_needs_it}</p>` : (product.ky_requirement ? `
+      <h2>Is ${product.name.toLowerCase()} required in Kentucky?</h2>
+      <p>${product.ky_requirement}</p>` : '');
+
+  const coversSection = rc.what_it_covers && rc.what_it_covers.length > 0 ? `
+      <h2>What does ${product.name.toLowerCase()} cover?</h2>
+      <ul class="coverage-list">
+        ${rc.what_it_covers.map(c => `<li>${c}</li>`).join('\n        ')}
+      </ul>` : '';
+
+  const doesntCoverSection = (rc.what_it_doesnt_cover && rc.what_it_doesnt_cover.length > 0) ? `
+      <h2>What ${product.name.toLowerCase()} does NOT cover</h2>
+      <ul class="exclusion-list">
+        ${rc.what_it_doesnt_cover.map(e => `<li>${e}</li>`).join('\n        ')}
+      </ul>` : (product.common_exclusions && product.common_exclusions.length > 0 ? `
+      <h2>What ${product.name.toLowerCase()} does NOT cover</h2>
+      <ul class="exclusion-list">
+        ${product.common_exclusions.map(e => `<li>${e}</li>`).join('\n        ')}
+      </ul>` : '');
+
+  const costSection = rc.cost_narrative ? `
+      <h2>What does ${product.name.toLowerCase()} cost${lineKey === 'personal' ? ' in Kentucky' : ''}?</h2>
+      <p>${rc.cost_narrative}</p>` : (product.typical_cost_range ? `
       <h2>What does ${product.name.toLowerCase()} cost?</h2>
       <p>
         In our experience: <strong>${product.typical_cost_range}</strong>.
         ${product.cost_factors ? 'Key factors that affect your premium include: ' + product.cost_factors.join(', ') + '.' : ''}
         As an independent agency, we shop across 17+ carriers to find the best combination of coverage and price.
-      </p>` : '';
+      </p>` : '');
 
-  const requirementSection = product.ky_requirement ? `
-      <h2>Is ${product.name.toLowerCase()} required in Kentucky?</h2>
-      <p>${product.ky_requirement}</p>` : '';
+  const faqSection = displayFaqs.length > 0 ? `
+      <section class="faq-section" style="margin-top:var(--space-2xl);">
+        <h2>Frequently asked questions</h2>
+        ${displayFaqs.map(f => `
+        <div class="faq-item">
+          <button class="faq-item__question" aria-expanded="false">
+            <h3 style="margin:0;font-size:var(--text-lg);pointer-events:none;">${f.question}</h3>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;transition:transform 0.2s;pointer-events:none;"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="faq-item__answer">
+            <p>${f.answer}</p>
+          </div>
+        </div>`).join('')}
+      </section>` : '';
 
-  const exclusionsSection = product.common_exclusions && product.common_exclusions.length > 0 ? `
-      <h2>What ${product.name.toLowerCase()} does NOT cover</h2>
-      <ul>
-        ${product.common_exclusions.map(e => `<li>${e}</li>`).join('\n        ')}
-      </ul>` : '';
+  // FAQPage schema for the FAQs
+  const faqSchema = displayFaqs.length > 0 ? `
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      ${displayFaqs.map(f => `{
+        "@type": "Question",
+        "name": ${JSON.stringify(f.question)},
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": ${JSON.stringify(f.answer)}
+        }
+      }`).join(',\n      ')}
+    ]
+  }
+  </script>` : '';
 
   // Build related product links with actual URLs
   const allProducts = [...(products.personal || []), ...(products.commercial || []), ...(products.life_health || [])];
@@ -147,7 +227,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
     ],
     "description": "${product.summary.replace(/"/g, '\\"')}"
   }
-  </script>
+  </script>${faqSchema}
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -228,10 +308,12 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
 
   <main id="main">
     <article class="product-content">
-      <p class="text-lg">${product.summary}</p>
-      ${requirementSection}
-      ${exclusionsSection}
+      ${directAnswerSection}
+      ${whoNeedsSection}
+      ${coversSection}
+      ${doesntCoverSection}
       ${costSection}
+      ${faqSection}
       <!-- Inline Quote Form -->
       <div class="inline-quote-section">
         <h3>Get a ${product.name.toLowerCase()} quote</h3>

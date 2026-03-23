@@ -1,0 +1,407 @@
+{
+  "general-liability": {
+    "direct_answer": "General liability insurance covers your business when a third party — a customer, vendor, or passerby — suffers bodily injury or property damage because of your operations. It pays for medical bills, legal defense, and settlements so a single incident doesn't bankrupt your company. If someone slips on your shop floor or your crew damages a client's property on a job site, GL is the policy that responds.",
+    "who_needs_it": "In Kentucky, almost every business that interacts with the public or works on someone else's property needs general liability coverage. Commercial landlords across Owensboro and the greater Daviess County area require it before signing a lease. General contractors won't let subcontractors — HVAC techs, electricians, plumbers, roofers — on a job site without a certificate of insurance showing at least $1 million per occurrence. Restaurants, retail shops, and manufacturers all face slip-and-fall exposure daily. Even home-based businesses can face claims from delivery drivers or visiting clients. In our experience with Kentucky contractors, the businesses that skip GL don't save money — they just transfer the risk to their personal assets. We shop 14+ commercial carriers to match the coverage to your actual operations.",
+    "what_it_covers": [
+      "Bodily injury to customers, vendors, or visitors at your premises",
+      "Property damage your business operations cause to others",
+      "Products liability — injury or damage caused by a product you sell or distribute",
+      "Completed operations — damage arising from work you've already finished",
+      "Personal and advertising injury — libel, slander, copyright infringement in your advertising",
+      "Legal defense costs, even if the lawsuit is groundless",
+      "Medical payments to others (no-fault, typically $5,000–$10,000 per person)"
+    ],
+    "what_it_doesnt_cover": [
+      "Employee injuries on the job — that requires workers compensation",
+      "Damage to your own business property — that requires commercial property insurance",
+      "Auto accidents involving business vehicles — that requires commercial auto",
+      "Professional mistakes, bad advice, or errors in your professional services — that requires professional liability (E&O)",
+      "Intentional acts or criminal conduct",
+      "Pollution or environmental contamination (requires separate environmental liability)",
+      "Cyber breaches and data loss — that requires cyber insurance"
+    ],
+    "cost_narrative": "For most Kentucky small businesses, general liability runs between $500 and $3,000 per year. A low-risk office or consultant might pay $400–$700 annually, while a roofing or concrete contractor could see $2,000–$5,000 depending on revenue and payroll. Your classification code, annual revenue, claims history, and location all factor in. Higher-risk trades pay more because the exposure is higher. We shop 14+ commercial carriers, and we regularly see 30–40% price differences between carriers for the same contractor — which is why it pays to let us quote it rather than taking the first number you find online.",
+    "faqs": [
+      {
+        "question": "How much general liability coverage does a Kentucky contractor need?",
+        "answer": "Most general contractors and project owners in Kentucky require subcontractors to carry at least $1 million per occurrence and $2 million aggregate. Some larger commercial projects and government contracts require $2 million per occurrence. Your coverage limits should match the contracts you want to bid on — undercovering yourself locks you out of better-paying jobs."
+      },
+      {
+        "question": "Does general liability cover my employees if they get hurt?",
+        "answer": "No. Employee injuries are covered by workers compensation insurance, not general liability. GL covers third parties — customers, visitors, and bystanders. Kentucky requires workers comp for businesses with one or more employees, so you likely need both policies."
+      },
+      {
+        "question": "Can I bundle general liability with other commercial coverage?",
+        "answer": "Yes. A Business Owners Policy (BOP) bundles general liability with commercial property insurance, and often costs less than buying them separately. Most small businesses with a physical location — retail shops, restaurants, offices — benefit from a BOP. We can quote both standalone GL and a BOP to show you the price difference."
+      },
+      {
+        "question": "Do I need general liability if I work from home?",
+        "answer": "If anyone visits your home for business purposes, or if you perform any work off-site for clients, yes. Your homeowners policy explicitly excludes business activities. A client who trips over a cord in your home office, or property you damage at a customer's location, would not be covered by your personal policy."
+      },
+      {
+        "question": "How fast can I get a general liability certificate of insurance?",
+        "answer": "In most cases, we can bind coverage and issue a certificate of insurance the same day. If a general contractor or landlord is demanding proof of coverage before you can start work or sign a lease, call us in the morning and you can have your certificate by the afternoon. We handle rush requests regularly for Kentucky contractors."
+      }
+    ]
+  },
+  "commercial-property": {
+    "direct_answer": "Commercial property insurance protects the physical assets your business depends on — the building you own or lease, your equipment, inventory, furniture, and signage — against fire, wind, theft, vandalism, and other covered perils. It also covers business income you lose if a covered event forces you to shut down temporarily. If your restaurant catches fire or a storm tears the roof off your warehouse, commercial property insurance pays to repair and replace what was damaged and keeps revenue flowing while you rebuild.",
+    "who_needs_it": "Any Kentucky business that owns or leases a physical space needs commercial property coverage. If you own the building, the policy covers the structure and your contents. If you lease, your landlord's policy covers the building shell but not your equipment, inventory, or build-out — that's on you. Owensboro-area restaurants, manufacturers with expensive machinery, retailers with inventory, and contractors storing tools and materials all carry significant property exposure. Kentucky's weather adds risk: straight-line winds, hail, and the occasional tornado make windstorm coverage especially important in western Kentucky. Commercial mortgage lenders require property coverage as a condition of the loan, similar to homeowners insurance. We shop 14+ commercial carriers to find the right balance of coverage and cost for your specific operation.",
+    "what_it_covers": [
+      "Building structure (if you own it) — walls, roof, foundation, permanently installed fixtures",
+      "Business personal property — equipment, furniture, inventory, tools, computers",
+      "Tenant improvements and build-out you've paid for in a leased space",
+      "Business income and extra expense if a covered loss forces you to close temporarily",
+      "Outdoor signage, fencing, and landscaping (subject to sub-limits)",
+      "Debris removal after a covered loss",
+      "Fire, lightning, windstorm, hail, explosion, theft, vandalism, and other named perils"
+    ],
+    "what_it_doesnt_cover": [
+      "Flood damage — requires a separate flood policy (NFIP or private)",
+      "Earthquake damage — requires a separate earthquake endorsement",
+      "Normal wear and tear, gradual deterioration, or maintenance issues",
+      "Employee theft or embezzlement — requires a crime/fidelity coverage endorsement",
+      "Equipment breakdown or mechanical failure — requires an equipment breakdown endorsement",
+      "Vehicles — those are covered under commercial auto",
+      "Data and software — typically requires a cyber policy or specific endorsement"
+    ],
+    "cost_narrative": "Kentucky small businesses typically pay $750 to $5,000 per year for commercial property coverage, though manufacturers, restaurants, and businesses with high-value equipment can pay more. The biggest cost drivers are building replacement value, construction type (frame buildings cost more to insure than masonry), your fire protection class, and the deductible you choose. A higher deductible — $2,500 or $5,000 instead of $1,000 — can reduce your premium by 10–20%. We regularly see significant price variation between carriers for the same property, which is why we shop 14+ commercial carriers on every account.",
+    "faqs": [
+      {
+        "question": "My landlord has insurance on the building — do I still need commercial property coverage?",
+        "answer": "Yes. Your landlord's policy covers the building structure, not your stuff inside it. Your equipment, inventory, furniture, computers, and any improvements you've made to the space are your responsibility. If a fire destroys your leased restaurant, the landlord's policy rebuilds the shell — but your ovens, tables, POS systems, and lost revenue are only covered if you have your own commercial property policy."
+      },
+      {
+        "question": "What is business income coverage and do I need it?",
+        "answer": "Business income coverage (also called business interruption) replaces the revenue you lose while your business is shut down due to a covered property loss. If a fire closes your shop for three months, this coverage pays your ongoing expenses — rent, payroll, loan payments — and your lost net income during the rebuilding period. For most businesses, this is the most critical part of the property policy."
+      },
+      {
+        "question": "Does commercial property insurance cover flooding in Kentucky?",
+        "answer": "No. Flood damage is excluded from all standard commercial property policies. You need a separate flood insurance policy, either through the National Flood Insurance Program (NFIP) or a private flood carrier. This matters in Owensboro and other communities near the Ohio River and its tributaries. We can quote flood coverage alongside your property policy."
+      },
+      {
+        "question": "How do I determine the right amount of property coverage?",
+        "answer": "Coverage should be based on the replacement cost of your building and contents — not the market value or what you paid for them. Underinsuring triggers a coinsurance penalty: if you insure for 60% of value and have a loss, the carrier can reduce your claim payment proportionally. We help clients calculate accurate replacement values so you're fully covered without overpaying."
+      },
+      {
+        "question": "Can I bundle property and liability coverage together?",
+        "answer": "Yes, and most small businesses should. A Business Owners Policy (BOP) packages general liability and commercial property into one policy, often at a lower combined premium than buying them separately. BOPs also include business income coverage as a standard feature. We quote BOPs alongside standalone policies to show you the cost comparison."
+      }
+    ]
+  },
+  "commercial-auto": {
+    "direct_answer": "Commercial auto insurance covers vehicles your business owns, leases, or uses for work — trucks, vans, company cars, and fleets. It pays for liability when a business vehicle causes injury or property damage, and covers physical damage to the vehicle itself from collisions or other events. If your personal auto policy discovers you've been using your car for deliveries, hauling materials, or transporting clients, they can deny the claim entirely — commercial auto fills that gap.",
+    "who_needs_it": "In Kentucky, any business that owns a vehicle titled in the company name needs a commercial auto policy — your personal auto insurance won't cover it. Beyond that, contractors who haul tools and materials, delivery services, landscapers, HVAC companies running service vans, and any business with employees driving for work purposes all need commercial auto. Even if your employees drive their own cars for work errands, you have exposure — hired and non-owned auto coverage fills that gap. Kentucky requires the same minimum liability limits for commercial vehicles as personal (25/50/25), but most contracts and prudent risk management call for $1 million combined single limit. In our experience, Kentucky contractors are especially underinsured on commercial auto — one serious at-fault accident with a loaded work truck can easily exceed minimum limits. We shop 14+ commercial carriers to find the right fit for your fleet size and usage.",
+    "what_it_covers": [
+      "Liability for bodily injury and property damage your business vehicle causes",
+      "Collision coverage — damage to your vehicle from an accident regardless of fault",
+      "Comprehensive coverage — theft, vandalism, fire, hail, and windshield damage",
+      "Medical payments for driver and passengers in your business vehicle",
+      "Uninsured/underinsured motorist coverage",
+      "Hired auto — vehicles you rent or borrow for business use",
+      "Non-owned auto — employee-owned vehicles used for business errands",
+      "Towing and roadside assistance"
+    ],
+    "what_it_doesnt_cover": [
+      "Cargo being transported — requires inland marine or motor truck cargo coverage",
+      "Personal use of a business vehicle outside policy terms (check your policy)",
+      "Vehicles not listed or scheduled on the policy",
+      "Employee injuries — those are covered under workers compensation",
+      "Pollution or hazardous material cleanup from a transported load",
+      "Wear and tear, mechanical breakdown, or tire damage (normal use)",
+      "Tools and equipment inside the vehicle — those need an inland marine floater"
+    ],
+    "cost_narrative": "Commercial auto in Kentucky typically runs $1,200 to $4,000 per vehicle per year, but pricing swings widely based on vehicle type, driver records, and how far your vehicles travel. A contractor's pickup with a clean-record driver might cost $1,200–$1,800, while a heavy-duty work truck or a driver with violations can push past $4,000. Fleets of 5+ vehicles may qualify for fleet discounts. The biggest factors are driver MVR records, vehicle weight and type, radius of operation, and your claims history. We shop 14+ carriers because commercial auto pricing is one of the most competitive — and variable — lines in commercial insurance.",
+    "faqs": [
+      {
+        "question": "Can my employees drive their personal cars for work and be covered?",
+        "answer": "Your standard commercial auto policy only covers vehicles you own or lease. If employees use their personal vehicles for work — running to the supply house, meeting clients, making deliveries — you need hired and non-owned auto coverage added to your policy. Without it, if an employee causes an accident while on a work errand, your business could be liable with no insurance to respond."
+      },
+      {
+        "question": "Does my personal auto policy cover my vehicle if I use it for work?",
+        "answer": "Most personal auto policies exclude regular business use beyond commuting. If you're hauling materials, making deliveries, or transporting clients, your personal carrier can deny a claim. If the vehicle is titled in a business name, it absolutely requires a commercial auto policy. Even sole proprietors should review their personal policy's business-use exclusions carefully."
+      },
+      {
+        "question": "What liability limits should a Kentucky contractor carry on commercial auto?",
+        "answer": "Kentucky's minimum is 25/50/25, but that's dangerously low for a work truck. Most general contractors require their subs to carry $1 million combined single limit (CSL). A serious accident with injuries can easily generate claims exceeding $100,000. We recommend at least $500,000 CSL for most contractors, and $1 million if you work on commercial projects or for general contractors who require it."
+      },
+      {
+        "question": "Are my tools covered if they're stolen from my work truck?",
+        "answer": "No. Commercial auto comprehensive coverage covers the vehicle itself — not the tools, equipment, or materials inside. A contractor's tools and equipment need an inland marine (tools and equipment floater) policy. We write these regularly for Kentucky contractors and can bundle the quote with your commercial auto."
+      },
+      {
+        "question": "How do driver records affect my commercial auto premium?",
+        "answer": "Significantly. Each driver on the policy is rated individually. A clean MVR keeps costs low, while DUIs, at-fault accidents, or multiple violations can double or triple the per-vehicle premium — or make a driver uninsurable on standard markets. We pull MVRs on all drivers at quoting to identify issues before they surprise you at renewal."
+      }
+    ]
+  },
+  "workers-compensation": {
+    "direct_answer": "Workers compensation insurance pays medical expenses, rehabilitation costs, and a portion of lost wages for employees who are injured or become ill because of their job. It also protects your business from lawsuits by injured employees — in exchange for guaranteed benefits, employees give up the right to sue. In Kentucky, workers comp is required by law for virtually every employer with one or more employees.",
+    "who_needs_it": "Kentucky law is clear: if you have one or more employees, you almost certainly need workers compensation insurance. The only narrow exceptions are certain agricultural and domestic workers. This applies to every industry — contractors, restaurants, manufacturers, offices, retail stores, and professional services firms. Kentucky takes enforcement seriously; operating without required workers comp is a Class D felony carrying fines of up to $1,000 per day. Beyond legal compliance, the practical reality is that a single serious workplace injury — a roofer's fall, a kitchen burn, a repetitive-stress injury at a manufacturing plant — can generate $50,000 to $500,000+ in medical and wage-replacement costs. General contractors in Kentucky verify subcontractor workers comp certificates before allowing anyone on site; without coverage, you'll be locked out of jobs. We shop 14+ commercial carriers and work with Kentucky's assigned risk pool when needed.",
+    "what_it_covers": [
+      "Medical expenses for work-related injuries and illnesses — doctor visits, surgery, medication, physical therapy",
+      "Lost wages (typically two-thirds of the employee's average weekly wage in Kentucky)",
+      "Vocational rehabilitation if an employee cannot return to their previous job",
+      "Death benefits and funeral expenses for fatal workplace injuries",
+      "Employer's liability coverage — legal defense if an employee sues beyond the comp claim",
+      "Coverage applies regardless of fault — no need to prove the employer was negligent"
+    ],
+    "what_it_doesnt_cover": [
+      "Independent contractors (but misclassification can result in audits and penalties)",
+      "Sole proprietors and partners — they can elect to include themselves but are not required to",
+      "Intentional self-inflicted injuries",
+      "Injuries sustained while under the influence of drugs or alcohol",
+      "Injuries from a fight the employee started",
+      "Non-work-related injuries or illnesses that happen to occur at the workplace",
+      "1099 workers (unless they're determined to be misclassified employees)"
+    ],
+    "cost_narrative": "Workers comp premiums in Kentucky are calculated as a rate per $100 of payroll, and the rate varies dramatically by job classification. An office worker (clerical class code) might cost $0.30–$0.50 per $100 of payroll, while a roofer can cost $12–$18 per $100 of payroll. For a roofing company running $500,000 in annual payroll, that translates to $60,000–$90,000 per year in workers comp premium alone. Your experience modification rate (mod) is the single biggest controllable cost factor — a clean safety record can earn you a mod below 1.0 and cut your premium by 10–25%. Conversely, frequent claims push your mod up and increase costs for three years. We shop 14+ carriers and advise on safety programs and return-to-work strategies to keep your mod low.",
+    "faqs": [
+      {
+        "question": "Is workers comp required for subcontractors in Kentucky?",
+        "answer": "Subcontractors with employees must carry their own workers comp. If a subcontractor without workers comp has an employee get injured on your job site, their claim can roll up to the general contractor's policy — increasing the GC's costs and experience mod. That's why most Kentucky GCs require certificates of insurance from every sub before they set foot on the job."
+      },
+      {
+        "question": "Can I exclude myself as an owner from workers comp in Kentucky?",
+        "answer": "Sole proprietors and partners may elect to exclude themselves from workers comp coverage under Kentucky law. LLC members and corporate officers may also have exclusion options depending on their role. However, excluding yourself means you have no coverage for your own work injuries — and some contracts and clients require owners to be included. We walk through the pros and cons for your specific situation."
+      },
+      {
+        "question": "What is an experience modification rate (mod) and why does it matter?",
+        "answer": "Your experience mod compares your business's claims history to the average for your industry. A mod of 1.0 is average. Below 1.0 means fewer claims than average — you get a discount. Above 1.0 means more claims — you pay a surcharge. A mod of 1.3 means you're paying 30% more than average. Claims stay on your mod for three years, so one bad year has a long tail. Investing in safety programs and return-to-work policies is the most effective way to control your workers comp costs."
+      },
+      {
+        "question": "What happens if I don't carry workers comp in Kentucky?",
+        "answer": "Operating without required workers compensation in Kentucky is a Class D felony. Penalties include fines up to $1,000 per day of non-compliance, and you become personally liable for all employee injury costs with no insurance to backstop you. The Kentucky Department of Workers' Claims actively audits and enforces compliance. It's not worth the risk."
+      },
+      {
+        "question": "How are workers comp premiums audited?",
+        "answer": "Workers comp policies are audited annually. You provide actual payroll records, and the carrier adjusts your premium based on real payroll versus the estimate used at policy inception. If your payroll grew, you'll owe additional premium. If it shrank, you'll get a refund. Misclassifying employees — putting a roofer in a clerical class code, for example — can trigger audit penalties. We help clients prepare for audits and ensure classifications are accurate from day one."
+      }
+    ]
+  },
+  "cyber": {
+    "direct_answer": "Cyber insurance covers the financial fallout from data breaches, ransomware attacks, and other cyber incidents. It pays for forensic investigation, customer notification, credit monitoring, legal defense, regulatory fines, ransom payments, and business income lost while your systems are down. A single breach can cost a small business $50,000 to $200,000+ between response costs, legal exposure, and lost revenue — cyber insurance keeps that from being an existential event.",
+    "who_needs_it": "If your Kentucky business stores customer names, email addresses, credit card numbers, Social Security numbers, or health information — electronically or in the cloud — you have cyber exposure. Restaurants processing card payments, medical practices handling patient records, professional services firms storing client financials, manufacturers running connected equipment, and retailers with e-commerce sites are all targets. Cybercriminals increasingly focus on small and mid-size businesses because they typically have weaker security than large corporations. Kentucky's data breach notification law (KRS 365.732) requires businesses to notify affected individuals when personal information is compromised — and notification alone costs $3–$5 per record before you factor in legal, forensic, and remediation costs. Many client contracts and vendor agreements now require cyber coverage as a condition of doing business. We shop 14+ commercial carriers to find policies matched to your actual data exposure and industry.",
+    "what_it_covers": [
+      "Data breach response — forensic investigation to determine what happened and what was compromised",
+      "Customer and regulatory notification costs (required by Kentucky law)",
+      "Credit monitoring and identity theft protection for affected individuals",
+      "Ransomware and cyber extortion payments and negotiation costs",
+      "Business income loss and extra expense during a cyber event",
+      "Legal defense and regulatory fines from a breach",
+      "Public relations and crisis management expenses",
+      "System restoration — costs to rebuild or restore compromised systems and data"
+    ],
+    "what_it_doesnt_cover": [
+      "Known pre-existing vulnerabilities you failed to patch — carriers expect basic cyber hygiene",
+      "Loss of future revenue beyond the policy period (lost goodwill is generally not covered)",
+      "Physical property damage from a cyber event (some overlap policies exist)",
+      "Acts of war or nation-state attacks (though definitions vary by carrier)",
+      "Intentional acts by company leadership",
+      "Bodily injury claims arising from a cyber event (covered by GL)",
+      "Failure to maintain minimum security standards outlined in the policy application"
+    ],
+    "cost_narrative": "Cyber insurance for Kentucky small businesses typically costs $500 to $5,000 per year, with most businesses under 50 employees falling in the $700–$2,500 range. Pricing depends on your industry, annual revenue, how much sensitive data you store, and what security measures you have in place. Businesses that use multi-factor authentication, encrypt data, maintain regular backups, and train employees on phishing see lower premiums. Retailers, healthcare, and financial services pay more because of higher regulatory exposure. Coverage limits of $1 million are standard for small businesses. We shop 14+ carriers and can often find significant savings for businesses that have invested in basic cybersecurity controls.",
+    "faqs": [
+      {
+        "question": "My business is small — do hackers really target companies our size?",
+        "answer": "Yes. According to industry data, over 40% of cyber attacks target businesses with fewer than 250 employees. Small businesses are attractive targets because they often lack dedicated IT security, use outdated software, and don't train employees on phishing. A ransomware attack that locks your systems for a week can cost $50,000–$100,000+ in lost revenue and recovery costs alone, even before legal and notification expenses."
+      },
+      {
+        "question": "Does general liability cover a data breach?",
+        "answer": "No. General liability policies have specific exclusions for electronic data, cyber events, and privacy-related claims. A standard GL policy will not pay for breach notification, forensic investigation, ransomware demands, or regulatory fines. You need a dedicated cyber policy for these exposures. They are separate and complementary coverages."
+      },
+      {
+        "question": "What security measures do cyber carriers require?",
+        "answer": "Most carriers now require multi-factor authentication (MFA) on email and remote access, regular data backups stored offline, endpoint detection and response (EDR) software, and employee security awareness training. Some ask about encryption, patch management, and incident response plans. Failing to meet these minimum requirements can result in claim denial. We review the application requirements with you before binding so there are no surprises."
+      },
+      {
+        "question": "Does cyber insurance cover ransomware payments?",
+        "answer": "Most cyber policies cover ransomware extortion payments, including the ransom itself and the cost of hiring professional negotiators. However, carriers typically require you to involve their incident response team before making any payment. Some policies have sub-limits on ransom payments lower than the overall policy limit. We make sure you understand exactly what your policy covers before you need it."
+      },
+      {
+        "question": "What does Kentucky law require after a data breach?",
+        "answer": "Kentucky's data breach notification law (KRS 365.732) requires businesses to notify affected Kentucky residents as soon as reasonably possible after discovering a breach of personal information. You must also notify the Kentucky Attorney General if the breach affects more than 1,000 residents. Notification costs, including printing, mailing, call center setup, and credit monitoring, add up fast — a cyber policy covers these costs directly."
+      }
+    ]
+  },
+  "bonds": {
+    "direct_answer": "A surety bond is a three-party financial guarantee: a bonding company (surety) guarantees to a project owner or government entity (obligee) that your business (principal) will fulfill a specific obligation — whether that's completing a construction project, paying subcontractors, or complying with a license requirement. Unlike insurance, if the surety pays a claim on your bond, you owe them back. Bonds are required for many Kentucky contractor licenses, government contracts, and professional licenses.",
+    "who_needs_it": "In Kentucky, surety bonds are required across a wide range of situations. Contractors bidding on public works projects need bid bonds, performance bonds, and payment bonds — Kentucky law requires these on most state and municipal construction contracts. Contractors applying for a Kentucky contractor's license in certain categories need a license bond. Notaries public in Kentucky must carry a surety bond. Auto dealers, mortgage brokers, collection agencies, and other licensed professionals are required to post bonds with the state. Beyond legal requirements, private project owners increasingly require performance and payment bonds on larger commercial construction projects to protect themselves against contractor default. In our experience, Kentucky contractors are often surprised at how affordable bond premiums are when they have decent credit. We work with multiple surety markets and can help contractors build their bond program from the ground up.",
+    "what_it_covers": [
+      "Bid bonds — guarantees you'll enter into a contract at the bid price if awarded the project",
+      "Performance bonds — guarantees you'll complete the project per contract terms",
+      "Payment bonds — guarantees you'll pay your subcontractors, suppliers, and laborers",
+      "License and permit bonds — guarantees compliance with Kentucky licensing requirements",
+      "Court bonds — judicial bonds required for legal proceedings (appeal bonds, fiduciary bonds)",
+      "Notary bonds — required for all Kentucky notaries public",
+      "Fidelity bonds — protects against employee dishonesty (technically different from surety but often grouped together)"
+    ],
+    "what_it_doesnt_cover": [
+      "Bonds are NOT insurance — if the surety pays a claim, you must reimburse them in full",
+      "Does not cover your own losses — only pays the obligee (project owner or government entity)",
+      "Does not cover negligence or accidents — that's general liability insurance",
+      "Does not pay for cost overruns you caused — it covers the obligee's cost to complete if you default",
+      "Does not replace workers comp, auto, or liability coverage",
+      "Personal guaranty is almost always required — your personal credit and finances are on the hook"
+    ],
+    "cost_narrative": "Bond premiums in Kentucky typically run 1% to 3% of the bond amount for principals with strong credit (700+ score and solid financials). A $25,000 contractor's license bond might cost $250–$750 per year. Performance and payment bonds on a $500,000 construction project might cost $5,000–$15,000. For applicants with weaker credit or limited experience, premiums can reach 5–15% of the bond amount through specialty surety markets. The biggest factors are your personal credit score, business financial statements, industry experience, and project size. We work with multiple surety companies and can often find competitive rates even for contractors who've been turned down elsewhere.",
+    "faqs": [
+      {
+        "question": "What's the difference between a bond and insurance?",
+        "answer": "Insurance transfers risk to the carrier — when a claim is paid, the insurance company absorbs the loss. A surety bond is a guarantee backed by your own finances — if the surety pays a claim on your bond, you owe them back every dollar plus expenses. Think of a bond as a credit arrangement with a guarantee attached, not as an insurance policy."
+      },
+      {
+        "question": "What do I need to qualify for a surety bond in Kentucky?",
+        "answer": "For most contract bonds, sureties look at three things: your personal credit score (typically 680+), your business financial statements (balance sheet strength and working capital), and your industry experience and track record. For smaller license bonds under $50,000, credit score alone may be sufficient. We help contractors understand what sureties are looking for and how to strengthen their bond capacity over time."
+      },
+      {
+        "question": "Do Kentucky contractors need a bond to get licensed?",
+        "answer": "It depends on the license type and locality. Some Kentucky cities and counties require contractor license bonds. State-level specialty licenses may also require bonds. Public works projects in Kentucky require bid bonds, performance bonds, and payment bonds by law. We can tell you exactly which bonds your specific license or project requires."
+      },
+      {
+        "question": "How long does it take to get a surety bond?",
+        "answer": "Small license and permit bonds (under $50,000) can often be issued in 24–48 hours based on a credit check alone. Larger contract bonds — performance and payment bonds on construction projects — require financial underwriting and typically take 3–10 business days depending on the surety's review of your financials. For time-sensitive bid bonds, we work with sureties who can provide quick-turn approvals for established contractors."
+      },
+      {
+        "question": "Can I get bonded with bad credit?",
+        "answer": "Yes, though it costs more. Standard surety markets prefer credit scores above 680, but specialty and high-risk surety programs work with scores down to 500 or below. Expect to pay 5–15% of the bond amount instead of 1–3%. These programs are useful for contractors rebuilding credit or newer businesses without a financial track record. We have access to multiple surety markets specifically for these situations."
+      }
+    ]
+  },
+  "builders-risk": {
+    "direct_answer": "Builders risk insurance covers a building during construction, renovation, or major addition — protecting the structure, building materials, and equipment on site against fire, wind, theft, vandalism, and other covered perils. It's a temporary policy that lasts for the duration of the project. Without it, a fire or severe storm during construction could leave you with a destroyed project, outstanding loans, and no coverage to rebuild.",
+    "who_needs_it": "In Kentucky, builders risk coverage is essential for any significant construction project. General contractors building new homes or commercial buildings, property owners funding ground-up construction, and businesses undertaking major renovations all need this coverage. Most construction contracts in Kentucky specify which party — the owner or the contractor — is responsible for providing builders risk, and it's usually required before the first shovel hits the ground. Lenders financing new construction require it as a condition of the loan. Kentucky's exposure to severe weather — straight-line winds, hail, and tornadoes — makes builders risk particularly important for projects with months of open framing. Theft of building materials from job sites is also a common claim in the Owensboro area and across the state. In our experience with Kentucky contractors, the most common mistake is underestimating the project's total completed value, which can trigger coinsurance penalties at claim time. We shop 14+ commercial carriers for builders risk to get competitive rates on projects from $100,000 custom homes to multi-million-dollar commercial buildings.",
+    "what_it_covers": [
+      "The building or structure under construction, including foundations and permanent fixtures",
+      "Building materials and supplies on site or in transit to the site",
+      "Temporary structures — scaffolding, fencing, construction trailers (varies by policy)",
+      "Fire, lightning, windstorm, hail, explosion, and vandalism damage",
+      "Theft of building materials and installed components",
+      "Soft costs — architectural fees, permits, and loan interest for delays caused by a covered loss",
+      "Debris removal after a covered loss"
+    ],
+    "what_it_doesnt_cover": [
+      "Existing structures — those need a commercial property policy (or an endorsement for renovation projects)",
+      "Employee injuries — covered by workers compensation",
+      "Damage caused by faulty workmanship, design defects, or defective materials",
+      "Earthquake and flood damage — require separate endorsements or policies",
+      "Contractor's tools and equipment — require an inland marine floater",
+      "Penalties and liquidated damages for project delays",
+      "Liability for injuries to third parties — that's general liability"
+    ],
+    "cost_narrative": "Builders risk premiums in Kentucky typically run 1% to 4% of the total completed project value, depending on construction type, project size, and duration. A $300,000 custom home might cost $3,000–$6,000 for a 12-month builders risk policy. A $2 million commercial building could run $15,000–$40,000. Frame construction costs more than masonry or steel. Longer project timelines increase cost. Higher deductibles — $5,000 to $10,000 — can bring premiums down significantly. We shop 14+ carriers for builders risk because rates and appetite vary widely, especially for larger or longer-duration projects.",
+    "faqs": [
+      {
+        "question": "Who buys the builders risk policy — the contractor or the property owner?",
+        "answer": "It depends on the construction contract. On many residential projects, the contractor purchases builders risk. On commercial projects, the owner often provides it. The contract should clearly state who is responsible. Either way, both parties should be named as insureds on the policy. We review the contract language with our clients to make sure the right party is carrying coverage and both are protected."
+      },
+      {
+        "question": "Does builders risk cover theft of materials from the job site?",
+        "answer": "Yes, most builders risk policies cover theft of building materials and installed components from the job site. However, some carriers require reasonable security measures — perimeter fencing, locked storage, or security cameras — especially on high-value projects. Materials stored off-site or in transit may have sub-limits. We make sure the policy covers your actual site conditions."
+      },
+      {
+        "question": "When does builders risk coverage start and end?",
+        "answer": "Coverage typically starts on a specified effective date (usually when construction begins) and ends on the earliest of: project completion, the building being occupied, the policy expiration date, or the maximum policy term. Most policies are written for 3, 6, or 12 months with options to extend. If your project runs over schedule, you need to extend the policy before it expires or you'll have a coverage gap."
+      },
+      {
+        "question": "Does my commercial property insurance cover a building addition or renovation?",
+        "answer": "Your existing commercial property policy may cover minor renovations, but major additions, gut rehabs, or significant structural work typically need a separate builders risk policy. The risk profile during construction — open framing, power tools, hot work, unsecured openings — is fundamentally different from an occupied building. We review your existing property policy and recommend builders risk when the project warrants it."
+      },
+      {
+        "question": "Is builders risk required for residential home construction in Kentucky?",
+        "answer": "Kentucky law doesn't require it, but virtually every construction lender does as a condition of the loan. Even if you're paying cash, a single fire or windstorm during framing can destroy months of work and hundreds of thousands of dollars in materials and labor. For the 1–3% of project cost it typically runs, builders risk is one of the most cost-effective protections on any construction project."
+      }
+    ]
+  },
+  "special-event": {
+    "direct_answer": "Special event insurance provides short-term liability coverage and optional cancellation protection for one-time events like weddings, festivals, corporate gatherings, fundraisers, and community events. It protects you if a guest is injured, property is damaged, or the event must be cancelled for a covered reason. Most venues in Kentucky require proof of event insurance before they'll let you book the space.",
+    "who_needs_it": "If you're hosting a wedding at a Kentucky winery, organizing a community festival in Owensboro, putting on a corporate event at a rented venue, or running a charity fundraiser, you almost certainly need special event insurance. Nearly every event venue in Kentucky — from Owensboro Convention Center to local parks, churches, and private event spaces — requires a certificate of liability insurance naming them as additional insured before you can use the space. Beyond venue requirements, event insurance protects you personally as the organizer. If a guest trips and breaks an ankle, if a tent collapses on attendees, or if your event damages the venue's property, the liability falls on you as the host. Events with alcohol service carry heightened risk and may require host liquor liability coverage. We regularly write event policies for Kentucky weddings, festivals, corporate retreats, and nonprofit fundraisers — most can be bound and issued the same day.",
+    "what_it_covers": [
+      "General liability — bodily injury to guests and property damage at the event",
+      "Host liquor liability — coverage if alcohol is served (not sold) and a guest is injured or causes damage",
+      "Event cancellation — reimburses non-recoverable deposits and expenses if the event is cancelled for a covered reason",
+      "Property damage to the venue caused by event activities or guests",
+      "Additional insured status for the venue (required by most locations)",
+      "Medical payments for guest injuries regardless of fault (typically $5,000 per person)"
+    ],
+    "what_it_doesnt_cover": [
+      "Professional entertainers' injuries — bands, DJs, caterers, and vendors need their own coverage",
+      "Pre-existing weather forecasts known before policy purchase (for cancellation coverage)",
+      "Cancellation due to communicable disease — check the specific policy language, coverage varies",
+      "Damage to your own property or gifts",
+      "Events involving extreme or high-risk activities (skydiving, fireworks) without special endorsement",
+      "Liquor liability if alcohol is sold for profit — that requires a separate liquor liability policy",
+      "Vendor or contractor negligence — each vendor should carry their own insurance"
+    ],
+    "cost_narrative": "Special event insurance in Kentucky is surprisingly affordable. A basic wedding or corporate event with 100–200 guests typically costs $150–$300 for liability coverage. Larger events, events with alcohol, or events with cancellation coverage can run $300–$500. Multi-day festivals and events with 500+ attendees cost more based on duration, activities, and risk. Cancellation coverage adds roughly 1–2% of the total non-recoverable event cost. For a $20,000 wedding budget, cancellation coverage might add $200–$400 to the premium. We can usually quote and bind event insurance the same day you call.",
+    "faqs": [
+      {
+        "question": "Does my venue require event insurance?",
+        "answer": "Almost certainly. The vast majority of event venues in Kentucky — hotels, convention centers, wineries, parks and recreation facilities, churches, and private event spaces — require proof of liability insurance and additional insured status before they'll finalize your booking. Check your venue contract for the specific requirements. Most venues require $1 million per occurrence in general liability."
+      },
+      {
+        "question": "Does event insurance cover alcohol-related incidents?",
+        "answer": "If alcohol is served but not sold (typical at weddings and private parties), host liquor liability coverage is usually included or available as an add-on. If alcohol is sold — even at a fundraiser with a cash bar — you may need a separate liquor liability policy. The distinction between served and sold matters for coverage. Tell us your alcohol plans so we get the right coverage in place."
+      },
+      {
+        "question": "Can I get event insurance if my event is next week?",
+        "answer": "Yes. Special event policies can often be quoted, bound, and the certificate of insurance issued within the same business day. We handle last-minute requests regularly. Just don't wait until the day of — give us at least 24–48 hours to ensure everything is in order and your venue has the certificate."
+      },
+      {
+        "question": "Does event cancellation coverage cover bad weather?",
+        "answer": "It depends on the policy. Many event cancellation policies cover cancellation due to severe weather that makes the event unsafe or impossible — hurricanes, ice storms, flooding. However, most policies exclude cancellation due to ordinary rain or cold weather that simply makes the event less enjoyable. Some policies have a named-storm cutoff, meaning you can't purchase coverage after a storm is already named and approaching. Read the policy terms carefully."
+      },
+      {
+        "question": "Do vendors at my event need their own insurance?",
+        "answer": "Yes. Caterers, photographers, DJs, florists, rental companies, and other vendors should carry their own general liability insurance. Your event policy covers you as the host — not negligence by professional vendors. Most reputable vendors already carry insurance. You should request certificates of insurance from each vendor and keep them on file. If a vendor causes an injury or damages property, their insurance should respond first."
+      }
+    ]
+  },
+  "professional-liability": {
+    "direct_answer": "Professional liability insurance — also called Errors and Omissions (E&O) — covers claims that your professional advice, services, or work product caused a client financial harm due to a mistake, oversight, or failure to perform. General liability covers physical injury and property damage; professional liability covers financial losses from your professional work. If a client sues you for a missed deadline, an error in your deliverable, or advice that cost them money, this is the policy that responds.",
+    "who_needs_it": "Any Kentucky business that provides advice, designs, plans, consulting, or professional services to clients needs professional liability coverage. This includes accountants, architects, engineers, IT consultants, real estate agents, insurance agents, marketing agencies, financial advisors, attorneys, healthcare practitioners, and technology companies. Many client contracts in Kentucky require proof of E&O coverage before you can start work — especially in government contracting, healthcare, and financial services. Professional licensing boards for certain professions in Kentucky may also require or strongly recommend it. Even if it's not legally required, one dissatisfied client alleging your work cost them money can generate $50,000–$150,000+ in legal defense costs alone, regardless of whether the claim has merit. In our experience, professional services firms that skip E&O are betting their business on never making a mistake and never facing a disgruntled client — that's not a sustainable strategy. We shop 14+ commercial carriers to match E&O coverage to your specific profession and risk profile.",
+    "what_it_covers": [
+      "Claims alleging errors or mistakes in your professional work product",
+      "Claims of negligence in performing professional services",
+      "Failure to deliver services as promised or contracted",
+      "Missed deadlines that cause a client financial loss",
+      "Unintentional breach of contract related to professional services",
+      "Legal defense costs — even if the claim is frivolous, defense costs are covered",
+      "Settlements and judgments up to policy limits",
+      "Regulatory proceedings and disciplinary hearings (varies by policy)"
+    ],
+    "what_it_doesnt_cover": [
+      "Bodily injury or physical property damage — that's covered by general liability",
+      "Intentional wrongdoing, fraud, or criminal acts",
+      "Claims arising from services performed before the policy's retroactive date",
+      "Employment-related claims (discrimination, wrongful termination) — that's EPLI",
+      "Known claims or circumstances you were aware of before buying the policy",
+      "Contractual guarantees of results or outcomes (e.g., guaranteeing a specific ROI)",
+      "Personal injury claims — libel, slander outside professional services context"
+    ],
+    "cost_narrative": "Professional liability insurance for Kentucky professionals typically costs $500 to $3,000 per year, though some high-risk professions like architects, engineers, and medical practitioners pay more. Annual revenue is the primary rating factor — a solo consultant with $150,000 in revenue might pay $500–$800, while a 10-person firm with $1.5 million in revenue could pay $2,000–$5,000. Your profession, claims history, years in business, and the retroactive date on the policy all factor in. Claims-made policies (the standard form for E&O) require continuous coverage to maintain protection for past work. We shop 14+ carriers and make sure your retroactive date covers all the work you've done, not just current projects.",
+    "faqs": [
+      {
+        "question": "What's the difference between professional liability and general liability?",
+        "answer": "General liability covers bodily injury and property damage — a client slips in your office, or you damage someone's property. Professional liability covers financial losses from your professional work — an error in your design, bad advice, or missed deadline that costs a client money. They cover different types of claims and most businesses that provide professional services need both."
+      },
+      {
+        "question": "What does 'claims-made' mean and why does it matter?",
+        "answer": "Professional liability policies are almost always written on a claims-made basis, meaning the policy that's in force when the claim is filed is the one that responds — not the policy that was in force when the work was done. This means you need continuous, uninterrupted coverage. If you let your E&O lapse and a client files a claim about work you did two years ago, you'd have no coverage. When switching carriers, make sure the new policy's retroactive date matches your original inception date."
+      },
+      {
+        "question": "Do I need E&O insurance if I'm a sole proprietor or freelancer?",
+        "answer": "Yes, especially if your work involves advice, designs, or deliverables that a client relies on to make business decisions. A sole proprietor has no corporate shield — a professional liability claim could reach your personal assets. The cost for a solo professional is often $500–$1,000 per year, which is far less than a single demand letter from a client's attorney would cost to defend."
+      },
+      {
+        "question": "Does my professional liability policy cover past work?",
+        "answer": "Only if the policy's retroactive date extends back to when the work was performed. The retroactive date is the earliest date for which the policy will cover claims. If your retroactive date is January 2024 and a client sues over work you did in 2023, the claim would not be covered. When we write a new E&O policy, we work to set the retroactive date as far back as possible — ideally to the date you first started offering professional services."
+      },
+      {
+        "question": "What Kentucky professions are most likely to need professional liability?",
+        "answer": "Accountants and CPAs, architects and engineers, IT consultants and managed service providers, attorneys, real estate agents and brokers, insurance agents, financial advisors, marketing and advertising agencies, healthcare practitioners, and construction design professionals. If clients pay you for your expertise, judgment, or professional opinion rather than physical labor, you likely need E&O coverage. Many of these professions also have client contract requirements or licensing board expectations for coverage."
+      }
+    ]
+  }
+}

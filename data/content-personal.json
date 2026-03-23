@@ -1,0 +1,456 @@
+{
+  "home": {
+    "direct_answer": "Home insurance is a policy that pays to repair or rebuild your house, replace your belongings, and cover legal liability if someone is injured on your property. If you have a mortgage, your lender requires it — but even if you own your home outright, it protects what is likely your single largest financial asset against fire, wind, theft, and dozens of other perils.",
+    "who_needs_it": "If you own a home in Daviess County or anywhere in western Kentucky, home insurance is not optional in practice — even if state law does not mandate it for mortgage-free homes. Our region faces real risks: severe thunderstorms with damaging hail roll through the Ohio River valley every spring, ice storms can collapse roofs and down trees in winter, and straight-line winds from derecho events have caused millions in damage across Owensboro in recent years. A single uninsured kitchen fire or burst pipe could cost $50,000 or more to repair. In our experience working with homeowners across Owensboro, Henderson, and Hancock County, the question is never whether you need home insurance — it is whether you have enough of it and are paying a fair price. We shop 17+ carriers to make sure both boxes are checked.",
+    "what_it_covers": [
+      "Your home's structure (dwelling coverage) including attached garage, porch, and built-in appliances",
+      "Other structures on your property — detached garage, shed, fence, in-ground pool",
+      "Personal belongings inside and outside your home — furniture, electronics, clothing, appliances",
+      "Loss of use / additional living expenses if your home is uninhabitable during repairs",
+      "Personal liability if someone is injured on your property or you cause damage to someone else's property",
+      "Medical payments to guests injured on your property regardless of fault (typically $1,000–$5,000)",
+      "Debris removal after a covered loss",
+      "Reasonable repairs to protect your home from further damage after a loss"
+    ],
+    "what_it_doesnt_cover": [
+      "Flood damage — requires a separate flood insurance policy, even for heavy rain backup",
+      "Earthquake damage — excluded in standard policies, available as a separate policy or endorsement",
+      "Sewer and drain backup — excluded unless you add a specific endorsement (typically $50–$100/year)",
+      "Normal wear and tear, maintenance issues, and gradual deterioration",
+      "Mold — limited or excluded depending on the carrier; some offer optional mold endorsements",
+      "Damage from termites, rodents, or other pests",
+      "Intentional damage by the homeowner",
+      "Home business equipment and liability beyond very small sub-limits ($2,500 typical)"
+    ],
+    "cost_narrative": "Most homeowners in the Owensboro area pay between $1,200 and $2,400 per year, though homes with older roofs, higher replacement costs, or previous claims can run higher. Your premium depends heavily on your home's replacement cost, roof age and material, distance from a fire hydrant, your deductible choice, and your claims history. A newer roof alone can save 15–25% on premium with many carriers. Because we shop 17+ carriers, we frequently find coverage gaps or overcharges when reviewing policies written by single-carrier agents. Our goal is not just the lowest price — it is the right coverage at a fair price so you are not surprised at claim time.",
+    "faqs": [
+      {
+        "question": "How much home insurance do I actually need?",
+        "answer": "You need enough dwelling coverage to completely rebuild your home at today's construction costs — not your home's market value or purchase price. In the Owensboro area, rebuilding costs typically run $150–$250 per square foot depending on finishes. A 2,000 sq ft home might need $300,000–$500,000 in dwelling coverage. We run a replacement cost estimate for every client using current local construction data, because being underinsured by even 20% can trigger a coinsurance penalty that reduces your claim payout."
+      },
+      {
+        "question": "What is the difference between replacement cost and actual cash value?",
+        "answer": "Replacement cost pays to repair or replace damaged property with new materials of similar quality, with no deduction for depreciation. Actual cash value deducts depreciation — so a 10-year-old roof might only get 40–50% of the cost to replace it. We strongly recommend replacement cost coverage for both your dwelling and personal property. The premium difference is modest, but the claim payout difference can be tens of thousands of dollars."
+      },
+      {
+        "question": "Does my home insurance cover my home business or side hustle?",
+        "answer": "Standard home insurance includes only a very small sub-limit for business equipment — typically $2,500 — and provides zero business liability coverage. If you run a business from home, see clients at your house, or store inventory on your property, you need either a home business endorsement or a separate business owner's policy. We see this gap frequently in Owensboro and it is one of the first things we check during a policy review."
+      },
+      {
+        "question": "Will my premium go up if I file a claim?",
+        "answer": "It depends on the claim type and your carrier, but yes, a claim can increase your premium at renewal — typically 10–30% for 3–5 years. Weather-related claims in Kentucky (hail, wind) tend to have less impact than water damage or liability claims because they affect many policyholders at once. Before filing a small claim, weigh the payout against the potential premium increase. In our experience, claims under $2,000–$3,000 above your deductible are often not worth filing."
+      },
+      {
+        "question": "Do I need to update my policy after a renovation or addition?",
+        "answer": "Yes, and this is one of the most common coverage gaps we find. If you finish a basement, add a deck, remodel a kitchen, or build an addition, your dwelling coverage limit needs to increase to reflect the higher replacement cost. Notify your agent before major work begins — some carriers offer automatic coverage increases during construction, and a builders risk endorsement may be appropriate for large projects."
+      }
+    ]
+  },
+  "auto": {
+    "direct_answer": "Auto insurance pays for damage and injuries when you are in a car accident, whether you cause it or someone else does. Kentucky requires every registered vehicle to carry minimum liability coverage of 25/50/25 and $10,000 in personal injury protection (PIP), but most drivers need significantly more coverage than the state minimum to be properly protected.",
+    "who_needs_it": "If you drive or own a vehicle registered in Kentucky, Indiana, or Tennessee, you are legally required to carry auto insurance. Kentucky is a choice no-fault state, meaning you can choose to keep the default no-fault PIP coverage or reject it in writing. Most Owensboro-area drivers stay with the no-fault system, which means your own PIP coverage pays your medical bills up to $10,000 regardless of who caused the accident. But Kentucky's minimum liability limits of 25/50/25 leave you dangerously exposed — a single serious accident can easily exceed $100,000 in medical bills and property damage. If you commute on US-60, the Audubon Parkway, or cross the river into Indiana regularly, in our experience, you should carry at least 100/300/100 liability limits and strongly consider an umbrella policy.",
+    "what_it_covers": [
+      "Bodily injury liability — pays for others' medical bills, lost wages, and legal costs when you cause an accident",
+      "Property damage liability — pays to repair or replace others' vehicles and property you damage",
+      "Personal injury protection (PIP) — covers your own medical bills and lost wages regardless of fault ($10,000 minimum in KY)",
+      "Collision — pays to repair or replace your vehicle after an accident regardless of fault",
+      "Comprehensive — covers theft, vandalism, hail, flooding, animal strikes, and falling objects",
+      "Uninsured/underinsured motorist — protects you when the at-fault driver has no insurance or not enough",
+      "Medical payments — additional medical coverage for you and your passengers",
+      "Rental car reimbursement and towing/roadside assistance (optional)"
+    ],
+    "what_it_doesnt_cover": [
+      "Intentional damage you cause on purpose",
+      "Wear and tear, mechanical breakdown, and maintenance",
+      "Personal belongings stolen from your vehicle — covered under home or renters insurance",
+      "Driving for commercial purposes (delivery, rideshare) without a commercial or rideshare endorsement",
+      "Damage to your own vehicle if you only carry liability (no collision or comprehensive)",
+      "Racing, track events, or off-road competitions"
+    ],
+    "cost_narrative": "Auto insurance in the Owensboro area typically runs $1,000–$2,800 per year depending on your driving record, vehicle, and coverage limits. Kentucky rates tend to be near the national average, but factors like a clean driving record, multi-policy bundling, and your credit score can swing your premium by 30–50%. Younger drivers and those with at-fault accidents or DUIs will pay significantly more. Because we represent 17+ carriers, we can often find meaningful savings by matching your specific risk profile to the carrier that prices it most favorably — something a single-carrier agent simply cannot do.",
+    "faqs": [
+      {
+        "question": "What does Kentucky's 25/50/25 minimum actually mean?",
+        "answer": "The numbers represent liability limits in thousands: $25,000 per person for bodily injury, $50,000 total per accident for bodily injury, and $25,000 for property damage. In practice, these minimums are dangerously low. A single trip to the ER can cost $25,000, and a new truck costs $50,000+. If you cause an accident that exceeds your limits, you are personally responsible for the difference. We recommend at least 100/300/100 for most drivers."
+      },
+      {
+        "question": "What is PIP and can I opt out in Kentucky?",
+        "answer": "PIP (Personal Injury Protection) pays your medical bills and a portion of lost wages after an accident regardless of fault, up to $10,000. Kentucky is a choice no-fault state, so you can reject PIP in writing and retain the right to sue at-fault drivers for all damages. If you keep PIP, you can only sue if your injuries exceed certain thresholds. Most of our clients keep PIP because it provides fast, guaranteed payment without waiting for a liability determination."
+      },
+      {
+        "question": "Do I need uninsured motorist coverage if I already have health insurance?",
+        "answer": "Yes, we strongly recommend it. About 14% of Kentucky drivers are uninsured. Uninsured/underinsured motorist coverage protects not just your medical bills but also lost wages, pain and suffering, and other damages that health insurance does not cover. It also applies when a hit-and-run driver cannot be identified. In Kentucky, UM/UIM coverage is offered at the same limits as your liability — you must reject it in writing if you do not want it."
+      },
+      {
+        "question": "Does my auto insurance cover me if I drive for Uber, Lyft, or DoorDash?",
+        "answer": "Standard personal auto policies exclude coverage while you are logged into a rideshare or delivery app and available for rides or deliveries. If you drive for Uber, Lyft, DoorDash, or similar services, you need a rideshare endorsement on your personal policy or a commercial auto policy. The rideshare companies provide some coverage while you are on a trip, but there are dangerous gaps, especially while you are waiting for a request. Let us know if you do any gig driving — we can add the right endorsement for a modest cost."
+      },
+      {
+        "question": "How do I get my rates down after an accident or ticket?",
+        "answer": "Most accidents and violations affect your rate for 3–5 years in Kentucky. During that period, the best strategy is to shop carriers, because different companies weigh violations differently. Some carriers are more forgiving of a single at-fault accident, while others penalize it heavily. We can requote your policy across 17+ carriers to find the one that treats your specific situation most favorably. Additionally, completing a Kentucky-approved defensive driving course can earn a small discount with some carriers."
+      }
+    ]
+  },
+  "renters": {
+    "direct_answer": "Renters insurance protects your personal belongings, provides liability coverage, and pays for temporary housing if your rental becomes unlivable due to a covered event like fire or water damage. Your landlord's insurance covers the building but nothing inside your apartment — your furniture, electronics, clothing, and everything else you own is unprotected without a renters policy.",
+    "who_needs_it": "If you rent an apartment, house, or condo in Owensboro, Bowling Green, Evansville, or anywhere in the tri-state area, renters insurance is one of the smartest purchases you can make for its cost. Walk through your rental and mentally total what it would cost to replace everything — your bed, couch, TV, laptop, clothes, kitchen items, and personal effects. For most renters, that number is $15,000–$50,000. A single apartment fire, burst pipe from a frozen line in January, or break-in could wipe out everything. Many apartment complexes in Owensboro — including those managed by Scott Properties, Monarch Properties, and others — now require proof of renters insurance before you sign a lease. Even if your landlord does not require it, the coverage is so affordable that skipping it is a risk that makes no financial sense.",
+    "what_it_covers": [
+      "Personal belongings — furniture, electronics, clothing, appliances, and more — against fire, theft, vandalism, and other covered perils",
+      "Personal belongings away from home — your laptop stolen from your car or luggage lost during travel",
+      "Personal liability — if someone is injured in your rental or you accidentally damage someone's property (typically $100,000–$300,000)",
+      "Medical payments to guests injured in your rental regardless of fault",
+      "Additional living expenses — hotel, meals, and other costs if your rental is uninhabitable after a covered loss",
+      "Credit card and bank account fraud coverage (limited, but included in most policies)"
+    ],
+    "what_it_doesnt_cover": [
+      "The building itself or your landlord's property — that is your landlord's responsibility",
+      "Flood damage — requires a separate flood policy even for renters",
+      "Earthquake damage — requires a separate endorsement or policy",
+      "Your roommate's belongings unless they are named on your policy",
+      "High-value items above sub-limits — jewelry over $1,500, firearms, collectibles (schedulable separately)",
+      "Damage from pests, mold, or normal wear and tear",
+      "Your vehicle or items permanently stored in your car"
+    ],
+    "cost_narrative": "Renters insurance in the Owensboro area typically costs $15–$30 per month, making it one of the most affordable and impactful insurance products available. That is roughly the cost of one takeout dinner per month for $20,000–$50,000 in belongings coverage plus $100,000 or more in liability protection. Your premium depends on the amount of coverage, your deductible, your location, and your liability limit. Bundling renters with your auto policy usually saves 5–15% on both policies. We shop multiple carriers to find the best value for your situation.",
+    "faqs": [
+      {
+        "question": "Does renters insurance cover my belongings if my apartment floods?",
+        "answer": "No. Standard renters insurance excludes flood damage, defined as water that enters from outside the building due to rising water, overflowing rivers, or heavy rainfall runoff. If your apartment is near Panther Creek, the Ohio River, or any low-lying area in Owensboro, a separate renter's flood policy is available through the NFIP or private carriers, typically for $50–$150 per year. However, renters insurance does cover water damage from burst pipes, appliance leaks, and accidental overflow inside the unit."
+      },
+      {
+        "question": "My landlord says they have insurance — why do I need my own?",
+        "answer": "Your landlord's insurance covers the building structure and their liability as a property owner. It does not cover your personal belongings, your liability as a tenant, or your additional living expenses if you are displaced. If a fire destroys your apartment, your landlord's insurance rebuilds the unit — but you are on your own to replace everything inside it and pay for a hotel while repairs are made."
+      },
+      {
+        "question": "Does renters insurance cover my roommate?",
+        "answer": "Not automatically. Your renters policy covers you and typically your spouse or domestic partner. If you have a roommate who is not related to you, they need their own policy or must be added as a named insured on yours. If your roommate's belongings are stolen or damaged, your policy will not pay for their losses unless they are listed on the policy. Each roommate getting their own policy is usually the simplest approach."
+      },
+      {
+        "question": "What if my landlord requires specific coverage amounts or to be listed on my policy?",
+        "answer": "Many Owensboro landlords and property management companies require tenants to carry a minimum amount of renters insurance — typically $100,000 in liability — and to list the landlord as an interested party (not the same as additional insured). This means the landlord receives notification if your policy is cancelled. We handle these requirements daily and can set up your policy to meet your lease requirements, usually same-day."
+      },
+      {
+        "question": "Are my expensive items like jewelry, cameras, or musical instruments fully covered?",
+        "answer": "Standard renters policies include sub-limits on certain categories: jewelry is typically capped at $1,500, firearms at $2,500, and electronics may have limits depending on the carrier. If you own a $3,000 engagement ring, a $2,000 camera, or a valuable instrument, you should schedule those items individually on your policy. Scheduling provides broader coverage (including accidental loss) and eliminates the sub-limit. The cost is usually $1–$3 per $100 of value per year."
+      }
+    ]
+  },
+  "umbrella": {
+    "direct_answer": "Umbrella insurance is an extra layer of liability protection that kicks in when your home or auto policy limits are exhausted. It covers catastrophic liability claims — like a serious car accident, a lawsuit from an injury on your property, or a defamation claim — and typically provides $1 million to $5 million in additional coverage starting at around $200–$500 per year.",
+    "who_needs_it": "If you own a home in Daviess County, have a teenage driver on your auto policy, own rental property, have a swimming pool or trampoline, or simply have assets worth protecting, an umbrella policy is one of the highest-value purchases in insurance. Consider this: a jury verdict for a serious auto accident in Kentucky can easily reach $500,000 or more, and your auto policy probably caps liability at $100,000–$300,000 per person. That gap is your personal exposure — your savings, your home equity, and even future wages can be at risk. In our experience across Owensboro, Whitesville, and the surrounding area, the clients who benefit most from umbrella policies are homeowners with equity, professionals with above-average income, landlords, parents of teen drivers, and anyone with a boat, ATV, or recreational vehicle. The coverage is remarkably affordable relative to the protection it provides.",
+    "what_it_covers": [
+      "Liability claims that exceed your home insurance policy limits",
+      "Liability claims that exceed your auto insurance policy limits",
+      "Legal defense costs — often covered even above the policy limit",
+      "Bodily injury liability — medical bills, lost wages, and pain and suffering you are responsible for",
+      "Property damage liability exceeding your underlying policy limits",
+      "Personal liability for incidents like libel, slander, defamation, and invasion of privacy",
+      "Liability arising from serving on a nonprofit board (in many policies)",
+      "Incidents that occur worldwide — not limited to Kentucky"
+    ],
+    "what_it_doesnt_cover": [
+      "Your own injuries or medical bills",
+      "Damage to your own property",
+      "Intentional acts or criminal behavior",
+      "Business or professional liability — requires a separate commercial policy",
+      "Workers compensation claims from household employees",
+      "Liability arising from war or nuclear hazard",
+      "Punitive damages — coverage varies by state; Kentucky allows umbrella coverage of punitive damages in most cases"
+    ],
+    "cost_narrative": "A $1 million umbrella policy in the Owensboro area typically costs $200–$500 per year, and each additional million is usually $75–$150 more. That works out to roughly $0.55–$1.37 per day for a million dollars in protection. Carriers require you to maintain minimum underlying limits on your home and auto policies — usually $300,000 or more on home liability and 250/500/100 on auto. If your current limits are lower, we will factor in the cost of increasing them when quoting your umbrella. Even with underlying limit increases, most clients find the total cost increase modest for the protection gained. We have access to umbrella policies from 17+ carriers with varying eligibility rules — some are more accommodating of rental properties, teen drivers, or recreational vehicles.",
+    "faqs": [
+      {
+        "question": "How much umbrella coverage do I need?",
+        "answer": "A common rule of thumb is to carry umbrella coverage equal to your net worth — including home equity, savings, investments, and retirement accounts. If your household net worth is $500,000, a $1 million umbrella is a reasonable starting point. If you have higher exposure risks (teen drivers, rental properties, a pool), consider $2–$3 million. Keep in mind that a judgment can also attach to future earnings, not just current assets. In our experience, most Owensboro families land between $1 million and $2 million in umbrella coverage."
+      },
+      {
+        "question": "Does an umbrella policy cover me if my teenager causes a car accident?",
+        "answer": "Yes, and this is one of the most compelling reasons to carry one. Teen drivers are statistically the highest-risk group on the road. If your teen causes a serious accident with injuries exceeding your auto policy limits, the umbrella covers the excess. Given that a single serious injury claim can reach $300,000–$1,000,000, the $200–$500 annual umbrella premium is a small price for that protection."
+      },
+      {
+        "question": "Do I need separate umbrella policies for my home and auto?",
+        "answer": "No. A personal umbrella policy sits over both your home and auto policies simultaneously. It also extends over other personal liability policies like your boat or motorcycle insurance. One umbrella policy covers the excess liability from all of your underlying personal policies. Carriers typically require all underlying policies to be with the same company or to meet specified minimum limits."
+      },
+      {
+        "question": "Can I get an umbrella policy if I own rental property?",
+        "answer": "Yes, but carrier guidelines vary. Some carriers include one or two rental properties under a personal umbrella at no additional charge, while others require each rental to be disclosed and may charge an additional premium. If you own three or more rental units, some carriers will require a commercial umbrella instead. We work with multiple carriers and can find the right fit for landlords with varying portfolio sizes."
+      },
+      {
+        "question": "Does an umbrella policy cover dog bite liability?",
+        "answer": "In most cases, yes — an umbrella extends over the liability coverage in your home or renters policy, which typically covers dog bite claims. However, some carriers exclude certain breeds or require disclosure of your dog's breed and bite history. Kentucky follows a strict liability statute for dog bites, meaning the dog owner is liable regardless of whether the dog has bitten before. Given that the average dog bite liability claim exceeds $50,000, umbrella coverage for pet owners is particularly valuable."
+      }
+    ]
+  },
+  "flood": {
+    "direct_answer": "Flood insurance is a separate policy that covers damage to your home and belongings caused by flooding — which is explicitly excluded from standard homeowners insurance. Whether it is the Ohio River overflowing, heavy rain overwhelming drainage, or rapid snowmelt, any water damage classified as a flood requires its own policy, available through the National Flood Insurance Program (NFIP) or private flood carriers.",
+    "who_needs_it": "If you live anywhere near the Ohio River, Panther Creek, Yellow Creek, or the numerous smaller waterways that run through Daviess County, you should seriously consider flood insurance — even if your property is not in a FEMA-designated high-risk flood zone. Approximately 25% of all flood claims nationally come from properties outside high-risk zones. Owensboro's location along the Ohio River means that significant portions of the community fall within or near FEMA Special Flood Hazard Areas, and the 1997 Ohio River flood demonstrated that water does not respect zone boundaries. If your mortgage lender has determined your property is in Zone A or Zone AE, flood insurance is mandatory. But even in Zone X (moderate-to-low risk), a few inches of water from a heavy spring rainstorm can cause $20,000 or more in damage to flooring, drywall, appliances, and personal belongings. We help homeowners across Owensboro, Whitesville, and the surrounding river communities assess their actual flood risk and find the most cost-effective coverage.",
+    "what_it_covers": [
+      "Your home's structure — foundation, walls, flooring, built-in appliances, electrical and plumbing systems",
+      "Personal belongings — furniture, clothing, electronics, and other contents (with an NFIP contents policy or private flood policy)",
+      "Cleanup costs including mud and debris removal",
+      "HVAC systems, water heaters, and fuel tanks",
+      "Detached garages (NFIP covers under the building policy)",
+      "Washer, dryer, and food freezer contents in a basement (limited under NFIP)"
+    ],
+    "what_it_doesnt_cover": [
+      "Temporary living expenses or additional living costs — unlike homeowners insurance, NFIP does not cover loss of use",
+      "Cars, trucks, and other vehicles — flood damage to vehicles is covered under auto comprehensive coverage",
+      "Currency, precious metals, and valuable papers",
+      "Property and belongings outside the building — landscaping, decks, patios, fences, septic systems",
+      "Sewer backup unless the backup is directly caused by flooding (some private carriers offer broader coverage)",
+      "Mold or moisture damage that could have been prevented by the homeowner",
+      "Basement improvements under NFIP — finished walls, flooring, and contents in basements have very limited coverage"
+    ],
+    "cost_narrative": "Flood insurance in the Owensboro area typically costs $500–$2,500 per year depending on your flood zone, elevation, building type, and coverage amount. Properties in high-risk Zone A or AE pay more than those in moderate-risk Zone X. The NFIP recently implemented Risk Rating 2.0, which bases premiums on a property's individual flood risk rather than just its zone designation — some homes saw increases while others saw decreases. Private flood carriers now offer competitive alternatives to the NFIP with broader coverage, higher limits, and sometimes lower premiums. We compare NFIP and private flood options for every client to find the best combination of coverage and price. Important note: NFIP policies have a 30-day waiting period before coverage takes effect, so do not wait until a storm is forecast.",
+    "faqs": [
+      {
+        "question": "My home is not in a flood zone — do I still need flood insurance?",
+        "answer": "FEMA flood maps show risk zones, but they are not guarantees. About 25% of all flood claims are filed by properties in low-to-moderate risk zones. If your home is near any waterway, in a low-lying area, or downstream from development that has changed drainage patterns, you are at risk. In Owensboro, rapid development and changes to stormwater management can increase flood risk for homes that were previously considered safe. Preferred Risk Policies for low-risk zones can cost as little as $300–$500 per year through the NFIP."
+      },
+      {
+        "question": "What is the difference between NFIP and private flood insurance?",
+        "answer": "The NFIP is the federal program run by FEMA with standardized coverage: up to $250,000 for the building and $100,000 for contents, with no loss-of-use coverage. Private flood insurance is offered by traditional insurance carriers and can provide higher limits, loss-of-use coverage, replacement cost on contents, and sometimes lower premiums. Private flood policies may also have shorter waiting periods. We compare both options for every flood insurance client."
+      },
+      {
+        "question": "Does my homeowners insurance cover any type of water damage?",
+        "answer": "Your homeowners policy covers sudden and accidental water damage from internal sources — a burst pipe, an overflowing washing machine, or a water heater that fails. It does not cover water that enters your home from outside due to rising water levels, surface runoff, or overwhelmed storm drains, which is the definition of a flood. This distinction catches many homeowners off guard after a heavy rainstorm. If water comes in through the ground or from outside surface water, you need a flood policy."
+      },
+      {
+        "question": "Is there a waiting period before flood insurance takes effect?",
+        "answer": "NFIP policies have a standard 30-day waiting period from the date of purchase before coverage begins. There are exceptions: if you are purchasing flood insurance as part of a new mortgage closing, coverage can be effective immediately. Some private flood carriers offer shorter waiting periods of 10–14 days. The takeaway is clear — buy flood insurance well before you need it. Calling during a flood watch is too late."
+      },
+      {
+        "question": "How does NFIP Risk Rating 2.0 affect my premium?",
+        "answer": "Risk Rating 2.0, implemented in recent years, prices individual properties based on specific flood risk factors — distance to a water source, flood frequency, building characteristics, and replacement cost — rather than relying solely on FEMA flood zone maps. Some Owensboro homeowners saw modest premium increases while others saw decreases. Existing policyholders are subject to annual premium increases capped at 18% per year until they reach their full-risk rate. We can pull your property's specific Risk Rating 2.0 premium to see where you stand."
+      }
+    ]
+  },
+  "motorcycle": {
+    "direct_answer": "Motorcycle insurance covers liability for injuries and damage you cause while riding, plus optional coverage for your own bike, medical payments, and uninsured motorist protection. Kentucky requires all registered motorcycles to carry the same minimum liability as cars — 25/50/25 — and riders face significantly higher injury risk than car drivers, making adequate coverage essential.",
+    "who_needs_it": "If you ride a motorcycle in Kentucky, Indiana, or Tennessee, you are legally required to carry liability insurance. Riders in the Owensboro area know the scenic routes along the Ohio River, through Yellow Creek Park, and out into the rolling hills of Hancock and McLean counties — but they also know the risks. Kentucky does not have a universal helmet law for adults over 21, which increases rider vulnerability and potential injury severity. Deer crossings are common on rural roads in Daviess County, particularly in fall and early spring. And other drivers failing to see motorcycles remains the number-one cause of motorcycle accidents. With 17+ carriers, we work with riders from sport bike enthusiasts to Harley touring riders to custom cruiser owners, finding coverage that fits how you actually ride. Whether you ride year-round or just April through October, we can structure a policy that fits your season and budget.",
+    "what_it_covers": [
+      "Bodily injury liability — pays for others' injuries when you are at fault",
+      "Property damage liability — pays for damage to others' vehicles and property",
+      "Collision — covers damage to your bike from an accident with another vehicle or object",
+      "Comprehensive — covers theft, vandalism, fire, weather damage, and animal strikes",
+      "Uninsured/underinsured motorist — protects you when the other driver has no or insufficient insurance",
+      "Medical payments or PIP — covers your own medical bills after an accident",
+      "Custom parts and equipment coverage — covers aftermarket add-ons beyond factory equipment",
+      "Accessory coverage — helmets, riding gear, and safety equipment",
+      "Roadside assistance and towing"
+    ],
+    "what_it_doesnt_cover": [
+      "Racing, stunting, or competitive events — excluded by all standard policies",
+      "Wear and tear, mechanical breakdown, and maintenance",
+      "Passengers unless your policy includes guest passenger liability",
+      "Custom parts and accessories above your policy's stated limit unless specifically endorsed",
+      "Riding off-road on a street-registered motorcycle (some carriers exclude this)",
+      "Commercial use — delivery, courier, or business use without a commercial endorsement"
+    ],
+    "cost_narrative": "Motorcycle insurance in the Owensboro area ranges from about $300 to $1,500 per year, depending heavily on your bike type, riding experience, and coverage level. Sport bikes and supersports cost significantly more to insure than cruisers and touring bikes due to higher accident frequency and severity. Seasonal storage discounts can reduce your premium if you do not ride during winter months — typically November through March in Kentucky. Completing a Motorcycle Safety Foundation (MSF) course can earn a 5–10% discount with most carriers. Because motorcycle rates vary dramatically between carriers, shopping across our 17+ companies often yields significant savings.",
+    "faqs": [
+      {
+        "question": "Do I need motorcycle insurance if I only ride on weekends?",
+        "answer": "Yes. Kentucky requires liability insurance for all registered motorcycles regardless of how often you ride. Insurance must be in force at all times the motorcycle is registered, not just when you are on the road. If you ride seasonally, some carriers offer lay-up periods where you maintain comprehensive coverage (for theft and weather damage in storage) but drop collision and liability during months you are not riding, saving 20–40% annually."
+      },
+      {
+        "question": "Are my custom parts and aftermarket accessories covered?",
+        "answer": "Standard motorcycle policies include limited coverage for custom parts and equipment — typically $1,000–$3,000 above factory specs. If you have invested in custom exhaust, saddlebags, lighting, windshield, or performance upgrades, you need to add a custom parts endorsement to cover their full value. Provide us with a list of modifications and their cost, and we will make sure they are covered. Without this endorsement, your claim payout after a total loss will only reflect the bike's stock value."
+      },
+      {
+        "question": "Does my auto insurance cover my motorcycle?",
+        "answer": "No. Auto insurance policies specifically exclude motorcycles. You need a separate motorcycle insurance policy with its own liability, collision, and comprehensive coverage. However, bundling your motorcycle and auto policies with the same carrier often earns a multi-vehicle or multi-policy discount of 5–15%. Some carriers also offer a package discount if you insure your home with them as well."
+      },
+      {
+        "question": "What happens if I lend my motorcycle to a friend and they crash it?",
+        "answer": "Your motorcycle insurance generally follows the bike, not the rider — so your policy would be the primary coverage if a permissive user (someone you gave permission to ride) has an accident. Your deductible applies, any claim goes on your record, and if the damages exceed your limits, your friend's insurance may provide secondary coverage. Be cautious about lending your bike, because a claim from a permissive user affects your premium and claims history."
+      },
+      {
+        "question": "Is Kentucky's helmet law different for motorcycle passengers?",
+        "answer": "Kentucky requires helmets for all riders and passengers under 21 and for riders with an instruction permit, regardless of age. Riders 21 and older with a full motorcycle license are not required to wear a helmet but must wear eye protection. While helmet use is a personal choice for adults, it is worth noting that carriers do not offer helmet-use discounts — but not wearing a helmet can significantly increase the severity and cost of injuries, which can affect future policy availability and pricing."
+      }
+    ]
+  },
+  "boat": {
+    "direct_answer": "Boat insurance covers damage to your watercraft, liability for injuries or property damage you cause on the water, and protection for passengers and equipment. Kentucky does not require boat insurance by law, but if you finance your boat, your lender will require it — and operating on the Ohio River, Kentucky Lake, or any waterway without liability coverage puts your personal assets at serious risk.",
+    "who_needs_it": "If you own a boat, pontoon, jet ski, or other watercraft in the Owensboro area, you need boat insurance. Daviess County sits on the Ohio River — one of the busiest inland waterways in the country — where recreational boaters share the water with commercial barge traffic. English Park boat ramp, Smothers Park, and the Owensboro riverfront see heavy recreational use from spring through fall. Kentucky Lake and Lake Barkley are popular weekend destinations for Owensboro boaters, and both can see crowded conditions on summer holidays. A single collision on the water can cause injuries, damage to expensive vessels, and liability claims that reach into the hundreds of thousands. Your homeowners policy may provide a small amount of coverage for very small watercraft (typically under 25 horsepower), but any serious boat — pontoon, bass boat, ski boat, or PWC — needs a dedicated marine policy. We work with specialized marine carriers who understand watercraft risks and can provide agreed-value coverage so you know exactly what you will receive if your boat is totaled.",
+    "what_it_covers": [
+      "Physical damage to your boat's hull, deck, and superstructure — collision, storm, fire, theft, and vandalism",
+      "Motor and mechanical equipment",
+      "Trailer coverage — for the trailer used to transport your boat",
+      "Liability for bodily injury to others caused by your boat operation",
+      "Property damage liability — damage to docks, other boats, and structures",
+      "Medical payments for passengers on your boat regardless of fault",
+      "Towing and on-water assistance",
+      "Fuel spill liability — covers cleanup costs if your boat leaks fuel",
+      "Personal effects on board — fishing equipment, electronics, water sports gear",
+      "Wreck removal — required by the Coast Guard and can cost thousands"
+    ],
+    "what_it_doesnt_cover": [
+      "Normal wear, weathering, marine growth, and gradual deterioration",
+      "Manufacturer defects and mechanical breakdown (unless a specific mechanical breakdown endorsement is added)",
+      "Damage from ice and freezing if the boat was not properly winterized",
+      "Racing or speed competitions unless specifically endorsed",
+      "Commercial use — charter, rental, or paid passenger operations require commercial marine coverage",
+      "War, nuclear hazard, and government seizure",
+      "Insects, vermin, and animals (some carriers offer limited coverage)"
+    ],
+    "cost_narrative": "Boat insurance in the Owensboro area generally costs $200–$1,000 per year, depending on your boat type, value, horsepower, and navigational territory. Pontoon boats and smaller fishing boats tend to fall on the lower end, while high-performance ski boats and larger vessels cost more. Where you operate matters — the Ohio River's commercial traffic and current are considered higher risk than an inland lake. Your boating experience, safety course completion, and claims history also factor in. Agreed-value policies (which pay a predetermined amount for a total loss) cost slightly more than actual cash value policies but eliminate depreciation disputes at claim time. We strongly recommend agreed value for any boat worth more than a few thousand dollars.",
+    "faqs": [
+      {
+        "question": "Does my homeowners insurance cover my boat?",
+        "answer": "Your homeowners policy may include a small amount of liability coverage for watercraft — typically limited to boats with 25 horsepower or less and sailboats under 26 feet. Anything larger or more powerful is excluded. Even for small watercraft that fall within the homeowners policy limits, the coverage is minimal and does not include physical damage to the boat itself. A standalone boat policy provides far more comprehensive protection for any vessel you take on the water regularly."
+      },
+      {
+        "question": "What is agreed value vs. actual cash value on a boat policy?",
+        "answer": "Agreed value means you and the carrier agree upfront on your boat's value, and that is what you receive (minus your deductible) if the boat is a total loss — no depreciation, no negotiation. Actual cash value deducts depreciation, so a 10-year-old boat might only receive 40–60% of what it would cost to replace. Since boats depreciate significantly and replacement costs can be surprising, we recommend agreed-value coverage for most boat owners. The premium difference is typically modest."
+      },
+      {
+        "question": "Do I need boat insurance for a jet ski or personal watercraft?",
+        "answer": "Yes, we strongly recommend it. Jet skis and personal watercraft (PWC) have some of the highest accident rates of any watercraft type due to their speed, maneuverability, and the demographics of many riders. Liability claims from PWC accidents can easily reach $100,000+. A dedicated watercraft policy or PWC endorsement provides liability, physical damage, and medical payments coverage. Rates for jet skis typically run $100–$400 per year depending on the model and your experience."
+      },
+      {
+        "question": "Is my boat covered during winter storage?",
+        "answer": "Yes, most boat policies provide year-round coverage including during off-season storage — covering theft, fire, vandalism, and weather damage while your boat is in a marina, storage lot, or your garage. However, damage from ice and freezing is typically excluded if the boat was not properly winterized according to manufacturer guidelines. If you store your boat on a trailer at home, make sure your policy covers the storage location and that the trailer itself is included."
+      },
+      {
+        "question": "Do I need a boating safety course to get boat insurance in Kentucky?",
+        "answer": "Kentucky law requires a boating education certificate for all motorboat operators born after January 1, 1984. While it is not strictly required for insurance, completing a Kentucky-approved boating safety course — offered by the Kentucky Department of Fish and Wildlife — can earn you a 5–10% discount on your boat insurance premium with many carriers. The course covers navigation rules, safety equipment, and the specific hazards of Kentucky waterways including river currents and commercial traffic on the Ohio."
+      }
+    ]
+  },
+  "classic-car": {
+    "direct_answer": "Classic car insurance is a specialized policy that insures collector, antique, and vintage vehicles at an agreed value — the actual worth you and the carrier agree upon — rather than the depreciated actual cash value that a standard auto policy would pay. It is designed for vehicles that appreciate or hold their value, and it typically costs less than regular auto insurance because classic cars are driven fewer miles and stored more carefully.",
+    "who_needs_it": "If you own a classic, antique, or collector vehicle in the Owensboro area, a standard auto policy is the wrong tool for the job. Standard auto insurance pays actual cash value — what a depreciated used car is worth — which has no relationship to what a restored 1969 Camaro, a pristine 1957 Chevy Bel Air, or a numbers-matching Corvette is actually worth on the collector market. The Owensboro area has an active classic car community, with regular cruise-ins, the International Bar-B-Q Festival car show, and strong representation at the Corvette Museum events in Bowling Green — just 90 minutes east on I-165. Whether your vehicle is a weekend cruiser, a show car, or a barn find in progress, we work with specialized classic car carriers like Hagerty, Grundy, and American Collectors to provide agreed-value coverage that reflects what your vehicle is truly worth, not what a standard insurance algorithm says a car that old should cost.",
+    "what_it_covers": [
+      "Agreed value physical damage — your vehicle is insured for a specific dollar amount you and the carrier agree upon",
+      "Liability coverage meeting Kentucky's 25/50/25 minimum requirement",
+      "Spare parts and accessories — coverage for parts you have purchased for restoration or maintenance",
+      "Flatbed towing to the repair shop of your choice, not just the nearest shop",
+      "Coverage during car shows, exhibitions, and club events",
+      "Trip interruption — reimburses lodging and rental car costs if your classic breaks down more than a set distance from home",
+      "Auto show medical reimbursement (some carriers)",
+      "Inflation guard — automatic annual increases to your agreed value to keep pace with the collector market"
+    ],
+    "what_it_doesnt_cover": [
+      "Daily driver use exceeding mileage limits — most policies restrict annual mileage to 2,500–7,500 miles",
+      "Racing, timed events, or competitive use unless specifically endorsed",
+      "Modifications or custom work not disclosed to the carrier",
+      "Using the vehicle for commercial purposes — delivery, rideshare, or hired transport",
+      "Mechanical breakdown and normal maintenance",
+      "Vehicles that do not meet the carrier's age or eligibility requirements (typically 25+ years old or recognized as a collectible)"
+    ],
+    "cost_narrative": "Classic car insurance in the Owensboro area typically costs $200–$800 per year — often 40–60% less than a standard auto policy for the same vehicle. The lower cost reflects the limited use, careful storage, and experienced drivers that characterize classic car ownership. Your premium depends on the agreed value, annual mileage limit, storage type (enclosed garage is preferred), your driving record, and whether the vehicle is your sole transportation or a secondary vehicle. Most classic car carriers require you to have a regular daily driver vehicle with its own insurance. We work with multiple specialty carriers and can find competitive rates for everything from a $15,000 restored pickup to a $250,000 concours-level collectible.",
+    "faqs": [
+      {
+        "question": "What qualifies as a classic car for insurance purposes?",
+        "answer": "Definitions vary by carrier, but generally a classic or collector vehicle is at least 25 years old, or is a recognized collectible, limited production, or special-interest vehicle. Some carriers insure vehicles as young as 15 years old if they are appreciating in value or are recognized collectibles. Exotic and specialty vehicles — like a late-model Porsche 911 GT3 or a low-production muscle car — may qualify regardless of age. We can check eligibility with our specialty carriers for any vehicle you believe has collector value."
+      },
+      {
+        "question": "What is agreed value and why does it matter?",
+        "answer": "Agreed value means you and the insurance carrier agree on your vehicle's worth when the policy is written, and that is what you receive (minus your deductible) if the vehicle is totaled. This is fundamentally different from a standard auto policy, which pays actual cash value — typically far less than a collector vehicle is worth because standard valuation tools treat old cars as depreciated. If your 1970 Chevelle is worth $65,000 in the collector market, an agreed-value policy will pay $65,000. A standard policy might pay $5,000."
+      },
+      {
+        "question": "Can I drive my classic car regularly and still get a classic car policy?",
+        "answer": "Classic car policies typically restrict annual mileage to 2,500–7,500 miles depending on the carrier. Most require that the classic car is not your primary daily transportation — you need a regular daily driver insured separately. If you drive your classic to weekend car shows, cruises, and occasional errands, that normally fits within the mileage limits. If you want to drive it daily, a standard auto policy with a stated-value endorsement may be a better fit, though you will pay more and may have a valuation gap."
+      },
+      {
+        "question": "How do I determine the right agreed value for my classic car?",
+        "answer": "Start with current market data from sources like Hagerty Valuation Tools, Bring a Trailer auction results, and Hemmings listings for comparable vehicles in similar condition. Your carrier may require a professional appraisal — especially for vehicles valued above $50,000. Document any restoration work, matching numbers, provenance, and awards. The agreed value should reflect what a knowledgeable buyer would pay in a private sale today. Review and update the agreed value annually, as the collector car market shifts. We can help guide you through the valuation process."
+      },
+      {
+        "question": "Does classic car insurance cover my vehicle during restoration?",
+        "answer": "Yes, most specialty carriers offer coverage for vehicles undergoing restoration, though the terms vary. Some carriers will insure a project car at an agreed value that reflects the anticipated completed value with an adjustment for its current state. Others offer specific restoration coverage that increases in value as work progresses. Storage and fire protection matter — a vehicle being restored in a heated, enclosed garage is a better risk than one in an open carport. Let us know the details of your project and we will find a carrier that fits."
+      }
+    ]
+  },
+  "earthquake": {
+    "direct_answer": "Earthquake insurance covers damage to your home, personal belongings, and additional living expenses caused by an earthquake — none of which is covered by a standard homeowners policy. Western Kentucky sits directly on the New Madrid Seismic Zone, one of the most active fault systems east of the Rocky Mountains, making earthquake coverage a genuinely important consideration for homeowners in this region.",
+    "who_needs_it": "If you own a home in Owensboro, Henderson, or anywhere in western Kentucky, you live within the influence zone of the New Madrid Seismic Zone. This is not a theoretical risk — the New Madrid fault produced four of the largest earthquakes in North American recorded history in 1811–1812, estimated at magnitude 7.0–8.0, strong enough to ring church bells in Boston and reverse the flow of the Mississippi River. USGS scientists estimate a 25–40% probability of a magnitude 6.0 or greater earthquake in the New Madrid zone within the next 50 years. A magnitude 6.0 event centered near the fault could cause significant structural damage across western Kentucky, particularly to older homes, homes on poor soil, and masonry construction. Most homeowners in Daviess County do not carry earthquake coverage because they have never experienced a damaging quake — but that is exactly the kind of low-frequency, high-severity risk that insurance is designed for. In our experience, the cost of earthquake coverage in this area is modest relative to the potential loss.",
+    "what_it_covers": [
+      "Damage to your home's structure — foundation, walls, roof, chimney, and attached structures",
+      "Personal property damage caused by earthquake — furniture, electronics, appliances damaged by shaking or collapse",
+      "Additional living expenses if your home is uninhabitable after an earthquake",
+      "Other structures on your property — detached garage, shed, fence",
+      "Broken plumbing, gas lines, and electrical systems caused by seismic activity",
+      "Emergency stabilization and temporary repairs"
+    ],
+    "what_it_doesnt_cover": [
+      "Fire following an earthquake — this is actually covered by your standard homeowners policy",
+      "Flood or tsunami caused by an earthquake — requires a separate flood policy",
+      "Land damage, sinkholes, and changes to your lot's topography",
+      "Vehicles damaged by earthquake — covered under auto comprehensive coverage",
+      "Landscaping, swimming pools (some carriers offer limited coverage), and exterior property",
+      "Pre-existing structural damage or deferred maintenance that earthquake shaking worsens"
+    ],
+    "cost_narrative": "Earthquake insurance in the Owensboro area typically costs $100–$800 per year, depending on your home's construction type, foundation, age, coverage amount, and deductible. The most important cost factor is the deductible, which is expressed as a percentage of your dwelling coverage — typically 5%, 10%, or 15%. On a home insured for $300,000, a 10% earthquake deductible means you pay the first $30,000 of damage out of pocket. Choosing a higher deductible significantly reduces premium. Masonry homes (brick) cost more to insure for earthquake because they are more vulnerable to shaking than wood-frame construction. We can add earthquake coverage as an endorsement to your homeowners policy with some carriers, or write a standalone earthquake policy with others.",
+    "faqs": [
+      {
+        "question": "How likely is an earthquake in western Kentucky?",
+        "answer": "More likely than most residents realize. The USGS estimates a 25–40% chance of a magnitude 6.0 or greater earthquake in the New Madrid Seismic Zone within the next 50 years. Smaller earthquakes occur regularly — the region experiences several hundred minor seismic events per year, most too small to feel. The New Madrid fault's 1811–1812 earthquakes were among the largest in North American history. While a repeat of that magnitude is less likely in any given year, a moderate earthquake capable of causing significant structural damage is a realistic possibility within a homeowner's lifetime."
+      },
+      {
+        "question": "Why is the earthquake deductible so much higher than my homeowners deductible?",
+        "answer": "Earthquake deductibles are percentage-based (typically 5–15% of dwelling coverage) rather than flat dollar amounts because earthquake damage tends to be widespread, affecting many properties simultaneously — similar to hurricane deductibles in coastal areas. On a $300,000 home, a 10% deductible means $30,000 out of pocket before coverage kicks in. This structure keeps premiums affordable but means earthquake insurance is designed for severe damage, not cosmetic cracks. Choosing a 5% deductible roughly doubles your premium compared to 15%, so the deductible choice is the biggest pricing lever."
+      },
+      {
+        "question": "Are brick homes more at risk than wood-frame homes in an earthquake?",
+        "answer": "Yes. Unreinforced masonry — including older brick homes common in Owensboro's established neighborhoods — is the most vulnerable construction type in an earthquake. Brick walls can crack, crumble, and collapse under seismic shaking because masonry is strong in compression but weak under lateral forces. Wood-frame homes are more flexible and tend to perform better. If your home is brick, earthquake insurance is particularly important, and you may want to consult a structural engineer about retrofitting options like foundation bolting and cripple wall bracing."
+      },
+      {
+        "question": "Does my homeowners insurance cover anything related to earthquakes?",
+        "answer": "Your standard homeowners policy specifically excludes earthquake damage to your home and belongings. However, it does cover fire damage even if the fire was caused by an earthquake — for example, a gas line rupture that ignites after seismic shaking. It also covers water damage from burst pipes, as long as the damage is from the pipe rupture itself and not from earth movement. But the structural damage from shaking — cracked foundations, collapsed chimneys, shifted walls — is entirely excluded without earthquake coverage."
+      },
+      {
+        "question": "Can I buy earthquake insurance after an earthquake warning is issued?",
+        "answer": "Earthquake policies typically take effect immediately or within a few days of purchase, but carriers may impose moratoriums on new policies after significant seismic activity in the region. Unlike the 30-day waiting period for flood insurance, earthquake policies generally do not have a standard waiting period — but that can change quickly if seismic activity increases. The best time to buy earthquake coverage is before you need it, when you have full access to all carriers and the most competitive pricing."
+      }
+    ]
+  },
+  "pet": {
+    "direct_answer": "Pet insurance reimburses you for veterinary costs when your dog or cat is injured or becomes ill, covering treatments that can easily reach $3,000–$10,000 for emergencies, surgeries, or chronic conditions. It works on a reimbursement model — you pay the vet and submit a claim — and is designed to prevent you from ever having to choose between your pet's health and your bank account.",
+    "who_needs_it": "If you own a dog or cat in Kentucky and would not be able to comfortably absorb a $3,000–$5,000 emergency vet bill, pet insurance deserves serious consideration. Veterinary medicine has advanced dramatically — ACL surgery, cancer treatment, MRI imaging, and emergency care are now routine for pets — but the costs reflect that advancement. A single ACL repair for a dog in the Owensboro area can run $3,000–$5,000, and cancer treatment can exceed $10,000. Even common conditions like ear infections, allergies, and digestive issues add up across a pet's lifetime. Pet insurance works best when purchased while your pet is young and healthy, before any conditions develop that would be classified as pre-existing. Kentucky has several excellent veterinary practices — Daviess County Animal Hospital, Countryside Animal Hospital, and the emergency services at Reid Animal Hospital — and pet insurance ensures you can say yes to recommended treatment without hesitation. We work with multiple pet insurance carriers to match your pet's breed, age, and your budget to the right plan.",
+    "what_it_covers": [
+      "Accidents — broken bones, lacerations, poisoning, foreign body ingestion, and bite wounds",
+      "Illnesses — cancer, diabetes, infections, digestive disorders, heart disease, and allergies",
+      "Emergency and specialty veterinary care including surgery, hospitalization, and imaging",
+      "Prescription medications for covered conditions",
+      "Diagnostic testing — blood work, X-rays, MRI, CT scans, and ultrasound",
+      "Chronic and recurring conditions diagnosed after enrollment (ongoing coverage in subsequent years)",
+      "Hereditary and breed-specific conditions — hip dysplasia, IVDD, brachycephalic syndrome (if not pre-existing)",
+      "Optional wellness/routine care add-on — vaccinations, annual exams, dental cleaning, spay/neuter (varies by carrier)"
+    ],
+    "what_it_doesnt_cover": [
+      "Pre-existing conditions — any illness or injury that occurred or showed symptoms before the policy effective date or during the waiting period",
+      "Routine and preventive care unless a wellness add-on is purchased",
+      "Cosmetic procedures — ear cropping, tail docking, dewclaw removal (unless medically necessary)",
+      "Breeding costs, pregnancy, and whelping",
+      "Experimental treatments not recognized by veterinary standards",
+      "Food, supplements, and over-the-counter medications",
+      "Pre-existing behavioral conditions"
+    ],
+    "cost_narrative": "Pet insurance in Kentucky typically costs $30–$80 per month for dogs and $20–$50 per month for cats, with the wide range reflecting differences in breed, age, coverage level, deductible, and reimbursement percentage. A young mixed-breed dog with a $500 annual deductible and 80% reimbursement might cost $35–$45 per month, while an older purebred large-breed dog with a lower deductible runs higher. The three biggest cost levers are your deductible (typically $100–$1,000 annual), reimbursement percentage (70%, 80%, or 90%), and annual limit ($5,000 to unlimited). We help pet owners find the balance between monthly premium and out-of-pocket costs that makes sense for their situation.",
+    "faqs": [
+      {
+        "question": "Is pet insurance actually worth the cost?",
+        "answer": "For most pet owners, the math works in your favor over a pet's lifetime. The average dog owner spends $4,500–$10,000 on veterinary care over their dog's life, with costs heavily concentrated in the first year (puppy care) and the last few years (chronic conditions and end-of-life care). A single emergency — a foreign body surgery, a cancer diagnosis, or an accident — can cost $3,000–$10,000 in one event. Pet insurance turns that unpredictable financial risk into a predictable monthly cost. It is most valuable for owners of breeds prone to expensive conditions and for anyone who would struggle with a surprise multi-thousand-dollar vet bill."
+      },
+      {
+        "question": "When is the best time to enroll my pet?",
+        "answer": "As early as possible — ideally as a puppy or kitten. Pet insurance does not cover pre-existing conditions, so any health issue that develops before enrollment is permanently excluded. Enrolling when your pet is young and healthy means everything that develops later will be covered. Most carriers accept pets as young as 6–8 weeks old. Premiums also increase with age, so locking in a lower rate while your pet is young saves money over the life of the policy. There is typically a 14-day waiting period for illness coverage and a shorter wait for accident coverage."
+      },
+      {
+        "question": "Can I use any veterinarian with pet insurance?",
+        "answer": "Yes. Unlike human health insurance, pet insurance does not use networks. You can visit any licensed veterinarian, emergency clinic, or specialist anywhere in the country. You pay the vet directly at the time of service, then submit your receipt and medical records to the insurance company for reimbursement. Most carriers process claims within 5–14 days and offer direct deposit. This means if you are traveling with your pet or need to see an emergency or specialty vet, your coverage works the same as it does at your regular Owensboro veterinarian."
+      },
+      {
+        "question": "What counts as a pre-existing condition?",
+        "answer": "A pre-existing condition is any injury, illness, or symptom that appeared before your policy's effective date or during the waiting period. This includes conditions that were diagnosed, treated, or showed clinical signs — even if you did not seek treatment. For example, if your dog limped on and off before enrollment, a later ACL tear in that leg may be denied as pre-existing. Some carriers are more lenient with curable pre-existing conditions (like a resolved ear infection), considering them eligible again after 12–18 months symptom-free. We can help you understand how each carrier defines and handles pre-existing conditions."
+      },
+      {
+        "question": "Does pet insurance cover hereditary and breed-specific conditions?",
+        "answer": "Most comprehensive pet insurance plans cover hereditary and breed-specific conditions — like hip dysplasia in German Shepherds, IVDD in Dachshunds, or heart conditions in Cavalier King Charles Spaniels — as long as they were not pre-existing at enrollment. This is one of the most important reasons to enroll early, before these conditions develop. Some budget-tier or accident-only plans exclude hereditary conditions, so read the policy carefully. If you own a breed known for expensive health issues, a plan that covers hereditary conditions is especially important."
+      }
+    ]
+  }
+}
