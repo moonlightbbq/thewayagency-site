@@ -2,13 +2,13 @@
   "pages": {
     "/": {
       "title": "The Way Agency | Independent Insurance in Owensboro, KY",
-      "description": "The Way Agency is an independent insurance agency serving Kentucky, Indiana, and Tennessee since 1998. We shop 17+ carriers to find the right personal, commercial, and life insurance for your situation.",
+      "description": "The Way Agency is an independent insurance agency serving Kentucky, Indiana, and Tennessee since 1998. We represent dozens of carriers to find the right personal, commercial, and life insurance for your situation.",
       "schema_types": ["InsuranceAgency", "LocalBusiness", "WebSite", "FAQPage"],
       "last_reviewed": "2026-03"
     },
     "/personal/": {
       "title": "Personal Insurance in Kentucky | Home, Auto & More | The Way Agency",
-      "description": "Personal insurance from 17+ carriers: home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet insurance in KY, IN & TN.",
+      "description": "Personal insurance from top-rated carriers: home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet insurance in KY, IN & TN.",
       "schema_types": ["InsuranceAgency", "FAQPage"],
       "last_reviewed": "2026-03"
     },
@@ -26,7 +26,7 @@
     },
     "/about/": {
       "title": "About The Way Agency | Independent Insurance in Kentucky",
-      "description": "Learn about The Way Agency  -  an independent insurance agency serving Kentucky, Indiana, and Tennessee since 1998. We shop 17+ carriers to find you the right coverage.",
+      "description": "Learn about The Way Agency  -  an independent insurance agency serving Kentucky, Indiana, and Tennessee since 1998. We represent dozens of carriers to find you the right coverage.",
       "schema_types": ["InsuranceAgency", "LocalBusiness"],
       "last_reviewed": "2026-03"
     },
@@ -56,7 +56,7 @@
     },
     "/quote.html": {
       "title": "Get an Insurance Quote | The Way Agency",
-      "description": "Request a free insurance quote from The Way Agency. We shop 17+ carriers to find the right coverage at the right price in KY, IN & TN.",
+      "description": "Request a free insurance quote from The Way Agency. We represent dozens of carriers to find the right coverage at the right price in KY, IN & TN.",
       "schema_types": ["InsuranceAgency"],
       "last_reviewed": "2026-03"
     },

@@ -74,7 +74,7 @@ function generateCarrierMarquee(lineKey) {
   ).join('\n          ');
   return `
     <section class="carriers">
-      <p class="carriers__label">We shop ${lineCarriers.length}+ carriers for you</p>
+      <p class="carriers__label">We represent ${lineCarriers.length}+ carriers</p>
       <div style="overflow:hidden;">
         <div class="carriers__track">
           ${carrierItems}
