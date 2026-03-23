@@ -644,53 +644,14 @@
       <div class="bundle-msg" id="bundle-msg"></div>
       <div class="bundle-pills" id="bundle-pills"></div>
     </div>
-    <div class="product-grid" id="product-grid">
-      <div class="product-opt" data-pid="homeowners" onclick="toggleProd(this)">
-        <span class="icon">&#127968;</span>Homeowners
-      </div>
-      <div class="product-opt" data-pid="auto" onclick="toggleProd(this)">
-        <span class="icon">&#128663;</span>Auto
-      </div>
-      <div class="product-opt" data-pid="umbrella" onclick="toggleProd(this)">
-        <span class="icon">&#9748;&#65039;</span>Umbrella
-      </div>
-      <div class="product-opt" data-pid="flood" onclick="toggleProd(this)">
-        <span class="icon">&#127754;</span>Flood
-      </div>
-      <div class="product-opt" data-pid="life" onclick="toggleProd(this)">
-        <span class="icon">&#10084;&#65039;</span>Life
-      </div>
-      <div class="product-opt" data-pid="renters" onclick="toggleProd(this)">
-        <span class="icon">&#127970;</span>Renters
-      </div>
-      <div class="product-opt" data-pid="bop" onclick="toggleProd(this)">
-        <span class="icon">&#127978;</span>Business
-      </div>
-      <div class="product-opt" data-pid="motorcycle" onclick="toggleProd(this)">
-        <span class="icon">&#127949;&#65039;</span>Motorcycle
-      </div>
-    </div>
+    <div class="product-grid" id="product-grid"></div>
     <div style="margin-top:12px">
       <button type="button" class="add-vehicle-btn" id="show-other-btn" onclick="toggleOtherProducts()" style="width:100%;justify-content:center">
         <span>+</span> Need something else? See all products
       </button>
       <div class="other-products" id="other-products">
         <p style="font-size:12px;color:var(--muted);margin:8px 0 4px">Additional coverage options:</p>
-        <div class="other-product-grid" id="other-product-grid">
-          <div class="product-opt" data-pid="dwelling_fire" onclick="toggleProd(this)"><span class="icon">&#128293;</span>Dwelling Fire</div>
-          <div class="product-opt" data-pid="cgl" onclick="toggleProd(this)"><span class="icon">&#128188;</span>General Liability</div>
-          <div class="product-opt" data-pid="commercial_auto" onclick="toggleProd(this)"><span class="icon">&#128666;</span>Commercial Auto</div>
-          <div class="product-opt" data-pid="workers_comp" onclick="toggleProd(this)"><span class="icon">🦺</span>Workers Comp</div>
-          <div class="product-opt" data-pid="cyber" onclick="toggleProd(this)"><span class="icon">&#128187;</span>Cyber</div>
-          <div class="product-opt" data-pid="eo" onclick="toggleProd(this)"><span class="icon">&#128220;</span>Professional Liability</div>
-          <div class="product-opt" data-pid="boat" onclick="toggleProd(this)"><span class="icon">&#9973;&#65039;</span>Boat</div>
-          <div class="product-opt" data-pid="rv" onclick="toggleProd(this)"><span class="icon">&#128652;</span>RV</div>
-          <div class="product-opt" data-pid="earthquake" onclick="toggleProd(this)"><span class="icon">🌍</span>Earthquake</div>
-          <div class="product-opt" data-pid="farm_ranch" onclick="toggleProd(this)"><span class="icon">&#127806;</span>Farm / Ranch</div>
-          <div class="product-opt" data-pid="bonds" onclick="toggleProd(this)"><span class="icon">&#128196;</span>Bonds</div>
-          <div class="product-opt" data-pid="builders_risk" onclick="toggleProd(this)"><span class="icon">&#128679;</span>Builders Risk</div>
-          <div class="product-opt" data-pid="other" onclick="toggleProd(this)"><span class="icon">&#128221;</span>Other</div>
-        </div>
+        <div class="other-product-grid" id="other-product-grid"></div>
       </div>
     </div>
     <div id="step2-error" class="error hidden"></div>
@@ -782,6 +743,69 @@ let pollTimer = null;          // Polls for agent takeover
 let turnstileToken = null;     // Cloudflare Turnstile token
 let turnstileWidgetId = null;  // Widget ID for reset
 
+// ── Product catalog (drives the dynamic grid) ───────────────────────────────
+const PRODUCTS = [
+  // Personal
+  { id: 'homeowners',      icon: '\u{1F3E0}', label: 'Homeowners',           line: 'personal' },
+  { id: 'auto',            icon: '\u{1F697}', label: 'Auto',                 line: 'personal' },
+  { id: 'umbrella',        icon: '\u2614\uFE0F', label: 'Umbrella',          line: 'personal' },
+  { id: 'flood',           icon: '\u{1F30A}', label: 'Flood',                line: 'personal' },
+  { id: 'life',            icon: '\u2764\uFE0F', label: 'Life',              line: 'personal' },
+  { id: 'renters',         icon: '\u{1F3E2}', label: 'Renters',              line: 'personal' },
+  { id: 'motorcycle',      icon: '\u{1F3CD}\uFE0F', label: 'Motorcycle',     line: 'personal' },
+  { id: 'boat',            icon: '\u26F5\uFE0F', label: 'Boat',              line: 'personal' },
+  { id: 'rv',              icon: '\u{1F68C}', label: 'RV',                   line: 'personal' },
+  { id: 'earthquake',      icon: '\u{1F30D}', label: 'Earthquake',           line: 'personal' },
+  // Commercial
+  { id: 'bop',             icon: '\u{1F3EA}', label: 'Business',             line: 'commercial' },
+  { id: 'cgl',             icon: '\u{1F4BC}', label: 'General Liability',    line: 'commercial' },
+  { id: 'commercial_auto', icon: '\u{1F69A}', label: 'Commercial Auto',      line: 'commercial' },
+  { id: 'workers_comp',    icon: '\u{1F9BA}', label: 'Workers Comp',         line: 'commercial' },
+  { id: 'cyber',           icon: '\u{1F4BB}', label: 'Cyber',                line: 'commercial' },
+  { id: 'eo',              icon: '\u{1F4DC}', label: 'Professional Liability', line: 'commercial' },
+  { id: 'dwelling_fire',   icon: '\u{1F525}', label: 'Dwelling Fire',        line: 'commercial' },
+  { id: 'bonds',           icon: '\u{1F4C4}', label: 'Bonds',                line: 'commercial' },
+  { id: 'farm_ranch',      icon: '\u{1F33E}', label: 'Farm / Ranch',         line: 'commercial' },
+  { id: 'builders_risk',   icon: '\u{1F6A7}', label: 'Builders Risk',        line: 'commercial' },
+  // Catch-all
+  { id: 'other',           icon: '\u{1F4DD}', label: 'Other',                line: 'other' },
+];
+
+const MAIN_GRID_SIZE = 8;
+
+function getProductLine(pid) {
+  const p = PRODUCTS.find(x => x.id === pid);
+  return p ? p.line : null;
+}
+
+function renderProductGrid(priorityLine) {
+  // Sort: priority line first, then the other line, then 'other'
+  const sorted = [...PRODUCTS].sort((a, b) => {
+    const order = (p) => {
+      if (priorityLine && p.line === priorityLine) return 0;
+      if (p.line === 'personal' && !priorityLine) return 0; // default: personal first
+      if (p.line === 'personal') return 1;
+      if (p.line === 'commercial') return priorityLine === 'commercial' ? 0 : 1;
+      return 2; // 'other'
+    };
+    return order(a) - order(b);
+  });
+
+  const mainGrid = document.getElementById('product-grid');
+  const otherGrid = document.getElementById('other-product-grid');
+
+  const renderOpt = (p) => {
+    const selected = selectedProducts.includes(p.id) ? ' selected' : '';
+    return `<div class="product-opt${selected}" data-pid="${p.id}" onclick="toggleProd(this)"><span class="icon">${p.icon}</span>${p.label}</div>`;
+  };
+
+  mainGrid.innerHTML = sorted.slice(0, MAIN_GRID_SIZE).map(renderOpt).join('');
+  otherGrid.innerHTML = sorted.slice(MAIN_GRID_SIZE).map(renderOpt).join('');
+}
+
+// Render default grid (personal first) immediately
+renderProductGrid(null);
+
 // ── Bundle suggestion map ────────────────────────────────────────────────────
 const BUNDLE_MAP = {
   homeowners:      { products: ['auto', 'umbrella'],        msg: "Customers who add auto and umbrella coverage typically save 15-25% with multi-policy discounts." },
@@ -871,19 +895,27 @@ function syncBundlePills() {
   const params = new URLSearchParams(window.location.search);
   const pid = params.get('product');
   if (!pid) return;
-  // Find the product option and select it (may be in main grid or "other" grid)
+
+  // Reorder grid so the selected product's line appears first
+  const line = getProductLine(pid);
+  if (line) {
+    selectedProducts.push(pid);
+    renderProductGrid(line);
+  }
+
+  // Select the product in the grid
   const el = document.querySelector(`.product-opt[data-pid="${pid}"]`);
   if (el) {
     el.classList.add('selected');
-    selectedProducts.push(pid);
-    // If it's in the "other products" panel, expand it
+    // If somehow still in "other" panel, expand it
     if (el.closest('.other-products')) {
       const panel = document.getElementById('other-products');
       if (panel) panel.classList.add('show');
     }
-    // Show bundle suggestion banner
-    renderBundleBanner(pid);
   }
+
+  // Show bundle suggestion banner
+  renderBundleBanner(pid);
 })();
 
 // ── Cloudflare Turnstile (bot protection) ───────────────────────────────────
