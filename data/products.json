@@ -270,7 +270,7 @@
       "typical_cost_range": "1%–15% of the bond amount, depending on credit and bond type",
       "cost_factors": ["bond type and amount", "personal and business credit", "financial statements", "industry experience", "project size"],
       "ky_requirement": "Required for many Kentucky contractor licenses, notary commissions, court proceedings, and government contracts.",
-      "common_exclusions": ["Bonds are not insurance — if the bond company pays a claim, you owe them back. This is different from insurance where the carrier absorbs the loss."],
+      "common_exclusions": ["Bonds are not insurance  -  if the bond company pays a claim, you owe them back. This is different from insurance where the carrier absorbs the loss."],
       "related_products": ["general-liability", "builders-risk"],
       "last_reviewed": "2026-03"
     },
@@ -283,7 +283,7 @@
       "title_tag": "Builders Risk Insurance in Kentucky | The Way Agency",
       "meta_description": "Builders risk insurance covers buildings and materials during construction. Essential for contractors and property owners in Kentucky.",
       "h1": "What is builders risk insurance?",
-      "summary": "Covers a building under construction, renovation, or addition — including the structure, materials, and equipment on site — against fire, wind, theft, and other covered perils during the construction period.",
+      "summary": "Covers a building under construction, renovation, or addition  -  including the structure, materials, and equipment on site  -  against fire, wind, theft, and other covered perils during the construction period.",
       "typical_cost_range": "1%–4% of the total project cost",
       "cost_factors": ["total project value", "construction type", "project duration", "location and exposure", "security measures on site"],
       "ky_requirement": "Not required by Kentucky law, but typically required by construction contracts, lenders, and project owners.",
@@ -362,7 +362,7 @@
       "title_tag": "Supplemental Health Insurance in Kentucky | The Way Agency",
       "meta_description": "Supplemental health insurance pays cash benefits for accidents, critical illness, and hospital stays to cover gaps in your primary health plan.",
       "h1": "What does supplemental health insurance cover?",
-      "summary": "Pays cash benefits directly to you when a covered health event occurs — accident, critical illness, or hospital stay. Helps cover deductibles, copays, lost income, and other expenses your primary health plan doesn't pay.",
+      "summary": "Pays cash benefits directly to you when a covered health event occurs  -  accident, critical illness, or hospital stay. Helps cover deductibles, copays, lost income, and other expenses your primary health plan doesn't pay.",
       "related_products": ["individual-health", "group-health"],
       "last_reviewed": "2026-03"
     },

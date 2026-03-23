@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * The Way Agency — Static Site Build Script
+ * The Way Agency  -  Static Site Build Script
  * 
  * Generates product pages from data/products.json,
  * copies all files to build/, and generates sitemap.xml.
@@ -44,7 +44,7 @@ const testimonials = JSON.parse(fs.readFileSync(path.join(DATA, 'testimonials.js
 const agency = locations.agency;
 const office = locations.offices[0];
 
-// Load rich content files (optional — graceful fallback if not yet created)
+// Load rich content files (optional  -  graceful fallback if not yet created)
 let richContent = {};
 for (const file of ['content-personal.json', 'content-commercial.json', 'content-life-health.json']) {
   const fp = path.join(DATA, file);
@@ -226,7 +226,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
   const relatedLinks = (product.related_products || []).map(rId => {
     const rp = allProducts.find(p => p.id === rId);
     if (!rp) return '';
-    return `<li><a href="${rp.url}"><strong>${rp.name}</strong></a> — ${rp.summary ? rp.summary.split('.')[0] + '.' : ''}</li>`;
+    return `<li><a href="${rp.url}"><strong>${rp.name}</strong></a>  -  ${rp.summary ? rp.summary.split('.')[0] + '.' : ''}</li>`;
   }).filter(Boolean).join('\n        ');
 
   // Cross-line suggestion
@@ -404,31 +404,23 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
 
       ${relatedSection}
 
-      <div class="product-meta">
-        <span>Reviewed by a licensed agent at The Way Agency</span>
-        <span>Last reviewed: ${product.last_reviewed ? new Date(product.last_reviewed + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'March 2026'}</span>
-      </div>
+      ${(() => {
+        const reviewer = findReviewerForProduct(product, lineKey);
+        const designations = reviewer.designations && reviewer.designations.length > 0 ? reviewer.designations.join(', ') + ' | ' : '';
+        const reviewDate = product.last_reviewed ? new Date(product.last_reviewed + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'March 2026';
+        return `<div style="margin-top:var(--space-2xl);padding:var(--space-lg);background:var(--light-bg);border:1px solid var(--border);border-radius:var(--border-radius-lg);">
+        <p style="font-size:var(--text-sm);color:var(--slate);margin-bottom:4px;">Reviewed by</p>
+        <p style="font-weight:600;color:var(--navy);margin-bottom:2px;">
+          <a href="/about/team.html#${reviewer.slug}" style="color:var(--navy);">${reviewer.name}</a>, ${reviewer.title}
+        </p>
+        <p style="font-size:var(--text-sm);color:var(--slate);margin-bottom:0;">
+          ${designations}Licensed in KY, IN &amp; TN | ${reviewer.years_experience} years experience | Last reviewed: ${reviewDate}
+        </p>
+      </div>`;
+      })()}
     </article>
 
     ${crossSellSection}
-
-    ${(() => {
-      const reviewer = findReviewerForProduct(product, lineKey);
-      const designations = reviewer.designations && reviewer.designations.length > 0 ? reviewer.designations.join(', ') + ' · ' : '';
-      const reviewDate = product.last_reviewed ? new Date(product.last_reviewed + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'March 2026';
-      return `<div class="author-attribution" style="margin-top:var(--space-2xl);padding:var(--space-lg);background:var(--light-bg);border-radius:var(--border-radius-lg);display:flex;align-items:center;gap:var(--space-lg);">
-  <div>
-    <p style="font-size:var(--text-sm);color:var(--slate);margin-bottom:4px;">Reviewed by</p>
-    <p style="font-weight:600;color:var(--navy);margin-bottom:2px;">
-      <a href="/about/team.html#${reviewer.slug}" style="color:var(--navy);">${reviewer.name}</a>, ${reviewer.title}
-    </p>
-    <p style="font-size:var(--text-sm);color:var(--slate);margin-bottom:0;">
-      ${designations}Licensed in KY, IN &amp; TN &middot; ${reviewer.years_experience} years experience<br>
-      Last reviewed: ${reviewDate}
-    </p>
-  </div>
-</div>`;
-    })()}
 
     ${generateTestimonials(lineKey)}
 
@@ -591,7 +583,7 @@ for (const [lineKey, lineInfo] of Object.entries(lineMap)) {
   ensureDir(path.join(BUILD, lineInfo.slug));
 
   for (const product of lineProducts) {
-    // Skip home — we have a hand-crafted version
+    // Skip home  -  we have a hand-crafted version
     if (product.id === 'home' && lineKey === 'personal') continue;
 
     const html = generateProductPage(product, lineInfo.name, lineInfo.slug, lineKey);
@@ -671,7 +663,7 @@ for (const city of landingData.cities) {
       <div class="container container--narrow">
         <h2>Why ${city.city} families and businesses choose The Way Agency</h2>
         <p>${city.context}</p>
-        <p>As an independent agency, we are not tied to one insurance company. We shop your coverage across 17+ carriers — including Travelers, Progressive, Safeco, Chubb, The Hartford, and more — to find the best combination of coverage and price for your specific situation in ${city.county}.</p>
+        <p>As an independent agency, we are not tied to one insurance company. We shop your coverage across 17+ carriers  -  including Travelers, Progressive, Safeco, Chubb, The Hartford, and more  -  to find the best combination of coverage and price for your specific situation in ${city.county}.</p>
 
         <h2>Insurance options in ${city.city}</h2>
         <div class="grid grid--3" style="margin:var(--space-xl) 0;">
@@ -802,7 +794,7 @@ for (const ind of landingData.industries) {
         </div>
 
         <h2>Why choose The Way Agency for ${ind.name.toLowerCase()} insurance?</h2>
-        <p><strong>Industry experience.</strong> We understand the specific risks, contract requirements, and coverage gaps that ${ind.name.toLowerCase()} face. We don't sell generic policies — we build programs that match real-world operations.</p>
+        <p><strong>Industry experience.</strong> We understand the specific risks, contract requirements, and coverage gaps that ${ind.name.toLowerCase()} face. We don't sell generic policies  -  we build programs that match real-world operations.</p>
         <p><strong>17+ carriers.</strong> As an independent agency, we access markets that captive agents and direct-to-carrier sites cannot. For specialty trades, this access is the difference between getting covered and getting declined.</p>
         <p><strong>Certificate management.</strong> We handle COIs, additional insured requests, and evidence of coverage quickly. When you need a certificate for a job site by tomorrow morning, we make it happen.</p>
         <p><strong>Claims advocacy.</strong> When something goes wrong on a job, we help you navigate the claims process and push back on the carrier when needed. We work for you, not the insurance company.</p>

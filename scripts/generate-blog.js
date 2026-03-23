@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * The Way Agency — Blog Generator
+ * The Way Agency  -  Blog Generator
  *
  * Converts Markdown blog posts in src/blog/ to HTML pages in build/blog/.
  * Also regenerates the blog index page with all posts sorted by date.
@@ -316,7 +316,7 @@ for (const file of mdFiles) {
   const { meta, body } = parseFrontMatter(raw);
 
   if (!meta.title || !meta.slug) {
-    console.log(`  ⚠ Skipping ${file} — missing title or slug in front matter`);
+    console.log(`  ⚠ Skipping ${file}  -  missing title or slug in front matter`);
     continue;
   }
 
@@ -328,7 +328,7 @@ for (const file of mdFiles) {
 
   fs.writeFileSync(path.join(BLOG_BUILD, `${meta.slug}.html`), html);
   posts.push(meta);
-  console.log(`  ✓ ${meta.slug}.html — "${meta.title}"`);
+  console.log(`  ✓ ${meta.slug}.html  -  "${meta.title}"`);
 }
 
 console.log(`\n✅ Generated ${posts.length} blog posts from Markdown`);

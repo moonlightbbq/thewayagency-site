@@ -34,7 +34,7 @@
     {
       "id": "home-deductible-choice",
       "question": "What deductible should I choose for homeowners insurance?",
-      "answer": "Most Kentucky homeowners choose a $1,000 or $2,500 deductible. A higher deductible lowers your premium — moving from $1,000 to $2,500 often saves 10-15% on your annual premium. Choose the highest deductible you could comfortably pay out of pocket after a loss without financial strain.",
+      "answer": "Most Kentucky homeowners choose a $1,000 or $2,500 deductible. A higher deductible lowers your premium  -  moving from $1,000 to $2,500 often saves 10-15% on your annual premium. Choose the highest deductible you could comfortably pay out of pocket after a loss without financial strain.",
       "category": "personal",
       "product": "home",
       "related_products": [],
@@ -143,7 +143,7 @@
     {
       "id": "auto-teen-driver",
       "question": "How much does it cost to add a teen driver to my auto insurance?",
-      "answer": "Adding a teen driver in Kentucky typically increases your annual premium by $1,500 to $3,500. Good student discounts (B average or better) can save 10-25%. Completing a state-approved driver training course also helps. We shop multiple carriers because teen driver surcharges vary significantly — some carriers are much more competitive for households with young drivers.",
+      "answer": "Adding a teen driver in Kentucky typically increases your annual premium by $1,500 to $3,500. Good student discounts (B average or better) can save 10-25%. Completing a state-approved driver training course also helps. We shop multiple carriers because teen driver surcharges vary significantly  -  some carriers are much more competitive for households with young drivers.",
       "category": "personal",
       "product": "auto",
       "related_products": [],
@@ -208,7 +208,7 @@
     {
       "id": "renters-how-much-coverage",
       "question": "How much renters insurance coverage do I need?",
-      "answer": "Most renters need $20,000 to $50,000 in personal property coverage. Walk through your rental and add up what it would cost to replace everything — furniture, electronics, clothing, kitchenware. People usually underestimate by 30-50%. Also choose at least $100,000 in liability coverage; $300,000 is better and costs only a few dollars more per month.",
+      "answer": "Most renters need $20,000 to $50,000 in personal property coverage. Walk through your rental and add up what it would cost to replace everything  -  furniture, electronics, clothing, kitchenware. People usually underestimate by 30-50%. Also choose at least $100,000 in liability coverage; $300,000 is better and costs only a few dollars more per month.",
       "category": "personal",
       "product": "renters",
       "related_products": [],
@@ -230,7 +230,7 @@
     {
       "id": "umbrella-who-needs",
       "question": "Do I need umbrella insurance?",
-      "answer": "Umbrella insurance is recommended for anyone with significant assets to protect — homeowners, landlords, and anyone whose net worth exceeds their auto and home liability limits. A $1M umbrella policy typically costs $200 to $400 per year, which is one of the best values in insurance for the amount of protection it provides.",
+      "answer": "Umbrella insurance is recommended for anyone with significant assets to protect  -  homeowners, landlords, and anyone whose net worth exceeds their auto and home liability limits. A $1M umbrella policy typically costs $200 to $400 per year, which is one of the best values in insurance for the amount of protection it provides.",
       "category": "personal",
       "product": "umbrella",
       "tags": ["recommendation", "assets", "liability"],
@@ -251,7 +251,7 @@
     {
       "id": "umbrella-landlord",
       "question": "Do I need umbrella insurance if I rent out property?",
-      "answer": "Yes, landlords are strongly recommended to carry umbrella insurance. A tenant or visitor injury lawsuit can easily exceed your landlord policy's liability limits. Even one rental property increases your liability exposure significantly. A $1M umbrella policy covering your rental properties typically costs $300-$500 per year — far less than a single legal judgment.",
+      "answer": "Yes, landlords are strongly recommended to carry umbrella insurance. A tenant or visitor injury lawsuit can easily exceed your landlord policy's liability limits. Even one rental property increases your liability exposure significantly. A $1M umbrella policy covering your rental properties typically costs $300-$500 per year  -  far less than a single legal judgment.",
       "category": "personal",
       "product": "umbrella",
       "related_products": ["home"],
@@ -339,7 +339,7 @@
     {
       "id": "boat-ohio-river",
       "question": "What boat insurance do I need for the Ohio River?",
-      "answer": "The Ohio River borders Kentucky and Indiana, so your policy needs to cover navigation in both states. Most boat policies let you define a navigational territory — make sure it includes Kentucky and Indiana waters at minimum. Liability coverage of at least $300,000 is recommended for Ohio River boating due to heavy commercial barge traffic. Also consider towing and fuel spill liability coverage.",
+      "answer": "The Ohio River borders Kentucky and Indiana, so your policy needs to cover navigation in both states. Most boat policies let you define a navigational territory  -  make sure it includes Kentucky and Indiana waters at minimum. Liability coverage of at least $300,000 is recommended for Ohio River boating due to heavy commercial barge traffic. Also consider towing and fuel spill liability coverage.",
       "category": "personal",
       "product": "boat",
       "related_products": ["umbrella"],
@@ -350,7 +350,7 @@
     {
       "id": "boat-ky-requirements",
       "question": "Is boat insurance required in Kentucky?",
-      "answer": "Kentucky does not require boat insurance by law. However, marinas require it for docking privileges, and lenders require it if you finance your boat. Even without a legal requirement, carrying at least liability coverage is essential — a boating accident causing injury can result in lawsuits exceeding $100,000. Policies for small boats start as low as $200 per year.",
+      "answer": "Kentucky does not require boat insurance by law. However, marinas require it for docking privileges, and lenders require it if you finance your boat. Even without a legal requirement, carrying at least liability coverage is essential  -  a boating accident causing injury can result in lawsuits exceeding $100,000. Policies for small boats start as low as $200 per year.",
       "category": "personal",
       "product": "boat",
       "related_products": [],
@@ -361,7 +361,7 @@
     {
       "id": "classic-car-agreed-value",
       "question": "What is agreed value coverage for classic cars?",
-      "answer": "Agreed value means you and the insurance company agree on your vehicle's worth when the policy is written. If the car is totaled, you receive that full agreed amount with no depreciation — unlike standard auto policies that pay only actual cash value. You will need an appraisal or documentation supporting the value. This is the most important feature of classic car insurance.",
+      "answer": "Agreed value means you and the insurance company agree on your vehicle's worth when the policy is written. If the car is totaled, you receive that full agreed amount with no depreciation  -  unlike standard auto policies that pay only actual cash value. You will need an appraisal or documentation supporting the value. This is the most important feature of classic car insurance.",
       "category": "personal",
       "product": "classic-car",
       "related_products": [],
@@ -415,7 +415,7 @@
     {
       "id": "pet-pre-existing",
       "question": "Does pet insurance cover pre-existing conditions?",
-      "answer": "No. Pet insurance does not cover pre-existing conditions — any illness or injury that occurred or showed symptoms before coverage started. This is why enrolling your pet when they are young and healthy gives you the broadest coverage. Some carriers distinguish between curable and incurable pre-existing conditions, potentially covering curable ones after a symptom-free waiting period.",
+      "answer": "No. Pet insurance does not cover pre-existing conditions  -  any illness or injury that occurred or showed symptoms before coverage started. This is why enrolling your pet when they are young and healthy gives you the broadest coverage. Some carriers distinguish between curable and incurable pre-existing conditions, potentially covering curable ones after a symptom-free waiting period.",
       "category": "personal",
       "product": "pet",
       "related_products": [],
@@ -469,7 +469,7 @@
     {
       "id": "gl-vs-professional-liability",
       "question": "What is the difference between general liability and professional liability insurance?",
-      "answer": "General liability covers bodily injury and property damage — someone slips in your office or you damage a client's property. Professional liability (E&O) covers financial harm from your professional services — bad advice, missed deadlines, or errors in your work. A consulting firm needs both: GL for physical risks at their office and professional liability for their consulting work.",
+      "answer": "General liability covers bodily injury and property damage  -  someone slips in your office or you damage a client's property. Professional liability (E&O) covers financial harm from your professional services  -  bad advice, missed deadlines, or errors in your work. A consulting firm needs both: GL for physical risks at their office and professional liability for their consulting work.",
       "category": "commercial",
       "product": "general-liability",
       "related_products": ["professional-liability"],
@@ -480,7 +480,7 @@
     {
       "id": "gl-certificate-of-insurance",
       "question": "What is a certificate of insurance and how do I get one?",
-      "answer": "A certificate of insurance (COI) is a one-page document proving you have active coverage. Landlords, general contractors, and clients frequently request one before allowing you to work. We can issue COIs same-day at no charge — just tell us who needs to be listed and any specific requirements. Additional insured endorsements may be needed and are usually included at no extra cost.",
+      "answer": "A certificate of insurance (COI) is a one-page document proving you have active coverage. Landlords, general contractors, and clients frequently request one before allowing you to work. We can issue COIs same-day at no charge  -  just tell us who needs to be listed and any specific requirements. Additional insured endorsements may be needed and are usually included at no extra cost.",
       "category": "commercial",
       "product": "general-liability",
       "related_products": [],
@@ -524,7 +524,7 @@
     {
       "id": "cp-tenant-vs-owner",
       "question": "Do I need commercial property insurance if I lease my business space?",
-      "answer": "Yes, even if you do not own the building. Your landlord's policy covers the building structure but not your business contents — equipment, inventory, furniture, and improvements you have made to the space. You need a commercial property or BOP policy for your business personal property. Most leases also require you to carry liability coverage and name the landlord as additional insured.",
+      "answer": "Yes, even if you do not own the building. Your landlord's policy covers the building structure but not your business contents  -  equipment, inventory, furniture, and improvements you have made to the space. You need a commercial property or BOP policy for your business personal property. Most leases also require you to carry liability coverage and name the landlord as additional insured.",
       "category": "commercial",
       "product": "commercial-property",
       "related_products": ["general-liability"],
@@ -535,7 +535,7 @@
     {
       "id": "cp-equipment-breakdown",
       "question": "Does commercial property insurance cover equipment breakdown?",
-      "answer": "Standard commercial property policies cover equipment damaged by external events like fire or theft, but not mechanical or electrical breakdown. An equipment breakdown endorsement (also called boiler and machinery) covers sudden equipment failures — HVAC systems, refrigeration, electrical panels, and production equipment. For restaurants, manufacturers, and any business dependent on specialized equipment, this endorsement is essential and typically costs $200-$500 per year.",
+      "answer": "Standard commercial property policies cover equipment damaged by external events like fire or theft, but not mechanical or electrical breakdown. An equipment breakdown endorsement (also called boiler and machinery) covers sudden equipment failures  -  HVAC systems, refrigeration, electrical panels, and production equipment. For restaurants, manufacturers, and any business dependent on specialized equipment, this endorsement is essential and typically costs $200-$500 per year.",
       "category": "commercial",
       "product": "commercial-property",
       "related_products": [],
@@ -589,7 +589,7 @@
     {
       "id": "wc-indiana-requirements",
       "question": "Is workers compensation required in Indiana?",
-      "answer": "Yes. Indiana requires workers compensation for all employers with one or more employees, with very limited exceptions for agricultural workers and domestic service. Independent contractors are exempt, but Indiana closely scrutinizes contractor classifications — misclassifying employees as contractors can result in fines and back-payment of premiums. The penalties for operating without coverage are severe.",
+      "answer": "Yes. Indiana requires workers compensation for all employers with one or more employees, with very limited exceptions for agricultural workers and domestic service. Independent contractors are exempt, but Indiana closely scrutinizes contractor classifications  -  misclassifying employees as contractors can result in fines and back-payment of premiums. The penalties for operating without coverage are severe.",
       "category": "commercial",
       "product": "workers-compensation",
       "related_products": [],
@@ -600,7 +600,7 @@
     {
       "id": "wc-experience-modifier",
       "question": "What is a workers comp experience modifier (mod rate)?",
-      "answer": "Your experience modification rate (EMR or mod) compares your business's claims history to similar businesses in your industry. A mod of 1.0 is average. Below 1.0 means fewer claims than average and lower premiums. Above 1.0 means more claims and higher premiums. A strong safety program that reduces workplace injuries can lower your mod significantly — a 0.80 mod saves 20% on your workers comp premium.",
+      "answer": "Your experience modification rate (EMR or mod) compares your business's claims history to similar businesses in your industry. A mod of 1.0 is average. Below 1.0 means fewer claims than average and lower premiums. Above 1.0 means more claims and higher premiums. A strong safety program that reduces workplace injuries can lower your mod significantly  -  a 0.80 mod saves 20% on your workers comp premium.",
       "category": "commercial",
       "product": "workers-compensation",
       "related_products": [],
@@ -611,7 +611,7 @@
     {
       "id": "wc-cost-how-calculated",
       "question": "How is workers compensation premium calculated?",
-      "answer": "Workers comp premiums are calculated by multiplying your payroll (per $100) by your industry classification rate, then by your experience modifier. For example, an office worker classification might be $0.30 per $100 of payroll, while a roofing contractor might be $15+ per $100. Accurate employee classification is critical — misclassification can result in audit surprises or overpayment.",
+      "answer": "Workers comp premiums are calculated by multiplying your payroll (per $100) by your industry classification rate, then by your experience modifier. For example, an office worker classification might be $0.30 per $100 of payroll, while a roofing contractor might be $15+ per $100. Accurate employee classification is critical  -  misclassification can result in audit surprises or overpayment.",
       "category": "commercial",
       "product": "workers-compensation",
       "related_products": [],
@@ -633,7 +633,7 @@
     {
       "id": "cyber-small-business",
       "question": "Does a small business need cyber insurance?",
-      "answer": "If your business stores customer data — names, emails, payment information, health records — a data breach can cost tens of thousands of dollars in notification costs, legal fees, and regulatory fines. Cyber insurance covers these costs. Policies for small businesses typically start around $500 per year. It is not required by Kentucky law but is effectively required if you handle sensitive data or are subject to contractual obligations.",
+      "answer": "If your business stores customer data  -  names, emails, payment information, health records  -  a data breach can cost tens of thousands of dollars in notification costs, legal fees, and regulatory fines. Cyber insurance covers these costs. Policies for small businesses typically start around $500 per year. It is not required by Kentucky law but is effectively required if you handle sensitive data or are subject to contractual obligations.",
       "category": "commercial",
       "product": "cyber",
       "tags": ["small-business", "data-breach", "cost"],
@@ -643,7 +643,7 @@
     {
       "id": "cyber-ransomware",
       "question": "Does cyber insurance cover ransomware attacks?",
-      "answer": "Yes, most cyber insurance policies cover ransomware attacks, including the cost of forensic investigation, data recovery, business income lost during the attack, and in some cases, the ransom payment itself. Coverage for ransom payments varies by carrier and policy — some require prior approval before payment. Having a cyber policy also gives you access to a breach response team that can help contain the attack quickly.",
+      "answer": "Yes, most cyber insurance policies cover ransomware attacks, including the cost of forensic investigation, data recovery, business income lost during the attack, and in some cases, the ransom payment itself. Coverage for ransom payments varies by carrier and policy  -  some require prior approval before payment. Having a cyber policy also gives you access to a breach response team that can help contain the attack quickly.",
       "category": "commercial",
       "product": "cyber",
       "related_products": [],
@@ -665,7 +665,7 @@
     {
       "id": "cyber-requirements",
       "question": "Are there industries that require cyber insurance?",
-      "answer": "Healthcare businesses subject to HIPAA, financial services firms, and businesses handling credit card data under PCI-DSS standards face the highest regulatory risk from data breaches. While no Kentucky law requires cyber insurance for all businesses, contractual requirements are increasingly common — many clients and vendors now require cyber coverage as a condition of doing business. Government contracts often mandate it as well.",
+      "answer": "Healthcare businesses subject to HIPAA, financial services firms, and businesses handling credit card data under PCI-DSS standards face the highest regulatory risk from data breaches. While no Kentucky law requires cyber insurance for all businesses, contractual requirements are increasingly common  -  many clients and vendors now require cyber coverage as a condition of doing business. Government contracts often mandate it as well.",
       "category": "commercial",
       "product": "cyber",
       "related_products": [],
@@ -676,7 +676,7 @@
     {
       "id": "bonds-contractor",
       "question": "What surety bond do I need as a contractor in Kentucky?",
-      "answer": "Kentucky requires contractors to obtain a surety bond to get licensed. The bond amount varies by license type — general contractors typically need a $5,000-$25,000 bond, while specialty trades may require different amounts. The bond guarantees you will follow state regulations and complete contracted work. You pay a premium of 1-5% of the bond amount annually, based on your credit and financial strength.",
+      "answer": "Kentucky requires contractors to obtain a surety bond to get licensed. The bond amount varies by license type  -  general contractors typically need a $5,000-$25,000 bond, while specialty trades may require different amounts. The bond guarantees you will follow state regulations and complete contracted work. You pay a premium of 1-5% of the bond amount annually, based on your credit and financial strength.",
       "category": "commercial",
       "product": "bonds",
       "related_products": ["general-liability"],
@@ -687,7 +687,7 @@
     {
       "id": "bonds-how-different",
       "question": "How is a surety bond different from insurance?",
-      "answer": "Insurance pays claims and absorbs the loss. A surety bond pays the claim but then comes back to you for reimbursement — it is a guarantee, not a transfer of risk. If a bond claim is paid, you owe the bonding company the full amount. Bonds protect the public or project owner, not you. This is why bond underwriting focuses heavily on your credit, finances, and ability to repay.",
+      "answer": "Insurance pays claims and absorbs the loss. A surety bond pays the claim but then comes back to you for reimbursement  -  it is a guarantee, not a transfer of risk. If a bond claim is paid, you owe the bonding company the full amount. Bonds protect the public or project owner, not you. This is why bond underwriting focuses heavily on your credit, finances, and ability to repay.",
       "category": "commercial",
       "product": "bonds",
       "related_products": [],
@@ -708,7 +708,7 @@
     },
     {
       "id": "br-who-buys",
-      "question": "Who should purchase builders risk insurance — the contractor or property owner?",
+      "question": "Who should purchase builders risk insurance  -  the contractor or property owner?",
       "answer": "Either party can purchase builders risk, and the construction contract should specify who is responsible. Property owners often purchase it to ensure continuous coverage that transitions into their permanent property policy. General contractors may carry an annual builders risk policy covering multiple projects. We recommend the contract clearly define who provides it to avoid gaps or double coverage.",
       "category": "commercial",
       "product": "builders-risk",
@@ -720,7 +720,7 @@
     {
       "id": "br-renovation",
       "question": "Do I need builders risk insurance for a home renovation?",
-      "answer": "Yes, if the renovation is significant — typically $50,000 or more in project value, or if it involves structural changes. Your existing homeowners policy may provide limited renovation coverage, but it usually has gaps for materials stored on-site, theft of building supplies, and damage during construction. A builders risk policy fills these gaps for the duration of the project, usually costing 1-4% of the total project value.",
+      "answer": "Yes, if the renovation is significant  -  typically $50,000 or more in project value, or if it involves structural changes. Your existing homeowners policy may provide limited renovation coverage, but it usually has gaps for materials stored on-site, theft of building supplies, and damage during construction. A builders risk policy fills these gaps for the duration of the project, usually costing 1-4% of the total project value.",
       "category": "commercial",
       "product": "builders-risk",
       "related_products": ["home"],
@@ -731,7 +731,7 @@
     {
       "id": "br-what-covered",
       "question": "What does builders risk insurance cover during construction?",
-      "answer": "Builders risk covers the structure under construction, building materials on-site and in transit, temporary structures like scaffolding, and installed fixtures and equipment — against perils like fire, wind, theft, and vandalism. It does not cover faulty workmanship, employee injuries, or damage to existing structures. Coverage begins at project start and ends at completion, occupancy, or policy expiration, whichever comes first.",
+      "answer": "Builders risk covers the structure under construction, building materials on-site and in transit, temporary structures like scaffolding, and installed fixtures and equipment  -  against perils like fire, wind, theft, and vandalism. It does not cover faulty workmanship, employee injuries, or damage to existing structures. Coverage begins at project start and ends at completion, occupancy, or policy expiration, whichever comes first.",
       "category": "commercial",
       "product": "builders-risk",
       "related_products": ["commercial-property", "general-liability"],
@@ -753,7 +753,7 @@
     {
       "id": "se-alcohol",
       "question": "Does special event insurance cover alcohol-related incidents?",
-      "answer": "Standard event liability policies cover injuries from alcohol-related incidents, but only if alcohol is served by licensed bartenders — not self-serve. If you are serving alcohol, the policy requires host liquor liability coverage, which is included in most event policies when you disclose alcohol service on the application. If you are selling alcohol, you need a separate liquor liability policy, which is more expensive.",
+      "answer": "Standard event liability policies cover injuries from alcohol-related incidents, but only if alcohol is served by licensed bartenders  -  not self-serve. If you are serving alcohol, the policy requires host liquor liability coverage, which is included in most event policies when you disclose alcohol service on the application. If you are selling alcohol, you need a separate liquor liability policy, which is more expensive.",
       "category": "commercial",
       "product": "special-event",
       "related_products": [],
@@ -797,7 +797,7 @@
     {
       "id": "medicare-how-works",
       "question": "How does Medicare work in Kentucky?",
-      "answer": "Medicare is federal health insurance for people 65 and older or with qualifying disabilities. Original Medicare has two parts: Part A covers hospital stays, Part B covers doctor visits and outpatient care. Most people also need additional coverage for gaps, which can come from a Medicare Supplement (Medigap) plan or a Medicare Advantage (Part C) plan. Part D covers prescription drugs. Enrollment timing matters — missing your initial enrollment period can mean permanent premium penalties.",
+      "answer": "Medicare is federal health insurance for people 65 and older or with qualifying disabilities. Original Medicare has two parts: Part A covers hospital stays, Part B covers doctor visits and outpatient care. Most people also need additional coverage for gaps, which can come from a Medicare Supplement (Medigap) plan or a Medicare Advantage (Part C) plan. Part D covers prescription drugs. Enrollment timing matters  -  missing your initial enrollment period can mean permanent premium penalties.",
       "category": "life_health",
       "product": "medicare",
       "tags": ["medicare", "enrollment", "parts", "supplement"],
@@ -807,7 +807,7 @@
     {
       "id": "medicare-supplement-vs-advantage",
       "question": "What is the difference between Medicare Supplement and Medicare Advantage?",
-      "answer": "Medicare Supplement (Medigap) plans fill the gaps in Original Medicare — you keep Parts A and B and the supplement covers copays, coinsurance, and deductibles. Medicare Advantage (Part C) replaces Original Medicare with a private plan that often includes drug coverage, dental, and vision. Supplement plans offer more provider freedom but cost more monthly. Advantage plans have lower premiums but use provider networks.",
+      "answer": "Medicare Supplement (Medigap) plans fill the gaps in Original Medicare  -  you keep Parts A and B and the supplement covers copays, coinsurance, and deductibles. Medicare Advantage (Part C) replaces Original Medicare with a private plan that often includes drug coverage, dental, and vision. Supplement plans offer more provider freedom but cost more monthly. Advantage plans have lower premiums but use provider networks.",
       "category": "life_health",
       "product": "medicare",
       "related_products": ["supplemental-health"],
@@ -862,7 +862,7 @@
     {
       "id": "medicaid-vs-medicare",
       "question": "What is the difference between Medicare and Medicaid?",
-      "answer": "Medicare is federal health insurance based on age (65+) or disability, regardless of income. Medicaid is a state-federal program based on income — it covers low-income individuals and families. Some people qualify for both (dual eligible) and receive coverage from both programs. Medicare is administered federally; Kentucky's Medicaid program operates through managed care organizations under the kynect system.",
+      "answer": "Medicare is federal health insurance based on age (65+) or disability, regardless of income. Medicaid is a state-federal program based on income  -  it covers low-income individuals and families. Some people qualify for both (dual eligible) and receive coverage from both programs. Medicare is administered federally; Kentucky's Medicaid program operates through managed care organizations under the kynect system.",
       "category": "life_health",
       "product": "medicaid",
       "related_products": ["medicare"],
@@ -939,7 +939,7 @@
     {
       "id": "individual-health-cost",
       "question": "How much does individual health insurance cost in Kentucky?",
-      "answer": "Before subsidies, individual health plans in Kentucky range from $300 to $700 per month depending on age, plan tier (Bronze, Silver, Gold, Platinum), and tobacco use. Many Kentuckians qualify for premium tax credits that significantly reduce the monthly cost — some pay as little as $0-$50 per month. Income-based cost-sharing reductions on Silver plans can also lower deductibles and copays substantially.",
+      "answer": "Before subsidies, individual health plans in Kentucky range from $300 to $700 per month depending on age, plan tier (Bronze, Silver, Gold, Platinum), and tobacco use. Many Kentuckians qualify for premium tax credits that significantly reduce the monthly cost  -  some pay as little as $0-$50 per month. Income-based cost-sharing reductions on Silver plans can also lower deductibles and copays substantially.",
       "category": "life_health",
       "product": "individual-health",
       "related_products": ["supplemental-health"],
@@ -961,7 +961,7 @@
     {
       "id": "family-health-kchip",
       "question": "What is KCHIP and does my child qualify?",
-      "answer": "Kentucky Children's Health Insurance Program (KCHIP) provides low-cost or free health coverage for children up to age 19 in families that earn too much for Medicaid but cannot afford private insurance. Income limits vary by family size — generally up to 218% of the federal poverty level. KCHIP covers doctor visits, prescriptions, dental, vision, hospital care, and mental health services with minimal copays.",
+      "answer": "Kentucky Children's Health Insurance Program (KCHIP) provides low-cost or free health coverage for children up to age 19 in families that earn too much for Medicaid but cannot afford private insurance. Income limits vary by family size  -  generally up to 218% of the federal poverty level. KCHIP covers doctor visits, prescriptions, dental, vision, hospital care, and mental health services with minimal copays.",
       "category": "life_health",
       "product": "family-health",
       "related_products": ["medicaid", "individual-health"],
@@ -1071,7 +1071,7 @@
     {
       "id": "annuities-types",
       "question": "What are the different types of annuities?",
-      "answer": "Fixed annuities guarantee a set interest rate for a defined period — safe and predictable. Fixed indexed annuities earn interest linked to a market index (like the S&P 500) with a floor protecting against losses. Variable annuities invest in sub-accounts similar to mutual funds with higher growth potential but more risk. Each type serves different retirement goals based on your risk tolerance and income needs.",
+      "answer": "Fixed annuities guarantee a set interest rate for a defined period  -  safe and predictable. Fixed indexed annuities earn interest linked to a market index (like the S&P 500) with a floor protecting against losses. Variable annuities invest in sub-accounts similar to mutual funds with higher growth potential but more risk. Each type serves different retirement goals based on your risk tolerance and income needs.",
       "category": "life_health",
       "product": "annuities",
       "related_products": ["whole-life"],
@@ -1082,7 +1082,7 @@
     {
       "id": "annuities-retirement-income",
       "question": "How do annuities provide retirement income?",
-      "answer": "Annuities convert a lump sum into guaranteed periodic payments — monthly, quarterly, or annually. You can choose payments for a set period (period certain) or for life (lifetime income). Lifetime income annuities eliminate the risk of outliving your savings. Payments can begin immediately (immediate annuity) or at a future date (deferred annuity). Kentucky does not tax Social Security benefits, making annuity income planning particularly relevant for retirees here.",
+      "answer": "Annuities convert a lump sum into guaranteed periodic payments  -  monthly, quarterly, or annually. You can choose payments for a set period (period certain) or for life (lifetime income). Lifetime income annuities eliminate the risk of outliving your savings. Payments can begin immediately (immediate annuity) or at a future date (deferred annuity). Kentucky does not tax Social Security benefits, making annuity income planning particularly relevant for retirees here.",
       "category": "life_health",
       "product": "annuities",
       "related_products": [],
@@ -1104,7 +1104,7 @@
     {
       "id": "disability-short-vs-long",
       "question": "What is the difference between short-term and long-term disability?",
-      "answer": "Short-term disability covers you for 3 to 6 months after a brief waiting period (usually 7-14 days). Long-term disability begins after 90-180 days and can pay benefits for years or until age 65. Most people need both: short-term covers the gap until long-term kicks in. If budget is limited, prioritize long-term disability — a multi-year inability to work is the bigger financial threat. Long-term disability costs 1-3% of your annual income.",
+      "answer": "Short-term disability covers you for 3 to 6 months after a brief waiting period (usually 7-14 days). Long-term disability begins after 90-180 days and can pay benefits for years or until age 65. Most people need both: short-term covers the gap until long-term kicks in. If budget is limited, prioritize long-term disability  -  a multi-year inability to work is the bigger financial threat. Long-term disability costs 1-3% of your annual income.",
       "category": "life_health",
       "product": "disability",
       "related_products": ["supplemental-health"],
@@ -1115,7 +1115,7 @@
     {
       "id": "final-expense-vs-whole-life",
       "question": "What is the difference between final expense and traditional whole life insurance?",
-      "answer": "Final expense is a type of whole life insurance with smaller face amounts ($5,000-$25,000) and simplified underwriting — usually just health questions, no medical exam. Traditional whole life offers higher coverage amounts ($50,000+) but requires full medical underwriting. Final expense is designed specifically to cover funeral costs ($7,000-$12,000 on average), outstanding medical bills, and small debts, making it accessible for seniors or those with health issues.",
+      "answer": "Final expense is a type of whole life insurance with smaller face amounts ($5,000-$25,000) and simplified underwriting  -  usually just health questions, no medical exam. Traditional whole life offers higher coverage amounts ($50,000+) but requires full medical underwriting. Final expense is designed specifically to cover funeral costs ($7,000-$12,000 on average), outstanding medical bills, and small debts, making it accessible for seniors or those with health issues.",
       "category": "life_health",
       "product": "final-expense",
       "related_products": ["whole-life"],
@@ -1177,7 +1177,7 @@
     {
       "id": "claims-how-to-file",
       "question": "How do I file an insurance claim?",
-      "answer": "Contact us by phone or email and we will guide you through the process — we can often file the claim on your behalf directly with the carrier. For emergencies (fire, major accident, break-in), call 911 first, then contact us as soon as possible. Document the damage with photos and do not throw away damaged items until the adjuster has seen them. We advocate for you throughout the claims process to ensure fair settlement.",
+      "answer": "Contact us by phone or email and we will guide you through the process  -  we can often file the claim on your behalf directly with the carrier. For emergencies (fire, major accident, break-in), call 911 first, then contact us as soon as possible. Document the damage with photos and do not throw away damaged items until the adjuster has seen them. We advocate for you throughout the claims process to ensure fair settlement.",
       "category": "general",
       "product": null,
       "tags": ["claims", "filing", "process", "documentation"],
@@ -1207,7 +1207,7 @@
     {
       "id": "bundling-discounts",
       "question": "Can I save money by bundling my insurance policies?",
-      "answer": "Yes. Most carriers offer multi-policy discounts of 10-25% when you bundle home and auto, or combine multiple lines of coverage. Bundling also simplifies management — one carrier, one bill, and one agent to call. We compare bundled pricing against standalone policies from different carriers to make sure bundling is actually saving you money, because sometimes the best rates come from splitting policies across carriers.",
+      "answer": "Yes. Most carriers offer multi-policy discounts of 10-25% when you bundle home and auto, or combine multiple lines of coverage. Bundling also simplifies management  -  one carrier, one bill, and one agent to call. We compare bundled pricing against standalone policies from different carriers to make sure bundling is actually saving you money, because sometimes the best rates come from splitting policies across carriers.",
       "category": "general",
       "product": null,
       "tags": ["bundling", "multi-policy", "discount", "savings"],

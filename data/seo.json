@@ -26,7 +26,7 @@
     },
     "/about/": {
       "title": "About The Way Agency | Independent Insurance in Kentucky",
-      "description": "Learn about The Way Agency — an independent insurance agency serving Kentucky, Indiana, and Tennessee since 1998. We shop 17+ carriers to find you the right coverage.",
+      "description": "Learn about The Way Agency  -  an independent insurance agency serving Kentucky, Indiana, and Tennessee since 1998. We shop 17+ carriers to find you the right coverage.",
       "schema_types": ["InsuranceAgency", "LocalBusiness"],
       "last_reviewed": "2026-03"
     },

@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════
-   THE WAY AGENCY — Lead Generation Engine
-   Version 2.0 — Full conversion optimization
+   THE WAY AGENCY  -  Lead Generation Engine
+   Version 2.0  -  Full conversion optimization
    ═══════════════════════════════════════════════ */
 
 (function() {
@@ -255,7 +255,7 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
         <h3 style="font-family:var(--font-heading);font-size:1.5rem;font-weight:600;color:var(--navy);margin-bottom:8px;">Before you go</h3>
-        <p style="color:var(--slate);font-size:0.95rem;font-weight:300;margin-bottom:20px;">Get a free coverage review — we'll look at what you have and tell you if there's a better option. No commitment, no pressure.</p>
+        <p style="color:var(--slate);font-size:0.95rem;font-weight:300;margin-bottom:20px;">Get a free coverage review  -  we'll look at what you have and tell you if there's a better option. No commitment, no pressure.</p>
         <form id="exitForm">
           <div style="display:flex;gap:8px;margin-bottom:10px;">
             <input type="text" name="name" placeholder="Your name" required style="flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-body);font-size:14px;font-weight:300;">
@@ -485,7 +485,7 @@
         </div>
         <p style="font-size:13px;color:var(--slate);font-weight:300;font-style:italic;line-height:1.6;margin:0;">
           "She saved me a ton of money and doubled my coverage. Buying online was not as smart as I thought."
-          <span style="font-weight:500;color:var(--navy);display:block;margin-top:4px;font-style:normal;">— Lisa M., Owensboro</span>
+          <span style="font-weight:500;color:var(--navy);display:block;margin-top:4px;font-style:normal;"> -  Lisa M., Owensboro</span>
         </p>`;
     });
   }
