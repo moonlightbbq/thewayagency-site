@@ -371,7 +371,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
       <p class="hero__eyebrow">${lineName}</p>
       <h1 class="hero__title">${product.h1 || product.name}</h1>
       <div class="hero__actions">
-        <a href="/intake/" class="btn btn--primary btn--lg">Get a ${product.name} Quote</a>
+        <a href="/intake/?product=${product.id}" class="btn btn--primary btn--lg">Get a ${product.name} Quote</a>
       </div>
     </div>
     <div class="hero__accent"></div>
@@ -431,7 +431,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
         <h2 class="cta-banner__title">Ready to talk about ${product.name.toLowerCase()}?</h2>
         <p class="cta-banner__text">We'll listen, shop 17+ carriers, and come back with clear options. No pressure. It's all about you.</p>
         <div class="cta-banner__actions">
-          <a href="/intake/" class="btn btn--primary btn--lg">Get a Quote</a>
+          <a href="/intake/?product=${product.id}" class="btn btn--primary btn--lg">Get a Quote</a>
           <a href="/contact.html" class="btn btn--outline-white btn--lg">Request a Review</a>
         </div>
         <div class="contact-methods">
@@ -554,7 +554,6 @@ for (const file of rootPages) {
 // Copy hand-crafted subdirectory pages
 const subPages = [
   ['personal', 'index.html'],
-  ['personal', 'home.html'],
   ['commercial', 'index.html'],
   ['life-health', 'index.html'],
   ['about', 'index.html'],
@@ -586,9 +585,6 @@ for (const [lineKey, lineInfo] of Object.entries(lineMap)) {
   ensureDir(path.join(BUILD, lineInfo.slug));
 
   for (const product of lineProducts) {
-    // Skip home  -  we have a hand-crafted version
-    if (product.id === 'home' && lineKey === 'personal') continue;
-
     const html = generateProductPage(product, lineInfo.name, lineInfo.slug, lineKey);
     const filename = `${product.slug}.html`;
     fs.writeFileSync(path.join(BUILD, lineInfo.slug, filename), html);

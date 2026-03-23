@@ -722,6 +722,24 @@ let pollTimer = null;          // Polls for agent takeover
 let turnstileToken = null;     // Cloudflare Turnstile token
 let turnstileWidgetId = null;  // Widget ID for reset
 
+// ── Pre-select product from URL parameter (e.g. /intake/?product=homeowners) ─
+(function preSelectProduct() {
+  const params = new URLSearchParams(window.location.search);
+  const pid = params.get('product');
+  if (!pid) return;
+  // Find the product option and select it (may be in main grid or "other" grid)
+  const el = document.querySelector(`.product-opt[data-pid="${pid}"]`);
+  if (el) {
+    el.classList.add('selected');
+    selectedProducts.push(pid);
+    // If it's in the "other products" panel, expand it
+    if (el.closest('.other-products')) {
+      const panel = document.getElementById('other-products');
+      if (panel) panel.classList.add('show');
+    }
+  }
+})();
+
 // ── Cloudflare Turnstile (bot protection) ───────────────────────────────────
 (async function initTurnstile() {
   try {
