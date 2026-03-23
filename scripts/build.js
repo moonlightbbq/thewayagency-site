@@ -70,7 +70,7 @@ function generateCarrierMarquee(lineKey) {
   if (!lineCarriers.length) return '';
   // Duplicate for seamless scroll
   const carrierItems = lineCarriers.map(c =>
-    `<span class="carriers__logo">${c.name}${c.am_best_rating ? ' <span style="font-size:11px;opacity:0.7;">(${c.am_best_rating})</span>' : ''}</span>`
+    `<span class="carriers__logo">${c.name}</span>`
   ).join('\n          ');
   return `
     <section class="carriers">
