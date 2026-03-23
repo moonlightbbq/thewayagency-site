@@ -1,0 +1,59 @@
+{
+  "offices": [
+    {
+      "name": "Owensboro Office",
+      "street": "4501 Stonegate Dr",
+      "city": "Owensboro",
+      "state": "KY",
+      "zip": "42303",
+      "phone": "(502) 413-5335",
+      "email": "hello@thewayagency.com",
+      "latitude": 37.7510,
+      "longitude": -87.1133,
+      "hours": {
+        "monday": "8:30 AM – 5:00 PM",
+        "tuesday": "8:30 AM – 5:00 PM",
+        "wednesday": "8:30 AM – 5:00 PM",
+        "thursday": "8:30 AM – 5:00 PM",
+        "friday": "8:30 AM – 5:00 PM",
+        "saturday": "Closed",
+        "sunday": "Closed"
+      }
+    }
+  ],
+  "service_areas": [
+    {
+      "state": "Kentucky",
+      "abbr": "KY",
+      "cities": ["Owensboro", "Henderson", "Louisville", "Lexington", "Bowling Green", "Elizabethtown", "Mt. Washington", "Frankfort"]
+    },
+    {
+      "state": "Indiana",
+      "abbr": "IN",
+      "cities": ["Evansville", "Indianapolis", "Fort Wayne", "Carmel", "Fishers"]
+    },
+    {
+      "state": "Tennessee",
+      "abbr": "TN",
+      "cities": ["Nashville", "Memphis", "Knoxville", "Chattanooga", "Clarksville"]
+    }
+  ],
+  "agency": {
+    "legal_name": "Way Insurance LLC",
+    "dba": "The Way Agency",
+    "founded": "1998",
+    "type": "Independent Insurance Agency",
+    "affiliations": [],
+    "google_business_url": "",
+    "google_rating": "",
+    "google_review_count": "",
+    "bbb_url": "https://www.bbb.org/us/ky/mt-washington/profile/insurance-agency/way-insurance-llc-0402-159158212",
+    "social": {
+      "facebook": "https://www.facebook.com/TheWayAgency/",
+      "instagram": "https://www.instagram.com/thewayagencyins/",
+      "linkedin": "https://www.linkedin.com/company/the-way-agency-insurance",
+      "twitter": "https://twitter.com/TheWayAgency",
+      "youtube": "https://www.youtube.com/channel/UCrgPhp55Ss_DmUNfUT394eQ"
+    }
+  }
+}

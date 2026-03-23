@@ -1,0 +1,166 @@
+{
+  "entries": [
+    {
+      "id": "home-flood-exclusion",
+      "question": "Is flood insurance included in my homeowners policy?",
+      "answer": "No. Standard homeowners insurance in Kentucky does not cover flood damage. You need a separate flood policy, available through the National Flood Insurance Program (NFIP) or private carriers. If your home is in a FEMA-designated flood zone, your mortgage lender will likely require it.",
+      "category": "personal",
+      "product": "home",
+      "related_products": ["flood"],
+      "tags": ["exclusions", "flood", "fema", "mortgage"],
+      "source_page": "/personal/home.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "home-acv-vs-rc",
+      "question": "What is the difference between actual cash value and replacement cost?",
+      "answer": "Actual cash value pays what your damaged item is worth today, minus depreciation. Replacement cost pays what it costs to buy the same item new. We almost always recommend replacement cost coverage because the premium difference is small but the payout difference after a loss can be significant.",
+      "category": "personal",
+      "product": "home",
+      "tags": ["coverage-types", "valuation", "claims"],
+      "source_page": "/personal/home.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "home-cost-owensboro",
+      "question": "What does home insurance cost in Owensboro, KY?",
+      "answer": "Most homeowners in the Owensboro area pay between $1,200 and $2,400 per year. The main factors are your home's replacement cost, age and roof condition, deductible choice, claims history, and proximity to a fire station. We shop 17+ carriers to find the best combination of coverage and price.",
+      "category": "personal",
+      "product": "home",
+      "tags": ["cost", "pricing", "owensboro"],
+      "source_page": "/personal/home.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "auto-ky-minimums",
+      "question": "What are the minimum auto insurance requirements in Kentucky?",
+      "answer": "Kentucky requires minimum liability limits of 25/50/25: $25,000 per person for bodily injury, $50,000 per accident for bodily injury, and $25,000 for property damage. Kentucky also requires $10,000 in Personal Injury Protection (PIP). We typically recommend higher limits because the cost difference is often less than $15/month.",
+      "category": "personal",
+      "product": "auto",
+      "tags": ["requirements", "kentucky", "minimums", "pip"],
+      "source_page": "/personal/auto.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "umbrella-who-needs",
+      "question": "Do I need umbrella insurance?",
+      "answer": "Umbrella insurance is recommended for anyone with significant assets to protect — homeowners, landlords, and anyone whose net worth exceeds their auto and home liability limits. A $1M umbrella policy typically costs $200 to $400 per year, which is one of the best values in insurance for the amount of protection it provides.",
+      "category": "personal",
+      "product": "umbrella",
+      "tags": ["recommendation", "assets", "liability"],
+      "source_page": "/personal/umbrella.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "renters-cost",
+      "question": "How much does renters insurance cost?",
+      "answer": "Renters insurance in Kentucky typically costs $15 to $30 per month ($180 to $360 per year). It covers your personal belongings, provides liability protection, and covers additional living expenses if your rental becomes uninhabitable. Many landlords require it as a lease condition.",
+      "category": "personal",
+      "product": "renters",
+      "tags": ["cost", "pricing", "landlord"],
+      "source_page": "/personal/renters.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "earthquake-ky-needed",
+      "question": "Do I need earthquake insurance in western Kentucky?",
+      "answer": "Western Kentucky sits on the New Madrid Seismic Zone, one of the most active fault systems east of the Rockies. Standard homeowners insurance excludes earthquake damage. Separate earthquake policies or endorsements are available and cost between $100 and $800 per year in western Kentucky. It is not required by law or lenders, but is strongly recommended in this region.",
+      "category": "personal",
+      "product": "earthquake",
+      "tags": ["new-madrid", "western-kentucky", "seismic"],
+      "source_page": "/personal/earthquake.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "gl-ky-required",
+      "question": "Is general liability insurance required in Kentucky?",
+      "answer": "Kentucky does not legally require general liability insurance for all businesses. However, most commercial leases, vendor contracts, and government permits require proof of GL coverage before you can operate. If you are a contractor, you will almost always need it to bid on jobs.",
+      "category": "commercial",
+      "product": "general-liability",
+      "tags": ["requirements", "kentucky", "contractors", "lease"],
+      "source_page": "/commercial/general-liability.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "wc-ky-required",
+      "question": "Is workers compensation required in Kentucky?",
+      "answer": "Yes. Kentucky requires workers compensation insurance for most employers with one or more employees. There are limited exceptions for certain agricultural and domestic workers. Sole proprietors and partners can opt out of coverage for themselves but must cover their employees.",
+      "category": "commercial",
+      "product": "workers-compensation",
+      "tags": ["requirements", "kentucky", "employers", "law"],
+      "source_page": "/commercial/workers-compensation.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "cyber-small-business",
+      "question": "Does a small business need cyber insurance?",
+      "answer": "If your business stores customer data — names, emails, payment information, health records — a data breach can cost tens of thousands of dollars in notification costs, legal fees, and regulatory fines. Cyber insurance covers these costs. Policies for small businesses typically start around $500 per year. It is not required by Kentucky law but is effectively required if you handle sensitive data or are subject to contractual obligations.",
+      "category": "commercial",
+      "product": "cyber",
+      "tags": ["small-business", "data-breach", "cost"],
+      "source_page": "/commercial/cyber.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "independent-agent-cost",
+      "question": "Does it cost more to use an independent insurance agent?",
+      "answer": "No. Insurance rates are set by the carriers, not the agent. You pay the same premium whether you buy direct from a carrier or through an independent agent like The Way Agency. The difference is that we shop multiple carriers and help you understand your coverage at no extra cost to you.",
+      "category": "general",
+      "product": null,
+      "tags": ["independent-agent", "cost", "comparison"],
+      "source_page": "/about/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "independent-agent-what",
+      "question": "What is an independent insurance agent?",
+      "answer": "An independent agent works with multiple insurance carriers instead of just one company. This means we can compare coverage and pricing across 17+ carriers to find the best fit for your situation, rather than being limited to selling one company's products. You get more options and someone who works for you, not the insurance company.",
+      "category": "general",
+      "product": null,
+      "tags": ["independent-agent", "definition", "carriers"],
+      "source_page": "/about/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "states-served",
+      "question": "What states does The Way Agency serve?",
+      "answer": "The Way Agency is licensed in Kentucky, Indiana, and Tennessee. We serve clients across all three states with personal, commercial, and life and health insurance.",
+      "category": "general",
+      "product": null,
+      "tags": ["states", "licensing", "service-area"],
+      "source_page": "/about/locations.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "response-time",
+      "question": "How quickly will I hear back after requesting a quote?",
+      "answer": "Our goal is same-day response during business hours (Monday through Friday, 8:30 AM to 5:00 PM). Most quote requests receive a response within a few hours. We prefer to reach out by phone first, but will text or email if that is what you prefer.",
+      "category": "general",
+      "product": null,
+      "tags": ["response-time", "quote", "contact"],
+      "source_page": "/quote.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "term-vs-whole-life",
+      "question": "What is the difference between term life and whole life insurance?",
+      "answer": "Term life covers you for a specific period (10, 20, or 30 years) and pays a death benefit if you die during that term. It is the most affordable option. Whole life covers you for your entire life, builds cash value over time, and has level premiums, but costs significantly more. Term is best for temporary needs like covering a mortgage or raising children. Whole life is used for lifelong coverage, estate planning, and building a cash value asset.",
+      "category": "life_health",
+      "product": "term-life",
+      "related_products": ["whole-life"],
+      "tags": ["comparison", "term", "whole-life"],
+      "source_page": "/life-health/term-life.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "medicare-how-works",
+      "question": "How does Medicare work in Kentucky?",
+      "answer": "Medicare is federal health insurance for people 65 and older or with qualifying disabilities. Original Medicare has two parts: Part A covers hospital stays, Part B covers doctor visits and outpatient care. Most people also need additional coverage for gaps, which can come from a Medicare Supplement (Medigap) plan or a Medicare Advantage (Part C) plan. Part D covers prescription drugs. Enrollment timing matters — missing your initial enrollment period can mean permanent premium penalties.",
+      "category": "life_health",
+      "product": "medicare",
+      "tags": ["medicare", "enrollment", "parts", "supplement"],
+      "source_page": "/life-health/medicare.html",
+      "last_reviewed": "2026-03"
+    }
+  ]
+}

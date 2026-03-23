@@ -1,0 +1,68 @@
+# The Way Agency — URL Redirect Map
+# Old Webflow URLs → New URLs (301 permanent redirects)
+# Deployed alongside the site on Cloudflare Pages
+
+# Homepage
+/home /  301
+
+# Personal Lines
+/personal-insurance /personal/ 301
+/personal/home-insurance /personal/home.html 301
+/personal/auto-insurance /personal/auto.html 301
+/personal/renters-insurance /personal/renters.html 301
+/personal/umbrella-insurance /personal/umbrella.html 301
+/personal/flood-insurance /personal/flood.html 301
+/personal/motorcycle-insurance /personal/motorcycle.html 301
+/personal/boat-insurance /personal/boat.html 301
+/personal/classic-car-insurance /personal/classic-car.html 301
+/personal/earthquake-insurance /personal/earthquake.html 301
+/personal/pet-insurance /personal/pet.html 301
+
+# Commercial Lines
+/commercial-insurance /commercial/ 301
+/commercial/general-liability /commercial/general-liability.html 301
+/commercial/commercial-property /commercial/commercial-property.html 301
+/commercial/commercial-auto /commercial/commercial-auto.html 301
+/commercial/workers-compensation /commercial/workers-compensation.html 301
+/commercial/cyber /commercial/cyber.html 301
+/commercial/bonds /commercial/bonds.html 301
+/commercial/builders-risk /commercial/builders-risk.html 301
+/commercial/special-event /commercial/special-event.html 301
+/commercial/professional-liability /commercial/professional-liability.html 301
+
+# Life & Health
+/life-health-insurance /life-health/ 301
+/life-health/medicare /life-health/medicare.html 301
+/life-health/medicaid /life-health/medicaid.html 301
+/life-health/supplemental-health-insurance /life-health/supplemental-health.html 301
+/life-health/group-health /life-health/group-health.html 301
+/life-health/individual-health /life-health/individual-health.html 301
+/life-health/family-health /life-health/family-health.html 301
+/life-health/term-life /life-health/term-life.html 301
+/life-health/whole-life /life-health/whole-life.html 301
+/life-health/annuities /life-health/annuities.html 301
+/life-health/disability /life-health/disability.html 301
+/life-health/final-expense-insurance /life-health/final-expense.html 301
+
+# About
+/about-us/about-us /about/ 301
+/about-us/why-clients-choose-us /about/ 301
+/about-us/our-insurance-team /about/team.html 301
+/about-us/insurance-locations /about/locations.html 301
+/about-us/mission-and-values /about/ 301
+/about-us/community-impact /about/community.html 301
+/about-us/careers-at-the-way-agency /about/careers.html 301
+
+# Utility
+/contact-us /contact.html 301
+/log-in /login.html 301
+/privacy-policy /privacy.html 301
+/t-c /terms.html 301
+
+# Blog (individual posts — add as discovered)
+/post/cyber-safety-for-small-businesses-prevention-checklist /blog/cyber-safety.html 301
+/post/kentucky-tornado-season-prep-safety-insurance-checklist /blog/tornado-season.html 301
+/post/kentucky-winter-storm-preparedness-safety-frozen-pipes /blog/winter-storm.html 301
+/post/landlord-insurance-made-simple /blog/landlord-insurance.html 301
+/post/fur-real-dont-let-vet-bills-bite-you /blog/pet-insurance-guide.html 301
+/post/is-earthquake-insurance-necessary /blog/earthquake-insurance.html 301
