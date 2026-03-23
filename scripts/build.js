@@ -184,7 +184,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
       <p>
         In our experience: <strong>${product.typical_cost_range}</strong>.
         ${product.cost_factors ? 'Key factors that affect your premium include: ' + product.cost_factors.join(', ') + '.' : ''}
-        As an independent agency, we shop across 17+ carriers to find the best combination of coverage and price.
+        As an independent agency, we represent dozens of carriers and match you with the right one for your situation.
       </p>` : '');
 
   const faqSection = displayFaqs.length > 0 ? `
@@ -391,7 +391,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
       <!-- Inline Quote Form -->
       <div class="inline-quote-section">
         <h3>Let's find the right ${product.name.toLowerCase()} for you</h3>
-        <p>Tell us a little about yourself and we'll come back with options from 17+ carriers. No pressure, no jargon, just clear answers.</p>
+        <p>Tell us a little about yourself and we'll come back with the best options for your situation. No pressure, no jargon, just clear answers.</p>
         <form class="inline-quote-form" novalidate>
           <input type="hidden" name="product" value="${product.id}">
           <input type="hidden" name="lineOfBusiness" value="${lineSlug}">
@@ -429,7 +429,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
     <section class="cta-banner">
       <div class="container">
         <h2 class="cta-banner__title">Ready to talk about ${product.name.toLowerCase()}?</h2>
-        <p class="cta-banner__text">We'll listen, shop 17+ carriers, and come back with clear options. No pressure. It's all about you.</p>
+        <p class="cta-banner__text">We'll listen, find the right carriers for your situation, and come back with clear options. No pressure.</p>
         <div class="cta-banner__actions">
           <a href="/intake/?product=${product.id}" class="btn btn--primary btn--lg">Get a Quote</a>
           <a href="/contact.html" class="btn btn--outline-white btn--lg">Request a Review</a>
@@ -605,10 +605,10 @@ for (const city of landingData.cities) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Insurance in ${city.city}, ${city.state} | The Way Agency</title>
-  <meta name="description" content="Independent insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from 17+ carriers. Get a free quote today.">
+  <meta name="description" content="Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from top-rated carriers. Get a free quote today.">
   <link rel="canonical" href="https://www.thewayagency.com/insurance/${city.slug}.html">
   <meta property="og:title" content="Insurance in ${city.city}, ${city.state} | The Way Agency">
-  <meta property="og:description" content="Independent insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from 17+ carriers.">
+  <meta property="og:description" content="Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from top-rated carriers.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.thewayagency.com/insurance/${city.slug}.html">
   <meta property="og:site_name" content="The Way Agency">
@@ -640,7 +640,7 @@ for (const city of landingData.cities) {
     <div class="hero__content">
       <p class="hero__eyebrow">Serving ${city.county}</p>
       <h1 class="hero__title">Insurance in ${city.city}, ${city.state}</h1>
-      <p class="hero__subtitle">Independent agency. 17+ carriers. Personal, commercial, and life insurance for ${city.city} families and businesses.</p>
+      <p class="hero__subtitle">We represent dozens of carriers so you get the right coverage at the right price. Personal, commercial, and life insurance for ${city.city} families and businesses.</p>
       <div class="hero__actions">
         <a href="/intake/?city=${encodeURIComponent(city.city)}&state=${encodeURIComponent(city.state)}" class="btn btn--primary btn--lg">Get a Free Quote</a>
         <a href="tel:+15024135335" class="btn btn--outline-white btn--lg">Call ${office.phone}</a>
@@ -653,7 +653,7 @@ for (const city of landingData.cities) {
     <div class="trust-bar"><div class="trust-bar__inner">
       <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Since 1998</div>
       <div class="trust-bar__divider"></div>
-      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>17+ Carriers</div>
+      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Dozens of Carriers</div>
       <div class="trust-bar__divider"></div>
       <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Licensed in ${city.state}</div>
     </div></div>
@@ -662,7 +662,7 @@ for (const city of landingData.cities) {
       <div class="container container--narrow">
         <h2>Why ${city.city} families and businesses choose The Way Agency</h2>
         <p>${city.context}</p>
-        <p>As an independent agency, we are not tied to one insurance company. We shop your coverage across 17+ carriers  -  including Travelers, Progressive, Safeco, Chubb, The Hartford, and more  -  to find the best combination of coverage and price for your specific situation in ${city.county}.</p>
+        <p>As an independent agency, we are not tied to one insurance company. We represent dozens of carriers  -  including Travelers, Progressive, Safeco, Chubb, The Hartford, and more  -  and we match you with the right ones for your specific situation in ${city.county}.</p>
 
         <h2>Insurance options in ${city.city}</h2>
         <div class="grid grid--3" style="margin:var(--space-xl) 0;">
@@ -687,7 +687,7 @@ for (const city of landingData.cities) {
 
         <h2>How it works</h2>
         <p><strong>1. Tell us what you need.</strong> Request a quote online or call ${office.phone}. We just need basic info to get started.</p>
-        <p><strong>2. We shop carriers.</strong> We compare options across 17+ carriers to find the best coverage and price for your situation in ${city.city}.</p>
+        <p><strong>2. We find the right carriers.</strong> We compare options across dozens of carriers to find the best coverage and price for your situation in ${city.city}.</p>
         <p><strong>3. You choose with confidence.</strong> We present clear recommendations and help you understand exactly what you're buying. No pressure, no jargon.</p>
         <p style="color:var(--slate);font-size:var(--text-sm);">We aim to respond same-day during business hours (Mon–Fri, 8:30 AM – 5:00 PM).</p>
       </div>
@@ -733,10 +733,10 @@ for (const ind of landingData.industries) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Insurance for ${ind.name} in Kentucky | The Way Agency</title>
-  <meta name="description" content="Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. ${ind.description.split('.')[0]}. Get a free quote from 17+ carriers.">
+  <meta name="description" content="Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. ${ind.description.split('.')[0]}. Get a free quote from top-rated carriers.">
   <link rel="canonical" href="https://www.thewayagency.com/industries/${ind.slug}.html">
   <meta property="og:title" content="Insurance for ${ind.name} in Kentucky | The Way Agency">
-  <meta property="og:description" content="Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. Get a free quote from 17+ carriers.">
+  <meta property="og:description" content="Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. Get a free quote from top-rated carriers.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.thewayagency.com/industries/${ind.slug}.html">
   <meta property="og:site_name" content="The Way Agency">
@@ -777,7 +777,7 @@ for (const ind of landingData.industries) {
 
         <h2>Kentucky-specific requirements</h2>
         <p>${ind.ky_notes}</p>
-        <p>We work with 17+ carriers including specialty markets for ${ind.name.toLowerCase()}, which means we can often find coverage that generalist agencies cannot. We also handle certificates of insurance, additional insured endorsements, and audit support.</p>
+        <p>We represent dozens of carriers including specialty markets for ${ind.name.toLowerCase()}, which means we can often find coverage that generalist agencies cannot. We also handle certificates of insurance, additional insured endorsements, and audit support.</p>
 
         <div class="inline-quote-section">
           <h3>Get a quote for your ${ind.name.toLowerCase().replace(/s$/, '')} business</h3>
@@ -795,7 +795,7 @@ for (const ind of landingData.industries) {
 
         <h2>Why choose The Way Agency for ${ind.name.toLowerCase()} insurance?</h2>
         <p><strong>Industry experience.</strong> We understand the specific risks, contract requirements, and coverage gaps that ${ind.name.toLowerCase()} face. We don't sell generic policies  -  we build programs that match real-world operations.</p>
-        <p><strong>17+ carriers.</strong> As an independent agency, we access markets that captive agents and direct-to-carrier sites cannot. For specialty trades, this access is the difference between getting covered and getting declined.</p>
+        <p><strong>Carrier access.</strong> As an independent agency, we access markets that captive agents and direct-to-carrier sites cannot. For specialty trades, this access is the difference between getting covered and getting declined.</p>
         <p><strong>Certificate management.</strong> We handle COIs, additional insured requests, and evidence of coverage quickly. When you need a certificate for a job site by tomorrow morning, we make it happen.</p>
         <p><strong>Claims advocacy.</strong> When something goes wrong on a job, we help you navigate the claims process and push back on the carrier when needed. We work for you, not the insurance company.</p>
       </div>
