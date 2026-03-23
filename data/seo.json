@@ -1,0 +1,94 @@
+{
+  "pages": {
+    "/": {
+      "title": "The Way Agency | Independent Insurance in Owensboro, KY",
+      "description": "The Way Agency is an independent insurance agency serving Kentucky, Indiana, and Tennessee since 1998. We shop 17+ carriers to find the right personal, commercial, and life insurance for your situation.",
+      "schema_types": ["InsuranceAgency", "LocalBusiness", "WebSite", "FAQPage"],
+      "last_reviewed": "2026-03"
+    },
+    "/personal/": {
+      "title": "Personal Insurance in Kentucky | Home, Auto & More | The Way Agency",
+      "description": "Personal insurance from 17+ carriers: home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet insurance in KY, IN & TN.",
+      "schema_types": ["InsuranceAgency", "FAQPage"],
+      "last_reviewed": "2026-03"
+    },
+    "/commercial/": {
+      "title": "Commercial Insurance in Kentucky | Business Coverage | The Way Agency",
+      "description": "Commercial insurance for Kentucky businesses: general liability, commercial property, commercial auto, workers comp, cyber, bonds, and more from 14+ carriers.",
+      "schema_types": ["InsuranceAgency", "FAQPage"],
+      "last_reviewed": "2026-03"
+    },
+    "/life-health/": {
+      "title": "Life & Health Insurance in Kentucky | Medicare, Life & More | The Way Agency",
+      "description": "Life and health insurance in KY, IN & TN: Medicare, Medicaid, individual and group health, term and whole life, annuities, disability, and supplemental coverage.",
+      "schema_types": ["InsuranceAgency", "FAQPage"],
+      "last_reviewed": "2026-03"
+    },
+    "/about/": {
+      "title": "About The Way Agency | Independent Insurance in Kentucky",
+      "description": "Learn about The Way Agency — an independent insurance agency serving Kentucky, Indiana, and Tennessee since 1998. We shop 17+ carriers to find you the right coverage.",
+      "schema_types": ["InsuranceAgency", "LocalBusiness"],
+      "last_reviewed": "2026-03"
+    },
+    "/about/team.html": {
+      "title": "Our Insurance Team | Licensed Agents | The Way Agency",
+      "description": "Meet the licensed insurance professionals at The Way Agency. Our team holds CISR designations and is licensed in Kentucky, Indiana, and Tennessee.",
+      "schema_types": ["InsuranceAgency", "Person"],
+      "last_reviewed": "2026-03"
+    },
+    "/about/locations.html": {
+      "title": "Insurance Office Locations | KY, IN & TN | The Way Agency",
+      "description": "Find The Way Agency office locations and service areas across Kentucky, Indiana, and Tennessee. Visit us in Owensboro, KY.",
+      "schema_types": ["LocalBusiness"],
+      "last_reviewed": "2026-03"
+    },
+    "/about/careers.html": {
+      "title": "Insurance Careers | Join The Way Agency",
+      "description": "Join our team of insurance professionals serving Kentucky, Indiana, and Tennessee. View open positions at The Way Agency.",
+      "schema_types": ["InsuranceAgency"],
+      "last_reviewed": "2026-03"
+    },
+    "/about/community.html": {
+      "title": "Community Involvement | The Way Agency",
+      "description": "The Way Agency gives back to the Owensboro and Kentucky communities we serve through charitable partnerships and local involvement.",
+      "schema_types": ["InsuranceAgency"],
+      "last_reviewed": "2026-03"
+    },
+    "/quote.html": {
+      "title": "Get an Insurance Quote | The Way Agency",
+      "description": "Request a free insurance quote from The Way Agency. We shop 17+ carriers to find the right coverage at the right price in KY, IN & TN.",
+      "schema_types": ["InsuranceAgency"],
+      "last_reviewed": "2026-03"
+    },
+    "/contact.html": {
+      "title": "Contact The Way Agency | Insurance in Owensboro, KY",
+      "description": "Contact The Way Agency for insurance questions, quotes, or policy service. Call (502) 413-5335 or visit our Owensboro, KY office.",
+      "schema_types": ["InsuranceAgency", "LocalBusiness"],
+      "last_reviewed": "2026-03"
+    },
+    "/blog/": {
+      "title": "Insurance Blog | Tips & Insights | The Way Agency",
+      "description": "Insurance insights, tips, and Kentucky-specific guidance from the licensed agents at The Way Agency.",
+      "schema_types": ["Blog"],
+      "last_reviewed": "2026-03"
+    },
+    "/login.html": {
+      "title": "Client Login | The Way Agency",
+      "description": "Access your insurance account, view policy documents, and manage your coverage online through The Way Agency client portal.",
+      "schema_types": [],
+      "last_reviewed": "2026-03"
+    },
+    "/privacy.html": {
+      "title": "Privacy Policy | The Way Agency",
+      "description": "How The Way Agency collects, uses, and protects your personal information. Read our full privacy policy.",
+      "schema_types": [],
+      "last_reviewed": "2026-03"
+    },
+    "/terms.html": {
+      "title": "Terms and Conditions | The Way Agency",
+      "description": "Terms and conditions for using The Way Agency website and services.",
+      "schema_types": [],
+      "last_reviewed": "2026-03"
+    }
+  }
+}

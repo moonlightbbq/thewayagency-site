@@ -1,0 +1,46 @@
+{
+  "team": [
+    {
+      "name": "Audrey Mitchell",
+      "slug": "audrey-mitchell",
+      "title": "Licensed Agent",
+      "photo": "/src/assets/images/team/audrey-mitchell.webp",
+      "years_experience": 8,
+      "license_states": ["KY", "IN", "TN"],
+      "designations": ["CISR"],
+      "specialties": ["personal_lines", "home", "auto", "umbrella", "flood", "renters"],
+      "bio": "Audrey helps families across Kentucky find the right home and auto coverage. She is known for taking time to explain options in plain language and making sure clients understand exactly what they are buying.",
+      "fun_fact": "Audrey coaches youth soccer in Owensboro.",
+      "email": "audrey@thewayagency.com",
+      "phone": "(502) 413-5335 ext 2"
+    },
+    {
+      "name": "Rebecca Way",
+      "slug": "rebecca-way",
+      "title": "Agency Principal / Licensed Agent",
+      "photo": "/src/assets/images/team/rebecca-way.webp",
+      "years_experience": 20,
+      "license_states": ["KY", "IN", "TN"],
+      "designations": [],
+      "specialties": ["commercial_lines", "personal_lines", "life_health", "general-liability", "commercial-property", "workers-compensation"],
+      "bio": "Rebecca founded The Way Agency with a mission to make insurance accessible and personal. She oversees all commercial and personal lines and brings two decades of experience helping Kentucky businesses and families protect what matters most.",
+      "fun_fact": "",
+      "email": "rebecca@thewayagency.com",
+      "phone": "(502) 413-5335 ext 1"
+    },
+    {
+      "name": "Josh Mitchell",
+      "slug": "josh-mitchell",
+      "title": "Licensed Agent",
+      "photo": "/src/assets/images/team/josh-mitchell.webp",
+      "years_experience": 10,
+      "license_states": ["KY", "IN", "TN"],
+      "designations": [],
+      "specialties": ["commercial_lines", "general-liability", "commercial-auto", "bonds", "builders-risk", "workers-compensation"],
+      "bio": "Josh specializes in commercial insurance for contractors, manufacturers, and small businesses across the tri-state area. He understands the unique risks businesses face and works to build coverage programs that protect without overpaying.",
+      "fun_fact": "",
+      "email": "josh@thewayagency.com",
+      "phone": "(502) 413-5335 ext 3"
+    }
+  ]
+}

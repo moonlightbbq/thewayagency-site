@@ -37,8 +37,18 @@ function copyDir(src, dest) {
 // ─── Load Data ─────────────────────────────────
 const products = JSON.parse(fs.readFileSync(path.join(DATA, 'products.json'), 'utf8'));
 const locations = JSON.parse(fs.readFileSync(path.join(DATA, 'locations.json'), 'utf8'));
+const team = JSON.parse(fs.readFileSync(path.join(DATA, 'team.json'), 'utf8'));
 const agency = locations.agency;
 const office = locations.offices[0];
+
+// ─── Author Attribution ─────────────────────────
+function findReviewerForProduct(product, lineKey) {
+  const match = team.team.find(member =>
+    member.specialties.includes(product.id) ||
+    member.specialties.includes(lineKey === 'personal' ? 'personal_lines' : lineKey === 'commercial' ? 'commercial_lines' : 'life_health')
+  );
+  return match || team.team[0];
+}
 
 // ─── Product Page Template ─────────────────────
 function generateProductPage(product, lineName, lineSlug, lineKey) {
@@ -103,6 +113,8 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
   <meta property="og:description" content="${product.summary}">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.thewayagency.com${product.url}">
+  <meta property="og:site_name" content="The Way Agency">
+  <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -245,6 +257,24 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
 
     ${crossSellSection}
 
+    ${(() => {
+      const reviewer = findReviewerForProduct(product, lineKey);
+      const designations = reviewer.designations && reviewer.designations.length > 0 ? reviewer.designations.join(', ') + ' · ' : '';
+      const reviewDate = product.last_reviewed ? new Date(product.last_reviewed + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'March 2026';
+      return `<div class="author-attribution" style="margin-top:var(--space-2xl);padding:var(--space-lg);background:var(--light-bg);border-radius:var(--border-radius-lg);display:flex;align-items:center;gap:var(--space-lg);">
+  <div>
+    <p style="font-size:var(--text-sm);color:var(--slate);margin-bottom:4px;">Reviewed by</p>
+    <p style="font-weight:600;color:var(--navy);margin-bottom:2px;">
+      <a href="/about/team.html#${reviewer.slug}" style="color:var(--navy);">${reviewer.name}</a>, ${reviewer.title}
+    </p>
+    <p style="font-size:var(--text-sm);color:var(--slate);margin-bottom:0;">
+      ${designations}Licensed in KY, IN &amp; TN &middot; ${reviewer.years_experience} years experience<br>
+      Last reviewed: ${reviewDate}
+    </p>
+  </div>
+</div>`;
+    })()}
+
     <section class="cta-banner">
       <div class="container">
         <h2 class="cta-banner__title">Get a ${product.name.toLowerCase()} quote</h2>
@@ -279,6 +309,10 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
         <p style="font-size:var(--text-sm);margin-top:var(--space-sm);"><a href="tel:+15024135335">${office.phone}</a></p>
         <p style="font-size:var(--text-sm);"><a href="mailto:${office.email}">${office.email}</a></p>
         <p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p>
+        <a href="https://g.page/r/CSHCy85xJ8VOEBM/review" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:var(--space-sm);font-size:11px;color:rgba(255,255,255,0.7);text-decoration:none;">
+          <span style="color:#FBBC05;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span>5.0 from 19 Google reviews</span>
+        </a>
       </div>
       <div>
         <h4 class="footer__heading">Personal</h4>
@@ -330,10 +364,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
 // ─── Build ─────────────────────────────────────
 console.log('🔨 Building The Way Agency site...\n');
 
-// 1. Clean and create build directory
-if (fs.existsSync(BUILD)) {
-  fs.rmSync(BUILD, { recursive: true });
-}
+// 1. Ensure build directory exists (preserve hand-crafted pages)
 ensureDir(BUILD);
 
 // 2. Copy CSS
@@ -422,6 +453,12 @@ for (const city of landingData.cities) {
   <title>Insurance in ${city.city}, ${city.state} | The Way Agency</title>
   <meta name="description" content="Independent insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from 17+ carriers. Get a free quote today.">
   <link rel="canonical" href="https://www.thewayagency.com/insurance/${city.slug}.html">
+  <meta property="og:title" content="Insurance in ${city.city}, ${city.state} | The Way Agency">
+  <meta property="og:description" content="Independent insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from 17+ carriers.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.thewayagency.com/insurance/${city.slug}.html">
+  <meta property="og:site_name" content="The Way Agency">
+  <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -543,6 +580,12 @@ for (const ind of landingData.industries) {
   <title>Insurance for ${ind.name} in Kentucky | The Way Agency</title>
   <meta name="description" content="Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. ${ind.description.split('.')[0]}. Get a free quote from 17+ carriers.">
   <link rel="canonical" href="https://www.thewayagency.com/industries/${ind.slug}.html">
+  <meta property="og:title" content="Insurance for ${ind.name} in Kentucky | The Way Agency">
+  <meta property="og:description" content="Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. Get a free quote from 17+ carriers.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.thewayagency.com/industries/${ind.slug}.html">
+  <meta property="og:site_name" content="The Way Agency">
+  <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -661,6 +704,16 @@ for (const city of landingData.cities) {
 // Add industry pages
 for (const ind of landingData.industries) {
   sitemapUrls.push({ url: `/industries/${ind.slug}.html`, priority: '0.6', freq: 'monthly' });
+}
+
+// Add blog posts (scan build/blog/ for .html files that aren't index.html)
+const blogDir = path.join(BUILD, 'blog');
+if (fs.existsSync(blogDir)) {
+  for (const file of fs.readdirSync(blogDir)) {
+    if (file.endsWith('.html') && file !== 'index.html') {
+      sitemapUrls.push({ url: `/blog/${file}`, priority: '0.5', freq: 'monthly' });
+    }
+  }
 }
 
 const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
