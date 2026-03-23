@@ -764,16 +764,17 @@ const PRODUCTS = [
   { id: 'boat',            icon: '\u26F5\uFE0F', label: 'Boat',              line: 'personal' },
   { id: 'rv',              icon: '\u{1F68C}', label: 'RV',                   line: 'personal' },
   { id: 'earthquake',      icon: '\u{1F30D}', label: 'Earthquake',           line: 'personal' },
-  // Commercial
-  { id: 'bop',             icon: '\u{1F3EA}', label: 'Business',             line: 'commercial' },
+  // Commercial (top 8 shown in main grid when ?line=commercial)
+  { id: 'bop',             icon: '\u{1F3EA}', label: 'Business Owners Policy', line: 'commercial' },
   { id: 'cgl',             icon: '\u{1F4BC}', label: 'General Liability',    line: 'commercial' },
   { id: 'commercial_auto', icon: '\u{1F69A}', label: 'Commercial Auto',      line: 'commercial' },
   { id: 'workers_comp',    icon: '\u{1F9BA}', label: 'Workers Comp',         line: 'commercial' },
   { id: 'cyber',           icon: '\u{1F4BB}', label: 'Cyber',                line: 'commercial' },
   { id: 'eo',              icon: '\u{1F4DC}', label: 'Professional Liability', line: 'commercial' },
-  { id: 'dwelling_fire',   icon: '\u{1F525}', label: 'Dwelling Fire',        line: 'commercial' },
   { id: 'bonds',           icon: '\u{1F4C4}', label: 'Bonds',                line: 'commercial' },
   { id: 'farm_ranch',      icon: '\u{1F33E}', label: 'Farm / Ranch',         line: 'commercial' },
+  // Less common commercial (shown in "other" dropdown)
+  { id: 'dwelling_fire',   icon: '\u{1F525}', label: 'Dwelling Fire',        line: 'commercial' },
   { id: 'builders_risk',   icon: '\u{1F6A7}', label: 'Builders Risk',        line: 'commercial' },
   // Catch-all
   { id: 'other',           icon: '\u{1F4DD}', label: 'Other',                line: 'other' },
@@ -841,7 +842,7 @@ const BUNDLE_MAP = {
 
 const PRODUCT_NAMES = {
   homeowners:'Homeowners', auto:'Auto', umbrella:'Umbrella', flood:'Flood', life:'Life',
-  renters:'Renters', bop:'Business', motorcycle:'Motorcycle', dwelling_fire:'Dwelling Fire',
+  renters:'Renters', bop:'Business Owners Policy', motorcycle:'Motorcycle', dwelling_fire:'Dwelling Fire',
   cgl:'General Liability', commercial_auto:'Commercial Auto', workers_comp:'Workers Comp',
   cyber:'Cyber', eo:'Professional Liability', boat:'Boat', rv:'RV', earthquake:'Earthquake',
   farm_ranch:'Farm / Ranch', bonds:'Bonds', other:'Other',
@@ -1668,7 +1669,7 @@ function getVehicles() {
 // ── All product labels ──────────────────────────────────────────────────────
 const PROD_LABELS = {
   homeowners: 'Homeowners', auto: 'Auto', umbrella: 'Umbrella', flood: 'Flood',
-  life: 'Life', renters: 'Renters', bop: 'Business', motorcycle: 'Motorcycle',
+  life: 'Life', renters: 'Renters', bop: 'Business Owners Policy', motorcycle: 'Motorcycle',
   dwelling_fire: 'Dwelling Fire', cgl: 'General Liability', commercial_auto: 'Commercial Auto',
   workers_comp: 'Workers Comp', cyber: 'Cyber', eo: 'Professional Liability', boat: 'Boat', rv: 'RV',
   earthquake: 'Earthquake', farm_ranch: 'Farm / Ranch', bonds: 'Bonds', builders_risk: 'Builders Risk', other: 'Other'
