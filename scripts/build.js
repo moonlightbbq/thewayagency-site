@@ -642,7 +642,7 @@ for (const city of landingData.cities) {
       <h1 class="hero__title">Insurance in ${city.city}, ${city.state}</h1>
       <p class="hero__subtitle">Independent agency. 17+ carriers. Personal, commercial, and life insurance for ${city.city} families and businesses.</p>
       <div class="hero__actions">
-        <a href="/intake/" class="btn btn--primary btn--lg">Get a Free Quote</a>
+        <a href="/intake/?city=${encodeURIComponent(city.city)}&state=${encodeURIComponent(city.state)}" class="btn btn--primary btn--lg">Get a Free Quote</a>
         <a href="tel:+15024135335" class="btn btn--outline-white btn--lg">Call ${office.phone}</a>
       </div>
     </div>
@@ -698,7 +698,7 @@ for (const city of landingData.cities) {
         <h2 class="cta-banner__title">Ready to get started in ${city.city}?</h2>
         <p class="cta-banner__text">Request a quote or call us directly. We're here to help.</p>
         <div class="cta-banner__actions">
-          <a href="/intake/" class="btn btn--primary btn--lg">Get a Quote</a>
+          <a href="/intake/?city=${encodeURIComponent(city.city)}&state=${encodeURIComponent(city.state)}" class="btn btn--primary btn--lg">Get a Quote</a>
           <a href="tel:+15024135335" class="btn btn--outline-white btn--lg">Call ${office.phone}</a>
         </div>
         <div class="contact-methods">
@@ -759,7 +759,7 @@ for (const ind of landingData.industries) {
       <h1 class="hero__title">Insurance for<br>${ind.name}</h1>
       <p class="hero__subtitle">${ind.description}</p>
       <div class="hero__actions">
-        <a href="/intake/" class="btn btn--primary btn--lg">Get a Quote</a>
+        <a href="/intake/?line=commercial&industry=${ind.slug}" class="btn btn--primary btn--lg">Get a Quote</a>
         <a href="tel:+15024135335" class="btn btn--outline-white btn--lg">Call ${office.phone}</a>
       </div>
     </div>
@@ -806,7 +806,7 @@ for (const ind of landingData.industries) {
         <h2 class="cta-banner__title">Get coverage for your ${ind.name.toLowerCase().replace(/s$/, '')} business</h2>
         <p class="cta-banner__text">We'll build a program that matches your operations, contracts, and budget.</p>
         <div class="cta-banner__actions">
-          <a href="/intake/" class="btn btn--primary btn--lg">Get a Quote</a>
+          <a href="/intake/?line=commercial&industry=${ind.slug}" class="btn btn--primary btn--lg">Get a Quote</a>
           <a href="tel:+15024135335" class="btn btn--outline-white btn--lg">Call ${office.phone}</a>
         </div>
         <div class="contact-methods">

@@ -165,25 +165,22 @@
   // ═══════════════════════════════════════════════
   function initInlineForms() {
     $$('.inline-quote-form').forEach(form => {
-      form.addEventListener('submit', async (e) => {
+      form.addEventListener('submit', (e) => {
         e.preventDefault();
         const data = Object.fromEntries(new FormData(form));
-        const btn = form.querySelector('button[type="submit"]');
-        btn.textContent = 'Sending...';
-        btn.disabled = true;
+        trackEvent('form_submit', 'lead', 'inline-product-form');
 
-        await submitLead(data, 'inline-product-form');
+        // Build intake URL with pre-filled context
+        const params = new URLSearchParams();
+        if (data.product) params.set('product', data.product);
+        if (data.lineOfBusiness) params.set('line', data.lineOfBusiness);
+        if (data.name) params.set('name', data.name);
+        if (data.email) params.set('email', data.email);
+        if (data.phone) params.set('phone', data.phone);
+        if (data.industry) params.set('industry', data.industry);
+        params.set('src', 'inline');
 
-        form.innerHTML = `
-          <div style="text-align:center;padding:var(--space-lg) 0;">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" style="margin:0 auto var(--space-sm);">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-            <p style="font-weight:600;color:var(--navy);margin-bottom:4px;">Quote request received</p>
-            <p style="font-size:var(--text-sm);color:var(--slate);">We'll be in touch within ${CONFIG.responseTimeMinutes} minutes during business hours.</p>
-          </div>`;
-
-        trackEvent('form_complete', 'lead', 'inline-form');
+        window.location.href = '/intake/?' + params.toString();
       });
     });
   }
@@ -191,9 +188,46 @@
   // ═══════════════════════════════════════════════
   // 4. STICKY MOBILE CTA BAR
   // ═══════════════════════════════════════════════
+  // Detect page context for smart intake links
+  function getIntakeUrl() {
+    const path = window.location.pathname;
+    // Product pages: /personal/home.html, /commercial/cyber.html, etc.
+    const productMatch = path.match(/\/(personal|commercial|life-health)\/([^/]+)\.html$/);
+    if (productMatch && productMatch[2] !== 'index') {
+      const slug = productMatch[2];
+      // Map slug to product ID (most match, some need mapping)
+      const slugMap = { 'home': 'homeowners', 'general-liability': 'cgl', 'commercial-auto': 'commercial_auto',
+        'commercial-property': 'bop', 'workers-compensation': 'workers_comp', 'professional-liability': 'eo',
+        'builders-risk': 'builders_risk', 'special-event': 'bop', 'classic-car': 'auto',
+        'farm-ranch': 'farm_ranch', 'dwelling-fire': 'dwelling_fire', 'term-life': 'life',
+        'whole-life': 'life', 'final-expense': 'life', 'family-health': 'life',
+        'individual-health': 'life', 'group-health': 'life', 'supplemental-health': 'life',
+        'dental-vision': 'life', 'disability': 'life', 'medicare': 'life', 'medicaid': 'life', 'annuities': 'life' };
+      const pid = slugMap[slug] || slug;
+      return '/intake/?product=' + encodeURIComponent(pid);
+    }
+    // Hub pages: /personal/, /commercial/, /life-health/
+    if (path.match(/\/personal\/?$/)) return '/intake/?line=personal';
+    if (path.match(/\/commercial\/?$/)) return '/intake/?line=commercial';
+    if (path.match(/\/life-health\/?$/)) return '/intake/?line=personal';
+    // Geo pages: /insurance/louisville-ky.html
+    const geoMatch = path.match(/\/insurance\/([^/]+)\.html$/);
+    if (geoMatch) {
+      const parts = geoMatch[1].split('-');
+      const state = parts.pop().toUpperCase();
+      const city = parts.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      return '/intake/?city=' + encodeURIComponent(city) + '&state=' + encodeURIComponent(state);
+    }
+    // Industry pages: /industries/roofing-contractors.html
+    const indMatch = path.match(/\/industries\/([^/]+)\.html$/);
+    if (indMatch) return '/intake/?line=commercial&industry=' + encodeURIComponent(indMatch[1]);
+    return '/intake/';
+  }
+
   function initStickyMobileCTA() {
     if (window.innerWidth > 768) return;
 
+    const intakeUrl = getIntakeUrl();
     const bar = createElement('div', {
       id: 'stickyMobileCTA',
       style: {
@@ -221,7 +255,7 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         Text
       </a>
-      <a href="/intake/" style="flex:1.5;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:var(--cyan);border:1.5px solid var(--cyan);border-radius:6px;color:var(--navy-dark);font-size:13px;font-weight:600;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;" onclick="trackEvent('click','cta','mobile-quote')">
+      <a href="${intakeUrl}" style="flex:1.5;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:var(--cyan);border:1.5px solid var(--cyan);border-radius:6px;color:var(--navy-dark);font-size:13px;font-weight:600;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;" onclick="trackEvent('click','cta','mobile-quote')">
         Get a Quote
       </a>
     `);
@@ -318,13 +352,18 @@
       }
     });
 
-    // Form handler
-    $('#exitForm').addEventListener('submit', async (e) => {
+    // Form handler — redirect to full intake with pre-filled data
+    $('#exitForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const data = Object.fromEntries(new FormData(e.target));
-      data.requestType = 'coverage-review';
-      await submitLead(data, 'exit-intent');
-      e.target.innerHTML = '<p style="text-align:center;padding:20px 0;font-weight:600;color:var(--navy);">Thank you! We\'ll reach out within 1 business day.</p>';
+      trackEvent('form_submit', 'lead', 'exit-intent');
+
+      const params = new URLSearchParams();
+      if (data.name) params.set('name', data.name);
+      if (data.email) params.set('email', data.email);
+      params.set('src', 'coverage-review');
+
+      window.location.href = '/intake/?' + params.toString();
     });
 
     trackEvent('popup_show', 'exit_intent', window.location.pathname);

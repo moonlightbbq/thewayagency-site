@@ -926,6 +926,39 @@ function syncBundlePills() {
   renderBundleBanner(pid);
 })();
 
+// ── Pre-fill form fields from URL params (from inline forms, geo pages, etc.) ─
+(function prefillFromParams() {
+  const params = new URLSearchParams(window.location.search);
+  const fill = (paramKey, fieldId) => {
+    const val = params.get(paramKey);
+    if (!val) return;
+    const el = document.getElementById(fieldId);
+    if (el) { el.value = val; el.classList.add('filled'); }
+  };
+
+  // Contact fields (from inline forms)
+  const name = params.get('name');
+  if (name) {
+    const parts = name.trim().split(/\s+/);
+    const fname = document.getElementById('i_fname');
+    const lname = document.getElementById('i_lname');
+    if (fname) { fname.value = parts[0] || ''; if (fname.value) fname.classList.add('filled'); }
+    if (lname) { lname.value = parts.slice(1).join(' ') || ''; if (lname.value) lname.classList.add('filled'); }
+  }
+  fill('email', 'i_email');
+  fill('phone', 'i_phone');
+
+  // Geo context (from city/industry pages)
+  fill('city', 'i_city');
+  fill('state', 'i_state');
+
+  // Industry tag — store for submission
+  const industry = params.get('industry');
+  if (industry) {
+    window._intakeIndustry = industry;
+  }
+})();
+
 // ── Cloudflare Turnstile (bot protection) ───────────────────────────────────
 (async function initTurnstile() {
   try {
@@ -1796,6 +1829,13 @@ async function submitIntake() {
     'i_br_projtype','i_br_value',
   ];
   fields.forEach(id => { const val = el(id); if (val) formData[id] = val; });
+
+  // Add industry context if passed from an industry page
+  if (window._intakeIndustry) formData.industry = window._intakeIndustry;
+
+  // Add source tracking from URL param
+  const srcParam = new URLSearchParams(window.location.search).get('src');
+  if (srcParam) formData.lead_source = srcParam;
 
   try {
     const res = await fetch(SAGE_API + '/api/intake', {

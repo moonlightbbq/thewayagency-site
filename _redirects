@@ -69,6 +69,9 @@
 /portal.html /portal/ 301
 /partner.html /partner/ 301
 
+# Retired pages
+/quote.html /intake/ 301
+
 # Blog (individual posts — add as discovered)
 /post/cyber-safety-for-small-businesses-prevention-checklist /blog/cyber-safety.html 301
 /post/kentucky-tornado-season-prep-safety-insurance-checklist /blog/tornado-season.html 301
