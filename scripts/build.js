@@ -10,11 +10,45 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const SRC = path.join(ROOT, 'src');
 const BUILD = path.join(ROOT, 'build');
 const DATA = path.join(ROOT, 'data');
+
+// ─── Version / Build Info ───────────────────────
+function getGitInfo() {
+  try {
+    const commit = execSync('git rev-parse --short HEAD', { cwd: ROOT }).toString().trim();
+    const branch = execSync('git rev-parse --abbrev-ref HEAD', { cwd: ROOT }).toString().trim();
+    return { commit, branch };
+  } catch {
+    return { commit: 'unknown', branch: 'unknown' };
+  }
+}
+const gitInfo = getGitInfo();
+const buildDate = new Date().toISOString();
+const buildVersion = `${buildDate.split('T')[0]}-${gitInfo.commit}`;
+console.log(`\nBuild version: ${buildVersion} (branch: ${gitInfo.branch})`);
+
+// ─── Version injection helper ───────────────────
+const versionMeta = `<meta name="build-version" content="${buildVersion}">`;
+const versionComment = `<!-- build: ${buildVersion} | ${gitInfo.branch} | ${buildDate} -->`;
+const versionFooter = `<span style="font-size:10px;color:rgba(255,255,255,0.25);margin-left:auto;">build ${buildVersion}</span>`;
+
+function injectVersion(html) {
+  // Add meta tag after charset
+  html = html.replace('<meta charset="UTF-8">', `<meta charset="UTF-8">\n  ${versionMeta}`);
+  // Add build comment after doctype
+  html = html.replace('<!DOCTYPE html>', `<!DOCTYPE html>\n${versionComment}`);
+  // Add version to footer bottom
+  html = html.replace(
+    /(<div class="footer__legal-links">[\s\S]*?<\/div>\s*<\/div>)/,
+    `$1\n      ${versionFooter}`
+  );
+  return html;
+}
 
 // ─── Utilities ─────────────────────────────────
 function ensureDir(dir) {
@@ -525,6 +559,16 @@ console.log('🔨 Building The Way Agency site...\n');
 // 1. Ensure build directory exists (preserve hand-crafted pages)
 ensureDir(BUILD);
 
+// 1b. Write version.json
+const versionInfo = {
+  version: buildVersion,
+  commit: gitInfo.commit,
+  branch: gitInfo.branch,
+  builtAt: buildDate,
+};
+fs.writeFileSync(path.join(BUILD, 'version.json'), JSON.stringify(versionInfo, null, 2));
+console.log('  ✓ version.json written');
+
 // 2. Copy CSS
 copyDir(path.join(SRC, 'css'), path.join(BUILD, 'src', 'css'));
 console.log('  ✓ CSS copied');
@@ -546,7 +590,8 @@ const rootPages = ['index.html', 'quote.html', 'contact.html', 'privacy.html', '
 for (const file of rootPages) {
   const src = path.join(SRC, 'pages', file);
   if (fs.existsSync(src)) {
-    fs.copyFileSync(src, path.join(BUILD, file));
+    const content = fs.readFileSync(src, 'utf8');
+    fs.writeFileSync(path.join(BUILD, file), injectVersion(content));
     console.log(`  ✓ ${file}`);
   }
 }
@@ -567,7 +612,8 @@ for (const [dir, file] of subPages) {
   const src = path.join(SRC, 'pages', dir, file);
   if (fs.existsSync(src)) {
     ensureDir(path.join(BUILD, dir));
-    fs.copyFileSync(src, path.join(BUILD, dir, file));
+    const content = fs.readFileSync(src, 'utf8');
+    fs.writeFileSync(path.join(BUILD, dir, file), injectVersion(content));
     console.log(`  ✓ ${dir}/${file} (hand-crafted)`);
   }
 }
@@ -587,7 +633,7 @@ for (const [lineKey, lineInfo] of Object.entries(lineMap)) {
   for (const product of lineProducts) {
     const html = generateProductPage(product, lineInfo.name, lineInfo.slug, lineKey);
     const filename = `${product.slug}.html`;
-    fs.writeFileSync(path.join(BUILD, lineInfo.slug, filename), html);
+    fs.writeFileSync(path.join(BUILD, lineInfo.slug, filename), injectVersion(html));
     generatedCount++;
   }
 }
@@ -716,7 +762,7 @@ for (const city of landingData.cities) {
   <script src="/src/js/app.js"></script>
 </body>
 </html>`.replace(/CONFIG_PHONE_RAW/g, '+15024135335');
-  fs.writeFileSync(path.join(BUILD, 'insurance', `${city.slug}.html`), pageHtml);
+  fs.writeFileSync(path.join(BUILD, 'insurance', `${city.slug}.html`), injectVersion(pageHtml));
   geoCount++;
 }
 console.log(`  ✓ Generated ${geoCount} geo-targeted city pages`);
@@ -823,7 +869,7 @@ for (const ind of landingData.industries) {
   <script src="/src/js/app.js"></script>
 </body>
 </html>`;
-  fs.writeFileSync(path.join(BUILD, 'industries', `${ind.slug}.html`), indHtml);
+  fs.writeFileSync(path.join(BUILD, 'industries', `${ind.slug}.html`), injectVersion(indHtml));
   indCount++;
 }
 console.log(`  ✓ Generated ${indCount} industry landing pages`);
@@ -905,7 +951,8 @@ for (const page of portalPages) {
   if (fs.existsSync(srcFile)) {
     const destDir = path.join(BUILD, path.dirname(page.dest));
     ensureDir(destDir);
-    fs.copyFileSync(srcFile, path.join(BUILD, page.dest));
+    const pageContent = fs.readFileSync(srcFile, 'utf8');
+    fs.writeFileSync(path.join(BUILD, page.dest), injectVersion(pageContent));
     if (page.sitemap) {
       sitemapUrls.push({ url: page.sitemap, priority: '0.8', freq: 'monthly' });
     }
