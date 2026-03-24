@@ -82,7 +82,6 @@
     data.source = source || 'website';
     data.page = window.location.pathname;
     data.referrer = document.referrer || 'direct';
-    data._hp_company = ''; // Honeypot — bots will fill this, humans won't
 
     // Get Turnstile token if configured
     if (CONFIG.turnstileSiteKey) {
@@ -92,20 +91,25 @@
     trackEvent('form_submit', 'lead', source);
 
     if (CONFIG.webhookUrl) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
       try {
         const res = await fetch(CONFIG.webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+          body: JSON.stringify(data),
+          signal: controller.signal,
         });
+        clearTimeout(timeout);
         const result = await res.json();
         if (result.sessionId) {
-          // Store sessionId for status checking
           try { localStorage.setItem('twa_last_session', result.sessionId); } catch(e) {}
         }
         return result;
       } catch (err) {
+        clearTimeout(timeout);
         console.error('[TWA] Submission error:', err);
+        return { ok: false, error: 'submission_failed' };
       }
     } else {
       console.log('[TWA] Lead data (no webhook):', data);

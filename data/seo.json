@@ -54,12 +54,6 @@
       "schema_types": ["InsuranceAgency"],
       "last_reviewed": "2026-03"
     },
-    "/quote.html": {
-      "title": "Get an Insurance Quote | The Way Agency",
-      "description": "Request a free insurance quote from The Way Agency. We represent dozens of carriers to find the right coverage at the right price in KY, IN & TN.",
-      "schema_types": ["InsuranceAgency"],
-      "last_reviewed": "2026-03"
-    },
     "/contact.html": {
       "title": "Contact The Way Agency | Insurance in Owensboro, KY",
       "description": "Contact The Way Agency for insurance questions, quotes, or policy service. Call (502) 413-5335 or visit our Owensboro, KY office.",

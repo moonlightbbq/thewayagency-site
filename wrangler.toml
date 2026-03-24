@@ -5,19 +5,6 @@
 name = "thewayagency-workers"
 compatibility_date = "2024-01-01"
 
-# ─── Quote Worker ───
-# Forwards quote form submissions to sage-server
-[[workers]]
-name = "thewayagency-quote"
-main = "workers/quote.js"
-routes = [
-  { pattern = "thewayagency.com/api/quote", zone_name = "thewayagency.com" },
-  { pattern = "www.thewayagency.com/api/quote", zone_name = "thewayagency.com" },
-]
-
-[workers.vars]
-SAGE_API_URL = "https://sage.thewayagency.com"
-
 # ─── Contact Worker ───
 # Handles contact form submissions, sends email notification
 [[workers]]

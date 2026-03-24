@@ -432,9 +432,12 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
         <form class="inline-quote-form" novalidate>
           <input type="hidden" name="product" value="${product.id}">
           <input type="hidden" name="lineOfBusiness" value="${lineSlug}">
-          <input type="text" name="name" placeholder="Your name" required autocomplete="name">
-          <input type="email" name="email" placeholder="Email address" required autocomplete="email">
-          <input type="tel" name="phone" placeholder="Phone (optional)" autocomplete="tel">
+          <label for="iq-name-${product.id}" class="sr-only">Your name</label>
+          <input type="text" id="iq-name-${product.id}" name="name" placeholder="Your name" required autocomplete="name">
+          <label for="iq-email-${product.id}" class="sr-only">Email address</label>
+          <input type="email" id="iq-email-${product.id}" name="email" placeholder="Email address" required autocomplete="email">
+          <label for="iq-phone-${product.id}" class="sr-only">Phone (optional)</label>
+          <input type="tel" id="iq-phone-${product.id}" name="phone" placeholder="Phone (optional)" autocomplete="tel">
           <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off">
           <button type="submit">Get Quote</button>
         </form>
@@ -589,7 +592,7 @@ if (fs.existsSync(path.join(SRC, 'assets'))) {
 }
 
 // 5. Copy all hand-crafted pages (root level)
-const rootPages = ['index.html', 'quote.html', 'contact.html', 'privacy.html', 'terms.html', 'login.html'];
+const rootPages = ['index.html', 'contact.html', 'privacy.html', 'terms.html', 'login.html'];
 for (const file of rootPages) {
   const src = path.join(SRC, 'pages', file);
   if (fs.existsSync(src)) {
@@ -728,9 +731,12 @@ for (const city of landingData.cities) {
           <form class="inline-quote-form" novalidate>
             <input type="hidden" name="city" value="${city.city}">
             <input type="hidden" name="state" value="${city.state}">
-            <input type="text" name="name" placeholder="Your name" required autocomplete="name">
-            <input type="email" name="email" placeholder="Email address" required autocomplete="email">
-            <input type="tel" name="phone" placeholder="Phone (optional)" autocomplete="tel">
+            <label for="iq-name-${city.slug}" class="sr-only">Your name</label>
+            <input type="text" id="iq-name-${city.slug}" name="name" placeholder="Your name" required autocomplete="name">
+            <label for="iq-email-${city.slug}" class="sr-only">Email address</label>
+            <input type="email" id="iq-email-${city.slug}" name="email" placeholder="Email address" required autocomplete="email">
+            <label for="iq-phone-${city.slug}" class="sr-only">Phone (optional)</label>
+            <input type="tel" id="iq-phone-${city.slug}" name="phone" placeholder="Phone (optional)" autocomplete="tel">
             <button type="submit">Get Quote</button>
           </form>
           <p style="font-size:11px;color:var(--slate,#64748b);margin-top:8px;text-align:center;">We never sell your data. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
@@ -838,9 +844,12 @@ for (const ind of landingData.industries) {
           <form class="inline-quote-form" novalidate>
             <input type="hidden" name="industry" value="${ind.slug}">
             <input type="hidden" name="lineOfBusiness" value="commercial">
-            <input type="text" name="name" placeholder="Your name" required autocomplete="name">
-            <input type="email" name="email" placeholder="Email address" required autocomplete="email">
-            <input type="tel" name="phone" placeholder="Phone (optional)" autocomplete="tel">
+            <label for="iq-name-${ind.slug}" class="sr-only">Your name</label>
+            <input type="text" id="iq-name-${ind.slug}" name="name" placeholder="Your name" required autocomplete="name">
+            <label for="iq-email-${ind.slug}" class="sr-only">Email address</label>
+            <input type="email" id="iq-email-${ind.slug}" name="email" placeholder="Email address" required autocomplete="email">
+            <label for="iq-phone-${ind.slug}" class="sr-only">Phone (optional)</label>
+            <input type="tel" id="iq-phone-${ind.slug}" name="phone" placeholder="Phone (optional)" autocomplete="tel">
             <button type="submit">Get Quote</button>
           </form>
           <p style="font-size:11px;color:var(--slate,#64748b);margin-top:8px;text-align:center;">We never sell your data. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
