@@ -554,7 +554,7 @@
           <span style="font-size:12px;color:var(--slate);font-weight:300;">from Google Reviews</span>
         </div>
         <p style="font-size:13px;color:var(--slate);font-weight:300;font-style:italic;line-height:1.6;margin:0;">
-          "She saved me a ton of money and doubled my coverage. Buying online was not as smart as I thought."
+          "Finding Rebecca has been such a blessing! Not only did she save me a ton of money but she also doubled my coverage. Apparently buying online was not as smart as I thought it was."
           <span style="font-weight:500;color:var(--navy);display:block;margin-top:4px;font-style:normal;"> -  Lisa M., Owensboro</span>
         </p>`;
     });
