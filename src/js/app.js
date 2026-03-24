@@ -15,7 +15,7 @@
     email: 'hello@thewayagency.com',
     textNumber: '(502) 413-5335',
     calendarUrl: '', // Set to Calendly or scheduling tool URL
-    gaId: '', // Set to GA4 measurement ID
+    gaId: 'G-C79ZCDZVPE',
     fbPixelId: '', // Set to Facebook Pixel ID
     responseTimeMinutes: 60, // Used in messaging
   };
@@ -209,7 +209,7 @@
     // Hub pages: /personal/, /commercial/, /life-health/
     if (path.match(/\/personal\/?$/)) return '/intake/?line=personal';
     if (path.match(/\/commercial\/?$/)) return '/intake/?line=commercial';
-    if (path.match(/\/life-health\/?$/)) return '/intake/?line=personal';
+    if (path.match(/\/life-health\/?$/)) return '/intake/?line=life-health';
     // Geo pages: /insurance/louisville-ky.html
     const geoMatch = path.match(/\/insurance\/([^/]+)\.html$/);
     if (geoMatch) {
@@ -284,6 +284,7 @@
   // ═══════════════════════════════════════════════
   function initExitIntent() {
     if (window.innerWidth < 768) return; // Desktop only
+    if (sessionStorage.getItem('twa_exit_shown')) return; // Already shown this session
     let shown = false;
 
     document.addEventListener('mouseout', (e) => {
@@ -294,9 +295,6 @@
         showExitPopup();
       }
     });
-
-    // Don't show if already shown this session
-    if (sessionStorage.getItem('twa_exit_shown')) return;
   }
 
   function showExitPopup() {

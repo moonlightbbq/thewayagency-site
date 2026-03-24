@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found | The Way Agency</title>
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/src/assets/images/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/css/base.css">
+  <link rel="stylesheet" href="/src/css/components.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo" aria-label="The Way Agency Home">
+        <img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;">
+      </a>
+      <div class="nav__links" id="navLinks">
+        <a href="/personal/" class="nav__link">Personal</a>
+        <a href="/commercial/" class="nav__link">Commercial</a>
+        <a href="/life-health/" class="nav__link">Life &amp; Health</a>
+        <a href="/about/" class="nav__link">About</a>
+        <a href="/intake/" class="btn btn--primary">Get a Quote</a>
+      </div>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <main id="main" style="margin-top:var(--nav-height);">
+    <section class="section" style="min-height:60vh;display:flex;align-items:center;">
+      <div class="container" style="text-align:center;">
+        <h1 style="font-size:var(--text-5xl);color:var(--navy);margin-bottom:var(--space-md);">Page not found</h1>
+        <p style="font-size:var(--text-lg);color:var(--slate);font-weight:300;max-width:480px;margin:0 auto var(--space-2xl);">
+          The page you're looking for doesn't exist or has moved. Let us help you find what you need.
+        </p>
+        <div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;margin-bottom:var(--space-2xl);">
+          <a href="/" class="btn btn--primary btn--lg">Go Home</a>
+          <a href="/intake/" class="btn btn--outline btn--lg">Get a Quote</a>
+        </div>
+        <p style="font-size:var(--text-sm);color:var(--slate);">
+          Or call us at <a href="tel:+15024135335" style="font-weight:600;">(502) 413-5335</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" role="contentinfo">
+    <div class="footer__bottom">
+      <p>&copy; 2026 The Way Agency. All rights reserved.</p>
+      <div class="footer__legal-links">
+        <a href="/privacy.html">Privacy Policy</a>
+        <a href="/terms.html">Terms &amp; Conditions</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.getElementById('navLinks');
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('nav__links--open');
+      navToggle.setAttribute('aria-expanded', navLinks.classList.contains('nav__links--open'));
+    });
+  </script>
+</body>
+</html>

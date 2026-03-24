@@ -75,6 +75,7 @@ const team = JSON.parse(fs.readFileSync(path.join(DATA, 'team.json'), 'utf8'));
 const knowledgeBase = JSON.parse(fs.readFileSync(path.join(DATA, 'knowledge-base.json'), 'utf8'));
 const carriers = JSON.parse(fs.readFileSync(path.join(DATA, 'carriers.json'), 'utf8'));
 const testimonials = JSON.parse(fs.readFileSync(path.join(DATA, 'testimonials.json'), 'utf8'));
+const seoData = JSON.parse(fs.readFileSync(path.join(DATA, 'seo.json'), 'utf8'));
 const agency = locations.agency;
 const office = locations.offices[0];
 
@@ -300,6 +301,8 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
   <meta property="og:url" content="https://www.thewayagency.com${product.url}">
   <meta property="og:site_name" content="The Way Agency">
   <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
+  <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
+  <link rel="icon" href="/src/assets/images/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -659,6 +662,8 @@ for (const city of landingData.cities) {
   <meta property="og:url" content="https://www.thewayagency.com/insurance/${city.slug}.html">
   <meta property="og:site_name" content="The Way Agency">
   <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
+  <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
+  <link rel="icon" href="/src/assets/images/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -787,6 +792,8 @@ for (const ind of landingData.industries) {
   <meta property="og:url" content="https://www.thewayagency.com/industries/${ind.slug}.html">
   <meta property="og:site_name" content="The Way Agency">
   <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
+  <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
+  <link rel="icon" href="/src/assets/images/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -878,23 +885,29 @@ console.log(`  ✓ Generated ${indCount} industry landing pages`);
 const baseUrl = 'https://www.thewayagency.com';
 const today = new Date().toISOString().split('T')[0];
 
+// Use last_reviewed from seo.json for hand-crafted pages when available
+function seoLastmod(urlPath) {
+  const entry = seoData.pages && seoData.pages[urlPath];
+  return entry && entry.last_reviewed ? entry.last_reviewed + '-01' : null;
+}
+
 const sitemapUrls = [
-  { url: '/', priority: '1.0', freq: 'weekly' },
-  { url: '/quote.html', priority: '0.9', freq: 'monthly' },
-  { url: '/personal/', priority: '0.8', freq: 'monthly' },
-  { url: '/commercial/', priority: '0.8', freq: 'monthly' },
-  { url: '/life-health/', priority: '0.8', freq: 'monthly' },
-  { url: '/about/', priority: '0.7', freq: 'monthly' },
-  { url: '/about/team.html', priority: '0.6', freq: 'monthly' },
-  { url: '/about/locations.html', priority: '0.6', freq: 'monthly' },
-  { url: '/blog/', priority: '0.7', freq: 'weekly' },
-  { url: '/contact.html', priority: '0.6', freq: 'monthly' },
+  { url: '/', priority: '1.0', freq: 'weekly', lastmod: seoLastmod('/') },
+  { url: '/quote.html', priority: '0.9', freq: 'monthly', lastmod: seoLastmod('/quote.html') },
+  { url: '/personal/', priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/personal/') },
+  { url: '/commercial/', priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/commercial/') },
+  { url: '/life-health/', priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/life-health/') },
+  { url: '/about/', priority: '0.7', freq: 'monthly', lastmod: seoLastmod('/about/') },
+  { url: '/about/team.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/about/team.html') },
+  { url: '/about/locations.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/about/locations.html') },
+  { url: '/blog/', priority: '0.7', freq: 'weekly', lastmod: seoLastmod('/blog/') },
+  { url: '/contact.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/contact.html') },
 ];
 
-// Add all product pages
+// Add all product pages (use last_reviewed date when available)
 for (const [lineKey, lineInfo] of Object.entries(lineMap)) {
   for (const product of (products[lineKey] || [])) {
-    sitemapUrls.push({ url: product.url, priority: '0.7', freq: 'monthly' });
+    sitemapUrls.push({ url: product.url, priority: '0.7', freq: 'monthly', lastmod: product.last_reviewed ? product.last_reviewed + '-01' : null });
   }
 }
 
@@ -922,7 +935,7 @@ const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${sitemapUrls.map(u => `  <url>
     <loc>${baseUrl}${u.url}</loc>
-    <lastmod>${today}</lastmod>
+    <lastmod>${u.lastmod || today}</lastmod>
     <changefreq>${u.freq}</changefreq>
     <priority>${u.priority}</priority>
   </url>`).join('\n')}
@@ -965,7 +978,7 @@ const finalSitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${sitemapUrls.map(u => `  <url>
     <loc>${baseUrl}${u.url}</loc>
-    <lastmod>${today}</lastmod>
+    <lastmod>${u.lastmod || today}</lastmod>
     <changefreq>${u.freq}</changefreq>
     <priority>${u.priority}</priority>
   </url>`).join('\n')}
