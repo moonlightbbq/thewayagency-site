@@ -342,7 +342,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
   <nav class="nav" id="nav">
     <div class="nav__inner">
       <a href="/" class="nav__logo" aria-label="Home">
-        <img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;">
+        <picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></picture>
       </a>
       <div class="nav__links" id="navLinks">
         <div class="nav__dropdown">
@@ -495,7 +495,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
   <footer class="footer">
     <div class="footer__grid">
       <div class="footer__brand">
-        <img class="footer__logo" src="/src/assets/images/logo-horizontal-white.png" alt="The Way Agency" style="height:36px;width:auto;">
+        <picture><source srcset="/src/assets/images/logo-horizontal-white.webp" type="image/webp"><img class="footer__logo" src="/src/assets/images/logo-horizontal-white.png" alt="The Way Agency" style="height:36px;width:auto;"></picture>
         <address class="footer__address" style="font-style:normal;">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address>
         <div class="footer__contact-link">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
@@ -624,6 +624,21 @@ for (const [dir, file] of subPages) {
   }
 }
 
+// 5b. Copy hand-crafted blog posts from src/pages/blog/
+const blogSrcDir = path.join(SRC, 'pages', 'blog');
+if (fs.existsSync(blogSrcDir)) {
+  ensureDir(path.join(BUILD, 'blog'));
+  let blogCount = 0;
+  for (const file of fs.readdirSync(blogSrcDir)) {
+    if (file.endsWith('.html') && file !== 'index.html') {
+      const content = fs.readFileSync(path.join(blogSrcDir, file), 'utf8');
+      fs.writeFileSync(path.join(BUILD, 'blog', file), injectVersion(content));
+      blogCount++;
+    }
+  }
+  if (blogCount > 0) console.log(`  ✓ Copied ${blogCount} blog posts`);
+}
+
 // 6. Generate product pages from JSON
 const lineMap = {
   personal: { name: 'Personal Insurance', slug: 'personal' },
@@ -687,7 +702,7 @@ for (const city of landingData.cities) {
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
-  <nav class="nav" id="nav"><div class="nav__inner"><a href="/" class="nav__logo"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></a><div class="nav__links" id="navLinks"><div class="nav__dropdown"><a href="/personal/" class="nav__link">Personal</a><div class="nav__dropdown-menu"><a href="/personal/home.html" class="nav__dropdown-item">Home</a><a href="/personal/auto.html" class="nav__dropdown-item">Auto</a><a href="/personal/renters.html" class="nav__dropdown-item">Renters</a><a href="/personal/umbrella.html" class="nav__dropdown-item">Umbrella</a><a href="/personal/flood.html" class="nav__dropdown-item">Flood</a></div></div><div class="nav__dropdown"><a href="/commercial/" class="nav__link">Commercial</a><div class="nav__dropdown-menu"><a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a><a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a><a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Commercial Auto</a><a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a></div></div><div class="nav__dropdown"><a href="/life-health/" class="nav__link">Life &amp; Health</a><div class="nav__dropdown-menu"><a href="/life-health/medicare.html" class="nav__dropdown-item">Medicare</a><a href="/life-health/term-life.html" class="nav__dropdown-item">Term Life</a><a href="/life-health/group-health.html" class="nav__dropdown-item">Group Health</a></div></div><a href="/about/" class="nav__link">About</a><a href="/intake/" class="btn btn--primary">Get a Quote</a></div><button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button></div></nav>
+  <nav class="nav" id="nav"><div class="nav__inner"><a href="/" class="nav__logo"><picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></picture></a><div class="nav__links" id="navLinks"><div class="nav__dropdown"><a href="/personal/" class="nav__link">Personal</a><div class="nav__dropdown-menu"><a href="/personal/home.html" class="nav__dropdown-item">Home</a><a href="/personal/auto.html" class="nav__dropdown-item">Auto</a><a href="/personal/renters.html" class="nav__dropdown-item">Renters</a><a href="/personal/umbrella.html" class="nav__dropdown-item">Umbrella</a><a href="/personal/flood.html" class="nav__dropdown-item">Flood</a></div></div><div class="nav__dropdown"><a href="/commercial/" class="nav__link">Commercial</a><div class="nav__dropdown-menu"><a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a><a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a><a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Commercial Auto</a><a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a></div></div><div class="nav__dropdown"><a href="/life-health/" class="nav__link">Life &amp; Health</a><div class="nav__dropdown-menu"><a href="/life-health/medicare.html" class="nav__dropdown-item">Medicare</a><a href="/life-health/term-life.html" class="nav__dropdown-item">Term Life</a><a href="/life-health/group-health.html" class="nav__dropdown-item">Group Health</a></div></div><a href="/about/" class="nav__link">About</a><a href="/intake/" class="btn btn--primary">Get a Quote</a></div><button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button></div></nav>
 
   <section class="hero" style="min-height:45vh;">
     <div class="hero__bg"></div><div class="hero__texture"></div>
@@ -809,7 +824,7 @@ for (const ind of landingData.industries) {
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
-  <nav class="nav" id="nav"><div class="nav__inner"><a href="/" class="nav__logo"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></a><div class="nav__links" id="navLinks"><a href="/personal/" class="nav__link">Personal</a><div class="nav__dropdown"><a href="/commercial/" class="nav__link">Commercial</a><div class="nav__dropdown-menu"><a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a><a href="/commercial/commercial-property.html" class="nav__dropdown-item">Property</a><a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Auto</a><a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a><a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a><a href="/commercial/bonds.html" class="nav__dropdown-item">Bonds</a></div></div><a href="/life-health/" class="nav__link">Life &amp; Health</a><a href="/about/" class="nav__link">About</a><a href="/intake/" class="btn btn--primary">Get a Quote</a></div><button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button></div></nav>
+  <nav class="nav" id="nav"><div class="nav__inner"><a href="/" class="nav__logo"><picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></picture></a><div class="nav__links" id="navLinks"><a href="/personal/" class="nav__link">Personal</a><div class="nav__dropdown"><a href="/commercial/" class="nav__link">Commercial</a><div class="nav__dropdown-menu"><a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a><a href="/commercial/commercial-property.html" class="nav__dropdown-item">Property</a><a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Auto</a><a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a><a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a><a href="/commercial/bonds.html" class="nav__dropdown-item">Bonds</a></div></div><a href="/life-health/" class="nav__link">Life &amp; Health</a><a href="/about/" class="nav__link">About</a><a href="/intake/" class="btn btn--primary">Get a Quote</a></div><button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button></div></nav>
 
   <section class="hero" style="min-height:45vh;">
     <div class="hero__bg" style="background:linear-gradient(135deg, #0F2240 0%, #173358 40%, #2680B5 100%);"></div><div class="hero__texture"></div>

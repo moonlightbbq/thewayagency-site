@@ -200,7 +200,7 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   <nav class="nav" id="nav">
     <div class="nav__inner">
       <a href="/" class="nav__logo" aria-label="Home">
-        <img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;">
+        <picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></picture>
       </a>
       <div class="nav__links" id="navLinks">
         <a href="/personal/" class="nav__link">Personal</a>
@@ -208,7 +208,7 @@ function generateBlogPost(meta, bodyHtml, faqs) {
         <a href="/life-health/" class="nav__link">Life &amp; Health</a>
         <a href="/about/" class="nav__link">About</a>
         <a href="/blog/" class="nav__link">Blog</a>
-        <a href="/quote.html" class="btn btn--primary">Get a Quote</a>
+        <a href="/intake/" class="btn btn--primary">Get a Quote</a>
       </div>
       <button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
     </div>
@@ -238,7 +238,7 @@ function generateBlogPost(meta, bodyHtml, faqs) {
         <h2 class="cta-banner__title">Have questions about your coverage?</h2>
         <p class="cta-banner__text">We're here to help. Get a free quote or request a coverage review.</p>
         <div class="cta-banner__actions">
-          <a href="/quote.html" class="btn btn--primary btn--lg">Get a Quote</a>
+          <a href="/intake/" class="btn btn--primary btn--lg">Get a Quote</a>
           <a href="/contact.html" class="btn btn--outline-white btn--lg">Contact Us</a>
         </div>
       </div>
@@ -266,7 +266,7 @@ function generateBlogPost(meta, bodyHtml, faqs) {
           <a href="/personal/">Personal</a>
           <a href="/commercial/">Commercial</a>
           <a href="/life-health/">Life &amp; Health</a>
-          <a href="/quote.html">Get a Quote</a>
+          <a href="/intake/">Get a Quote</a>
         </div>
       </div>
       <div>
