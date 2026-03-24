@@ -21,6 +21,7 @@
   color: var(--slate);
   font-weight: 300;
   margin-bottom: var(--space-lg);
+  max-width: 100%;
 }
 
 .inline-quote-form {
