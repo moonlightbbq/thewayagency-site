@@ -893,7 +893,6 @@ function seoLastmod(urlPath) {
 
 const sitemapUrls = [
   { url: '/', priority: '1.0', freq: 'weekly', lastmod: seoLastmod('/') },
-  { url: '/quote.html', priority: '0.9', freq: 'monthly', lastmod: seoLastmod('/quote.html') },
   { url: '/personal/', priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/personal/') },
   { url: '/commercial/', priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/commercial/') },
   { url: '/life-health/', priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/life-health/') },
