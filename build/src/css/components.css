@@ -91,7 +91,7 @@
 
 /* ── Carrier Marquee ── */
 .carriers{padding:var(--space-2xl) 0;overflow:hidden;background:var(--white);border-bottom:1px solid var(--border)}
-.carriers__label{text-align:center;font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.15em;color:var(--gray);margin-bottom:var(--space-lg)}
+.carriers__label{text-align:center;font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.15em;color:var(--gray);margin-bottom:var(--space-lg);margin-left:auto;margin-right:auto}
 .carriers__track{display:flex;gap:var(--space-3xl);animation:scroll-left 40s linear infinite;width:max-content}
 .carriers__track:hover{animation-play-state:paused}
 .carriers__logo{height:36px;width:auto;opacity:.45;filter:grayscale(100%);transition:all var(--transition-base);flex-shrink:0;display:flex;align-items:center;font-size:14px;font-weight:600;color:var(--gray);white-space:nowrap}
@@ -110,6 +110,7 @@
 /* ── Steps ── */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-2xl);counter-reset:step}
 .step{text-align:center;position:relative}
+.step>p{margin-left:auto;margin-right:auto}
 .step__number{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--cyan));color:var(--white);font-size:var(--text-2xl);font-weight:600;margin-bottom:var(--space-lg)}
 .step__title{font-size:var(--text-xl);font-weight:600;color:var(--navy);margin-bottom:var(--space-sm)}
 .step__text{color:var(--slate);font-weight:300;max-width:300px;margin:0 auto}
@@ -118,6 +119,7 @@
 
 /* ── CTA Banner ── */
 .cta-banner{background:var(--navy);padding:var(--space-3xl) 0;text-align:center;position:relative;overflow:hidden}
+.cta-banner p{margin-left:auto;margin-right:auto}
 .cta-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(32,188,238,.08) 0%,transparent 60%)}
 .cta-banner__title{color:var(--white);font-size:var(--text-4xl);margin-bottom:var(--space-md);position:relative}
 .cta-banner__text{color:rgba(255,255,255,.75);font-size:var(--text-lg);font-weight:300;margin-bottom:var(--space-2xl);max-width:600px;margin-left:auto;margin-right:auto;position:relative}

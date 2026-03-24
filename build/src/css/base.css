@@ -60,9 +60,11 @@ h2{font-size:var(--text-4xl);margin-bottom:var(--space-lg)}
 h3{font-size:var(--text-2xl);margin-bottom:var(--space-md)}
 h4{font-size:var(--text-xl);margin-bottom:var(--space-sm)}
 p{margin-bottom:var(--space-md);max-width:72ch}
+[style*="text-align:center"]>p, [style*="text-align: center"]>p, .text-center>p, .text-center p{margin-left:auto;margin-right:auto}
+p[style*="text-align:center"], p[style*="text-align: center"]{margin-left:auto;margin-right:auto}
 strong{font-weight:600}
 
-.text-center{text-align:center} .text-sm{font-size:var(--text-sm)}
+.text-center{text-align:center;margin-left:auto;margin-right:auto} .text-sm{font-size:var(--text-sm)}
 .text-lg{font-size:var(--text-lg);line-height:1.8}
 .text-slate{color:var(--slate)} .text-white{color:var(--white)}
 
