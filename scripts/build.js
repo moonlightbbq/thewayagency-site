@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
  * The Way Agency  -  Static Site Build Script
- * 
+ *
  * Generates product pages from data/products.json,
  * copies all files to build/, and generates sitemap.xml.
- * 
+ *
  * Usage: node scripts/build.js
  */
 
@@ -171,6 +171,231 @@ function findReviewerForProduct(product, lineKey) {
   return match || team.team[0];
 }
 
+// ─── Shared Template Functions ──────────────────
+
+function renderHead({ title, description, canonical, ogTitle, ogDescription, ogUrl, schema }) {
+  return `<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+  <meta name="description" content="${description}">
+  <link rel="canonical" href="${canonical}">
+  <meta property="og:title" content="${ogTitle || title}">
+  <meta property="og:description" content="${ogDescription || description}">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="${ogUrl || canonical}">
+  <meta property="og:site_name" content="The Way Agency">
+  <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
+  <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
+  <link rel="icon" href="/src/assets/images/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/css/base.css">
+  <link rel="stylesheet" href="/src/css/components.css">
+  <link rel="stylesheet" href="/src/css/leadgen.css">${schema ? `
+  ${schema}` : ''}
+</head>`;
+}
+
+function renderNav() {
+  return `  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo" aria-label="Home">
+        <picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></picture>
+      </a>
+      <div class="nav__links" id="navLinks">
+        <div class="nav__dropdown">
+          <a href="/personal/" class="nav__link">Personal</a>
+          <div class="nav__dropdown-menu">
+            <a href="/personal/home.html" class="nav__dropdown-item">Home</a>
+            <a href="/personal/auto.html" class="nav__dropdown-item">Auto</a>
+            <a href="/personal/renters.html" class="nav__dropdown-item">Renters</a>
+            <a href="/personal/umbrella.html" class="nav__dropdown-item">Umbrella</a>
+            <a href="/personal/flood.html" class="nav__dropdown-item">Flood</a>
+            <a href="/personal/motorcycle.html" class="nav__dropdown-item">Motorcycle</a>
+            <a href="/personal/boat.html" class="nav__dropdown-item">Boat</a>
+            <a href="/personal/classic-car.html" class="nav__dropdown-item">Classic Car</a>
+            <a href="/personal/earthquake.html" class="nav__dropdown-item">Earthquake</a>
+            <a href="/personal/pet.html" class="nav__dropdown-item">Pet</a>
+          </div>
+        </div>
+        <div class="nav__dropdown">
+          <a href="/commercial/" class="nav__link">Commercial</a>
+          <div class="nav__dropdown-menu">
+            <a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a>
+            <a href="/commercial/commercial-property.html" class="nav__dropdown-item">Commercial Property</a>
+            <a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Commercial Auto</a>
+            <a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a>
+            <a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a>
+            <a href="/commercial/bonds.html" class="nav__dropdown-item">Bonds</a>
+            <a href="/commercial/builders-risk.html" class="nav__dropdown-item">Builders Risk</a>
+            <a href="/commercial/special-event.html" class="nav__dropdown-item">Special Events</a>
+            <a href="/commercial/professional-liability.html" class="nav__dropdown-item">Professional Liability</a>
+          </div>
+        </div>
+        <div class="nav__dropdown">
+          <a href="/life-health/" class="nav__link">Life &amp; Health</a>
+          <div class="nav__dropdown-menu">
+            <a href="/life-health/medicare.html" class="nav__dropdown-item">Medicare</a>
+            <a href="/life-health/individual-health.html" class="nav__dropdown-item">Individual Health</a>
+            <a href="/life-health/group-health.html" class="nav__dropdown-item">Group Health</a>
+            <a href="/life-health/term-life.html" class="nav__dropdown-item">Term Life</a>
+            <a href="/life-health/whole-life.html" class="nav__dropdown-item">Whole Life</a>
+            <a href="/life-health/disability.html" class="nav__dropdown-item">Disability</a>
+            <a href="/life-health/final-expense.html" class="nav__dropdown-item">Final Expense</a>
+          </div>
+        </div>
+        <div class="nav__dropdown">
+          <a href="/about/" class="nav__link">About</a>
+          <div class="nav__dropdown-menu" style="grid-template-columns:1fr;">
+            <a href="/about/" class="nav__dropdown-item">Who We Are</a>
+            <a href="/about/team.html" class="nav__dropdown-item">Our Team</a>
+            <a href="/about/locations.html" class="nav__dropdown-item">Locations</a>
+          </div>
+        </div>
+        <a href="/blog/" class="nav__link">Blog</a>
+        <a href="/intake/" class="btn btn--primary">Get a Quote</a>
+      </div>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>`;
+}
+
+function renderFooter() {
+  return `  <footer class="footer">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <picture><source srcset="/src/assets/images/logo-horizontal-white.webp" type="image/webp"><img class="footer__logo" src="/src/assets/images/logo-horizontal-white.png" alt="The Way Agency" style="height:36px;width:auto;"></picture>
+        <address class="footer__address" style="font-style:normal;">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address>
+        <div class="footer__contact-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <a href="tel:+15024135335">${office.phone}</a>
+        </div>
+        <div class="footer__contact-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          <a href="mailto:${office.email}">${office.email}</a>
+        </div>
+        <p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p>
+        <a href="https://g.page/r/CSHCy85xJ8VOEBM/review" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:var(--space-sm);font-size:11px;color:rgba(255,255,255,0.7);text-decoration:none;">
+          <span style="color:#FBBC05;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span>5.0 from 19 Google reviews</span>
+        </a>
+      </div>
+      <div>
+        <h4 class="footer__heading">Personal</h4>
+        <div class="footer__link-list">
+          <a href="/personal/home.html">Home</a>
+          <a href="/personal/auto.html">Auto</a>
+          <a href="/personal/renters.html">Renters</a>
+          <a href="/personal/umbrella.html">Umbrella</a>
+          <a href="/personal/flood.html">Flood</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer__heading">Commercial</h4>
+        <div class="footer__link-list">
+          <a href="/commercial/general-liability.html">General Liability</a>
+          <a href="/commercial/commercial-property.html">Property</a>
+          <a href="/commercial/commercial-auto.html">Auto</a>
+          <a href="/commercial/workers-compensation.html">Workers Comp</a>
+          <a href="/commercial/cyber.html">Cyber</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer__heading">Company</h4>
+        <div class="footer__link-list">
+          <a href="/about/">About Us</a>
+          <a href="/about/team.html">Our Team</a>
+          <a href="/about/locations.html">Locations</a>
+          <a href="/blog/">Blog</a>
+          <a href="/intake/">Get a Quote</a>
+          <a href="/contact.html">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>&copy; 2026 The Way Agency. All rights reserved.</p>
+      <div class="footer__legal-links">
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+      </div>
+    </div>
+    <p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p>
+  </footer>`;
+}
+
+function renderHero({ eyebrow, title, subtitle, buttons, minHeight, bgStyle }) {
+  const height = minHeight || '40vh';
+  const eyebrowHtml = eyebrow ? `\n      <p class="hero__eyebrow">${eyebrow}</p>` : '';
+  const subtitleHtml = subtitle ? `\n      <p class="hero__subtitle">${subtitle}</p>` : '';
+  const bgStyleAttr = bgStyle ? ` style="${bgStyle}"` : '';
+  const buttonsHtml = buttons && buttons.length > 0 ? `\n      <div class="hero__actions">\n${buttons.map(b => `        <a href="${b.href}" class="${b.className || 'btn btn--primary btn--lg'}">${b.text}</a>`).join('\n')}\n      </div>` : '';
+  return `  <section class="hero" style="min-height:${height};">
+    <div class="hero__bg"${bgStyleAttr}></div>
+    <div class="hero__texture"></div>
+    <div class="hero__content">${eyebrowHtml}
+      <h1 class="hero__title">${title}</h1>${subtitleHtml}${buttonsHtml}
+    </div>
+    <div class="hero__accent"></div>
+  </section>`;
+}
+
+function renderCTA({ title, text, buttons, contactMethods }) {
+  const showContact = contactMethods !== false;
+  return `    <section class="cta-banner">
+      <div class="container">
+        <h2 class="cta-banner__title">${title}</h2>
+        <p class="cta-banner__text">${text}</p>
+        <div class="cta-banner__actions">
+${buttons.map(b => `          <a href="${b.href}" class="${b.className || 'btn btn--primary btn--lg'}">${b.text}</a>`).join('\n')}
+        </div>${showContact ? `
+        <div class="contact-methods">
+          <a href="tel:+15024135335">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
+            ${office.phone}
+          </a>
+          <a href="sms:+15024135335">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Text us
+          </a>
+          <a href="mailto:${office.email}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Email
+          </a>
+        </div>` : ''}
+      </div>
+    </section>`;
+}
+
+function renderInlineForm(formId, hiddenFields) {
+  const hiddenHtml = Object.entries(hiddenFields).map(([k, v]) =>
+    `          <input type="hidden" name="${k}" value="${v}">`
+  ).join('\n');
+  return `        <div class="inline-quote-section">
+          <h3>%%FORM_HEADING%%</h3>
+          <p>%%FORM_SUBTEXT%%</p>
+          <form class="inline-quote-form" novalidate>
+${hiddenHtml}
+            <label for="iq-name-${formId}" class="sr-only">Your name</label>
+            <input type="text" id="iq-name-${formId}" name="name" placeholder="Your name" required autocomplete="name">
+            <label for="iq-email-${formId}" class="sr-only">Email address</label>
+            <input type="email" id="iq-email-${formId}" name="email" placeholder="Email address" required autocomplete="email">
+            <label for="iq-phone-${formId}" class="sr-only">Phone (optional)</label>
+            <input type="tel" id="iq-phone-${formId}" name="phone" placeholder="Phone (optional)" autocomplete="tel">
+            <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off">
+            <button type="submit">Get Quote</button>
+          </form>
+          <p style="font-size:11px;color:var(--slate,#64748b);margin-top:8px;text-align:center;">We never sell your data. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
+        </div>`;
+}
+
+function renderScripts() {
+  return `  <div id="ai-chat-root"></div>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+  <script src="/src/js/app.js"></script>`;
+}
+
 // ─── Product Page Template ─────────────────────
 function generateProductPage(product, lineName, lineSlug, lineKey) {
   const rc = richContent[product.id] || {};
@@ -287,29 +512,8 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
         </div>
       </section>`;
 
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${product.title_tag}</title>
-  <meta name="description" content="${product.meta_description || product.summary}">
-  <link rel="canonical" href="https://www.thewayagency.com${product.url}">
-  <meta property="og:title" content="${product.title_tag}">
-  <meta property="og:description" content="${product.summary}">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.thewayagency.com${product.url}">
-  <meta property="og:site_name" content="The Way Agency">
-  <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
-  <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
-  <link rel="icon" href="/src/assets/images/favicon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/src/css/base.css">
-  <link rel="stylesheet" href="/src/css/components.css">
-  <link rel="stylesheet" href="/src/css/leadgen.css">
-  <script type="application/ld+json">
+  // Product page schema
+  const serviceSchema = `<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -335,84 +539,34 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
     ],
     "description": "${product.summary.replace(/"/g, '\\"')}"
   }
-  </script>${faqSchema}
-</head>
+  </script>${faqSchema}`;
+
+  // Build inline form
+  const formHtml = renderInlineForm(product.id, { product: product.id, lineOfBusiness: lineSlug })
+    .replace('%%FORM_HEADING%%', `Let's find the right ${product.name.toLowerCase()} for you`)
+    .replace('%%FORM_SUBTEXT%%', 'Tell us a little about yourself and we\'ll come back with the best options for your situation. No pressure, no jargon, just clear answers.');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+${renderHead({
+    title: product.title_tag,
+    description: product.meta_description || product.summary,
+    canonical: `https://www.thewayagency.com${product.url}`,
+    ogTitle: product.title_tag,
+    ogDescription: product.summary,
+    ogUrl: `https://www.thewayagency.com${product.url}`,
+    schema: serviceSchema,
+  })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
-  <nav class="nav" id="nav">
-    <div class="nav__inner">
-      <a href="/" class="nav__logo" aria-label="Home">
-        <picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></picture>
-      </a>
-      <div class="nav__links" id="navLinks">
-        <div class="nav__dropdown">
-          <a href="/personal/" class="nav__link">Personal</a>
-          <div class="nav__dropdown-menu">
-            <a href="/personal/home.html" class="nav__dropdown-item">Home</a>
-            <a href="/personal/auto.html" class="nav__dropdown-item">Auto</a>
-            <a href="/personal/renters.html" class="nav__dropdown-item">Renters</a>
-            <a href="/personal/umbrella.html" class="nav__dropdown-item">Umbrella</a>
-            <a href="/personal/flood.html" class="nav__dropdown-item">Flood</a>
-            <a href="/personal/motorcycle.html" class="nav__dropdown-item">Motorcycle</a>
-            <a href="/personal/boat.html" class="nav__dropdown-item">Boat</a>
-            <a href="/personal/classic-car.html" class="nav__dropdown-item">Classic Car</a>
-            <a href="/personal/earthquake.html" class="nav__dropdown-item">Earthquake</a>
-            <a href="/personal/pet.html" class="nav__dropdown-item">Pet</a>
-          </div>
-        </div>
-        <div class="nav__dropdown">
-          <a href="/commercial/" class="nav__link">Commercial</a>
-          <div class="nav__dropdown-menu">
-            <a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a>
-            <a href="/commercial/commercial-property.html" class="nav__dropdown-item">Commercial Property</a>
-            <a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Commercial Auto</a>
-            <a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a>
-            <a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a>
-            <a href="/commercial/bonds.html" class="nav__dropdown-item">Bonds</a>
-            <a href="/commercial/builders-risk.html" class="nav__dropdown-item">Builders Risk</a>
-            <a href="/commercial/special-event.html" class="nav__dropdown-item">Special Events</a>
-            <a href="/commercial/professional-liability.html" class="nav__dropdown-item">Professional Liability</a>
-          </div>
-        </div>
-        <div class="nav__dropdown">
-          <a href="/life-health/" class="nav__link">Life &amp; Health</a>
-          <div class="nav__dropdown-menu">
-            <a href="/life-health/medicare.html" class="nav__dropdown-item">Medicare</a>
-            <a href="/life-health/individual-health.html" class="nav__dropdown-item">Individual Health</a>
-            <a href="/life-health/group-health.html" class="nav__dropdown-item">Group Health</a>
-            <a href="/life-health/term-life.html" class="nav__dropdown-item">Term Life</a>
-            <a href="/life-health/whole-life.html" class="nav__dropdown-item">Whole Life</a>
-            <a href="/life-health/disability.html" class="nav__dropdown-item">Disability</a>
-            <a href="/life-health/final-expense.html" class="nav__dropdown-item">Final Expense</a>
-          </div>
-        </div>
-        <div class="nav__dropdown">
-          <a href="/about/" class="nav__link">About</a>
-          <div class="nav__dropdown-menu" style="grid-template-columns:1fr;">
-            <a href="/about/" class="nav__dropdown-item">Who We Are</a>
-            <a href="/about/team.html" class="nav__dropdown-item">Our Team</a>
-            <a href="/about/locations.html" class="nav__dropdown-item">Locations</a>
-          </div>
-        </div>
-        <a href="/blog/" class="nav__link">Blog</a>
-        <a href="/intake/" class="btn btn--primary">Get a Quote</a>
-      </div>
-      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
-    </div>
-  </nav>
+${renderNav()}
 
-  <section class="hero" style="min-height:40vh;">
-    <div class="hero__bg"></div>
-    <div class="hero__texture"></div>
-    <div class="hero__content">
-      <p class="hero__eyebrow">${lineName}</p>
-      <h1 class="hero__title">${product.h1 || product.name}</h1>
-      <div class="hero__actions">
-        <a href="/intake/?product=${product.id}" class="btn btn--primary btn--lg">Get a ${product.name} Quote</a>
-      </div>
-    </div>
-    <div class="hero__accent"></div>
-  </section>
+${renderHero({
+    eyebrow: lineName,
+    title: product.h1 || product.name,
+    buttons: [{ href: `/intake/?product=${product.id}`, text: `Get a ${product.name} Quote`, className: 'btn btn--primary btn--lg' }],
+    minHeight: '40vh',
+  })}
 
   ${generateCarrierMarquee(lineKey)}
 
@@ -426,23 +580,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
       ${costSection}
       ${faqSection}
       <!-- Inline Quote Form -->
-      <div class="inline-quote-section">
-        <h3>Let's find the right ${product.name.toLowerCase()} for you</h3>
-        <p>Tell us a little about yourself and we'll come back with the best options for your situation. No pressure, no jargon, just clear answers.</p>
-        <form class="inline-quote-form" novalidate>
-          <input type="hidden" name="product" value="${product.id}">
-          <input type="hidden" name="lineOfBusiness" value="${lineSlug}">
-          <label for="iq-name-${product.id}" class="sr-only">Your name</label>
-          <input type="text" id="iq-name-${product.id}" name="name" placeholder="Your name" required autocomplete="name">
-          <label for="iq-email-${product.id}" class="sr-only">Email address</label>
-          <input type="email" id="iq-email-${product.id}" name="email" placeholder="Email address" required autocomplete="email">
-          <label for="iq-phone-${product.id}" class="sr-only">Phone (optional)</label>
-          <input type="tel" id="iq-phone-${product.id}" name="phone" placeholder="Phone (optional)" autocomplete="tel">
-          <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off">
-          <button type="submit">Get Quote</button>
-        </form>
-        <p style="font-size:11px;color:var(--slate,#64748b);margin-top:8px;text-align:center;">We never sell your data. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
-      </div>
+${formHtml}
 
       ${relatedSection}
 
@@ -466,95 +604,19 @@ function generateProductPage(product, lineName, lineSlug, lineKey) {
 
     ${generateTestimonials(lineKey)}
 
-    <section class="cta-banner">
-      <div class="container">
-        <h2 class="cta-banner__title">Ready to talk about ${product.name.toLowerCase()}?</h2>
-        <p class="cta-banner__text">We'll listen, find the right carriers for your situation, and come back with clear options. No pressure.</p>
-        <div class="cta-banner__actions">
-          <a href="/intake/?product=${product.id}" class="btn btn--primary btn--lg">Get a Quote</a>
-          <a href="/contact.html" class="btn btn--outline-white btn--lg">Request a Review</a>
-        </div>
-        <div class="contact-methods">
-          <a href="tel:+15024135335">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
-            (502) 413-5335
-          </a>
-          <a href="sms:+15024135335">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            Text us
-          </a>
-          <a href="mailto:hello@thewayagency.com">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            Email
-          </a>
-        </div>
-      </div>
-    </section>
+${renderCTA({
+      title: `Ready to talk about ${product.name.toLowerCase()}?`,
+      text: "We'll listen, find the right carriers for your situation, and come back with clear options. No pressure.",
+      buttons: [
+        { href: `/intake/?product=${product.id}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
+        { href: '/contact.html', text: 'Request a Review', className: 'btn btn--outline-white btn--lg' },
+      ],
+      contactMethods: true,
+    })}
   </main>
 
-  <footer class="footer">
-    <div class="footer__grid">
-      <div class="footer__brand">
-        <picture><source srcset="/src/assets/images/logo-horizontal-white.webp" type="image/webp"><img class="footer__logo" src="/src/assets/images/logo-horizontal-white.png" alt="The Way Agency" style="height:36px;width:auto;"></picture>
-        <address class="footer__address" style="font-style:normal;">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address>
-        <div class="footer__contact-link">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          <a href="tel:+15024135335">${office.phone}</a>
-        </div>
-        <div class="footer__contact-link">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-          <a href="mailto:${office.email}">${office.email}</a>
-        </div>
-        <p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p>
-        <a href="https://g.page/r/CSHCy85xJ8VOEBM/review" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:var(--space-sm);font-size:11px;color:rgba(255,255,255,0.7);text-decoration:none;">
-          <span style="color:#FBBC05;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-          <span>5.0 from 19 Google reviews</span>
-        </a>
-      </div>
-      <div>
-        <h4 class="footer__heading">Personal</h4>
-        <div class="footer__link-list">
-          <a href="/personal/home.html">Home</a>
-          <a href="/personal/auto.html">Auto</a>
-          <a href="/personal/renters.html">Renters</a>
-          <a href="/personal/umbrella.html">Umbrella</a>
-          <a href="/personal/flood.html">Flood</a>
-        </div>
-      </div>
-      <div>
-        <h4 class="footer__heading">Commercial</h4>
-        <div class="footer__link-list">
-          <a href="/commercial/general-liability.html">General Liability</a>
-          <a href="/commercial/commercial-property.html">Property</a>
-          <a href="/commercial/commercial-auto.html">Auto</a>
-          <a href="/commercial/workers-compensation.html">Workers Comp</a>
-          <a href="/commercial/cyber.html">Cyber</a>
-        </div>
-      </div>
-      <div>
-        <h4 class="footer__heading">Company</h4>
-        <div class="footer__link-list">
-          <a href="/about/">About Us</a>
-          <a href="/about/team.html">Our Team</a>
-          <a href="/about/locations.html">Locations</a>
-          <a href="/blog/">Blog</a>
-          <a href="/intake/">Get a Quote</a>
-          <a href="/contact.html">Contact</a>
-        </div>
-      </div>
-    </div>
-    <div class="footer__bottom">
-      <p>&copy; 2026 The Way Agency. All rights reserved.</p>
-      <div class="footer__legal-links">
-        <a href="/privacy.html">Privacy</a>
-        <a href="/terms.html">Terms</a>
-      </div>
-    </div>
-    <p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p>
-  </footer>
-  <div id="ai-chat-root"></div>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
-  <script src="/src/js/app.js"></script>
+${renderFooter()}
+${renderScripts()}
 </body>
 </html>`;
 }
@@ -666,29 +728,7 @@ ensureDir(path.join(BUILD, 'insurance'));
 let geoCount = 0;
 
 for (const city of landingData.cities) {
-  const pageHtml = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Insurance in ${city.city}, ${city.state} | The Way Agency</title>
-  <meta name="description" content="Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from top-rated carriers. Get a free quote today.">
-  <link rel="canonical" href="https://www.thewayagency.com/insurance/${city.slug}.html">
-  <meta property="og:title" content="Insurance in ${city.city}, ${city.state} | The Way Agency">
-  <meta property="og:description" content="Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from top-rated carriers.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.thewayagency.com/insurance/${city.slug}.html">
-  <meta property="og:site_name" content="The Way Agency">
-  <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
-  <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
-  <link rel="icon" href="/src/assets/images/favicon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/src/css/base.css">
-  <link rel="stylesheet" href="/src/css/components.css">
-  <link rel="stylesheet" href="/src/css/leadgen.css">
-  <script type="application/ld+json">
+  const citySchema = `<script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "InsuranceAgency",
@@ -698,25 +738,37 @@ for (const city of landingData.cities) {
     "address": {"@type": "PostalAddress", "streetAddress": "${office.street}", "addressLocality": "${office.city}", "addressRegion": "${office.state}", "postalCode": "${office.zip}"},
     "areaServed": {"@type": "City", "name": "${city.city}", "containedIn": {"@type": "State", "name": "${city.state === 'KY' ? 'Kentucky' : city.state === 'IN' ? 'Indiana' : 'Tennessee'}"}}
   }
-  </script>
-</head>
+  </script>`;
+
+  const cityFormHtml = renderInlineForm(city.slug, { city: city.city, state: city.state })
+    .replace('%%FORM_HEADING%%', `Get a free insurance quote in ${city.city}`)
+    .replace('%%FORM_SUBTEXT%%', 'Tell us your name and email and a licensed agent will follow up with options.');
+
+  const pageHtml = `<!DOCTYPE html>
+<html lang="en">
+${renderHead({
+    title: `Insurance in ${city.city}, ${city.state} | The Way Agency`,
+    description: `Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from top-rated carriers. Get a free quote today.`,
+    canonical: `https://www.thewayagency.com/insurance/${city.slug}.html`,
+    ogTitle: `Insurance in ${city.city}, ${city.state} | The Way Agency`,
+    ogDescription: `Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from top-rated carriers.`,
+    ogUrl: `https://www.thewayagency.com/insurance/${city.slug}.html`,
+    schema: citySchema,
+  })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
-  <nav class="nav" id="nav"><div class="nav__inner"><a href="/" class="nav__logo"><picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></picture></a><div class="nav__links" id="navLinks"><div class="nav__dropdown"><a href="/personal/" class="nav__link">Personal</a><div class="nav__dropdown-menu"><a href="/personal/home.html" class="nav__dropdown-item">Home</a><a href="/personal/auto.html" class="nav__dropdown-item">Auto</a><a href="/personal/renters.html" class="nav__dropdown-item">Renters</a><a href="/personal/umbrella.html" class="nav__dropdown-item">Umbrella</a><a href="/personal/flood.html" class="nav__dropdown-item">Flood</a></div></div><div class="nav__dropdown"><a href="/commercial/" class="nav__link">Commercial</a><div class="nav__dropdown-menu"><a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a><a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a><a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Commercial Auto</a><a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a></div></div><div class="nav__dropdown"><a href="/life-health/" class="nav__link">Life &amp; Health</a><div class="nav__dropdown-menu"><a href="/life-health/medicare.html" class="nav__dropdown-item">Medicare</a><a href="/life-health/term-life.html" class="nav__dropdown-item">Term Life</a><a href="/life-health/group-health.html" class="nav__dropdown-item">Group Health</a></div></div><a href="/about/" class="nav__link">About</a><a href="/intake/" class="btn btn--primary">Get a Quote</a></div><button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button></div></nav>
+${renderNav()}
 
-  <section class="hero" style="min-height:45vh;">
-    <div class="hero__bg"></div><div class="hero__texture"></div>
-    <div class="hero__content">
-      <p class="hero__eyebrow">Serving ${city.county}</p>
-      <h1 class="hero__title">Insurance in ${city.city}, ${city.state}</h1>
-      <p class="hero__subtitle">We represent dozens of carriers so you get the right coverage at the right price. Personal, commercial, and life insurance for ${city.city} families and businesses.</p>
-      <div class="hero__actions">
-        <a href="/intake/?city=${encodeURIComponent(city.city)}&state=${encodeURIComponent(city.state)}" class="btn btn--primary btn--lg">Get a Free Quote</a>
-        <a href="tel:+15024135335" class="btn btn--outline-white btn--lg">Call ${office.phone}</a>
-      </div>
-    </div>
-    <div class="hero__accent"></div>
-  </section>
+${renderHero({
+    eyebrow: `Serving ${city.county}`,
+    title: `Insurance in ${city.city}, ${city.state}`,
+    subtitle: `We represent dozens of carriers so you get the right coverage at the right price. Personal, commercial, and life insurance for ${city.city} families and businesses.`,
+    buttons: [
+      { href: `/intake/?city=${encodeURIComponent(city.city)}&state=${encodeURIComponent(city.state)}`, text: 'Get a Free Quote', className: 'btn btn--primary btn--lg' },
+      { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
+    ],
+    minHeight: '45vh',
+  })}
 
   <main id="main">
     <div class="trust-bar"><div class="trust-bar__inner">
@@ -740,22 +792,7 @@ for (const city of landingData.cities) {
           <a href="/life-health/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Life &amp; Health</h3><p class="card__text">Medicare, health, life, disability, and employee benefits.</p><span class="card__link">View options <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span></a>
         </div>
 
-        <div class="inline-quote-section">
-          <h3>Get a free insurance quote in ${city.city}</h3>
-          <p>Tell us your name and email and a licensed agent will follow up with options.</p>
-          <form class="inline-quote-form" novalidate>
-            <input type="hidden" name="city" value="${city.city}">
-            <input type="hidden" name="state" value="${city.state}">
-            <label for="iq-name-${city.slug}" class="sr-only">Your name</label>
-            <input type="text" id="iq-name-${city.slug}" name="name" placeholder="Your name" required autocomplete="name">
-            <label for="iq-email-${city.slug}" class="sr-only">Email address</label>
-            <input type="email" id="iq-email-${city.slug}" name="email" placeholder="Email address" required autocomplete="email">
-            <label for="iq-phone-${city.slug}" class="sr-only">Phone (optional)</label>
-            <input type="tel" id="iq-phone-${city.slug}" name="phone" placeholder="Phone (optional)" autocomplete="tel">
-            <button type="submit">Get Quote</button>
-          </form>
-          <p style="font-size:11px;color:var(--slate,#64748b);margin-top:8px;text-align:center;">We never sell your data. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
-        </div>
+${cityFormHtml}
 
         <h2>How it works</h2>
         <p><strong>1. Tell us what you need.</strong> Request a quote online or call ${office.phone}. We just need basic info to get started.</p>
@@ -765,29 +802,21 @@ for (const city of landingData.cities) {
       </div>
     </section>
 
-    <section class="cta-banner">
-      <div class="container">
-        <h2 class="cta-banner__title">Ready to get started in ${city.city}?</h2>
-        <p class="cta-banner__text">Request a quote or call us directly. We're here to help.</p>
-        <div class="cta-banner__actions">
-          <a href="/intake/?city=${encodeURIComponent(city.city)}&state=${encodeURIComponent(city.state)}" class="btn btn--primary btn--lg">Get a Quote</a>
-          <a href="tel:+15024135335" class="btn btn--outline-white btn--lg">Call ${office.phone}</a>
-        </div>
-        <div class="contact-methods">
-          <a href="tel:+15024135335"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>${office.phone}</a>
-          <a href="sms:+15024135335"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Text us</a>
-          <a href="mailto:${office.email}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</a>
-        </div>
-      </div>
-    </section>
+${renderCTA({
+      title: `Ready to get started in ${city.city}?`,
+      text: "Request a quote or call us directly. We're here to help.",
+      buttons: [
+        { href: `/intake/?city=${encodeURIComponent(city.city)}&state=${encodeURIComponent(city.state)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
+        { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
+      ],
+      contactMethods: true,
+    })}
   </main>
 
-  <footer class="footer"><div class="footer__grid"><div class="footer__brand"><img class="footer__logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:36px;width:auto;filter:brightness(0) invert(1);"><address class="footer__address">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address><p style="font-size:var(--text-sm);margin-top:var(--space-sm);"><a href="tel:+15024135335">${office.phone}</a></p><p style="font-size:var(--text-sm);"><a href="mailto:${office.email}">${office.email}</a></p><p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p></div><div><h4 class="footer__heading">Personal</h4><div class="footer__link-list"><a href="/personal/home.html">Home</a><a href="/personal/auto.html">Auto</a><a href="/personal/renters.html">Renters</a><a href="/personal/umbrella.html">Umbrella</a><a href="/personal/flood.html">Flood</a></div></div><div><h4 class="footer__heading">Commercial</h4><div class="footer__link-list"><a href="/commercial/general-liability.html">General Liability</a><a href="/commercial/commercial-property.html">Property</a><a href="/commercial/commercial-auto.html">Auto</a><a href="/commercial/workers-compensation.html">Workers Comp</a><a href="/commercial/cyber.html">Cyber</a></div></div><div><h4 class="footer__heading">Company</h4><div class="footer__link-list"><a href="/about/">About Us</a><a href="/about/team.html">Our Team</a><a href="/about/locations.html">Locations</a><a href="/blog/">Blog</a><a href="/intake/">Get a Quote</a><a href="/contact.html">Contact</a></div></div></div><div class="footer__bottom"><p>&copy; 2026 The Way Agency.</p><div class="footer__legal-links"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div></div><p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p></footer>
-  <div id="ai-chat-root"></div>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
-  <script src="/src/js/app.js"></script>
+${renderFooter()}
+${renderScripts()}
 </body>
-</html>`.replace(/CONFIG_PHONE_RAW/g, '+15024135335');
+</html>`;
   fs.writeFileSync(path.join(BUILD, 'insurance', `${city.slug}.html`), injectVersion(pageHtml));
   geoCount++;
 }
@@ -799,46 +828,36 @@ let indCount = 0;
 
 for (const ind of landingData.industries) {
   const coverageList = ind.typical_coverage.map(c => `<li>${c}</li>`).join('\n            ');
+
+  const indFormHtml = renderInlineForm(ind.slug, { industry: ind.slug, lineOfBusiness: 'commercial' })
+    .replace('%%FORM_HEADING%%', `Get a quote for your ${ind.name.toLowerCase().replace(/s$/, '')} business`)
+    .replace('%%FORM_SUBTEXT%%', 'Tell us about your business and we\'ll come back with coverage options from carriers that specialize in your industry.');
+
   const indHtml = `<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Insurance for ${ind.name} in Kentucky | The Way Agency</title>
-  <meta name="description" content="Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. ${ind.description.split('.')[0]}. Get a free quote from top-rated carriers.">
-  <link rel="canonical" href="https://www.thewayagency.com/industries/${ind.slug}.html">
-  <meta property="og:title" content="Insurance for ${ind.name} in Kentucky | The Way Agency">
-  <meta property="og:description" content="Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. Get a free quote from top-rated carriers.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.thewayagency.com/industries/${ind.slug}.html">
-  <meta property="og:site_name" content="The Way Agency">
-  <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
-  <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
-  <link rel="icon" href="/src/assets/images/favicon.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/src/css/base.css">
-  <link rel="stylesheet" href="/src/css/components.css">
-  <link rel="stylesheet" href="/src/css/leadgen.css">
-</head>
+${renderHead({
+    title: `Insurance for ${ind.name} in Kentucky | The Way Agency`,
+    description: `Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. ${ind.description.split('.')[0]}. Get a free quote from top-rated carriers.`,
+    canonical: `https://www.thewayagency.com/industries/${ind.slug}.html`,
+    ogTitle: `Insurance for ${ind.name} in Kentucky | The Way Agency`,
+    ogDescription: `Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. Get a free quote from top-rated carriers.`,
+    ogUrl: `https://www.thewayagency.com/industries/${ind.slug}.html`,
+  })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
-  <nav class="nav" id="nav"><div class="nav__inner"><a href="/" class="nav__logo"><picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></picture></a><div class="nav__links" id="navLinks"><a href="/personal/" class="nav__link">Personal</a><div class="nav__dropdown"><a href="/commercial/" class="nav__link">Commercial</a><div class="nav__dropdown-menu"><a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a><a href="/commercial/commercial-property.html" class="nav__dropdown-item">Property</a><a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Auto</a><a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a><a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a><a href="/commercial/bonds.html" class="nav__dropdown-item">Bonds</a></div></div><a href="/life-health/" class="nav__link">Life &amp; Health</a><a href="/about/" class="nav__link">About</a><a href="/intake/" class="btn btn--primary">Get a Quote</a></div><button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button></div></nav>
+${renderNav()}
 
-  <section class="hero" style="min-height:45vh;">
-    <div class="hero__bg" style="background:linear-gradient(135deg, #0F2240 0%, #173358 40%, #2680B5 100%);"></div><div class="hero__texture"></div>
-    <div class="hero__content">
-      <p class="hero__eyebrow">Industry Specialty</p>
-      <h1 class="hero__title">Insurance for<br>${ind.name}</h1>
-      <p class="hero__subtitle">${ind.description}</p>
-      <div class="hero__actions">
-        <a href="/intake/?line=commercial&industry=${ind.slug}" class="btn btn--primary btn--lg">Get a Quote</a>
-        <a href="tel:+15024135335" class="btn btn--outline-white btn--lg">Call ${office.phone}</a>
-      </div>
-    </div>
-    <div class="hero__accent"></div>
-  </section>
+${renderHero({
+    eyebrow: 'Industry Specialty',
+    title: `Insurance for<br>${ind.name}`,
+    subtitle: ind.description,
+    buttons: [
+      { href: `/intake/?line=commercial&industry=${ind.slug}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
+      { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
+    ],
+    minHeight: '45vh',
+    bgStyle: 'background:linear-gradient(135deg, #0F2240 0%, #173358 40%, #2680B5 100%);',
+  })}
 
   <main id="main">
     <section class="section">
@@ -853,22 +872,7 @@ for (const ind of landingData.industries) {
         <p>${ind.ky_notes}</p>
         <p>We represent dozens of carriers including specialty markets for ${ind.name.toLowerCase()}, which means we can often find coverage that generalist agencies cannot. We also handle certificates of insurance, additional insured endorsements, and audit support.</p>
 
-        <div class="inline-quote-section">
-          <h3>Get a quote for your ${ind.name.toLowerCase().replace(/s$/, '')} business</h3>
-          <p>Tell us about your business and we'll come back with coverage options from carriers that specialize in your industry.</p>
-          <form class="inline-quote-form" novalidate>
-            <input type="hidden" name="industry" value="${ind.slug}">
-            <input type="hidden" name="lineOfBusiness" value="commercial">
-            <label for="iq-name-${ind.slug}" class="sr-only">Your name</label>
-            <input type="text" id="iq-name-${ind.slug}" name="name" placeholder="Your name" required autocomplete="name">
-            <label for="iq-email-${ind.slug}" class="sr-only">Email address</label>
-            <input type="email" id="iq-email-${ind.slug}" name="email" placeholder="Email address" required autocomplete="email">
-            <label for="iq-phone-${ind.slug}" class="sr-only">Phone (optional)</label>
-            <input type="tel" id="iq-phone-${ind.slug}" name="phone" placeholder="Phone (optional)" autocomplete="tel">
-            <button type="submit">Get Quote</button>
-          </form>
-          <p style="font-size:11px;color:var(--slate,#64748b);margin-top:8px;text-align:center;">We never sell your data. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
-        </div>
+${indFormHtml}
 
         <h2>Why choose The Way Agency for ${ind.name.toLowerCase()} insurance?</h2>
         <p><strong>Industry experience.</strong> We understand the specific risks, contract requirements, and coverage gaps that ${ind.name.toLowerCase()} face. We don't sell generic policies  -  we build programs that match real-world operations.</p>
@@ -878,26 +882,19 @@ for (const ind of landingData.industries) {
       </div>
     </section>
 
-    <section class="cta-banner">
-      <div class="container">
-        <h2 class="cta-banner__title">Get coverage for your ${ind.name.toLowerCase().replace(/s$/, '')} business</h2>
-        <p class="cta-banner__text">We'll build a program that matches your operations, contracts, and budget.</p>
-        <div class="cta-banner__actions">
-          <a href="/intake/?line=commercial&industry=${ind.slug}" class="btn btn--primary btn--lg">Get a Quote</a>
-          <a href="tel:+15024135335" class="btn btn--outline-white btn--lg">Call ${office.phone}</a>
-        </div>
-        <div class="contact-methods">
-          <a href="tel:+15024135335"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>${office.phone}</a>
-          <a href="sms:+15024135335"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Text us</a>
-        </div>
-      </div>
-    </section>
+${renderCTA({
+      title: `Get coverage for your ${ind.name.toLowerCase().replace(/s$/, '')} business`,
+      text: "We'll build a program that matches your operations, contracts, and budget.",
+      buttons: [
+        { href: `/intake/?line=commercial&industry=${ind.slug}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
+        { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
+      ],
+      contactMethods: true,
+    })}
   </main>
 
-  <footer class="footer"><div class="footer__grid"><div class="footer__brand"><img class="footer__logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:36px;width:auto;filter:brightness(0) invert(1);"><address class="footer__address">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address><p style="font-size:var(--text-sm);margin-top:var(--space-sm);"><a href="tel:+15024135335">${office.phone}</a></p><p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p></div><div><h4 class="footer__heading">Coverage</h4><div class="footer__link-list"><a href="/personal/">Personal</a><a href="/commercial/">Commercial</a><a href="/life-health/">Life &amp; Health</a></div></div><div><h4 class="footer__heading">Company</h4><div class="footer__link-list"><a href="/about/">About Us</a><a href="/about/team.html">Our Team</a><a href="/blog/">Blog</a><a href="/intake/">Quote</a></div></div><div></div></div><div class="footer__bottom"><p>&copy; 2026 The Way Agency.</p><div class="footer__legal-links"><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div></div><p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p></footer>
-  <div id="ai-chat-root"></div>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
-  <script src="/src/js/app.js"></script>
+${renderFooter()}
+${renderScripts()}
 </body>
 </html>`;
   fs.writeFileSync(path.join(BUILD, 'industries', `${ind.slug}.html`), injectVersion(indHtml));
@@ -905,7 +902,33 @@ for (const ind of landingData.industries) {
 }
 console.log(`  ✓ Generated ${indCount} industry landing pages`);
 
-// 7. Generate sitemap.xml
+// 7. Copy root files
+for (const file of ['_redirects', '_headers', 'robots.txt']) {
+  const src = path.join(ROOT, file);
+  if (fs.existsSync(src)) {
+    fs.copyFileSync(src, path.join(BUILD, file));
+    console.log(`  ✓ ${file}`);
+  }
+}
+
+// 8. Copy customer-facing portal pages (migrated from sage-server)
+const portalPages = [
+  { src: 'intake.html', dest: 'intake/index.html', sitemap: '/intake/' },
+  { src: 'portal.html', dest: 'portal/index.html', sitemap: null },  // Token-based, not indexable
+  { src: 'partner.html', dest: 'partner/index.html', sitemap: null }, // Token-based, not indexable
+];
+for (const page of portalPages) {
+  const srcFile = path.join(SRC, page.src);
+  if (fs.existsSync(srcFile)) {
+    const destDir = path.join(BUILD, path.dirname(page.dest));
+    ensureDir(destDir);
+    const pageContent = fs.readFileSync(srcFile, 'utf8');
+    fs.writeFileSync(path.join(BUILD, page.dest), injectVersion(pageContent));
+    console.log(`  ✓ ${page.dest}`);
+  }
+}
+
+// 9. Generate sitemap.xml (single generation with all pages)
 const baseUrl = 'https://www.thewayagency.com';
 const today = new Date().toISOString().split('T')[0];
 
@@ -954,6 +977,13 @@ if (fs.existsSync(blogDir)) {
   }
 }
 
+// Add portal pages to sitemap
+for (const page of portalPages) {
+  if (page.sitemap && fs.existsSync(path.join(SRC, page.src))) {
+    sitemapUrls.push({ url: page.sitemap, priority: '0.8', freq: 'monthly' });
+  }
+}
+
 const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${sitemapUrls.map(u => `  <url>
@@ -966,47 +996,6 @@ ${sitemapUrls.map(u => `  <url>
 
 fs.writeFileSync(path.join(BUILD, 'sitemap.xml'), sitemapXml);
 console.log(`  ✓ sitemap.xml (${sitemapUrls.length} URLs)`);
-
-// 8. Copy root files
-for (const file of ['_redirects', '_headers', 'robots.txt']) {
-  const src = path.join(ROOT, file);
-  if (fs.existsSync(src)) {
-    fs.copyFileSync(src, path.join(BUILD, file));
-    console.log(`  ✓ ${file}`);
-  }
-}
-
-// 9. Copy customer-facing portal pages (migrated from sage-server)
-const portalPages = [
-  { src: 'intake.html', dest: 'intake/index.html', sitemap: '/intake/' },
-  { src: 'portal.html', dest: 'portal/index.html', sitemap: null },  // Token-based, not indexable
-  { src: 'partner.html', dest: 'partner/index.html', sitemap: null }, // Token-based, not indexable
-];
-for (const page of portalPages) {
-  const srcFile = path.join(SRC, page.src);
-  if (fs.existsSync(srcFile)) {
-    const destDir = path.join(BUILD, path.dirname(page.dest));
-    ensureDir(destDir);
-    const pageContent = fs.readFileSync(srcFile, 'utf8');
-    fs.writeFileSync(path.join(BUILD, page.dest), injectVersion(pageContent));
-    if (page.sitemap) {
-      sitemapUrls.push({ url: page.sitemap, priority: '0.8', freq: 'monthly' });
-    }
-    console.log(`  ✓ ${page.dest}`);
-  }
-}
-
-// Regenerate sitemap with portal pages included
-const finalSitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${sitemapUrls.map(u => `  <url>
-    <loc>${baseUrl}${u.url}</loc>
-    <lastmod>${u.lastmod || today}</lastmod>
-    <changefreq>${u.freq}</changefreq>
-    <priority>${u.priority}</priority>
-  </url>`).join('\n')}
-</urlset>`;
-fs.writeFileSync(path.join(BUILD, 'sitemap.xml'), finalSitemapXml);
 
 console.log(`\n✅ Build complete! ${generatedCount + rootPages.length + subPages.length + portalPages.length} pages in build/`);
 console.log(`   Total files: ${sitemapUrls.length} indexable URLs`);
