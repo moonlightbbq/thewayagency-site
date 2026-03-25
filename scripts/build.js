@@ -592,7 +592,7 @@ if (fs.existsSync(path.join(SRC, 'assets'))) {
 }
 
 // 5. Copy all hand-crafted pages (root level)
-const rootPages = ['index.html', 'contact.html', 'privacy.html', 'terms.html', 'login.html'];
+const rootPages = ['index.html', 'contact.html', 'privacy.html', 'terms.html', 'login.html', '404.html'];
 for (const file of rootPages) {
   const src = path.join(SRC, 'pages', file);
   if (fs.existsSync(src)) {
