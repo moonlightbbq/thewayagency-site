@@ -424,7 +424,7 @@
           </svg>
           <h2 style="margin-bottom:var(--space-md);">Quote request received</h2>
           <p style="color:var(--slate);font-size:var(--text-lg);font-weight:300;max-width:480px;margin:0 auto var(--space-lg);">
-            A licensed agent will reach out within ${CONFIG.responseTimeMinutes} minutes during business hours (Mon–Fri, 8:30 AM – 5:00 PM).
+            A licensed agent will contact you same day during business hours (Mon–Fri, 8:30 AM – 5:00 PM).
           </p>
           <p style="color:var(--slate);font-size:var(--text-sm);">
             Prefer to talk now? <a href="tel:${CONFIG.phoneRaw}" style="font-weight:600;">Call ${CONFIG.phone}</a> or <a href="sms:${CONFIG.phoneRaw}" style="font-weight:600;">text us</a>.
