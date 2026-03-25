@@ -261,12 +261,9 @@ function renderInlineForm(formId, hiddenFields) {
           <p>%%FORM_SUBTEXT%%</p>
           <form class="inline-quote-form" novalidate>
 ${hiddenHtml}
-            <label for="iq-name-${formId}" class="sr-only">Your name</label>
-            <input type="text" id="iq-name-${formId}" name="name" placeholder="Your name" required autocomplete="name">
-            <label for="iq-email-${formId}" class="sr-only">Email address</label>
-            <input type="email" id="iq-email-${formId}" name="email" placeholder="Email address" required autocomplete="email">
-            <label for="iq-phone-${formId}" class="sr-only">Phone (optional)</label>
-            <input type="tel" id="iq-phone-${formId}" name="phone" placeholder="Phone (optional)" autocomplete="tel">
+            <input type="text" name="name" placeholder="Your name" required autocomplete="name" aria-label="Your name">
+            <input type="email" name="email" placeholder="Email address" required autocomplete="email" aria-label="Email address">
+            <input type="tel" name="phone" placeholder="Phone (optional)" autocomplete="tel" aria-label="Phone (optional)">
             <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off">
             <button type="submit">Get Quote</button>
           </form>
