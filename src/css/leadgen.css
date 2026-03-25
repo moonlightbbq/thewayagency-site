@@ -9,6 +9,9 @@
   border-radius: var(--border-radius-lg);
   padding: var(--space-2xl);
   margin: var(--space-2xl) 0;
+  overflow: hidden;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .inline-quote-section h3 {
@@ -26,9 +29,14 @@
 
 .inline-quote-form {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
+  grid-template-columns: 1fr 1fr;
   gap: var(--space-sm);
   align-items: end;
+}
+@media (min-width: 900px) {
+  .inline-quote-form {
+    grid-template-columns: 1fr 1fr 1fr auto;
+  }
 }
 
 .inline-quote-form input {
@@ -73,12 +81,15 @@
   color: var(--white);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .inline-quote-form {
     grid-template-columns: 1fr;
   }
   .inline-quote-form button {
     width: 100%;
+  }
+  .inline-quote-section {
+    padding: var(--space-lg);
   }
 }
 
