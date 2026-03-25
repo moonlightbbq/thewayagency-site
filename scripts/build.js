@@ -754,13 +754,13 @@ if (fs.existsSync(blogSrcDir)) {
   ensureDir(path.join(BUILD, 'blog'));
   let blogCount = 0;
   for (const file of fs.readdirSync(blogSrcDir)) {
-    if (file.endsWith('.html') && file !== 'index.html') {
+    if (file.endsWith('.html')) {
       const content = fs.readFileSync(path.join(blogSrcDir, file), 'utf8');
       fs.writeFileSync(path.join(BUILD, 'blog', file), injectVersion(content));
       blogCount++;
     }
   }
-  if (blogCount > 0) console.log(`  ✓ Copied ${blogCount} blog posts`);
+  if (blogCount > 0) console.log(`  ✓ Copied ${blogCount} blog posts (including index)`);
 }
 
 // 5c. Run blog generator (Markdown → HTML + auto-generate blog index from calendar)
