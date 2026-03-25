@@ -115,9 +115,10 @@ function extractFAQs(body) {
   return faqs;
 }
 
-// ─── Load shared data ───────────────────────
+// ─── Load shared data and templates ──────────
 const locations = JSON.parse(fs.readFileSync(path.join(DATA, 'locations.json'), 'utf8'));
 const office = locations.offices[0];
+const { renderNav, renderFooter, renderScripts } = require('./shared-templates');
 
 // ─── Blog post HTML template ────────────────
 function generateBlogPost(meta, bodyHtml, faqs) {
@@ -197,67 +198,7 @@ function generateBlogPost(meta, bodyHtml, faqs) {
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
-  <nav class="nav" id="nav">
-    <div class="nav__inner">
-      <a href="/" class="nav__logo" aria-label="Home">
-        <picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></picture>
-      </a>
-      <div class="nav__links" id="navLinks">
-        <div class="nav__dropdown">
-          <a href="/personal/" class="nav__link">Personal</a>
-          <div class="nav__dropdown-menu">
-            <a href="/personal/home.html" class="nav__dropdown-item">Home</a>
-            <a href="/personal/auto.html" class="nav__dropdown-item">Auto</a>
-            <a href="/personal/renters.html" class="nav__dropdown-item">Renters</a>
-            <a href="/personal/umbrella.html" class="nav__dropdown-item">Umbrella</a>
-            <a href="/personal/flood.html" class="nav__dropdown-item">Flood</a>
-            <a href="/personal/motorcycle.html" class="nav__dropdown-item">Motorcycle</a>
-            <a href="/personal/boat.html" class="nav__dropdown-item">Boat</a>
-            <a href="/personal/classic-car.html" class="nav__dropdown-item">Classic Car</a>
-            <a href="/personal/earthquake.html" class="nav__dropdown-item">Earthquake</a>
-            <a href="/personal/pet.html" class="nav__dropdown-item">Pet</a>
-          </div>
-        </div>
-        <div class="nav__dropdown">
-          <a href="/commercial/" class="nav__link">Commercial</a>
-          <div class="nav__dropdown-menu">
-            <a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a>
-            <a href="/commercial/commercial-property.html" class="nav__dropdown-item">Commercial Property</a>
-            <a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Commercial Auto</a>
-            <a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a>
-            <a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a>
-            <a href="/commercial/bonds.html" class="nav__dropdown-item">Bonds</a>
-            <a href="/commercial/builders-risk.html" class="nav__dropdown-item">Builders Risk</a>
-            <a href="/commercial/special-event.html" class="nav__dropdown-item">Special Events</a>
-            <a href="/commercial/professional-liability.html" class="nav__dropdown-item">Professional Liability</a>
-          </div>
-        </div>
-        <div class="nav__dropdown">
-          <a href="/life-health/" class="nav__link">Life &amp; Health</a>
-          <div class="nav__dropdown-menu">
-            <a href="/life-health/medicare.html" class="nav__dropdown-item">Medicare</a>
-            <a href="/life-health/individual-health.html" class="nav__dropdown-item">Individual Health</a>
-            <a href="/life-health/group-health.html" class="nav__dropdown-item">Group Health</a>
-            <a href="/life-health/term-life.html" class="nav__dropdown-item">Term Life</a>
-            <a href="/life-health/whole-life.html" class="nav__dropdown-item">Whole Life</a>
-            <a href="/life-health/disability.html" class="nav__dropdown-item">Disability</a>
-            <a href="/life-health/final-expense.html" class="nav__dropdown-item">Final Expense</a>
-          </div>
-        </div>
-        <div class="nav__dropdown">
-          <a href="/about/" class="nav__link">About</a>
-          <div class="nav__dropdown-menu" style="grid-template-columns:1fr;">
-            <a href="/about/" class="nav__dropdown-item">Who We Are</a>
-            <a href="/about/team.html" class="nav__dropdown-item">Our Team</a>
-            <a href="/about/locations.html" class="nav__dropdown-item">Locations</a>
-          </div>
-        </div>
-        <a href="/blog/" class="nav__link">Blog</a>
-        <a href="/intake/" class="btn btn--primary">Get a Quote</a>
-      </div>
-      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
-    </div>
-  </nav>
+${renderNav()}
 
   <section class="hero" style="min-height:30vh;">
     <div class="hero__bg"></div><div class="hero__texture"></div>
@@ -290,113 +231,200 @@ function generateBlogPost(meta, bodyHtml, faqs) {
     </section>
   </main>
 
-  <footer class="footer">
-    <div class="footer__grid">
-      <div class="footer__brand">
-        <picture><source srcset="/src/assets/images/logo-horizontal-white.webp" type="image/webp"><img class="footer__logo" src="/src/assets/images/logo-horizontal-white.png" alt="The Way Agency" style="height:36px;width:auto;"></picture>
-        <address class="footer__address" style="font-style:normal;">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address>
-        <div class="footer__contact-link">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          <a href="tel:+15024135335">${office.phone}</a>
-        </div>
-        <div class="footer__contact-link">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-          <a href="mailto:${office.email}">${office.email}</a>
-        </div>
-        <p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p>
-        <a href="https://g.page/r/CSHCy85xJ8VOEBM/review" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:var(--space-sm);font-size:11px;color:rgba(255,255,255,0.7);text-decoration:none;">
-          <span style="color:#FBBC05;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-          <span>5.0 from 19 Google reviews</span>
-        </a>
-        <div class="footer__socials">
-          <a href="https://www.facebook.com/TheWayAgency/" aria-label="Facebook" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg></a>
-          <a href="https://www.instagram.com/thewayagencyins/" aria-label="Instagram" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg></a>
-          <a href="https://www.linkedin.com/company/the-way-agency-insurance" aria-label="LinkedIn" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg></a>
-        </div>
-      </div>
-      <div>
-        <h4 class="footer__heading">Personal</h4>
-        <div class="footer__link-list">
-          <a href="/personal/home.html">Home</a>
-          <a href="/personal/auto.html">Auto</a>
-          <a href="/personal/renters.html">Renters</a>
-          <a href="/personal/umbrella.html">Umbrella</a>
-          <a href="/personal/flood.html">Flood</a>
-        </div>
-      </div>
-      <div>
-        <h4 class="footer__heading">Commercial</h4>
-        <div class="footer__link-list">
-          <a href="/commercial/general-liability.html">General Liability</a>
-          <a href="/commercial/commercial-property.html">Property</a>
-          <a href="/commercial/commercial-auto.html">Auto</a>
-          <a href="/commercial/workers-compensation.html">Workers Comp</a>
-          <a href="/commercial/cyber.html">Cyber</a>
-        </div>
-      </div>
-      <div>
-        <h4 class="footer__heading">Company</h4>
-        <div class="footer__link-list">
-          <a href="/about/">About Us</a>
-          <a href="/about/team.html">Our Team</a>
-          <a href="/about/locations.html">Locations</a>
-          <a href="/blog/">Blog</a>
-          <a href="/intake/">Get a Quote</a>
-          <a href="/contact.html">Contact</a>
-        </div>
-      </div>
+${renderFooter(office)}
+${renderScripts()}
+</body>
+</html>`;
+}
+
+// ─── Blog index page template ────────────────
+function generateBlogIndex(allPosts) {
+  const cards = allPosts.map(p => {
+    const date = new Date(p.publish_date + 'T12:00:00');
+    const dateLabel = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+    return `
+          <a href="/blog/${p.slug}.html" class="card" style="text-decoration:none;">
+            <p style="font-size:var(--text-xs);color:var(--slate);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--space-sm);">${dateLabel}</p>
+            <h3 class="card__title" style="font-size:var(--text-xl);">${p.title}</h3>
+            <p class="card__text">${p.description}</p>
+            <span class="card__link">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+          </a>`;
+  }).join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Insurance Blog | Tips & Insights | The Way Agency</title>
+  <meta name="description" content="Insurance insights, tips, and Kentucky-specific guidance from The Way Agency team. Practical advice in plain language.">
+  <link rel="canonical" href="https://www.thewayagency.com/blog/">
+    <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
+  <link rel="icon" href="/src/assets/images/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/src/css/base.css">
+  <link rel="stylesheet" href="/src/css/components.css">
+  <link rel="stylesheet" href="/src/css/leadgen.css">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Insurance Blog | Tips &amp; Insights | The Way Agency">
+  <meta property="og:description" content="Insurance insights, tips, and Kentucky-specific guidance from The Way Agency team. Practical advice in plain language.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.thewayagency.com/blog/">
+  <meta property="og:site_name" content="The Way Agency">
+  <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "Insurance Blog | Tips & Insights",
+    "url": "https://www.thewayagency.com/blog/",
+    "description": "Insurance insights, tips, and Kentucky-specific guidance from The Way Agency team.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "The Way Agency",
+      "url": "https://www.thewayagency.com"
+    }
+  }
+  </script>
+
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+${renderNav()}
+
+  <section class="hero" style="min-height:35vh;">
+    <div class="hero__bg"></div>
+    <div class="hero__texture"></div>
+    <div class="hero__content">
+      <p class="hero__eyebrow">Blog</p>
+      <h1 class="hero__title">Insurance insights<br>&amp; practical tips</h1>
+      <p class="hero__subtitle">Practical advice from our licensed agents. No jargon, no fluff  -  just useful information for Kentucky families and businesses.</p>
     </div>
-    <div class="footer__bottom">
-      <p>&copy; ${new Date().getFullYear()} The Way Agency. All rights reserved.</p>
-      <div class="footer__legal-links">
-        <a href="/privacy.html">Privacy</a>
-        <a href="/terms.html">Terms</a>
+    <div class="hero__accent"></div>
+  </section>
+
+  <main id="main">
+    <section class="section">
+      <div class="container">
+        <div class="grid grid--3">${cards}
+        </div>
       </div>
-    </div>
-    <p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p>
-  </footer>
-  <div id="ai-chat-root"></div>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
-  <script src="/src/js/app.js"></script>
+    </section>
+
+    <section class="cta-banner">
+      <div class="container">
+        <h2 class="cta-banner__title">Have an insurance question?</h2>
+        <p class="cta-banner__text">We're happy to answer questions about your coverage, even if you're not a client yet.</p>
+        <div class="cta-banner__actions">
+          <a href="/intake/" class="btn btn--primary btn--lg">Get a Quote</a>
+          <a href="/contact.html" class="btn btn--outline-white btn--lg">Ask a Question</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+${renderFooter(office)}
+${renderScripts()}
 </body>
 </html>`;
 }
 
 // ─── Build ──────────────────────────────────
-if (!fs.existsSync(BLOG_SRC)) {
-  console.log('No src/blog/ directory found. Create Markdown posts there to use the blog generator.');
-  process.exit(0);
+
+// Ensure build/blog/ exists
+if (!fs.existsSync(BLOG_BUILD)) {
+  fs.mkdirSync(BLOG_BUILD, { recursive: true });
 }
 
-const mdFiles = fs.readdirSync(BLOG_SRC).filter(f => f.endsWith('.md'));
-if (mdFiles.length === 0) {
-  console.log('No Markdown files found in src/blog/');
-  process.exit(0);
-}
-
-console.log(`\n📝 Generating ${mdFiles.length} blog posts...\n`);
-
+// 1. Convert Markdown posts to HTML
 const posts = [];
 
-for (const file of mdFiles) {
-  const raw = fs.readFileSync(path.join(BLOG_SRC, file), 'utf8');
-  const { meta, body } = parseFrontMatter(raw);
+if (fs.existsSync(BLOG_SRC)) {
+  const mdFiles = fs.readdirSync(BLOG_SRC).filter(f => f.endsWith('.md'));
+  if (mdFiles.length > 0) {
+    console.log(`\n  Generating ${mdFiles.length} blog posts from Markdown...\n`);
+    for (const file of mdFiles) {
+      const raw = fs.readFileSync(path.join(BLOG_SRC, file), 'utf8');
+      const { meta, body } = parseFrontMatter(raw);
 
-  if (!meta.title || !meta.slug) {
-    console.log(`  ⚠ Skipping ${file}  -  missing title or slug in front matter`);
-    continue;
+      if (!meta.title || !meta.slug) {
+        console.log(`  ! Skipping ${file}  -  missing title or slug in front matter`);
+        continue;
+      }
+
+      const faqs = extractFAQs(body);
+      const cleanBody = body.replace(/### FAQ: .+?\n\n[\s\S]*?(?=\n###|\n## |$)/g, '');
+      const bodyHtml = markdownToHtml(cleanBody);
+      const html = generateBlogPost(meta, bodyHtml, faqs);
+
+      fs.writeFileSync(path.join(BLOG_BUILD, `${meta.slug}.html`), html);
+      posts.push(meta);
+      console.log(`  ✓ ${meta.slug}.html  -  "${meta.title}"`);
+    }
   }
-
-  const faqs = extractFAQs(body);
-  // Remove FAQ sections from body before converting (they render separately)
-  const cleanBody = body.replace(/### FAQ: .+?\n\n[\s\S]*?(?=\n###|\n## |$)/g, '');
-  const bodyHtml = markdownToHtml(cleanBody);
-  const html = generateBlogPost(meta, bodyHtml, faqs);
-
-  fs.writeFileSync(path.join(BLOG_BUILD, `${meta.slug}.html`), html);
-  posts.push(meta);
-  console.log(`  ✓ ${meta.slug}.html  -  "${meta.title}"`);
 }
 
-console.log(`\n✅ Generated ${posts.length} blog posts from Markdown`);
-console.log('   Run "node scripts/build.js" to update the sitemap.\n');
+// 2. Generate blog index from content-calendar.json
+const calendarPath = path.join(DATA, 'content-calendar.json');
+if (fs.existsSync(calendarPath)) {
+  const calendar = JSON.parse(fs.readFileSync(calendarPath, 'utf8'));
+
+  // Collect all published posts: existing_posts + year1 entries with status "published"
+  const allPublished = [];
+
+  for (const post of (calendar.existing_posts || [])) {
+    if (post.status === 'published') {
+      allPublished.push({
+        slug: post.slug,
+        title: post.title,
+        description: post.description,
+        publish_date: post.publish_date
+      });
+    }
+  }
+
+  for (const post of (calendar.year1 || [])) {
+    if (post.status === 'published') {
+      allPublished.push({
+        slug: post.slug,
+        title: post.title,
+        description: post.description,
+        publish_date: post.publish_date
+      });
+    }
+  }
+
+  // Also include any markdown posts we just generated that aren't in the calendar
+  for (const meta of posts) {
+    const alreadyInCalendar = allPublished.some(p => p.slug === meta.slug);
+    if (!alreadyInCalendar) {
+      allPublished.push({
+        slug: meta.slug,
+        title: meta.title,
+        description: meta.description || '',
+        publish_date: meta.date
+      });
+    }
+  }
+
+  // Sort by date, newest first
+  allPublished.sort((a, b) => new Date(b.publish_date) - new Date(a.publish_date));
+
+  if (allPublished.length > 0) {
+    const indexHtml = generateBlogIndex(allPublished);
+    fs.writeFileSync(path.join(BLOG_BUILD, 'index.html'), indexHtml);
+    console.log(`  ✓ blog/index.html (${allPublished.length} posts)`);
+  }
+} else {
+  console.log('  ! No content-calendar.json found — skipping index generation');
+}
+
+const totalGenerated = posts.length;
+console.log(`\n  Blog generation complete: ${totalGenerated} Markdown posts converted`);
+console.log('   Run "node scripts/build.js" to copy static assets and update the sitemap.\n');
