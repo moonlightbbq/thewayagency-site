@@ -972,7 +972,7 @@ ${renderScripts()}
 console.log(`  ✓ Generated ${indCount} industry landing pages`);
 
 // 7. Copy root files
-for (const file of ['_redirects', '_headers', 'robots.txt']) {
+for (const file of ['_redirects', '_headers', 'robots.txt', 'favicon.ico']) {
   const src = path.join(ROOT, file);
   if (fs.existsSync(src)) {
     fs.copyFileSync(src, path.join(BUILD, file));
