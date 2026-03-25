@@ -54,7 +54,8 @@
         content_category: category
       });
     }
-    console.log('[TWA Track]', action, category, label);
+    // Debug: uncomment for local testing
+    // console.log('[TWA Track]', action, category, label);
   }
 
   // ─── Turnstile Helper ───────────────────────
@@ -111,9 +112,8 @@
         console.error('[TWA] Submission error:', err);
         return { ok: false, error: 'submission_failed' };
       }
-    } else {
-      console.log('[TWA] Lead data (no webhook):', data);
     }
+
     return { ok: true };
   }
 
@@ -286,7 +286,7 @@
   function showExitPopup() {
     const overlay = createElement('div', { id: 'exitOverlay', class: 'exit-overlay' }, `
       <div class="exit-popup">
-        <button id="exitClose" class="exit-popup__close">
+        <button id="exitClose" class="exit-popup__close" aria-label="Close">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
         <h3 class="exit-popup__title">Before you go</h3>
@@ -298,7 +298,7 @@
             <input type="email" name="email" placeholder="Email address" required class="exit-popup__input">
           </div>
           <button type="submit" class="exit-popup__submit">Get a Free Coverage Review</button>
-          <p class="exit-popup__privacy">We never sell your data. A licensed agent will follow up within 1 business day.</p>
+          <p class="exit-popup__privacy">We never sell your data. A licensed agent will follow up within 1 business day. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
         </form>
       </div>
     `);
@@ -408,7 +408,14 @@
       const btn = form.querySelector('button[type="submit"]');
       btn.textContent = 'Sending...';
       btn.disabled = true;
-      await submitLead(data, 'quote-wizard');
+      const result = await submitLead(data, 'quote-wizard');
+
+      if (result && result.ok === false) {
+        btn.textContent = 'Send Quote Request';
+        btn.disabled = false;
+        form.insertAdjacentHTML('afterbegin', '<p style="color:var(--error);font-size:var(--text-sm);margin-bottom:var(--space-md);">Something went wrong. Please try again or call us at ' + CONFIG.phone + '.</p>');
+        return;
+      }
 
       form.innerHTML = `
         <div style="text-align:center;padding:var(--space-3xl) 0;">
@@ -453,7 +460,14 @@
       const btn = form.querySelector('button[type="submit"]');
       btn.textContent = 'Sending...';
       btn.disabled = true;
-      await submitLead(data, 'main-quote-form');
+      const result = await submitLead(data, 'main-quote-form');
+
+      if (result && result.ok === false) {
+        btn.textContent = 'Send';
+        btn.disabled = false;
+        form.insertAdjacentHTML('afterbegin', '<p style="color:var(--error);font-size:var(--text-sm);margin-bottom:var(--space-md);">Something went wrong. Please try again or call us at ' + CONFIG.phone + '.</p>');
+        return;
+      }
 
       form.style.display = 'none';
       const success = $('#quoteSuccess');
@@ -471,7 +485,15 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const data = Object.fromEntries(new FormData(form));
-      await submitLead(data, 'contact-form');
+      const btn = form.querySelector('button[type="submit"]');
+      if (btn) { btn.textContent = 'Sending...'; btn.disabled = true; }
+      const result = await submitLead(data, 'contact-form');
+
+      if (result && result.ok === false) {
+        if (btn) { btn.textContent = 'Send Message'; btn.disabled = false; }
+        form.insertAdjacentHTML('afterbegin', '<p style="color:var(--error);font-size:var(--text-sm);margin-bottom:var(--space-md);">Something went wrong. Please try again or call us at ' + CONFIG.phone + '.</p>');
+        return;
+      }
       form.innerHTML = '<div style="text-align:center;padding:var(--space-2xl) 0;"><p style="font-weight:600;color:var(--navy);font-size:var(--text-xl);">Message sent!</p><p style="color:var(--slate);margin-top:8px;">We\'ll respond within 1 business day.</p></div>';
     });
   }
