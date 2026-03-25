@@ -409,6 +409,30 @@
     color: var(--mint);
     font-weight: 600;
   }
+
+  /* Sticky help float */
+  .intake-help-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 900;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: var(--navy);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 24px;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,.2);
+    transition: background .2s;
+  }
+  .intake-help-float:hover { background: var(--blue); color: #fff; }
+  @media (max-width: 480px) {
+    .intake-help-float { bottom: 12px; right: 12px; font-size: 12px; padding: 8px 14px; }
+  }
 </style>
 </head>
 <body>
@@ -475,16 +499,6 @@
     <button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
   </div>
 </nav>
-
-<section class="hero" style="min-height:25vh;">
-  <div class="hero__bg"></div>
-  <div class="hero__texture"></div>
-  <div class="hero__content">
-    <h1 class="hero__title" style="font-size:clamp(1.8rem,4vw,2.5rem);">Get Your Free Insurance Quote</h1>
-    <p class="hero__subtitle">Tell us what you need and a licensed agent will follow up with the best options for your situation.</p>
-  </div>
-  <div class="hero__accent"></div>
-</section>
 
 <div class="trust-bar">
   <div class="trust-item">
@@ -560,6 +574,16 @@
 
 <main id="main">
 <div class="container">
+  <!-- Headline + response time promise -->
+  <div style="text-align:center;padding:var(--space-xl) 0 var(--space-md);">
+    <h1 style="font-size:clamp(1.5rem,3.5vw,2rem);color:var(--navy);margin-bottom:8px;">Get Your Free Insurance Quote</h1>
+    <p style="color:var(--slate);font-size:var(--text-sm);margin-bottom:12px;">A licensed agent will follow up within 60 minutes during business hours.</p>
+    <div style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--charcoal);">
+      <span style="color:#FBBC05;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+      <strong>5.0</strong> <span style="color:var(--slate);">from 19 Google reviews</span>
+    </div>
+  </div>
+
   <div class="progress-wrap" id="progress-wrap">
     <div class="progress-labels">
       <span class="progress-label active" data-step="1">Contact</span>
@@ -575,13 +599,10 @@
     </div>
   </div>
 
-  <!-- Step 1: Contact Info -->
+  <!-- Step 1: Contact Info (name, email, phone first — address in step 3) -->
   <div id="step-1" class="card">
     <h2>Tell us about yourself</h2>
-    <p class="card-desc">We'll use this to prepare your personalized quote.</p>
-    <div style="background:#f0fdf8;border:1px solid #bbf7d0;border-radius:10px;padding:12px 14px;margin-bottom:20px;font-size:12px;color:#166534;line-height:1.5">
-      <strong>Your information is safe with us.</strong> We will never sell your data. We only share what is necessary with our carrier partners and service providers to prepare your quote and service your policy. <a href="/privacy.html" style="color:#166534;text-decoration:underline">Privacy Policy</a>
-    </div>
+    <p class="card-desc">We just need your name and contact info to get started.</p>
     <div class="form-row">
       <div class="form-group">
         <label>First Name *</label>
@@ -602,23 +623,8 @@
         <input type="tel" id="i_phone" placeholder="(555) 123-4567" required autocomplete="tel">
       </div>
     </div>
-    <div class="form-group">
-      <label>Mailing Address <span style="color:#ef4444">*</span></label>
-      <input type="text" id="i_address" required autocomplete="street-address">
-    </div>
-    <div class="form-row-3">
-      <div class="form-group">
-        <label>City <span style="color:#ef4444">*</span></label>
-        <input type="text" id="i_city" required autocomplete="address-level2">
-      </div>
-      <div class="form-group">
-        <label>State <span style="color:#ef4444">*</span></label>
-        <input type="text" id="i_state" maxlength="2"required autocomplete="address-level1">
-      </div>
-      <div class="form-group">
-        <label>ZIP <span style="color:#ef4444">*</span></label>
-        <input type="text" id="i_zip" maxlength="10" required autocomplete="postal-code">
-      </div>
+    <div style="background:#f0fdf8;border:1px solid #bbf7d0;border-radius:10px;padding:10px 14px;margin:16px 0 0;font-size:11px;color:#166534;line-height:1.5;text-align:center;">
+      Your information is safe. We never sell your data. <a href="/privacy.html" style="color:#166534;text-decoration:underline">Privacy Policy</a>
     </div>
     <div id="step1-error" class="error hidden"></div>
     <div class="btn-row">
@@ -653,10 +659,28 @@
     </div>
   </div>
 
-  <!-- Step 3: Product-Specific Questions -->
+  <!-- Step 3: Address + Product-Specific Questions -->
   <div id="step-3" class="card hidden">
     <h2>A few more details</h2>
     <p class="card-desc">This helps us get you the most accurate quote.</p>
+    <div class="form-group">
+      <label>Mailing Address <span style="color:#ef4444">*</span></label>
+      <input type="text" id="i_address" required autocomplete="street-address">
+    </div>
+    <div class="form-row-3">
+      <div class="form-group">
+        <label>City <span style="color:#ef4444">*</span></label>
+        <input type="text" id="i_city" required autocomplete="address-level2">
+      </div>
+      <div class="form-group">
+        <label>State <span style="color:#ef4444">*</span></label>
+        <input type="text" id="i_state" maxlength="2" required autocomplete="address-level1">
+      </div>
+      <div class="form-group">
+        <label>ZIP <span style="color:#ef4444">*</span></label>
+        <input type="text" id="i_zip" maxlength="10" required autocomplete="postal-code">
+      </div>
+    </div>
     <div id="product-questions"></div>
     <div class="form-group">
       <label>Additional Notes</label>
@@ -714,6 +738,12 @@
   </div>
 </div>
 </main>
+
+<!-- Sticky help element -->
+<a href="tel:+15024135335" class="intake-help-float" aria-label="Call for help">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
+  Need help? Call us
+</a>
 
 <footer class="footer">
   <div class="footer__grid">
