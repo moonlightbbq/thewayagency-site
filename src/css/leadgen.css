@@ -28,15 +28,14 @@
 }
 
 .inline-quote-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-sm);
-  align-items: end;
 }
-@media (min-width: 900px) {
-  .inline-quote-form {
-    grid-template-columns: 1fr 1fr 1fr auto;
-  }
+.inline-quote-form input[type="text"],
+.inline-quote-form input[type="email"],
+.inline-quote-form input[type="tel"] {
+  width: 100%;
 }
 
 .inline-quote-form input {
@@ -60,8 +59,8 @@
   color: var(--gray);
 }
 
-.inline-quote-form button {
-  padding: 10px 20px;
+.inline-quote-form button[type="submit"] {
+  padding: 12px 20px;
   background: var(--cyan);
   color: var(--navy-dark);
   border: none;
@@ -74,20 +73,15 @@
   letter-spacing: 0.04em;
   white-space: nowrap;
   transition: all var(--transition-base);
+  width: 100%;
 }
 
-.inline-quote-form button:hover {
+.inline-quote-form button[type="submit"]:hover {
   background: var(--blue);
   color: var(--white);
 }
 
 @media (max-width: 640px) {
-  .inline-quote-form {
-    grid-template-columns: 1fr;
-  }
-  .inline-quote-form button {
-    width: 100%;
-  }
   .inline-quote-section {
     padding: var(--space-lg);
   }
