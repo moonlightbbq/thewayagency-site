@@ -17,85 +17,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/src/css/base.css">
+<link rel="stylesheet" href="/src/css/components.css">
+<link rel="stylesheet" href="/src/css/leadgen.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
 <style>
   :root {
-    --blue: #1a6fb5;
-    --cyan: #29b6f6;
     --mint: #6ec6a0;
-    --dark: #1a2332;
-    --text: #2d3748;
-    --muted: #64748b;
-    --light: #f7f9fc;
-    --border: #e2e8f0;
-    --white: #ffffff;
     --radius: 12px;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0 }
-  body {
-    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-weight: 300;
-    background: var(--light);
-    color: var(--text);
-    min-height: 100vh;
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  h1,h2,h3,h4,h5,h6 { font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 600 }
-
-  /* ─── Header ─── */
-  .site-header {
-    background: linear-gradient(135deg, var(--dark) 0%, #1e3a5f 50%, var(--blue) 100%);
-    color: var(--white);
-    padding: 28px 20px 32px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .site-header::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -20%;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(41,182,246,.15) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .site-header::after {
-    content: '';
-    position: absolute;
-    bottom: -60%;
-    left: -10%;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(110,198,160,.1) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .header-logo {
-    height: 52px;
-    margin-bottom: 16px;
-    filter: brightness(0) invert(1);
-    position: relative;
-    z-index: 1;
-  }
-  .header-tagline {
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -0.3px;
-    margin-bottom: 6px;
-    position: relative;
-    z-index: 1;
-  }
-  .header-sub {
-    font-size: 14px;
-    opacity: .75;
-    font-weight: 400;
-    position: relative;
-    z-index: 1;
   }
 
   /* ─── Trust bar ─── */
@@ -124,13 +53,13 @@
   .trust-label {
     font-size: 11px;
     font-weight: 600;
-    color: var(--dark);
+    color: var(--navy);
     letter-spacing: .2px;
     line-height: 1.3;
   }
   .trust-sub {
     font-size: 10px;
-    color: var(--muted);
+    color: var(--slate);
     font-weight: 400;
     margin-top: -2px;
   }
@@ -182,12 +111,12 @@
   .card h2 {
     font-size: 18px;
     font-weight: 600;
-    color: var(--dark);
+    color: var(--navy);
     margin-bottom: 4px;
   }
   .card .card-desc {
     font-size: 13px;
-    color: var(--muted);
+    color: var(--slate);
     margin-bottom: 20px;
     line-height: 1.5;
   }
@@ -198,7 +127,7 @@
     display: block;
     font-size: 12px;
     font-weight: 600;
-    color: var(--muted);
+    color: var(--slate);
     margin-bottom: 5px;
     text-transform: uppercase;
     letter-spacing: .4px;
@@ -209,7 +138,7 @@
     border: 1.5px solid var(--border);
     border-radius: 10px;
     font-size: 16px;
-    color: var(--text);
+    color: var(--charcoal);
     background: var(--white);
     outline: none;
     transition: border-color .2s, box-shadow .2s;
@@ -235,7 +164,7 @@
     transition: all .2s;
     font-size: 13px;
     font-weight: 600;
-    color: var(--text);
+    color: var(--charcoal);
     background: var(--white);
     user-select: none;
     -webkit-tap-highlight-color: transparent;
@@ -271,10 +200,10 @@
   .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none }
   .btn-outline {
     background: var(--white);
-    color: var(--muted);
+    color: var(--slate);
     border: 1.5px solid var(--border);
   }
-  .btn-outline:hover { background: var(--light); color: var(--text) }
+  .btn-outline:hover { background: var(--light-bg); color: var(--charcoal) }
   .btn-row { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px }
 
   /* ─── Summary ─── */
@@ -286,8 +215,8 @@
     font-size: 14px;
   }
   .summary-row:last-child { border: none }
-  .summary-row .label { color: var(--muted) }
-  .summary-row .value { font-weight: 600; color: var(--dark); text-align: right; max-width: 60% }
+  .summary-row .label { color: var(--slate) }
+  .summary-row .value { font-weight: 600; color: var(--navy); text-align: right; max-width: 60% }
 
   /* ─── Confirmation ─── */
   .confirmation { text-align: center; padding: 40px 20px }
@@ -304,8 +233,8 @@
     color: var(--white);
     box-shadow: 0 4px 16px rgba(110,198,160,.35);
   }
-  .confirmation h2 { color: var(--dark); font-size: 22px; margin-bottom: 8px }
-  .confirmation p { color: var(--muted); font-size: 14px; line-height: 1.6 }
+  .confirmation h2 { color: var(--navy); font-size: 22px; margin-bottom: 8px }
+  .confirmation p { color: var(--slate); font-size: 14px; line-height: 1.6 }
   .ref-badge {
     display: inline-block;
     margin-top: 16px;
@@ -321,17 +250,6 @@
 
   .hidden { display: none !important }
   .error { color: #ef4444; font-size: 12px; margin-top: 6px }
-
-  /* ─── Footer ─── */
-  .site-footer {
-    text-align: center;
-    padding: 24px 16px;
-    font-size: 11px;
-    color: #94a3b8;
-    border-top: 1px solid var(--border);
-    margin-top: 20px;
-  }
-  .site-footer a { color: var(--blue); text-decoration: none }
 
   /* ─── Section headers (product questions) ─── */
   .section-header {
@@ -366,7 +284,7 @@
   .vehicle-block { position: relative; padding: 12px 0; border-top: 1px solid var(--border); margin-top: 12px }
   .vehicle-block:first-child { border-top: none; margin-top: 0; padding-top: 0 }
   .remove-vehicle {
-    position: absolute; top: 12px; right: 0; font-size: 18px; color: var(--muted);
+    position: absolute; top: 12px; right: 0; font-size: 18px; color: var(--slate);
     cursor: pointer; background: none; border: none; padding: 2px 6px; line-height: 1;
   }
   .remove-vehicle:hover { color: #ef4444 }
@@ -375,12 +293,12 @@
   /* ─── Same address toggle ─── */
   .toggle-row {
     display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
-    font-size: 13px; color: var(--text);
+    font-size: 13px; color: var(--charcoal);
   }
   .toggle-row .toggle-label { font-weight: 600 }
   .toggle-btn {
     padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: 600;
-    cursor: pointer; border: 1.5px solid var(--border); background: var(--white); color: var(--muted);
+    cursor: pointer; border: 1.5px solid var(--border); background: var(--white); color: var(--slate);
     transition: all .2s;
   }
   .toggle-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue) }
@@ -400,8 +318,6 @@
   @media (max-width: 768px) {
     .container { padding: 20px 16px 36px }
     .card { padding: 24px 20px }
-    .site-header { padding: 24px 16px 28px }
-    .header-tagline { font-size: 20px }
   }
 
   /* ─── Mobile: ≤480 (phones) ─── */
@@ -413,10 +329,6 @@
     .card { padding: 20px 16px; margin-bottom: 12px }
     .card h2 { font-size: 17px }
     .card .card-desc { font-size: 12px; margin-bottom: 16px }
-    .site-header { padding: 20px 16px 24px }
-    .header-logo { height: 44px; margin-bottom: 12px }
-    .header-tagline { font-size: 18px }
-    .header-sub { font-size: 13px }
     .trust-icon-svg { width: 30px; height: 30px }
     .trust-item { padding: 12px 4px; gap: 4px }
     .trust-label { font-size: 10px }
@@ -439,7 +351,6 @@
     .trust-sub { display: none }
     .product-opt { padding: 12px 8px; font-size: 12px }
     .product-opt .icon { font-size: 22px; margin-bottom: 4px }
-    .header-tagline { font-size: 16px }
     .container { padding: 12px 10px 28px }
   }
 
@@ -456,12 +367,12 @@
   .bundle-banner .bundle-title {
     font-size: 14px;
     font-weight: 600;
-    color: var(--dark);
+    color: var(--navy);
     margin-bottom: 6px;
   }
   .bundle-banner .bundle-msg {
     font-size: 13px;
-    color: var(--muted);
+    color: var(--slate);
     line-height: 1.5;
     margin-bottom: 12px;
   }
@@ -502,10 +413,78 @@
 </head>
 <body>
 
-<div class="site-header">
-  <a href="/" style="text-decoration:none"><picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img class="header-logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency — Back to Home"></picture></a>
-  <div class="header-tagline">The Way Insurance Gets Done</div>
-</div>
+<a href="#main" class="skip-link">Skip to main content</a>
+<nav class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="/" class="nav__logo" aria-label="Home">
+      <picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></picture>
+    </a>
+    <div class="nav__links" id="navLinks">
+      <div class="nav__dropdown">
+        <a href="/personal/" class="nav__link">Personal</a>
+        <div class="nav__dropdown-menu">
+          <a href="/personal/home.html" class="nav__dropdown-item">Home</a>
+          <a href="/personal/auto.html" class="nav__dropdown-item">Auto</a>
+          <a href="/personal/renters.html" class="nav__dropdown-item">Renters</a>
+          <a href="/personal/umbrella.html" class="nav__dropdown-item">Umbrella</a>
+          <a href="/personal/flood.html" class="nav__dropdown-item">Flood</a>
+          <a href="/personal/motorcycle.html" class="nav__dropdown-item">Motorcycle</a>
+          <a href="/personal/boat.html" class="nav__dropdown-item">Boat</a>
+          <a href="/personal/classic-car.html" class="nav__dropdown-item">Classic Car</a>
+          <a href="/personal/earthquake.html" class="nav__dropdown-item">Earthquake</a>
+          <a href="/personal/pet.html" class="nav__dropdown-item">Pet</a>
+        </div>
+      </div>
+      <div class="nav__dropdown">
+        <a href="/commercial/" class="nav__link">Commercial</a>
+        <div class="nav__dropdown-menu">
+          <a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a>
+          <a href="/commercial/commercial-property.html" class="nav__dropdown-item">Commercial Property</a>
+          <a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Commercial Auto</a>
+          <a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a>
+          <a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a>
+          <a href="/commercial/bonds.html" class="nav__dropdown-item">Bonds</a>
+          <a href="/commercial/builders-risk.html" class="nav__dropdown-item">Builders Risk</a>
+          <a href="/commercial/special-event.html" class="nav__dropdown-item">Special Events</a>
+          <a href="/commercial/professional-liability.html" class="nav__dropdown-item">Professional Liability</a>
+        </div>
+      </div>
+      <div class="nav__dropdown">
+        <a href="/life-health/" class="nav__link">Life &amp; Health</a>
+        <div class="nav__dropdown-menu">
+          <a href="/life-health/medicare.html" class="nav__dropdown-item">Medicare</a>
+          <a href="/life-health/individual-health.html" class="nav__dropdown-item">Individual Health</a>
+          <a href="/life-health/group-health.html" class="nav__dropdown-item">Group Health</a>
+          <a href="/life-health/term-life.html" class="nav__dropdown-item">Term Life</a>
+          <a href="/life-health/whole-life.html" class="nav__dropdown-item">Whole Life</a>
+          <a href="/life-health/disability.html" class="nav__dropdown-item">Disability</a>
+          <a href="/life-health/final-expense.html" class="nav__dropdown-item">Final Expense</a>
+        </div>
+      </div>
+      <div class="nav__dropdown">
+        <a href="/about/" class="nav__link">About</a>
+        <div class="nav__dropdown-menu" style="grid-template-columns:1fr;">
+          <a href="/about/" class="nav__dropdown-item">Who We Are</a>
+          <a href="/about/team.html" class="nav__dropdown-item">Our Team</a>
+          <a href="/about/locations.html" class="nav__dropdown-item">Locations</a>
+        </div>
+      </div>
+      <a href="/blog/" class="nav__link">Blog</a>
+      <a href="/intake/" class="btn btn--primary">Get a Quote</a>
+    </div>
+    <button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<section class="hero" style="min-height:25vh;">
+  <div class="hero__bg"></div>
+  <div class="hero__texture"></div>
+  <div class="hero__content">
+    <h1 class="hero__title" style="font-size:clamp(1.8rem,4vw,2.5rem);">Get Your Free Insurance Quote</h1>
+    <p class="hero__subtitle">Tell us what you need and a licensed agent will follow up with the best options for your situation.</p>
+  </div>
+  <div class="hero__accent"></div>
+</section>
 
 <div class="trust-bar">
   <div class="trust-item">
@@ -579,6 +558,7 @@
   </div>
 </div>
 
+<main id="main">
 <div class="container">
   <div class="progress-wrap" id="progress-wrap">
     <div class="progress-labels">
@@ -662,7 +642,7 @@
         <span>+</span> Need something else? See all products
       </button>
       <div class="other-products" id="other-products">
-        <p style="font-size:12px;color:var(--muted);margin:8px 0 4px">Additional coverage options:</p>
+        <p style="font-size:12px;color:var(--slate);margin:8px 0 4px">Additional coverage options:</p>
         <div class="other-product-grid" id="other-product-grid"></div>
       </div>
     </div>
@@ -733,12 +713,80 @@
     </div>
   </div>
 </div>
+</main>
 
-<div class="site-footer">
-  &copy; 2026 The Way Agency &middot; <a href="https://www.thewayagency.com">www.thewayagency.com</a> &middot; <a href="mailto:hello@thewayagency.com">hello@thewayagency.com</a>
-  <br>PO Box 187, Owensboro, KY 42302
-  <br><span id="intake-version" style="font-size:11px;color:#94a3b8"></span>
-</div>
+<footer class="footer">
+  <div class="footer__grid">
+    <div class="footer__brand">
+      <picture><source srcset="/src/assets/images/logo-horizontal-white.webp" type="image/webp"><img class="footer__logo" src="/src/assets/images/logo-horizontal-white.png" alt="The Way Agency" style="height:36px;width:auto;"></picture>
+      <address class="footer__address" style="font-style:normal;">PO Box 187<br>Owensboro, KY 42302</address>
+      <div class="footer__contact-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <a href="tel:+15024135335">(502) 413-5335</a>
+      </div>
+      <div class="footer__contact-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        <a href="mailto:hello@thewayagency.com">hello@thewayagency.com</a>
+      </div>
+      <p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p>
+      <a href="https://g.page/r/CSHCy85xJ8VOEBM/review" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:6px;margin-top:var(--space-sm);font-size:11px;color:rgba(255,255,255,0.7);text-decoration:none;">
+        <span style="color:#FBBC05;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+        <span>5.0 from 19 Google reviews</span>
+      </a>
+      <div class="footer__socials">
+        <a href="https://www.facebook.com/TheWayAgency/" aria-label="Facebook" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/thewayagencyins/" aria-label="Instagram" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/company/the-way-agency-insurance" aria-label="LinkedIn" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div>
+      <h4 class="footer__heading">Personal</h4>
+      <div class="footer__link-list">
+        <a href="/personal/home.html">Home</a>
+        <a href="/personal/auto.html">Auto</a>
+        <a href="/personal/renters.html">Renters</a>
+        <a href="/personal/umbrella.html">Umbrella</a>
+        <a href="/personal/flood.html">Flood</a>
+      </div>
+    </div>
+    <div>
+      <h4 class="footer__heading">Commercial</h4>
+      <div class="footer__link-list">
+        <a href="/commercial/general-liability.html">General Liability</a>
+        <a href="/commercial/commercial-property.html">Property</a>
+        <a href="/commercial/commercial-auto.html">Auto</a>
+        <a href="/commercial/workers-compensation.html">Workers Comp</a>
+        <a href="/commercial/cyber.html">Cyber</a>
+      </div>
+    </div>
+    <div>
+      <h4 class="footer__heading">Company</h4>
+      <div class="footer__link-list">
+        <a href="/about/">About Us</a>
+        <a href="/about/team.html">Our Team</a>
+        <a href="/about/locations.html">Locations</a>
+        <a href="/blog/">Blog</a>
+        <a href="/intake/">Get a Quote</a>
+        <a href="/contact.html">Contact</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <p>&copy; 2026 The Way Agency. All rights reserved.</p>
+    <div class="footer__legal-links">
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+    </div>
+  </div>
+  <p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p>
+  <p style="text-align:center;margin-top:var(--space-sm);"><span id="intake-version" style="font-size:11px;color:rgba(255,255,255,0.3)"></span></p>
+</footer>
 
 <script>
 const SAGE_API = 'https://sage.thewayagency.com';
@@ -1334,7 +1382,7 @@ function renderProductQuestions() {
   if (needsCurrentInsurance) {
     html += `<div style="margin-bottom:20px">
       <div class="section-header"><span class="section-icon">&#128203;</span> Current Insurance</div>
-      <p style="font-size:12px;color:var(--muted);margin:-8px 0 12px">Helps us find the best rate and timing</p>
+      <p style="font-size:12px;color:var(--slate);margin:-8px 0 12px">Helps us find the best rate and timing</p>
       <div class="form-row">
         <div class="form-group"><label>Current Insurance Company</label><input type="text" id="i_current_carrier" placeholder="e.g. State Farm, Geico, or None"></div>
         <div class="form-group"><label>When does your policy expire?</label><select id="i_policy_expiry">
@@ -1349,7 +1397,7 @@ function renderProductQuestions() {
     const reason = [selectedProducts.includes('life') ? 'life' : '', selectedProducts.includes('auto') ? 'auto' : '', selectedProducts.includes('umbrella') ? 'umbrella' : ''].filter(Boolean).join(', ');
     html += `<div style="margin-bottom:20px">
       <div class="section-header"><span class="section-icon">&#128197;</span> Date of Birth</div>
-      <p style="font-size:12px;color:var(--muted);margin:-8px 0 12px">Needed for ${esc(reason)} quoting</p>
+      <p style="font-size:12px;color:var(--slate);margin:-8px 0 12px">Needed for ${esc(reason)} quoting</p>
       <div class="form-group" style="max-width:220px"><label>Date of Birth</label><input type="date" id="i_dob"></div>
     </div>`;
   }
@@ -1359,7 +1407,7 @@ function renderProductQuestions() {
     const commercialSelected = selectedProducts.filter(p => COMMERCIAL_PRODUCTS.includes(p)).map(p => PROD_LABELS[p] || p).join(', ');
     html += `<div style="margin-bottom:20px">
       <div class="section-header"><span class="section-icon">&#127970;</span> Business Information</div>
-      <p style="font-size:12px;color:var(--muted);margin:-8px 0 12px">Applies to: ${esc(commercialSelected)}</p>
+      <p style="font-size:12px;color:var(--slate);margin:-8px 0 12px">Applies to: ${esc(commercialSelected)}</p>
       <div class="form-row">
         <div class="form-group"><label>Business Name</label><input type="text" id="i_biz_name" placeholder="Your business name"></div>
         <div class="form-group"><label>Type of Business / Operations</label><input type="text" id="i_biz_type" placeholder="e.g. Plumbing, Restaurant, Consulting"></div>
@@ -1387,7 +1435,7 @@ function renderProductQuestions() {
         <button type="button" class="toggle-btn active" id="ho-same-y" data-action="set-ho-addr" data-same="true">Yes</button>
         <button type="button" class="toggle-btn" id="ho-same-n" data-action="set-ho-addr" data-same="false">No</button>
       </div>
-      ${addr ? `<div id="ho-addr-display" style="font-size:13px;color:var(--muted);margin-bottom:12px;padding:8px 12px;background:var(--light);border-radius:8px">${esc(addr)}</div>` : ''}
+      ${addr ? `<div id="ho-addr-display" style="font-size:13px;color:var(--slate);margin-bottom:12px;padding:8px 12px;background:var(--light);border-radius:8px">${esc(addr)}</div>` : ''}
       <div id="ho-diff-addr" class="hidden" style="margin-bottom:12px">
         <div class="form-group"><label>Property Address</label><input type="text" id="i_ho_address" placeholder="Property street address"></div>
         <div class="form-row-3">
@@ -1573,7 +1621,7 @@ function renderProductQuestions() {
   if (selectedProducts.includes('cyber')) {
     html += `<div style="margin-bottom:20px">
       <div class="section-header"><span class="section-icon">&#128187;</span> Cyber Liability</div>
-      <p style="font-size:12px;color:var(--muted);margin:-8px 0 12px">Our agent will discuss coverage details on your call.</p>
+      <p style="font-size:12px;color:var(--slate);margin:-8px 0 12px">Our agent will discuss coverage details on your call.</p>
     </div>`;
   }
 
@@ -1587,7 +1635,7 @@ function renderProductQuestions() {
   if (selectedProducts.includes('earthquake')) {
     html += `<div style="margin-bottom:20px">
       <div class="section-header"><span class="section-icon">🌍</span> Earthquake</div>
-      <p style="font-size:12px;color:var(--muted);margin:-8px 0 12px">We'll assess your property's risk zone and coverage needs on our call.</p>
+      <p style="font-size:12px;color:var(--slate);margin:-8px 0 12px">We'll assess your property's risk zone and coverage needs on our call.</p>
     </div>`;
   }
 
@@ -1638,7 +1686,7 @@ function renderProductQuestions() {
     </div>`;
   }
 
-  if (!html) html = '<p style="color:var(--muted);font-size:13px;padding:8px 0">No additional details needed for your selection. Click Review to continue.</p>';
+  if (!html) html = '<p style="color:var(--slate);font-size:13px;padding:8px 0">No additional details needed for your selection. Click Review to continue.</p>';
   container.innerHTML = html;
 
   if (selectedProducts.includes('auto')) {
