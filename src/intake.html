@@ -31,8 +31,11 @@
     color: var(--text);
     min-height: 100vh;
     min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
     -webkit-font-smoothing: antialiased;
   }
+
   h1,h2,h3,h4,h5,h6 { font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 600 }
 
   /* ─── Header ─── */
@@ -125,7 +128,7 @@
   }
 
   /* ─── Container ─── */
-  .container { max-width: 580px; margin: 0 auto; padding: 24px 16px 40px }
+  .container { max-width: 580px; margin: 0 auto; padding: 24px 16px 40px; flex: 1 }
 
   /* ─── Progress ─── */
   .progress-wrap { margin-bottom: 28px }
@@ -492,7 +495,7 @@
 <body>
 
 <div class="site-header">
-  <picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img class="header-logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency"></picture>
+  <a href="/" style="text-decoration:none"><picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img class="header-logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency — Back to Home"></picture></a>
   <div class="header-tagline">The Way Insurance Gets Done</div>
 </div>
 
