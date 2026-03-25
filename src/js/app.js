@@ -232,34 +232,16 @@
     if (window.innerWidth > 768) return;
 
     const intakeUrl = getIntakeUrl();
-    const bar = createElement('div', {
-      id: 'stickyMobileCTA',
-      style: {
-        position: 'fixed',
-        bottom: '0',
-        left: '0',
-        right: '0',
-        zIndex: '999',
-        background: 'var(--navy)',
-        padding: '10px 16px',
-        display: 'flex',
-        gap: '8px',
-        justifyContent: 'center',
-        alignItems: 'center',
-        boxShadow: '0 -2px 12px rgba(0,0,0,0.15)',
-        transform: 'translateY(100%)',
-        transition: 'transform 0.3s ease',
-      }
-    }, `
-      <a href="tel:${CONFIG.phoneRaw}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:transparent;border:1.5px solid rgba(255,255,255,0.3);border-radius:6px;color:white;font-size:13px;font-weight:600;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;">
+    const bar = createElement('div', { id: 'stickyMobileCTA', class: 'sticky-cta' }, `
+      <a href="tel:${CONFIG.phoneRaw}" class="sticky-cta__link">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
         Call
       </a>
-      <a href="sms:${CONFIG.phoneRaw}" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:transparent;border:1.5px solid rgba(255,255,255,0.3);border-radius:6px;color:white;font-size:13px;font-weight:600;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;">
+      <a href="sms:${CONFIG.phoneRaw}" class="sticky-cta__link">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         Text
       </a>
-      <a href="${intakeUrl}" style="flex:1.5;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px;background:var(--cyan);border:1.5px solid var(--cyan);border-radius:6px;color:var(--navy-dark);font-size:13px;font-weight:600;text-decoration:none;text-transform:uppercase;letter-spacing:0.04em;">
+      <a href="${intakeUrl}" class="sticky-cta__link sticky-cta__link--primary">
         Get a Quote
       </a>
     `);
@@ -271,10 +253,10 @@
     window.addEventListener('scroll', () => {
       const shouldShow = window.scrollY > 400;
       if (shouldShow && !shown) {
-        bar.style.transform = 'translateY(0)';
+        bar.classList.add('sticky-cta--visible');
         shown = true;
       } else if (!shouldShow && shown) {
-        bar.style.transform = 'translateY(100%)';
+        bar.classList.remove('sticky-cta--visible');
         shown = false;
       }
     }, { passive: true });
@@ -302,56 +284,38 @@
   }
 
   function showExitPopup() {
-    const overlay = createElement('div', {
-      id: 'exitOverlay',
-      style: {
-        position: 'fixed',
-        inset: '0',
-        zIndex: '10000',
-        background: 'rgba(15,34,64,0.6)',
-        backdropFilter: 'blur(4px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '20px',
-        opacity: '0',
-        transition: 'opacity 0.3s ease',
-      }
-    }, `
-      <div style="background:white;border-radius:12px;max-width:460px;width:100%;padding:40px;position:relative;transform:translateY(20px);transition:transform 0.3s ease;">
-        <button id="exitClose" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;padding:8px;color:var(--slate);">
+    const overlay = createElement('div', { id: 'exitOverlay', class: 'exit-overlay' }, `
+      <div class="exit-popup">
+        <button id="exitClose" class="exit-popup__close">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
-        <h3 style="font-family:var(--font-heading);font-size:1.5rem;font-weight:600;color:var(--navy);margin-bottom:8px;">Before you go</h3>
-        <p style="color:var(--slate);font-size:0.95rem;font-weight:300;margin-bottom:20px;">Get a free coverage review  -  we'll look at what you have and tell you if there's a better option. No commitment, no pressure.</p>
+        <h3 class="exit-popup__title">Before you go</h3>
+        <p class="exit-popup__desc">Get a free coverage review  -  we'll look at what you have and tell you if there's a better option. No commitment, no pressure.</p>
         <form id="exitForm">
           <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off">
-          <div style="display:flex;gap:8px;margin-bottom:10px;">
-            <input type="text" name="name" placeholder="Your name" required style="flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-body);font-size:14px;font-weight:300;">
-            <input type="email" name="email" placeholder="Email address" required style="flex:1;padding:10px 14px;border:1px solid var(--border);border-radius:6px;font-family:var(--font-body);font-size:14px;font-weight:300;">
+          <div class="exit-popup__row">
+            <input type="text" name="name" placeholder="Your name" required class="exit-popup__input">
+            <input type="email" name="email" placeholder="Email address" required class="exit-popup__input">
           </div>
-          <button type="submit" style="width:100%;padding:12px;background:var(--cyan);color:var(--navy-dark);border:none;border-radius:6px;font-family:var(--font-body);font-size:14px;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:0.04em;">Get a Free Coverage Review</button>
-          <p style="font-size:11px;color:var(--gray);margin-top:8px;text-align:center;">We never sell your data. A licensed agent will follow up within 1 business day.</p>
+          <button type="submit" class="exit-popup__submit">Get a Free Coverage Review</button>
+          <p class="exit-popup__privacy">We never sell your data. A licensed agent will follow up within 1 business day.</p>
         </form>
       </div>
     `);
 
     document.body.appendChild(overlay);
     requestAnimationFrame(() => {
-      overlay.style.opacity = '1';
-      overlay.querySelector('div').style.transform = 'translateY(0)';
+      overlay.classList.add('exit-overlay--visible');
     });
 
     // Close handlers
-    $('#exitClose').addEventListener('click', () => {
-      overlay.style.opacity = '0';
+    function closeExit() {
+      overlay.classList.remove('exit-overlay--visible');
       setTimeout(() => overlay.remove(), 300);
-    });
+    }
+    $('#exitClose').addEventListener('click', closeExit);
     overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) {
-        overlay.style.opacity = '0';
-        setTimeout(() => overlay.remove(), 300);
-      }
+      if (e.target === overlay) closeExit();
     });
 
     // Form handler — redirect to full intake with pre-filled data
