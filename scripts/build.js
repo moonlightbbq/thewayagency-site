@@ -193,8 +193,11 @@ function renderHead({ title, description, canonical, ogTitle, ogDescription, ogU
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/css/base.css">
   <link rel="stylesheet" href="/src/css/components.css">
-  <link rel="stylesheet" href="/src/css/leadgen.css">${schema ? `
-  ${schema}` : ''}
+  <link rel="stylesheet" href="/src/css/leadgen.css">${schema ? (schema.includes('<script') ? `
+  ${schema}` : `
+  <script type="application/ld+json">
+  ${schema}
+  </script>`) : ''}
 </head>`;
 }
 
