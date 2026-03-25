@@ -407,6 +407,186 @@ function renderScripts() {
   <script src="/src/js/app.js"></script>`;
 }
 
+// ─── Hub Page Generator ──────────────────────────
+const hubConfig = {
+  personal: {
+    title: 'Personal Insurance in Kentucky | Home, Auto & More | The Way Agency',
+    description: 'Personal insurance solutions for Kentucky families: home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet. We represent dozens of carriers.',
+    canonical: '/personal/',
+    hero: { eyebrow: 'Personal Insurance', title: 'Protection for you<br>and your family', subtitle: 'From your home and vehicles to your personal liability, we help Kentucky families find the right coverage from dozens of carriers.' },
+    sectionEyebrow: 'Coverage Options',
+    sectionTitle: 'Personal insurance products',
+    sectionDesc: 'Each product page explains what the coverage is, who needs it, what it costs, and what it doesn\'t cover, in plain language.',
+    ctaTitle: 'Get a personal insurance quote',
+    ctaText: 'Tell us what you need and we\'ll shop dozens of carriers for the best options.',
+    crossSell: [
+      { href: '/commercial/', title: 'Commercial Insurance', text: 'Liability, property, auto, workers comp, and more for your business.', label: 'Explore Commercial' },
+      { href: '/life-health/', title: 'Life & Health', text: 'Medicare, health, life, disability, and final expense coverage.', label: 'Explore Life & Health' },
+    ],
+    schema: { serviceName: 'Personal Insurance', serviceType: 'Personal Lines Insurance', serviceDesc: 'Home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet insurance for Kentucky, Indiana, and Tennessee families.' },
+  },
+  commercial: {
+    title: 'Commercial Insurance in Kentucky | The Way Agency',
+    description: 'Commercial insurance for Kentucky businesses: general liability, property, auto, workers comp, cyber, bonds, builders risk, special events, and professional liability.',
+    canonical: '/commercial/',
+    hero: { eyebrow: 'Commercial Insurance', title: 'Protection that lets<br>your business grow', subtitle: 'From general liability to workers comp, we help Kentucky businesses build coverage that matches real risk and real operations.' },
+    sectionEyebrow: 'Coverage Options',
+    sectionTitle: 'Commercial insurance products',
+    sectionDesc: 'Each product page explains who needs the coverage, what it protects against, what it costs, and what it does not cover.',
+    ctaTitle: 'Get a commercial insurance quote',
+    ctaText: 'Tell us about your business and we\'ll build a coverage program from dozens of carriers.',
+    crossSell: [
+      { href: '/personal/', title: 'Personal Insurance', text: 'Home, auto, umbrella, and specialty coverage for you and your family.', label: 'Explore Personal' },
+      { href: '/life-health/', title: 'Life & Health', text: 'Medicare, group health, life insurance, and employee benefits.', label: 'Explore Life & Health' },
+    ],
+    schema: { serviceName: 'Commercial Insurance', serviceType: 'Commercial Lines Insurance', serviceDesc: 'General liability, property, auto, workers comp, cyber, bonds, builders risk, special events, and professional liability for Kentucky businesses.' },
+  },
+  life_health: {
+    title: 'Life & Health Insurance in Kentucky | The Way Agency',
+    description: 'Life and health insurance for Kentucky families: Medicare, Medicaid, individual health, group health, term life, whole life, annuities, disability, and final expense.',
+    canonical: '/life-health/',
+    hero: { eyebrow: 'Life & Health Insurance', title: 'Plan for what<br>matters most', subtitle: 'Medicare, health coverage, life insurance, disability, and employee benefits. We help you navigate the options and choose with confidence.' },
+    ctaTitle: 'Get a life & health insurance quote',
+    ctaText: 'Tell us what you need and we\'ll walk you through your options in plain language.',
+    crossSell: [
+      { href: '/personal/', title: 'Personal Insurance', text: 'Home, auto, umbrella, and specialty coverage for you and your family.', label: 'Explore Personal' },
+      { href: '/commercial/', title: 'Commercial Insurance', text: 'Liability, property, auto, workers comp, and more for your business.', label: 'Explore Commercial' },
+    ],
+    schema: { serviceName: 'Life & Health Insurance', serviceType: 'Life and Health Insurance', serviceDesc: 'Medicare, health, life, disability, annuities, and final expense insurance for Kentucky, Indiana, and Tennessee.' },
+    // Life & health splits products into two groups
+    groups: [
+      { eyebrow: 'Health Coverage', title: 'Health insurance options', ids: ['medicare', 'medicaid', 'supplemental-health', 'group-health', 'individual-health', 'family-health', 'dental-vision'] },
+      { eyebrow: 'Life & Income Protection', title: 'Life and income protection', ids: ['term-life', 'whole-life', 'annuities', 'disability', 'final-expense'] },
+    ],
+  },
+};
+
+function generateHubPage(lineKey) {
+  const config = hubConfig[lineKey];
+  const lineSlug = lineKey === 'life_health' ? 'life-health' : lineKey;
+  const lineProducts = products[lineKey] || [];
+
+  const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+
+  function productCard(p) {
+    return `          <a href="${p.url}" class="card" style="text-decoration:none;">
+            <h3 class="card__title">${p.name}</h3>
+            <p class="card__text">${p.summary.split('.').slice(0, 2).join('.') + '.'}</p>
+            <span class="card__link">Learn more ${arrowSvg}</span>
+          </a>`;
+  }
+
+  // Build product grid(s)
+  let productSections;
+  if (config.groups) {
+    // Life & health: multiple grouped sections
+    productSections = config.groups.map((group, i) => {
+      const groupProducts = group.ids.map(id => lineProducts.find(p => p.slug === id)).filter(Boolean);
+      return `
+    <section class="section${i % 2 === 1 ? ' section--light' : ''}">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-header__eyebrow">${group.eyebrow}</p>
+          <h2>${group.title}</h2>
+        </div>
+        <div class="grid grid--3">
+${groupProducts.map(p => productCard(p)).join('\n')}
+        </div>
+      </div>
+    </section>`;
+    }).join('\n');
+  } else {
+    // Single product grid
+    productSections = `
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-header__eyebrow">${config.sectionEyebrow}</p>
+          <h2>${config.sectionTitle}</h2>
+          <p>${config.sectionDesc}</p>
+        </div>
+        <div class="grid grid--3">
+${lineProducts.map(p => productCard(p)).join('\n')}
+        </div>
+      </div>
+    </section>`;
+  }
+
+  // Cross-sell section
+  const crossSellCards = config.crossSell.map(cs => `          <a href="${cs.href}" class="card" style="text-decoration:none;text-align:center;">
+            <h3 class="card__title">${cs.title}</h3>
+            <p class="card__text">${cs.text}</p>
+            <span class="card__link">${cs.label} ${arrowSvg}</span>
+          </a>`).join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+${renderHead({
+    title: config.title,
+    description: config.description,
+    canonical: `https://www.thewayagency.com${config.canonical}`,
+    ogTitle: config.title,
+    ogDescription: config.description,
+    ogUrl: `https://www.thewayagency.com${config.canonical}`,
+    schema: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "InsuranceAgency",
+      "name": "The Way Agency",
+      "legalName": "Way Associates, Inc",
+      "url": "https://www.thewayagency.com",
+      "telephone": office.phone,
+      "email": office.email,
+      "address": { "@type": "PostalAddress", "streetAddress": office.street, "addressLocality": office.city, "addressRegion": office.state, "postalCode": office.zip },
+      "areaServed": [{ "@type": "State", "name": "Kentucky" }, { "@type": "State", "name": "Indiana" }, { "@type": "State", "name": "Tennessee" }],
+      "makesOffer": { "@type": "Offer", "itemOffered": { "@type": "Service", "name": config.schema.serviceName, "serviceType": config.schema.serviceType, "description": config.schema.serviceDesc } }
+    }, null, 2),
+  })}
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+${renderNav()}
+
+${renderHero({
+    eyebrow: config.hero.eyebrow,
+    title: config.hero.title,
+    subtitle: config.hero.subtitle,
+    buttons: [{ href: `/intake/?line=${lineSlug}`, text: `Get a ${config.hero.eyebrow} Quote`, className: 'btn btn--primary btn--lg' }],
+    minHeight: '45vh',
+  })}
+
+  <main id="main">
+${productSections}
+
+    <!-- Cross-sell -->
+    <section class="section section--light">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-header__eyebrow">Also Available</p>
+          <h2>Need other coverage?</h2>
+        </div>
+        <div class="grid grid--2" style="max-width:800px;margin:0 auto;">
+${crossSellCards}
+        </div>
+      </div>
+    </section>
+
+${renderCTA({
+    title: config.ctaTitle,
+    text: config.ctaText,
+    buttons: [
+      { href: `/intake/?line=${lineSlug}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
+      { href: '/contact.html', text: 'Request a Coverage Review', className: 'btn btn--outline-white btn--lg' },
+    ],
+  })}
+  </main>
+
+${renderFooter()}
+${renderScripts()}
+</body>
+</html>`;
+}
+
 // ─── Product Page Template ─────────────────────
 function generateProductPage(product, lineName, lineSlug, lineKey) {
   const rc = richContent[product.id] || {};
@@ -675,11 +855,17 @@ for (const file of rootPages) {
   }
 }
 
+// Generate hub pages from products.json
+for (const [lineKey, config] of Object.entries(hubConfig)) {
+  const lineSlug = lineKey === 'life_health' ? 'life-health' : lineKey;
+  ensureDir(path.join(BUILD, lineSlug));
+  const hubHtml = generateHubPage(lineKey);
+  fs.writeFileSync(path.join(BUILD, lineSlug, 'index.html'), injectVersion(hubHtml));
+  console.log(`  ✓ ${lineSlug}/index.html (generated from products.json)`);
+}
+
 // Copy hand-crafted subdirectory pages
 const subPages = [
-  ['personal', 'index.html'],
-  ['commercial', 'index.html'],
-  ['life-health', 'index.html'],
   ['about', 'index.html'],
   ['about', 'team.html'],
   ['about', 'locations.html'],
