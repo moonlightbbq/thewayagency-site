@@ -1004,6 +1004,40 @@ const SAGE_API = 'https://sage.thewayagency.com';
     .catch(() => {});
 })();
 
+// ── Context-Aware Welcome ───────────────────────────────────────────────────
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const product = params.get('product');
+  const city = params.get('city');
+  const state = params.get('state');
+  const src = params.get('src');
+  const line = params.get('line');
+  const headline = document.getElementById('intake-headline');
+  const subtitle = document.getElementById('intake-subtitle');
+  if (!headline) return;
+
+  const PROD_NAMES = { homeowners:'Homeowners', auto:'Auto', umbrella:'Umbrella', flood:'Flood', life:'Life', renters:'Renters', bop:'Business', cgl:'Liability', commercial_auto:'Commercial Auto', workers_comp:'Workers Comp', cyber:'Cyber', bonds:'Bonds', motorcycle:'Motorcycle', boat:'Boat', rv:'RV', medicare:'Medicare' };
+
+  if (product && PROD_NAMES[product]) {
+    headline.textContent = PROD_NAMES[product] + ' Insurance Quote';
+    if (subtitle) subtitle.textContent = 'Get a personalized ' + PROD_NAMES[product].toLowerCase() + ' quote from a licensed agent.';
+  } else if (city) {
+    headline.textContent = 'Insurance Quote for ' + city + (state ? ', ' + state : '');
+    if (subtitle) subtitle.textContent = 'A local agent serving ' + city + ' will follow up within one business day.';
+  } else if (line === 'commercial') {
+    headline.textContent = 'Commercial Insurance Quote';
+    if (subtitle) subtitle.textContent = 'Protect your business with coverage from 30+ carriers.';
+  } else if (line === 'life-health') {
+    headline.textContent = 'Life & Health Insurance Quote';
+    if (subtitle) subtitle.textContent = 'Get personalized life and health coverage options.';
+  }
+
+  // Track entry source
+  if (window.dataLayer) {
+    dataLayer.push({ event: 'intake_entry', source: src || 'direct', product: product || '', city: city || '', line: line || '' });
+  }
+})();
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // INTAKE ANALYTICS ENGINE (v3 — standardized taxonomy, no duplicate events)
 //

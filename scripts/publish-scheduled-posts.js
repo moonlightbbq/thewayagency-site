@@ -33,10 +33,25 @@ for (const post of calendar.year1) {
   if (post.status !== 'planned' && post.status !== 'in-review') continue;
   if (post.publish_date > today) continue;
 
-  // Check that the markdown file exists
+  // Readiness check: markdown file must exist
   const mdFile = path.join(BLOG_SRC, `${post.slug}.md`);
   if (!fs.existsSync(mdFile)) {
     console.log(`  ! Skipping "${post.title}" - markdown file not found: src/blog/${post.slug}.md`);
+    continue;
+  }
+
+  // Readiness check: file must have title and description in frontmatter
+  const mdContent = fs.readFileSync(mdFile, 'utf8');
+  if (!mdContent.includes('title:') || !mdContent.includes('description:')) {
+    console.log(`  ! Skipping "${post.title}" - missing title or description in frontmatter`);
+    continue;
+  }
+
+  // Readiness check: file must have meaningful content (>200 words)
+  const bodyText = mdContent.replace(/---[\s\S]*?---/, '').trim();
+  const wordCount = bodyText.split(/\s+/).length;
+  if (wordCount < 200) {
+    console.log(`  ! Skipping "${post.title}" - content too short (${wordCount} words, need 200+)`);
     continue;
   }
 
