@@ -279,7 +279,7 @@ const hubConfig = {
 // ─── Hub Page Generator ─────────────────────────
 
 function generateHubPage(lineKey, ctx) {
-  const { products, office, renderNav, renderFooter, renderScripts } = ctx;
+  const { products, office, seoData, renderNav, renderFooter, renderScripts } = ctx;
   const config = hubConfig[lineKey];
   const lineSlug = lineKey === 'life_health' ? 'life-health' : lineKey;
   const lineProducts = products[lineKey] || [];
@@ -359,7 +359,21 @@ ${renderHead({
       "email": office.email,
       "address": { "@type": "PostalAddress", "streetAddress": office.street, "addressLocality": office.city, "addressRegion": office.state, "postalCode": office.zip },
       "areaServed": [{ "@type": "State", "name": "Kentucky" }, { "@type": "State", "name": "Indiana" }, { "@type": "State", "name": "Tennessee" }],
+      "sameAs": (seoData && seoData.social_profiles) || [],
       "makesOffer": { "@type": "Offer", "itemOffered": { "@type": "Service", "name": config.schema.serviceName, "serviceType": config.schema.serviceType, "description": config.schema.serviceDesc } }
+    }, null, 2)}
+  </script>
+  <script type="application/ld+json">
+  ${JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": config.hero.eyebrow + " Products",
+      "itemListElement": lineProducts.map((p, i) => ({
+        "@type": "ListItem",
+        "position": i + 1,
+        "name": p.name,
+        "url": `https://www.thewayagency.com${p.url}`
+      }))
     }, null, 2)}
   </script>
   <script type="application/ld+json">
@@ -415,7 +429,7 @@ ${renderScripts()}
 // ─── Product Page Template ──────────────────────
 
 function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
-  const { products, office, team, knowledgeBase, carriers, testimonials, reviews, richContent, renderNav, renderFooter, renderScripts } = ctx;
+  const { products, office, team, knowledgeBase, carriers, testimonials, reviews, richContent, seoData, renderNav, renderFooter, renderScripts } = ctx;
   const rc = richContent[product.id] || {};
   const faqs = rc.faqs || [];
   const kbFaqs = getFAQsForProduct(knowledgeBase, product.id);
@@ -525,6 +539,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
         </div>
       </section>`;
 
+  const socialProfiles = (seoData && seoData.social_profiles) || [];
   const serviceSchema = `<script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -536,6 +551,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
       "name": "The Way Agency",
       "url": "https://www.thewayagency.com",
       "telephone": "${office.phone}",
+      "sameAs": ${JSON.stringify(socialProfiles)},
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "${office.street}",

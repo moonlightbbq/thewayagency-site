@@ -69,7 +69,7 @@ if (fs.existsSync(criticalCssPath)) {
 const injectVersion = createInjectVersion({ buildVersion, gitInfo, buildDate, reviews: _reviews, renderHead_GTM, renderBody_GTM, criticalCss: criticalCssMinified });
 
 // ─── Shared Context ─────────────────────────────
-const ctx = { products, office, team, knowledgeBase, carriers, testimonials, reviews: _reviews, richContent, landingData, renderNav, renderFooter, renderScripts };
+const ctx = { products, office, team, knowledgeBase, carriers, testimonials, reviews: _reviews, richContent, landingData, seoData, renderNav, renderFooter, renderScripts };
 
 // ─── Build ──────────────────────────────────────
 console.log('🔨 Building The Way Agency site...\n');
