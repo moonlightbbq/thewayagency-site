@@ -1213,6 +1213,376 @@
       "tags": ["bundling", "multi-policy", "discount", "savings"],
       "source_page": "/about/",
       "last_reviewed": "2026-03"
+    },
+    {
+      "id": "comm-auto-personal-use",
+      "question": "Can I use my personal auto policy for business driving?",
+      "answer": "Generally no. Most personal auto policies exclude regular business use beyond commuting. If you drive to job sites, make deliveries, or transport clients, you need commercial auto insurance. Using a personal policy for business driving can result in a denied claim.",
+      "category": "commercial",
+      "product": "commercial-auto",
+      "tags": ["commercial-auto", "personal-auto", "exclusions"],
+      "source_page": "/commercial/commercial-auto.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "comm-auto-hired-nonowned",
+      "question": "What is hired and non-owned auto coverage?",
+      "answer": "Hired and non-owned auto covers liability when employees drive rented vehicles or their own cars for business purposes. If an employee causes an accident while running a business errand in their personal car, your company could be sued. This coverage fills that gap and is often required on commercial contracts.",
+      "category": "commercial",
+      "product": "commercial-auto",
+      "tags": ["commercial-auto", "hired-auto", "non-owned", "liability"],
+      "source_page": "/commercial/commercial-auto.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "cyber-data-breach-steps",
+      "question": "What should I do if my business has a data breach?",
+      "answer": "First, contact your cyber insurance carrier immediately — they have breach response teams on call. Kentucky law (KRS 365.732) requires you to notify affected individuals without unreasonable delay. Your cyber policy typically covers forensic investigation, legal counsel, notification costs, and credit monitoring for affected customers.",
+      "category": "commercial",
+      "product": "cyber",
+      "tags": ["cyber", "data-breach", "kentucky", "notification"],
+      "source_page": "/commercial/cyber.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "bonds-vs-insurance",
+      "question": "What is the difference between a surety bond and insurance?",
+      "answer": "Insurance protects you from losses. A surety bond protects the party you are doing business with — it guarantees you will fulfill your obligations. If you fail to perform, the bond company pays the claim and then comes back to you for reimbursement. Contractors, notaries, and licensed professionals commonly need surety bonds in Kentucky.",
+      "category": "commercial",
+      "product": "bonds",
+      "tags": ["bonds", "surety", "contractors"],
+      "source_page": "/commercial/bonds.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "bonds-contractor-license",
+      "question": "Do I need a surety bond to get a contractor's license in Kentucky?",
+      "answer": "It depends on your city and county. Kentucky does not have a statewide contractor licensing requirement, but many cities like Louisville, Lexington, and Owensboro require contractor licenses that include surety bonds. The bond amount varies by jurisdiction and trade. We can help you determine what bonds you need and get them quickly.",
+      "category": "commercial",
+      "product": "bonds",
+      "tags": ["bonds", "contractors", "licensing", "kentucky"],
+      "source_page": "/commercial/bonds.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "term-life-how-much",
+      "question": "How much term life insurance do I need?",
+      "answer": "A common rule of thumb is 10-12 times your annual income, but the right amount depends on your debts, dependents, and goals. Consider your mortgage balance, future college costs, and how many years of income your family would need to replace. We can walk you through a needs analysis to find the right number.",
+      "category": "life_health",
+      "product": "term-life",
+      "tags": ["term-life", "coverage-amount", "needs-analysis"],
+      "source_page": "/life-health/term-life.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "term-life-convertible",
+      "question": "Can I convert my term life policy to permanent coverage?",
+      "answer": "Most term life policies include a conversion option that lets you switch to a whole life or universal life policy without a new medical exam, usually before a specified age or within a certain period. This is valuable because your health may change over time. We always recommend choosing a policy with a strong conversion option.",
+      "category": "life_health",
+      "product": "term-life",
+      "tags": ["term-life", "whole-life", "conversion"],
+      "source_page": "/life-health/term-life.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "disability-short-vs-long",
+      "question": "What is the difference between short-term and long-term disability insurance?",
+      "answer": "Short-term disability covers lost income for a few weeks to six months after an injury or illness. Long-term disability kicks in after short-term benefits end and can pay until age 65 or longer. Most people need long-term disability because the biggest financial risk is a multi-year inability to work, not a brief recovery period.",
+      "category": "life_health",
+      "product": "disability",
+      "tags": ["disability", "short-term", "long-term", "income-protection"],
+      "source_page": "/life-health/disability.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "disability-employer-vs-individual",
+      "question": "Is employer-provided disability insurance enough?",
+      "answer": "Usually not. Employer group disability typically replaces only 60% of your base salary, often excludes bonuses and commissions, and benefits are taxable if your employer pays the premium. An individual policy can fill the gap with higher benefit amounts, non-taxable benefits, and portability if you change jobs.",
+      "category": "life_health",
+      "product": "disability",
+      "tags": ["disability", "group-coverage", "individual"],
+      "source_page": "/life-health/disability.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "disability-elimination-period",
+      "question": "What is an elimination period in disability insurance?",
+      "answer": "The elimination period is the waiting time between when you become disabled and when benefits start paying. Common options are 30, 60, 90, or 180 days. A longer elimination period means lower premiums, but you need savings or other income to cover that gap. Most people choose 90 days as a balance between cost and coverage.",
+      "category": "life_health",
+      "product": "disability",
+      "tags": ["disability", "elimination-period", "waiting-period"],
+      "source_page": "/life-health/disability.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "general-claims-process",
+      "question": "What happens when I file an insurance claim?",
+      "answer": "You report the claim to your agent or carrier, they assign an adjuster to investigate, the adjuster assesses the damage or liability, and the carrier makes a settlement offer. As your independent agent, we advocate for you throughout this process — we push back on low estimates, help document your loss, and make sure the carrier treats you fairly.",
+      "category": "general",
+      "product": null,
+      "tags": ["claims", "process", "adjuster"],
+      "source_page": "/about/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "general-claims-premium",
+      "question": "Will filing a claim raise my insurance premium?",
+      "answer": "It depends on the claim type and your history. At-fault auto accidents and water damage claims tend to increase premiums. Weather-related claims and comprehensive claims (theft, hail) usually have less impact. One claim in five years rarely causes a significant increase. We can help you evaluate whether filing is worth it before you report a small claim.",
+      "category": "general",
+      "product": null,
+      "tags": ["claims", "premiums", "surcharges"],
+      "source_page": "/about/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "general-independent-vs-captive",
+      "question": "What is the difference between an independent agent and a captive agent?",
+      "answer": "A captive agent works for one insurance company (like State Farm or Farmers) and can only offer that company's products. An independent agent represents multiple carriers and shops the market on your behalf. This means we can compare rates and coverage from dozens of companies to find the best fit for your situation — not just one option.",
+      "category": "general",
+      "product": null,
+      "tags": ["independent-agent", "captive-agent", "comparison"],
+      "source_page": "/about/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "general-agent-cost",
+      "question": "Does it cost more to use an independent insurance agent?",
+      "answer": "No. Independent agents are paid by the insurance carriers through commissions, not by you. You pay the same premium whether you buy directly from a carrier or through an independent agent. The difference is that we do the shopping, comparison, and advocacy for you at no additional cost.",
+      "category": "general",
+      "product": null,
+      "tags": ["independent-agent", "cost", "commissions"],
+      "source_page": "/about/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "bundling-what-to-bundle",
+      "question": "What insurance policies can I bundle together?",
+      "answer": "Most carriers offer discounts when you combine home and auto insurance, but you can also bundle renters and auto, add umbrella coverage, or include boat, motorcycle, and other specialty lines. Commercial clients can bundle general liability, property, and auto into a Business Owners Policy (BOP). We compare bundled vs. split pricing to find the best deal.",
+      "category": "general",
+      "product": null,
+      "tags": ["bundling", "multi-policy", "discount"],
+      "source_page": "/about/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "bundling-when-not",
+      "question": "When should I NOT bundle my insurance?",
+      "answer": "Bundling is not always the cheapest option. If one carrier is significantly cheaper for your auto but average for your home, splitting policies across two carriers may save you more than the bundle discount. We always run both scenarios — bundled and split — to show you the real numbers before you decide.",
+      "category": "general",
+      "product": null,
+      "tags": ["bundling", "comparison", "savings"],
+      "source_page": "/about/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "boat-ky-requirements",
+      "question": "Is boat insurance required in Kentucky?",
+      "answer": "Kentucky does not require boat insurance by law, but your lender will require it if you are financing a boat. Even without a loan, boat insurance is strongly recommended — a boating accident can cause serious injuries and property damage, and your homeowners or auto policy does not cover watercraft liability.",
+      "category": "personal",
+      "product": "boat",
+      "tags": ["boat", "kentucky", "requirements"],
+      "source_page": "/personal/boat.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "boat-agreed-value",
+      "question": "What is agreed value boat insurance?",
+      "answer": "Agreed value means you and the carrier agree upfront on the boat's value. If the boat is totaled, you receive the full agreed amount with no depreciation deduction. This is different from actual cash value, which deducts depreciation and can leave you with much less than you need to replace your boat.",
+      "category": "personal",
+      "product": "boat",
+      "tags": ["boat", "agreed-value", "valuation"],
+      "source_page": "/personal/boat.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "boat-towing-salvage",
+      "question": "Does boat insurance cover towing and salvage?",
+      "answer": "Most boat insurance policies include or offer towing and on-water assistance coverage. Salvage coverage — which pays to recover a sunken or grounded boat — is typically included but may have sublimits. On the Ohio River and Kentucky's larger lakes, towing costs can run $500-$2,000, so this coverage is worth having.",
+      "category": "personal",
+      "product": "boat",
+      "tags": ["boat", "towing", "salvage", "ohio-river"],
+      "source_page": "/personal/boat.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "special-event-what-covered",
+      "question": "What does special event insurance cover?",
+      "answer": "Special event insurance typically covers liability for bodily injury and property damage at your event, plus cancellation or postponement costs if the event cannot take place due to weather, venue issues, or other covered reasons. Some policies also cover vendor no-shows, lost deposits, and liquor liability if alcohol is served.",
+      "category": "commercial",
+      "product": "special-event",
+      "tags": ["special-event", "liability", "cancellation"],
+      "source_page": "/commercial/special-event.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "special-event-when-needed",
+      "question": "When do I need special event insurance?",
+      "answer": "Any time you are hosting a gathering where someone could get hurt or property could be damaged. Weddings, corporate events, festivals, fundraisers, and sporting events are common examples. Most venues in Kentucky require proof of event liability insurance before they will let you book. We can typically get a policy issued within 24 hours.",
+      "category": "commercial",
+      "product": "special-event",
+      "tags": ["special-event", "venue", "requirements"],
+      "source_page": "/commercial/special-event.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "classic-car-daily-driver",
+      "question": "Can I use classic car insurance on a daily driver?",
+      "answer": "No. Classic car insurance (agreed value policies from carriers like Hagerty or American Modern) requires limited use — typically under 5,000 miles per year, no commuting, and storage in a garage. If you drive your classic car daily, you need a standard auto policy. Classic car insurance is designed for collector vehicles driven occasionally.",
+      "category": "personal",
+      "product": "classic-car",
+      "tags": ["classic-car", "daily-driver", "mileage"],
+      "source_page": "/personal/classic-car.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "classic-car-agreed-value",
+      "question": "What is agreed value coverage for classic cars?",
+      "answer": "Agreed value means you and the carrier set the vehicle's value when the policy starts, based on appraisals and market data. If the car is totaled, you receive the full agreed amount — no depreciation. This is critical for classic cars because their value often exceeds what standard auto insurance would pay based on book value.",
+      "category": "personal",
+      "product": "classic-car",
+      "tags": ["classic-car", "agreed-value", "valuation"],
+      "source_page": "/personal/classic-car.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "professional-liability-who-needs",
+      "question": "Who needs professional liability (E&O) insurance?",
+      "answer": "Any business that provides advice, services, or expertise to clients. Common examples include accountants, consultants, real estate agents, architects, engineers, IT professionals, and insurance agents. If a client claims your work caused them a financial loss, professional liability covers your legal defense and any settlement or judgment.",
+      "category": "commercial",
+      "product": "professional-liability",
+      "tags": ["professional-liability", "eo", "services"],
+      "source_page": "/commercial/professional-liability.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "professional-liability-vs-gl",
+      "question": "What is the difference between professional liability and general liability?",
+      "answer": "General liability covers bodily injury and property damage — someone slips in your office or you damage a client's property. Professional liability (E&O) covers financial losses from your professional services — bad advice, missed deadlines, errors in work product. Most service businesses need both, because they cover completely different types of claims.",
+      "category": "commercial",
+      "product": "professional-liability",
+      "tags": ["professional-liability", "general-liability", "comparison"],
+      "source_page": "/commercial/professional-liability.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "builders-risk-who-needs",
+      "question": "Who needs builders risk insurance?",
+      "answer": "Anyone building a new structure or doing a major renovation. Builders risk covers the building under construction, materials on site, and materials in transit against fire, wind, theft, and vandalism. In Kentucky, the property owner, general contractor, or both may be required to carry it depending on the contract terms.",
+      "category": "commercial",
+      "product": "builders-risk",
+      "tags": ["builders-risk", "construction", "renovation"],
+      "source_page": "/commercial/builders-risk.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "builders-risk-duration",
+      "question": "How long does a builders risk policy last?",
+      "answer": "Builders risk policies are written for the duration of the construction project, typically 3 to 12 months. If the project runs longer than expected, the policy can usually be extended. Coverage begins when construction starts and ends when the building is occupied or the policy term expires, whichever comes first.",
+      "category": "commercial",
+      "product": "builders-risk",
+      "tags": ["builders-risk", "policy-term", "construction"],
+      "source_page": "/commercial/builders-risk.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "medicaid-vs-medicare",
+      "question": "What is the difference between Medicaid and Medicare?",
+      "answer": "Medicare is federal health insurance for people 65 and older (or with certain disabilities), regardless of income. Medicaid is a joint federal-state program for people with limited income and resources. In Kentucky, Medicaid is administered through Medicaid Managed Care Organizations. Some people qualify for both programs simultaneously (dual eligible).",
+      "category": "life_health",
+      "product": "medicaid",
+      "tags": ["medicaid", "medicare", "comparison", "kentucky"],
+      "source_page": "/life-health/medicaid.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "medicaid-ky-expansion",
+      "question": "Does Kentucky have expanded Medicaid?",
+      "answer": "Yes. Kentucky expanded Medicaid under the Affordable Care Act, covering adults with household incomes up to 138% of the federal poverty level. You can apply through kynect (Kentucky's health insurance marketplace) at kynect.ky.gov. Eligibility is based on income, household size, and residency — not assets.",
+      "category": "life_health",
+      "product": "medicaid",
+      "tags": ["medicaid", "expansion", "kentucky", "kynect"],
+      "source_page": "/life-health/medicaid.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "supplemental-health-what",
+      "question": "What is supplemental health insurance?",
+      "answer": "Supplemental health insurance pays benefits in addition to your primary health plan. Common types include accident, critical illness, hospital indemnity, and cancer policies. These plans pay a cash benefit directly to you when a covered event occurs, helping cover deductibles, copays, and out-of-pocket expenses that your major medical plan does not fully cover.",
+      "category": "life_health",
+      "product": "supplemental-health",
+      "tags": ["supplemental", "accident", "critical-illness", "gap-coverage"],
+      "source_page": "/life-health/supplemental-health.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "supplemental-health-with-medicare",
+      "question": "Can I get supplemental insurance with Medicare?",
+      "answer": "Yes. Medicare Supplement (Medigap) plans cover costs that Original Medicare does not, like copays, coinsurance, and deductibles. Medigap is different from Medicare Advantage — you can have Medigap with Original Medicare but not with a Medicare Advantage plan. We can help you compare Medigap plans to find the right balance of coverage and cost.",
+      "category": "life_health",
+      "product": "supplemental-health",
+      "tags": ["supplemental", "medicare", "medigap"],
+      "source_page": "/life-health/supplemental-health.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "family-health-aca",
+      "question": "Can I get health insurance for my family through the ACA marketplace?",
+      "answer": "Yes. Kentucky uses kynect (kynect.ky.gov) as its ACA marketplace. During open enrollment (typically November 1 to January 15), you can compare plans and check if you qualify for premium subsidies based on household income. Special enrollment periods are available if you have a qualifying life event like marriage, birth of a child, or job loss.",
+      "category": "life_health",
+      "product": "family-health",
+      "tags": ["family-health", "aca", "marketplace", "kynect", "kentucky"],
+      "source_page": "/life-health/family-health.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "family-health-cobra",
+      "question": "What is COBRA and how long does it last?",
+      "answer": "COBRA lets you continue your employer's group health plan after leaving a job, but you pay the full premium plus a 2% administrative fee. COBRA lasts 18 months for most qualifying events (36 months for some). It is expensive but provides continuity while you find new coverage through kynect, a new employer, or an individual plan.",
+      "category": "life_health",
+      "product": "family-health",
+      "tags": ["family-health", "cobra", "job-loss", "continuation"],
+      "source_page": "/life-health/family-health.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "dental-vision-standalone",
+      "question": "Do I need standalone dental and vision insurance?",
+      "answer": "If your employer does not offer dental and vision benefits, or if you are self-employed or retired, standalone dental and vision plans are available and affordable. Dental plans typically run $25-50/month per person and cover preventive care, basic procedures, and major work. Vision plans are usually $10-20/month and cover annual exams and eyewear.",
+      "category": "life_health",
+      "product": "dental-vision",
+      "tags": ["dental", "vision", "standalone", "cost"],
+      "source_page": "/life-health/dental-vision.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "dental-vision-medicare",
+      "question": "Does Medicare cover dental and vision?",
+      "answer": "Original Medicare (Parts A and B) does not cover routine dental or vision care. Some Medicare Advantage plans include dental and vision benefits, but coverage varies widely. If you have Original Medicare, you will need a separate dental and vision plan. We can help you compare options that work with your existing Medicare coverage.",
+      "category": "life_health",
+      "product": "dental-vision",
+      "tags": ["dental", "vision", "medicare"],
+      "source_page": "/life-health/dental-vision.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "annuities-types",
+      "question": "What is the difference between fixed and variable annuities?",
+      "answer": "A fixed annuity guarantees a set interest rate for a specified period, similar to a CD but with tax-deferred growth. A variable annuity lets you invest in sub-accounts (similar to mutual funds) with the potential for higher returns but also market risk. Fixed annuities are simpler and safer; variable annuities offer growth potential with more complexity and fees.",
+      "category": "life_health",
+      "product": "annuities",
+      "tags": ["annuities", "fixed", "variable", "retirement"],
+      "source_page": "/life-health/annuities.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "annuities-when-makes-sense",
+      "question": "When does an annuity make sense?",
+      "answer": "Annuities make the most sense when you have maxed out other tax-advantaged retirement accounts (401k, IRA) and want additional tax-deferred savings, or when you want guaranteed lifetime income in retirement. They are not ideal for everyone — they have surrender charges if you withdraw early, and the fees on variable annuities can be high. We help you evaluate whether an annuity fits your overall retirement plan.",
+      "category": "life_health",
+      "product": "annuities",
+      "tags": ["annuities", "retirement", "tax-deferred"],
+      "source_page": "/life-health/annuities.html",
+      "last_reviewed": "2026-03"
     }
   ]
 }
