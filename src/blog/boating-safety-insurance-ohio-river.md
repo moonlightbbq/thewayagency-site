@@ -9,6 +9,8 @@ modified: 2026-05-20
 reading_time: 6 min read
 related_page: /personal/boat.html
 tags: boat insurance, ohio river, kentucky, watercraft, boating safety
+category: personal
+status: published
 ---
 
 Summer on the Ohio River is one of the best parts of living in western Kentucky. From [Owensboro](/insurance/owensboro-ky.html) to [Henderson](/insurance/henderson-ky.html) and all the way down to the lakes, thousands of boats hit the water every weekend from May through September.
@@ -143,3 +145,7 @@ Kentucky does not legally require boat insurance for recreational boaters. Howev
 ### FAQ: What should I do if I am in a boating accident on the Ohio River?
 
 Ensure everyone's safety first, then render aid to anyone in distress. Contact the Coast Guard or local authorities. Document the scene with photos and exchange information with any other parties involved. Report the accident to your insurance company as soon as possible. Kentucky law requires you to report boating accidents involving death, injury, or significant property damage to the Kentucky Department of Fish and Wildlife Resources.
+
+---
+
+**Need help reviewing your coverage before the season starts?** [Get a free quote](/intake/) or call us at (502) 413-5335. We'll make sure you're covered for what's ahead.

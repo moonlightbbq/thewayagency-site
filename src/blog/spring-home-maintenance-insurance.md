@@ -9,6 +9,8 @@ modified: 2026-04-08
 reading_time: 6 min read
 related_page: /personal/home.html
 tags: home insurance, kentucky, spring maintenance, home maintenance, lower premiums
+category: personal
+status: published
 ---
 
 Spring in Kentucky brings warm weather, severe storms, and a chance to do the kind of home maintenance that actually affects your insurance costs. Insurers look at risk when they set your premium, and a well-maintained home is a lower-risk home.
@@ -137,3 +139,7 @@ If a healthy tree falls on your home due to wind or a storm, your homeowners pol
 ### FAQ: Does homeowners insurance cover water damage from clogged gutters?
 
 Generally, no. Insurance covers sudden and accidental water damage, not damage resulting from deferred maintenance. If clogged gutters cause water to seep into your walls or foundation over time, that is considered a maintenance issue and would not be covered.
+
+---
+
+**Need help reviewing your coverage before the season starts?** [Get a free quote](/intake/) or call us at (502) 413-5335. We'll make sure you're covered for what's ahead.

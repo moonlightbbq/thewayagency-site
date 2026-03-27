@@ -9,6 +9,8 @@ modified: 2026-07-15
 reading_time: 6 min read
 related_page: /commercial/commercial-property.html
 tags: commercial insurance, business insurance, kentucky weather, storm damage, business interruption
+category: commercial
+status: published
 ---
 
 Kentucky summers are beautiful until they are not. Between June and September, the state sees severe thunderstorms, hail, straight-line winds, flash flooding, and the occasional tornado. For homeowners, that means checking the roof and the sump pump. For business owners, the stakes are higher.
@@ -117,3 +119,7 @@ Business income coverage replaces lost net income and pays continuing expenses d
 ### FAQ: How long does it take to get a commercial property claim paid after storm damage?
 
 Straightforward claims with clear documentation typically settle within 30 to 60 days. Larger claims involving structural damage, contractor estimates, and rebuilding can take several months. Having thorough documentation and working with your agent to stay on top of the process helps keep things moving.
+
+---
+
+**Need help reviewing your coverage before the season starts?** [Get a free quote](/intake/) or call us at (502) 413-5335. We'll make sure you're covered for what's ahead.

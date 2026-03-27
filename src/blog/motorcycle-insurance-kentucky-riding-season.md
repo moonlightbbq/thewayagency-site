@@ -9,6 +9,8 @@ modified: 2027-03-03
 reading_time: 6 min read
 related_page: /personal/motorcycle.html
 tags: motorcycle insurance kentucky, motorcycle insurance cost KY, kentucky motorcycle insurance requirements, motorcycle coverage options
+category: personal
+status: published
 ---
 
 Spring in Kentucky means dogwoods blooming, temperatures climbing, and motorcycles coming out of storage. Whether you ride a cruiser through the backroads of western Kentucky or commute on a sport bike in Louisville, the start of riding season is a good time to make sure your motorcycle insurance is actually set up the way you need it.
@@ -117,3 +119,7 @@ Full coverage motorcycle insurance in Kentucky typically costs $400 to $1,200 pe
 ### FAQ: Do I need medical payments coverage on my motorcycle policy?
 
 It is strongly recommended. Since motorcycles are exempt from Kentucky's PIP requirement, you do not have the automatic medical coverage that car insurance provides. Medical payments coverage fills this gap by paying your medical expenses after an accident regardless of fault, and it is inexpensive to add.
+
+---
+
+**Need help reviewing your coverage before the season starts?** [Get a free quote](/intake/) or call us at (502) 413-5335. We'll make sure you're covered for what's ahead.

@@ -9,6 +9,8 @@ modified: 2027-03-24
 reading_time: 6 min read
 related_page: /personal/home.html
 tags: storm season insurance checklist 2027, tornado season prep 2027, kentucky storm insurance, severe weather insurance coverage
+category: personal
+status: published
 ---
 
 Kentucky's severe weather season typically runs from March through June, with the worst tornado and hail activity concentrated in April and May. If you have lived here for any length of time, you know what that means: sirens, warnings, and the occasional reminder that the weather here can turn dangerous without much notice.
@@ -112,3 +114,7 @@ Instead of a flat dollar amount, a percentage-based deductible is calculated as 
 ### FAQ: Should I replace my roof before storm season?
 
 If your roof is near the end of its useful life, replacing it before storm season can provide several benefits: full replacement cost coverage instead of a depreciated ACV payout, lower premiums with many carriers, and peace of mind that your home is protected. Discuss your roof's age and condition with your agent to evaluate whether replacement makes financial sense.
+
+---
+
+**Need help reviewing your coverage before the season starts?** [Get a free quote](/intake/) or call us at (502) 413-5335. We'll make sure you're covered for what's ahead.
