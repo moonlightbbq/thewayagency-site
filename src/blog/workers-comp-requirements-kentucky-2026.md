@@ -18,7 +18,7 @@ Workers compensation is one of those things business owners know they probably n
 
 Kentucky law is clear on this: if you have one or more employees, you are generally required to carry [workers compensation insurance](/commercial/workers-compensation.html). That threshold is lower than many states, and it catches a lot of small businesses off guard.
 
-Under KRS Chapter 342, the requirement applies regardless of whether your employees are full-time, part-time, or seasonal. It does not matter how small your operation is. A restaurant owner with one dishwasher, a [contractor](/industries/contractors.html) with one laborer, a retailer with one cashier — they all need coverage.
+Under KRS Chapter 342, the requirement applies regardless of whether your employees are full-time, part-time, or seasonal. It does not matter how small your operation is. A restaurant owner with one dishwasher, a [contractor](/industries/general-contractors.html) with one laborer, a retailer with one cashier — they all need coverage.
 
 The law also applies to most corporate officers and LLC members who are actively involved in the business. You can elect to exclude yourself from coverage in some cases, but the default position is that you are covered.
 
