@@ -541,6 +541,7 @@
     $$('a[href^="tel:"]').forEach(el => {
       el.addEventListener('click', () => {
         track('lead_phone_call', { category: 'conversion', page_path: window.location.pathname });
+        track('phone_click', { category: 'conversion', page_path: window.location.pathname, link_text: el.textContent.trim().slice(0, 30), position: getElementPosition(el) });
         fireConversion('phone_call', { source: window.location.pathname });
       });
     });
@@ -810,8 +811,8 @@
       }
     }, { passive: true });
 
-    // Time on page (30s/60s/120s/300s)
-    const timeThresholds = [30, 60, 120, 300];
+    // Time on page (15s/30s/60s/120s/300s)
+    const timeThresholds = [15, 30, 60, 120, 300];
     const timeFired = new Set();
     const pageStart = Date.now();
     setInterval(() => {
@@ -833,6 +834,25 @@
         });
       });
     }
+
+    // CTA visibility tracking via IntersectionObserver
+    const ctaVisibleFired = new Set();
+    const ctaObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const id = el.id || el.textContent.trim().slice(0, 30);
+        if (ctaVisibleFired.has(id)) return;
+        ctaVisibleFired.add(id);
+        track('cta_visible', {
+          category: 'engagement',
+          cta_text: el.textContent.trim().slice(0, 50),
+          page_path: window.location.pathname,
+          position: getElementPosition(el),
+        });
+      });
+    }, { threshold: 0.5 });
+    $$('.cta-banner, .btn--primary, .btn-primary, a[href*="/intake"]').forEach(el => ctaObserver.observe(el));
   }
 
   // ═══════════════════════════════════════════════

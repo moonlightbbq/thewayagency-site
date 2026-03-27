@@ -2392,6 +2392,20 @@ async function submitIntake() {
       for (const key of utmKeys) { if (saved[key] && !formData[key]) formData[key] = saved[key]; }
     } catch(e) {}
   }
+  // Capture GCLID/FBCLID from URL or attribution cookies
+  const gclid = urlParams.get('gclid');
+  const fbclid = urlParams.get('fbclid');
+  if (gclid) formData.gclid = gclid;
+  if (fbclid) formData.fbclid = fbclid;
+  // Also check last-touch attribution cookie (set by app.js)
+  const ltCookie = document.cookie.match(/twa_lt=([^;]+)/);
+  if (ltCookie) {
+    try {
+      const lt = JSON.parse(decodeURIComponent(ltCookie[1]));
+      if (lt.gclid && !formData.gclid) formData.gclid = lt.gclid;
+      if (lt.fbclid && !formData.fbclid) formData.fbclid = lt.fbclid;
+    } catch(e) {}
+  }
   formData.lead_referrer = document.referrer || 'direct';
   formData.lead_page = window.location.pathname + window.location.search;
 
