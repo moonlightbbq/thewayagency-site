@@ -432,6 +432,17 @@ let VERIFY_STEP_SHOWN = false;
 
 async function init() {
   if (!TOKEN) { showError('Invalid Link', 'This link appears to be invalid. Please contact the agency for a new link.'); return; }
+
+  // Try cached data first for instant render
+  try {
+    const cached = sessionStorage.getItem('twa_portal_' + TOKEN);
+    if (cached) {
+      CONFIG = JSON.parse(cached);
+      buildForm();
+      document.getElementById('root').insertAdjacentHTML('afterbegin', '<div style="text-align:center;font-size:11px;color:var(--muted);padding:4px;background:var(--light)">Loading latest data...</div>');
+    }
+  } catch(e) {}
+
   try {
     const res = await fetch(SAGE_API + '/api/portal/' + TOKEN);
     if (res.status === 410) {
@@ -445,10 +456,17 @@ async function init() {
     }
     if (!res.ok) { showError('Link Not Found', 'This link is not valid. Please contact the agency.'); return; }
     CONFIG = await res.json();
+    try { sessionStorage.setItem('twa_portal_' + TOKEN, JSON.stringify(CONFIG)); } catch(ce) {}
     buildForm();
     loadGoogleMaps();
   } catch (e) {
-    showError('Connection Error', 'Unable to reach the server. Please try again later.');
+    // If we have cached data, show it with a banner instead of blocking error
+    if (CONFIG) {
+      const root = document.getElementById('root');
+      if (root) root.insertAdjacentHTML('afterbegin', '<div style="text-align:center;font-size:12px;color:#d97706;padding:8px;background:#fffbeb;border-radius:8px;margin-bottom:12px">Unable to refresh. Showing last known data. Call <a href="tel:+15024135335">(502) 413-5335</a> for help.</div>');
+      return;
+    }
+    showError('Connection Error', 'Unable to reach the server. Please try again later or call (502) 413-5335.');
   }
 }
 

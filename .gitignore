@@ -1,4 +1,6 @@
 build/
+.build-history/
+.content-backups/
 node_modules/
 *.env
 .env.*

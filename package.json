@@ -4,7 +4,9 @@
   "private": true,
   "description": "The Way Agency marketing website — static site on Cloudflare Pages",
   "scripts": {
+    "prebuild": "node scripts/build-rollback.js snapshot",
     "build": "node scripts/build.js",
+    "postbuild": "node scripts/build-rollback.js archive",
     "check-data": "node scripts/check-data-integrity.js",
     "admin": "node scripts/admin.js"
   },
