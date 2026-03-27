@@ -390,8 +390,31 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Montserrat', -apple-system, BlinkMacSystemFont
   <span id="portal-version" style="display:none"></span>
 </div>
 
+<div id="system-banner" style="display:none;padding:10px 20px;text-align:center;font-size:13px;font-weight:600;cursor:pointer" onclick="this.style.display='none'" role="alert"></div>
+
 <script>
 const SAGE_API = 'https://sage.thewayagency.com';
+
+// System status banner
+(function checkSystemStatus() {
+  const testBanner = new URLSearchParams(location.search).get('twa_test_banner');
+  if (testBanner) { showBanner(testBanner === 'emergency' ? 'red' : testBanner === 'maintenance' ? 'blue' : 'amber', testBanner === 'emergency' ? 'EMERGENCY MODE — System is read-only.' : testBanner === 'maintenance' ? 'Scheduled maintenance in progress.' : 'Some features may be limited.'); return; }
+  const ctrl = new AbortController();
+  setTimeout(() => ctrl.abort(), 5000);
+  fetch(SAGE_API + '/api/status', { signal: ctrl.signal }).then(r => r.json()).then(d => {
+    if (d.killLevel >= 4) showBanner('red', 'EMERGENCY MODE — System is read-only. Call (502) 413-5335 for help.');
+    else if (d.killLevel >= 2) showBanner('amber', 'Some features are temporarily limited. We are working on it.');
+    else if (d.maintenance) showBanner('blue', 'Scheduled maintenance in progress. Some features may be slow.');
+  }).catch(() => { showBanner('yellow', 'Unable to verify server status. Some features may not work.'); });
+})();
+function showBanner(color, msg) {
+  var b = document.getElementById('system-banner');
+  if (!b) return;
+  var colors = { red: { bg: '#fef2f2', c: '#dc2626', border: '#fecaca' }, amber: { bg: '#fffbeb', c: '#d97706', border: '#fde68a' }, blue: { bg: '#eff6ff', c: '#2563eb', border: '#bfdbfe' }, yellow: { bg: '#fefce8', c: '#a16207', border: '#fef08a' } };
+  var s = colors[color] || colors.amber;
+  b.style.cssText = 'display:block;padding:10px 20px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;background:' + s.bg + ';color:' + s.c + ';border-bottom:1px solid ' + s.border;
+  b.textContent = msg;
+}
 
 // Show version in footer
 fetch(SAGE_API + '/api/health').then(r=>r.json()).then(d=>{ const el=document.getElementById('portal-version'); if(el&&d.version) el.textContent='v'+d.version; }).catch(()=>{});

@@ -621,6 +621,7 @@
 </nav>
 
 <main id="main" style="margin-top:var(--nav-height);">
+<div id="intake-system-banner" style="display:none;padding:10px 20px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;max-width:580px;margin:8px auto 0;border-radius:8px" onclick="this.style.display='none'" role="alert"></div>
 <div class="container">
   <!-- Headline + response time promise -->
   <div style="text-align:center;padding:var(--space-xl) 0 var(--space-md);">
@@ -980,6 +981,25 @@
 
 <script>
 const SAGE_API = 'https://sage.thewayagency.com';
+
+// ── System status banner ────────────────────────────────────────────────────
+(function() {
+  const testBanner = new URLSearchParams(location.search).get('twa_test_banner');
+  if (testBanner) { showIntakeBanner(testBanner === 'emergency' ? 'red' : 'amber', testBanner === 'emergency' ? 'EMERGENCY MODE — Your data has been saved locally.' : 'Some features may be limited.'); return; }
+  const ctrl = new AbortController();
+  setTimeout(() => ctrl.abort(), 5000);
+  fetch(SAGE_API + '/api/status', { signal: ctrl.signal }).then(r => r.json()).then(d => {
+    if (d.killLevel >= 4) { showIntakeBanner('red', 'We are experiencing issues. Your data will be saved locally.'); window._sageUnreachable = true; }
+    else if (d.killLevel >= 2) showIntakeBanner('amber', 'Some features are temporarily limited. You can still submit your quote.');
+  }).catch(() => { showIntakeBanner('yellow', 'Connection issues detected. Your data will be saved if submission fails.'); });
+})();
+function showIntakeBanner(color, msg) {
+  const b = document.getElementById('intake-system-banner');
+  if (!b) return;
+  const colors = { red: '#fef2f2;color:#dc2626', amber: '#fffbeb;color:#d97706', yellow: '#fefce8;color:#a16207' };
+  b.style.cssText = 'display:block;padding:10px 20px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;max-width:580px;margin:8px auto 0;border-radius:8px;background:' + (colors[color] || colors.amber);
+  b.textContent = msg;
+}
 
 // ── Agent personalization ───────────────────────────────────────────────────
 (function() {

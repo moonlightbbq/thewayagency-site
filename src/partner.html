@@ -61,6 +61,7 @@
 </style>
 </head>
 <body>
+<div id="system-banner" style="display:none;padding:10px 20px;text-align:center;font-size:13px;font-weight:600;cursor:pointer" onclick="this.style.display='none'" role="alert"></div>
 <div class="header">
   <h1>The Way Agency</h1>
   <p>Referral Partner Portal</p>
@@ -148,6 +149,23 @@
 
 <script>
 const SAGE_API = 'https://sage.thewayagency.com';
+
+// System status banner
+(function() {
+  var ctrl = new AbortController();
+  setTimeout(function() { ctrl.abort(); }, 5000);
+  fetch(SAGE_API + '/api/status', { signal: ctrl.signal }).then(function(r) { return r.json(); }).then(function(d) {
+    if (d.killLevel >= 4) showBanner('red', 'EMERGENCY MODE — System is read-only.');
+    else if (d.killLevel >= 2) showBanner('amber', 'Some features are temporarily limited.');
+  }).catch(function() { showBanner('yellow', 'Unable to verify server status.'); });
+  function showBanner(color, msg) {
+    var b = document.getElementById('system-banner'); if (!b) return;
+    var colors = { red:'#fef2f2;color:#dc2626;border-bottom:1px solid #fecaca', amber:'#fffbeb;color:#d97706;border-bottom:1px solid #fde68a', yellow:'#fefce8;color:#a16207;border-bottom:1px solid #fef08a' };
+    b.style.cssText = 'display:block;padding:10px 20px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;background:' + (colors[color] || colors.amber);
+    b.textContent = msg;
+  }
+})();
+
 const params = new URLSearchParams(window.location.search);
 const TOKEN = params.get('token');
 let selectedProducts = [];
