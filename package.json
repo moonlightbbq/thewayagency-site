@@ -5,6 +5,7 @@
   "description": "The Way Agency marketing website — static site on Cloudflare Pages",
   "scripts": {
     "build": "node scripts/build.js",
+    "check-data": "node scripts/check-data-integrity.js",
     "admin": "node scripts/admin.js"
   },
   "engines": {
