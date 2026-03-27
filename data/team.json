@@ -1,0 +1,74 @@
+{
+  "team": [
+    {
+      "name": "Sheilia Royal",
+      "slug": "sheilia-royal",
+      "title": "Agency Principal / Licensed Agent",
+      "photo": "/src/assets/images/team/sheilia-royal.webp",
+      "years_experience": 20,
+      "license_states": ["KY", "IN", "TN"],
+      "designations": [],
+      "specialties": ["commercial_lines", "personal_lines", "life_health", "general-liability", "commercial-property", "workers-compensation"],
+      "bio": "Sheilia leads The Way Agency with a mission to make insurance accessible and personal. She oversees all commercial and personal lines and brings two decades of experience helping Kentucky businesses and families protect what matters most.",
+      "fun_fact": "",
+      "email": "sheilia@thewayagency.com",
+      "phone": "(502) 413-5335 ext 1"
+    },
+    {
+      "name": "Audrey Lillpop",
+      "slug": "audrey-lillpop",
+      "title": "Licensed Agent",
+      "photo": "/src/assets/images/team/audrey-lillpop.webp",
+      "years_experience": 8,
+      "license_states": ["KY", "IN", "TN"],
+      "designations": [],
+      "specialties": ["personal_lines", "home", "auto", "umbrella", "flood", "renters"],
+      "bio": "Audrey helps families across Kentucky find the right home and auto coverage. She is known for taking time to explain options in plain language and making sure clients understand exactly what they are buying.",
+      "fun_fact": "",
+      "email": "audrey@thewayagency.com",
+      "phone": "(502) 413-5335 ext 2"
+    },
+    {
+      "name": "Kelly McCallister",
+      "slug": "kelly-mccallister",
+      "title": "Client Care Specialist",
+      "photo": "/src/assets/images/team/kelly-mccallister.webp",
+      "years_experience": 10,
+      "license_states": ["KY", "IN", "TN"],
+      "designations": [],
+      "specialties": ["commercial_lines", "general-liability", "commercial-auto", "bonds", "builders-risk", "workers-compensation", "cyber"],
+      "bio": "Kelly specializes in commercial insurance for contractors, manufacturers, and small businesses across the tri-state area. She understands the unique risks businesses face and works to build coverage programs that protect without overpaying.",
+      "fun_fact": "",
+      "email": "kelly@thewayagency.com",
+      "phone": "(502) 413-5335 ext 3"
+    },
+    {
+      "name": "Jill Boone",
+      "slug": "jill-boone",
+      "title": "Licensed Agent",
+      "photo": "/src/assets/images/team/jill-boone.webp",
+      "years_experience": 6,
+      "license_states": ["KY", "IN", "TN"],
+      "designations": [],
+      "specialties": ["life_health", "medicare", "medicaid", "individual-health", "group-health", "term-life", "whole-life", "disability", "final-expense"],
+      "bio": "Jill focuses on life and health insurance, helping individuals and families navigate Medicare, health coverage options, and life insurance planning. She brings a patient, detail-oriented approach to every client conversation.",
+      "fun_fact": "",
+      "email": "jill@thewayagency.com",
+      "phone": "(502) 413-5335 ext 4"
+    },
+    {
+      "name": "Allison Sommers",
+      "slug": "allison-sommers",
+      "title": "College Intern",
+      "photo": "/src/assets/images/team/allison-sommers.webp",
+      "years_experience": 0,
+      "license_states": [],
+      "designations": [],
+      "specialties": [],
+      "bio": "",
+      "fun_fact": "",
+      "email": "",
+      "phone": ""
+    }
+  ]
+}

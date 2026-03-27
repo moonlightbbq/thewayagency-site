@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<!-- build: 2026-03-24-8102278 | staging | 2026-03-24T15:00:01.296Z -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+  <meta name="build-version" content="2026-03-24-8102278">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Referral Portal — The Way Agency</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:300;background:#f8fafc;color:#1e293b;min-height:100vh}
+  h1,h2,h3,h4,h5,h6{font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:600}
+  .header{background:linear-gradient(135deg,#1e3a8a,#3b82f6);color:#fff;padding:20px;text-align:center}
+  .header h1{font-size:22px;margin-bottom:4px}
+  .header p{font-size:13px;opacity:.8}
+  .container{max-width:700px;margin:0 auto;padding:20px}
+  .card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.1);padding:24px;margin-bottom:16px}
+  .card h2{font-size:16px;color:#1e3a8a;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid #e2e8f0}
+  .tabs{display:flex;gap:4px;margin-bottom:20px}
+  .tab{padding:8px 16px;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;background:#f1f5f9;color:#475569;transition:all .2s}
+  .tab.active{background:#3b82f6;color:#fff}
+  .form-group{margin-bottom:14px}
+  .form-group label{display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+  .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;outline:none;transition:border-color .2s}
+  .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .product-opt{padding:10px;border:2px solid #e2e8f0;border-radius:8px;cursor:pointer;text-align:center;transition:all .2s;font-size:12px;font-weight:500}
+  .product-opt:hover{border-color:#3b82f6;background:#eff6ff}
+  .product-opt.selected{border-color:#3b82f6;background:#dbeafe;color:#1e3a8a}
+  .btn{padding:10px 20px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+  .btn-primary{background:#3b82f6;color:#fff}
+  .btn-primary:hover{background:#2563eb}
+  .btn-primary:disabled{background:#93c5fd;cursor:not-allowed}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;padding:8px;background:#f1f5f9;font-weight:600;color:#475569;font-size:11px;text-transform:uppercase}
+  td{padding:8px;border-bottom:1px solid #f1f5f9}
+  .status{font-size:10px;padding:2px 8px;border-radius:4px;font-weight:600}
+  .status-draft{background:#f59e0b20;color:#f59e0b}
+  .status-submitted{background:#3b82f620;color:#3b82f6}
+  .status-bound{background:#22c55e20;color:#22c55e}
+  .status-quoted{background:#8b5cf620;color:#8b5cf6}
+  .error{color:#ef4444;font-size:12px;margin-top:8px}
+  .success{text-align:center;padding:30px;color:#22c55e}
+  .success .check{font-size:36px;margin-bottom:8px}
+  .empty{text-align:center;padding:30px;color:#9ca3af}
+  .partner-info{text-align:center;padding:8px;font-size:13px;color:#475569;margin-bottom:16px}
+  .hidden{display:none!important}
+  @media(max-width:480px){.form-row{grid-template-columns:1fr}.product-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>The Way Agency</h1>
+  <p>Referral Partner Portal</p>
+</div>
+<div class="container">
+  <div class="partner-info" id="partner-info"></div>
+
+  <div class="tabs">
+    <button class="tab active" data-action="show-tab" data-tab="refer">Submit Referral</button>
+    <button class="tab" data-action="show-tab" data-tab="history">My Referrals</button>
+  </div>
+
+  <!-- Referral Form -->
+  <div id="tab-refer" class="card">
+    <h2>New Referral</h2>
+    <div class="form-row">
+      <div class="form-group"><label>First Name *</label><input type="text" id="p_fname"></div>
+      <div class="form-group"><label>Last Name *</label><input type="text" id="p_lname"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Email</label><input type="email" id="p_email"></div>
+      <div class="form-group"><label>Phone</label><input type="tel" id="p_phone"></div>
+    </div>
+    <div class="form-group"><label>Address</label><input type="text" id="p_address"></div>
+    <div class="form-row">
+      <div class="form-group"><label>City</label><input type="text" id="p_city"></div>
+      <div class="form-group">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div><label>State</label><input type="text" id="p_state" maxlength="2"></div>
+          <div><label>ZIP</label><input type="text" id="p_zip" maxlength="10"></div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Products Needed *</label>
+      <div class="product-grid" id="p-product-grid">
+        <div class="product-opt" data-pid="homeowners" data-action="toggle-prod">🏠 Homeowners</div>
+        <div class="product-opt" data-pid="auto" data-action="toggle-prod">🚗 Auto</div>
+        <div class="product-opt" data-pid="umbrella" data-action="toggle-prod">☂️ Umbrella</div>
+        <div class="product-opt" data-pid="flood" data-action="toggle-prod">🌊 Flood</div>
+        <div class="product-opt" data-pid="life" data-action="toggle-prod">❤️ Life</div>
+        <div class="product-opt" data-pid="renters" data-action="toggle-prod">🏢 Renters</div>
+      </div>
+    </div>
+    <div class="form-group"><label>Notes</label><textarea id="p_notes" rows="3" placeholder="Any additional details..."></textarea></div>
+    <div id="refer-error" class="error hidden"></div>
+    <button class="btn btn-primary" id="refer-btn" data-action="submit-referral" style="width:100%">Submit Referral</button>
+
+    <div id="refer-success" class="success hidden">
+      <div class="check">✅</div>
+      <h3>Referral Submitted!</h3>
+      <p>Reference: <strong id="refer-ref"></strong></p>
+      <p style="margin-top:8px;font-size:13px;color:#64748b">We'll be in touch with your client shortly.</p>
+      <button class="btn btn-primary" data-action="reset-form" style="margin-top:12px">Submit Another</button>
+    </div>
+  </div>
+
+  <!-- Referral History -->
+  <div id="tab-history" class="card hidden">
+    <h2>My Referrals</h2>
+    <div id="history-content"><div class="empty">Loading...</div></div>
+  </div>
+</div>
+
+<script>
+const SAGE_API = 'https://sage.thewayagency.com';
+const params = new URLSearchParams(window.location.search);
+const TOKEN = params.get('token');
+let selectedProducts = [];
+
+if(!TOKEN){
+  document.querySelector('.container').innerHTML = '<div class="card"><div class="empty">Invalid portal link. Please contact The Way Agency for your partner access link.</div></div>';
+}
+
+// Load partner info
+async function init(){
+  if(!TOKEN) return;
+  try {
+    const res = await fetch(SAGE_API + '/api/partners/portal?token='+TOKEN);
+    if(!res.ok) throw new Error('Invalid token');
+    const data = await res.json();
+    document.getElementById('partner-info').textContent = `Welcome, ${data.partner.name}${data.partner.company?' — '+data.partner.company:''}`;
+  } catch(e){
+    document.querySelector('.container').innerHTML = '<div class="card"><div class="empty">Invalid or expired portal link. Please contact The Way Agency.</div></div>';
+  }
+}
+init();
+
+function v(id){ return document.getElementById(id)?.value?.trim() || ''; }
+
+function showTab(tab, event){
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  if (event && event.target) event.target.classList.add('active');
+  document.getElementById('tab-refer').classList.toggle('hidden', tab !== 'refer');
+  document.getElementById('tab-history').classList.toggle('hidden', tab !== 'history');
+  if(tab === 'history') loadHistory();
+}
+
+function toggleProd(el){
+  el.classList.toggle('selected');
+  selectedProducts = [...document.querySelectorAll('.product-opt.selected')].map(e => e.dataset.pid);
+}
+
+async function submitReferral(){
+  const err = document.getElementById('refer-error');
+  err.classList.add('hidden');
+
+  if(!v('p_fname')||!v('p_lname')){ err.textContent='Name required'; err.classList.remove('hidden'); return; }
+  if(!v('p_email')&&!v('p_phone')){ err.textContent='Email or phone required'; err.classList.remove('hidden'); return; }
+  if(!selectedProducts.length){ err.textContent='Select at least one product'; err.classList.remove('hidden'); return; }
+
+  const btn = document.getElementById('refer-btn');
+  btn.textContent = 'Submitting...'; btn.disabled = true;
+
+  try {
+    const res = await fetch(SAGE_API + '/api/partners/portal/refer?token='+TOKEN, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        firstName:v('p_fname'), lastName:v('p_lname'),
+        email:v('p_email'), phone:v('p_phone'),
+        address:v('p_address'), city:v('p_city'), state:v('p_state'), zip:v('p_zip'),
+        products: selectedProducts,
+        notes: v('p_notes'),
+      })
+    });
+    const data = await res.json();
+    if(data.ok){
+      document.getElementById('refer-ref').textContent = '#' + data.reference;
+      document.getElementById('refer-success').classList.remove('hidden');
+      document.getElementById('refer-btn').classList.add('hidden');
+      // Hide form fields
+      document.querySelectorAll('#tab-refer .form-group, #tab-refer .form-row').forEach(e => e.classList.add('hidden'));
+    } else {
+      err.textContent = data.error || 'Submission failed';
+      err.classList.remove('hidden');
+    }
+  } catch(e){
+    err.textContent = 'Network error. Please try again.';
+    err.classList.remove('hidden');
+  } finally {
+    btn.textContent = 'Submit Referral'; btn.disabled = false;
+  }
+}
+
+function resetForm(){
+  ['p_fname','p_lname','p_email','p_phone','p_address','p_city','p_state','p_zip','p_notes'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  document.querySelectorAll('.product-opt').forEach(e => e.classList.remove('selected'));
+  selectedProducts = [];
+  document.getElementById('refer-success').classList.add('hidden');
+  document.getElementById('refer-btn').classList.remove('hidden');
+  document.querySelectorAll('#tab-refer .form-group, #tab-refer .form-row').forEach(e => e.classList.remove('hidden'));
+}
+
+async function loadHistory(){
+  const container = document.getElementById('history-content');
+  try {
+    const res = await fetch(SAGE_API + '/api/partners/portal?token='+TOKEN);
+    const data = await res.json();
+    if(!data.referrals || !data.referrals.length){
+      container.innerHTML = '<div class="empty">No referrals yet</div>';
+      return;
+    }
+    let html = '<table><tr><th>Ref</th><th>Client</th><th>Products</th><th>Status</th><th>Date</th></tr>';
+    data.referrals.forEach(r => {
+      const statusCls = 'status status-'+(r.status||'draft');
+      html += `<tr>
+        <td><strong>#${esc(r.reference)}</strong></td>
+        <td>${esc(r.customer_name)}</td>
+        <td>${esc(r.products.join(', '))}</td>
+        <td><span class="${statusCls}">${esc(r.status)}</span></td>
+        <td style="color:#6b7280;font-size:11px">${new Date(r.created_at).toLocaleDateString()}</td>
+      </tr>`;
+    });
+    html += '</table>';
+    container.innerHTML = html;
+  } catch(e){
+    container.innerHTML = '<div class="empty">Failed to load referrals</div>';
+  }
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+document.addEventListener('click', function(e) {
+  var el = e.target.closest('[data-action]');
+  if (!el) return;
+  var action = el.dataset.action;
+  if (action === 'show-tab') showTab(el.dataset.tab, e);
+  else if (action === 'toggle-prod') toggleProd(el);
+  else if (action === 'submit-referral') submitReferral();
+  else if (action === 'reset-form') resetForm();
+});
+</script>
+</body>
+</html>

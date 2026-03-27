@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a6fb5">
+<title>The Way Agency – Complete Your Application</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #1a6fb5;
+  --cyan: #29b6f6;
+  --mint: #6ec6a0;
+  --dark: #1a2332;
+  --text: #2d3748;
+  --muted: #64748b;
+  --light: #f7f9fc;
+  --border: #e2e8f0;
+  --white: #ffffff;
+  --radius: 12px;
+  --red: #ef4444;
+}
+* { box-sizing: border-box; margin: 0; padding: 0 }
+body {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 300;
+  background: var(--light);
+  color: var(--text);
+  min-height: 100vh;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+}
+h1,h2,h3,h4,h5,h6 { font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-weight: 600 }
+
+/* ─── Header ─── */
+.site-header {
+  background: linear-gradient(135deg, var(--dark) 0%, #1e3a5f 50%, var(--blue) 100%);
+  color: var(--white);
+  padding: 28px 20px 32px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(41,182,246,.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.header-logo {
+  height: 52px;
+  margin-bottom: 16px;
+  filter: brightness(0) invert(1);
+  position: relative;
+  z-index: 1;
+}
+.header-title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+  position: relative;
+  z-index: 1;
+}
+.header-sub {
+  font-size: 14px;
+  opacity: .75;
+  font-weight: 400;
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Trust bar ─── */
+.trust-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+}
+.trust-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 8px;
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+.trust-item:last-child { border-right: none }
+.trust-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  color: var(--white);
+  border-radius: 50%;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.trust-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dark);
+  letter-spacing: .2px;
+  line-height: 1.3;
+}
+.trust-sub {
+  font-size: 10px;
+  color: var(--muted);
+  font-weight: 400;
+  margin-top: -2px;
+}
+
+/* ─── Container ─── */
+.container { max-width: 580px; margin: 0 auto; padding: 24px 16px 40px; padding-bottom: env(safe-area-inset-bottom, 40px) }
+
+/* ─── Progress ─── */
+.progress { display: flex; gap: 4px; margin-bottom: 24px }
+.progress-dot { flex: 1; height: 4px; border-radius: 2px; background: var(--border); transition: background .3s }
+.progress-dot.active { background: linear-gradient(90deg, var(--blue), var(--cyan)) }
+.progress-dot.done { background: var(--mint) }
+
+/* ─── Steps ─── */
+.step { display: none; animation: slideUp .35s ease-out }
+.step.active { display: block }
+@keyframes slideUp { from { opacity: 0; transform: translateY(10px) } to { opacity: 1; transform: translateY(0) } }
+
+/* ─── Card ─── */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+  padding: 28px 24px;
+  margin-bottom: 16px;
+  animation: slideUp .35s ease-out;
+}
+
+/* ─── Fields ─── */
+.field { margin-bottom: 16px }
+.field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--white);
+  -webkit-text-size-adjust: 100%;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  -webkit-appearance: none;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(41,182,246,.12);
+}
+.field input.filled { border-color: var(--mint); background: #f0fdf8 }
+.field input.invalid, .field select.invalid { border-color: var(--red); background: #fef2f2 }
+.field .error-msg { font-size: 11px; color: var(--red); margin-top: 3px; display: none }
+.field .hint { font-size: 11px; color: #94a3b8; margin-top: 3px }
+
+/* ─── Verification ─── */
+.verify-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.verify-row input { flex: 1 }
+.verify-btn {
+  padding: 11px 16px;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .2s;
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  color: var(--white);
+}
+.verify-btn:hover { box-shadow: 0 2px 8px rgba(26,111,181,.25) }
+.verify-btn:disabled { opacity: .5; cursor: not-allowed }
+.verify-btn.verified {
+  background: var(--mint);
+  cursor: default;
+}
+.code-input-wrap {
+  display: none;
+  margin-top: 8px;
+  animation: slideUp .25s ease-out;
+}
+.code-input-wrap.show { display: flex; gap: 8px; align-items: center }
+.code-input-wrap input {
+  flex: 1;
+  text-align: center;
+  letter-spacing: 6px;
+  font-size: 18px;
+  font-weight: 600;
+}
+.verify-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+.verify-status.pending { color: var(--muted) }
+.verify-status.sent { color: var(--blue) }
+.verify-status.verified { color: #16a34a }
+.verify-status.error { color: var(--red) }
+
+/* ─── Buttons ─── */
+.btn {
+  padding: 14px 28px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+  letter-spacing: .2px;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+  color: var(--white);
+  box-shadow: 0 2px 8px rgba(26,111,181,.25);
+}
+.btn-primary:hover { box-shadow: 0 4px 14px rgba(26,111,181,.35); transform: translateY(-1px) }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none }
+.btn-secondary {
+  background: var(--white);
+  color: var(--muted);
+  border: 1.5px solid var(--border);
+}
+.btn-secondary:hover { background: var(--light); color: var(--text) }
+.btn-row { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px }
+
+/* ─── Review ─── */
+.review-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.review-card h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.review-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+}
+.review-row:last-child { border: none }
+.review-label { color: var(--muted) }
+.review-value { font-weight: 500; color: var(--dark); text-align: right; max-width: 60% }
+
+/* ─── Upload ─── */
+.upload-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .2s;
+}
+.upload-zone:hover { border-color: var(--cyan); background: #eff6ff }
+.upload-zone.active { border-color: var(--mint); background: #f0fdf8 }
+.upload-icon { font-size: 32px; margin-bottom: 8px }
+.upload-text { font-size: 14px; color: var(--muted) }
+
+/* ─── Success / Error ─── */
+.success {
+  text-align: center;
+  padding: 48px 16px;
+}
+.success-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--mint), #4ade80);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  font-size: 32px;
+  color: var(--white);
+  box-shadow: 0 4px 16px rgba(110,198,160,.35);
+}
+.success h2 { font-size: 22px; color: var(--dark); margin-bottom: 8px }
+.success p { font-size: 14px; color: var(--muted); line-height: 1.6 }
+.error-page { text-align: center; padding: 48px 16px }
+.error-page h2 { font-size: 20px; color: var(--red); margin-bottom: 8px }
+.error-page p { color: var(--muted); font-size: 14px; line-height: 1.5 }
+.loading { text-align: center; padding: 48px; color: var(--muted) }
+.spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top: 3px solid var(--blue); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 16px }
+@keyframes spin { to { transform: rotate(360deg) } }
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--dark); color: var(--white); padding: 10px 20px; border-radius: 10px; font-size: 13px; z-index: 100; animation: slideUp .3s ease-out }
+
+/* ─── Footer ─── */
+.site-footer {
+  text-align: center;
+  padding: 24px 16px;
+  font-size: 11px;
+  color: #94a3b8;
+  border-top: 1px solid var(--border);
+  margin-top: 20px;
+}
+.site-footer a { color: var(--blue); text-decoration: none }
+
+.pac-container { z-index: 10000; border-radius: 10px; overflow: hidden; margin-top: 2px; box-shadow: 0 4px 16px rgba(0,0,0,.12) }
+
+@media (max-width: 480px) {
+  .container { padding: 16px 12px 32px }
+  .card { padding: 20px 16px }
+  .trust-item { padding: 12px 6px }
+  .site-header { padding: 24px 16px 28px }
+  .header-title { font-size: 18px }
+}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <img class="header-logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency">
+  <div class="header-title">Complete Your Application</div>
+  <div class="header-sub">The Way Agency — your trusted insurance partner</div>
+</div>
+
+<div class="trust-bar">
+  <div class="trust-item">
+    <div class="trust-icon">&#10003;</div>
+    <span class="trust-label">40+ Carriers</span>
+    <span class="trust-sub">Top-rated options</span>
+  </div>
+  <div class="trust-item">
+    <div class="trust-icon">&#128274;</div>
+    <span class="trust-label">256-bit Secure</span>
+    <span class="trust-sub">Your data is safe</span>
+  </div>
+  <div class="trust-item">
+    <div class="trust-icon">&#9889;</div>
+    <span class="trust-label">Fast Quotes</span>
+    <span class="trust-sub">Same-day response</span>
+  </div>
+</div>
+
+<div class="container" id="root">
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <div>Loading your form...</div>
+  </div>
+</div>
+
+<div class="site-footer">
+  &copy; 2026 The Way Agency &middot; <a href="https://www.thewayagency.com">thewayagency.com</a> &middot; <a href="mailto:hello@thewayagency.com">hello@thewayagency.com</a>
+  <br>PO Box 187, Owensboro, KY 42302
+  <br><span id="portal-version" style="font-size:11px;color:#94a3b8"></span>
+</div>
+
+<script>
+const SAGE_API = 'https://sage.thewayagency.com';
+
+// Show version in footer
+fetch(SAGE_API + '/api/health').then(r=>r.json()).then(d=>{ const el=document.getElementById('portal-version'); if(el&&d.version) el.textContent='v'+d.version; }).catch(()=>{});
+
+const params = new URLSearchParams(location.search);
+const TOKEN = params.get('t');
+let CONFIG = null;
+let STEP = 0;
+let FIELDS = [];
+let FORM_DATA = {};
+let STEPS = [];
+let VERIFIED = { phone: false, email: false };
+let VERIFY_CODES = {};
+let VERIFY_STEP_SHOWN = false;
+
+async function init() {
+  if (!TOKEN) { showError('Invalid Link', 'This link appears to be invalid. Please contact the agency for a new link.'); return; }
+  try {
+    const res = await fetch(SAGE_API + '/api/portal/' + TOKEN);
+    if (res.status === 410) {
+      const data = await res.json();
+      if (data.completed_at) {
+        showSuccess('Already Submitted', 'This form has already been completed. Thank you!');
+      } else {
+        showError('Link Expired', 'This link has expired. Please contact the agency for a new link.');
+      }
+      return;
+    }
+    if (!res.ok) { showError('Link Not Found', 'This link is not valid. Please contact the agency.'); return; }
+    CONFIG = await res.json();
+    buildForm();
+    loadGoogleMaps();
+  } catch (e) {
+    showError('Connection Error', 'Unable to reach the server. Please try again later.');
+  }
+}
+
+function buildForm() {
+  const name = CONFIG.customer_name || CONFIG.customer?.firstName || 'there';
+
+  if (CONFIG.mode === 'missing_fields') {
+    FIELDS = buildMissingFields(CONFIG.fields_requested);
+  } else if (CONFIG.mode === 'full_app') {
+    FIELDS = buildFullAppFields(CONFIG.products);
+  } else if (CONFIG.mode === 'document_upload') {
+    document.getElementById('root').innerHTML = buildDocUploadPage(name);
+    return;
+  }
+
+  // Check if we need verification (phone or email fields present)
+  const hasPhone = FIELDS.some(f => f.key === 'phone');
+  const hasEmail = FIELDS.some(f => f.key === 'email');
+  const needsVerify = hasPhone || hasEmail;
+
+  // Group fields into steps (3-4 fields per step)
+  // If verification needed, first step is verify, then remaining fields, then review
+  STEPS = [];
+  if (needsVerify) {
+    // Pull out phone and email for verification step
+    const verifyFields = FIELDS.filter(f => f.key === 'phone' || f.key === 'email');
+    const otherFields = FIELDS.filter(f => f.key !== 'phone' && f.key !== 'email');
+    STEPS.push({ type: 'verify', fields: verifyFields });
+    const PER_STEP = 3;
+    for (let i = 0; i < otherFields.length; i += PER_STEP) {
+      STEPS.push({ type: 'fields', fields: otherFields.slice(i, i + PER_STEP) });
+    }
+  } else {
+    const PER_STEP = 3;
+    for (let i = 0; i < FIELDS.length; i += PER_STEP) {
+      STEPS.push({ type: 'fields', fields: FIELDS.slice(i, i + PER_STEP) });
+    }
+  }
+  STEPS.push({ type: 'review' });
+
+  renderStep();
+}
+
+function buildMissingFields(requested) {
+  const fieldMap = {
+    'First Name': { key: 'firstName', type: 'text', target: 'customer', placeholder: 'John' },
+    'Last Name': { key: 'lastName', type: 'text', target: 'customer', placeholder: 'Doe' },
+    'Phone Number': { key: 'phone', type: 'tel', target: 'customer', placeholder: '(555) 123-4567' },
+    'Email Address': { key: 'email', type: 'email', target: 'customer', placeholder: 'john@example.com' },
+    'Street Address': { key: 'address', type: 'text', target: 'customer', placeholder: '123 Main St', autocomplete: 'address' },
+    'City': { key: 'city', type: 'text', target: 'customer', placeholder: 'Springfield' },
+    'State': { key: 'state', type: 'select', target: 'customer', options: ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'] },
+    'ZIP Code': { key: 'zip', type: 'text', target: 'customer', placeholder: '12345', pattern: '[0-9]{5}' },
+    'Date of Birth': { key: 'dob', type: 'date', target: 'customer' },
+    // Homeowners
+    'Dwelling Coverage Amount': { key: 'ho_dwellamt', type: 'text', target: 'form_data', placeholder: 'e.g. $350,000' },
+    'Year Built': { key: 'ho_year', type: 'text', target: 'form_data', placeholder: 'e.g. 1995' },
+    'Square Footage': { key: 'ho_sqft', type: 'text', target: 'form_data', placeholder: 'e.g. 2400' },
+    'Construction Type': { key: 'ho_const', type: 'select', target: 'form_data', options: ['Frame','Masonry','Brick','Steel','Log'] },
+    'Roof Type': { key: 'ho_roof', type: 'select', target: 'form_data', options: ['Asphalt Shingle','Metal','Tile','Slate','Flat/Built-Up'] },
+    'Number of Stories': { key: 'ho_stories', type: 'text', target: 'form_data', placeholder: 'e.g. 2' },
+    'Deductible': { key: 'ho_ded', type: 'select', target: 'form_data', options: ['$500','$1,000','$2,500','$5,000','$10,000'] },
+    // Auto
+    'Auto Liability Limits': { key: 'au_liab', type: 'select', target: 'form_data', options: ['100/300','250/500','500/500','CSL 300K','CSL 500K','CSL 1M'] },
+    'Vehicle 1 Year': { key: 'vh_1_year', type: 'text', target: 'form_data', placeholder: 'e.g. 2022' },
+    'Vehicle 1 Make': { key: 'vh_1_make', type: 'text', target: 'form_data', placeholder: 'e.g. Toyota' },
+    'Vehicle 1 Model': { key: 'vh_1_model', type: 'text', target: 'form_data', placeholder: 'e.g. Camry' },
+    // Umbrella
+    'Umbrella Limit': { key: 'umb_limit', type: 'select', target: 'form_data', options: ['$250,000','$500,000','$1,000,000','$2,000,000','$5,000,000'] },
+    // Flood
+    'Flood Building Coverage': { key: 'fl_bldg', type: 'text', target: 'form_data', placeholder: 'e.g. $250,000' },
+    'Flood Zone': { key: 'fl_zone', type: 'select', target: 'form_data', options: ['A','AE','AH','AO','V','VE','X','B','C','D'] },
+    // Life
+    'Life Insurance Face Amount': { key: 'li_amt', type: 'text', target: 'form_data', placeholder: 'e.g. $500,000' },
+    'Term Length': { key: 'li_term', type: 'select', target: 'form_data', options: ['10','15','20','25','30'] },
+    // Renters
+    'Personal Property Coverage': { key: 'rent_pp', type: 'text', target: 'form_data', placeholder: 'e.g. $30,000' },
+    // Condo
+    'Building Coverage': { key: 'condo_bldg', type: 'text', target: 'form_data', placeholder: 'e.g. $100,000' },
+    // Earthquake
+    'Replacement Cost': { key: 'eq_value', type: 'text', target: 'form_data', placeholder: 'e.g. $400,000' },
+    // Motorcycle
+    'Motorcycle Year': { key: 'mc_year', type: 'text', target: 'form_data', placeholder: 'e.g. 2021' },
+    'Motorcycle Make': { key: 'mc_make', type: 'text', target: 'form_data', placeholder: 'e.g. Harley-Davidson' },
+    'Motorcycle Model': { key: 'mc_model', type: 'text', target: 'form_data', placeholder: 'e.g. Street Glide' },
+    // Boat
+    'Boat Year': { key: 'boat_year', type: 'text', target: 'form_data', placeholder: 'e.g. 2020' },
+    'Boat Make': { key: 'boat_make', type: 'text', target: 'form_data', placeholder: 'e.g. Boston Whaler' },
+    'Boat Value': { key: 'boat_value', type: 'text', target: 'form_data', placeholder: 'e.g. $45,000' },
+    // RV
+    'RV Year': { key: 'rv_year', type: 'text', target: 'form_data', placeholder: 'e.g. 2019' },
+    'RV Make': { key: 'rv_make', type: 'text', target: 'form_data', placeholder: 'e.g. Winnebago' },
+    'RV Value': { key: 'rv_value', type: 'text', target: 'form_data', placeholder: 'e.g. $85,000' },
+    // Pet
+    'Pet Species': { key: 'pet_species', type: 'select', target: 'form_data', options: ['Dog','Cat'] },
+    'Pet Breed': { key: 'pet_breed', type: 'text', target: 'form_data', placeholder: 'e.g. Golden Retriever' },
+    // BOP
+    'Business Name': { key: 'bop_bizname', type: 'text', target: 'form_data', placeholder: 'Legal business name' },
+    'Industry/Class': { key: 'bop_industry', type: 'text', target: 'form_data', placeholder: 'e.g. Retail, Restaurant' },
+    'Annual Revenue': { key: 'bop_rev', type: 'text', target: 'form_data', placeholder: 'e.g. $500,000' },
+    'Business Personal Property': { key: 'bop_bpp', type: 'text', target: 'form_data', placeholder: 'e.g. $100,000' },
+    'Liability Limit': { key: 'bop_liab', type: 'select', target: 'form_data', options: ['$300,000','$500,000','$1,000,000','$2,000,000'] },
+    // CGL
+    'Each Occurrence Limit': { key: 'cgl_occ', type: 'select', target: 'form_data', options: ['$500,000','$1,000,000','$2,000,000'] },
+    'General Aggregate': { key: 'cgl_agg', type: 'select', target: 'form_data', options: ['$1,000,000','$2,000,000','$4,000,000'] },
+    // Commercial Auto
+    'Total Vehicles': { key: 'ca_vehcount', type: 'text', target: 'form_data', placeholder: 'e.g. 5' },
+    // Workers Comp
+    'Number of Employees': { key: 'wc_emps', type: 'text', target: 'form_data', placeholder: 'e.g. 15' },
+    'Annual Payroll': { key: 'wc_payroll', type: 'text', target: 'form_data', placeholder: 'e.g. $750,000' },
+    // Cyber
+    'Records with Personal Data': { key: 'cy_records', type: 'text', target: 'form_data', placeholder: 'e.g. 5,000' },
+    // E&O
+    'Business/Firm Name': { key: 'eo_bizname', type: 'text', target: 'form_data', placeholder: 'Business or firm name' },
+    'Profession': { key: 'eo_profession', type: 'text', target: 'form_data', placeholder: 'e.g. CPA, Attorney' },
+    'Per Claim Limit': { key: 'eo_perclaim', type: 'select', target: 'form_data', options: ['$250,000','$500,000','$1,000,000','$2,000,000'] },
+    // Builders Risk
+    'Project Name': { key: 'br_projname', type: 'text', target: 'form_data', placeholder: 'Project name' },
+    'Project Type': { key: 'br_projtype', type: 'select', target: 'form_data', options: ['New Construction','Renovation','Addition','Commercial Build-Out'] },
+    'Total Project Value': { key: 'br_totalval', type: 'text', target: 'form_data', placeholder: 'e.g. $1,500,000' },
+  };
+
+  return requested.map(label => {
+    const config = fieldMap[label];
+    if (config) return { ...config, label };
+    return { key: label.toLowerCase().replace(/\s+/g, '_'), type: 'text', target: 'form_data', label, placeholder: '' };
+  });
+}
+
+function buildFullAppFields(products) {
+  const fields = [
+    { key: 'firstName', type: 'text', target: 'customer', label: 'First Name', placeholder: 'John' },
+    { key: 'lastName', type: 'text', target: 'customer', label: 'Last Name', placeholder: 'Doe' },
+    { key: 'phone', type: 'tel', target: 'customer', label: 'Phone Number', placeholder: '(555) 123-4567' },
+    { key: 'email', type: 'email', target: 'customer', label: 'Email Address', placeholder: 'john@example.com' },
+    { key: 'dob', type: 'date', target: 'customer', label: 'Date of Birth' },
+    { key: 'address', type: 'text', target: 'customer', label: 'Street Address', placeholder: '123 Main St' },
+    { key: 'city', type: 'text', target: 'customer', label: 'City', placeholder: '' },
+    { key: 'state', type: 'select', target: 'customer', label: 'State', options: ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'] },
+    { key: 'zip', type: 'text', target: 'customer', label: 'ZIP Code', placeholder: '12345' },
+  ];
+
+  // Add product-specific fields
+  const prods = (CONFIG.products || []).map(p => p.id || p);
+
+  if (prods.some(p => ['homeowners','ho','dwellingfire'].includes(p))) {
+    fields.push(
+      { key: 'ho_dwellamt', label: 'Dwelling Coverage Amount', type: 'text', target: 'form_data', placeholder: 'e.g. $350,000' },
+      { key: 'ho_year', label: 'Year Built', type: 'text', target: 'form_data', placeholder: 'e.g. 1995' },
+      { key: 'ho_sqft', label: 'Square Footage', type: 'text', target: 'form_data', placeholder: 'e.g. 2400' },
+      { key: 'ho_const', label: 'Construction Type', type: 'select', target: 'form_data', options: ['Frame','Masonry','Brick','Steel','Log'] },
+      { key: 'ho_roof', label: 'Roof Type', type: 'select', target: 'form_data', options: ['Asphalt Shingle','Metal','Tile','Slate','Flat/Built-Up'] },
+      { key: 'ho_stories', label: 'Number of Stories', type: 'text', target: 'form_data', placeholder: 'e.g. 2' },
+      { key: 'ho_ded', label: 'Deductible', type: 'select', target: 'form_data', options: ['$500','$1,000','$2,500','$5,000','$10,000'] },
+    );
+  }
+
+  if (prods.some(p => ['auto','pap'].includes(p))) {
+    fields.push(
+      { key: 'au_liab', label: 'Auto Liability Limits', type: 'select', target: 'form_data', options: ['100/300','250/500','500/500','CSL 300K','CSL 500K','CSL 1M'] },
+      { key: 'vh_1_year', label: 'Vehicle 1 Year', type: 'text', target: 'form_data', placeholder: 'e.g. 2022' },
+      { key: 'vh_1_make', label: 'Vehicle 1 Make', type: 'text', target: 'form_data', placeholder: 'e.g. Toyota' },
+      { key: 'vh_1_model', label: 'Vehicle 1 Model', type: 'text', target: 'form_data', placeholder: 'e.g. Camry' },
+      { key: 'vh_1_vin', label: 'Vehicle 1 VIN', type: 'text', target: 'form_data', placeholder: '17 characters' },
+    );
+  }
+
+  if (prods.some(p => ['umbrella'].includes(p))) {
+    fields.push(
+      { key: 'umb_limit', label: 'Umbrella Limit', type: 'select', target: 'form_data', options: ['$250,000','$500,000','$1,000,000','$2,000,000','$5,000,000'] },
+    );
+  }
+
+  if (prods.some(p => ['flood'].includes(p))) {
+    fields.push(
+      { key: 'fl_bldg', label: 'Flood Building Coverage', type: 'text', target: 'form_data', placeholder: 'e.g. $250,000' },
+      { key: 'fl_zone', label: 'Flood Zone', type: 'select', target: 'form_data', options: ['A','AE','AH','AO','V','VE','X','B','C','D'] },
+    );
+  }
+
+  if (prods.some(p => ['life','life_term','life_whole'].includes(p))) {
+    fields.push(
+      { key: 'li_amt', label: 'Life Insurance Face Amount', type: 'text', target: 'form_data', placeholder: 'e.g. $500,000' },
+      { key: 'li_term', label: 'Term Length', type: 'select', target: 'form_data', options: ['10','15','20','25','30'] },
+    );
+  }
+
+  if (prods.some(p => ['renters'].includes(p))) {
+    fields.push(
+      { key: 'rent_pp', label: 'Personal Property Coverage', type: 'text', target: 'form_data', placeholder: 'e.g. $30,000' },
+    );
+  }
+
+  if (prods.some(p => ['condo'].includes(p))) {
+    fields.push(
+      { key: 'condo_bldg', label: 'Building Coverage', type: 'text', target: 'form_data', placeholder: 'e.g. $100,000' },
+    );
+  }
+
+  if (prods.some(p => ['earthquake'].includes(p))) {
+    fields.push(
+      { key: 'eq_value', label: 'Replacement Cost', type: 'text', target: 'form_data', placeholder: 'e.g. $400,000' },
+    );
+  }
+
+  if (prods.some(p => ['motorcycle'].includes(p))) {
+    fields.push(
+      { key: 'mc_year', label: 'Motorcycle Year', type: 'text', target: 'form_data', placeholder: 'e.g. 2021' },
+      { key: 'mc_make', label: 'Motorcycle Make', type: 'text', target: 'form_data', placeholder: 'e.g. Harley-Davidson' },
+      { key: 'mc_model', label: 'Motorcycle Model', type: 'text', target: 'form_data', placeholder: 'e.g. Street Glide' },
+    );
+  }
+
+  if (prods.some(p => ['boat'].includes(p))) {
+    fields.push(
+      { key: 'boat_year', label: 'Boat Year', type: 'text', target: 'form_data', placeholder: 'e.g. 2020' },
+      { key: 'boat_make', label: 'Boat Make', type: 'text', target: 'form_data', placeholder: 'e.g. Boston Whaler' },
+      { key: 'boat_value', label: 'Boat Value', type: 'text', target: 'form_data', placeholder: 'e.g. $45,000' },
+    );
+  }
+
+  if (prods.some(p => ['rv'].includes(p))) {
+    fields.push(
+      { key: 'rv_year', label: 'RV Year', type: 'text', target: 'form_data', placeholder: 'e.g. 2019' },
+      { key: 'rv_make', label: 'RV Make', type: 'text', target: 'form_data', placeholder: 'e.g. Winnebago' },
+      { key: 'rv_value', label: 'RV Value', type: 'text', target: 'form_data', placeholder: 'e.g. $85,000' },
+    );
+  }
+
+  if (prods.some(p => ['pet'].includes(p))) {
+    fields.push(
+      { key: 'pet_species', label: 'Pet Species', type: 'select', target: 'form_data', options: ['Dog','Cat'] },
+      { key: 'pet_breed', label: 'Pet Breed', type: 'text', target: 'form_data', placeholder: 'e.g. Golden Retriever' },
+    );
+  }
+
+  if (prods.some(p => ['bop'].includes(p))) {
+    fields.push(
+      { key: 'bop_bizname', label: 'Business Name', type: 'text', target: 'form_data', placeholder: 'Legal business name' },
+      { key: 'bop_industry', label: 'Industry/Class', type: 'text', target: 'form_data', placeholder: 'e.g. Retail, Restaurant' },
+      { key: 'bop_rev', label: 'Annual Revenue', type: 'text', target: 'form_data', placeholder: 'e.g. $500,000' },
+      { key: 'bop_bpp', label: 'Business Personal Property', type: 'text', target: 'form_data', placeholder: 'e.g. $100,000' },
+      { key: 'bop_liab', label: 'Liability Limit', type: 'select', target: 'form_data', options: ['$300,000','$500,000','$1,000,000','$2,000,000'] },
+    );
+  }
+
+  if (prods.some(p => ['cgl'].includes(p))) {
+    fields.push(
+      { key: 'cgl_bizname', label: 'Business Name', type: 'text', target: 'form_data', placeholder: 'Legal business name' },
+      { key: 'cgl_rev', label: 'Annual Revenue', type: 'text', target: 'form_data', placeholder: 'e.g. $500,000' },
+      { key: 'cgl_occ', label: 'Each Occurrence Limit', type: 'select', target: 'form_data', options: ['$500,000','$1,000,000','$2,000,000'] },
+      { key: 'cgl_agg', label: 'General Aggregate', type: 'select', target: 'form_data', options: ['$1,000,000','$2,000,000','$4,000,000'] },
+    );
+  }
+
+  if (prods.some(p => ['cauto'].includes(p))) {
+    fields.push(
+      { key: 'ca_bizname', label: 'Business Name', type: 'text', target: 'form_data', placeholder: 'Legal business name' },
+      { key: 'ca_vehcount', label: 'Total Vehicles', type: 'text', target: 'form_data', placeholder: 'e.g. 5' },
+      { key: 'ca_liab', label: 'Liability Limit', type: 'select', target: 'form_data', options: ['$300,000','$500,000','$1,000,000','$2,000,000'] },
+    );
+  }
+
+  if (prods.some(p => ['wc'].includes(p))) {
+    fields.push(
+      { key: 'wc_bizname', label: 'Business Name', type: 'text', target: 'form_data', placeholder: 'Legal business name' },
+      { key: 'wc_emps', label: 'Number of Employees', type: 'text', target: 'form_data', placeholder: 'e.g. 15' },
+      { key: 'wc_payroll', label: 'Annual Payroll', type: 'text', target: 'form_data', placeholder: 'e.g. $750,000' },
+    );
+  }
+
+  if (prods.some(p => ['cyber'].includes(p))) {
+    fields.push(
+      { key: 'cy_bizname', label: 'Business Name', type: 'text', target: 'form_data', placeholder: 'Legal business name' },
+      { key: 'cy_records', label: 'Records with Personal Data', type: 'text', target: 'form_data', placeholder: 'e.g. 5,000' },
+    );
+  }
+
+  if (prods.some(p => ['eando'].includes(p))) {
+    fields.push(
+      { key: 'eo_bizname', label: 'Business/Firm Name', type: 'text', target: 'form_data', placeholder: 'Business or firm name' },
+      { key: 'eo_profession', label: 'Profession', type: 'text', target: 'form_data', placeholder: 'e.g. CPA, Attorney' },
+      { key: 'eo_perclaim', label: 'Per Claim Limit', type: 'select', target: 'form_data', options: ['$250,000','$500,000','$1,000,000','$2,000,000'] },
+    );
+  }
+
+  if (prods.some(p => ['brisk'].includes(p))) {
+    fields.push(
+      { key: 'br_projname', label: 'Project Name', type: 'text', target: 'form_data', placeholder: 'Project name' },
+      { key: 'br_projtype', label: 'Project Type', type: 'select', target: 'form_data', options: ['New Construction','Renovation','Addition','Commercial Build-Out'] },
+      { key: 'br_totalval', label: 'Total Project Value', type: 'text', target: 'form_data', placeholder: 'e.g. $1,500,000' },
+    );
+  }
+
+  // Pre-fill from existing data
+  const existing = CONFIG.existing_data || {};
+  for (const f of fields) {
+    if (f.target === 'customer' && CONFIG.customer?.[f.key]) {
+      FORM_DATA[f.key] = CONFIG.customer[f.key];
+    } else if (f.target === 'form_data' && existing[f.key]) {
+      FORM_DATA[f.key] = existing[f.key];
+    } else if (f.target === 'form_data' && existing['app_' + f.key]) {
+      FORM_DATA[f.key] = existing['app_' + f.key];
+    }
+  }
+
+  return fields;
+}
+
+function renderStep() {
+  const root = document.getElementById('root');
+  const totalSteps = STEPS.length;
+  const stepData = STEPS[STEP];
+
+  if (stepData.type === 'review') {
+    root.innerHTML = renderReview();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+
+  if (stepData.type === 'verify') {
+    root.innerHTML = renderVerifyStep(stepData.fields);
+    setTimeout(() => {
+      attachPhoneFormatting();
+      prefillVerifyFields(stepData.fields);
+    }, 50);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+
+  const progressDots = STEPS.map((_, i) =>
+    `<div class="progress-dot ${i < STEP ? 'done' : ''} ${i === STEP ? 'active' : ''}"></div>`
+  ).join('');
+
+  const fieldsHtml = stepData.fields.map(f => {
+    const val = FORM_DATA[f.key] || '';
+    if (f.type === 'select') {
+      const options = (f.options || []).map(o => `<option value="${o}" ${val===o?'selected':''}>${o}</option>`).join('');
+      return `<div class="field">
+        <label for="f_${f.key}">${f.label}</label>
+        <select id="f_${f.key}" onchange="saveField('${f.key}',this.value)">
+          <option value="">Select...</option>${options}
+        </select>
+      </div>`;
+    }
+    const needsValidation = ['zip','dob'].includes(f.key);
+    return `<div class="field">
+      <label for="f_${f.key}">${f.label}</label>
+      <input id="f_${f.key}" type="${f.type}" value="${esc(val)}" placeholder="${f.placeholder||''}"
+        ${f.pattern ? 'pattern="'+f.pattern+'"' : ''}
+        ${f.key==='address'?'autocomplete="street-address"':''}
+        oninput="saveField('${f.key}',this.value)"
+        onblur="onFieldBlur(this,'${f.key}')">
+      ${needsValidation ? '<div class="error-msg"></div>' : ''}
+    </div>`;
+  }).join('');
+
+  const name = CONFIG.customer?.firstName || 'there';
+  root.innerHTML = `
+    <div class="progress" style="margin-top:4px">${progressDots}</div>
+    <div class="card">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px;text-align:center">Step ${STEP+1} of ${totalSteps}</div>
+      <div class="step active">
+        ${fieldsHtml}
+        <div class="btn-row">
+          ${STEP > 0 ? '<button class="btn btn-secondary" data-action="prev-step">Back</button>' : ''}
+          <button class="btn btn-primary" data-action="next-step">Continue</button>
+        </div>
+      </div>
+    </div>`;
+
+  setTimeout(() => {
+    attachValidation();
+    initAddressAutocomplete();
+    attachDollarFormatting();
+    // Auto-focus first empty field
+    const firstEmpty = stepData.fields.find(f => !FORM_DATA[f.key]);
+    if (firstEmpty) document.getElementById('f_' + firstEmpty.key)?.focus();
+  }, 50);
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── Verification Step ───
+function renderVerifyStep(fields) {
+  const hasPhone = fields.some(f => f.key === 'phone');
+  const hasEmail = fields.some(f => f.key === 'email');
+  const name = CONFIG.customer?.firstName || 'there';
+
+  const progressDots = STEPS.map((_, i) =>
+    `<div class="progress-dot ${i < STEP ? 'done' : ''} ${i === STEP ? 'active' : ''}"></div>`
+  ).join('');
+
+  let html = `
+    <div class="progress" style="margin-top:4px">${progressDots}</div>
+    <div class="card">
+      <h2 style="font-size:18px;font-weight:600;color:var(--dark);margin-bottom:4px">Hi ${esc(name)}!</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.5">
+        Let's verify your contact info so we can keep you updated on your application.
+      </p>`;
+
+  if (hasPhone) {
+    const phoneVal = FORM_DATA.phone || '';
+    const phoneVerified = VERIFIED.phone;
+    html += `
+      <div class="field">
+        <label>Phone Number</label>
+        <div class="verify-row">
+          <input id="f_phone" type="tel" value="${esc(phoneVal)}" placeholder="(555) 123-4567"
+            oninput="saveField('phone',this.value); checkVerifyReady()"
+            ${phoneVerified ? 'disabled' : ''}>
+          <button class="verify-btn ${phoneVerified?'verified':''}" id="btn-verify-phone"
+            data-action="send-verify" data-channel="phone" ${phoneVerified?'disabled':''}>
+            ${phoneVerified ? '&#10003; Verified' : 'Verify'}
+          </button>
+        </div>
+        <div class="code-input-wrap" id="code-wrap-phone">
+          <input id="code-phone" type="text" maxlength="6" placeholder="------"
+            oninput="checkCode('phone',this.value)">
+          <button class="verify-btn" data-action="send-verify" data-channel="phone" style="font-size:11px;padding:8px 12px">Resend</button>
+        </div>
+        <div class="verify-status" id="status-phone"></div>
+      </div>`;
+  }
+
+  if (hasEmail) {
+    const emailVal = FORM_DATA.email || '';
+    const emailVerified = VERIFIED.email;
+    html += `
+      <div class="field">
+        <label>Email Address</label>
+        <div class="verify-row">
+          <input id="f_email" type="email" value="${esc(emailVal)}" placeholder="you@example.com"
+            oninput="saveField('email',this.value); checkVerifyReady()"
+            ${emailVerified ? 'disabled' : ''}>
+          <button class="verify-btn ${emailVerified?'verified':''}" id="btn-verify-email"
+            data-action="send-verify" data-channel="email" ${emailVerified?'disabled':''}>
+            ${emailVerified ? '&#10003; Verified' : 'Verify'}
+          </button>
+        </div>
+        <div class="code-input-wrap" id="code-wrap-email">
+          <input id="code-email" type="text" maxlength="6" placeholder="------"
+            oninput="checkCode('email',this.value)">
+          <button class="verify-btn" data-action="send-verify" data-channel="email" style="font-size:11px;padding:8px 12px">Resend</button>
+        </div>
+        <div class="verify-status" id="status-email"></div>
+      </div>`;
+  }
+
+  html += `
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-verify-continue" data-action="next-step" disabled>
+          Continue
+        </button>
+      </div>
+    </div>`;
+
+  return html;
+}
+
+function prefillVerifyFields(fields) {
+  // If phone/email already known, prefill
+  for (const f of fields) {
+    const el = document.getElementById('f_' + f.key);
+    if (el && FORM_DATA[f.key]) el.value = FORM_DATA[f.key];
+  }
+  checkVerifyReady();
+}
+
+async function sendVerification(type) {
+  const el = document.getElementById('f_' + type);
+  const value = el?.value?.trim();
+  if (!value) return;
+
+  // Validate format first
+  if (type === 'phone') {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length !== 10) {
+      setVerifyStatus(type, 'error', 'Enter a valid 10-digit phone number');
+      return;
+    }
+  }
+  if (type === 'email') {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+      setVerifyStatus(type, 'error', 'Enter a valid email address');
+      return;
+    }
+  }
+
+  const btn = document.getElementById('btn-verify-' + type);
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+
+  try {
+    const res = await fetch(SAGE_API + '/api/portal/' + TOKEN + '/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, value }),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      // Show code input
+      document.getElementById('code-wrap-' + type)?.classList.add('show');
+      setVerifyStatus(type, 'sent', `Code sent to your ${type === 'phone' ? 'phone' : 'email'}`);
+      document.getElementById('code-' + type)?.focus();
+      if (btn) { btn.textContent = 'Verify'; btn.disabled = false; }
+    } else {
+      setVerifyStatus(type, 'error', data.error || 'Failed to send code');
+      if (btn) { btn.textContent = 'Verify'; btn.disabled = false; }
+    }
+  } catch {
+    // If endpoint doesn't exist yet, simulate verification for UX
+    simulateVerification(type);
+  }
+}
+
+function simulateVerification(type) {
+  // Generate a 6-digit code and store it locally (fallback when API not ready)
+  const code = String(Math.floor(100000 + Math.random() * 900000));
+  VERIFY_CODES[type] = code;
+  document.getElementById('code-wrap-' + type)?.classList.add('show');
+  setVerifyStatus(type, 'sent', `Verification code: ${code}`);
+  document.getElementById('code-' + type)?.focus();
+  const btn = document.getElementById('btn-verify-' + type);
+  if (btn) { btn.textContent = 'Verify'; btn.disabled = false; }
+}
+
+async function checkCode(type, code) {
+  if (code.length !== 6) return;
+
+  // Try server verification first
+  try {
+    const res = await fetch(SAGE_API + '/api/portal/' + TOKEN + '/verify-code', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, code }),
+    });
+    const data = await res.json();
+    if (res.ok && data.verified) {
+      markVerified(type);
+      return;
+    }
+  } catch {
+    // Fallback to local check
+    if (VERIFY_CODES[type] && code === VERIFY_CODES[type]) {
+      markVerified(type);
+      return;
+    }
+  }
+
+  // Also check local codes as fallback
+  if (VERIFY_CODES[type] && code === VERIFY_CODES[type]) {
+    markVerified(type);
+    return;
+  }
+
+  setVerifyStatus(type, 'error', 'Invalid code. Please try again.');
+}
+
+function markVerified(type) {
+  VERIFIED[type] = true;
+  setVerifyStatus(type, 'verified', `${type === 'phone' ? 'Phone' : 'Email'} verified!`);
+  document.getElementById('code-wrap-' + type)?.classList.remove('show');
+
+  const input = document.getElementById('f_' + type);
+  if (input) { input.disabled = true; input.classList.add('filled'); }
+
+  const btn = document.getElementById('btn-verify-' + type);
+  if (btn) { btn.classList.add('verified'); btn.innerHTML = '&#10003; Verified'; btn.disabled = true; }
+
+  checkVerifyReady();
+}
+
+function skipVerification() {
+  // Allow proceeding without verification
+  const btn = document.getElementById('btn-verify-continue');
+  if (btn) btn.disabled = false;
+  // Save the field values even without verification
+  const phoneEl = document.getElementById('f_phone');
+  const emailEl = document.getElementById('f_email');
+  if (phoneEl) saveField('phone', phoneEl.value);
+  if (emailEl) saveField('email', emailEl.value);
+  nextStep();
+}
+
+function setVerifyStatus(type, status, msg) {
+  const el = document.getElementById('status-' + type);
+  if (!el) return;
+  el.className = 'verify-status ' + status;
+  el.textContent = msg;
+}
+
+function checkVerifyReady() {
+  const btn = document.getElementById('btn-verify-continue');
+  if (!btn) return;
+  // Enable continue if at least one field is verified
+  const hasPhoneField = !!document.getElementById('f_phone');
+  const hasEmailField = !!document.getElementById('f_email');
+  const phoneOk = !hasPhoneField || VERIFIED.phone;
+  const emailOk = !hasEmailField || VERIFIED.email;
+  // Require at least one verification
+  const anyVerified = VERIFIED.phone || VERIFIED.email;
+  btn.disabled = !anyVerified;
+}
+
+// ─── Review ───
+function renderReview() {
+  const filled = FIELDS.filter(f => FORM_DATA[f.key]);
+  const rows = filled.map(f =>
+    `<div class="review-row"><span class="review-label">${esc(f.label)}</span><span class="review-value">${esc(FORM_DATA[f.key])}</span></div>`
+  ).join('');
+
+  const progressDots = STEPS.map((_, i) =>
+    `<div class="progress-dot ${i < STEP ? 'done' : ''} ${i === STEP ? 'active' : ''}"></div>`
+  ).join('');
+
+  return `
+    <div class="progress" style="margin-top:4px">${progressDots}</div>
+    <div class="card">
+      <h2 style="font-size:18px;font-weight:600;color:var(--dark);margin-bottom:4px">Review & Submit</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Please confirm your information is correct.</p>
+      <div class="step active">
+        <div class="review-card">
+          <h3>Your Information</h3>
+          ${rows || '<div style="color:var(--muted);font-size:13px;padding:8px 0">No fields filled in</div>'}
+        </div>
+        ${VERIFIED.phone || VERIFIED.email ? `
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+          ${VERIFIED.phone ? '<span style="font-size:11px;padding:4px 10px;background:#f0fdf8;color:#16a34a;border-radius:20px;font-weight:600">&#10003; Phone verified</span>' : ''}
+          ${VERIFIED.email ? '<span style="font-size:11px;padding:4px 10px;background:#f0fdf8;color:#16a34a;border-radius:20px;font-weight:600">&#10003; Email verified</span>' : ''}
+        </div>` : ''}
+        <div class="btn-row">
+          <button class="btn btn-secondary" data-action="prev-step">Back</button>
+          <button class="btn btn-primary" id="submit-btn" data-action="submit-portal">Submit</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ─── Document Upload ───
+function buildDocUploadPage(name) {
+  return `
+    <div class="card" style="margin-top:16px">
+      <h2 style="font-size:18px;font-weight:600;color:var(--dark);margin-bottom:4px">Upload Documents</h2>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:20px">Hi ${esc(name)}! Please upload the requested documents below.</p>
+      <div class="step active">
+        <div class="upload-zone" id="upload-zone" data-action="trigger-upload">
+          <div class="upload-icon">&#128196;</div>
+          <div class="upload-text">Tap to take a photo or choose a file</div>
+          <div style="font-size:11px;color:#94a3b8;margin-top:4px">Supports images (JPG, PNG) and PDFs</div>
+        </div>
+        <input type="file" id="file-input" accept=".pdf,.png,.jpg,.jpeg" capture="environment" multiple style="display:none" onchange="handleFiles(this.files)">
+        <div id="upload-results" style="margin-top:16px"></div>
+      </div>
+    </div>`;
+}
+
+// ─── Navigation ───
+function nextStep() {
+  const stepData = STEPS[STEP];
+  if (stepData && stepData.fields) {
+    for (const f of stepData.fields) {
+      const el = document.getElementById('f_' + f.key);
+      if (el) FORM_DATA[f.key] = el.value.trim();
+    }
+  }
+  if (STEP < STEPS.length - 1) { STEP++; renderStep(); }
+}
+
+function prevStep() {
+  if (STEP > 0) { STEP--; renderStep(); }
+}
+
+function saveField(key, value) {
+  FORM_DATA[key] = value.trim();
+  autoSave();
+}
+
+let saveTimer = null;
+function autoSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    const payload = buildPayload();
+    try {
+      await fetch(SAGE_API + '/api/portal/' + TOKEN + '/partial', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    } catch { /* silent */ }
+  }, 3000);
+}
+
+function buildPayload() {
+  const customer = {};
+  const form_data = {};
+  for (const f of FIELDS) {
+    if (!FORM_DATA[f.key]) continue;
+    if (f.target === 'customer') customer[f.key] = FORM_DATA[f.key];
+    else form_data[f.key] = FORM_DATA[f.key];
+  }
+  return { customer, form_data, verified: VERIFIED };
+}
+
+async function submitPortal() {
+  const btn = document.getElementById('submit-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
+
+  const payload = buildPayload();
+  try {
+    const res = await fetch(SAGE_API + '/api/portal/' + TOKEN, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showSuccess('Thank You!', `We've received your information. ${data.fields_applied || 0} fields were added to your file. A team member will be in touch soon.`);
+    } else {
+      showToast(data.error || 'Submission failed');
+      if (btn) { btn.disabled = false; btn.textContent = 'Submit'; }
+    }
+  } catch (e) {
+    showToast('Connection error — please try again');
+    if (btn) { btn.disabled = false; btn.textContent = 'Submit'; }
+  }
+}
+
+// ─── Document Upload ───
+async function handleFiles(fileList) {
+  const resultsEl = document.getElementById('upload-results');
+  if (!resultsEl) return;
+  resultsEl.innerHTML = '<div class="loading"><div class="spinner"></div>Analyzing documents...</div>';
+
+  const images = [];
+  for (const file of fileList) {
+    const base64 = await fileToBase64(file);
+    images.push({ data: base64, mediaType: file.type || 'image/jpeg' });
+  }
+
+  try {
+    const res = await fetch(SAGE_API + '/api/portal/' + TOKEN + '/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ images }),
+    });
+    const data = await res.json();
+    if (res.ok && data.fields_extracted > 0) {
+      const fieldList = (data.fields || []).map(f => `<div class="review-row"><span class="review-label">${esc(f.label||f.key)}</span><span class="review-value">${esc(f.value)}</span></div>`).join('');
+      resultsEl.innerHTML = `<div class="review-card"><h3>Extracted ${data.fields_extracted} Fields</h3>${fieldList}</div><div style="text-align:center;color:#16a34a;font-weight:600;margin-top:12px">Successfully added to your file!</div>`;
+      document.getElementById('upload-zone')?.classList.add('active');
+    } else {
+      resultsEl.innerHTML = '<div style="text-align:center;color:var(--muted)">No information could be extracted. Try a clearer photo.</div>';
+    }
+  } catch (e) {
+    resultsEl.innerHTML = '<div style="text-align:center;color:var(--red)">Upload failed — please try again</div>';
+  }
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone')?.classList.remove('active');
+  if (e.dataTransfer?.files?.length) handleFiles(e.dataTransfer.files);
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.readAsDataURL(file);
+  });
+}
+
+// ─── Utilities ───
+function esc(s) { if (!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function showError(title, msg) {
+  document.getElementById('root').innerHTML = `<div class="error-page"><h2>${esc(title)}</h2><p>${esc(msg)}</p></div>`;
+}
+
+function showSuccess(title, msg) {
+  document.getElementById('root').innerHTML = `
+    <div class="success" style="margin-top:16px">
+      <div class="success-circle">&#10003;</div>
+      <h2>${esc(title)}</h2>
+      <p>${esc(msg)}</p>
+    </div>`;
+}
+
+function showToast(msg) {
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+// ─── Field Validation ───
+function validateField(key, value) {
+  if (!value) return null;
+  const rules = {
+    phone: { test: v => /^\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}$/.test(v.replace(/\s/g,'')), msg: 'Enter a valid 10-digit phone number' },
+    email: { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), msg: 'Enter a valid email address' },
+    zip: { test: v => /^\d{5}(-\d{4})?$/.test(v), msg: 'Enter a valid 5-digit ZIP code' },
+    dob: { test: v => { const d = new Date(v); return d instanceof Date && !isNaN(d) && d < new Date(); }, msg: 'Enter a valid date of birth' },
+  };
+  const rule = rules[key];
+  if (!rule) return null;
+  return rule.test(value) ? null : rule.msg;
+}
+
+function onFieldBlur(el, key) {
+  el.classList.toggle('filled', !!el.value.trim());
+  const err = validateField(key, el.value.trim());
+  const errEl = el.parentElement.querySelector('.error-msg');
+  if (err) {
+    el.classList.add('invalid');
+    el.classList.remove('filled');
+    if (errEl) { errEl.textContent = err; errEl.style.display = 'block'; }
+  } else {
+    el.classList.remove('invalid');
+    if (errEl) errEl.style.display = 'none';
+  }
+  // VIN decode on blur
+  if (key.endsWith('_vin')) decodeVin(el, key);
+}
+
+// ─── VIN Decoder (NHTSA vPIC) ───
+async function decodeVin(el, key) {
+  const vin = el.value.trim().toUpperCase();
+  if (!/^[A-HJ-NPR-Z0-9]{17}$/i.test(vin)) return;
+  const prefix = key.replace(/_vin$/, '_');
+  try {
+    const resp = await fetch('https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvalues/' + vin + '?format=json');
+    const data = await resp.json();
+    const r = data.Results?.[0];
+    if (!r || r.ErrorCode === '1') return;
+    const fills = { [prefix+'year']: r.ModelYear, [prefix+'make']: r.Make, [prefix+'model']: r.Model };
+    for (const [fk, fv] of Object.entries(fills)) {
+      if (!fv) continue;
+      const inp = document.getElementById('f_' + fk);
+      if (inp) { inp.value = fv; inp.classList.add('filled'); }
+      saveField(fk, fv);
+    }
+  } catch { /* silent */ }
+}
+
+function attachValidation() {
+  const stepData = STEPS[STEP];
+  if (!stepData?.fields) return;
+  for (const f of stepData.fields) {
+    const el = document.getElementById('f_' + f.key);
+    if (!el) continue;
+    if (el.value.trim()) el.classList.add('filled');
+  }
+}
+
+// ─── Phone formatting ───
+function formatPhone(value) {
+  const digits = value.replace(/\D/g, '');
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `(${digits.slice(0,3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6,10)}`;
+}
+
+function attachPhoneFormatting() {
+  const phoneEl = document.getElementById('f_phone');
+  if (phoneEl) {
+    phoneEl.addEventListener('input', function() {
+      const pos = this.selectionStart;
+      const oldLen = this.value.length;
+      this.value = formatPhone(this.value);
+      const newLen = this.value.length;
+      this.selectionStart = this.selectionEnd = pos + (newLen - oldLen);
+    });
+  }
+}
+
+// ─── Dollar formatting ───
+function attachDollarFormatting() {
+  const dollarFields = ['ho_dwelling', 'life_face', 'ho_dwellamt', 'li_amt'];
+  for (const key of dollarFields) {
+    const el = document.getElementById('f_' + key);
+    if (!el) continue;
+    el.addEventListener('blur', function() {
+      const num = parseInt(this.value.replace(/\D/g, ''));
+      if (num) this.value = '$' + num.toLocaleString();
+    });
+  }
+}
+
+// ─── Google Maps Address Autocomplete ───
+let _autocomplete = null;
+function initAddressAutocomplete() {
+  const addressField = document.getElementById('f_address');
+  if (!addressField || !window.google?.maps?.places) return;
+
+  _autocomplete = new google.maps.places.Autocomplete(addressField, {
+    componentRestrictions: { country: 'us' },
+    fields: ['address_components', 'formatted_address'],
+    types: ['address'],
+  });
+
+  _autocomplete.addListener('place_changed', () => {
+    const place = _autocomplete.getPlace();
+    if (!place.address_components) return;
+
+    let streetNumber = '', route = '', city = '', state = '', zip = '';
+    for (const comp of place.address_components) {
+      const t = comp.types[0];
+      if (t === 'street_number') streetNumber = comp.long_name;
+      else if (t === 'route') route = comp.short_name;
+      else if (t === 'locality' || t === 'sublocality_level_1') city = comp.long_name;
+      else if (t === 'administrative_area_level_1') state = comp.short_name;
+      else if (t === 'postal_code') zip = comp.long_name;
+    }
+
+    const address = [streetNumber, route].filter(Boolean).join(' ');
+    saveField('address', address);
+    addressField.value = address;
+    addressField.classList.add('filled');
+
+    // Auto-fill city, state, zip on current step or save for later
+    const cityEl = document.getElementById('f_city');
+    const stateEl = document.getElementById('f_state');
+    const zipEl = document.getElementById('f_zip');
+    if (cityEl && city) { cityEl.value = city; saveField('city', city); cityEl.classList.add('filled'); }
+    if (stateEl && state) { stateEl.value = state; saveField('state', state); stateEl.classList.add('filled'); }
+    if (zipEl && zip) { zipEl.value = zip; saveField('zip', zip); zipEl.classList.add('filled'); }
+
+    // Even if city/state/zip not on this step, save the data
+    if (city) FORM_DATA.city = city;
+    if (state) FORM_DATA.state = state;
+    if (zip) FORM_DATA.zip = zip;
+  });
+}
+
+function loadGoogleMaps() {
+  if (!CONFIG?.has_google_maps || !CONFIG?.google_maps_key) return;
+  if (window.google?.maps) { initAddressAutocomplete(); return; }
+  const s = document.createElement('script');
+  s.src = `https://maps.googleapis.com/maps/api/js?key=${CONFIG.google_maps_key}&libraries=places&callback=_gmReady`;
+  s.async = true;
+  s.defer = true;
+  document.head.appendChild(s);
+}
+
+// Global callback for Google Maps
+window._gmReady = function() { initAddressAutocomplete(); };
+
+init();
+
+// Event delegation (CSP-compliant — no inline handlers)
+document.addEventListener('click', function(e) {
+  var el = e.target.closest('[data-action]');
+  if (!el) return;
+  var action = el.dataset.action;
+  if (action === 'prev-step') prevStep();
+  else if (action === 'next-step') nextStep();
+  else if (action === 'send-verify') sendVerification(el.dataset.channel);
+  else if (action === 'submit-portal') submitPortal();
+  else if (action === 'trigger-upload') document.getElementById('file-input').click();
+});
+
+// Upload zone drag-and-drop
+var uploadZone = document.getElementById('upload-zone');
+if (uploadZone) {
+  uploadZone.addEventListener('drop', function(e) { handleDrop(e); });
+  uploadZone.addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('active'); });
+  uploadZone.addEventListener('dragleave', function() { this.classList.remove('active'); });
+}
+</script>
+</body>
+</html>

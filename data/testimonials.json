@@ -1,0 +1,88 @@
+{
+  "testimonials": [
+    {
+      "id": "brian-osbourne",
+      "name": "Brian Osbourne",
+      "rating": 5,
+      "text": "I can't recommend Audrey at The Way Agency highly enough! From our very first conversation, she was knowledgeable, attentive, and committed to finding the best coverage for our needs. She took the time to understand our situation, answered all my questions with patience and clarity, and made the entire process seamless.",
+      "source": "google",
+      "source_url": "https://www.google.com/maps/contrib/102715349158228233817/reviews",
+      "date": "2024-06-15",
+      "agent": "audrey",
+      "product_lines": ["personal"],
+      "products": ["home", "auto"]
+    },
+    {
+      "id": "olivia-mitchell",
+      "name": "Olivia Mitchell",
+      "rating": 5,
+      "text": "Rebecca has been wonderful  -  she is personable, helpful and organized. We are so grateful for her!",
+      "source": "google",
+      "source_url": "",
+      "date": "2024-05-20",
+      "agent": "rebecca",
+      "product_lines": ["personal"],
+      "products": []
+    },
+    {
+      "id": "september-board",
+      "name": "September Board",
+      "rating": 5,
+      "text": "Audrey was personable and took time to review our current coverage to make sure we made the right choice.",
+      "source": "google",
+      "source_url": "https://www.google.com/maps/contrib/102715349158228233817/reviews",
+      "date": "2024-04-10",
+      "agent": "audrey",
+      "product_lines": ["personal"],
+      "products": []
+    },
+    {
+      "id": "ace-boogie",
+      "name": "Ace Boogie",
+      "rating": 5,
+      "text": "In times when you can't drive without insurance, it's such a relief to have a company that treats you like family and honestly takes care of you the right way. Highly recommended!",
+      "source": "google",
+      "source_url": "",
+      "date": "2024-03-15",
+      "agent": "",
+      "product_lines": ["personal"],
+      "products": ["auto"]
+    },
+    {
+      "id": "poseidon-crc",
+      "name": "Poseidon CRC",
+      "rating": 5,
+      "text": "Josh was top notch and super helpful in making my transition over to their services. Thanks Josh!",
+      "source": "google",
+      "source_url": "https://www.google.com/maps/contrib/102715349158228233817/reviews",
+      "date": "2024-02-20",
+      "agent": "josh",
+      "product_lines": ["commercial"],
+      "products": []
+    },
+    {
+      "id": "kelsey-watson",
+      "name": "Kelsey Watson",
+      "rating": 5,
+      "text": "Courtney was amazing! She was patient and went over everything with me in detail. She was very knowledgeable and helped me choose the best plan to fit my needs. I would absolutely recommend The Way Agency to anyone looking for coverage! No one better.",
+      "source": "google",
+      "source_url": "",
+      "date": "2024-01-25",
+      "agent": "courtney",
+      "product_lines": ["life_health"],
+      "products": []
+    },
+    {
+      "id": "lisa-moore",
+      "name": "Lisa Moore",
+      "rating": 5,
+      "text": "Finding Rebecca has been such a blessing! Not only did she save me a ton of money but she also doubled my coverage. Apparently buying online was not as smart as I thought it was. I'm so glad I found The Way Agency.",
+      "source": "google",
+      "source_url": "",
+      "date": "2023-12-10",
+      "agent": "rebecca",
+      "product_lines": ["personal"],
+      "products": ["home", "auto"]
+    }
+  ]
+}

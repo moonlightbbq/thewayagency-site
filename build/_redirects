@@ -1,0 +1,68 @@
+# The Way Agency — URL Redirect Map
+# Old Webflow URLs → New URLs (301 permanent redirects)
+# Deployed alongside the site on Cloudflare Pages
+#
+# NOTE: Cloudflare Pages has "pretty URLs" enabled by default,
+# which auto-serves /foo from /foo.html. Do NOT add redirects
+# from /path/slug to /path/slug.html — that causes redirect loops.
+# Only redirect when the OLD slug differs from the NEW slug.
+
+# Homepage
+/home /  301
+
+# Personal Lines (old Webflow slugs → new slugs)
+/personal-insurance /personal/ 301
+/personal/home-insurance /personal/home.html 301
+/personal/auto-insurance /personal/auto.html 301
+/personal/renters-insurance /personal/renters.html 301
+/personal/umbrella-insurance /personal/umbrella.html 301
+/personal/flood-insurance /personal/flood.html 301
+/personal/motorcycle-insurance /personal/motorcycle.html 301
+/personal/boat-insurance /personal/boat.html 301
+/personal/classic-car-insurance /personal/classic-car.html 301
+/personal/earthquake-insurance /personal/earthquake.html 301
+/personal/pet-insurance /personal/pet.html 301
+
+# Commercial Lines (old Webflow slugs only)
+/commercial-insurance /commercial/ 301
+
+# Life & Health (old Webflow slugs only)
+/life-health-insurance /life-health/ 301
+/life-health/supplemental-health-insurance /life-health/supplemental-health.html 301
+/life-health/final-expense-insurance /life-health/final-expense.html 301
+
+# About (old Webflow slugs → new paths)
+/about-us/about-us /about/ 301
+/about-us/why-clients-choose-us /about/ 301
+/about-us/our-insurance-team /about/team.html 301
+/about-us/insurance-locations /about/locations.html 301
+/about-us/mission-and-values /about/ 301
+/about-us/community-impact /about/community.html 301
+/about-us/careers-at-the-way-agency /about/careers.html 301
+
+# Utility (old Webflow slugs)
+/contact-us /contact.html 301
+/log-in /login.html 301
+/privacy-policy /privacy.html 301
+/t-c /terms.html 301
+
+# Portal pages (SPA — serve index.html for all sub-paths)
+/intake/* /intake/index.html 200
+/portal/* /portal/index.html 200
+/partner/* /partner/index.html 200
+
+# Old sage URLs (in case anyone bookmarked them)
+/intake.html /intake/ 301
+/portal.html /portal/ 301
+/partner.html /partner/ 301
+
+# Retired pages
+/quote.html /intake/ 301
+
+# Blog (individual posts — add as discovered)
+/post/cyber-safety-for-small-businesses-prevention-checklist /blog/cyber-safety.html 301
+/post/kentucky-tornado-season-prep-safety-insurance-checklist /blog/tornado-season.html 301
+/post/kentucky-winter-storm-preparedness-safety-frozen-pipes /blog/winter-storm.html 301
+/post/landlord-insurance-made-simple /blog/landlord-insurance.html 301
+/post/fur-real-dont-let-vet-bills-bite-you /blog/pet-insurance-guide.html 301
+/post/is-earthquake-insurance-necessary /blog/earthquake-insurance.html 301

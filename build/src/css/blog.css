@@ -1,0 +1,9 @@
+/* ── Blog post typography ── */
+.blog-content{max-width:780px;margin:0 auto;padding:var(--space-2xl) var(--space-xl)}
+.blog-content h2{margin-top:var(--space-2xl);margin-bottom:var(--space-md)}
+.blog-content h3{margin-top:var(--space-xl);margin-bottom:var(--space-sm)}
+.blog-content p{margin-bottom:var(--space-md);line-height:1.8}
+.blog-content ul,.blog-content ol{margin-bottom:var(--space-md);padding-left:var(--space-xl)}
+.blog-content li{margin-bottom:var(--space-sm);line-height:1.7}
+.blog-content blockquote{border-left:3px solid var(--cyan);margin:var(--space-xl) 0;padding:var(--space-md) var(--space-xl);background:var(--light-bg)}
+.blog-meta{font-size:var(--text-sm);color:var(--slate);margin-bottom:var(--space-xl)}
