@@ -451,10 +451,80 @@ ${renderNav()}
   <main id="main">
     <section class="section">
       <div class="container">
-        <div class="grid grid--3">${cards}
+        <div class="blog-filter">
+          <input type="search" class="blog-filter__search" id="blogSearch" placeholder="Search articles..." aria-label="Search articles">
+          <div class="blog-filter__pills">
+            <button class="blog-filter__pill blog-filter__pill--active" data-category="">All</button>
+            ${filterPills}
+          </div>
         </div>
+        <div class="grid grid--3" id="blogGrid">${cards}
+        </div>
+        <p id="blogNoResults" style="display:none;text-align:center;color:var(--slate);padding:var(--space-2xl) 0;">No articles found. Try a different search or category.</p>
       </div>
     </section>
+
+    <script>
+    (function() {
+      var search = document.getElementById('blogSearch');
+      var grid = document.getElementById('blogGrid');
+      var cards = grid.querySelectorAll('.blog-card');
+      var pills = document.querySelectorAll('.blog-filter__pill');
+      var noResults = document.getElementById('blogNoResults');
+      var activeCategory = '';
+      var debounceTimer;
+
+      function filter() {
+        var q = search.value.toLowerCase().trim();
+        var shown = 0;
+        cards.forEach(function(card) {
+          var matchCat = !activeCategory || card.dataset.category === activeCategory;
+          var matchSearch = !q || card.dataset.title.indexOf(q) !== -1 || card.dataset.desc.indexOf(q) !== -1;
+          card.style.display = matchCat && matchSearch ? '' : 'none';
+          if (matchCat && matchSearch) shown++;
+        });
+        noResults.style.display = shown === 0 ? '' : 'none';
+        // Update URL params
+        var params = new URLSearchParams();
+        if (activeCategory) params.set('category', activeCategory);
+        if (q) params.set('q', q);
+        var qs = params.toString();
+        history.replaceState(null, '', qs ? '?' + qs : location.pathname);
+        // Analytics
+        if (window.dataLayer && q) {
+          window.dataLayer.push({ event: 'blog_search', search_term: q });
+        }
+      }
+
+      search.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(filter, 300);
+      });
+
+      pills.forEach(function(pill) {
+        pill.addEventListener('click', function() {
+          pills.forEach(function(p) { p.classList.remove('blog-filter__pill--active'); });
+          pill.classList.add('blog-filter__pill--active');
+          activeCategory = pill.dataset.category;
+          filter();
+          if (window.dataLayer) {
+            window.dataLayer.push({ event: 'blog_filter', category: activeCategory || 'all' });
+          }
+        });
+      });
+
+      // Restore from URL params
+      var params = new URLSearchParams(location.search);
+      if (params.get('q')) { search.value = params.get('q'); }
+      if (params.get('category')) {
+        activeCategory = params.get('category');
+        pills.forEach(function(p) {
+          p.classList.toggle('blog-filter__pill--active', p.dataset.category === activeCategory);
+        });
+      }
+      if (params.get('q') || params.get('category')) filter();
+    })();
+    </script>
 
     <section class="cta-banner">
       <div class="container">
@@ -567,7 +637,7 @@ if (fs.existsSync(calendarPath)) {
   const allPublishedFiltered = readyToPublish;
 
   if (allPublishedFiltered.length > 0) {
-    const indexHtml = generateBlogIndex(allPublishedFiltered);
+    const indexHtml = generateBlogIndex(allPublishedFiltered, posts);
     fs.writeFileSync(path.join(BLOG_BUILD, 'index.html'), indexHtml);
     console.log(`  ✓ blog/index.html (${allPublishedFiltered.length} posts, ${allPublished.length - allPublishedFiltered.length} scheduled)`);
 

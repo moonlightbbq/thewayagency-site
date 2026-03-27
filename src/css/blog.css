@@ -7,3 +7,13 @@
 .blog-content li{margin-bottom:var(--space-sm);line-height:1.7}
 .blog-content blockquote{border-left:3px solid var(--cyan);margin:var(--space-xl) 0;padding:var(--space-md) var(--space-xl);background:var(--light-bg)}
 .blog-meta{font-size:var(--text-sm);color:var(--slate);margin-bottom:var(--space-xl)}
+
+/* ── Blog index search & filter ── */
+.blog-filter{margin-bottom:var(--space-2xl);text-align:center}
+.blog-filter__search{width:100%;max-width:480px;padding:12px 16px;border:1px solid var(--border);border-radius:var(--border-radius);font-family:var(--font-body);font-size:var(--text-base);font-weight:300;color:var(--charcoal);margin-bottom:var(--space-lg);transition:border-color var(--transition-fast)}
+.blog-filter__search:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(48,151,211,.12)}
+.blog-filter__pills{display:flex;justify-content:center;gap:var(--space-sm);flex-wrap:wrap}
+.blog-filter__pill{padding:6px 16px;border:1px solid var(--border);border-radius:20px;background:var(--white);font-family:var(--font-body);font-size:var(--text-sm);font-weight:500;color:var(--slate);cursor:pointer;transition:all var(--transition-fast)}
+.blog-filter__pill:hover{border-color:var(--cyan);color:var(--navy)}
+.blog-filter__pill--active{background:var(--navy);border-color:var(--navy);color:var(--white)}
+.blog-filter__pill--active:hover{background:var(--blue);border-color:var(--blue)}

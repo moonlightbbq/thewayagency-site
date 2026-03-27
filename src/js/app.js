@@ -1072,6 +1072,68 @@
   window.initTestimonialCarousel = initTestimonialCarousel;
 
   // ═══════════════════════════════════════════════
+  // 15. LIVE CHAT WIDGET
+  // ═══════════════════════════════════════════════
+  function initChatWidget() {
+    const path = window.location.pathname;
+    if (path.startsWith('/intake') || path.startsWith('/portal') || path.startsWith('/partner') || path.startsWith('/admin')) return;
+
+    const style = document.createElement('style');
+    style.textContent = '.twa-chat-bubble{position:fixed;bottom:20px;right:20px;z-index:800;width:56px;height:56px;border-radius:50%;background:var(--navy,#173358);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;transition:transform .2s}.twa-chat-bubble:hover{transform:scale(1.08)}.twa-chat-panel{position:fixed;bottom:86px;right:20px;z-index:801;width:340px;max-width:calc(100vw - 40px);background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.15);display:none;overflow:hidden}.twa-chat-panel.open{display:block}.twa-chat-header{background:var(--navy,#173358);color:#fff;padding:16px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center}.twa-chat-close{background:none;border:none;color:#fff;cursor:pointer;font-size:20px;padding:0 4px}.twa-chat-body{padding:16px}.twa-chat-body .form-group{margin-bottom:12px}.twa-chat-body label{display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px}.twa-chat-body input,.twa-chat-body select,.twa-chat-body textarea{width:100%;padding:8px 10px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none}.twa-chat-body input:focus,.twa-chat-body select:focus,.twa-chat-body textarea:focus{border-color:var(--blue,#1a6fb5)}.twa-chat-submit{width:100%;padding:10px;background:var(--blue,#1a6fb5);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}.twa-chat-submit:hover{background:var(--navy,#173358)}.twa-chat-submit:disabled{opacity:.6;cursor:not-allowed}';
+    document.head.appendChild(style);
+
+    const bubble = createElement('button', { class: 'twa-chat-bubble', 'aria-label': 'Chat with us' },
+      '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>');
+
+    const panel = createElement('div', { class: 'twa-chat-panel', id: 'twaChatPanel' }, `
+      <div class="twa-chat-header">
+        <span>Send us a message</span>
+        <button class="twa-chat-close" id="twaChatClose" aria-label="Close chat">&times;</button>
+      </div>
+      <div class="twa-chat-body">
+        <div class="form-group"><label for="chat_name">Your Name</label><input type="text" id="chat_name" placeholder="Name"></div>
+        <div class="form-group"><label for="chat_type">What do you need?</label><select id="chat_type"><option value="">Select...</option><option value="quote">Insurance quote</option><option value="question">Coverage question</option><option value="claim">Claims help</option><option value="other">Something else</option></select></div>
+        <div class="form-group"><label for="chat_message">Message</label><textarea id="chat_message" rows="3" placeholder="How can we help?"></textarea></div>
+        <button class="twa-chat-submit" id="twaChatSubmit">Send Message</button>
+        <div id="twaChatStatus" style="display:none;margin-top:8px;font-size:12px;text-align:center" role="alert" aria-live="polite"></div>
+      </div>
+    `);
+
+    document.body.appendChild(panel);
+    document.body.appendChild(bubble);
+
+    let isOpen = false;
+    function toggleChat() { isOpen = !isOpen; panel.classList.toggle('open', isOpen); if (isOpen) track('chat_widget_opened', { category: 'engagement' }); }
+
+    bubble.addEventListener('click', toggleChat);
+    panel.querySelector('#twaChatClose').addEventListener('click', toggleChat);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen) toggleChat(); });
+
+    panel.querySelector('#twaChatSubmit').addEventListener('click', async () => {
+      const name = panel.querySelector('#chat_name').value.trim();
+      const type = panel.querySelector('#chat_type').value;
+      const message = panel.querySelector('#chat_message').value.trim();
+      const status = panel.querySelector('#twaChatStatus');
+      const btn = panel.querySelector('#twaChatSubmit');
+
+      if (!message) { status.style.display = 'block'; status.style.color = '#ef4444'; status.textContent = 'Please enter a message.'; return; }
+
+      btn.disabled = true; btn.textContent = 'Sending...';
+      try {
+        await fetch(CONFIG.webhookUrl, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: name || 'Chat visitor', message, subject: type, source: 'chat_widget', page: window.location.pathname }),
+        });
+        status.style.display = 'block'; status.style.color = '#16a34a'; status.textContent = 'Sent! We\'ll get back to you soon.';
+        panel.querySelector('#chat_name').value = ''; panel.querySelector('#chat_message').value = '';
+        track('chat_widget_submitted', { category: 'conversion', type });
+      } catch(e) {
+        status.style.display = 'block'; status.style.color = '#ef4444'; status.textContent = 'Failed to send. Call us at ' + CONFIG.phone;
+      } finally { btn.disabled = false; btn.textContent = 'Send Message'; }
+    });
+  }
+
+  // ═══════════════════════════════════════════════
   // INITIALIZE
   // ═══════════════════════════════════════════════
   document.addEventListener('DOMContentLoaded', () => {
@@ -1089,6 +1151,7 @@
     initFormTestimonials();
     initScrollAnimations();
     initEngagementTracking();
+    initChatWidget();
     initTestimonialCarousel('[data-testimonials]', {});
     // Auto-init carousels with mode attribute
     $$('[data-testimonial-mode]').forEach(function(el) {
