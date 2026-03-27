@@ -6,6 +6,35 @@
 const fs = require('fs');
 const path = require('path');
 
+// ─── Breadcrumb Helper ──────────────────────────
+
+function renderBreadcrumbs(items) {
+  // items: [{ name, url }] — last item has no url (current page)
+  const htmlItems = items.map((item, i) => {
+    if (i < items.length - 1) {
+      return `<a href="${item.url}">${item.name}</a>`;
+    }
+    return `<span>${item.name}</span>`;
+  }).join(' <span style="color:var(--gray);margin:0 4px;">›</span> ');
+
+  const html = `    <nav aria-label="Breadcrumb" style="max-width:var(--max-width);margin:0 auto;padding:var(--space-md) var(--space-xl);font-size:var(--text-sm);color:var(--slate);">
+      ${htmlItems}
+    </nav>`;
+
+  const schema = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": items.map((item, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": item.name,
+      ...(item.url ? { "item": `https://www.thewayagency.com${item.url}` } : {})
+    }))
+  });
+
+  return { html, schema };
+}
+
 // ─── Data Helpers ───────────────────────────────
 
 function getFAQsForProduct(knowledgeBase, productId) {
@@ -304,6 +333,11 @@ ${lineProducts.map(p => productCard(p)).join('\n')}
             <span class="card__link">${cs.label} ${arrowSvg}</span>
           </a>`).join('\n');
 
+  const hubBreadcrumbs = renderBreadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: config.hero.eyebrow },
+  ]);
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -314,7 +348,8 @@ ${renderHead({
     ogTitle: config.title,
     ogDescription: config.description,
     ogUrl: `https://www.thewayagency.com${config.canonical}`,
-    schema: JSON.stringify({
+    schema: `<script type="application/ld+json">
+  ${JSON.stringify({
       "@context": "https://schema.org",
       "@type": "InsuranceAgency",
       "name": "The Way Agency",
@@ -325,7 +360,11 @@ ${renderHead({
       "address": { "@type": "PostalAddress", "streetAddress": office.street, "addressLocality": office.city, "addressRegion": office.state, "postalCode": office.zip },
       "areaServed": [{ "@type": "State", "name": "Kentucky" }, { "@type": "State", "name": "Indiana" }, { "@type": "State", "name": "Tennessee" }],
       "makesOffer": { "@type": "Offer", "itemOffered": { "@type": "Service", "name": config.schema.serviceName, "serviceType": config.schema.serviceType, "description": config.schema.serviceDesc } }
-    }, null, 2),
+    }, null, 2)}
+  </script>
+  <script type="application/ld+json">
+  ${hubBreadcrumbs.schema}
+  </script>`,
   })}
 </head>
 <body>
@@ -340,6 +379,7 @@ ${renderHero({
     minHeight: '45vh',
   })}
 
+${hubBreadcrumbs.html}
   <main id="main">
 ${productSections}
 
@@ -517,6 +557,12 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
     .replace('%%FORM_HEADING%%', `Let's find the right ${product.name.toLowerCase()} for you`)
     .replace('%%FORM_SUBTEXT%%', 'Tell us a little about yourself and we\'ll come back with the best options for your situation. No pressure, no jargon, just clear answers.');
 
+  const breadcrumbs = renderBreadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: lineName, url: `/${lineSlug}/` },
+    { name: product.name },
+  ]);
+
   return `<!DOCTYPE html>
 <html lang="en">
 ${renderHead({
@@ -526,7 +572,10 @@ ${renderHead({
     ogTitle: product.title_tag,
     ogDescription: product.summary,
     ogUrl: `https://www.thewayagency.com${product.url}`,
-    schema: serviceSchema,
+    schema: serviceSchema + `
+  <script type="application/ld+json">
+  ${breadcrumbs.schema}
+  </script>`,
   })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -541,6 +590,7 @@ ${renderHero({
 
   ${generateCarrierMarquee(carriers, lineKey)}
 
+${breadcrumbs.html}
   <main id="main">
     <article class="product-content">
       ${directAnswerSection}

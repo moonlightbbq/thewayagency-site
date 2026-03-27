@@ -11,10 +11,27 @@
       "h1": "What does home insurance cover in Kentucky?",
       "summary": "Covers your home's structure, personal belongings, and liability if someone is injured on your property. Required by most mortgage lenders. Does not include flood or earthquake damage.",
       "typical_cost_range": "$1,200–$2,400/year in Owensboro area",
-      "cost_factors": ["home replacement cost", "age and roof condition", "deductible amount", "claims history", "proximity to fire station"],
+      "cost_factors": [
+        "home replacement cost",
+        "age and roof condition",
+        "deductible amount",
+        "claims history",
+        "proximity to fire station"
+      ],
       "ky_requirement": "Required by mortgage lenders. Not required by state law for homes owned outright.",
-      "common_exclusions": ["flood damage", "earthquake damage", "normal wear and tear", "intentional damage", "mold (limited)"],
-      "related_products": ["flood", "umbrella", "earthquake"],
+      "common_exclusions": [
+        "flood damage",
+        "earthquake damage",
+        "normal wear and tear",
+        "intentional damage",
+        "mold (limited)"
+      ],
+      "related_products": [
+        "auto",
+        "flood",
+        "umbrella",
+        "earthquake"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -28,10 +45,27 @@
       "h1": "What auto insurance do you need in Kentucky?",
       "summary": "Covers liability for injuries and property damage you cause, plus optional collision, comprehensive, and uninsured motorist protection. Kentucky requires minimum 25/50/25 liability limits.",
       "typical_cost_range": "$1,000–$2,800/year depending on driving record and coverage",
-      "cost_factors": ["driving record", "vehicle type and age", "coverage limits chosen", "deductible", "credit score", "annual mileage"],
+      "cost_factors": [
+        "driving record",
+        "vehicle type and age",
+        "coverage limits chosen",
+        "deductible",
+        "credit score",
+        "annual mileage"
+      ],
       "ky_requirement": "Kentucky requires minimum liability limits of 25/50/25 ($25K per person, $50K per accident bodily injury, $25K property damage). Also requires $10K PIP.",
-      "common_exclusions": ["intentional damage", "wear and tear", "personal belongings in vehicle (covered by home/renters)", "commercial use without commercial policy"],
-      "related_products": ["umbrella", "motorcycle", "classic-car"],
+      "common_exclusions": [
+        "intentional damage",
+        "wear and tear",
+        "personal belongings in vehicle (covered by home/renters)",
+        "commercial use without commercial policy"
+      ],
+      "related_products": [
+        "home",
+        "umbrella",
+        "motorcycle",
+        "classic-car"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -45,10 +79,24 @@
       "h1": "Do you need renters insurance in Kentucky?",
       "summary": "Protects your personal belongings, provides liability coverage, and covers additional living expenses if your rental becomes unlivable. Typically $15–$30/month.",
       "typical_cost_range": "$180–$360/year ($15–$30/month)",
-      "cost_factors": ["coverage amount for belongings", "deductible", "location", "liability limit"],
+      "cost_factors": [
+        "coverage amount for belongings",
+        "deductible",
+        "location",
+        "liability limit"
+      ],
       "ky_requirement": "Not required by Kentucky law, but many landlords require it as a lease condition.",
-      "common_exclusions": ["flood damage", "earthquake", "roommate's belongings (unless named on policy)", "high-value items above sub-limits"],
-      "related_products": ["umbrella", "flood"],
+      "common_exclusions": [
+        "flood damage",
+        "earthquake",
+        "roommate's belongings (unless named on policy)",
+        "high-value items above sub-limits"
+      ],
+      "related_products": [
+        "umbrella",
+        "flood",
+        "pet"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -62,10 +110,24 @@
       "h1": "What is umbrella insurance and do you need it?",
       "summary": "Adds an extra layer of liability protection above your home and auto policy limits. Covers lawsuits, legal fees, and judgments that exceed your underlying policy limits.",
       "typical_cost_range": "$200–$500/year for $1M in coverage",
-      "cost_factors": ["coverage amount ($1M–$5M)", "number of homes and vehicles", "underlying policy limits", "personal risk factors"],
+      "cost_factors": [
+        "coverage amount ($1M–$5M)",
+        "number of homes and vehicles",
+        "underlying policy limits",
+        "personal risk factors"
+      ],
       "ky_requirement": "Not required by law, but strongly recommended for homeowners, landlords, and anyone with significant assets.",
-      "common_exclusions": ["your own injuries", "your own property damage", "intentional acts", "business activities"],
-      "related_products": ["home", "auto"],
+      "common_exclusions": [
+        "your own injuries",
+        "your own property damage",
+        "intentional acts",
+        "business activities"
+      ],
+      "related_products": [
+        "home",
+        "auto",
+        "renters"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -79,10 +141,24 @@
       "h1": "Is flood insurance required in Kentucky?",
       "summary": "Standard homeowners insurance does not cover flood damage. Separate flood policies are available through the National Flood Insurance Program (NFIP) or private carriers.",
       "typical_cost_range": "$500–$2,500/year depending on flood zone and elevation",
-      "cost_factors": ["FEMA flood zone designation", "elevation relative to base flood elevation", "building type", "coverage amount", "deductible"],
+      "cost_factors": [
+        "FEMA flood zone designation",
+        "elevation relative to base flood elevation",
+        "building type",
+        "coverage amount",
+        "deductible"
+      ],
       "ky_requirement": "Required by mortgage lenders if your property is in a FEMA-designated Special Flood Hazard Area (Zone A or V). Optional but recommended for all homeowners near waterways.",
-      "common_exclusions": ["damage from sewer backup (separate endorsement)", "temporary housing during repairs (limited)", "vehicles damaged by flood (covered by auto comp)"],
-      "related_products": ["home", "umbrella"],
+      "common_exclusions": [
+        "damage from sewer backup (separate endorsement)",
+        "temporary housing during repairs (limited)",
+        "vehicles damaged by flood (covered by auto comp)"
+      ],
+      "related_products": [
+        "home",
+        "earthquake",
+        "umbrella"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -96,10 +172,25 @@
       "h1": "What motorcycle insurance is required in Kentucky?",
       "summary": "Covers liability, collision, and comprehensive protection for your motorcycle. Kentucky requires the same minimum liability limits as auto insurance (25/50/25).",
       "typical_cost_range": "$300–$1,500/year depending on bike type and riding history",
-      "cost_factors": ["motorcycle type and value", "riding experience", "coverage limits", "seasonal vs. year-round use", "storage and anti-theft"],
+      "cost_factors": [
+        "motorcycle type and value",
+        "riding experience",
+        "coverage limits",
+        "seasonal vs. year-round use",
+        "storage and anti-theft"
+      ],
       "ky_requirement": "Kentucky requires minimum liability of 25/50/25 for registered motorcycles, same as auto.",
-      "common_exclusions": ["racing or competition", "wear and tear", "passengers without coverage", "custom parts above stated value (without endorsement)"],
-      "related_products": ["auto", "umbrella"],
+      "common_exclusions": [
+        "racing or competition",
+        "wear and tear",
+        "passengers without coverage",
+        "custom parts above stated value (without endorsement)"
+      ],
+      "related_products": [
+        "auto",
+        "umbrella",
+        "classic-car"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -113,10 +204,25 @@
       "h1": "Do you need boat insurance in Kentucky?",
       "summary": "Covers your watercraft, equipment, liability for injuries or property damage, and towing/salvage. Kentucky does not require boat insurance by law, but marinas and lenders typically do.",
       "typical_cost_range": "$200–$1,000/year depending on boat type and value",
-      "cost_factors": ["boat type, size, and value", "engine horsepower", "storage location", "experience and boating safety courses", "navigational territory"],
+      "cost_factors": [
+        "boat type, size, and value",
+        "engine horsepower",
+        "storage location",
+        "experience and boating safety courses",
+        "navigational territory"
+      ],
       "ky_requirement": "Not required by Kentucky law. Required by most marinas and lenders. Recommended for anyone operating on the Ohio River, Kentucky Lake, or other waterways.",
-      "common_exclusions": ["normal wear and marine growth", "manufacturer defects", "ice and freezing (if not winterized)", "racing unless endorsed"],
-      "related_products": ["umbrella", "home"],
+      "common_exclusions": [
+        "normal wear and marine growth",
+        "manufacturer defects",
+        "ice and freezing (if not winterized)",
+        "racing unless endorsed"
+      ],
+      "related_products": [
+        "umbrella",
+        "home",
+        "auto"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -130,10 +236,24 @@
       "h1": "How is classic car insurance different from regular auto insurance?",
       "summary": "Insures collector, antique, and classic vehicles at an agreed value rather than depreciated actual cash value. Typically requires limited-use mileage restrictions and enclosed storage.",
       "typical_cost_range": "$200–$800/year for most classic vehicles",
-      "cost_factors": ["agreed value of vehicle", "annual mileage limit", "storage type", "driving record", "number of vehicles in collection"],
+      "cost_factors": [
+        "agreed value of vehicle",
+        "annual mileage limit",
+        "storage type",
+        "driving record",
+        "number of vehicles in collection"
+      ],
       "ky_requirement": "Same minimum liability requirements as standard auto (25/50/25). Classic car policies add agreed-value physical damage coverage.",
-      "common_exclusions": ["daily driver use exceeding mileage limits", "racing or competition", "modifications not disclosed to carrier"],
-      "related_products": ["auto", "umbrella"],
+      "common_exclusions": [
+        "daily driver use exceeding mileage limits",
+        "racing or competition",
+        "modifications not disclosed to carrier"
+      ],
+      "related_products": [
+        "auto",
+        "umbrella",
+        "motorcycle"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -147,10 +267,24 @@
       "h1": "Do you need earthquake insurance in western Kentucky?",
       "summary": "Standard homeowners insurance excludes earthquake damage. Western Kentucky sits on the New Madrid Seismic Zone, one of the most active fault systems east of the Rockies. Separate earthquake policies or endorsements are available.",
       "typical_cost_range": "$100–$800/year in western Kentucky",
-      "cost_factors": ["proximity to New Madrid fault zone", "home construction type", "foundation type", "coverage amount", "deductible (typically 5-15% of coverage)"],
+      "cost_factors": [
+        "proximity to New Madrid fault zone",
+        "home construction type",
+        "foundation type",
+        "coverage amount",
+        "deductible (typically 5-15% of coverage)"
+      ],
       "ky_requirement": "Not required by law or lenders, but strongly recommended in western Kentucky due to New Madrid Seismic Zone proximity.",
-      "common_exclusions": ["fire following earthquake (covered by homeowners)", "flood following earthquake (requires flood policy)", "land and landscaping damage"],
-      "related_products": ["home", "flood"],
+      "common_exclusions": [
+        "fire following earthquake (covered by homeowners)",
+        "flood following earthquake (requires flood policy)",
+        "land and landscaping damage"
+      ],
+      "related_products": [
+        "home",
+        "flood",
+        "umbrella"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -164,10 +298,25 @@
       "h1": "Is pet insurance worth it?",
       "summary": "Reimburses veterinary costs for accidents, illnesses, and sometimes routine care. Helps avoid choosing between your pet's health and a surprise $3,000+ vet bill.",
       "typical_cost_range": "$30–$80/month for dogs, $20–$50/month for cats",
-      "cost_factors": ["pet age and breed", "coverage type (accident-only vs. comprehensive)", "reimbursement percentage", "annual limit", "deductible"],
+      "cost_factors": [
+        "pet age and breed",
+        "coverage type (accident-only vs. comprehensive)",
+        "reimbursement percentage",
+        "annual limit",
+        "deductible"
+      ],
       "ky_requirement": "Not required. Purely optional coverage for pet owners who want financial protection against unexpected vet costs.",
-      "common_exclusions": ["pre-existing conditions", "routine wellness (unless added)", "cosmetic procedures", "breeding costs"],
-      "related_products": ["home", "renters"],
+      "common_exclusions": [
+        "pre-existing conditions",
+        "routine wellness (unless added)",
+        "cosmetic procedures",
+        "breeding costs"
+      ],
+      "related_products": [
+        "home",
+        "renters",
+        "umbrella"
+      ],
       "last_reviewed": "2026-03"
     }
   ],
@@ -183,10 +332,26 @@
       "h1": "What does general liability insurance cover?",
       "summary": "Covers your business if a customer, vendor, or visitor is injured at your location, or if your work damages someone else's property. Most commercial leases and contracts in Kentucky require it.",
       "typical_cost_range": "$500–$3,000/year for most small businesses",
-      "cost_factors": ["industry and risk class", "annual revenue", "number of employees", "location", "claims history"],
+      "cost_factors": [
+        "industry and risk class",
+        "annual revenue",
+        "number of employees",
+        "location",
+        "claims history"
+      ],
       "ky_requirement": "Not required by Kentucky law for all businesses, but required by most commercial leases, vendor contracts, and government permits.",
-      "common_exclusions": ["employee injuries (workers comp)", "auto accidents (commercial auto)", "professional mistakes (professional liability)", "intentional acts"],
-      "related_products": ["commercial-property", "professional-liability", "workers-compensation"],
+      "common_exclusions": [
+        "employee injuries (workers comp)",
+        "auto accidents (commercial auto)",
+        "professional mistakes (professional liability)",
+        "intentional acts"
+      ],
+      "related_products": [
+        "commercial-property",
+        "professional-liability",
+        "workers-compensation",
+        "cyber"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -200,10 +365,26 @@
       "h1": "What does commercial property insurance cover?",
       "summary": "Protects your business's physical assets: the building you own or lease, equipment, inventory, furniture, and business income lost during a covered event.",
       "typical_cost_range": "$750–$5,000/year depending on property value and industry",
-      "cost_factors": ["building value and construction type", "contents and equipment value", "location and fire protection class", "industry risk", "deductible"],
+      "cost_factors": [
+        "building value and construction type",
+        "contents and equipment value",
+        "location and fire protection class",
+        "industry risk",
+        "deductible"
+      ],
       "ky_requirement": "Required by commercial mortgage lenders. Recommended for any business with physical assets.",
-      "common_exclusions": ["flood damage", "earthquake", "normal wear and tear", "employee theft (requires crime coverage)"],
-      "related_products": ["general-liability", "builders-risk", "cyber"],
+      "common_exclusions": [
+        "flood damage",
+        "earthquake",
+        "normal wear and tear",
+        "employee theft (requires crime coverage)"
+      ],
+      "related_products": [
+        "general-liability",
+        "builders-risk",
+        "cyber",
+        "bonds"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -217,10 +398,25 @@
       "h1": "When do you need commercial auto insurance?",
       "summary": "Covers vehicles owned or used by your business, including company cars, trucks, vans, and fleets. Personal auto policies typically exclude vehicles used for business purposes.",
       "typical_cost_range": "$1,200–$4,000/year per vehicle",
-      "cost_factors": ["number and type of vehicles", "driver records", "radius of operation", "cargo type", "coverage limits"],
+      "cost_factors": [
+        "number and type of vehicles",
+        "driver records",
+        "radius of operation",
+        "cargo type",
+        "coverage limits"
+      ],
       "ky_requirement": "Kentucky requires same minimum liability for commercial vehicles as personal (25/50/25). Higher limits are typically required by contracts and prudent risk management.",
-      "common_exclusions": ["personal use outside policy terms", "vehicles not listed on policy", "cargo (requires separate inland marine)", "pollution from transported materials"],
-      "related_products": ["general-liability", "workers-compensation"],
+      "common_exclusions": [
+        "personal use outside policy terms",
+        "vehicles not listed on policy",
+        "cargo (requires separate inland marine)",
+        "pollution from transported materials"
+      ],
+      "related_products": [
+        "general-liability",
+        "workers-compensation",
+        "umbrella"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -234,10 +430,25 @@
       "h1": "Is workers compensation required in Kentucky?",
       "summary": "Covers medical expenses, rehabilitation, and lost wages for employees injured on the job. Kentucky requires workers comp for most employers with one or more employees.",
       "typical_cost_range": "Varies by payroll and industry classification. Rates range from $0.30 to $15+ per $100 of payroll.",
-      "cost_factors": ["industry classification code", "total payroll", "claims history (experience modifier)", "number of employees", "safety programs"],
+      "cost_factors": [
+        "industry classification code",
+        "total payroll",
+        "claims history (experience modifier)",
+        "number of employees",
+        "safety programs"
+      ],
       "ky_requirement": "Kentucky requires workers compensation for all employers with one or more employees, with limited exceptions for certain agricultural and domestic workers.",
-      "common_exclusions": ["independent contractors (unless misclassified)", "intentional self-injury", "injuries under the influence", "sole proprietors and partners (optional)"],
-      "related_products": ["general-liability", "commercial-auto"],
+      "common_exclusions": [
+        "independent contractors (unless misclassified)",
+        "intentional self-injury",
+        "injuries under the influence",
+        "sole proprietors and partners (optional)"
+      ],
+      "related_products": [
+        "general-liability",
+        "commercial-auto",
+        "disability"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -251,10 +462,25 @@
       "h1": "Does your business need cyber insurance?",
       "summary": "Covers costs from data breaches, ransomware attacks, and cyber extortion: forensic investigation, customer notification, credit monitoring, legal defense, regulatory fines, and business income lost during an attack.",
       "typical_cost_range": "$500–$5,000/year for most small businesses",
-      "cost_factors": ["industry and data sensitivity", "annual revenue", "number of records stored", "security measures in place", "prior incidents"],
+      "cost_factors": [
+        "industry and data sensitivity",
+        "annual revenue",
+        "number of records stored",
+        "security measures in place",
+        "prior incidents"
+      ],
       "ky_requirement": "Not required by Kentucky law, but effectively required if you handle customer financial data, health records, or are subject to contractual obligations.",
-      "common_exclusions": ["known pre-existing vulnerabilities", "acts of war or terrorism", "physical infrastructure damage", "loss of future revenue beyond policy period"],
-      "related_products": ["general-liability", "professional-liability"],
+      "common_exclusions": [
+        "known pre-existing vulnerabilities",
+        "acts of war or terrorism",
+        "physical infrastructure damage",
+        "loss of future revenue beyond policy period"
+      ],
+      "related_products": [
+        "general-liability",
+        "professional-liability",
+        "commercial-property"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -268,10 +494,22 @@
       "h1": "What is a surety bond and when do you need one?",
       "summary": "A three-party guarantee: the bonding company guarantees to a project owner (obligee) that your business (principal) will fulfill contractual obligations. If you don't, the bond pays the claim.",
       "typical_cost_range": "1%–15% of the bond amount, depending on credit and bond type",
-      "cost_factors": ["bond type and amount", "personal and business credit", "financial statements", "industry experience", "project size"],
+      "cost_factors": [
+        "bond type and amount",
+        "personal and business credit",
+        "financial statements",
+        "industry experience",
+        "project size"
+      ],
       "ky_requirement": "Required for many Kentucky contractor licenses, notary commissions, court proceedings, and government contracts.",
-      "common_exclusions": ["Bonds are not insurance  -  if the bond company pays a claim, you owe them back. This is different from insurance where the carrier absorbs the loss."],
-      "related_products": ["general-liability", "builders-risk"],
+      "common_exclusions": [
+        "Bonds are not insurance  -  if the bond company pays a claim, you owe them back. This is different from insurance where the carrier absorbs the loss."
+      ],
+      "related_products": [
+        "general-liability",
+        "builders-risk",
+        "commercial-property"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -285,10 +523,26 @@
       "h1": "What is builders risk insurance?",
       "summary": "Covers a building under construction, renovation, or addition  -  including the structure, materials, and equipment on site  -  against fire, wind, theft, and other covered perils during the construction period.",
       "typical_cost_range": "1%–4% of the total project cost",
-      "cost_factors": ["total project value", "construction type", "project duration", "location and exposure", "security measures on site"],
+      "cost_factors": [
+        "total project value",
+        "construction type",
+        "project duration",
+        "location and exposure",
+        "security measures on site"
+      ],
       "ky_requirement": "Not required by Kentucky law, but typically required by construction contracts, lenders, and project owners.",
-      "common_exclusions": ["existing structures (covered by commercial property)", "employee injuries (workers comp)", "faulty workmanship", "earthquake and flood (without endorsement)"],
-      "related_products": ["general-liability", "commercial-property", "bonds"],
+      "common_exclusions": [
+        "existing structures (covered by commercial property)",
+        "employee injuries (workers comp)",
+        "faulty workmanship",
+        "earthquake and flood (without endorsement)"
+      ],
+      "related_products": [
+        "general-liability",
+        "commercial-property",
+        "bonds",
+        "workers-compensation"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -302,10 +556,24 @@
       "h1": "Do you need insurance for your event?",
       "summary": "Provides liability coverage and optional cancellation protection for one-time events: weddings, festivals, corporate events, fundraisers, and community gatherings. Most venues in Kentucky require proof of event insurance.",
       "typical_cost_range": "$75–$500 per event depending on size and type",
-      "cost_factors": ["number of attendees", "event type", "whether alcohol is served", "venue requirements", "cancellation coverage amount"],
+      "cost_factors": [
+        "number of attendees",
+        "event type",
+        "whether alcohol is served",
+        "venue requirements",
+        "cancellation coverage amount"
+      ],
       "ky_requirement": "Not required by law, but required by most venues, parks, and event spaces as a condition of rental.",
-      "common_exclusions": ["professional entertainer injuries (they need their own coverage)", "pre-existing conditions for cancellation", "communicable disease cancellation (check policy)", "damage to rented equipment (check policy)"],
-      "related_products": ["general-liability"],
+      "common_exclusions": [
+        "professional entertainer injuries (they need their own coverage)",
+        "pre-existing conditions for cancellation",
+        "communicable disease cancellation (check policy)",
+        "damage to rented equipment (check policy)"
+      ],
+      "related_products": [
+        "general-liability",
+        "commercial-property"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -319,10 +587,25 @@
       "h1": "What is professional liability insurance?",
       "summary": "Also called Errors & Omissions (E&O) insurance. Covers claims that your professional advice, services, or work product caused a client financial harm due to mistakes, negligence, or failure to deliver.",
       "typical_cost_range": "$500–$3,000/year for most professionals",
-      "cost_factors": ["profession and specialty", "annual revenue", "years in business", "claims history", "coverage limits and deductible"],
+      "cost_factors": [
+        "profession and specialty",
+        "annual revenue",
+        "years in business",
+        "claims history",
+        "coverage limits and deductible"
+      ],
       "ky_requirement": "Not required by Kentucky law for all professions, but required by many professional licensing boards and client contracts.",
-      "common_exclusions": ["intentional wrongdoing", "bodily injury (covered by GL)", "prior known claims", "criminal acts"],
-      "related_products": ["general-liability", "cyber"],
+      "common_exclusions": [
+        "intentional wrongdoing",
+        "bodily injury (covered by GL)",
+        "prior known claims",
+        "criminal acts"
+      ],
+      "related_products": [
+        "general-liability",
+        "cyber",
+        "bonds"
+      ],
       "last_reviewed": "2026-03"
     }
   ],
@@ -337,7 +620,11 @@
       "meta_description": "Understanding Medicare in Kentucky: Original Medicare, Medicare Advantage, Medigap supplements, and Part D drug plans explained.",
       "h1": "How does Medicare work in Kentucky?",
       "summary": "Federal health insurance for people 65+ or with qualifying disabilities. Original Medicare (Parts A & B) covers hospital and medical services. Gaps can be filled with Medicare Supplement (Medigap) or Medicare Advantage (Part C) plans.",
-      "related_products": ["supplemental-health", "individual-health"],
+      "related_products": [
+        "supplemental-health",
+        "individual-health",
+        "dental-vision"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -350,7 +637,11 @@
       "meta_description": "Understanding Medicaid eligibility and coverage in Kentucky. Information about Kentucky's expanded Medicaid program.",
       "h1": "Who qualifies for Medicaid in Kentucky?",
       "summary": "State and federal health coverage for low-income individuals and families. Kentucky expanded Medicaid under the ACA, covering adults up to 138% of the federal poverty level.",
-      "related_products": ["individual-health", "family-health"],
+      "related_products": [
+        "individual-health",
+        "family-health",
+        "dental-vision"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -363,7 +654,11 @@
       "meta_description": "Supplemental health insurance pays cash benefits for accidents, critical illness, and hospital stays to cover gaps in your primary health plan.",
       "h1": "What does supplemental health insurance cover?",
       "summary": "Pays cash benefits directly to you when a covered health event occurs  -  accident, critical illness, or hospital stay. Helps cover deductibles, copays, lost income, and other expenses your primary health plan doesn't pay.",
-      "related_products": ["individual-health", "group-health"],
+      "related_products": [
+        "medicare",
+        "individual-health",
+        "group-health"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -376,7 +671,12 @@
       "meta_description": "Group health insurance for Kentucky businesses. Compare plans, control costs, and offer competitive benefits to attract talent.",
       "h1": "How does group health insurance work for small businesses?",
       "summary": "Health coverage sponsored by an employer for employees and often their dependents. Small businesses (2–50 employees) in Kentucky can access group plans through the small group market with community-rated premiums.",
-      "related_products": ["supplemental-health", "term-life", "disability"],
+      "related_products": [
+        "supplemental-health",
+        "term-life",
+        "disability",
+        "dental-vision"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -389,7 +689,12 @@
       "meta_description": "Individual and family health insurance options in Kentucky, including marketplace plans with subsidies and off-exchange alternatives.",
       "h1": "How do you get health insurance in Kentucky without an employer plan?",
       "summary": "Individual health plans purchased through Kentucky's health insurance marketplace (kynect) or directly from carriers. Subsidies are available based on income. Open enrollment is typically November through January.",
-      "related_products": ["family-health", "supplemental-health", "dental-vision"],
+      "related_products": [
+        "family-health",
+        "supplemental-health",
+        "dental-vision",
+        "disability"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -402,7 +707,12 @@
       "meta_description": "Family health insurance plans in Kentucky. Compare marketplace plans, employer options, and CHIP for children.",
       "h1": "What are your family health insurance options in Kentucky?",
       "summary": "Covers you, your spouse, and dependent children under one policy. Available through employer plans, the Kentucky marketplace (kynect), or individual carriers. KCHIP provides low-cost coverage for children in families that earn too much for Medicaid.",
-      "related_products": ["individual-health", "dental-vision", "supplemental-health"],
+      "related_products": [
+        "individual-health",
+        "dental-vision",
+        "supplemental-health",
+        "term-life"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -415,7 +725,12 @@
       "meta_description": "Standalone dental, vision, and hearing insurance plans in Kentucky. Coverage for routine care and major services.",
       "h1": "Do you need separate dental and vision insurance?",
       "summary": "Most health insurance plans do not include dental, vision, or hearing coverage for adults. Standalone plans cover preventive care, exams, and major services at a fraction of out-of-pocket cost.",
-      "related_products": ["individual-health", "supplemental-health", "medicare"],
+      "related_products": [
+        "individual-health",
+        "supplemental-health",
+        "medicare",
+        "group-health"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -429,10 +744,25 @@
       "h1": "How much term life insurance do you need?",
       "summary": "Pays a death benefit to your beneficiaries if you die during the policy term (typically 10, 20, or 30 years). The most affordable type of life insurance. Does not build cash value.",
       "typical_cost_range": "$20–$80/month for a healthy 35-year-old with $500K coverage",
-      "cost_factors": ["age", "health and tobacco use", "coverage amount", "term length", "occupation"],
+      "cost_factors": [
+        "age",
+        "health and tobacco use",
+        "coverage amount",
+        "term length",
+        "occupation"
+      ],
       "ky_requirement": "Not required. Recommended for anyone with dependents, a mortgage, or debts that would burden survivors.",
-      "common_exclusions": ["suicide within first 2 years", "death from excluded activities", "material misrepresentation on application"],
-      "related_products": ["whole-life", "disability", "final-expense"],
+      "common_exclusions": [
+        "suicide within first 2 years",
+        "death from excluded activities",
+        "material misrepresentation on application"
+      ],
+      "related_products": [
+        "whole-life",
+        "disability",
+        "final-expense",
+        "annuities"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -446,10 +776,23 @@
       "h1": "What is the difference between whole life and term life insurance?",
       "summary": "Permanent life insurance that covers you for your entire life with level premiums, a guaranteed death benefit, and cash value that grows over time. More expensive than term but lasts forever and builds an asset.",
       "typical_cost_range": "$150–$500+/month for $250K coverage (varies widely by age and health)",
-      "cost_factors": ["age at purchase", "health", "coverage amount", "carrier and product type", "riders selected"],
+      "cost_factors": [
+        "age at purchase",
+        "health",
+        "coverage amount",
+        "carrier and product type",
+        "riders selected"
+      ],
       "ky_requirement": "Not required. Used for estate planning, final expenses, supplemental retirement income, and lifelong coverage needs.",
-      "common_exclusions": ["suicide within first 2 years", "material misrepresentation"],
-      "related_products": ["term-life", "annuities", "final-expense"],
+      "common_exclusions": [
+        "suicide within first 2 years",
+        "material misrepresentation"
+      ],
+      "related_products": [
+        "term-life",
+        "annuities",
+        "final-expense"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -462,7 +805,11 @@
       "meta_description": "Annuities provide guaranteed income in retirement. Learn about fixed, indexed, and variable annuity options in Kentucky.",
       "h1": "How do annuities work?",
       "summary": "A contract with an insurance company that provides guaranteed income payments, either immediately or at a future date. Used for retirement income planning, tax-deferred growth, and protection against outliving your savings.",
-      "related_products": ["whole-life", "term-life"],
+      "related_products": [
+        "whole-life",
+        "term-life",
+        "disability"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -476,10 +823,25 @@
       "h1": "What does disability insurance cover?",
       "summary": "Replaces a portion of your income (typically 50–70%) if you're unable to work due to illness or injury. Available as short-term (3–6 months) or long-term (years to age 65) coverage.",
       "typical_cost_range": "1%–3% of your annual income for long-term disability",
-      "cost_factors": ["occupation and risk class", "income", "benefit period", "elimination period (waiting period)", "definition of disability"],
+      "cost_factors": [
+        "occupation and risk class",
+        "income",
+        "benefit period",
+        "elimination period (waiting period)",
+        "definition of disability"
+      ],
       "ky_requirement": "Not required. Kentucky does not have state disability insurance. Social Security disability exists but has strict qualification criteria and long wait times.",
-      "common_exclusions": ["pre-existing conditions (during first year)", "self-inflicted injuries", "injuries during commission of a crime", "war"],
-      "related_products": ["term-life", "supplemental-health"],
+      "common_exclusions": [
+        "pre-existing conditions (during first year)",
+        "self-inflicted injuries",
+        "injuries during commission of a crime",
+        "war"
+      ],
+      "related_products": [
+        "term-life",
+        "supplemental-health",
+        "workers-compensation"
+      ],
       "last_reviewed": "2026-03"
     },
     {
@@ -493,10 +855,21 @@
       "h1": "What is final expense insurance?",
       "summary": "A smaller whole life policy (typically $5,000–$25,000) designed to cover funeral and burial costs, outstanding medical bills, and small debts. Simplified underwriting means no medical exam required for most applicants.",
       "typical_cost_range": "$30–$100/month depending on age and coverage amount",
-      "cost_factors": ["age", "health questions (simplified underwriting)", "coverage amount", "guaranteed vs. graded benefit"],
+      "cost_factors": [
+        "age",
+        "health questions (simplified underwriting)",
+        "coverage amount",
+        "guaranteed vs. graded benefit"
+      ],
       "ky_requirement": "Not required. Designed for seniors and those who want to ensure their family is not burdened with funeral costs averaging $7,000–$12,000.",
-      "common_exclusions": ["graded benefit policies may limit payout in first 2 years to return of premiums plus interest for non-accidental death"],
-      "related_products": ["whole-life", "term-life"],
+      "common_exclusions": [
+        "graded benefit policies may limit payout in first 2 years to return of premiums plus interest for non-accidental death"
+      ],
+      "related_products": [
+        "whole-life",
+        "term-life",
+        "medicare"
+      ],
       "last_reviewed": "2026-03"
     }
   ]

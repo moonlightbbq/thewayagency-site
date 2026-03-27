@@ -461,6 +461,43 @@ if (fs.existsSync(calendarPath)) {
     const indexHtml = generateBlogIndex(allPublishedFiltered);
     fs.writeFileSync(path.join(BLOG_BUILD, 'index.html'), indexHtml);
     console.log(`  ✓ blog/index.html (${allPublishedFiltered.length} posts, ${allPublished.length - allPublishedFiltered.length} scheduled)`);
+
+    // Inject "Popular Articles" into each generated blog post
+    const popularPosts = allPublishedFiltered.slice(0, 3);
+    if (popularPosts.length > 0) {
+      const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+      const popularHtml = `
+      <section style="margin-top:var(--space-2xl);padding-top:var(--space-2xl);border-top:1px solid var(--border);">
+        <h2 style="font-size:var(--text-2xl);">Popular Articles</h2>
+        <div class="grid grid--3" style="margin-top:var(--space-lg);">
+${popularPosts.map(p => `          <a href="/blog/${p.slug}.html" class="card" style="text-decoration:none;">
+            <h3 class="card__title" style="font-size:var(--text-lg);">${p.title}</h3>
+            <span class="card__link">Read article ${arrowSvg}</span>
+          </a>`).join('\n')}
+        </div>
+      </section>`;
+      // Insert popular articles before the closing </article> in each generated post
+      for (const meta of posts) {
+        const filePath = path.join(BLOG_BUILD, `${meta.slug}.html`);
+        if (fs.existsSync(filePath)) {
+          let html = fs.readFileSync(filePath, 'utf8');
+          // Skip if this post is one of the popular ones (avoid self-links) — replace with next posts
+          const filteredPopular = allPublishedFiltered.filter(p => p.slug !== meta.slug).slice(0, 3);
+          const thisPopularHtml = `
+      <section style="margin-top:var(--space-2xl);padding-top:var(--space-2xl);border-top:1px solid var(--border);">
+        <h2 style="font-size:var(--text-2xl);">Popular Articles</h2>
+        <div class="grid grid--3" style="margin-top:var(--space-lg);">
+${filteredPopular.map(p => `          <a href="/blog/${p.slug}.html" class="card" style="text-decoration:none;">
+            <h3 class="card__title" style="font-size:var(--text-lg);">${p.title}</h3>
+            <span class="card__link">Read article ${arrowSvg}</span>
+          </a>`).join('\n')}
+        </div>
+      </section>`;
+          html = html.replace('</article>', thisPopularHtml + '\n    </article>');
+          fs.writeFileSync(filePath, html);
+        }
+      }
+    }
   }
 } else {
   console.log('  ! No content-calendar.json found — skipping index generation');
