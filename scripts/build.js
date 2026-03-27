@@ -20,7 +20,7 @@ const DATA = path.join(ROOT, 'data');
 const { createVersionInfo, createInjectVersion } = require('./builders/seo');
 const assets = require('./builders/assets');
 const { copyBlogPages, runBlogGenerator } = require('./builders/blog-helpers');
-const { hubConfig, generateHubPage, generateProductPage, generateCityPage, generateCityProductPage, generateIndustryPage } = require('./builders/pages');
+const { hubConfig, generateHubPage, generateProductPage, generateCityPage, generateCityProductPage, generateIndustryPage, setCriticalCss } = require('./builders/pages');
 const { generateSitemap } = require('./builders/sitemap');
 
 // ─── Version / Build Info ───────────────────────
@@ -53,6 +53,15 @@ const { renderNav, renderFooter: _renderFooter, renderScripts, renderHead_GTM, r
 const _reviews = { rating: agency.google_rating || '5.0', count: agency.google_review_count || '20+' };
 function renderFooter() {
   return _renderFooter(office, _reviews);
+}
+
+// ─── Critical CSS ───────────────────────────────
+const criticalCssPath = path.join(SRC, 'css', 'critical.css');
+if (fs.existsSync(criticalCssPath)) {
+  const criticalCssRaw = fs.readFileSync(criticalCssPath, 'utf8');
+  const criticalCssMinified = assets.minifyCss(criticalCssRaw);
+  setCriticalCss(criticalCssMinified);
+  console.log(`  ✓ Critical CSS: ${(criticalCssMinified.length / 1024).toFixed(1)}KB (from ${(criticalCssRaw.length / 1024).toFixed(1)}KB)`);
 }
 
 // ─── Version Injection ──────────────────────────

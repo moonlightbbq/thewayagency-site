@@ -951,6 +951,7 @@ module.exports = {
   generateCityPage,
   generateCityProductPage,
   generateIndustryPage,
+  setCriticalCss,
   renderHead,
   renderHero,
   renderCTA,

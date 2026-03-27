@@ -22,7 +22,7 @@ function createVersionInfo(ROOT) {
   return { gitInfo, buildDate, buildVersion };
 }
 
-function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, renderHead_GTM, renderBody_GTM }) {
+function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, renderHead_GTM, renderBody_GTM, criticalCss }) {
   const versionMeta = `<meta name="build-version" content="${buildVersion}">`;
   const versionComment = `<!-- build: ${buildVersion} | ${gitInfo.branch} | ${buildDate} -->`;
   const versionFooter = `<!-- build: ${buildVersion} -->`;
