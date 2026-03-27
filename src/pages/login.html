@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="/src/css/base.css">
   <link rel="stylesheet" href="/src/css/components.css">
   <link rel="stylesheet" href="/src/css/leadgen.css">
+  <style>@media(max-width:768px){.login-grid{grid-template-columns:1fr !important;}}</style>
 
   <!-- Open Graph -->
   <meta property="og:title" content="Client Login | The Way Agency">
@@ -90,14 +91,179 @@
   </nav>
   <section class="hero" style="min-height:30vh;"><div class="hero__bg"></div><div class="hero__texture"></div><div class="hero__content"><h1 class="hero__title">Client Login</h1></div><div class="hero__accent"></div></section>
   <main id="main">
-    <section class="section"><div class="container container--narrow">
-      <p class="text-lg">Access your insurance account, check quote status, view policies, and manage your coverage.</p>
-      <div style="display:flex;flex-direction:column;gap:16px;max-width:400px;margin:var(--space-xl) auto;">
-        <a href="https://sage.thewayagency.com" class="btn btn--primary btn--lg" style="text-align:center;text-decoration:none;">Log In to Your Account</a>
-        <a href="/intake/" class="btn btn--outline btn--lg" style="text-align:center;text-decoration:none;">Start a New Quote</a>
+    <section class="section">
+      <div class="container" style="max-width:900px;">
+        <div class="login-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3xl);align-items:start;">
+          <!-- Login Form -->
+          <div>
+            <div class="card" style="padding:var(--space-2xl);">
+              <h2 style="font-size:var(--text-xl);margin-bottom:var(--space-xs);">Sign in to your account</h2>
+              <p style="font-size:var(--text-sm);color:var(--slate);margin-bottom:var(--space-xl);">Enter your email and we'll send you a secure login link.</p>
+
+              <div id="login-form">
+                <div class="form-group">
+                  <label for="login_email">Email Address</label>
+                  <input type="email" id="login_email" placeholder="you@example.com" required autocomplete="email">
+                </div>
+                <div id="login-error" style="display:none;color:#ef4444;font-size:12px;margin-bottom:12px;" role="alert" aria-live="polite"></div>
+                <button id="login-btn" class="btn btn--primary btn--lg" style="width:100%;">Send Magic Link</button>
+              </div>
+
+              <div id="login-success" style="display:none;text-align:center;padding:var(--space-lg) 0;">
+                <div style="width:48px;height:48px;border-radius:50%;background:#dcfce7;color:#16a34a;display:flex;align-items:center;justify-content:center;margin:0 auto var(--space-md);font-size:24px;">&#10003;</div>
+                <h3 style="margin-bottom:var(--space-xs);">Check your email</h3>
+                <p style="font-size:var(--text-sm);color:var(--slate);">We sent a login link to <strong id="login-email-sent"></strong>. It expires in 15 minutes.</p>
+                <button id="login-retry" class="btn btn--outline" style="margin-top:var(--space-lg);">Send Again</button>
+              </div>
+
+              <div style="text-align:center;margin-top:var(--space-lg);padding-top:var(--space-lg);border-top:1px solid var(--border);">
+                <button id="login-password-toggle" style="background:none;border:none;font-size:var(--text-sm);color:var(--blue);cursor:pointer;font-weight:500;">Log in with password instead</button>
+              </div>
+
+              <div id="login-password-form" style="display:none;margin-top:var(--space-lg);">
+                <div class="form-group">
+                  <label for="login_pass_email">Email</label>
+                  <input type="email" id="login_pass_email" autocomplete="email">
+                </div>
+                <div class="form-group">
+                  <label for="login_pass">Password</label>
+                  <input type="password" id="login_pass" autocomplete="current-password">
+                </div>
+                <div id="login-pass-error" style="display:none;color:#ef4444;font-size:12px;margin-bottom:12px;" role="alert" aria-live="polite"></div>
+                <button id="login-pass-btn" class="btn btn--primary btn--lg" style="width:100%;">Sign In</button>
+                <p style="text-align:center;margin-top:var(--space-sm);"><a href="#" id="login-forgot" style="font-size:var(--text-sm);color:var(--blue);">Forgot password?</a></p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Benefits -->
+          <div style="padding-top:var(--space-lg);">
+            <h3 style="margin-bottom:var(--space-lg);">Your account gives you access to:</h3>
+            <div style="display:flex;flex-direction:column;gap:var(--space-lg);">
+              <div style="display:flex;gap:12px;align-items:start;">
+                <div style="width:36px;height:36px;border-radius:8px;background:var(--linen);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                </div>
+                <div><strong style="font-size:var(--text-sm);">Policy Documents</strong><p style="font-size:var(--text-sm);color:var(--slate);margin-top:2px;">View and download your declarations pages, ID cards, and certificates.</p></div>
+              </div>
+              <div style="display:flex;gap:12px;align-items:start;">
+                <div style="width:36px;height:36px;border-radius:8px;background:var(--linen);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <div><strong style="font-size:var(--text-sm);">Quote Status</strong><p style="font-size:var(--text-sm);color:var(--slate);margin-top:2px;">Track where your quote is in the process and what's needed next.</p></div>
+              </div>
+              <div style="display:flex;gap:12px;align-items:start;">
+                <div style="width:36px;height:36px;border-radius:8px;background:var(--linen);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div><strong style="font-size:var(--text-sm);">Coverage Overview</strong><p style="font-size:var(--text-sm);color:var(--slate);margin-top:2px;">See what you're covered for and review your limits at a glance.</p></div>
+              </div>
+            </div>
+            <div style="margin-top:var(--space-2xl);padding:var(--space-lg);background:var(--linen);border-radius:var(--border-radius);">
+              <p style="font-size:var(--text-sm);line-height:1.6;color:var(--slate);margin:0;">
+                <strong style="color:var(--navy);">Don't have an account?</strong><br>
+                <a href="/intake/" style="color:var(--blue);font-weight:500;">Request a quote</a> and we'll set one up for you, or call us at <a href="tel:+15024135335" style="color:var(--blue);font-weight:500;">(502) 413-5335</a>.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-      <p style="text-align:center;margin-top:var(--space-lg);font-size:var(--text-sm);color:var(--slate);">Need help? Call us at <a href="tel:+15024135335">(502) 413-5335</a> or email <a href="mailto:hello@thewayagency.com">hello@thewayagency.com</a></p>
-    </div></section>
+    </section>
+
+    <script>
+    (function() {
+      var SAGE = 'https://sage.thewayagency.com';
+      var emailInput = document.getElementById('login_email');
+      var btn = document.getElementById('login-btn');
+      var error = document.getElementById('login-error');
+      var form = document.getElementById('login-form');
+      var success = document.getElementById('login-success');
+      var sentEl = document.getElementById('login-email-sent');
+
+      function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e); }
+
+      function sendMagicLink() {
+        var email = emailInput.value.trim();
+        if (!email || !isValidEmail(email)) { error.style.display = 'block'; error.textContent = 'Please enter a valid email address.'; return; }
+        error.style.display = 'none';
+        btn.disabled = true; btn.textContent = 'Sending...';
+
+        if (window.dataLayer) dataLayer.push({ event: 'login_attempt', method: 'magic_link' });
+
+        fetch(SAGE + '/api/auth/magic-link', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email })
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          if (data.ok || data.sent) {
+            form.style.display = 'none';
+            success.style.display = 'block';
+            sentEl.textContent = email;
+          } else {
+            error.style.display = 'block'; error.textContent = data.error || 'Unable to send login link. Please try again.';
+          }
+        }).catch(function() {
+          error.style.display = 'block'; error.textContent = 'Connection error. Please try again or call (502) 413-5335.';
+        }).finally(function() { btn.disabled = false; btn.textContent = 'Send Magic Link'; });
+      }
+
+      btn.addEventListener('click', sendMagicLink);
+      emailInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') sendMagicLink(); });
+      document.getElementById('login-retry').addEventListener('click', function() {
+        success.style.display = 'none'; form.style.display = 'block';
+      });
+
+      // Password fallback toggle
+      document.getElementById('login-password-toggle').addEventListener('click', function() {
+        var pf = document.getElementById('login-password-form');
+        pf.style.display = pf.style.display === 'none' ? 'block' : 'none';
+        this.textContent = pf.style.display === 'none' ? 'Log in with password instead' : 'Use magic link instead';
+      });
+
+      // Password login
+      document.getElementById('login-pass-btn').addEventListener('click', function() {
+        var email = document.getElementById('login_pass_email').value.trim();
+        var pass = document.getElementById('login_pass').value;
+        var err = document.getElementById('login-pass-error');
+        if (!email || !pass) { err.style.display = 'block'; err.textContent = 'Email and password required.'; return; }
+        err.style.display = 'none';
+        this.disabled = true; this.textContent = 'Signing in...';
+
+        if (window.dataLayer) dataLayer.push({ event: 'login_attempt', method: 'password' });
+
+        fetch(SAGE + '/api/auth/login', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email, password: pass })
+        }).then(function(r) { return r.json(); }).then(function(data) {
+          if (data.ok && data.token) {
+            try { localStorage.setItem('twa_auth', data.token); } catch(e) {}
+            window.location.href = data.redirect || '/portal/';
+          } else {
+            err.style.display = 'block'; err.textContent = data.error || 'Invalid email or password.';
+          }
+        }).catch(function() {
+          err.style.display = 'block'; err.textContent = 'Connection error. Please try again.';
+        }).finally(function() {
+          document.getElementById('login-pass-btn').disabled = false;
+          document.getElementById('login-pass-btn').textContent = 'Sign In';
+        });
+      });
+
+      // Forgot password
+      document.getElementById('login-forgot').addEventListener('click', function(e) {
+        e.preventDefault();
+        var email = document.getElementById('login_pass_email').value.trim();
+        if (!email) { document.getElementById('login-pass-error').style.display = 'block'; document.getElementById('login-pass-error').textContent = 'Enter your email first.'; return; }
+        fetch(SAGE + '/api/auth/forgot-password', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: email })
+        }).then(function() {
+          document.getElementById('login-pass-error').style.display = 'block';
+          document.getElementById('login-pass-error').style.color = '#16a34a';
+          document.getElementById('login-pass-error').textContent = 'If that email exists, we sent a reset link.';
+        }).catch(function() {});
+      });
+    })();
+    </script>
     <section class="cta-banner"><div class="container"><h2 class="cta-banner__title">Have a question?</h2><p class="cta-banner__text">We are here to help.</p><div class="cta-banner__actions"><a href="/intake/" class="btn btn--primary btn--lg">Get a Quote</a><a href="/contact.html" class="btn btn--outline-white btn--lg">Contact Us</a></div></div></section>
   </main>
   <footer class="footer">
