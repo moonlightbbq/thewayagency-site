@@ -1,0 +1,11 @@
+# The Way Agency — robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.thewayagency.com/sitemap.xml
+
+# Disallow build artifacts and internal paths
+Disallow: /build/
+Disallow: /scripts/
+Disallow: /data/

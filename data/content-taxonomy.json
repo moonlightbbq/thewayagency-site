@@ -1,0 +1,161 @@
+{
+  "_doc": "Content taxonomy for The Way Agency blog. Defines pillars, clusters, page roles, and lifecycle rules.",
+
+  "pillars": {
+    "product": {
+      "name": "Product Deep-Dives",
+      "description": "Supporting content for product/service pages. Answers specific questions, adds depth, and drives qualified traffic to money pages.",
+      "cadence": "1 per 4-week cycle",
+      "seo_role": "Support authority of product pages. Never compete with them for primary keywords.",
+      "linking_rule": "Always link to the target product page. Link to related product pages where natural. Link to 1-2 other blog posts in the same cluster."
+    },
+    "local": {
+      "name": "Local & Community",
+      "description": "Geo-targeted content supporting local SEO pages. Community involvement, local risks, regional insurance context.",
+      "cadence": "1 per 4-week cycle",
+      "seo_role": "Build local authority and support geo landing pages. Use city/county names naturally.",
+      "linking_rule": "Always link to the relevant geo page. Link to product pages relevant to the local topic. Link to community or about pages where appropriate."
+    },
+    "education": {
+      "name": "Advice & Education",
+      "description": "Top-of-funnel educational content answering common insurance questions. Builds trust and captures search traffic.",
+      "cadence": "1 per 4-week cycle",
+      "seo_role": "Capture informational search intent. Position The Way Agency as a helpful authority. These pages earn links and shares.",
+      "linking_rule": "Link to 2-3 product pages that are relevant to the topic. Link to related educational posts. These posts should become link targets for future content."
+    },
+    "seasonal": {
+      "name": "Seasonal & Industry",
+      "description": "Time-sensitive content tied to weather seasons, enrollment periods, or industry-specific insurance needs.",
+      "cadence": "1 per 4-week cycle",
+      "seo_role": "Capture seasonal search spikes. Support industry landing pages. Refresh annually to maintain rankings.",
+      "linking_rule": "Link to relevant product pages and industry pages. Link to evergreen educational posts that provide deeper context."
+    }
+  },
+
+  "clusters": {
+    "personal-auto": {
+      "name": "Auto Insurance",
+      "authority_page": "/personal/auto.html",
+      "description": "Everything about car insurance in Kentucky: coverage types, requirements, claims, teen drivers, bundling.",
+      "target_keywords": ["auto insurance kentucky", "car insurance KY", "auto insurance owensboro"]
+    },
+    "personal-home": {
+      "name": "Home Insurance",
+      "authority_page": "/personal/home.html",
+      "description": "Homeowners insurance, landlord coverage, maintenance tips, claims process.",
+      "target_keywords": ["home insurance kentucky", "homeowners insurance KY", "home insurance owensboro"]
+    },
+    "personal-specialty": {
+      "name": "Specialty Personal Lines",
+      "authority_pages": ["/personal/motorcycle.html", "/personal/boat.html", "/personal/classic-car.html", "/personal/pet.html", "/personal/earthquake.html"],
+      "description": "Niche personal coverage: motorcycle, boat, classic car, pet, earthquake.",
+      "target_keywords": ["motorcycle insurance KY", "boat insurance kentucky", "earthquake insurance western KY"]
+    },
+    "personal-protection": {
+      "name": "Protection & Risk",
+      "authority_pages": ["/personal/umbrella.html", "/personal/flood.html", "/personal/renters.html"],
+      "description": "Liability protection, flood coverage, renters insurance, risk management for individuals.",
+      "target_keywords": ["umbrella insurance KY", "flood insurance kentucky", "renters insurance owensboro"]
+    },
+    "commercial-core": {
+      "name": "Core Business Insurance",
+      "authority_pages": ["/commercial/general-liability.html", "/commercial/commercial-property.html", "/commercial/commercial-auto.html"],
+      "description": "Foundation commercial coverage: GL, property, commercial auto.",
+      "target_keywords": ["business insurance kentucky", "general liability KY", "commercial insurance owensboro"]
+    },
+    "commercial-specialty": {
+      "name": "Specialty Commercial Lines",
+      "authority_pages": ["/commercial/cyber.html", "/commercial/bonds.html", "/commercial/builders-risk.html", "/commercial/special-event.html", "/commercial/professional-liability.html"],
+      "description": "Specialized commercial coverage: cyber, bonds, builders risk, events, E&O.",
+      "target_keywords": ["cyber insurance KY", "surety bonds kentucky", "professional liability insurance"]
+    },
+    "commercial-workforce": {
+      "name": "Workforce Insurance",
+      "authority_pages": ["/commercial/workers-compensation.html", "/life-health/group-health.html"],
+      "description": "Workers comp, group health, employee benefits.",
+      "target_keywords": ["workers comp kentucky", "group health insurance KY", "employee benefits owensboro"]
+    },
+    "life-planning": {
+      "name": "Life & Estate Planning",
+      "authority_pages": ["/life-health/term-life.html", "/life-health/whole-life.html", "/life-health/disability.html", "/life-health/final-expense.html", "/life-health/annuities.html"],
+      "description": "Life insurance, disability, final expense, annuities, estate planning.",
+      "target_keywords": ["life insurance kentucky", "term life vs whole life", "disability insurance KY"]
+    },
+    "health-coverage": {
+      "name": "Health Insurance",
+      "authority_pages": ["/life-health/medicare.html", "/life-health/individual-health.html", "/life-health/group-health.html"],
+      "description": "Medicare, individual health, family health, dental/vision, enrollment.",
+      "target_keywords": ["medicare kentucky", "health insurance KY", "kynect enrollment"]
+    },
+    "insurance-basics": {
+      "name": "Insurance Fundamentals",
+      "authority_page": "/blog/",
+      "description": "How insurance works, claims process, comparing quotes, understanding policies. Top-of-funnel educational content.",
+      "target_keywords": ["how insurance works", "insurance deductible explained", "how to compare insurance quotes"]
+    },
+    "kentucky-local": {
+      "name": "Kentucky & Regional",
+      "authority_pages": ["/insurance/owensboro-ky.html", "/insurance/louisville-ky.html", "/insurance/lexington-ky.html"],
+      "description": "Kentucky-specific laws, weather risks, community content, local market insights.",
+      "target_keywords": ["insurance owensboro KY", "kentucky insurance laws", "ohio river flood risk"]
+    },
+    "industry-trades": {
+      "name": "Industry & Trades",
+      "authority_pages": ["/industries/roofing-contractors.html", "/industries/hvac-contractors.html", "/industries/electrical-contractors.html", "/industries/general-contractors.html", "/industries/restaurants.html", "/industries/professional-services.html"],
+      "description": "Industry-specific insurance guidance for contractors, restaurants, professional services, manufacturing.",
+      "target_keywords": ["contractor insurance kentucky", "restaurant insurance KY", "professional liability for consultants"]
+    }
+  },
+
+  "page_roles": {
+    "authority": "The main product/service/geo page. The 'money page' that should rank for primary commercial keywords. Blog posts SUPPORT these pages, never compete with them.",
+    "supporting": "Blog content that links to and reinforces authority pages. Targets long-tail keywords and informational intent.",
+    "hub": "Category index pages (personal/, commercial/, life-health/, blog/). Organize and link to authority and supporting pages.",
+    "local": "Geo-targeted landing pages. Blog posts with local content link to these.",
+    "seasonal": "Time-sensitive content that gets refreshed annually. Should link to evergreen authority pages.",
+    "trust": "Community, team, values content. Builds brand credibility. Links to about pages."
+  },
+
+  "lifecycle": {
+    "evergreen": {
+      "description": "Core educational and product-supporting content. Stays relevant year-round.",
+      "refresh_cycle": "annual",
+      "refresh_action": "Review for accuracy, update statistics and dates, add new internal links to recently published posts.",
+      "examples": "Product explainers, how-to guides, insurance basics"
+    },
+    "seasonal": {
+      "description": "Tied to weather seasons, enrollment periods, or annual events.",
+      "refresh_cycle": "annual",
+      "refresh_action": "Update dates, statistics, and any policy/law changes. Republish with updated modified date 2-4 weeks before the season starts.",
+      "seasonality_windows": {
+        "spring-storms": "February-March (publish before storm season)",
+        "summer-weather": "May-June",
+        "medicare-enrollment": "September (before Oct 15 open enrollment)",
+        "winter-prep": "October-November",
+        "tax-season": "January-February",
+        "back-to-school": "July-August"
+      },
+      "examples": "Tornado prep, winter storm guide, Medicare enrollment updates"
+    },
+    "timely": {
+      "description": "Tied to a specific event, law change, or news item. Has a limited useful lifespan.",
+      "refresh_cycle": "none",
+      "refresh_action": "After 12-18 months, evaluate: consolidate into an evergreen post, redirect to a related evergreen post, or archive with a noindex tag.",
+      "examples": "New law announcements, disaster response guides, rate change alerts"
+    },
+    "trust": {
+      "description": "Community involvement, team spotlights, values-driven content.",
+      "refresh_cycle": "as-needed",
+      "refresh_action": "Update annually if content references specific years or events. Otherwise leave as-is.",
+      "examples": "Community spotlight, year-in-review, partnership announcements"
+    }
+  },
+
+  "cannibalization_rules": {
+    "principle": "Blog posts target informational and long-tail keywords. Product pages target commercial and transactional keywords. They should never compete for the same primary keyword.",
+    "product_page_owns": "Primary product keyword + location modifier (e.g., 'home insurance owensboro KY'). Blog posts must NOT target these directly.",
+    "blog_post_targets": "Long-tail questions, comparisons, how-to queries, and situational keywords (e.g., 'do I need umbrella insurance if I rent', 'how to file a home insurance claim in KY').",
+    "geo_page_owns": "City + insurance queries (e.g., 'insurance in louisville ky'). Blog posts with local content should link TO geo pages, not try to rank for the same query.",
+    "resolution": "If a blog post starts ranking for a product page's primary keyword, add a canonical hint or merge the blog content into the product page as a section."
+  }
+}

@@ -1,0 +1,2821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a6fb5">
+<title>Get an Insurance Quote | The Way Agency</title>
+<meta name="description" content="Get an insurance quote from The Way Agency. We represent dozens of carriers to find the right coverage at the right price in KY, IN, and TN.">
+<link rel="canonical" href="https://www.thewayagency.com/intake/">
+<meta property="og:title" content="Get an Insurance Quote | The Way Agency">
+<meta property="og:description" content="Get an insurance quote from The Way Agency. We represent dozens of carriers to find the right coverage at the right price.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.thewayagency.com/intake/">
+<meta property="og:site_name" content="The Way Agency">
+<meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/src/css/base.css">
+<link rel="stylesheet" href="/src/css/components.css">
+<link rel="stylesheet" href="/src/css/leadgen.css">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+<style>
+  :root {
+    --mint: #6ec6a0;
+    --radius: 12px;
+  }
+
+  /* ─── Trust bar ─── */
+
+
+  /* ─── Container ─── */
+  .container { max-width: 580px; margin: 0 auto; padding: 24px 16px 40px; flex: 1 }
+
+  /* ─── Progress ─── */
+  .progress-wrap { margin-bottom: 28px }
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .progress-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--border);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    transition: color .3s;
+  }
+  .progress-label.active { color: var(--blue) }
+  .progress-label.done { color: var(--mint) }
+  .progress-track {
+    display: flex;
+    gap: 4px;
+  }
+  .progress-seg {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border);
+    transition: background .3s;
+  }
+  .progress-seg.active { background: linear-gradient(90deg, var(--blue), var(--cyan)) }
+  .progress-seg.done { background: var(--mint) }
+
+  /* ─── Card ─── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: 0 1px 3px rgba(0,0,0,.06), 0 4px 12px rgba(0,0,0,.04);
+    padding: 28px 24px;
+    margin-bottom: 16px;
+    animation: slideUp .35s ease-out;
+  }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(12px) } to { opacity: 1; transform: translateY(0) } }
+  .card h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 4px;
+  }
+  .card .card-desc {
+    font-size: 13px;
+    color: var(--slate);
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  /* ─── Form ─── */
+  .form-group { margin-bottom: 16px }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--slate);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 16px;
+    color: var(--charcoal);
+    background: var(--white);
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    -webkit-appearance: none;
+    -webkit-text-size-adjust: 100%;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 3px rgba(41,182,246,.12);
+  }
+  .form-group input.filled { border-color: var(--mint); background: #f0fdf8 }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+  .form-row-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px }
+
+  /* ─── Products ─── */
+  .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
+  .product-opt {
+    padding: 16px 12px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    text-align: center;
+    transition: all .2s;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--charcoal);
+    background: var(--white);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 44px;
+  }
+  .product-opt:hover { border-color: var(--cyan); background: #f0faff }
+  .product-opt.selected {
+    border-color: var(--blue);
+    background: linear-gradient(135deg, rgba(26,111,181,.06), rgba(41,182,246,.08));
+    color: var(--blue);
+  }
+  .product-opt .icon { font-size: 28px; margin-bottom: 6px; display: block }
+
+  /* ─── Buttons ─── */
+  .btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: .2px;
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    color: var(--white);
+    box-shadow: 0 2px 8px rgba(26,111,181,.25);
+  }
+  .btn-primary:hover { box-shadow: 0 4px 14px rgba(26,111,181,.35); transform: translateY(-1px) }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none }
+  .btn-outline {
+    background: var(--white);
+    color: var(--slate);
+    border: 1.5px solid var(--border);
+  }
+  .btn-outline:hover { background: var(--light-bg); color: var(--charcoal) }
+  .btn-row { display: flex; justify-content: space-between; gap: 12px; margin-top: 24px }
+
+  /* ─── Summary ─── */
+  .summary-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+  }
+  .summary-row:last-child { border: none }
+  .summary-row .label { color: var(--slate) }
+  .summary-row .value { font-weight: 600; color: var(--navy); text-align: right; max-width: 60% }
+
+  /* ─── Confirmation ─── */
+  .confirmation { text-align: center; padding: 40px 20px }
+  .check-circle {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--mint), #4ade80);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 32px;
+    color: var(--white);
+    box-shadow: 0 4px 16px rgba(110,198,160,.35);
+  }
+  .confirmation h2 { color: var(--navy); font-size: 22px; margin-bottom: 8px }
+  .confirmation p { color: var(--slate); font-size: 14px; line-height: 1.6 }
+  .ref-badge {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, rgba(26,111,181,.08), rgba(41,182,246,.08));
+    border: 1px solid rgba(26,111,181,.15);
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--blue);
+    letter-spacing: .5px;
+  }
+
+  .hidden { display: none !important }
+  .error { color: #ef4444; font-size: 12px; margin-top: 6px }
+
+  /* ─── Section headers (product questions) ─── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--blue);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid rgba(41,182,246,.15);
+  }
+  .section-header .section-icon { font-size: 20px }
+
+  /* ─── Verification inline step ─── */
+  /* ─── Other products expand ─── */
+  .other-products { display: none; margin-top: 10px }
+  .other-products.show { display: block }
+  .other-product-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px }
+  .other-product-grid .product-opt { padding: 10px 8px; font-size: 12px }
+  .other-product-grid .product-opt .icon { font-size: 20px; margin-bottom: 4px }
+
+  /* ─── Add vehicle button ─── */
+  .add-vehicle-btn {
+    display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
+    padding: 8px 16px; font-size: 13px; font-weight: 600; color: var(--blue);
+    background: rgba(26,111,181,.06); border: 1.5px dashed rgba(26,111,181,.3);
+    border-radius: 8px; cursor: pointer; transition: all .2s;
+  }
+  .add-vehicle-btn:hover { background: rgba(26,111,181,.1); border-color: var(--blue) }
+  .vehicle-block { position: relative; padding: 12px 0; border-top: 1px solid var(--border); margin-top: 12px }
+  .vehicle-block:first-child { border-top: none; margin-top: 0; padding-top: 0 }
+  .remove-vehicle {
+    position: absolute; top: 12px; right: 0; font-size: 18px; color: var(--slate);
+    cursor: pointer; background: none; border: none; padding: 2px 6px; line-height: 1;
+  }
+  .remove-vehicle:hover { color: #ef4444 }
+  .vehicle-label { font-size: 12px; font-weight: 600; color: var(--blue); margin-bottom: 8px }
+
+  /* ─── Same address toggle ─── */
+  .toggle-row {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+    font-size: 13px; color: var(--charcoal);
+  }
+  .toggle-row .toggle-label { font-weight: 600 }
+  .toggle-btn {
+    padding: 6px 16px; border-radius: 8px; font-size: 12px; font-weight: 600;
+    cursor: pointer; border: 1.5px solid var(--border); background: var(--white); color: var(--slate);
+    transition: all .2s;
+  }
+  .toggle-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue) }
+
+  /* ─── Agent takeover banner ─── */
+  .takeover-banner {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+    background: linear-gradient(135deg, var(--mint), #4ade80);
+    color: #fff; text-align: center; padding: 14px 20px;
+    font-size: 14px; font-weight: 600;
+    box-shadow: 0 4px 16px rgba(110,198,160,.35);
+    animation: slideDown .4s ease-out;
+  }
+  @keyframes slideDown { from { transform: translateY(-100%) } to { transform: translateY(0) } }
+
+  /* ─── Mobile: 481-768 (tablets) ─── */
+  @media (max-width: 768px) {
+    .container { padding: 20px 16px 36px }
+    .card { padding: 24px 20px }
+  }
+
+  /* ─── Mobile: ≤480 (phones) ─── */
+  @media (max-width: 480px) {
+    .form-row { grid-template-columns: 1fr }
+    .form-row-3 { grid-template-columns: 1fr 1fr 1fr }
+    .product-grid { grid-template-columns: 1fr 1fr }
+    .container { padding: 16px 12px 32px }
+    .card { padding: 20px 16px; margin-bottom: 12px }
+    .card h2 { font-size: 17px }
+    .card .card-desc { font-size: 12px; margin-bottom: 16px }
+    .other-product-grid { grid-template-columns: 1fr 1fr }
+    .btn { padding: 12px 20px; font-size: 14px }
+    .btn-row { margin-top: 20px }
+    .form-group label { font-size: 11px }
+    .form-group input, .form-group select, .form-group textarea { padding: 10px 12px; font-size: 16px }
+    .progress-label { font-size: 10px }
+    .summary-row { font-size: 13px }
+    .summary-row .value { max-width: 55% }
+  }
+
+  /* ─── Very small phones ─── */
+  @media (max-width: 360px) {
+    .form-row-3 { grid-template-columns: 1fr; gap: 8px }
+    .product-opt { padding: 12px 8px; font-size: 12px }
+    .product-opt .icon { font-size: 22px; margin-bottom: 4px }
+    .container { padding: 12px 10px 28px }
+  }
+
+  /* ─── Bundle suggestion banner ─── */
+  .bundle-banner {
+    background: #eff6ff;
+    border-left: 4px solid var(--blue);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    animation: fadeIn .3s ease-out;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px) } to { opacity: 1; transform: translateY(0) } }
+  .bundle-banner .bundle-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .bundle-banner .bundle-msg {
+    font-size: 13px;
+    color: var(--slate);
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .bundle-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .bundle-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 14px;
+    border: 1.5px solid var(--blue);
+    border-radius: 20px;
+    background: transparent;
+    color: var(--blue);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .bundle-pill:hover { background: #dbeafe }
+  .bundle-pill.added {
+    background: var(--blue);
+    color: #fff;
+    border-color: var(--blue);
+  }
+  .bundle-pill.added:hover { background: #1565a0 }
+  [data-action]:active { transform: scale(0.97); }
+  .bundle-done {
+    font-size: 13px;
+    color: var(--mint);
+    font-weight: 600;
+  }
+
+  /* Sticky help float */
+  .intake-help-float {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 900;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: var(--navy);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 24px;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,.2);
+    transition: background .2s;
+  }
+  .intake-help-float:hover { background: var(--blue); color: #fff; }
+  @media (max-width: 480px) {
+    .intake-help-float { bottom: 12px; right: 12px; font-size: 12px; padding: 8px 14px; }
+  }
+
+  /* ─── Upload Step ─── */
+  .upload-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  @media (max-width: 540px) {
+    .upload-choices { grid-template-columns: 1fr; }
+  }
+  .upload-choice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 28px 20px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--white);
+    cursor: pointer;
+    transition: all .2s;
+    text-align: center;
+  }
+  .upload-choice:hover { border-color: var(--cyan); background: #f0faff; }
+  .upload-choice-icon { font-size: 36px; }
+  .upload-choice-title { font-size: 15px; font-weight: 700; color: var(--navy); }
+  .upload-choice-desc { font-size: 12px; color: var(--slate); line-height: 1.5; }
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 32px 20px;
+    text-align: center;
+    transition: all .2s;
+    cursor: pointer;
+  }
+  .upload-zone.dragover { border-color: var(--cyan); background: #f0faff; }
+  .upload-zone-icon { font-size: 42px; margin-bottom: 8px; }
+  .upload-zone-text { font-size: 14px; font-weight: 600; color: var(--navy); margin-bottom: 4px; }
+  .upload-zone-sub { font-size: 12px; color: var(--slate); margin-bottom: 16px; }
+  .upload-spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--blue);
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+    margin: 0 auto 16px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .upload-status { font-size: 15px; font-weight: 600; color: var(--navy); text-align: center; }
+  .upload-detail { font-size: 12px; color: var(--slate); text-align: center; margin-top: 4px; }
+  .upload-success-icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #fff;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+  }
+  .upload-found { font-size: 14px; color: var(--navy); text-align: center; line-height: 1.6; margin-bottom: 4px; }
+  .upload-found-detail { font-size: 12px; color: var(--slate); text-align: center; margin-bottom: 16px; }
+  .upload-error-msg { font-size: 14px; color: #dc2626; text-align: center; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<a href="#main" class="skip-link">Skip to main content</a>
+<nav class="nav" id="nav">
+  <div class="nav__inner">
+    <a href="/" class="nav__logo" aria-label="Home">
+      <picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></picture>
+    </a>
+    <div class="nav__links" id="navLinks">
+      <div class="nav__dropdown">
+        <a href="/personal/" class="nav__link">Personal</a>
+        <div class="nav__dropdown-menu">
+          <a href="/personal/home.html" class="nav__dropdown-item">Home</a>
+          <a href="/personal/auto.html" class="nav__dropdown-item">Auto</a>
+          <a href="/personal/renters.html" class="nav__dropdown-item">Renters</a>
+          <a href="/personal/umbrella.html" class="nav__dropdown-item">Umbrella</a>
+          <a href="/personal/flood.html" class="nav__dropdown-item">Flood</a>
+          <a href="/personal/motorcycle.html" class="nav__dropdown-item">Motorcycle</a>
+          <a href="/personal/boat.html" class="nav__dropdown-item">Boat</a>
+          <a href="/personal/classic-car.html" class="nav__dropdown-item">Classic Car</a>
+          <a href="/personal/earthquake.html" class="nav__dropdown-item">Earthquake</a>
+          <a href="/personal/pet.html" class="nav__dropdown-item">Pet</a>
+        </div>
+      </div>
+      <div class="nav__dropdown">
+        <a href="/commercial/" class="nav__link">Commercial</a>
+        <div class="nav__dropdown-menu">
+          <a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a>
+          <a href="/commercial/commercial-property.html" class="nav__dropdown-item">Commercial Property</a>
+          <a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Commercial Auto</a>
+          <a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a>
+          <a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a>
+          <a href="/commercial/bonds.html" class="nav__dropdown-item">Bonds</a>
+          <a href="/commercial/builders-risk.html" class="nav__dropdown-item">Builders Risk</a>
+          <a href="/commercial/special-event.html" class="nav__dropdown-item">Special Events</a>
+          <a href="/commercial/professional-liability.html" class="nav__dropdown-item">Professional Liability</a>
+        </div>
+      </div>
+      <div class="nav__dropdown">
+        <a href="/life-health/" class="nav__link">Life &amp; Health</a>
+        <div class="nav__dropdown-menu">
+          <a href="/life-health/medicare.html" class="nav__dropdown-item">Medicare</a>
+          <a href="/life-health/individual-health.html" class="nav__dropdown-item">Individual Health</a>
+          <a href="/life-health/group-health.html" class="nav__dropdown-item">Group Health</a>
+          <a href="/life-health/term-life.html" class="nav__dropdown-item">Term Life</a>
+          <a href="/life-health/whole-life.html" class="nav__dropdown-item">Whole Life</a>
+          <a href="/life-health/disability.html" class="nav__dropdown-item">Disability</a>
+          <a href="/life-health/final-expense.html" class="nav__dropdown-item">Final Expense</a>
+        </div>
+      </div>
+      <div class="nav__dropdown">
+        <a href="/about/" class="nav__link">About</a>
+        <div class="nav__dropdown-menu" style="grid-template-columns:1fr;">
+          <a href="/about/" class="nav__dropdown-item">Who We Are</a>
+          <a href="/about/team.html" class="nav__dropdown-item">Our Team</a>
+          <a href="/about/locations.html" class="nav__dropdown-item">Locations</a>
+        </div>
+      </div>
+      <a href="/blog/" class="nav__link">Blog</a>
+      <a href="/intake/" class="btn btn--primary">Get a Quote</a>
+    </div>
+    <button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<main id="main" style="margin-top:var(--nav-height);">
+<div class="container">
+  <!-- Headline + response time promise -->
+  <div style="text-align:center;padding:var(--space-xl) 0 var(--space-md);">
+    <h1 id="intake-headline" style="font-size:clamp(1.5rem,3.5vw,2rem);color:var(--navy);margin-bottom:8px;">Get a Quote</h1>
+    <p id="intake-subtitle" style="color:var(--slate);font-size:var(--text-sm);margin-bottom:12px;">A licensed agent will follow up within one business day.</p>
+    <a href="https://g.page/r/CSHCy85xJ8VOEBM/review" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:var(--white);border:1px solid var(--border);border-radius:var(--border-radius);text-decoration:none;color:var(--charcoal);font-size:var(--text-sm);font-weight:500;">
+      <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      <span style="display:flex;align-items:center;gap:4px;">
+        <strong style="color:var(--navy);">5.0</strong>
+        <span style="color:#FBBC05;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+        <span style="color:var(--slate);">(19 reviews)</span>
+      </span>
+    </a>
+  </div>
+
+  <div class="progress-wrap" id="progress-wrap">
+    <div class="progress-labels">
+      <span class="progress-label active" data-step="1">Contact</span>
+      <span class="progress-label" data-step="2">Upload</span>
+      <span class="progress-label" data-step="3">Coverage</span>
+      <span class="progress-label" data-step="4">Details</span>
+      <span class="progress-label" data-step="5">Review</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-seg active" data-step="1"></div>
+      <div class="progress-seg" data-step="2"></div>
+      <div class="progress-seg" data-step="3"></div>
+      <div class="progress-seg" data-step="4"></div>
+      <div class="progress-seg" data-step="5"></div>
+    </div>
+  </div>
+
+  <!-- Step 1: Contact Info (name, email, phone first — address in step 3) -->
+  <div id="step-1" class="card">
+    <h2>Tell us about yourself</h2>
+    <p class="card-desc">We just need your name and contact info to get started.</p>
+    <div class="form-row">
+      <div class="form-group">
+        <label>First Name *</label>
+        <input type="text" id="i_fname" required autocomplete="given-name">
+      </div>
+      <div class="form-group">
+        <label>Last Name *</label>
+        <input type="text" id="i_lname" required autocomplete="family-name">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Email <span style="color:#ef4444">*</span></label>
+        <input type="email" id="i_email" placeholder="you@example.com" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label>Phone <span style="color:#ef4444">*</span></label>
+        <input type="tel" id="i_phone" placeholder="(555) 123-4567" required autocomplete="tel">
+      </div>
+    </div>
+    <div style="background:#f0fdf8;border:1px solid #bbf7d0;border-radius:10px;padding:10px 14px;margin:16px 0 0;font-size:11px;color:#166534;line-height:1.5;text-align:center;">
+      Your information is safe. We never sell your data. <a href="/privacy.html" style="color:#166534;text-decoration:underline">Privacy Policy</a>
+    </div>
+    <div id="step1-error" class="error hidden"></div>
+    <div class="btn-row">
+      <span></span>
+      <button class="btn btn-primary" id="step1-btn" data-action="next-step" data-step="1">Continue</button>
+    </div>
+  </div>
+
+  <!-- Step 2: Upload (optional doc upload) -->
+  <div id="step-2" class="card hidden">
+    <!-- State: Choice -->
+    <div id="upload-choice-view">
+      <h2>Speed up your quote</h2>
+      <p class="card-desc">Have your current insurance dec page handy? Upload it and we'll pre-fill the form for you.</p>
+      <div class="upload-choices">
+        <div class="upload-choice" id="upload-choose-file">
+          <div class="upload-choice-icon">&#128196;</div>
+          <div class="upload-choice-title">Upload dec page</div>
+          <div class="upload-choice-desc">PDF, photo, or screenshot — we'll extract your info automatically</div>
+          <input type="file" id="doc-upload-input" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" capture="environment" class="hidden">
+        </div>
+        <div class="upload-choice" data-action="skip-upload">
+          <div class="upload-choice-icon">&#9997;&#65039;</div>
+          <div class="upload-choice-title">Fill out manually</div>
+          <div class="upload-choice-desc">Choose your coverage and enter your details step by step</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- State: Drag-drop zone (shown after clicking "Upload dec page") -->
+    <div id="upload-dropzone-view" class="hidden">
+      <h2>Upload your document</h2>
+      <p class="card-desc">Drag and drop or choose a file below.</p>
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-zone-icon">&#128196;</div>
+        <div class="upload-zone-text">Drop your file here</div>
+        <div class="upload-zone-sub">PDF, JPEG, or PNG — max 10MB</div>
+        <button type="button" class="btn btn-primary" id="upload-zone-btn">Choose File</button>
+        <input type="file" id="doc-upload-input-zone" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" capture="environment" class="hidden">
+      </div>
+      <div class="btn-row" style="margin-top:16px">
+        <button class="btn btn-outline" id="upload-back-btn">Back</button>
+        <span></span>
+      </div>
+    </div>
+
+    <!-- State: Processing -->
+    <div id="upload-progress-view" class="hidden" style="padding:40px 20px;">
+      <div class="upload-spinner"></div>
+      <p class="upload-status">Analyzing your document...</p>
+      <p class="upload-detail">This usually takes 5-15 seconds</p>
+    </div>
+
+    <!-- State: Success -->
+    <div id="upload-success-view" class="hidden" style="padding:40px 20px;">
+      <div class="upload-success-icon">&#10003;</div>
+      <p class="upload-found" id="upload-found-text"></p>
+      <p class="upload-found-detail" id="upload-found-detail"></p>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <button class="btn btn-primary" data-action="upload-continue">Continue with pre-filled data</button>
+        <button class="btn btn-outline" style="font-size:13px;" data-action="skip-upload">Skip — I'll fill it out myself</button>
+      </div>
+    </div>
+
+    <!-- State: Error -->
+    <div id="upload-error-view" class="hidden" style="padding:40px 20px;">
+      <p class="upload-error-msg" id="upload-error-msg"></p>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+        <button class="btn btn-outline" id="upload-retry-btn">Try Again</button>
+        <button class="btn btn-outline" style="font-size:13px;" data-action="skip-upload">Skip — I'll fill it out manually</button>
+      </div>
+    </div>
+
+    <!-- Turnstile container for upload (rendered early) -->
+    <div id="upload-turnstile-container" style="margin:12px auto;text-align:center;"></div>
+  </div>
+
+  <!-- Step 3: Products -->
+  <div id="step-3" class="card hidden">
+    <h2>What coverage do you need?</h2>
+    <p class="card-desc">Select all that apply — we'll tailor your quote accordingly.</p>
+    <div id="bundle-banner" class="bundle-banner hidden">
+      <div class="bundle-title" id="bundle-title"></div>
+      <div class="bundle-msg" id="bundle-msg"></div>
+      <div class="bundle-pills" id="bundle-pills"></div>
+    </div>
+    <div class="product-grid" id="product-grid"></div>
+    <div style="margin-top:12px">
+      <button type="button" class="add-vehicle-btn" id="show-other-btn" data-action="toggle-other-products" style="width:100%;justify-content:center">
+        <span>+</span> Need something else? See all products
+      </button>
+      <div class="other-products" id="other-products">
+        <p style="font-size:12px;color:var(--slate);margin:8px 0 4px">Additional coverage options:</p>
+        <div class="other-product-grid" id="other-product-grid"></div>
+      </div>
+    </div>
+    <div id="step3-error" class="error hidden"></div>
+    <div class="btn-row">
+      <button class="btn btn-outline" data-action="prev-step" data-step="3">Back</button>
+      <button class="btn btn-primary" data-action="next-step" data-step="3">Continue</button>
+    </div>
+  </div>
+
+  <!-- Step 4: Your Details + Product-Specific Questions -->
+  <div id="step-4" class="card hidden">
+    <h2>Your details</h2>
+    <p class="card-desc">This helps us get you the most accurate quote.</p>
+
+    <!-- Section 1: Your Information (always shown) -->
+    <div style="margin-bottom:24px;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Your Information</div>
+      <div class="form-group">
+        <label>Mailing Address <span style="color:#ef4444">*</span></label>
+        <input type="text" id="i_address" required autocomplete="street-address">
+      </div>
+      <div class="form-row-3">
+        <div class="form-group">
+          <label>City <span style="color:#ef4444">*</span></label>
+          <input type="text" id="i_city" required autocomplete="address-level2">
+        </div>
+        <div class="form-group">
+          <label>State <span style="color:#ef4444">*</span></label>
+          <input type="text" id="i_state" maxlength="2" required autocomplete="address-level1">
+        </div>
+        <div class="form-group">
+          <label>ZIP <span style="color:#ef4444">*</span></label>
+          <input type="text" id="i_zip" maxlength="10" required autocomplete="postal-code">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group" id="dob-group">
+          <label>Date of Birth</label>
+          <input type="text" id="i_dob" placeholder="MM/DD/YYYY" maxlength="10" inputmode="numeric" autocomplete="bday">
+        </div>
+        <div class="form-group">
+          <label>Current Insurance Company</label>
+          <input type="text" id="i_current_carrier" placeholder="e.g. State Farm, Geico, or None">
+        </div>
+      </div>
+      <div class="form-group" style="max-width:280px;">
+        <label>When does your policy expire?</label>
+        <select id="i_policy_expiry">
+          <option value="">Select</option><option value="within30">Within 30 days</option><option value="1-3months">1–3 months</option><option value="3-6months">3–6 months</option><option value="over6months">6+ months</option><option value="none">No current policy</option><option value="unsure">Not sure</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Section 2: Product-specific details (injected by JS) -->
+    <div id="product-questions"></div>
+
+    <!-- Section 3: Notes (always shown) -->
+    <div class="form-group">
+      <label>Anything else we should know?</label>
+      <textarea id="i_notes" rows="3" placeholder="Special requirements, additional details, or questions..."></textarea>
+    </div>
+    <div id="step4-error" class="error hidden"></div>
+    <div class="btn-row">
+      <button class="btn btn-outline" data-action="prev-step" data-step="4">Back</button>
+      <button class="btn btn-primary" data-action="next-step" data-step="4">Review</button>
+    </div>
+  </div>
+
+  <!-- Step 5: Review & Submit -->
+  <div id="step-5" class="card hidden">
+    <h2>Review your information</h2>
+    <p class="card-desc">Please confirm everything looks correct before submitting.</p>
+    <div id="review-summary"></div>
+    <!-- Honeypot — hidden from humans, bots auto-fill it -->
+    <div style="position:absolute;left:-9999px;top:-9999px" aria-hidden="true">
+      <label for="_hp_company">Company</label>
+      <input type="text" id="_hp_company" name="_hp_company" tabindex="-1" autocomplete="off">
+    </div>
+    <div id="turnstile-container" style="margin:12px 0"></div>
+    <div id="step5-error" class="error hidden"></div>
+    <div class="btn-row">
+      <button class="btn btn-outline" data-action="prev-step" data-step="5">Back</button>
+      <button class="btn btn-primary" id="submit-btn" data-action="submit-intake">Submit Quote Request</button>
+    </div>
+  </div>
+
+  <!-- Confirmation -->
+  <div id="step-confirm" class="card hidden">
+    <div class="confirmation">
+      <div class="check-circle">&#10003;</div>
+      <h2>Quote Request Received!</h2>
+      <p id="confirm-message">Thank you for choosing The Way Agency. A licensed agent will review your information and reach out with your personalized quote shortly.</p>
+      <div class="ref-badge" id="ref-number"></div>
+      <p style="margin-top:16px;font-size:12px;color:#94a3b8">Save this reference number for your records.</p>
+    </div>
+  </div>
+
+  <!-- Agent takeover (shown when agent claims this session) -->
+  <div id="step-takeover" class="card hidden">
+    <div class="confirmation">
+      <div class="check-circle" style="background:linear-gradient(135deg, var(--blue), var(--cyan))">&#128222;</div>
+      <h2 id="takeover-heading">Your Agent is Ready!</h2>
+      <p id="takeover-desc"><strong id="takeover-agent-name">An agent</strong> from The Way Agency is ready to help finish your quote over the phone!</p>
+      <div class="ref-badge" id="takeover-ref"></div>
+      <div id="takeover-buttons" style="margin-top:24px;display:flex;flex-direction:column;gap:12px;align-items:center;width:100%;max-width:320px;margin-left:auto;margin-right:auto">
+        <button data-action="respond-offer" data-choice="call_me" style="width:100%;padding:14px 24px;border-radius:12px;border:none;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(34,197,94,.4);transition:transform .15s">&#128222; Call Me</button>
+        <button data-action="respond-offer" data-choice="online" style="width:100%;padding:12px 24px;border-radius:12px;border:1px solid #d1d5db;background:#fff;color:#374151;font-size:14px;font-weight:600;cursor:pointer;transition:background .15s">No Thanks, I'll Finish Online</button>
+      </div>
+      <div id="takeover-status" style="display:none;margin-top:20px;text-align:center"></div>
+    </div>
+  </div>
+</div>
+</main>
+
+<!-- Sticky help element -->
+<a id="intake-help-float" href="tel:+15024135335" class="intake-help-float" aria-label="Call for help">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
+  Need help? Call us
+</a>
+
+<footer class="footer">
+  <div class="footer__grid">
+    <div class="footer__brand">
+      <picture><source srcset="/src/assets/images/logo-horizontal-white.webp" type="image/webp"><img class="footer__logo" src="/src/assets/images/logo-horizontal-white.png" alt="The Way Agency" style="height:36px;width:auto;"></picture>
+      <address class="footer__address" style="font-style:normal;">PO Box 187<br>Owensboro, KY 42302</address>
+      <div class="footer__contact-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <a href="tel:+15024135335">(502) 413-5335</a>
+      </div>
+      <div class="footer__contact-link">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        <a href="mailto:hello@thewayagency.com">hello@thewayagency.com</a>
+      </div>
+      <p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon–Fri: 8:30 AM – 5:00 PM</p>
+      <a href="https://g.page/r/CSHCy85xJ8VOEBM/review" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;margin-top:var(--space-md);padding:8px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:var(--border-radius);text-decoration:none;font-size:var(--text-xs);font-weight:500;color:rgba(255,255,255,0.85);">
+        <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        <span style="display:flex;align-items:center;gap:4px;">
+          <strong style="color:var(--white);">5.0</strong>
+          <span style="color:#FBBC05;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+          <span style="color:rgba(255,255,255,0.6);">(19 reviews)</span>
+        </span>
+      </a>
+      <div class="footer__socials">
+        <a href="https://www.facebook.com/TheWayAgency/" aria-label="Facebook" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/thewayagencyins/" aria-label="Instagram" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a href="https://www.linkedin.com/company/the-way-agency-insurance" aria-label="LinkedIn" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div>
+      <h4 class="footer__heading">Personal</h4>
+      <div class="footer__link-list">
+        <a href="/personal/home.html">Home</a>
+        <a href="/personal/auto.html">Auto</a>
+        <a href="/personal/renters.html">Renters</a>
+        <a href="/personal/umbrella.html">Umbrella</a>
+        <a href="/personal/flood.html">Flood</a>
+      </div>
+    </div>
+    <div>
+      <h4 class="footer__heading">Commercial</h4>
+      <div class="footer__link-list">
+        <a href="/commercial/general-liability.html">General Liability</a>
+        <a href="/commercial/commercial-property.html">Property</a>
+        <a href="/commercial/commercial-auto.html">Auto</a>
+        <a href="/commercial/workers-compensation.html">Workers Comp</a>
+        <a href="/commercial/cyber.html">Cyber</a>
+      </div>
+    </div>
+    <div>
+      <h4 class="footer__heading">Company</h4>
+      <div class="footer__link-list">
+        <a href="/about/">About Us</a>
+        <a href="/about/team.html">Our Team</a>
+        <a href="/about/locations.html">Locations</a>
+        <a href="/blog/">Blog</a>
+        <a href="/intake/">Get a Quote</a>
+        <a href="/contact.html">Contact</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer__bottom">
+    <p>&copy; 2026 The Way Agency. All rights reserved.</p>
+    <div class="footer__legal-links">
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+    </div>
+  </div>
+  <p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p>
+  <!-- intake version injected as data attribute for debugging only -->
+  <span id="intake-version" style="display:none"></span>
+</footer>
+
+<script>
+const SAGE_API = 'https://sage.thewayagency.com';
+
+// ── Agent personalization ───────────────────────────────────────────────────
+(function() {
+  const agentSlug = new URLSearchParams(window.location.search).get('agent');
+  if (!agentSlug) return;
+  fetch(SAGE_API + '/api/intake/agent/' + encodeURIComponent(agentSlug))
+    .then(r => r.ok ? r.json() : null)
+    .then(agent => {
+      if (!agent || !agent.name) return;
+      const headline = document.getElementById('intake-headline');
+      const subtitle = document.getElementById('intake-subtitle');
+      const helpFloat = document.getElementById('intake-help-float');
+      if (headline) headline.textContent = 'Get a Quote from ' + agent.name.split(' ')[0];
+      if (subtitle) subtitle.textContent = agent.name.split(' ')[0] + ' will follow up within one business day.';
+      if (helpFloat && agent.phone) {
+        helpFloat.href = 'tel:+1' + agent.phone.replace(/\D/g, '');
+        helpFloat.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg> Call ' + agent.name.split(' ')[0];
+      }
+      // Store for confirmation screen personalization
+      window._assignedAgent = agent;
+    })
+    .catch(() => {});
+})();
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INTAKE ANALYTICS ENGINE (v3 — standardized taxonomy, no duplicate events)
+//
+// Event taxonomy:
+//   intake_start          — page load
+//   intake_step_view      — step shown (also fires virtual pageview)
+//   intake_step_complete  — step completed with timing
+//   intake_product_select / intake_product_deselect — product toggles
+//   intake_field_focus    — form field interaction (friction detection)
+//   intake_validation_error — validation failure
+//   intake_abandoned      — user leaves before submitting
+//   intake_complete       — successful submission
+//
+// All events include intake_source and intake_agent for attribution.
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const STEP_NAMES = { 1: 'contact', 2: 'upload', 3: 'products', 4: 'details', 5: 'review' };
+const _stepTimestamps = {};
+const _funnelData = {
+  entryTime: Date.now(),
+  source: new URLSearchParams(window.location.search).get('src') || 'direct',
+  agent: new URLSearchParams(window.location.search).get('agent') || '',
+};
+let _submitted = false;
+
+// ─── Core intake event dispatcher ───────────────────────────────────────────
+function trackIntake(eventName, params) {
+  if (!window.gtag) return;
+  gtag('event', eventName, {
+    event_category: 'intake',
+    intake_source: _funnelData.source,
+    intake_agent: _funnelData.agent,
+    ...params,
+  });
+  if (window.CONFIG?.debug || new URLSearchParams(window.location.search).has('twa_debug')) {
+    console.log(`%c[Intake] ${eventName}`, 'color:#0891b2;font-weight:bold', params || '');
+  }
+}
+
+// ─── Step tracking with virtual pageviews ───────────────────────────────────
+function trackStepEnter(step) {
+  _stepTimestamps[step] = Date.now();
+  trackIntake('intake_step_view', {
+    step_number: step,
+    step_name: STEP_NAMES[step],
+    time_on_form_sec: Math.round((Date.now() - _funnelData.entryTime) / 1000),
+  });
+  // Virtual pageview for GA4 funnel reports (Phase 1: structural fix)
+  if (window.gtag) {
+    gtag('event', 'page_view', {
+      page_path: '/intake/step-' + step + '-' + STEP_NAMES[step],
+      page_title: 'Intake — ' + STEP_NAMES[step].charAt(0).toUpperCase() + STEP_NAMES[step].slice(1),
+    });
+  }
+}
+
+function trackStepComplete(step) {
+  const timeOnStep = _stepTimestamps[step] ? Math.round((Date.now() - _stepTimestamps[step]) / 1000) : 0;
+  const params = { step_number: step, step_name: STEP_NAMES[step], time_on_step_sec: timeOnStep };
+  if (step === 2) {
+    params.products_selected = selectedProducts.join(',');
+    params.product_count = selectedProducts.length;
+  }
+  trackIntake('intake_step_complete', params);
+}
+
+// ─── Product tracking ───────────────────────────────────────────────────────
+function trackProductToggle(productId, selected) {
+  trackIntake(selected ? 'intake_product_select' : 'intake_product_deselect', {
+    product_id: productId,
+    total_selected: selectedProducts.length,
+  });
+}
+
+// ─── Validation error tracking ──────────────────────────────────────────────
+function trackValidationError(step, message) {
+  trackIntake('intake_validation_error', { step_number: step, error_message: message });
+}
+
+// ─── Abandonment tracking ───────────────────────────────────────────────────
+function trackAbandonment() {
+  if (_submitted) return;
+  trackIntake('intake_abandoned', {
+    abandoned_at_step: currentStep,
+    abandoned_at_name: STEP_NAMES[currentStep],
+    time_on_form_sec: Math.round((Date.now() - _funnelData.entryTime) / 1000),
+    products_selected: selectedProducts.join(',') || 'none',
+    had_contact_info: !!(v('i_fname') && v('i_email')),
+  });
+}
+
+// ─── Completion tracking ────────────────────────────────────────────────────
+function trackSubmitSuccess(reference, productCount) {
+  _submitted = true;
+  trackIntake('intake_complete', {
+    reference: reference,
+    product_count: productCount,
+    products: selectedProducts.join(','),
+    time_to_complete_sec: Math.round((Date.now() - _funnelData.entryTime) / 1000),
+  });
+  // Meta Lead event (single, clean fire — no duplicate)
+  if (window.fbq) fbq('track', 'Lead', { content_name: selectedProducts.join(','), content_category: 'quote_request', currency: 'USD' });
+}
+
+// ─── Form field focus tracking (Phase 2: friction detection) ────────────────
+const _fieldFocusTracked = new Set();
+function initFieldFocusTracking() {
+  document.addEventListener('focusin', (e) => {
+    const el = e.target;
+    if (el.tagName !== 'INPUT' && el.tagName !== 'SELECT' && el.tagName !== 'TEXTAREA') return;
+    const fieldName = el.id || el.name;
+    if (!fieldName || _fieldFocusTracked.has(fieldName)) return;
+    _fieldFocusTracked.add(fieldName);
+    trackIntake('intake_field_focus', { field_name: fieldName, step_number: currentStep });
+  });
+}
+
+// Fire abandonment on page unload
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') trackAbandonment(); });
+window.addEventListener('pagehide', trackAbandonment);
+
+// Track initial intake start
+trackIntake('intake_start', {
+  referrer: document.referrer || 'direct',
+  landing_url: window.location.href,
+  device: window.innerWidth < 768 ? 'mobile' : window.innerWidth < 1024 ? 'tablet' : 'desktop',
+});
+
+// Initialize field focus tracking
+initFieldFocusTracking();
+
+// Show version in footer
+fetch(SAGE_API + '/api/health').then(r=>r.json()).then(d=>{ const el=document.getElementById('intake-version'); if(el&&d.version) el.textContent='v'+d.version; }).catch(()=>{});
+
+let currentStep = 1;
+let selectedProducts = [];
+let vehicleCount = 1;
+let sessionId = null;          // Tracks this intake session for auto-save
+let contactTracked = false;    // Whether we've sent the initial contact notification
+let contactValidated = false;  // Whether silent validation has passed
+let pollTimer = null;          // Polls for agent takeover
+let turnstileToken = null;     // Cloudflare Turnstile token
+let turnstileWidgetId = null;  // Widget ID for reset
+
+// ── Product catalog (drives the dynamic grid) ───────────────────────────────
+const PRODUCTS = [
+  // Personal (ordered by frequency: most common first)
+  { id: 'homeowners',      icon: '\u{1F3E0}', label: 'Homeowners',           line: 'personal' },
+  { id: 'auto',            icon: '\u{1F697}', label: 'Auto',                 line: 'personal' },
+  { id: 'umbrella',        icon: '\u2614\uFE0F', label: 'Umbrella',          line: 'personal' },
+  { id: 'renters',         icon: '\u{1F3E2}', label: 'Renters',              line: 'personal' },
+  { id: 'life',            icon: '\u2764\uFE0F', label: 'Life',              line: 'personal' },
+  { id: 'flood',           icon: '\u{1F30A}', label: 'Flood',                line: 'personal' },
+  { id: 'motorcycle',      icon: '\u{1F3CD}\uFE0F', label: 'Motorcycle',     line: 'personal' },
+  { id: 'boat',            icon: '\u26F5\uFE0F', label: 'Boat',              line: 'personal' },
+  { id: 'rv',              icon: '\u{1F68C}', label: 'RV',                   line: 'personal' },
+  { id: 'earthquake',      icon: '\u{1F30D}', label: 'Earthquake',           line: 'personal' },
+  // Commercial (top 8 shown in main grid when ?line=commercial)
+  { id: 'bop',             icon: '\u{1F3EA}', label: 'Business Owners Policy', line: 'commercial' },
+  { id: 'cgl',             icon: '\u{1F4BC}', label: 'General Liability',    line: 'commercial' },
+  { id: 'commercial_auto', icon: '\u{1F69A}', label: 'Commercial Auto',      line: 'commercial' },
+  { id: 'workers_comp',    icon: '\u{1F9BA}', label: 'Workers Comp',         line: 'commercial' },
+  { id: 'cyber',           icon: '\u{1F4BB}', label: 'Cyber',                line: 'commercial' },
+  { id: 'eo',              icon: '\u{1F4DC}', label: 'Professional Liability', line: 'commercial' },
+  { id: 'bonds',           icon: '\u{1F4C4}', label: 'Bonds',                line: 'commercial' },
+  { id: 'builders_risk',   icon: '\u{1F6A7}', label: 'Builders Risk',        line: 'commercial' },
+  // Less common commercial (shown in "other" dropdown)
+  { id: 'farm_ranch',      icon: '\u{1F33E}', label: 'Farm / Ranch',         line: 'commercial' },
+  { id: 'dwelling_fire',   icon: '\u{1F525}', label: 'Dwelling Fire',        line: 'commercial' },
+  // Catch-all
+  { id: 'other',           icon: '\u{1F4DD}', label: 'Other',                line: 'other' },
+];
+
+const MAIN_GRID_SIZE = 8;
+
+function getProductLine(pid) {
+  const p = PRODUCTS.find(x => x.id === pid);
+  return p ? p.line : null;
+}
+
+function renderProductGrid(priorityLine) {
+  // Sort: priority line first, then the other line, then 'other'
+  const sorted = [...PRODUCTS].sort((a, b) => {
+    const order = (p) => {
+      if (priorityLine && p.line === priorityLine) return 0;
+      if (p.line === 'personal' && !priorityLine) return 0; // default: personal first
+      if (p.line === 'personal') return 1;
+      if (p.line === 'commercial') return priorityLine === 'commercial' ? 0 : 1;
+      return 2; // 'other'
+    };
+    return order(a) - order(b);
+  });
+
+  const mainGrid = document.getElementById('product-grid');
+  const otherGrid = document.getElementById('other-product-grid');
+
+  const renderOpt = (p) => {
+    const selected = selectedProducts.includes(p.id) ? ' selected' : '';
+    return `<div class="product-opt${selected}" data-pid="${p.id}" data-action="toggle-prod"><span class="icon">${p.icon}</span>${p.label}</div>`;
+  };
+
+  mainGrid.innerHTML = sorted.slice(0, MAIN_GRID_SIZE).map(renderOpt).join('');
+  otherGrid.innerHTML = sorted.slice(MAIN_GRID_SIZE).map(renderOpt).join('');
+}
+
+// Render grid — check for ?line= param first, otherwise default (personal first)
+(function initGrid() {
+  const params = new URLSearchParams(window.location.search);
+  const line = params.get('line');
+  if (line === 'personal' || line === 'commercial') {
+    renderProductGrid(line);
+  } else {
+    renderProductGrid(null);
+  }
+})();
+
+// ── Bundle suggestion map ────────────────────────────────────────────────────
+const BUNDLE_MAP = {
+  homeowners:      { products: ['auto', 'umbrella'],        msg: "Customers who add auto and umbrella coverage typically save 15-25% with multi-policy discounts." },
+  auto:            { products: ['homeowners', 'umbrella'],  msg: "Customers who bundle home and umbrella with auto typically save 15-25%." },
+  renters:         { products: ['auto', 'umbrella'],        msg: "Bundle with auto and umbrella for multi-policy savings of 10-20%." },
+  motorcycle:      { products: ['auto', 'homeowners'],      msg: "Bundle with auto and home for multi-policy savings of 10-15%." },
+  boat:            { products: ['homeowners', 'auto'],      msg: "Bundle with home and auto for multi-policy savings." },
+  flood:           { products: ['homeowners'],              msg: "Most carriers offer a discount when flood is paired with homeowners." },
+  umbrella:        { products: ['homeowners', 'auto'],      msg: "Umbrella requires underlying home and auto policies \u2014 we\u2019ll bundle all three." },
+  life:            { products: ['homeowners', 'auto'],      msg: "Some carriers discount life when bundled with home and auto." },
+  bop:             { products: ['commercial_auto', 'workers_comp'], msg: "Bundle with commercial auto and workers comp for a full business package." },
+  cgl:             { products: ['bop', 'commercial_auto'],  msg: "A BOP bundles GL + property at 10-20% less than standalone policies." },
+  commercial_auto: { products: ['cgl', 'workers_comp'],     msg: "Bundle with general liability and workers comp for fleet coverage." },
+  workers_comp:    { products: ['cgl', 'commercial_auto'],  msg: "Bundle with general liability and commercial auto for a complete package." },
+  cyber:           { products: ['bop', 'eo'],               msg: "Bundle with BOP and professional liability for full digital protection." },
+};
+
+const PRODUCT_NAMES = {
+  homeowners:'Homeowners', auto:'Auto', umbrella:'Umbrella', flood:'Flood', life:'Life',
+  renters:'Renters', bop:'Business Owners Policy', motorcycle:'Motorcycle', dwelling_fire:'Dwelling Fire',
+  cgl:'General Liability', commercial_auto:'Commercial Auto', workers_comp:'Workers Comp',
+  cyber:'Cyber', eo:'Professional Liability', boat:'Boat', rv:'RV', earthquake:'Earthquake',
+  farm_ranch:'Farm / Ranch', bonds:'Bonds', other:'Other',
+};
+
+let bundleSourceProduct = null; // The product that triggered the bundle banner
+
+function renderBundleBanner(pid) {
+  const bundle = BUNDLE_MAP[pid];
+  const banner = document.getElementById('bundle-banner');
+  if (!bundle || !banner) return;
+  trackIntake('bundle_shown', { product_id: pid });
+
+  bundleSourceProduct = pid;
+  const title = document.getElementById('bundle-title');
+  const msg = document.getElementById('bundle-msg');
+  const pills = document.getElementById('bundle-pills');
+
+  title.textContent = 'Save more by bundling';
+  msg.textContent = bundle.msg;
+
+  pills.innerHTML = bundle.products.map(p =>
+    `<button type="button" class="bundle-pill" data-bpid="${p}" data-action="toggle-bundle-pill" data-pid="${p}">+ ${PRODUCT_NAMES[p] || p}</button>`
+  ).join('');
+
+  banner.classList.remove('hidden');
+  syncBundlePills();
+}
+
+function toggleBundlePill(pid) {
+  trackIntake('bundle_product_toggled', { product_id: pid });
+  const el = document.querySelector(`.product-opt[data-pid="${pid}"]`);
+  if (!el) return;
+  // If it's in the collapsed "other products" panel, expand it first
+  if (el.closest('.other-products')) {
+    const panel = document.getElementById('other-products');
+    if (panel && !panel.classList.contains('show')) panel.classList.add('show');
+  }
+  toggleProd(el);
+}
+
+function syncBundlePills() {
+  const banner = document.getElementById('bundle-banner');
+  if (!banner || banner.classList.contains('hidden')) return;
+
+  const bundle = BUNDLE_MAP[bundleSourceProduct];
+  if (!bundle) return;
+
+  let allAdded = true;
+  document.querySelectorAll('.bundle-pill').forEach(pill => {
+    const pid = pill.dataset.bpid;
+    const isSelected = selectedProducts.includes(pid);
+    pill.classList.toggle('added', isSelected);
+    pill.textContent = isSelected ? '\u2713 ' + (PRODUCT_NAMES[pid] || pid) : '+ ' + (PRODUCT_NAMES[pid] || pid);
+    if (!isSelected) allAdded = false;
+  });
+
+  // If all bundle products selected, show success message
+  const msg = document.getElementById('bundle-msg');
+  if (allAdded && bundle.products.length > 0) {
+    msg.innerHTML = '<span class="bundle-done">\u2713 Great \u2014 you\'re bundling for maximum savings!</span>';
+  } else {
+    msg.textContent = bundle.msg;
+  }
+}
+
+// ── Pre-select product from URL parameter (e.g. /intake/?product=homeowners) ─
+(function preSelectProduct() {
+  const params = new URLSearchParams(window.location.search);
+  const pid = params.get('product');
+  if (!pid) return;
+
+  // Reorder grid so the selected product's line appears first
+  const line = getProductLine(pid);
+  if (line) {
+    selectedProducts.push(pid);
+    renderProductGrid(line);
+  }
+
+  // Select the product in the grid
+  const el = document.querySelector(`.product-opt[data-pid="${pid}"]`);
+  if (el) {
+    el.classList.add('selected');
+    // If somehow still in "other" panel, expand it
+    if (el.closest('.other-products')) {
+      const panel = document.getElementById('other-products');
+      if (panel) panel.classList.add('show');
+    }
+  }
+
+  // Show bundle suggestion banner
+  renderBundleBanner(pid);
+})();
+
+// ── Pre-fill form fields from URL params (from inline forms, geo pages, etc.) ─
+// ── Input sanitization helpers ───────────────────────────────────────────────
+function sanitizeText(val, maxLen) {
+  if (!val) return '';
+  return val.replace(/<[^>]*>/g, '').replace(/[^\w\s@.+\-'(),]/g, '').trim().slice(0, maxLen || 100);
+}
+function sanitizeAlpha(val, maxLen) {
+  if (!val) return '';
+  return val.replace(/[^a-zA-Z\s.\-']/g, '').trim().slice(0, maxLen || 50);
+}
+function sanitizeSlug(val, maxLen) {
+  if (!val) return '';
+  return val.replace(/[^a-z0-9\-_]/gi, '').slice(0, maxLen || 50);
+}
+function sanitizeEmail(val) {
+  if (!val) return '';
+  const clean = val.replace(/[<>'";\s]/g, '').slice(0, 254);
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean) ? clean : '';
+}
+function sanitizePhone(val) {
+  if (!val) return '';
+  return val.replace(/[^\d()\-\s+.]/g, '').slice(0, 20);
+}
+
+(function prefillFromParams() {
+  const params = new URLSearchParams(window.location.search);
+  const fill = (paramKey, fieldId, sanitizer) => {
+    const val = sanitizer(params.get(paramKey));
+    if (!val) return;
+    const el = document.getElementById(fieldId);
+    if (el) { el.value = val; el.classList.add('filled'); }
+  };
+
+  // Contact fields (from inline forms)
+  const rawName = sanitizeText(params.get('name'), 100);
+  if (rawName) {
+    const parts = rawName.split(/\s+/);
+    const fname = document.getElementById('i_fname');
+    const lname = document.getElementById('i_lname');
+    if (fname) { fname.value = parts[0] || ''; if (fname.value) fname.classList.add('filled'); }
+    if (lname) { lname.value = parts.slice(1).join(' ') || ''; if (lname.value) lname.classList.add('filled'); }
+  }
+  fill('email', 'i_email', sanitizeEmail);
+  fill('phone', 'i_phone', sanitizePhone);
+
+  // Geo context (from city/industry pages)
+  fill('city', 'i_city', sanitizeAlpha);
+  fill('state', 'i_state', (v) => sanitizeAlpha(v, 2).toUpperCase());
+
+  // Industry tag — store for submission (slug format only)
+  const industry = sanitizeSlug(params.get('industry'));
+  if (industry) {
+    window._intakeIndustry = industry;
+  }
+})();
+
+// ── Cloudflare Turnstile (bot protection) ───────────────────────────────────
+// Turnstile is initialized when step 4 (Review) becomes visible, not on page
+// load, because rendering into a hidden container fails on mobile browsers.
+let _turnstileSiteKey = null;
+
+(async function loadTurnstileConfig() {
+  try {
+    const cfg = await fetch(SAGE_API + '/api/config').then(r => r.json());
+    if (cfg.turnstileSiteKey) _turnstileSiteKey = cfg.turnstileSiteKey;
+  } catch (e) { /* config fetch failed — Turnstile will be skipped */ }
+})();
+
+function initTurnstileOnReview() {
+  if (!_turnstileSiteKey || turnstileWidgetId != null) return; // already rendered or no key
+  if (!window.turnstile) return; // script not loaded yet
+  try {
+    turnstileWidgetId = turnstile.render('#turnstile-container', {
+      sitekey: _turnstileSiteKey,
+      callback: (token) => { turnstileToken = token; },
+      'expired-callback': () => { turnstileToken = null; },
+      'error-callback': () => { turnstileToken = null; },
+      theme: 'light',
+    });
+  } catch (e) { console.warn('[Turnstile] Render failed:', e); }
+}
+
+function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+// ── Auto-save / abandoned form tracking ─────────────────────────────────────
+// As soon as we have name + contact info, save partial data to server
+async function trackPartial() {
+  const firstName = v('i_fname'), lastName = v('i_lname');
+  const email = v('i_email'), phone = v('i_phone');
+  if (!firstName || !lastName) return;
+  if (!email && !phone) return;
+  if (email && !isValidEmail(email)) return;
+  if (phone && !isValidPhone(phone)) return;
+
+  try {
+    const res = await fetch(SAGE_API + '/api/intake/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId,
+        firstName, lastName, email, phone,
+        address: v('i_address'), city: v('i_city'), state: v('i_state'), zip: v('i_zip'),
+        products: selectedProducts,
+        step: currentStep,
+        _hp_company: document.getElementById('_hp_company')?.value || '',
+        cfToken: turnstileToken || '',
+      })
+    });
+    const data = await res.json();
+    if (data.sessionId) {
+      sessionId = data.sessionId;
+      contactTracked = true;
+      // Start polling for agent takeover
+      if (!pollTimer) {
+        pollTimer = setInterval(checkTakeover, 5000);
+      }
+    }
+  } catch (e) { /* silent */ }
+}
+
+// Debounce auto-save
+let _trackTimer = null;
+function scheduleTrack() {
+  clearTimeout(_trackTimer);
+  _trackTimer = setTimeout(trackPartial, 1500);
+}
+
+// Attach to contact fields — fires on blur so we capture as they tab through
+['i_fname', 'i_lname', 'i_email', 'i_phone', 'i_address', 'i_city', 'i_state', 'i_zip'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('blur', scheduleTrack);
+    el.addEventListener('input', scheduleTrack);
+  }
+});
+
+// ── Check if an agent has claimed this session ──────────────────────────────
+let _takeoverShown = false;
+async function checkTakeover() {
+  if (!sessionId) return;
+  try {
+    const res = await fetch(SAGE_API + `/api/intake/status/${sessionId}`);
+    const data = await res.json();
+    if (data.claimed && !_takeoverShown) {
+      _takeoverShown = true;
+      clearInterval(pollTimer);
+      // Show takeover screen
+      for (let i = 1; i <= 4; i++) document.getElementById('step-' + i).classList.add('hidden');
+      document.getElementById('step-confirm').classList.add('hidden');
+      document.getElementById('step-takeover').classList.remove('hidden');
+      document.getElementById('takeover-ref').textContent = 'Reference: #' + (data.reference || sessionId.slice(0, 8));
+      document.getElementById('progress-wrap').classList.add('hidden');
+      // Set agent name
+      const agentName = data.agentName || 'An agent';
+      document.getElementById('takeover-agent-name').textContent = agentName;
+      document.getElementById('takeover-desc').innerHTML = '<strong>' + esc(agentName) + '</strong> from The Way Agency is ready to help finish your quote over the phone!';
+      // If prospect already responded (page refresh), restore that state
+      if (data.engagementType === 'call') {
+        showCallAccepted();
+      } else if (data.engagementType === 'online_preferred') {
+        returnToForm();
+      }
+    }
+  } catch (e) {
+    // Back off on errors (429s etc) — double the interval, max 30s
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      _pollInterval = Math.min((_pollInterval || 5000) * 2, 30000);
+      pollTimer = setInterval(checkTakeover, _pollInterval);
+    }
+  }
+}
+let _pollInterval = 5000;
+
+// ── Prospect responds to the agent's call offer ─────────────────────────────
+async function respondToOffer(choice) {
+  const btns = document.getElementById('takeover-buttons');
+  const status = document.getElementById('takeover-status');
+  btns.style.opacity = '0.5';
+  btns.style.pointerEvents = 'none';
+  try {
+    const res = await fetch(SAGE_API + '/api/intake/respond', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId, choice })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed');
+    if (choice === 'call_me') {
+      showCallAccepted();
+    } else {
+      returnToForm();
+    }
+  } catch (e) {
+    // On error, let them continue the form
+    btns.style.opacity = '';
+    btns.style.pointerEvents = '';
+    status.style.display = 'block';
+    status.innerHTML = '<span style="color:#dc2626">Something went wrong. You can continue filling out the form.</span>';
+  }
+}
+
+function showCallAccepted() {
+  const btns = document.getElementById('takeover-buttons');
+  const status = document.getElementById('takeover-status');
+  btns.style.display = 'none';
+  document.getElementById('takeover-heading').textContent = 'Expect a Call Shortly!';
+  document.getElementById('takeover-desc').textContent = 'Your agent will be calling you in just a moment. Keep your phone handy!';
+  status.style.display = 'block';
+  status.innerHTML = '<div style="display:inline-flex;align-items:center;gap:8px;padding:12px 20px;background:#f0fdf4;border-radius:10px;border:1px solid #bbf7d0"><span style="width:10px;height:10px;background:#22c55e;border-radius:50%;display:inline-block;animation:intake-pulse 1.5s infinite"></span><span style="color:#166534;font-weight:600">Waiting for your agent to call...</span></div>';
+}
+
+function returnToForm() {
+  document.getElementById('step-takeover').classList.add('hidden');
+  document.getElementById('step-' + currentStep).classList.remove('hidden');
+  document.getElementById('progress-wrap').classList.remove('hidden');
+}
+
+// ── Product selection ───────────────────────────────────────────────────────
+function toggleProd(el) {
+  el.classList.toggle('selected');
+  const wasSelected = el.classList.contains('selected');
+  selectedProducts = [...document.querySelectorAll('.product-opt.selected')].map(e => e.dataset.pid);
+  trackProductToggle(el.dataset.pid, wasSelected);
+  // If source product was deselected, hide bundle banner
+  if (bundleSourceProduct && !selectedProducts.includes(bundleSourceProduct)) {
+    const banner = document.getElementById('bundle-banner');
+    if (banner) banner.classList.add('hidden');
+    bundleSourceProduct = null;
+  }
+  // Sync bundle pill states
+  syncBundlePills();
+}
+
+function toggleOtherProducts() {
+  const panel = document.getElementById('other-products');
+  const btn = document.getElementById('show-other-btn');
+  const showing = panel.classList.toggle('show');
+  btn.innerHTML = showing ? '<span>&minus;</span> Hide additional products' : '<span>+</span> Need something else? See all products';
+}
+
+// ── Validation helpers ──────────────────────────────────────────────────────
+function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e); }
+function isValidPhone(p) { return p.replace(/\D/g, '').length === 10; }
+
+// ── Silent contact validation (Twilio Lookup + MX check) ────────────────────
+async function validateContacts() {
+  const email = v('i_email');
+  const phone = v('i_phone');
+  const err = document.getElementById('step1-error');
+  const btn = document.getElementById('step1-btn');
+  btn.textContent = 'Checking...';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(SAGE_API + '/api/intake/validate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email || undefined, phone: phone || undefined })
+    });
+    const data = await res.json();
+
+    // Show the first problem found
+    if (email && data.email && !data.email.valid) {
+      err.textContent = data.email.reason;
+      err.classList.remove('hidden');
+      document.getElementById('i_email').focus();
+      return false;
+    }
+    if (phone && data.phone && !data.phone.valid) {
+      err.textContent = data.phone.reason;
+      err.classList.remove('hidden');
+      document.getElementById('i_phone').focus();
+      return false;
+    }
+
+    contactValidated = true;
+    return true;
+  } catch (e) {
+    // Validation endpoint down — don't block the user
+    contactValidated = true;
+    return true;
+  } finally {
+    btn.textContent = 'Continue';
+    btn.disabled = false;
+  }
+}
+
+// ── Step navigation ─────────────────────────────────────────────────────────
+function showStep(n) {
+  for (let i = 1; i <= 5; i++) document.getElementById('step-' + i).classList.toggle('hidden', i !== n);
+  document.querySelectorAll('.progress-seg').forEach(s => {
+    const step = parseInt(s.dataset.step);
+    s.classList.toggle('active', step === n);
+    s.classList.toggle('done', step < n);
+  });
+  document.querySelectorAll('.progress-label').forEach(s => {
+    const step = parseInt(s.dataset.step);
+    s.classList.toggle('active', step === n);
+    s.classList.toggle('done', step < n);
+  });
+  // Track step completion for the step we're leaving
+  if (currentStep && currentStep !== n) trackStepComplete(currentStep);
+  currentStep = n;
+  if (n === 2) trackIntake('intake_upload_shown');
+  if (n === 3) applyExtractedProducts(); // auto-select products from doc upload
+  if (n === 4) renderProductQuestions();
+  if (n === 5) { renderReview(); initTurnstileOnReview(); }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Track step enter (includes virtual pageview for GA4 funnel reports)
+  trackStepEnter(n);
+  // Auto-save step progress
+  scheduleTrack();
+}
+
+async function nextStep(from) {
+  if (from === 1) {
+    const err = document.getElementById('step1-error');
+    if (!v('i_fname') || !v('i_lname')) { err.textContent = 'First and last name are required.'; err.classList.remove('hidden'); trackValidationError(1, 'missing_name'); return; }
+    if (!v('i_email')) { err.textContent = 'Email address is required.'; err.classList.remove('hidden'); trackValidationError(1, 'missing_email'); return; }
+    if (!v('i_phone')) { err.textContent = 'Phone number is required.'; err.classList.remove('hidden'); trackValidationError(1, 'missing_phone'); return; }
+    if (!isValidEmail(v('i_email'))) { err.textContent = 'Please enter a valid email address.'; err.classList.remove('hidden'); trackValidationError(1, 'invalid_email'); return; }
+    if (!isValidPhone(v('i_phone'))) { err.textContent = 'Please enter a valid 10-digit phone number.'; err.classList.remove('hidden'); trackValidationError(1, 'invalid_phone'); return; }
+    err.classList.add('hidden');
+
+    // Auto-capitalize first letter of each word in first/last name
+    const fnameEl = document.getElementById('i_fname');
+    const lnameEl = document.getElementById('i_lname');
+    fnameEl.value = fnameEl.value.trim().replace(/\b\w/g, c => c.toUpperCase());
+    lnameEl.value = lnameEl.value.trim().replace(/\b\w/g, c => c.toUpperCase());
+
+    // Run silent validation (Twilio Lookup + MX check) if not yet validated
+    if (!contactValidated) {
+      const valid = await validateContacts();
+      if (!valid) return;
+    }
+  }
+  if (from === 3) {
+    const err = document.getElementById('step3-error');
+    if (!selectedProducts.length) { err.textContent = 'Please select at least one type of coverage.'; err.classList.remove('hidden'); trackValidationError(3, 'no_products'); return; }
+    err.classList.add('hidden');
+  }
+  if (from === 4) {
+    const err = document.getElementById('step4-error');
+    const problems = [];
+    // Validate auto: at least one vehicle with year+make+model
+    if (selectedProducts.includes('auto')) {
+      const vehs = getVehicles();
+      if (!vehs.length || !vehs.some(v => v.year && v.make && v.model))
+        problems.push('Please enter at least one complete vehicle (year, make, and model).');
+    }
+    // Validate life: DOB required
+    if (selectedProducts.includes('life')) {
+      const dobVal = v('i_dob');
+      if (!dobVal || dobVal.length !== 10) problems.push('Please enter your date of birth for life insurance.');
+    }
+    // Validate other: description required
+    if (selectedProducts.includes('other')) {
+      if (!v('i_other_desc')) problems.push('Please describe the other coverage you need.');
+    }
+    // Validate address
+    if (!v('i_address') || !v('i_city') || !v('i_state') || !v('i_zip')) problems.push('Please complete your full mailing address.');
+    if (problems.length) { err.textContent = problems[0]; err.classList.remove('hidden'); return; }
+    err.classList.add('hidden');
+  }
+  showStep(from + 1);
+}
+
+function prevStep(from) { showStep(from - 1); }
+
+// Reset validation if contact fields change + live format feedback
+document.getElementById('i_email').addEventListener('input', function() {
+  if (contactValidated) contactValidated = false;
+  if (this.value.trim() && !isValidEmail(this.value.trim())) {
+    this.style.borderColor = '#ef4444';
+    this.style.background = '#fef2f2';
+  } else {
+    this.style.borderColor = '';
+    this.style.background = '';
+  }
+});
+document.getElementById('i_phone').addEventListener('input', function() {
+  if (contactValidated) contactValidated = false;
+  const digits = this.value.replace(/\D/g, '');
+  if (digits.length > 0 && digits.length !== 10) {
+    this.style.borderColor = '#ef4444';
+    this.style.background = '#fef2f2';
+  } else {
+    this.style.borderColor = '';
+    this.style.background = '';
+  }
+});
+
+// ── DOB auto-format (MM/DD/YYYY) ────────────────────────────────────────────
+document.getElementById('i_dob').addEventListener('input', function() {
+  let digits = this.value.replace(/\D/g, '');
+  if (digits.length > 8) digits = digits.slice(0, 8);
+  let formatted = '';
+  if (digits.length > 0) formatted = digits.slice(0, 2);
+  if (digits.length > 2) formatted += '/' + digits.slice(2, 4);
+  if (digits.length > 4) formatted += '/' + digits.slice(4, 8);
+  this.value = formatted;
+  // Visual feedback for invalid date
+  if (formatted.length === 10) {
+    const m = parseInt(digits.slice(0, 2)), d = parseInt(digits.slice(2, 4)), y = parseInt(digits.slice(4, 8));
+    const valid = m >= 1 && m <= 12 && d >= 1 && d <= 31 && y >= 1900 && y <= new Date().getFullYear();
+    this.style.borderColor = valid ? '' : '#ef4444';
+    this.style.background = valid ? '' : '#fef2f2';
+  } else if (formatted.length > 0) {
+    this.style.borderColor = '#ef4444';
+    this.style.background = '#fef2f2';
+  } else {
+    this.style.borderColor = '';
+    this.style.background = '';
+  }
+});
+
+// ── Product-specific questions (Step 3) ─────────────────────────────────────
+const COMMERCIAL_PRODUCTS = ['bop','cgl','commercial_auto','workers_comp','cyber','eo','bonds','builders_risk'];
+const PROPERTY_PRODUCTS = ['flood','earthquake','dwelling_fire'];
+
+function renderProductQuestions() {
+  const container = document.getElementById('product-questions');
+  let html = '';
+  const hasCommercial = selectedProducts.some(p => COMMERCIAL_PRODUCTS.includes(p));
+  const hasPersonal = selectedProducts.some(p => !COMMERCIAL_PRODUCTS.includes(p));
+  const hasProperty = selectedProducts.filter(p => PROPERTY_PRODUCTS.includes(p));
+
+  // Show/hide DOB based on whether personal lines are selected
+  const dobGroup = document.getElementById('dob-group');
+  if (dobGroup) dobGroup.style.display = hasPersonal ? '' : 'none';
+
+  // ═══ Per-product sections (lighter headers, no icons) ═══
+
+  if (selectedProducts.includes('homeowners')) {
+    const addr = [v('i_address'), v('i_city'), v('i_state'), v('i_zip')].filter(Boolean).join(', ');
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Homeowners</div>
+      <div class="toggle-row">
+        <span class="toggle-label">Property is at the same address as mailing?</span>
+        <button type="button" class="toggle-btn active" id="ho-same-y" data-action="set-ho-addr" data-same="true">Yes</button>
+        <button type="button" class="toggle-btn" id="ho-same-n" data-action="set-ho-addr" data-same="false">No</button>
+      </div>
+      ${addr ? `<div id="ho-addr-display" style="font-size:13px;color:var(--slate);margin-bottom:12px;padding:8px 12px;background:var(--light);border-radius:8px">${esc(addr)}</div>` : ''}
+      <div id="ho-diff-addr" class="hidden" style="margin-bottom:12px">
+        <div class="form-group"><label>Property Address</label><input type="text" id="i_ho_address" placeholder="Property street address"></div>
+        <div class="form-row-3">
+          <div class="form-group"><label>City</label><input type="text" id="i_ho_city"></div>
+          <div class="form-group"><label>State</label><input type="text" id="i_ho_state" maxlength="2"></div>
+          <div class="form-group"><label>ZIP</label><input type="text" id="i_ho_zip" maxlength="10"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Estimated Home Value</label><select id="i_ho_value">
+          <option value="">Select</option><option value="under150k">Under $150K</option><option value="150k-250k">$150K - $250K</option><option value="250k-400k">$250K - $400K</option><option value="400k-600k">$400K - $600K</option><option value="600k-1m">$600K - $1M</option><option value="over1m">$1M+</option>
+        </select></div>
+        <div class="form-group"><label>Year Built</label><input type="text" id="i_ho_yearbuilt" maxlength="4" placeholder="e.g. 1990"></div>
+      </div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('auto')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Auto Details</div>
+      <div id="vehicles-container"></div>
+      <button type="button" class="add-vehicle-btn" data-action="add-vehicle"><span>+</span> Add Another Vehicle</button>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('life')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Life Insurance</div>
+      <div class="form-row">
+        <div class="form-group"><label>Coverage Amount</label><select id="i_li_amount">
+          <option value="">Select amount</option>
+          <option value="25000">$25,000</option><option value="50000">$50,000</option><option value="100000">$100,000</option>
+          <option value="250000">$250,000</option><option value="500000">$500,000</option>
+          <option value="1000000">$1,000,000</option><option value="2000000">$2,000,000+</option>
+        </select></div>
+        <div class="form-group"><label>Type of Coverage</label><select id="i_li_type">
+          <option value="">Select</option><option value="term">Term (10/20/30 year)</option><option value="whole">Whole Life</option><option value="universal">Universal Life</option><option value="unsure">Not sure — need guidance</option>
+        </select></div>
+      </div>
+      <div class="form-group"><label>Tobacco Use</label><select id="i_li_tobacco">
+        <option value="">Select</option><option value="never">Never</option><option value="former">Former (quit 12+ months ago)</option><option value="current">Current user</option>
+      </select></div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('umbrella')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Umbrella</div>
+      <div class="form-row">
+        <div class="form-group"><label>Desired Coverage Limit</label><select id="i_umb_limit">
+          <option value="">Select limit</option>
+          <option value="1000000">$1,000,000</option><option value="2000000">$2,000,000</option><option value="3000000">$3,000,000</option><option value="5000000">$5,000,000</option>
+        </select></div>
+        <div class="form-group"><label>Number of Drivers in Household</label><input type="number" id="i_umb_drivers" min="1" max="20" placeholder="e.g. 2"></div>
+      </div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('flood')) {
+    const showPropFields = hasProperty.length <= 1;
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Flood</div>
+      ${showPropFields ? `<div class="form-row">
+        <div class="form-group"><label>Foundation Type</label><select id="i_fl_foundation">
+          <option value="">Select</option><option value="slab">Slab</option><option value="crawl">Crawlspace</option><option value="basement">Basement</option><option value="elevated">Elevated / Stilts</option>
+        </select></div>
+        <div class="form-group"><label>Previous flood claims?</label><select id="i_fl_claims">
+          <option value="">Select</option><option value="none">No prior claims</option><option value="1">1 claim</option><option value="2plus">2 or more claims</option>
+        </select></div>
+      </div>` : `<div class="form-group"><label>Previous flood claims?</label><select id="i_fl_claims">
+        <option value="">Select</option><option value="none">No prior claims</option><option value="1">1 claim</option><option value="2plus">2 or more claims</option>
+      </select></div>`}
+    </div>`;
+  }
+
+  if (selectedProducts.includes('renters')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Renters</div>
+      <div class="form-row">
+        <div class="form-group"><label>Personal Property Coverage</label><select id="i_rent_coverage">
+          <option value="">Select</option><option value="15000">$15,000</option><option value="20000">$20,000</option><option value="25000">$25,000</option><option value="30000">$30,000</option><option value="40000">$40,000</option><option value="50000">$50,000</option>
+        </select></div>
+        <div class="form-group"><label>Unit Type</label><select id="i_rent_type">
+          <option value="">Select</option><option value="apartment">Apartment</option><option value="house">House</option><option value="condo">Condo</option><option value="townhome">Townhome</option><option value="duplex">Duplex</option>
+        </select></div>
+      </div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('motorcycle')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Motorcycle</div>
+      <div class="form-row-3">
+        <div class="form-group"><label>Year</label><input type="text" id="i_mc_year" maxlength="4" placeholder="e.g. 2021"></div>
+        <div class="form-group"><label>Make</label><input type="text" id="i_mc_make" placeholder="e.g. Harley-Davidson"></div>
+        <div class="form-group"><label>Model</label><input type="text" id="i_mc_model" placeholder="e.g. Sportster"></div>
+      </div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('boat')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Boat</div>
+      <div class="form-row-3">
+        <div class="form-group"><label>Year</label><input type="text" id="i_boat_year" maxlength="4" placeholder="e.g. 2019"></div>
+        <div class="form-group"><label>Make</label><input type="text" id="i_boat_make" placeholder="e.g. Tracker"></div>
+        <div class="form-group"><label>Length (ft)</label><input type="text" id="i_boat_length" placeholder="e.g. 22"></div>
+      </div>
+      <div class="form-group"><label>Boat Type</label><select id="i_boat_type">
+        <option value="">Select</option><option value="pontoon">Pontoon</option><option value="bass">Bass boat</option><option value="bowrider">Bowrider</option><option value="cabin_cruiser">Cabin cruiser</option><option value="sailboat">Sailboat</option><option value="jet_ski">Jet ski / PWC</option><option value="other">Other</option>
+      </select></div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('rv')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">RV</div>
+      <div class="form-row-3">
+        <div class="form-group"><label>Year</label><input type="text" id="i_rv_year" maxlength="4" placeholder="e.g. 2020"></div>
+        <div class="form-group"><label>Make</label><input type="text" id="i_rv_make" placeholder="e.g. Jayco"></div>
+        <div class="form-group"><label>Model</label><input type="text" id="i_rv_model" placeholder="e.g. Jay Flight"></div>
+      </div>
+      <div class="form-group"><label>RV Type</label><select id="i_rv_type">
+        <option value="">Select</option><option value="class_a">Class A Motorhome</option><option value="class_b">Class B (Camper Van)</option><option value="class_c">Class C Motorhome</option><option value="travel_trailer">Travel Trailer</option><option value="fifth_wheel">Fifth Wheel</option><option value="popup">Pop-up Camper</option>
+      </select></div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('bop')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Business Owners Policy</div>
+      <div class="form-group"><label>Do you own or lease the building?</label><select id="i_bop_ownlease">
+        <option value="">Select</option><option value="own">Own</option><option value="lease">Lease</option><option value="home">Home-based</option>
+      </select></div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('dwelling_fire')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Dwelling Fire</div>
+      <div class="form-row">
+        <div class="form-group"><label>Property Use</label><select id="i_df_use">
+          <option value="">Select</option><option value="rental">Rental property</option><option value="vacant">Vacant</option><option value="renovation">Under renovation</option><option value="seasonal">Seasonal / Secondary home</option>
+        </select></div>
+        <div class="form-group"><label>Estimated Dwelling Value</label><select id="i_df_value">
+          <option value="">Select</option><option value="under100k">Under $100K</option><option value="100k-200k">$100K - $200K</option><option value="200k-300k">$200K - $300K</option><option value="300k-500k">$300K - $500K</option><option value="over500k">$500K+</option>
+        </select></div>
+      </div>
+      <div class="form-group"><label>Property Address (if different from mailing)</label><input type="text" id="i_df_address" placeholder="Leave blank if same as mailing address"></div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('cgl')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">General Liability</div>
+      <div class="form-group"><label>Desired Liability Limit</label><select id="i_cgl_limit">
+        <option value="">Select</option><option value="300k/600k">$300K / $600K</option><option value="500k/1m">$500K / $1M</option><option value="1m/2m">$1M / $2M</option><option value="2m/4m">$2M / $4M</option>
+      </select></div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('commercial_auto')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Commercial Auto</div>
+      <div class="form-row">
+        <div class="form-group"><label>Number of Vehicles</label><input type="number" id="i_ca_numveh" min="1" max="100" placeholder="e.g. 3"></div>
+        <div class="form-group"><label>Vehicle Types</label><select id="i_ca_vehtype">
+          <option value="">Select primary type</option><option value="cars">Cars / Sedans</option><option value="pickups">Pickups / SUVs</option><option value="vans">Vans / Cargo vans</option><option value="box_trucks">Box trucks</option><option value="semis">Semi-trucks / Tractor trailers</option><option value="mixed">Mixed fleet</option>
+        </select></div>
+      </div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('workers_comp')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Workers Comp</div>
+      <div class="form-group"><label>Annual Payroll</label><select id="i_wc_payroll">
+        <option value="">Select</option><option value="under100k">Under $100K</option><option value="100k-250k">$100K - $250K</option><option value="250k-500k">$250K - $500K</option><option value="500k-1m">$500K - $1M</option><option value="over1m">$1M+</option>
+      </select></div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('cyber')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Cyber Liability</div>
+      <p style="font-size:12px;color:var(--slate);margin:-8px 0 12px">Our agent will discuss coverage details on your call.</p>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('eo')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Professional Liability (E&O)</div>
+      <div class="form-group"><label>Profession / Specialty</label><input type="text" id="i_eo_profession" placeholder="e.g. CPA, Architect, IT Consultant"></div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('earthquake')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Earthquake</div>
+      <p style="font-size:12px;color:var(--slate);margin:-8px 0 12px">We'll assess your property's risk zone and coverage needs on our call.</p>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('farm_ranch')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Farm / Ranch</div>
+      <div class="form-row">
+        <div class="form-group"><label>Operation Type</label><select id="i_fr_type">
+          <option value="">Select</option><option value="crop">Crop farming</option><option value="livestock">Livestock</option><option value="mixed">Mixed operation</option><option value="hobby">Hobby farm</option><option value="equine">Horse / Equine</option>
+        </select></div>
+        <div class="form-group"><label>Total Acreage</label><input type="text" id="i_fr_acres" placeholder="e.g. 150"></div>
+      </div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('bonds')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Bonds</div>
+      <div class="form-row">
+        <div class="form-group"><label>Bond Type Needed</label><select id="i_bond_type">
+          <option value="">Select</option><option value="contractor">Contractor / Construction</option><option value="auto_dealer">Auto Dealer</option><option value="notary">Notary</option><option value="court">Court / Judicial</option><option value="license_permit">License / Permit</option><option value="fidelity">Fidelity / Employee</option><option value="other">Other</option>
+        </select></div>
+        <div class="form-group"><label>Bond Amount Required</label><input type="text" id="i_bond_amount" placeholder="e.g. $25,000"></div>
+      </div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('builders_risk')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Builders Risk</div>
+      <div class="form-row">
+        <div class="form-group"><label>Project Type</label><select id="i_br_projtype">
+          <option value="">Select</option><option value="new_construction">New Construction</option><option value="renovation">Renovation / Remodel</option><option value="addition">Addition</option><option value="commercial_build">Commercial Build-Out</option>
+        </select></div>
+        <div class="form-group"><label>Total Project Value</label><select id="i_br_value">
+          <option value="">Select</option><option value="under250k">Under $250K</option><option value="250k-500k">$250K - $500K</option><option value="500k-1m">$500K - $1M</option><option value="1m-5m">$1M - $5M</option><option value="over5m">$5M+</option>
+        </select></div>
+      </div>
+    </div>`;
+  }
+
+  if (selectedProducts.includes('other')) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Other Coverage</div>
+      <div class="form-group"><label>Please describe what coverage you need</label>
+        <textarea id="i_other_desc" rows="3" placeholder="Describe the coverage you're looking for..."></textarea>
+      </div>
+    </div>`;
+  }
+
+  // ── Business Information (after all product sections, only if commercial selected) ──
+  if (hasCommercial) {
+    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
+      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Business Information</div>
+      <div class="form-row">
+        <div class="form-group"><label>Business Name</label><input type="text" id="i_biz_name" placeholder="Your business name"></div>
+        <div class="form-group"><label>Type of Business / Operations</label><input type="text" id="i_biz_type" placeholder="e.g. Plumbing, Restaurant, Consulting"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Number of Employees</label><input type="number" id="i_biz_employees" min="0" max="9999" placeholder="e.g. 5"></div>
+        <div class="form-group"><label>Years in Business</label><select id="i_biz_years">
+          <option value="">Select</option><option value="new">Less than 1 year</option><option value="1-3">1–3 years</option><option value="3-5">3–5 years</option><option value="5-10">5–10 years</option><option value="10plus">10+ years</option>
+        </select></div>
+      </div>
+      <div class="form-group"><label>Annual Revenue</label><select id="i_biz_revenue">
+        <option value="">Select</option><option value="under100k">Under $100K</option><option value="100k-250k">$100K - $250K</option><option value="250k-500k">$250K - $500K</option><option value="500k-1m">$500K - $1M</option><option value="over1m">$1M+</option>
+      </select></div>
+    </div>`;
+  }
+
+  if (!html) html = '<p style="color:var(--slate);font-size:13px;padding:8px 0">No additional details needed for your selection. Click Review to continue.</p>';
+
+  // ── Save all dynamic field values before rebuilding ──
+  const savedValues = {};
+  container.querySelectorAll('input, select, textarea').forEach(el => {
+    if (el.id) savedValues[el.id] = el.value;
+  });
+  // Save vehicle data separately (no stable IDs)
+  const savedVehicles = [];
+  container.querySelectorAll('#vehicles-container .vehicle-block').forEach(b => {
+    savedVehicles.push({
+      year: b.querySelector('.vh-year')?.value || '',
+      make: b.querySelector('.vh-make')?.value || '',
+      model: b.querySelector('.vh-model')?.value || '',
+    });
+  });
+  // Save homeowners same-address toggle state
+  const savedHoSame = hoSameAddr;
+
+  container.innerHTML = html;
+
+  if (selectedProducts.includes('auto')) {
+    vehicleCount = 0;
+    // Restore saved vehicles or add one blank
+    if (savedVehicles.length) {
+      savedVehicles.forEach((vh, i) => {
+        addVehicle();
+        const block = document.querySelectorAll('#vehicles-container .vehicle-block')[i];
+        if (block) {
+          const yearEl = block.querySelector('.vh-year');
+          const makeEl = block.querySelector('.vh-make');
+          const modelEl = block.querySelector('.vh-model');
+          if (yearEl) yearEl.value = vh.year;
+          if (makeEl) makeEl.value = vh.make;
+          if (modelEl) modelEl.value = vh.model;
+        }
+      });
+    } else {
+      addVehicle();
+    }
+  }
+
+  // ── Restore all saved field values ──
+  Object.keys(savedValues).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = savedValues[id];
+  });
+
+  // Restore homeowners same-address toggle
+  if (selectedProducts.includes('homeowners') && !savedHoSame) {
+    setHomeSameAddr(false);
+  }
+
+  // Apply extracted fields from doc upload (if any)
+  if (typeof applyExtractedDetailFields === 'function') applyExtractedDetailFields();
+}
+
+let hoSameAddr = true;
+function setHomeSameAddr(same) {
+  hoSameAddr = same;
+  document.getElementById('ho-same-y').classList.toggle('active', same);
+  document.getElementById('ho-same-n').classList.toggle('active', !same);
+  const diffAddr = document.getElementById('ho-diff-addr');
+  const addrDisplay = document.getElementById('ho-addr-display');
+  if (diffAddr) diffAddr.classList.toggle('hidden', same);
+  if (addrDisplay) addrDisplay.classList.toggle('hidden', !same);
+}
+
+function addVehicle() {
+  vehicleCount++;
+  const n = vehicleCount;
+  const container = document.getElementById('vehicles-container');
+  const block = document.createElement('div');
+  block.className = 'vehicle-block';
+  block.id = `vehicle-${n}`;
+  block.innerHTML = `
+    ${n > 1 ? `<button type="button" class="remove-vehicle" data-action="remove-vehicle" data-vehicle="${n}" title="Remove vehicle">&times;</button>` : ''}
+    <div class="vehicle-label">Vehicle ${n}</div>
+    <div class="form-row-3">
+      <div class="form-group"><label>Year</label><input type="text" class="vh-year" maxlength="4" placeholder="e.g. 2022"></div>
+      <div class="form-group"><label>Make</label><input type="text" class="vh-make" placeholder="e.g. Toyota"></div>
+      <div class="form-group"><label>Model</label><input type="text" class="vh-model" placeholder="e.g. Camry"></div>
+    </div>`;
+  container.appendChild(block);
+  renumberVehicles();
+}
+
+function removeVehicle(n) {
+  const block = document.getElementById(`vehicle-${n}`);
+  if (block) block.remove();
+  renumberVehicles();
+}
+
+function renumberVehicles() {
+  document.querySelectorAll('#vehicles-container .vehicle-block').forEach((b, i) => {
+    const label = b.querySelector('.vehicle-label');
+    if (label) label.textContent = `Vehicle ${i + 1}`;
+  });
+}
+
+function getVehicles() {
+  const vehicles = [];
+  document.querySelectorAll('#vehicles-container .vehicle-block').forEach(b => {
+    const year = b.querySelector('.vh-year')?.value.trim() || '';
+    const make = b.querySelector('.vh-make')?.value.trim() || '';
+    const model = b.querySelector('.vh-model')?.value.trim() || '';
+    if (year || make || model) vehicles.push({ year, make, model });
+  });
+  return vehicles;
+}
+
+// ── All product labels ──────────────────────────────────────────────────────
+const PROD_LABELS = {
+  homeowners: 'Homeowners', auto: 'Auto', umbrella: 'Umbrella', flood: 'Flood',
+  life: 'Life', renters: 'Renters', bop: 'Business Owners Policy', motorcycle: 'Motorcycle',
+  dwelling_fire: 'Dwelling Fire', cgl: 'General Liability', commercial_auto: 'Commercial Auto',
+  workers_comp: 'Workers Comp', cyber: 'Cyber', eo: 'Professional Liability', boat: 'Boat', rv: 'RV',
+  earthquake: 'Earthquake', farm_ranch: 'Farm / Ranch', bonds: 'Bonds', builders_risk: 'Builders Risk', other: 'Other'
+};
+
+// ── Review ──────────────────────────────────────────────────────────────────
+function renderReview() {
+  const summary = document.getElementById('review-summary');
+  let html = '';
+  html += `<div class="summary-row"><span class="label">Name</span><span class="value">${esc(v('i_fname'))} ${esc(v('i_lname'))}</span></div>`;
+  if (v('i_email')) html += `<div class="summary-row"><span class="label">Email</span><span class="value">${esc(v('i_email'))}</span></div>`;
+  if (v('i_phone')) html += `<div class="summary-row"><span class="label">Phone</span><span class="value">${esc(v('i_phone'))}</span></div>`;
+  const addr = [v('i_address'), v('i_city'), v('i_state'), v('i_zip')].filter(Boolean).join(', ');
+  if (addr) html += `<div class="summary-row"><span class="label">Mailing Address</span><span class="value">${esc(addr)}</span></div>`;
+  const prods = selectedProducts.map(p => PROD_LABELS[p] || p).join(', ');
+  html += `<div class="summary-row"><span class="label">Coverage</span><span class="value">${esc(prods)}</span></div>`;
+
+  const vehicles = getVehicles();
+  if (vehicles.length) {
+    const vehDesc = vehicles.map((vh, i) => `${vh.year} ${vh.make} ${vh.model}`.trim() || `Vehicle ${i+1}`).join(', ');
+    html += `<div class="summary-row"><span class="label">Vehicles</span><span class="value">${esc(vehDesc)}</span></div>`;
+  }
+
+  // Helper to read form field values for review summary
+  const rv = id => { const e = document.getElementById(id); if (!e) return ''; const val = e.value.trim(); if (!val) return ''; if (e.tagName === 'SELECT') { const opt = e.options[e.selectedIndex]; return opt ? opt.textContent.trim() : val; } return val; };
+
+  if (selectedProducts.includes('homeowners')) {
+    if (hoSameAddr) {
+      html += `<div class="summary-row"><span class="label">Property Address</span><span class="value">Same as mailing</span></div>`;
+    } else {
+      const hoAddr = [rv('i_ho_address'), rv('i_ho_city'), rv('i_ho_state'), rv('i_ho_zip')].filter(Boolean).join(', ');
+      html += `<div class="summary-row"><span class="label">Property Address</span><span class="value">${hoAddr ? esc(hoAddr) : '<span style="color:#dc6803">Not provided</span>'}</span></div>`;
+    }
+    if (rv('i_ho_value')) html += `<div class="summary-row"><span class="label">Estimated Home Value</span><span class="value">${esc(rv('i_ho_value'))}</span></div>`;
+    if (rv('i_ho_yearbuilt')) html += `<div class="summary-row"><span class="label">Year Built</span><span class="value">${esc(rv('i_ho_yearbuilt'))}</span></div>`;
+  }
+
+  // Shared: Current insurance
+  if (rv('i_current_carrier')) html += `<div class="summary-row"><span class="label">Current Carrier</span><span class="value">${esc(rv('i_current_carrier'))}</span></div>`;
+  if (rv('i_policy_expiry')) html += `<div class="summary-row"><span class="label">Policy Expiration</span><span class="value">${esc(rv('i_policy_expiry'))}</span></div>`;
+
+  // Shared: DOB
+  if (rv('i_dob')) html += `<div class="summary-row"><span class="label">Date of Birth</span><span class="value">${esc(rv('i_dob'))}</span></div>`;
+
+  // Shared: Business info
+  const hasCommercialReview = selectedProducts.some(p => COMMERCIAL_PRODUCTS.includes(p));
+  if (hasCommercialReview) {
+    if (rv('i_biz_name')) html += `<div class="summary-row"><span class="label">Business Name</span><span class="value">${esc(rv('i_biz_name'))}</span></div>`;
+    if (rv('i_biz_type')) html += `<div class="summary-row"><span class="label">Business Type</span><span class="value">${esc(rv('i_biz_type'))}</span></div>`;
+    if (rv('i_biz_employees')) html += `<div class="summary-row"><span class="label">Employees</span><span class="value">${esc(rv('i_biz_employees'))}</span></div>`;
+    if (rv('i_biz_years')) html += `<div class="summary-row"><span class="label">Years in Business</span><span class="value">${esc(rv('i_biz_years'))}</span></div>`;
+    if (rv('i_biz_revenue')) html += `<div class="summary-row"><span class="label">Annual Revenue</span><span class="value">${esc(rv('i_biz_revenue'))}</span></div>`;
+  }
+
+  // Per-product unique fields only (streamlined)
+  const reviewFields = {
+    umbrella: [['Limit', 'i_umb_limit'], ['Drivers', 'i_umb_drivers']],
+    flood: [['Foundation', 'i_fl_foundation'], ['Prior Claims', 'i_fl_claims']],
+    renters: [['Personal Property', 'i_rent_coverage'], ['Unit Type', 'i_rent_type']],
+    life: [['Coverage Amount', 'i_li_amount'], ['Type', 'i_li_type'], ['Tobacco', 'i_li_tobacco']],
+    motorcycle: [['Motorcycle', () => [rv('i_mc_year'), rv('i_mc_make'), rv('i_mc_model')].filter(Boolean).join(' ')]],
+    boat: [['Boat', () => [rv('i_boat_year'), rv('i_boat_make'), rv('i_boat_length') ? rv('i_boat_length')+'ft' : ''].filter(Boolean).join(' ')], ['Type', 'i_boat_type']],
+    rv: [['RV', () => [rv('i_rv_year'), rv('i_rv_make'), rv('i_rv_model')].filter(Boolean).join(' ')], ['Type', 'i_rv_type']],
+    bop: [['Own/Lease', 'i_bop_ownlease']],
+    dwelling_fire: [['Property Use', 'i_df_use'], ['Value', 'i_df_value']],
+    cgl: [['Liability Limit', 'i_cgl_limit']],
+    commercial_auto: [['# Vehicles', 'i_ca_numveh'], ['Vehicle Types', 'i_ca_vehtype']],
+    workers_comp: [['Payroll', 'i_wc_payroll']],
+    eo: [['Profession', 'i_eo_profession']],
+    farm_ranch: [['Operation', 'i_fr_type'], ['Acreage', 'i_fr_acres']],
+    bonds: [['Bond Type', 'i_bond_type'], ['Amount', 'i_bond_amount']],
+    builders_risk: [['Project Type', 'i_br_projtype'], ['Project Value', 'i_br_value']],
+  };
+
+  selectedProducts.forEach(pid => {
+    const fields = reviewFields[pid];
+    if (!fields) return;
+    const entries = fields.map(([label, src]) => {
+      const val = typeof src === 'function' ? src() : rv(src);
+      return val ? [label, val] : null;
+    }).filter(Boolean);
+    if (entries.length) {
+      const prodLabel = PROD_LABELS[pid] || pid;
+      entries.forEach(([label, val]) => {
+        html += `<div class="summary-row"><span class="label">${esc(prodLabel)} — ${esc(label)}</span><span class="value">${esc(val)}</span></div>`;
+      });
+    }
+  });
+
+  if (v('i_notes')) html += `<div class="summary-row"><span class="label">Notes</span><span class="value">${esc(v('i_notes'))}</span></div>`;
+  if (v('i_other_desc')) html += `<div class="summary-row"><span class="label">Other Coverage</span><span class="value">${esc(v('i_other_desc'))}</span></div>`;
+  summary.innerHTML = html;
+}
+
+// ── Submit ───────────────────────────────────────────────────────────────────
+async function submitIntake() {
+  const btn = document.getElementById('submit-btn');
+  btn.textContent = 'Submitting...';
+  btn.disabled = true;
+  const err = document.getElementById('step5-error');
+
+  // If Turnstile token expired or never loaded, try to refresh it
+  if (!turnstileToken && window.turnstile) {
+    if (turnstileWidgetId != null) {
+      turnstile.reset(turnstileWidgetId);
+    } else {
+      initTurnstileOnReview();
+    }
+    // Wait briefly for the token callback
+    await new Promise(r => setTimeout(r, 2000));
+    if (!turnstileToken) {
+      err.textContent = 'Security verification is loading. Please wait a moment and try again.';
+      err.classList.remove('hidden');
+      btn.textContent = 'Submit Quote Request';
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  const formData = {};
+  const el = id => { const e = document.getElementById(id); return e ? e.value.trim() : ''; };
+
+  // Shared: Current insurance
+  if (el('i_current_carrier')) formData.current_carrier = el('i_current_carrier');
+  if (el('i_policy_expiry')) formData.policy_expiry = el('i_policy_expiry');
+
+  // Shared DOB field (used by life, auto, umbrella)
+  if (el('i_dob')) formData.app_dob = el('i_dob');
+  if (el('i_li_amount')) formData.li_faceamt = el('i_li_amount');
+  if (el('i_li_type')) formData.li_type = el('i_li_type');
+  if (el('i_li_tobacco')) formData.li_tobacco = el('i_li_tobacco');
+  if (el('i_other_desc')) formData.other_desc = el('i_other_desc');
+  formData.ho_same_as_mailing = hoSameAddr ? 'yes' : 'no';
+
+  // Homeowners: property address + value
+  if (el('i_ho_value')) formData.ho_value = el('i_ho_value');
+  if (el('i_ho_yearbuilt')) formData.ho_yearbuilt = el('i_ho_yearbuilt');
+  if (!hoSameAddr) {
+    if (el('i_ho_address')) formData.ho_address = el('i_ho_address');
+    if (el('i_ho_city')) formData.ho_city = el('i_ho_city');
+    if (el('i_ho_state')) formData.ho_state = el('i_ho_state');
+    if (el('i_ho_zip')) formData.ho_zip = el('i_ho_zip');
+  }
+
+  const vehicles = getVehicles();
+  vehicles.forEach((vh, i) => {
+    const n = i + 1;
+    if (vh.year) formData[`vh_${n}_year`] = vh.year;
+    if (vh.make) formData[`vh_${n}_make`] = vh.make;
+    if (vh.model) formData[`vh_${n}_model`] = vh.model;
+  });
+
+  // Shared business info fields
+  ['i_biz_name','i_biz_type','i_biz_revenue','i_biz_employees','i_biz_years'].forEach(id => {
+    const val = el(id); if (val) formData[id] = val;
+  });
+
+  // Collect all product-specific fields (streamlined set)
+  const fields = [
+    // Umbrella
+    'i_umb_limit','i_umb_drivers',
+    // Flood
+    'i_fl_foundation','i_fl_claims',
+    // Renters
+    'i_rent_coverage','i_rent_type',
+    // Motorcycle
+    'i_mc_year','i_mc_make','i_mc_model',
+    // Boat
+    'i_boat_year','i_boat_make','i_boat_length','i_boat_type',
+    // RV
+    'i_rv_year','i_rv_make','i_rv_model','i_rv_type',
+    // BOP
+    'i_bop_ownlease',
+    // Dwelling Fire
+    'i_df_use','i_df_value','i_df_address',
+    // General Liability
+    'i_cgl_limit',
+    // Commercial Auto
+    'i_ca_numveh','i_ca_vehtype',
+    // Workers Comp
+    'i_wc_payroll',
+    // E&O
+    'i_eo_profession',
+    // Farm/Ranch
+    'i_fr_type','i_fr_acres',
+    // Bonds
+    'i_bond_type','i_bond_amount',
+    // Builders Risk
+    'i_br_projtype','i_br_value',
+  ];
+  fields.forEach(id => { const val = el(id); if (val) formData[id] = val; });
+
+  // Add industry context if passed from an industry page
+  if (window._intakeIndustry) formData.industry = window._intakeIndustry;
+
+  // Add source tracking, UTM attribution, and agent assignment
+  const urlParams = new URLSearchParams(window.location.search);
+  const srcParam = urlParams.get('src');
+  if (srcParam) formData.lead_source = srcParam;
+  const agentParam = urlParams.get('agent');
+
+  // Capture UTM params (from URL or cookie)
+  const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
+  for (const key of utmKeys) {
+    const val = urlParams.get(key);
+    if (val) formData[key] = val;
+  }
+  // Also check cookie for returning visitors
+  const utmCookie = document.cookie.match(/twa_utm=([^;]+)/);
+  if (utmCookie) {
+    try {
+      const saved = JSON.parse(decodeURIComponent(utmCookie[1]));
+      for (const key of utmKeys) { if (saved[key] && !formData[key]) formData[key] = saved[key]; }
+    } catch(e) {}
+  }
+  formData.lead_referrer = document.referrer || 'direct';
+  formData.lead_page = window.location.pathname + window.location.search;
+
+  // Push enhanced conversion data for Google Ads + Meta
+  if (window.dataLayer) {
+    dataLayer.push({
+      event: 'enhanced_conversion',
+      enhanced_conversion_data: {
+        email: v('i_email').toLowerCase(),
+        phone_number: v('i_phone').replace(/\D/g, ''),
+        first_name: v('i_fname'),
+        last_name: v('i_lname'),
+        address: { postal_code: v('i_zip'), region: v('i_state'), country: 'US' },
+      },
+    });
+  }
+
+  try {
+    const res = await fetch(SAGE_API + '/api/intake', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId,
+        firstName: v('i_fname'),
+        lastName: v('i_lname'),
+        email: v('i_email'),
+        phone: v('i_phone'),
+        address: v('i_address'),
+        city: v('i_city'),
+        state: v('i_state'),
+        zip: v('i_zip'),
+        products: selectedProducts,
+        formData,
+        notes: v('i_notes'),
+        agent: agentParam || '',
+        _hp_company: document.getElementById('_hp_company')?.value || '',
+        cfToken: turnstileToken || '',
+      })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      clearInterval(pollTimer);
+      document.getElementById('step-5').classList.add('hidden');
+      document.getElementById('step-confirm').classList.remove('hidden');
+      document.getElementById('ref-number').textContent = 'Reference: #' + data.reference;
+      document.getElementById('progress-wrap').classList.add('hidden');
+      // Personalize confirmation if agent is assigned
+      if (window._assignedAgent) {
+        const a = window._assignedAgent;
+        const msg = document.getElementById('confirm-message');
+        if (msg) msg.textContent = 'Thank you for choosing The Way Agency. ' + a.name.split(' ')[0] + ' will review your information and reach out with your personalized quote within one business day.';
+      }
+      trackStepComplete(5);
+      trackSubmitSuccess(data.reference, selectedProducts.length);
+      // Google Ads conversion (configured in GTM)
+      if (window.dataLayer) {
+        dataLayer.push({
+          event: 'conversion',
+          conversion_type: 'quote_request',
+          conversion_products: selectedProducts.join(','),
+          conversion_reference: data.reference,
+          conversion_source: srcParam || 'intake',
+        });
+      }
+    } else {
+      err.textContent = data.error || 'Submission failed. Please try again.';
+      err.classList.remove('hidden');
+      trackValidationError(5, 'submit_failed_server');
+    }
+  } catch (e) {
+    err.textContent = 'Network error. Please check your connection and try again.';
+    trackValidationError(5, 'submit_failed_network');
+    err.classList.remove('hidden');
+  } finally {
+    btn.textContent = 'Submit Quote Request';
+    btn.disabled = false;
+    // Reset Turnstile for retry
+    if (window.turnstile && turnstileWidgetId != null) {
+      turnstile.reset(turnstileWidgetId);
+      turnstileToken = null;
+    }
+  }
+}
+
+// ── Phone auto-format ───────────────────────────────────────────────────────
+document.getElementById('i_phone').addEventListener('input', function() {
+  const digits = this.value.replace(/\D/g, '');
+  if (digits.length <= 3) this.value = digits;
+  else if (digits.length <= 6) this.value = `(${digits.slice(0,3)}) ${digits.slice(3)}`;
+  else this.value = `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6,10)}`;
+});
+
+// ── Mark filled fields ──────────────────────────────────────────────────────
+document.querySelectorAll('.form-group input').forEach(inp => {
+  inp.addEventListener('blur', function() { this.classList.toggle('filled', !!this.value.trim()); });
+});
+
+// ── Google Maps Address Autocomplete ────────────────────────────────────────
+(async function loadIntakeGoogleMaps() {
+  try {
+    const cfg = await fetch(SAGE_API + '/api/config').then(r => r.json());
+    if (!cfg.googleMapsKey) { console.warn('[Maps] No Google Maps key'); return; }
+    window._initIntakeAutocomplete = function() {
+      const input = document.getElementById('i_address');
+      if (!input) { console.warn('[Maps] No i_address input'); return; }
+      if (!window.google?.maps?.places) { console.warn('[Maps] Places library not loaded'); return; }
+      // Disable browser autocomplete so Google dropdown is visible
+      input.setAttribute('autocomplete', 'off');
+      try {
+        const ac = new google.maps.places.Autocomplete(input, {
+          types: ['address'], componentRestrictions: { country: 'us' }
+        });
+        ac.addListener('place_changed', () => {
+          const place = ac.getPlace();
+          if (!place.address_components) return;
+          let streetNum = '', route = '', city = '', state = '', zip = '';
+          for (const c of place.address_components) {
+            if (c.types.includes('street_number')) streetNum = c.long_name;
+            if (c.types.includes('route')) route = c.long_name;
+            if (c.types.includes('locality') || c.types.includes('sublocality_level_1')) city = c.long_name;
+            if (c.types.includes('administrative_area_level_1')) state = c.short_name;
+            if (c.types.includes('postal_code')) zip = c.long_name;
+          }
+          input.value = [streetNum, route].filter(Boolean).join(' ');
+          const fill = (id, val) => { const el = document.getElementById(id); if (el && val) { el.value = val; el.classList.add('filled'); } };
+          fill('i_city', city);
+          fill('i_state', state);
+          fill('i_zip', zip);
+          scheduleTrack();
+        });
+        console.log('[Maps] Autocomplete initialized');
+      } catch (err) { console.error('[Maps] Autocomplete init error:', err); }
+    };
+    const s = document.createElement('script');
+    s.src = `https://maps.googleapis.com/maps/api/js?key=${cfg.googleMapsKey}&libraries=places&callback=_initIntakeAutocomplete&v=weekly`;
+    s.async = true; s.defer = true;
+    s.onerror = () => console.error('[Maps] Failed to load Google Maps script');
+    document.head.appendChild(s);
+  } catch (e) { console.error('[Maps] Setup error:', e); }
+})();
+
+// ── Event delegation (replaces all inline onclick handlers) ──
+document.addEventListener('click', (e) => {
+  const el = e.target.closest('[data-action]');
+  if (!el) return;
+
+  const action = el.dataset.action;
+  switch (action) {
+    case 'toggle-prod': toggleProd(el); break;
+    case 'next-step': nextStep(parseInt(el.dataset.step)); break;
+    case 'prev-step': prevStep(parseInt(el.dataset.step)); break;
+    case 'toggle-other-products': toggleOtherProducts(); break;
+    case 'remove-vehicle': removeVehicle(parseInt(el.dataset.vehicle)); break;
+    case 'respond-offer': respondToOffer(el.dataset.choice); break;
+    case 'submit-intake': submitIntake(); break;
+    case 'add-vehicle': addVehicle(); break;
+    case 'toggle-bundle-pill': toggleBundlePill(el.dataset.pid); break;
+    case 'return-to-form': returnToForm(); break;
+    case 'set-ho-addr': setHomeSameAddr(el.dataset.same === 'true'); break;
+    case 'skip-upload': skipUpload(); break;
+    case 'upload-continue': proceedFromUpload(); break;
+  }
+});
+
+// ── Document Upload Logic ────────────────────────────────────────────────────
+let _docExtracted = null; // { fields, products, carrier } from parse
+let _uploadTurnstileId = null;
+let _uploadTurnstileToken = null;
+
+// Show upload step views
+function showUploadView(viewId) {
+  ['upload-choice-view', 'upload-dropzone-view', 'upload-progress-view', 'upload-success-view', 'upload-error-view'].forEach(id => {
+    document.getElementById(id).classList.toggle('hidden', id !== viewId);
+  });
+}
+
+// Init Turnstile early for upload step
+function initUploadTurnstile() {
+  if (!_turnstileSiteKey || _uploadTurnstileId != null) return;
+  if (!window.turnstile) return;
+  try {
+    _uploadTurnstileId = turnstile.render('#upload-turnstile-container', {
+      sitekey: _turnstileSiteKey,
+      callback: (token) => { _uploadTurnstileToken = token; },
+      'expired-callback': () => { _uploadTurnstileToken = null; },
+      'error-callback': () => { _uploadTurnstileToken = null; },
+      theme: 'light',
+      size: 'compact',
+    });
+  } catch (e) { console.warn('[Upload Turnstile] Render failed:', e); }
+}
+
+// Choice card: "Upload dec page" click
+document.getElementById('upload-choose-file').addEventListener('click', () => {
+  showUploadView('upload-dropzone-view');
+  initUploadTurnstile();
+});
+
+// Dropzone: "Choose File" button
+document.getElementById('upload-zone-btn').addEventListener('click', () => {
+  document.getElementById('doc-upload-input-zone').click();
+});
+
+// Dropzone: click anywhere in zone
+document.getElementById('upload-zone').addEventListener('click', (e) => {
+  if (e.target.id !== 'upload-zone-btn' && !e.target.closest('#upload-zone-btn')) {
+    document.getElementById('doc-upload-input-zone').click();
+  }
+});
+
+// Back button in dropzone view
+document.getElementById('upload-back-btn').addEventListener('click', () => {
+  showUploadView('upload-choice-view');
+});
+
+// Retry button
+document.getElementById('upload-retry-btn').addEventListener('click', () => {
+  showUploadView('upload-dropzone-view');
+});
+
+// Drag-and-drop
+const dropZone = document.getElementById('upload-zone');
+dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
+dropZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file) handleUploadFile(file);
+});
+
+// File input change (both inputs)
+document.getElementById('doc-upload-input').addEventListener('change', (e) => {
+  if (e.target.files[0]) handleUploadFile(e.target.files[0]);
+});
+document.getElementById('doc-upload-input-zone').addEventListener('change', (e) => {
+  if (e.target.files[0]) handleUploadFile(e.target.files[0]);
+});
+
+async function handleUploadFile(file) {
+  // Validate type
+  const allowed = ['application/pdf', 'image/jpeg', 'image/png'];
+  if (!allowed.includes(file.type)) {
+    showUploadError('Please upload a PDF, JPEG, or PNG file.');
+    return;
+  }
+  // Validate size
+  if (file.size > 10 * 1024 * 1024) {
+    showUploadError('File must be under 10MB. Try a lower resolution photo.');
+    return;
+  }
+
+  showUploadView('upload-progress-view');
+  trackIntake('intake_upload_started', { file_type: file.type, file_size: file.size });
+
+  // Slow progress message
+  const slowTimer = setTimeout(() => {
+    const detail = document.querySelector('#upload-progress-view .upload-detail');
+    if (detail) detail.textContent = 'Still working — complex documents take a bit longer';
+  }, 12000);
+
+  try {
+    // Convert to base64
+    const base64 = await fileToBase64(file);
+
+    // Wait for Turnstile if needed
+    if (!_uploadTurnstileToken && window.turnstile) {
+      initUploadTurnstile();
+      await new Promise(r => setTimeout(r, 2000));
+    }
+
+    const res = await fetch(SAGE_API + '/api/intake/parse-document', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        cfToken: _uploadTurnstileToken || '',
+        _hp_company: document.getElementById('_hp_company')?.value || '',
+        file: {
+          filename: file.name,
+          mime_type: file.type,
+          data: base64,
+        }
+      })
+    });
+
+    clearTimeout(slowTimer);
+    const data = await res.json();
+
+    if (!res.ok || !data.ok) {
+      showUploadError(data.error || 'Could not process document. Please try again.');
+      trackIntake('intake_upload_failed', { error_type: data.error || 'server_error' });
+      return;
+    }
+
+    // Store extracted data
+    _docExtracted = data;
+
+    // Apply contact fields immediately (step 1 is already filled, but override if doc has better data)
+    applyExtractedContactFields(data.fields);
+
+    // Show success
+    const prodNames = (data.products || []).map(p => PROD_LABELS[p] || p);
+    const fieldCount = (data.fields || []).filter(f => f.value && f.confidence !== 'low').length;
+    document.getElementById('upload-found-text').textContent =
+      prodNames.length ? `Found: ${prodNames.join(', ')}` : 'Document analyzed successfully';
+    document.getElementById('upload-found-detail').textContent =
+      `${fieldCount} field${fieldCount !== 1 ? 's' : ''} extracted` +
+      (data.carrier ? ` — current carrier: ${data.carrier}` : '') +
+      (data.pageWarning ? ` (${data.pageWarning})` : '');
+    showUploadView('upload-success-view');
+    trackIntake('intake_upload_success', { fields_count: fieldCount, products_count: prodNames.length, carrier: data.carrier || '' });
+
+    // Reset upload Turnstile so submission Turnstile can work
+    if (window.turnstile && _uploadTurnstileId != null) {
+      turnstile.remove(_uploadTurnstileId);
+      _uploadTurnstileId = null;
+      _uploadTurnstileToken = null;
+    }
+  } catch (e) {
+    clearTimeout(slowTimer);
+    showUploadError('Connection problem. Please check your internet and try again.');
+    trackIntake('intake_upload_failed', { error_type: 'network_error' });
+  }
+}
+
+function showUploadError(msg) {
+  document.getElementById('upload-error-msg').textContent = msg;
+  showUploadView('upload-error-view');
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]); // strip data:...;base64, prefix
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function skipUpload() {
+  _docExtracted = null;
+  trackIntake('intake_upload_skipped');
+  showStep(3); // go to Coverage
+}
+
+function proceedFromUpload() {
+  showStep(3); // go to Coverage (products will be auto-selected)
+}
+
+// ── Field Mapping & Prefill ─────────────────────────────────────────────────
+
+// Docparse field keys → intake form element IDs (direct 1:1 mappings)
+const DOC_FIELD_MAP = {
+  // Applicant
+  app_fname: 'i_fname', app_lname: 'i_lname',
+  app_email: 'i_email', app_phone: 'i_phone',
+  app_addr: 'i_address', app_city: 'i_city',
+  app_state: 'i_state', app_zip: 'i_zip',
+  app_carrier: 'i_current_carrier',
+  // Homeowners
+  ho_year: 'i_ho_yearbuilt',
+  ho_riskaddr: 'i_ho_address', ho_riskcity: 'i_ho_city',
+  ho_riskstate: 'i_ho_state', ho_riskzip: 'i_ho_zip',
+  // Umbrella
+  umb_drivers: 'i_umb_drivers',
+  // Motorcycle
+  mc_year: 'i_mc_year', mc_make: 'i_mc_make', mc_model: 'i_mc_model',
+  // Boat
+  boat_year: 'i_boat_year', boat_make: 'i_boat_make', boat_length: 'i_boat_length',
+  // RV
+  rv_year: 'i_rv_year', rv_make: 'i_rv_make', rv_model: 'i_rv_model',
+  // Commercial
+  bop_bizname: 'i_biz_name', bop_desc: 'i_biz_type',
+  bop_emps: 'i_biz_employees',
+  cgl_bizname: 'i_biz_name',
+  // E&O
+  eo_profession: 'i_eo_profession',
+  // Farm/Ranch
+  fr_acres: 'i_fr_acres',
+  // Bonds
+  bond_amount: 'i_bond_amount',
+  // Dwelling Fire
+  df_address: 'i_df_address',
+  // Drivers license (auto)
+  dr_1_licnum: 'i_dr_license',
+};
+
+// Dollar amount → select range bucket mappings
+function bucketDollarToSelect(amount, selectId) {
+  const num = parseInt(String(amount).replace(/\D/g, ''));
+  if (!num || isNaN(num)) return;
+  const el = document.getElementById(selectId);
+  if (!el) return;
+
+  // Try each option — pick the first range that contains the value
+  const opts = Array.from(el.options).filter(o => o.value);
+  for (const opt of opts) {
+    const val = opt.value;
+    // Match patterns like "150k-250k", "under150k", "over1m"
+    if (val.startsWith('under')) {
+      const cap = parseRangeNum(val.replace('under', ''));
+      if (num < cap) { el.value = val; return; }
+    } else if (val.startsWith('over')) {
+      const floor = parseRangeNum(val.replace('over', ''));
+      if (num >= floor) { el.value = val; return; }
+    } else if (val.includes('-')) {
+      const [lo, hi] = val.split('-').map(parseRangeNum);
+      if (num >= lo && num <= hi) { el.value = val; return; }
+    } else {
+      // Exact numeric option (e.g., life amount selects like "250000")
+      const optNum = parseInt(val);
+      if (!isNaN(optNum)) {
+        // Find closest
+        const next = opts[opts.indexOf(opt) + 1];
+        const nextNum = next ? parseInt(next.value) : Infinity;
+        if (num >= optNum && (isNaN(nextNum) || num < nextNum)) { el.value = val; return; }
+      }
+    }
+  }
+}
+
+function parseRangeNum(s) {
+  s = s.toLowerCase().replace(/[^0-9km.]/g, '');
+  if (s.endsWith('m')) return parseFloat(s) * 1000000;
+  if (s.endsWith('k')) return parseFloat(s) * 1000;
+  return parseInt(s) || 0;
+}
+
+// Apply extracted contact fields to step 1 (only if field is empty or doc has data)
+function applyExtractedContactFields(fields) {
+  if (!fields || !fields.length) return;
+  const contactFields = ['app_fname', 'app_lname', 'app_email', 'app_phone', 'app_addr', 'app_city', 'app_state', 'app_zip'];
+  for (const field of fields) {
+    if (!field.value || field.confidence === 'low') continue;
+    if (!contactFields.includes(field.key)) continue;
+    const targetId = DOC_FIELD_MAP[field.key];
+    if (!targetId) continue;
+    const el = document.getElementById(targetId);
+    if (!el) continue;
+    // Only fill if empty (don't overwrite user's typed data from step 1)
+    if (!el.value.trim()) {
+      el.value = field.value;
+      el.classList.add('filled');
+    }
+  }
+}
+
+// Auto-select products on step 3 (Coverage) from doc extraction
+function applyExtractedProducts() {
+  if (!_docExtracted || !_docExtracted.products || !_docExtracted.products.length) return;
+  // Only apply once
+  if (_docExtracted._productsApplied) return;
+  _docExtracted._productsApplied = true;
+
+  for (const pid of _docExtracted.products) {
+    if (!selectedProducts.includes(pid)) {
+      selectedProducts.push(pid);
+      // Toggle the UI button
+      const btn = document.querySelector(`.product-opt[data-pid="${pid}"]`);
+      if (btn) btn.classList.add('selected');
+    }
+  }
+  // Update bundle UI
+  if (typeof syncBundlePills === 'function') syncBundlePills();
+}
+
+// Apply extracted product-specific fields to step 4 (Details)
+// Called from renderProductQuestions after HTML is built
+function applyExtractedDetailFields() {
+  if (!_docExtracted || !_docExtracted.fields) return;
+  const fields = _docExtracted.fields;
+
+  for (const field of fields) {
+    if (!field.value || field.confidence === 'low') continue;
+
+    // Handle DOB format conversion (YYYY-MM-DD → MM/DD/YYYY)
+    if (field.key === 'app_dob') {
+      const match = field.value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (match) {
+        const el = document.getElementById('i_dob');
+        if (el && !el.value) { el.value = `${match[2]}/${match[3]}/${match[1]}`; el.classList.add('filled'); }
+      }
+      continue;
+    }
+
+    // Handle carrier (set current carrier)
+    if (field.key === 'app_carrier' || field.key === 'ho_carrier' || field.key === 'au_carrier') {
+      const el = document.getElementById('i_current_carrier');
+      if (el && !el.value) { el.value = field.value; el.classList.add('filled'); }
+      continue;
+    }
+
+    // Handle dollar-to-range selects
+    if (field.key === 'ho_dwellamt') { bucketDollarToSelect(field.value, 'i_ho_value'); continue; }
+    if (field.key === 'li_amt') { bucketDollarToSelect(field.value, 'i_li_amount'); continue; }
+    if (field.key === 'umb_limit') { bucketDollarToSelect(field.value, 'i_umb_limit'); continue; }
+    if (field.key === 'cgl_occ') { bucketDollarToSelect(field.value, 'i_cgl_limit'); continue; }
+    if (field.key === 'wc_payroll') { bucketDollarToSelect(field.value, 'i_wc_payroll'); continue; }
+    if (field.key === 'bop_rev' || field.key === 'cgl_rev') { bucketDollarToSelect(field.value, 'i_biz_revenue'); continue; }
+
+    // Handle vehicle fields (vh_1_year, vh_1_make, vh_1_model, vh_2_*, etc.)
+    const vhMatch = field.key.match(/^vh_(\d+)_(year|make|model)$/);
+    if (vhMatch) {
+      const vhIdx = parseInt(vhMatch[1]) - 1; // 0-indexed
+      const vhField = vhMatch[2];
+      const blocks = document.querySelectorAll('#vehicles-container .vehicle-block');
+      // Add vehicle blocks if needed
+      while (blocks.length <= vhIdx && typeof addVehicle === 'function') addVehicle();
+      const block = document.querySelectorAll('#vehicles-container .vehicle-block')[vhIdx];
+      if (block) {
+        const input = block.querySelector(`.vh-${vhField}`);
+        if (input && !input.value) { input.value = field.value; }
+      }
+      continue;
+    }
+
+    // Handle tobacco (map values)
+    if (field.key === 'li_tobacco') {
+      const el = document.getElementById('i_li_tobacco');
+      if (el && !el.value) {
+        const val = field.value.toLowerCase();
+        if (val.includes('never') || val === 'no') el.value = 'never';
+        else if (val.includes('former') || val.includes('quit')) el.value = 'former';
+        else if (val.includes('current') || val === 'yes') el.value = 'current';
+      }
+      continue;
+    }
+
+    // Direct field mapping
+    const targetId = DOC_FIELD_MAP[field.key];
+    if (targetId) {
+      const el = document.getElementById(targetId);
+      if (el && !el.value.trim()) {
+        el.value = field.value;
+        el.classList.add('filled');
+      }
+    }
+  }
+}
+
+</script>
+</body>
+</html>

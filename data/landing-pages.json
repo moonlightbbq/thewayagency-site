@@ -1,0 +1,180 @@
+{
+  "cities": [
+    {"city": "Owensboro", "state": "KY", "slug": "owensboro-ky", "county": "Daviess County", "pop": "60,000+", "context": "As our home base, we know Owensboro inside and out. From flood risks along the Ohio River to hail damage from spring storms, we understand the specific coverage needs of Daviess County residents and businesses."},
+    {"city": "Henderson", "state": "KY", "slug": "henderson-ky", "county": "Henderson County", "pop": "28,000+", "context": "Henderson sits on the Ohio River and faces similar weather risks as Owensboro. We serve homeowners, farmers, and small businesses throughout Henderson County with coverage tailored to the area."},
+    {"city": "Louisville", "state": "KY", "slug": "louisville-ky", "county": "Jefferson County", "pop": "620,000+", "context": "Louisville is Kentucky's largest city with a diverse insurance market. From Derby-area homes to River Road businesses, we help Louisville residents find coverage from top-rated carriers at competitive rates."},
+    {"city": "Lexington", "state": "KY", "slug": "lexington-ky", "county": "Fayette County", "pop": "320,000+", "context": "Lexington's mix of horse farms, university properties, and growing suburban neighborhoods creates unique insurance needs. We serve Fayette County with personal and commercial coverage."},
+    {"city": "Bowling Green", "state": "KY", "slug": "bowling-green-ky", "county": "Warren County", "pop": "80,000+", "context": "Bowling Green saw firsthand the impact of severe weather with the 2021 tornado. We help Warren County residents and businesses build coverage that holds up when it matters most."},
+    {"city": "Elizabethtown", "state": "KY", "slug": "elizabethtown-ky", "county": "Hardin County", "pop": "32,000+", "context": "Elizabethtown's proximity to Fort Knox and growing commercial corridor creates steady demand for both personal and commercial insurance. We serve Hardin County families and businesses."},
+    {"city": "Mt. Washington", "state": "KY", "slug": "mt-washington-ky", "county": "Bullitt County", "pop": "18,000+", "context": "Mt. Washington is one of the fastest-growing communities in Bullitt County and a priority service area for The Way Agency. Located along the I-65 corridor between Louisville and Elizabethtown, Mt. Washington offers a mix of established neighborhoods and new residential developments that attract young families, first-time homebuyers, and professionals who commute to Louisville, Fort Knox, and the surrounding region.\n\nThe local housing market includes everything from century-old farmhouses along Bardstown Road to new construction in planned communities off KY-44 and KY-480. This range means homeowners insurance needs vary significantly. Newer homes may qualify for lower premiums and modern building code credits, while older properties may need additional coverage for plumbing, electrical, and roof age. Properties near Floyds Fork and low-lying areas should also consider flood insurance, as standard homeowners policies do not cover flood damage.\n\nFor auto insurance, the I-65 commute is a defining factor. Most Mt. Washington residents drive to Louisville or Elizabethtown daily, and highway exposure increases the risk of serious accidents. We recommend liability limits above the Kentucky minimum and uninsured motorist coverage, given the state's high rate of uninsured drivers.\n\nMt. Washington's business community has grown alongside its residential base. Contractors, trades, service companies, and retail businesses along US-31E all need commercial insurance that meets Kentucky licensing and bonding requirements. We represent specialty commercial carriers that understand the needs of growing Bullitt County businesses.\n\nFor Medicare and life insurance, Mt. Washington residents benefit from proximity to Baptist Health, UofL Health, and Louisville's specialist network. We help seniors and families navigate plan options with a focus on keeping preferred providers in-network while managing costs.\n\nWe serve Mt. Washington with the same personal, independent approach we have brought to Owensboro since 1998. Every client gets access to dozens of carriers, a licensed agent who knows the local market, and ongoing service that does not end when the policy is signed."},
+    {"city": "Frankfort", "state": "KY", "slug": "frankfort-ky", "county": "Franklin County", "pop": "28,000+", "context": "As Kentucky's capital, Frankfort has a mix of state employees, small businesses, and historic properties with specialized insurance needs. We serve Franklin County."},
+    {"city": "Evansville", "state": "IN", "slug": "evansville-in", "county": "Vanderburgh County", "pop": "118,000+", "context": "Just across the river from Owensboro, Evansville is a natural extension of our service area. We're licensed in Indiana and serve Vanderburgh County with the same carriers and service."},
+    {"city": "Indianapolis", "state": "IN", "slug": "indianapolis-in", "county": "Marion County", "pop": "880,000+", "context": "Indiana's capital and largest city. We serve Indianapolis residents and businesses with personal and commercial insurance from top-rated carriers."},
+    {"city": "Fort Wayne", "state": "IN", "slug": "fort-wayne-in", "county": "Allen County", "pop": "260,000+", "context": "Fort Wayne's manufacturing base and growing residential areas create diverse insurance needs. We serve Allen County with competitive coverage options."},
+    {"city": "Carmel", "state": "IN", "slug": "carmel-in", "county": "Hamilton County", "pop": "100,000+", "context": "Carmel's upscale residential properties and thriving business community need coverage that matches their value. We help Hamilton County families protect their assets."},
+    {"city": "Fishers", "state": "IN", "slug": "fishers-in", "county": "Hamilton County", "pop": "100,000+", "context": "One of Indiana's fastest-growing cities. We help Fishers families and new businesses find the right insurance as the community continues to expand."},
+    {"city": "Nashville", "state": "TN", "slug": "nashville-tn", "county": "Davidson County", "pop": "690,000+", "context": "Nashville's booming growth means more homes, more businesses, and more insurance needs. We serve Davidson County with personal and commercial coverage."},
+    {"city": "Memphis", "state": "TN", "slug": "memphis-tn", "county": "Shelby County", "pop": "630,000+", "context": "Memphis sits in the New Madrid Seismic Zone like western Kentucky. We help Shelby County residents understand earthquake risk and build comprehensive coverage."},
+    {"city": "Knoxville", "state": "TN", "slug": "knoxville-tn", "county": "Knox County", "pop": "190,000+", "context": "Knoxville's mix of university properties, mountain homes, and commercial districts creates varied insurance needs. We serve Knox County."},
+    {"city": "Chattanooga", "state": "TN", "slug": "chattanooga-tn", "county": "Hamilton County", "pop": "180,000+", "context": "Chattanooga's revitalized downtown and surrounding suburbs need coverage from home insurance to commercial liability. We serve Hamilton County, TN."},
+    {"city": "Clarksville", "state": "TN", "slug": "clarksville-tn", "county": "Montgomery County", "pop": "170,000+", "context": "Fort Campbell's presence makes Clarksville one of Tennessee's fastest-growing cities. We help military families and local businesses find the right coverage."}
+  ],
+  "industries": [
+    {"name": "HVAC Contractors", "slug": "hvac-contractors", "icon": "thermometer", "description": "HVAC contractors face unique risks: work in occupied buildings, refrigerant handling, equipment breakdowns, and employee injuries on ladders and rooftops.", "typical_coverage": ["General liability", "Commercial auto", "Workers compensation", "Tools and equipment coverage", "Professional liability (for design work)", "Completed operations coverage"], "ky_notes": "Kentucky requires workers comp for HVAC companies with 1+ employees. Most general contractors require subcontractors to carry at least $1M in GL coverage."},
+    {"name": "Electrical Contractors", "slug": "electrical-contractors", "icon": "zap", "description": "Electrical work carries inherent fire and injury risk. Proper insurance protects against property damage claims, worker injuries, and completed operations liability.", "typical_coverage": ["General liability with completed operations", "Workers compensation", "Commercial auto", "Tools and equipment", "Umbrella liability", "Professional liability for design-build"], "ky_notes": "Kentucky electrical contractors must carry workers comp. Most project owners and GCs require $1M/$2M GL limits and additional insured status."},
+    {"name": "Plumbing Contractors", "slug": "plumbing-contractors", "icon": "droplets", "description": "Plumbing work creates water damage exposure that can far exceed the cost of the job itself. One burst pipe during a remodel can generate a six-figure claim.", "typical_coverage": ["General liability", "Workers compensation", "Commercial auto", "Tools and equipment", "Completed operations", "Water damage liability"], "ky_notes": "Plumbing contractors in Kentucky need GL coverage that specifically includes water damage and completed operations. Many carriers restrict or exclude plumbing  -  we know which ones don't."},
+    {"name": "Roofing Contractors", "slug": "roofing-contractors", "icon": "home", "description": "Roofing is one of the highest-risk trades in insurance due to fall hazards, property damage exposure, and storm-chasing competition that drives up claims.", "typical_coverage": ["General liability", "Workers compensation (high rates)", "Commercial auto", "Tools and equipment", "Umbrella liability", "Surety bonds for larger projects"], "ky_notes": "Workers comp rates for roofing in Kentucky are among the highest of any trade. We shop across specialty carriers to find competitive rates. Most roofing companies need $1M/$2M GL minimums."},
+    {"name": "General Contractors", "slug": "general-contractors", "icon": "hard-hat", "description": "General contractors coordinate subcontractors, manage project schedules, and bear ultimate responsibility for job site safety and completed work. Your insurance program needs to reflect that.", "typical_coverage": ["General liability", "Workers compensation", "Commercial auto", "Builders risk", "Umbrella liability", "Surety bonds (bid, performance, payment)", "Subcontractor default insurance"], "ky_notes": "Kentucky GCs bidding on public projects need surety bonds. Most commercial projects require $1M/$2M GL, $1M auto, and statutory workers comp."},
+    {"name": "Restaurants & Food Service", "slug": "restaurants", "icon": "utensils", "description": "Restaurants face a concentrated set of risks: slip-and-fall injuries, foodborne illness claims, liquor liability, employee injuries in kitchens, and property damage from grease fires.", "typical_coverage": ["General liability", "Commercial property", "Workers compensation", "Liquor liability", "Food contamination/spoilage", "Business income coverage", "Hired and non-owned auto"], "ky_notes": "Kentucky restaurants serving alcohol need separate liquor liability coverage. Food trucks need commercial auto plus GL. Workers comp is required."},
+    {"name": "Professional Services", "slug": "professional-services", "icon": "briefcase", "description": "Consultants, accountants, IT firms, real estate agents, and other professional service providers face errors and omissions exposure  -  a client claims your advice or work product caused them financial harm.", "typical_coverage": ["Professional liability (E&O)", "General liability", "Cyber liability", "Workers compensation", "Business owner's policy (BOP)", "Directors and officers (for firms)"], "ky_notes": "Many professional licenses in Kentucky require E&O coverage. Client contracts frequently require $1M professional liability limits."},
+    {"name": "Manufacturing", "slug": "manufacturing", "icon": "factory", "description": "Manufacturers face product liability, equipment breakdown, worker injury, and supply chain risks that general business policies don't fully address.", "typical_coverage": ["Product liability", "General liability", "Commercial property", "Equipment breakdown", "Workers compensation", "Business income and extra expense", "Inland marine (goods in transit)"], "ky_notes": "Kentucky manufacturers with distribution outside the state need product liability coverage that matches their distribution footprint. Workers comp rates vary significantly by manufacturing type."}
+  ],
+  "city_products": [
+    {
+      "city_slug": "owensboro-ky",
+      "city": "Owensboro",
+      "state": "KY",
+      "county": "Daviess County",
+      "products": [
+        {
+          "slug": "home-insurance",
+          "product_id": "home",
+          "line": "personal",
+          "name": "Home Insurance",
+          "h1": "Home Insurance for Owensboro Families",
+          "intro": "Owensboro sits along the Ohio River, where spring flooding, severe thunderstorms, and hail are real risks for homeowners. Standard homeowners insurance covers wind and hail damage, but flood damage requires a separate policy, and many Daviess County homeowners don't realize this until it's too late. Whether you own a historic home near downtown, a newer build in the Gateway Commons area, or a property along the river, the right home insurance starts with understanding what's actually covered and what isn't. As an independent agency based in Owensboro since 1998, we compare rates from dozens of carriers to find coverage that fits your home and your budget.",
+          "faqs": [
+            {"q": "Does home insurance cover flooding in Owensboro?", "a": "No. Standard homeowners insurance does not cover flood damage. Owensboro properties near the Ohio River or in FEMA-designated flood zones need a separate flood insurance policy. We can help you determine your flood risk and find the right coverage."},
+            {"q": "How much does home insurance cost in Owensboro, KY?", "a": "Most Owensboro homeowners pay between $1,200 and $2,400 per year depending on the home's age, value, construction, and distance from fire services. We shop multiple carriers to find the best rate for your specific situation."},
+            {"q": "What should Owensboro homeowners know about hail damage claims?", "a": "Western Kentucky sees frequent spring hail storms. Make sure your policy covers full roof replacement, not just depreciated value. We recommend replacement cost coverage and can explain the difference."}
+          ]
+        },
+        {
+          "slug": "auto-insurance",
+          "product_id": "auto",
+          "line": "personal",
+          "name": "Auto Insurance",
+          "h1": "Auto Insurance for Owensboro Drivers",
+          "intro": "Kentucky is a choice no-fault state, which means Owensboro drivers need at least $10,000 in Personal Injury Protection (PIP) plus minimum liability of 25/50/25. But minimums often aren't enough, especially if you commute on US-60, the Audubon Parkway, or cross the Ohio River into Indiana regularly. Uninsured motorist coverage is critical here because Kentucky has one of the highest uninsured driver rates in the country. We represent dozens of auto insurance carriers and can compare rates side by side to find the best price for your driving profile, vehicle, and coverage needs.",
+          "faqs": [
+            {"q": "What auto insurance is required in Owensboro, KY?", "a": "Kentucky requires minimum liability of 25/50/25 plus $10,000 PIP (Personal Injury Protection). However, we recommend higher limits, especially if you commute across the river or drive on highways regularly."},
+            {"q": "How much does auto insurance cost in Owensboro?", "a": "Rates vary based on your driving record, vehicle, and coverage levels. Most Owensboro drivers pay between $100 and $250 per month. We compare rates from dozens of carriers to find the best option."},
+            {"q": "Do I need uninsured motorist coverage in Kentucky?", "a": "We strongly recommend it. Kentucky has a high uninsured driver rate. Uninsured/underinsured motorist coverage protects you if you're hit by someone without adequate insurance."}
+          ]
+        },
+        {
+          "slug": "commercial-insurance",
+          "product_id": "cgl",
+          "line": "commercial",
+          "name": "Commercial Insurance",
+          "h1": "Business Insurance for Owensboro Companies",
+          "intro": "Owensboro's economy runs on small business, from contractors and manufacturers along Industrial Drive to restaurants and retail in the Frederica Street corridor. Whether you're a general contractor working job sites across Daviess County, a restaurant owner, or a professional services firm, the right commercial insurance protects your business from the risks specific to your industry and location. General liability, commercial property, workers compensation, and commercial auto are the foundation, but the coverage details matter more than the price tag. We work with specialty carriers that understand Kentucky contractor requirements, local building codes, and the risks that Owensboro businesses face every day. We also work with specialty markets for harder-to-place risks, including new ventures, businesses with prior claims, and operations that larger carriers decline to write.",
+          "faqs": [
+            {"q": "What insurance does a small business in Owensboro need?", "a": "At minimum, most Owensboro businesses need general liability, commercial property, and workers compensation (required for businesses with one or more employees in Kentucky). Contractors also need bonds and commercial auto."},
+            {"q": "How much does commercial insurance cost in Owensboro?", "a": "Costs vary significantly by industry, revenue, and employee count. A small contractor might pay $2,000-5,000 per year for general liability, while a restaurant could pay $3,000-8,000. We get quotes from multiple carriers to find the best rate."},
+            {"q": "Do Owensboro contractors need a surety bond?", "a": "Many do. Kentucky requires surety bonds for certain licensed trades and public projects in Daviess County. We write bonds through multiple surety markets and can usually get approval within a few days."}
+          ]
+        },
+        {
+          "slug": "medicare",
+          "product_id": "medicare",
+          "line": "life_health",
+          "name": "Medicare",
+          "h1": "Medicare Insurance in Owensboro, KY",
+          "intro": "Navigating Medicare in Owensboro means understanding which plans give you access to Owensboro Health Regional Hospital, local specialists, and the network of providers in Daviess County. Original Medicare (Parts A and B) covers hospital and medical services, but most people need a Medicare Supplement (Medigap) or Medicare Advantage plan to fill the gaps. The right choice depends on your health needs, the providers you want to keep, and your budget. We help Owensboro seniors compare plans from multiple carriers so you can choose with confidence, not confusion. During enrollment season, we walk you through the details side by side, comparing premiums, copays, drug formularies, and network breadth. Whether you are turning 65, aging off a group plan, or looking to switch during Open Enrollment, we make the process straightforward.",
+          "faqs": [
+            {"q": "When can I enroll in Medicare in Owensboro?", "a": "Your Initial Enrollment Period begins 3 months before you turn 65 and ends 3 months after. If you miss it, you may face late enrollment penalties. Open Enrollment runs from October 15 to December 7 each year."},
+            {"q": "Does Medicare cover Owensboro Health doctors?", "a": "Original Medicare is accepted by most providers. Medicare Advantage plans have networks, so you'll want to verify that Owensboro Health and your preferred doctors are included before enrolling."},
+            {"q": "What is the difference between Medicare Supplement and Medicare Advantage in Owensboro?", "a": "Medicare Supplement (Medigap) lets you see any doctor who accepts Medicare, with no network restrictions. Medicare Advantage plans have networks but often include extra benefits like dental and vision. The best choice depends on your health needs and which Owensboro providers you want to keep."}
+          ]
+        },
+        {
+          "slug": "umbrella-insurance",
+          "product_id": "umbrella",
+          "line": "personal",
+          "name": "Umbrella Insurance",
+          "h1": "Umbrella Insurance in Owensboro, KY",
+          "intro": "An umbrella policy adds an extra layer of liability protection above your home and auto insurance limits. In Owensboro, where property values and medical costs continue to rise, a single serious accident or lawsuit can exceed your standard policy limits quickly. Umbrella insurance typically provides $1 million or more in additional coverage for around $200 to $400 per year, making it one of the most affordable ways to protect your family's financial future. If you own a home, have teenage drivers, a pool, or a boat on the Ohio River, umbrella coverage is worth a serious look. It also extends coverage beyond your home and auto to incidents that happen anywhere, including rental properties, vacation travel, and volunteer activities. For Owensboro families with growing assets or those who are active in the community, umbrella insurance is one of the simplest ways to close the liability gap.",
+          "faqs": [
+            {"q": "How much does umbrella insurance cost in Owensboro?", "a": "Most Owensboro families pay $200 to $400 per year for $1 million in umbrella coverage. The exact cost depends on your home value, number of vehicles, and risk profile."},
+            {"q": "Who needs umbrella insurance in Kentucky?", "a": "Anyone with assets to protect. If you own a home, have a pool, own watercraft, or have teenage drivers, umbrella insurance is especially important. A lawsuit that exceeds your auto or home policy limits could put your savings at risk."},
+            {"q": "Does umbrella insurance cover rental properties in Owensboro?", "a": "Yes. If you own a rental property, your umbrella policy extends liability coverage beyond your landlord insurance limits. This is especially important for Owensboro property owners with tenants, as a single lawsuit can exceed a standard landlord policy."}
+          ]
+        }
+      ]
+    },
+    {
+      "city_slug": "mt-washington-ky",
+      "city": "Mt. Washington",
+      "state": "KY",
+      "county": "Bullitt County",
+      "products": [
+        {
+          "slug": "home-insurance",
+          "product_id": "home",
+          "line": "personal",
+          "name": "Home Insurance",
+          "h1": "Home Insurance for Mt. Washington Families",
+          "intro": "Mt. Washington is one of the fastest-growing communities in Bullitt County, with new subdivisions and established neighborhoods that each come with their own insurance considerations. New construction homes may qualify for lower premiums, but older homes near Floyds Fork or in low-lying areas may need additional flood coverage. Whether you're in Cedar Grove, Heritage Hill, or one of the newer developments off KY-44, understanding what your homeowners policy covers and what it doesn't is the first step. We compare rates from dozens of carriers to find coverage that matches your home, your neighborhood, and your budget.",
+          "faqs": [
+            {"q": "How much does home insurance cost in Mt. Washington, KY?", "a": "Most Mt. Washington homeowners pay between $1,100 and $2,200 per year. Newer construction homes often qualify for lower rates. We compare multiple carriers to find the best price for your specific home."},
+            {"q": "Do I need flood insurance in Mt. Washington?", "a": "It depends on your location. Properties near Floyds Fork or in designated flood zones should carry flood insurance. Even if you're not in a high-risk zone, flood coverage is affordable and worth considering given Kentucky's spring rain patterns."},
+            {"q": "Does home insurance cover storm damage in Bullitt County?", "a": "Standard homeowners insurance covers wind and hail damage. Tornado and straight-line wind events are covered under your windstorm provision. Flooding is excluded and requires a separate policy."}
+          ]
+        },
+        {
+          "slug": "auto-insurance",
+          "product_id": "auto",
+          "line": "personal",
+          "name": "Auto Insurance",
+          "h1": "Auto Insurance for Mt. Washington Drivers",
+          "intro": "Most Mt. Washington residents commute, whether it's north on I-65 to Louisville or south toward Elizabethtown and Fort Knox. That daily highway driving increases your exposure, and Kentucky's minimum auto insurance limits of 25/50/25 plus $10,000 PIP may not be enough if you're involved in a serious accident on the interstate. Higher liability limits and uninsured motorist coverage are worth considering, especially given Kentucky's high rate of uninsured drivers. We shop auto insurance from dozens of carriers and can often find better coverage at a lower rate than what you're paying now.",
+          "faqs": [
+            {"q": "How much does auto insurance cost in Mt. Washington, KY?", "a": "Most Mt. Washington drivers pay between $100 and $230 per month depending on driving record, vehicle, and coverage levels. Commuters on I-65 may pay slightly more. We compare rates from multiple carriers to find the best deal."},
+            {"q": "What auto insurance do I need for commuting on I-65?", "a": "We recommend higher liability limits than the Kentucky minimum, plus uninsured motorist coverage and comprehensive/collision if your vehicle has value. Highway commuting increases your risk exposure."},
+            {"q": "Can I bundle home and auto insurance in Mt. Washington?", "a": "Yes, and bundling typically saves 5-25%. We can quote both together across multiple carriers to find the best combined rate."}
+          ]
+        },
+        {
+          "slug": "commercial-insurance",
+          "product_id": "cgl",
+          "line": "commercial",
+          "name": "Commercial Insurance",
+          "h1": "Business Insurance for Mt. Washington Companies",
+          "intro": "Mt. Washington and Bullitt County have seen steady business growth, from local contractors and trades serving the residential building boom to retail and service businesses along US-31E. Whether you're a contractor, a restaurant owner, or a professional services firm, commercial insurance protects your business from the liabilities, property damage, and employee injury risks that come with doing business in Kentucky. We represent specialty commercial carriers that understand local contractor licensing, Kentucky workers comp requirements, and the coverage needs of growing Bullitt County businesses. Whether you are bidding on jobs in the new subdivisions going up along KY-44 or running a service business on US-31E, having the right coverage makes your business insurable to partners and hireable to general contractors. We handle certificates of insurance, additional insured endorsements, and audit preparation so you can focus on the work.",
+          "faqs": [
+            {"q": "What insurance does a contractor in Mt. Washington need?", "a": "At minimum, general liability, workers compensation (required in Kentucky for 1+ employees), and commercial auto. Many job sites also require bonds and additional insured endorsements. We handle all of it."},
+            {"q": "How much does business insurance cost in Mt. Washington?", "a": "Costs depend on your industry, revenue, and employee count. Small contractors typically pay $2,000-5,000 per year for general liability. We compare rates from multiple carriers to find the best option."},
+            {"q": "Do Mt. Washington contractors need workers comp?", "a": "Yes. Kentucky requires workers compensation for any business with one or more employees. Penalties for non-compliance include fines and personal liability for injuries. We write workers comp through multiple carriers and can often find competitive rates for Bullitt County contractors."}
+          ]
+        },
+        {
+          "slug": "medicare",
+          "product_id": "medicare",
+          "line": "life_health",
+          "name": "Medicare",
+          "h1": "Medicare Insurance in Mt. Washington, KY",
+          "intro": "Choosing the right Medicare plan in Mt. Washington means making sure your preferred doctors and hospitals are in-network. With Baptist Health and UofL Health facilities nearby, and specialists in Louisville easily accessible via I-65, Mt. Washington seniors have good healthcare options. But Medicare Advantage networks vary, and not every plan covers every provider. We help you compare Medicare Supplement and Medicare Advantage plans from multiple carriers to find the right fit for your health needs, your providers, and your budget. Whether you are turning 65, leaving an employer plan, or reviewing your current coverage during Open Enrollment, we simplify the process. We compare premiums, copays, prescription drug formularies, and provider networks across multiple carriers so you can make a confident decision without the confusion.",
+          "faqs": [
+            {"q": "When should I sign up for Medicare in Mt. Washington?", "a": "Your Initial Enrollment Period starts 3 months before your 65th birthday and ends 3 months after. Open Enrollment is October 15 through December 7 each year. Contact us early to review your options."},
+            {"q": "Which hospitals accept Medicare in the Mt. Washington area?", "a": "Original Medicare is accepted at most hospitals and doctors. Medicare Advantage plans have networks, so verify that Baptist Health, UofL Health, and your preferred providers are included before choosing a plan."},
+            {"q": "Can I keep my Louisville doctors with a Medicare plan from Mt. Washington?", "a": "It depends on the plan. Medicare Supplement plans let you see any doctor who accepts Medicare, including Louisville specialists. Medicare Advantage plans have networks, so you will want to verify your preferred providers are included before enrolling."}
+          ]
+        },
+        {
+          "slug": "umbrella-insurance",
+          "product_id": "umbrella",
+          "line": "personal",
+          "name": "Umbrella Insurance",
+          "h1": "Umbrella Insurance in Mt. Washington, KY",
+          "intro": "An umbrella policy provides an extra layer of liability protection above your home and auto insurance limits. For Mt. Washington families with growing property values, teenage drivers, or recreational vehicles, a single serious accident or lawsuit can exceed your standard policy limits. Umbrella insurance typically costs $200 to $400 per year for $1 million in additional coverage, making it one of the most affordable ways to protect your family's financial security as Bullitt County property values continue to rise. Umbrella coverage also protects you if you are sued for incidents that happen away from home, including car accidents, volunteer activities, or events on rental property you own. With Bullitt County's housing market attracting new homeowners and families with active lifestyles, the gap between what your standard policies cover and what a lawsuit could cost is worth closing.",
+          "faqs": [
+            {"q": "How much does umbrella insurance cost in Mt. Washington?", "a": "Most families pay $200 to $400 per year for $1 million in umbrella coverage. The cost depends on your assets, number of vehicles, and overall risk profile."},
+            {"q": "Do I need umbrella insurance if I have good auto and home coverage?", "a": "Yes, if you have assets to protect. Your home and auto policies have liability limits. A serious accident or lawsuit can exceed those limits, and umbrella coverage fills the gap."},
+            {"q": "How much umbrella insurance do Mt. Washington families need?", "a": "Most families start with $1 million, which costs $200 to $400 per year. If your total assets including home equity, savings, and investments exceed $1 million, consider a $2 million policy. We help you size the coverage to your actual financial exposure."}
+          ]
+        }
+      ]
+    }
+  ]
+}

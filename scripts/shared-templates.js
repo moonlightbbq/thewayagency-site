@@ -1,0 +1,187 @@
+/**
+ * Shared HTML template renderers for The Way Agency site.
+ *
+ * Used by build.js and generate-blog.js to ensure nav, footer,
+ * and script blocks are identical across all generated pages.
+ *
+ * Usage:
+ *   const { renderNav, renderFooter, renderScripts } = require('./shared-templates');
+ *   const office = { street: '...', city: '...', state: '...', zip: '...', phone: '...', email: '...' };
+ *   const html = renderNav() + content + renderFooter(office) + renderScripts();
+ */
+
+function renderNav() {
+  return `  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="/" class="nav__logo" aria-label="Home">
+        <picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></picture>
+      </a>
+      <div class="nav__links" id="navLinks">
+        <div class="nav__dropdown">
+          <a href="/personal/" class="nav__link">Personal</a>
+          <div class="nav__dropdown-menu">
+            <a href="/personal/home.html" class="nav__dropdown-item">Home</a>
+            <a href="/personal/auto.html" class="nav__dropdown-item">Auto</a>
+            <a href="/personal/renters.html" class="nav__dropdown-item">Renters</a>
+            <a href="/personal/umbrella.html" class="nav__dropdown-item">Umbrella</a>
+            <a href="/personal/flood.html" class="nav__dropdown-item">Flood</a>
+            <a href="/personal/motorcycle.html" class="nav__dropdown-item">Motorcycle</a>
+            <a href="/personal/boat.html" class="nav__dropdown-item">Boat</a>
+            <a href="/personal/classic-car.html" class="nav__dropdown-item">Classic Car</a>
+            <a href="/personal/earthquake.html" class="nav__dropdown-item">Earthquake</a>
+            <a href="/personal/pet.html" class="nav__dropdown-item">Pet</a>
+          </div>
+        </div>
+        <div class="nav__dropdown">
+          <a href="/commercial/" class="nav__link">Commercial</a>
+          <div class="nav__dropdown-menu">
+            <a href="/commercial/general-liability.html" class="nav__dropdown-item">General Liability</a>
+            <a href="/commercial/commercial-property.html" class="nav__dropdown-item">Commercial Property</a>
+            <a href="/commercial/commercial-auto.html" class="nav__dropdown-item">Commercial Auto</a>
+            <a href="/commercial/workers-compensation.html" class="nav__dropdown-item">Workers Comp</a>
+            <a href="/commercial/cyber.html" class="nav__dropdown-item">Cyber</a>
+            <a href="/commercial/bonds.html" class="nav__dropdown-item">Bonds</a>
+            <a href="/commercial/builders-risk.html" class="nav__dropdown-item">Builders Risk</a>
+            <a href="/commercial/special-event.html" class="nav__dropdown-item">Special Events</a>
+            <a href="/commercial/professional-liability.html" class="nav__dropdown-item">Professional Liability</a>
+          </div>
+        </div>
+        <div class="nav__dropdown">
+          <a href="/life-health/" class="nav__link">Life &amp; Health</a>
+          <div class="nav__dropdown-menu">
+            <a href="/life-health/medicare.html" class="nav__dropdown-item">Medicare</a>
+            <a href="/life-health/individual-health.html" class="nav__dropdown-item">Individual Health</a>
+            <a href="/life-health/group-health.html" class="nav__dropdown-item">Group Health</a>
+            <a href="/life-health/term-life.html" class="nav__dropdown-item">Term Life</a>
+            <a href="/life-health/whole-life.html" class="nav__dropdown-item">Whole Life</a>
+            <a href="/life-health/disability.html" class="nav__dropdown-item">Disability</a>
+            <a href="/life-health/final-expense.html" class="nav__dropdown-item">Final Expense</a>
+          </div>
+        </div>
+        <div class="nav__dropdown">
+          <a href="/about/" class="nav__link">About</a>
+          <div class="nav__dropdown-menu" style="grid-template-columns:1fr;">
+            <a href="/about/" class="nav__dropdown-item">Who We Are</a>
+            <a href="/about/team.html" class="nav__dropdown-item">Our Team</a>
+            <a href="/about/locations.html" class="nav__dropdown-item">Locations</a>
+            <a href="/about/community.html" class="nav__dropdown-item">Community</a>
+            <a href="/about/careers.html" class="nav__dropdown-item">Careers</a>
+          </div>
+        </div>
+        <a href="/blog/" class="nav__link">Blog</a>
+        <a href="/intake/" class="btn btn--primary">Get a Quote</a>
+      </div>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </div>
+  </nav>`;
+}
+
+function renderFooter(office, reviews) {
+  const reviewRating = (reviews && reviews.rating) || '5.0';
+  const reviewCount = (reviews && reviews.count) || '20+';
+  return `  <footer class="footer">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <picture><source srcset="/src/assets/images/logo-horizontal-white.webp" type="image/webp"><img class="footer__logo" src="/src/assets/images/logo-horizontal-white.png" alt="The Way Agency" style="height:36px;width:auto;"></picture>
+        <address class="footer__address" style="font-style:normal;">${office.street}<br>${office.city}, ${office.state} ${office.zip}</address>
+        <div class="footer__contact-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <a href="tel:+15024135335">${office.phone}</a>
+        </div>
+        <div class="footer__contact-link">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+          <a href="mailto:${office.email}">${office.email}</a>
+        </div>
+        <p style="font-size:var(--text-xs);margin-top:var(--space-md);color:rgba(255,255,255,0.5);">Mon\u2013Fri: 8:30 AM \u2013 5:00 PM</p>
+        <a href="https://g.page/r/CSHCy85xJ8VOEBM/review" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;margin-top:var(--space-md);padding:8px 14px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:var(--border-radius);text-decoration:none;font-size:var(--text-xs);font-weight:500;color:rgba(255,255,255,0.85);">
+          <svg width="16" height="16" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          <span style="display:flex;align-items:center;gap:4px;">
+            <strong style="color:var(--white);">${reviewRating}</strong>
+            <span style="color:#FBBC05;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            <span style="color:rgba(255,255,255,0.6);">(${reviewCount} reviews)</span>
+          </span>
+        </a>
+        <div class="footer__socials">
+          <a href="https://www.facebook.com/TheWayAgency/" aria-label="Facebook" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/thewayagencyins/" aria-label="Instagram" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/company/the-way-agency-insurance" aria-label="LinkedIn" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer__heading">Personal</h4>
+        <div class="footer__link-list">
+          <a href="/personal/home.html">Home</a>
+          <a href="/personal/auto.html">Auto</a>
+          <a href="/personal/renters.html">Renters</a>
+          <a href="/personal/umbrella.html">Umbrella</a>
+          <a href="/personal/flood.html">Flood</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer__heading">Commercial</h4>
+        <div class="footer__link-list">
+          <a href="/commercial/general-liability.html">General Liability</a>
+          <a href="/commercial/commercial-property.html">Property</a>
+          <a href="/commercial/commercial-auto.html">Auto</a>
+          <a href="/commercial/workers-compensation.html">Workers Comp</a>
+          <a href="/commercial/cyber.html">Cyber</a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer__heading">Company</h4>
+        <div class="footer__link-list">
+          <a href="/about/">About Us</a>
+          <a href="/about/team.html">Our Team</a>
+          <a href="/about/locations.html">Locations</a>
+          <a href="/blog/">Blog</a>
+          <a href="/intake/">Get a Quote</a>
+          <a href="/contact.html">Contact</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>&copy; ${new Date().getFullYear()} The Way Agency. All rights reserved.</p>
+      <div class="footer__legal-links">
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+      </div>
+    </div>
+    <p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p>
+  </footer>`;
+}
+
+function renderHead_GTM() {
+  // GTM head snippet + Microsoft Clarity — goes in <head> before </head>
+  return `
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-MCQG9SN3');</script>
+  <!-- End Google Tag Manager -->
+  <!-- Microsoft Clarity -->
+  <script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","w1trotz02p");</script>`;
+}
+
+function renderBody_GTM() {
+  // GTM noscript — goes immediately after <body>
+  return `  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MCQG9SN3"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->`;
+}
+
+function renderScripts() {
+  return `  <div id="ai-chat-root"></div>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+  <script src="/src/js/app.js"></script>`;
+}
+
+module.exports = { renderNav, renderFooter, renderScripts, renderHead_GTM, renderBody_GTM };

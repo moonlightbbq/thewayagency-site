@@ -1,0 +1,40 @@
+{
+  "personal": [
+    { "name": "Aegis Insurance", "slug": "aegis", "appointed_since": null, "status": "appointed", "am_best_rating": null },
+    { "name": "Allstate", "slug": "allstate", "appointed_since": null, "status": "appointed", "am_best_rating": "A+" },
+    { "name": "American Modern", "slug": "american-modern", "appointed_since": null, "status": "appointed", "am_best_rating": "A+" },
+    { "name": "Branch", "slug": "branch", "appointed_since": null, "status": "appointed", "am_best_rating": null },
+    { "name": "Bristol West", "slug": "bristol-west", "appointed_since": null, "status": "appointed", "am_best_rating": null },
+    { "name": "Chubb", "slug": "chubb", "appointed_since": null, "status": "appointed", "am_best_rating": "A++" },
+    { "name": "Clearcover", "slug": "clearcover", "appointed_since": null, "status": "appointed", "am_best_rating": null },
+    { "name": "Foremost", "slug": "foremost", "appointed_since": null, "status": "appointed", "am_best_rating": "A" },
+    { "name": "Geico", "slug": "geico", "appointed_since": null, "status": "appointed", "am_best_rating": "A++" },
+    { "name": "Grange Insurance", "slug": "grange", "appointed_since": null, "status": "appointed", "am_best_rating": "A" },
+    { "name": "Hagerty", "slug": "hagerty", "appointed_since": null, "status": "appointed", "am_best_rating": null },
+    { "name": "National General", "slug": "national-general", "appointed_since": null, "status": "appointed", "am_best_rating": "A-" },
+    { "name": "Openly", "slug": "openly", "appointed_since": null, "status": "appointed", "am_best_rating": null },
+    { "name": "Palomar", "slug": "palomar", "appointed_since": null, "status": "appointed", "am_best_rating": "A-" },
+    { "name": "Progressive", "slug": "progressive", "appointed_since": null, "status": "appointed", "am_best_rating": "A+" },
+    { "name": "Safeco", "slug": "safeco", "appointed_since": null, "status": "appointed", "am_best_rating": "A" },
+    { "name": "State Auto", "slug": "state-auto", "appointed_since": null, "status": "appointed", "am_best_rating": "A" },
+    { "name": "Travelers", "slug": "travelers", "appointed_since": null, "status": "appointed", "am_best_rating": "A++" },
+    { "name": "United Marine", "slug": "united-marine", "appointed_since": null, "status": "appointed", "am_best_rating": null }
+  ],
+  "commercial": [
+    { "name": "American Modern", "slug": "american-modern", "appointed_since": null, "status": "appointed", "am_best_rating": "A+" },
+    { "name": "Berkshire Hathaway GUARD", "slug": "berkshire-guard", "appointed_since": null, "status": "appointed", "am_best_rating": "A++" },
+    { "name": "BTIS", "slug": "btis", "appointed_since": null, "status": "appointed", "am_best_rating": null },
+    { "name": "Chubb", "slug": "chubb", "appointed_since": null, "status": "appointed", "am_best_rating": "A++" },
+    { "name": "CRC Group", "slug": "crc-group", "appointed_since": null, "status": "appointed", "am_best_rating": null },
+    { "name": "Hiscox", "slug": "hiscox", "appointed_since": null, "status": "appointed", "am_best_rating": "A" },
+    { "name": "ISC", "slug": "isc", "appointed_since": null, "status": "appointed", "am_best_rating": null },
+    { "name": "KEMI", "slug": "kemi", "appointed_since": null, "status": "appointed", "am_best_rating": null },
+    { "name": "Liberty Mutual", "slug": "liberty-mutual", "appointed_since": null, "status": "appointed", "am_best_rating": "A" },
+    { "name": "Progressive", "slug": "progressive", "appointed_since": null, "status": "appointed", "am_best_rating": "A+" },
+    { "name": "RPS", "slug": "rps", "appointed_since": null, "status": "appointed", "am_best_rating": null },
+    { "name": "State Auto", "slug": "state-auto", "appointed_since": null, "status": "appointed", "am_best_rating": "A" },
+    { "name": "The Hartford", "slug": "hartford", "appointed_since": null, "status": "appointed", "am_best_rating": "A+" },
+    { "name": "Travelers", "slug": "travelers", "appointed_since": null, "status": "appointed", "am_best_rating": "A++" },
+    { "name": "Zurich", "slug": "zurich", "appointed_since": null, "status": "appointed", "am_best_rating": "A+" }
+  ]
+}

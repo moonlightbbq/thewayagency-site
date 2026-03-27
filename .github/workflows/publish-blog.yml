@@ -1,0 +1,70 @@
+name: Publish Scheduled Blog Posts
+
+on:
+  schedule:
+    # Every Wednesday at 10:00 UTC (6:00 AM Eastern)
+    - cron: '0 10 * * 3'
+  workflow_dispatch:
+    # Allow manual trigger from GitHub Actions UI
+
+permissions:
+  contents: write
+
+jobs:
+  review-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # Step 1: Send review emails for posts due in ~2 weeks
+      - name: Send review emails
+        id: review
+        env:
+          SAGE_API_URL: ${{ secrets.SAGE_API_URL }}
+          SAGE_API_TOKEN: ${{ secrets.SAGE_API_TOKEN }}
+        run: |
+          if node scripts/send-review-emails.js; then
+            echo "reviews_sent=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "reviews_sent=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Step 1b: Update Google review count
+      - name: Update Google reviews
+        id: reviews
+        env:
+          GOOGLE_MAPS_KEY: ${{ secrets.GOOGLE_MAPS_KEY }}
+        run: |
+          if node scripts/update-reviews.js; then
+            echo "reviews_updated=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "reviews_updated=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Step 2: Publish posts that are due today
+      - name: Publish scheduled posts
+        id: publish
+        run: |
+          if node scripts/publish-scheduled-posts.js; then
+            echo "published=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            echo "No posts due today. Nothing to deploy."
+          fi
+
+      # Step 3: Commit any changes (review status updates + published posts)
+      - name: Commit and push
+        if: steps.review.outputs.reviews_sent == 'true' || steps.publish.outputs.published == 'true' || steps.reviews.outputs.reviews_updated == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/content-calendar.json data/locations.json src/blog/
+          git diff --cached --quiet && exit 0
+          git commit -m "weekly: blog publish + review updates for $(date +%Y-%m-%d)"
+          git push

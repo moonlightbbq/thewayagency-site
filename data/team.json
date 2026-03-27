@@ -1,0 +1,78 @@
+{
+  "team": [
+    {
+      "name": "Sheilia Royal",
+      "slug": "sheilia-royal",
+      "title": "Agency Principal / Licensed Agent",
+      "photo": "/src/assets/images/team/sheilia-royal.webp",
+      "years_experience": 20,
+      "license_states": ["KY", "IN", "TN"],
+      "designations": [],
+      "specialties": ["commercial_lines", "personal_lines", "life_health", "general-liability", "commercial-property", "workers-compensation"],
+      "service_areas": ["Owensboro", "Mt. Washington", "Henderson", "Louisville"],
+      "bio": "Coming soon.",
+      "fun_fact": "",
+      "email": "sheilia@thewayagency.com",
+      "phone": "(502) 413-5335 ext 1"
+    },
+    {
+      "name": "Audrey Lillpop",
+      "slug": "audrey-lillpop",
+      "title": "Licensed Agent",
+      "photo": "/src/assets/images/team/audrey-lillpop.webp",
+      "years_experience": 8,
+      "license_states": ["KY", "IN", "TN"],
+      "designations": [],
+      "specialties": ["personal_lines", "home", "auto", "umbrella", "flood", "renters"],
+      "service_areas": ["Owensboro", "Henderson", "Daviess County"],
+      "bio": "Coming soon.",
+      "fun_fact": "",
+      "email": "audrey@thewayagency.com",
+      "phone": "(502) 413-5335 ext 2"
+    },
+    {
+      "name": "Kelly McCallister",
+      "slug": "kelly-mccallister",
+      "title": "Client Care Specialist",
+      "photo": "/src/assets/images/team/kelly-mccallister.webp",
+      "years_experience": 10,
+      "license_states": ["KY", "IN", "TN"],
+      "designations": [],
+      "specialties": ["commercial_lines", "general-liability", "commercial-auto", "bonds", "builders-risk", "workers-compensation", "cyber"],
+      "service_areas": ["Owensboro", "Henderson", "Evansville"],
+      "bio": "Coming soon.",
+      "fun_fact": "",
+      "email": "kelly@thewayagency.com",
+      "phone": "(502) 413-5335 ext 3"
+    },
+    {
+      "name": "Jill Boone",
+      "slug": "jill-boone",
+      "title": "Licensed Agent",
+      "photo": "/src/assets/images/team/jill-boone.webp",
+      "years_experience": 6,
+      "license_states": ["KY", "IN", "TN"],
+      "designations": [],
+      "specialties": ["life_health", "medicare", "medicaid", "individual-health", "group-health", "term-life", "whole-life", "disability", "final-expense"],
+      "service_areas": ["Mt. Washington", "Louisville", "Bullitt County"],
+      "bio": "Coming soon.",
+      "fun_fact": "",
+      "email": "jill@thewayagency.com",
+      "phone": "(502) 413-5335 ext 4"
+    },
+    {
+      "name": "Allison Sommers",
+      "slug": "allison-sommers",
+      "title": "College Intern",
+      "photo": "/src/assets/images/team/allison-sommers.webp",
+      "years_experience": 0,
+      "license_states": [],
+      "designations": [],
+      "specialties": [],
+      "bio": "",
+      "fun_fact": "",
+      "email": "",
+      "phone": ""
+    }
+  ]
+}
