@@ -68,3 +68,17 @@
 /post/landlord-insurance-made-simple /blog/landlord-insurance.html 301
 /post/fur-real-dont-let-vet-bills-bite-you /blog/pet-insurance-guide.html 301
 /post/is-earthquake-insurance-necessary /blog/earthquake-insurance.html 301
+
+# Common typos and alternate paths
+/insurance /personal/ 301
+/products /personal/ 301
+/services /commercial/ 301
+/team /about/team.html 301
+/locations /about/locations.html 301
+/careers /about/careers.html 301
+/community /about/community.html 301
+/get-a-quote /intake/ 301
+/get-quote /intake/ 301
+/blog/index.html /blog/ 301
+/carrier /carriers/ 301
+/carriers/index.html /carriers/ 301

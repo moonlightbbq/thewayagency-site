@@ -187,5 +187,12 @@ const portalPages = assets.copyPortalPages(SRC, BUILD, injectVersion);
 // 9. Generate sitemap
 const sitemapUrls = generateSitemap(BUILD, { products, landingData, seoData, portalPages, SRC, carriers });
 
+// 10. Generate 404 suggestions data
+try {
+  require('./generate-404-data');
+} catch (e) {
+  console.log('  ! 404 suggestions generation had errors (non-fatal)');
+}
+
 console.log(`\n✅ Build complete! ${generatedCount + rootPages.length + subPages.length + portalPages.length} pages in build/`);
 console.log(`   Total files: ${sitemapUrls.length} indexable URLs`);

@@ -39,6 +39,59 @@
   }
 
   // ═══════════════════════════════════════════════
+  // MULTI-LANGUAGE (i18n)
+  // ═══════════════════════════════════════════════
+  let _i18nData = null;
+  let _i18nOriginals = new Map();
+  let _currentLang = 'en';
+
+  function initI18n() {
+    const navLinks = $('#navLinks');
+    if (!navLinks) return;
+    const toggle = createElement('button', {
+      id: 'langToggle',
+      'aria-label': 'Switch language',
+    }, 'EN | <span style="opacity:.5">ES</span>');
+    toggle.style.cssText = 'background:none;border:1px solid var(--border,#e2e8f0);border-radius:6px;padding:4px 10px;font-size:12px;font-weight:600;color:var(--slate,#64748b);cursor:pointer;margin-left:8px;white-space:nowrap;';
+    navLinks.appendChild(toggle);
+    toggle.addEventListener('click', () => { switchLang(_currentLang === 'en' ? 'es' : 'en'); });
+    try { if (localStorage.getItem('twa_lang') === 'es') switchLang('es'); } catch(e) {}
+  }
+
+  async function switchLang(lang) {
+    if (lang === 'en') {
+      _currentLang = 'en';
+      _i18nOriginals.forEach((original, el) => { el.textContent = original; });
+      updateLangToggle();
+      try { localStorage.setItem('twa_lang', 'en'); } catch(e) {}
+      return;
+    }
+    if (!_i18nData) {
+      try {
+        const res = await fetch('/data/i18n/es.json');
+        if (!res.ok) return;
+        _i18nData = await res.json();
+      } catch(e) { return; }
+    }
+    _currentLang = 'es';
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      if (_i18nData[key]) {
+        if (!_i18nOriginals.has(el)) _i18nOriginals.set(el, el.textContent);
+        el.textContent = _i18nData[key];
+      }
+    });
+    updateLangToggle();
+    try { localStorage.setItem('twa_lang', 'es'); } catch(e) {}
+  }
+
+  function updateLangToggle() {
+    const t = $('#langToggle');
+    if (!t) return;
+    t.innerHTML = _currentLang === 'es' ? '<span style="opacity:.5">EN</span> | ES' : 'EN | <span style="opacity:.5">ES</span>';
+  }
+
+  // ═══════════════════════════════════════════════
   // A/B TESTING FRAMEWORK
   // ═══════════════════════════════════════════════
   const AB_EXPERIMENTS = {
