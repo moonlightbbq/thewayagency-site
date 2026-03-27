@@ -56,16 +56,17 @@ function renderFooter() {
 }
 
 // ─── Critical CSS ───────────────────────────────
+let criticalCssMinified = '';
 const criticalCssPath = path.join(SRC, 'css', 'critical.css');
 if (fs.existsSync(criticalCssPath)) {
   const criticalCssRaw = fs.readFileSync(criticalCssPath, 'utf8');
-  const criticalCssMinified = assets.minifyCss(criticalCssRaw);
+  criticalCssMinified = assets.minifyCss(criticalCssRaw);
   setCriticalCss(criticalCssMinified);
   console.log(`  ✓ Critical CSS: ${(criticalCssMinified.length / 1024).toFixed(1)}KB (from ${(criticalCssRaw.length / 1024).toFixed(1)}KB)`);
 }
 
 // ─── Version Injection ──────────────────────────
-const injectVersion = createInjectVersion({ buildVersion, gitInfo, buildDate, reviews: _reviews, renderHead_GTM, renderBody_GTM });
+const injectVersion = createInjectVersion({ buildVersion, gitInfo, buildDate, reviews: _reviews, renderHead_GTM, renderBody_GTM, criticalCss: criticalCssMinified });
 
 // ─── Shared Context ─────────────────────────────
 const ctx = { products, office, team, knowledgeBase, carriers, testimonials, reviews: _reviews, richContent, landingData, renderNav, renderFooter, renderScripts };
@@ -83,7 +84,7 @@ assets.writeVersionJson(BUILD, {
 });
 
 // 2. Copy static assets
-assets.copyCss(SRC, BUILD);
+assets.copyCss(SRC, BUILD, true);
 assets.copyJs(SRC, BUILD);
 assets.copyAssets(SRC, BUILD);
 

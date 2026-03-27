@@ -459,6 +459,37 @@
   .upload-error-msg { font-size: 14px; color: #dc2626; text-align: center; margin-bottom: 16px; }
 
   /* ─── Draft auto-save ─── */
+  /* ─── Intake trust bar ─── */
+  .intake-trust-bar {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--slate);
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .intake-trust-bar span { white-space: nowrap; }
+  @media (max-width: 480px) { .intake-trust-bar { gap: 8px; font-size: 10px; } }
+
+  /* ─── Time estimate ─── */
+  .time-estimate {
+    text-align: center;
+    font-size: 12px;
+    color: var(--slate);
+    margin-bottom: 16px;
+    transition: opacity .3s;
+  }
+
+  /* ─── Step enter animation ─── */
+  .step-entering {
+    animation: stepEnter .3s ease-out;
+  }
+  @keyframes stepEnter {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
   .draft-toast {
     position: fixed;
     bottom: 24px;
@@ -621,6 +652,12 @@
       <div class="progress-seg" data-step="5"></div>
     </div>
   </div>
+  <div class="intake-trust-bar">
+    <span>&#128274; Secure &amp; Encrypted</span>
+    <span>&#128737;&#65039; 30+ Carriers</span>
+    <span>&#9201;&#65039; Response in 1 hour</span>
+  </div>
+  <div class="time-estimate" id="time-estimate">About 3 minutes left</div>
 
   <!-- Step 1: Contact Info (name, email, phone first — address in step 3) -->
   <div id="step-1" class="card">
@@ -744,6 +781,7 @@
         <div class="other-product-grid" id="other-product-grid"></div>
       </div>
     </div>
+    <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--slate);">Not sure what you need? <a href="tel:+15024135335" style="color:var(--blue);text-decoration:underline;">Call us at (502) 413-5335</a></p>
     <div id="step3-error" class="error hidden"></div>
     <div class="btn-row">
       <button class="btn btn-outline" data-action="prev-step" data-step="3">Back</button>

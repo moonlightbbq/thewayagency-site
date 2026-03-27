@@ -43,6 +43,12 @@ function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, render
     html = html.replace(/\(\d+ Google reviews\)/g, `(${reviews.count} Google reviews)`);
     html = html.replace(/"reviewCount":\s*"\d+"/g, `"reviewCount": "${reviews.count}"`);
     html = html.replace(/"ratingValue":\s*"[\d.]+"/g, `"ratingValue": "${reviews.rating}"`);
+    // Inject critical CSS into hand-crafted pages that have standard CSS links
+    if (criticalCss && html.includes('<link rel="stylesheet" href="/src/css/base.css">') && !html.includes('<style>')) {
+      const cssLinks = '  <link rel="stylesheet" href="/src/css/base.css">\n  <link rel="stylesheet" href="/src/css/components.css">\n  <link rel="stylesheet" href="/src/css/leadgen.css">';
+      const lazyCss = `  <style>${criticalCss}</style>\n  <link rel="stylesheet" href="/src/css/base.css" media="print" onload="this.media='all'">\n  <link rel="stylesheet" href="/src/css/components.css" media="print" onload="this.media='all'">\n  <link rel="stylesheet" href="/src/css/leadgen.css" media="print" onload="this.media='all'">\n  <noscript><link rel="stylesheet" href="/src/css/base.css"><link rel="stylesheet" href="/src/css/components.css"><link rel="stylesheet" href="/src/css/leadgen.css"></noscript>`;
+      html = html.replace(cssLinks, lazyCss);
+    }
     // Inject GTM head snippet (before </head>) and body snippet (after <body>)
     if (!html.includes('gtm.js')) {
       html = html.replace('</head>', renderHead_GTM() + '\n</head>');

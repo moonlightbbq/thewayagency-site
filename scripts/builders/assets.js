@@ -28,9 +28,28 @@ function writeVersionJson(BUILD, versionInfo) {
   console.log('  ✓ version.json written');
 }
 
-function copyCss(SRC, BUILD) {
-  copyDir(path.join(SRC, 'css'), path.join(BUILD, 'src', 'css'));
-  console.log('  ✓ CSS copied');
+function copyCss(SRC, BUILD, minify) {
+  const srcDir = path.join(SRC, 'css');
+  const destDir = path.join(BUILD, 'src', 'css');
+  ensureDir(destDir);
+  let totalBefore = 0, totalAfter = 0;
+  for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
+    if (entry.isFile() && entry.name.endsWith('.css')) {
+      const raw = fs.readFileSync(path.join(srcDir, entry.name), 'utf8');
+      totalBefore += raw.length;
+      if (minify) {
+        const min = minifyCss(raw);
+        totalAfter += min.length;
+        fs.writeFileSync(path.join(destDir, entry.name), min);
+      } else {
+        totalAfter += raw.length;
+        fs.copyFileSync(path.join(srcDir, entry.name), path.join(destDir, entry.name));
+      }
+    } else if (entry.isDirectory()) {
+      copyDir(path.join(srcDir, entry.name), path.join(destDir, entry.name));
+    }
+  }
+  console.log(`  ✓ CSS copied${minify ? ` (minified: ${(totalBefore / 1024).toFixed(1)}KB → ${(totalAfter / 1024).toFixed(1)}KB)` : ''}`);
 }
 
 function copyJs(SRC, BUILD) {
