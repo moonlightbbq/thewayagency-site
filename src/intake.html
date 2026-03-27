@@ -545,7 +545,7 @@
 <body>
 
 <!-- Draft resume toast -->
-<div class="draft-toast" id="draft-toast">
+<div class="draft-toast" id="draft-toast" role="alert" aria-live="polite">
   <div class="draft-toast-text">
     <strong>Resume your quote?</strong>
     <span id="draft-toast-detail">You have a saved draft.</span>
@@ -665,28 +665,28 @@
     <p class="card-desc">We just need your name and contact info to get started.</p>
     <div class="form-row">
       <div class="form-group">
-        <label>First Name *</label>
+        <label for="i_fname">First Name *</label>
         <input type="text" id="i_fname" required autocomplete="given-name">
       </div>
       <div class="form-group">
-        <label>Last Name *</label>
+        <label for="i_lname">Last Name *</label>
         <input type="text" id="i_lname" required autocomplete="family-name">
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>Email <span style="color:#ef4444">*</span></label>
+        <label for="i_email">Email <span style="color:#ef4444">*</span></label>
         <input type="email" id="i_email" placeholder="you@example.com" required autocomplete="email">
       </div>
       <div class="form-group">
-        <label>Phone <span style="color:#ef4444">*</span></label>
+        <label for="i_phone">Phone <span style="color:#ef4444">*</span></label>
         <input type="tel" id="i_phone" placeholder="(555) 123-4567" required autocomplete="tel">
       </div>
     </div>
     <div style="background:#f0fdf8;border:1px solid #bbf7d0;border-radius:10px;padding:10px 14px;margin:16px 0 0;font-size:11px;color:#166534;line-height:1.5;text-align:center;">
       Your information is safe. We never sell your data. <a href="/privacy.html" style="color:#166534;text-decoration:underline">Privacy Policy</a>
     </div>
-    <div id="step1-error" class="error hidden"></div>
+    <div id="step1-error" class="error hidden" role="alert" aria-live="polite"></div>
     <div class="btn-row">
       <span></span>
       <button class="btn btn-primary" id="step1-btn" data-action="next-step" data-step="1">Continue</button>
@@ -704,7 +704,7 @@
           <div class="upload-choice-icon">&#128196;</div>
           <div class="upload-choice-title">Upload dec page</div>
           <div class="upload-choice-desc">PDF, photo, or screenshot — we'll extract your info automatically</div>
-          <input type="file" id="doc-upload-input" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" capture="environment" class="hidden">
+          <input type="file" id="doc-upload-input" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" capture="environment" class="hidden" aria-label="Upload insurance document">
         </div>
         <div class="upload-choice" data-action="skip-upload">
           <div class="upload-choice-icon">&#9997;&#65039;</div>
@@ -723,7 +723,7 @@
         <div class="upload-zone-text">Drop your file here</div>
         <div class="upload-zone-sub">PDF, JPEG, or PNG — max 10MB</div>
         <button type="button" class="btn btn-primary" id="upload-zone-btn">Choose File</button>
-        <input type="file" id="doc-upload-input-zone" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" capture="environment" class="hidden">
+        <input type="file" id="doc-upload-input-zone" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" capture="environment" class="hidden" aria-label="Upload insurance document">
       </div>
       <div class="btn-row" style="margin-top:16px">
         <button class="btn btn-outline" id="upload-back-btn">Back</button>
@@ -782,7 +782,7 @@
       </div>
     </div>
     <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--slate);">Not sure what you need? <a href="tel:+15024135335" style="color:var(--blue);text-decoration:underline;">Call us at (502) 413-5335</a></p>
-    <div id="step3-error" class="error hidden"></div>
+    <div id="step3-error" class="error hidden" role="alert" aria-live="polite"></div>
     <div class="btn-row">
       <button class="btn btn-outline" data-action="prev-step" data-step="3">Back</button>
       <button class="btn btn-primary" data-action="next-step" data-step="3">Continue</button>
@@ -798,35 +798,35 @@
     <div style="margin-bottom:24px;">
       <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Your Information</div>
       <div class="form-group">
-        <label>Mailing Address <span style="color:#ef4444">*</span></label>
+        <label for="i_address">Mailing Address <span style="color:#ef4444">*</span></label>
         <input type="text" id="i_address" required autocomplete="street-address">
       </div>
       <div class="form-row-3">
         <div class="form-group">
-          <label>City <span style="color:#ef4444">*</span></label>
+          <label for="i_city">City <span style="color:#ef4444">*</span></label>
           <input type="text" id="i_city" required autocomplete="address-level2">
         </div>
         <div class="form-group">
-          <label>State <span style="color:#ef4444">*</span></label>
+          <label for="i_state">State <span style="color:#ef4444">*</span></label>
           <input type="text" id="i_state" maxlength="2" required autocomplete="address-level1">
         </div>
         <div class="form-group">
-          <label>ZIP <span style="color:#ef4444">*</span></label>
+          <label for="i_zip">ZIP <span style="color:#ef4444">*</span></label>
           <input type="text" id="i_zip" maxlength="10" required autocomplete="postal-code">
         </div>
       </div>
       <div class="form-row">
         <div class="form-group" id="dob-group">
-          <label>Date of Birth</label>
+          <label for="i_dob">Date of Birth</label>
           <input type="text" id="i_dob" placeholder="MM/DD/YYYY" maxlength="10" inputmode="numeric" autocomplete="bday">
         </div>
         <div class="form-group">
-          <label>Current Insurance Company</label>
+          <label for="i_current_carrier">Current Insurance Company</label>
           <input type="text" id="i_current_carrier" placeholder="e.g. State Farm, Geico, or None">
         </div>
       </div>
       <div class="form-group" style="max-width:280px;">
-        <label>When does your policy expire?</label>
+        <label for="i_policy_expiry">When does your policy expire?</label>
         <select id="i_policy_expiry">
           <option value="">Select</option><option value="within30">Within 30 days</option><option value="1-3months">1–3 months</option><option value="3-6months">3–6 months</option><option value="over6months">6+ months</option><option value="none">No current policy</option><option value="unsure">Not sure</option>
         </select>
@@ -838,10 +838,10 @@
 
     <!-- Section 3: Notes (always shown) -->
     <div class="form-group">
-      <label>Anything else we should know?</label>
+      <label for="i_notes">Anything else we should know?</label>
       <textarea id="i_notes" rows="3" placeholder="Special requirements, additional details, or questions..."></textarea>
     </div>
-    <div id="step4-error" class="error hidden"></div>
+    <div id="step4-error" class="error hidden" role="alert" aria-live="polite"></div>
     <div class="btn-row">
       <button class="btn btn-outline" data-action="prev-step" data-step="4">Back</button>
       <button class="btn btn-primary" data-action="next-step" data-step="4">Review</button>
@@ -859,7 +859,7 @@
       <input type="text" id="_hp_company" name="_hp_company" tabindex="-1" autocomplete="off">
     </div>
     <div id="turnstile-container" style="margin:12px 0"></div>
-    <div id="step5-error" class="error hidden"></div>
+    <div id="step5-error" class="error hidden" role="alert" aria-live="polite"></div>
     <div class="btn-row">
       <button class="btn btn-outline" data-action="prev-step" data-step="5">Back</button>
       <button class="btn btn-primary" id="submit-btn" data-action="submit-intake">Submit Quote Request</button>

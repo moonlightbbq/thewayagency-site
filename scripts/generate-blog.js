@@ -258,6 +258,12 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   <meta property="og:url" content="https://www.thewayagency.com/blog/${meta.slug}.html">
   <meta property="og:site_name" content="The Way Agency">
   <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
+  <meta property="article:published_time" content="${meta.date}">
+  <meta property="article:modified_time" content="${meta.modified || meta.date}">
+  <meta property="article:author" content="${meta.author}">
+  <meta property="article:section" content="${meta.category || 'insurance'}">
+  ${(meta.tags || '').replace(/[\[\]]/g, '').split(',').map(t => t.trim()).filter(Boolean).map(t => `<meta property="article:tag" content="${t}">`).join('\n  ')}
+  <link rel="alternate" type="application/rss+xml" title="The Way Agency Blog" href="/blog/feed.xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -376,6 +382,7 @@ function generateBlogIndex(allPosts) {
   <link rel="stylesheet" href="/src/css/base.css">
   <link rel="stylesheet" href="/src/css/components.css">
   <link rel="stylesheet" href="/src/css/leadgen.css">
+  <link rel="alternate" type="application/rss+xml" title="The Way Agency Blog" href="/blog/feed.xml">
 
   <!-- Open Graph -->
   <meta property="og:title" content="Insurance Blog | Tips &amp; Insights | The Way Agency">
@@ -581,6 +588,36 @@ ${related.map(p => `          <a href="/blog/${p.slug}.html" class="card" style=
 } else {
   console.log('  ! No content-calendar.json found — skipping index generation');
 }
+
+// 3. Generate RSS feed
+const rssItems = [];
+// Use allPublishedFiltered if available, otherwise fall back to posts
+const rssPosts = (typeof allPublishedFiltered !== 'undefined' ? allPublishedFiltered : posts.map(m => ({ slug: m.slug, title: m.title, description: m.description || '', publish_date: m.date }))).slice(0, 20);
+for (const p of rssPosts) {
+  rssItems.push(`    <item>
+      <title><![CDATA[${p.title}]]></title>
+      <link>https://www.thewayagency.com/blog/${p.slug}.html</link>
+      <guid>https://www.thewayagency.com/blog/${p.slug}.html</guid>
+      <pubDate>${new Date(p.publish_date + 'T12:00:00').toUTCString()}</pubDate>
+      <description><![CDATA[${p.description || ''}]]></description>
+    </item>`);
+}
+
+const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>The Way Agency Insurance Blog</title>
+    <link>https://www.thewayagency.com/blog/</link>
+    <description>Insurance insights, tips, and Kentucky-specific guidance from The Way Agency team.</description>
+    <language>en-us</language>
+    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+    <atom:link href="https://www.thewayagency.com/blog/feed.xml" rel="self" type="application/rss+xml"/>
+${rssItems.join('\n')}
+  </channel>
+</rss>`;
+
+fs.writeFileSync(path.join(BLOG_BUILD, 'feed.xml'), rssFeed);
+console.log(`  ✓ blog/feed.xml (${rssItems.length} items)`);
 
 const totalGenerated = posts.length;
 console.log(`\n  Blog generation complete: ${totalGenerated} Markdown posts converted`);
