@@ -1624,6 +1624,8 @@ async function validateContacts() {
 }
 
 // ── Step navigation ─────────────────────────────────────────────────────────
+const TIME_ESTIMATES = { 1: 'About 3 minutes left', 2: 'About 2 minutes left', 3: 'About 2 minutes left', 4: 'About 1 minute left', 5: 'Almost done!' };
+
 function showStep(n) {
   for (let i = 1; i <= 5; i++) document.getElementById('step-' + i).classList.toggle('hidden', i !== n);
   document.querySelectorAll('.progress-seg').forEach(s => {
@@ -1636,6 +1638,17 @@ function showStep(n) {
     s.classList.toggle('active', step === n);
     s.classList.toggle('done', step < n);
   });
+  // Time estimate
+  const timeEl = document.getElementById('time-estimate');
+  if (timeEl) timeEl.textContent = TIME_ESTIMATES[n] || '';
+  // Step enter animation
+  const stepEl = document.getElementById('step-' + n);
+  if (stepEl) {
+    stepEl.classList.remove('step-entering');
+    void stepEl.offsetWidth; // force reflow
+    stepEl.classList.add('step-entering');
+    stepEl.addEventListener('animationend', () => stepEl.classList.remove('step-entering'), { once: true });
+  }
   // Track step completion for the step we're leaving
   if (currentStep && currentStep !== n) trackStepComplete(currentStep);
   currentStep = n;
