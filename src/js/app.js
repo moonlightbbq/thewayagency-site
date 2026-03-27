@@ -330,10 +330,45 @@
     }, { passive: true });
 
     $$('.nav__dropdown > .nav__link').forEach(link => {
+      link.setAttribute('aria-expanded', 'false');
       link.addEventListener('click', (e) => {
         if (window.innerWidth <= 968) {
           e.preventDefault();
-          link.parentElement.classList.toggle('nav__dropdown--open');
+          const isOpen = link.parentElement.classList.toggle('nav__dropdown--open');
+          link.setAttribute('aria-expanded', isOpen);
+        }
+      });
+      // Keyboard: Enter/Space opens, Escape closes, ArrowDown moves into menu
+      link.addEventListener('keydown', (e) => {
+        const dropdown = link.parentElement;
+        const menu = dropdown.querySelector('.nav__dropdown-menu');
+        if (!menu) return;
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          dropdown.classList.add('nav__dropdown--open');
+          link.setAttribute('aria-expanded', 'true');
+          const firstItem = menu.querySelector('.nav__dropdown-item');
+          if (firstItem) firstItem.focus();
+        }
+        if (e.key === 'Escape') {
+          dropdown.classList.remove('nav__dropdown--open');
+          link.setAttribute('aria-expanded', 'false');
+          link.focus();
+        }
+      });
+    });
+
+    // Keyboard nav within dropdown menus
+    $$('.nav__dropdown-menu').forEach(menu => {
+      menu.addEventListener('keydown', (e) => {
+        const items = Array.from(menu.querySelectorAll('.nav__dropdown-item'));
+        const idx = items.indexOf(document.activeElement);
+        if (e.key === 'ArrowDown' && idx < items.length - 1) { e.preventDefault(); items[idx + 1].focus(); }
+        if (e.key === 'ArrowUp' && idx > 0) { e.preventDefault(); items[idx - 1].focus(); }
+        if (e.key === 'Escape') {
+          const parentLink = menu.parentElement.querySelector('.nav__link');
+          menu.parentElement.classList.remove('nav__dropdown--open');
+          if (parentLink) { parentLink.setAttribute('aria-expanded', 'false'); parentLink.focus(); }
         }
       });
     });
