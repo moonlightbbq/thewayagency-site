@@ -836,6 +836,117 @@
   }
 
   // ═══════════════════════════════════════════════
+  // 14. TESTIMONIAL CAROUSEL
+  // ═══════════════════════════════════════════════
+  function renderStars(rating) {
+    return '<span style="color:#FBBC05;font-size:14px;">' + '&#9733;'.repeat(Math.min(rating || 5, 5)) + '</span>';
+  }
+
+  function renderTestimonialCard(t) {
+    const products = (t.product_lines || t.products || []).slice(0, 2).map(function(p) {
+      return '<span style="display:inline-block;font-size:10px;padding:2px 8px;background:#eff6ff;color:#1e3a8a;border-radius:4px;font-weight:500;">' + (p.charAt(0).toUpperCase() + p.slice(1)).replace(/_/g, ' ') + '</span>';
+    }).join(' ');
+    return '<div class="twa-testimonial-card" style="background:var(--white,#fff);border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,.06);min-width:280px;flex:1;">' +
+      '<div style="margin-bottom:8px;">' + renderStars(t.rating) + '</div>' +
+      '<p style="font-size:14px;color:var(--charcoal,#1e293b);line-height:1.7;margin-bottom:12px;font-style:italic;font-weight:300;">"' + (t.text || '') + '"</p>' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+      '<span style="font-size:13px;font-weight:600;color:var(--navy,#173358);">' + (t.name || '') + '</span>' +
+      (products ? '<div style="display:flex;gap:4px;">' + products + '</div>' : '') +
+      '</div></div>';
+  }
+
+  function initTestimonialCarousel(selector, opts) {
+    var containers = $$(selector);
+    if (!containers.length) return;
+    var options = opts || {};
+    var filter = options.filter || null;
+    var mode = options.mode || 'carousel';
+    var autoAdvance = options.autoAdvance !== false;
+
+    containers.forEach(function(container) {
+      var dataAttr = container.getAttribute('data-testimonials');
+      var items;
+      try { items = dataAttr ? JSON.parse(dataAttr) : null; } catch(e) { items = null; }
+      if (!items || !items.length) return;
+
+      if (filter) {
+        items = items.filter(function(t) {
+          var lines = t.product_lines || [];
+          var prods = t.products || [];
+          return lines.indexOf(filter) !== -1 || prods.indexOf(filter) !== -1;
+        });
+      }
+      if (!items.length) return;
+
+      if (mode === 'grid') {
+        container.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;">' +
+          items.map(renderTestimonialCard).join('') + '</div>';
+        return;
+      }
+
+      if (mode === 'single') {
+        container.innerHTML = renderTestimonialCard(items[0]);
+        return;
+      }
+
+      // Carousel mode
+      var perPage = window.innerWidth < 768 ? 1 : 3;
+      var page = 0;
+      var totalPages = Math.ceil(items.length / perPage);
+
+      function renderCarouselPage() {
+        var start = page * perPage;
+        var pageItems = items.slice(start, start + perPage);
+        var cardsHtml = pageItems.map(renderTestimonialCard).join('');
+        container.querySelector('.twa-carousel-track').innerHTML = cardsHtml;
+      }
+
+      container.innerHTML =
+        '<div style="position:relative;">' +
+        '<div class="twa-carousel-track" style="display:flex;gap:16px;transition:opacity .3s;"></div>' +
+        (totalPages > 1 ? '<div style="display:flex;justify-content:center;align-items:center;gap:16px;margin-top:16px;">' +
+        '<button class="twa-carousel-prev" aria-label="Previous" style="background:none;border:1px solid var(--border,#e2e8f0);border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:16px;color:var(--slate,#64748b);">&#8249;</button>' +
+        '<span class="twa-carousel-dots" style="display:flex;gap:6px;"></span>' +
+        '<button class="twa-carousel-next" aria-label="Next" style="background:none;border:1px solid var(--border,#e2e8f0);border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:16px;color:var(--slate,#64748b);">&#8250;</button>' +
+        '</div>' : '') +
+        '</div>';
+
+      renderCarouselPage();
+
+      function updateDots() {
+        var dotsEl = container.querySelector('.twa-carousel-dots');
+        if (!dotsEl) return;
+        dotsEl.innerHTML = '';
+        for (var i = 0; i < totalPages; i++) {
+          var dot = document.createElement('span');
+          dot.style.cssText = 'width:8px;height:8px;border-radius:50%;background:' + (i === page ? 'var(--blue,#1a6fb5)' : 'var(--border,#e2e8f0)') + ';transition:background .2s;';
+          dotsEl.appendChild(dot);
+        }
+      }
+      updateDots();
+
+      var prevBtn = container.querySelector('.twa-carousel-prev');
+      var nextBtn = container.querySelector('.twa-carousel-next');
+      if (prevBtn) prevBtn.addEventListener('click', function() { page = (page - 1 + totalPages) % totalPages; renderCarouselPage(); updateDots(); });
+      if (nextBtn) nextBtn.addEventListener('click', function() { page = (page + 1) % totalPages; renderCarouselPage(); updateDots(); });
+
+      var timer = null;
+      if (autoAdvance && totalPages > 1) {
+        timer = setInterval(function() { page = (page + 1) % totalPages; renderCarouselPage(); updateDots(); }, 8000);
+      }
+      document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'hidden' && timer) { clearInterval(timer); timer = null; }
+        else if (document.visibilityState === 'visible' && autoAdvance && totalPages > 1 && !timer) {
+          timer = setInterval(function() { page = (page + 1) % totalPages; renderCarouselPage(); updateDots(); }, 8000);
+        }
+      });
+    });
+  }
+
+  // Expose globally for inline use
+  window.initTestimonialCarousel = initTestimonialCarousel;
+
+  // ═══════════════════════════════════════════════
   // INITIALIZE
   // ═══════════════════════════════════════════════
   document.addEventListener('DOMContentLoaded', () => {
@@ -852,6 +963,14 @@
     initFormTestimonials();
     initScrollAnimations();
     initEngagementTracking();
+    initTestimonialCarousel('[data-testimonials]', {});
+    // Auto-init carousels with mode attribute
+    $$('[data-testimonial-mode]').forEach(function(el) {
+      initTestimonialCarousel('[data-testimonial-mode="' + el.getAttribute('data-testimonial-mode') + '"]', {
+        mode: el.getAttribute('data-testimonial-mode'),
+        filter: el.getAttribute('data-testimonial-filter') || null,
+      });
+    });
   });
 
 })();
