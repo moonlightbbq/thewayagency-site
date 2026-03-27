@@ -263,6 +263,10 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   <meta property="article:author" content="${meta.author}">
   <meta property="article:section" content="${meta.category || 'insurance'}">
   ${(meta.tags || '').replace(/[\[\]]/g, '').split(',').map(t => t.trim()).filter(Boolean).map(t => `<meta property="article:tag" content="${t}">`).join('\n  ')}
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${meta.title}">
+  <meta name="twitter:description" content="${meta.description || ''}">
+  <meta name="twitter:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
   <link rel="alternate" type="application/rss+xml" title="The Way Agency Blog" href="/blog/feed.xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -317,6 +321,24 @@ ${renderNav()}
         <span>Published ${dateFormatted}</span>
         <span>|</span>
         <span>${readingTime}</span>
+      </div>
+      <div class="blog-share" style="display:flex;gap:8px;margin-bottom:var(--space-lg);flex-wrap:wrap;">
+        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(meta.title)}&url=https://www.thewayagency.com/blog/${meta.slug}.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on Twitter">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Share
+        </a>
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.thewayagency.com/blog/${meta.slug}.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on Facebook">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          Share
+        </a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://www.thewayagency.com/blog/${meta.slug}.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on LinkedIn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
+          Share
+        </a>
+        <button onclick="navigator.clipboard.writeText('https://www.thewayagency.com/blog/${meta.slug}.html').then(function(){this.textContent='Copied!';setTimeout(function(){this.textContent='Copy Link'}.bind(this),2000)}.bind(this))" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);background:var(--white);cursor:pointer;font-family:var(--font-body);font-weight:500;" aria-label="Copy link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          Copy Link
+        </button>
       </div>
 ${tocHtml}
       ${enhancedBody}
@@ -682,22 +704,40 @@ ${related.map(p => `          <a href="/blog/${p.slug}.html" class="card" style=
   console.log('  ! No content-calendar.json found — skipping index generation');
 }
 
-// 3. Generate RSS feed
+// 3. Generate enhanced RSS feed
 const rssItems = [];
-// Use allPublishedFiltered if available, otherwise fall back to posts
 const rssPosts = (typeof allPublishedFiltered !== 'undefined' ? allPublishedFiltered : posts.map(m => ({ slug: m.slug, title: m.title, description: m.description || '', publish_date: m.date }))).slice(0, 20);
+// Build author/category map from posts metadata
+const postMetaMap = {};
+for (const m of posts) postMetaMap[m.slug] = m;
+
 for (const p of rssPosts) {
+  const meta = postMetaMap[p.slug] || {};
+  const author = meta.author || 'The Way Agency';
+  const category = meta.category || '';
+  // Read full content for content:encoded if file exists
+  let contentEncoded = '';
+  const builtFile = path.join(BLOG_BUILD, `${p.slug}.html`);
+  if (fs.existsSync(builtFile)) {
+    const html = fs.readFileSync(builtFile, 'utf8');
+    const articleMatch = html.match(/<article[^>]*>([\s\S]*?)<\/article>/);
+    if (articleMatch) contentEncoded = articleMatch[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 2000);
+  }
+
   rssItems.push(`    <item>
       <title><![CDATA[${p.title}]]></title>
       <link>https://www.thewayagency.com/blog/${p.slug}.html</link>
-      <guid>https://www.thewayagency.com/blog/${p.slug}.html</guid>
+      <guid isPermaLink="true">https://www.thewayagency.com/blog/${p.slug}.html</guid>
       <pubDate>${new Date(p.publish_date + 'T12:00:00').toUTCString()}</pubDate>
-      <description><![CDATA[${p.description || ''}]]></description>
+      <dc:creator><![CDATA[${author}]]></dc:creator>${category ? `
+      <category><![CDATA[${category}]]></category>` : ''}
+      <description><![CDATA[${p.description || ''}]]></description>${contentEncoded ? `
+      <content:encoded><![CDATA[${contentEncoded}]]></content:encoded>` : ''}
     </item>`);
 }
 
 const rssFeed = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>The Way Agency Insurance Blog</title>
     <link>https://www.thewayagency.com/blog/</link>

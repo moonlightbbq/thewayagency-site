@@ -64,11 +64,31 @@ h1,h2,h3,h4{font-weight:600}
   <div id="admin-view" class="hidden">
     <div class="tabs" id="admin-tabs">
       <button class="tab active" data-tab="kill-switches">Kill Switches</button>
+      <button class="tab" data-tab="health">System Health</button>
+      <button class="tab" data-tab="data-protection">Data Protection</button>
+      <button class="tab" data-tab="disaster-recovery">Disaster Recovery</button>
     </div>
 
     <div id="tab-kill-switches">
       <div id="kill-cards"></div>
       <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px" id="kill-refresh">Last refresh: —</p>
+    </div>
+
+    <div id="tab-health" class="hidden">
+      <div class="card"><h3>Subsystem Status</h3><div id="health-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px"></div></div>
+      <div class="card"><h3>Active Automations</h3><div id="automations-table"></div></div>
+      <div class="card"><h3>Recent Audit Log <button onclick="loadHealth()" style="font-size:11px;background:var(--blue);color:#fff;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;margin-left:8px">Refresh</button></h3><div id="audit-log"></div></div>
+    </div>
+
+    <div id="tab-data-protection" class="hidden">
+      <div class="card"><h3>Protected Resources</h3><div id="protected-resources"></div></div>
+      <div class="card"><h3>Integrity Status</h3><div id="integrity-status"></div></div>
+      <div class="card"><h3>Deletion Log (Last 50)</h3><div id="deletion-log"></div></div>
+    </div>
+
+    <div id="tab-disaster-recovery" class="hidden">
+      <div class="card"><h3>Backup Status</h3><div id="backup-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px"></div></div>
+      <div class="card"><h3>Recovery Playbooks</h3><div id="playbooks"></div></div>
     </div>
   </div>
 </div>
@@ -231,7 +251,101 @@ function pauseAutomation() {
   }).then(function() { loadKillSwitches(); }).catch(function() { alert('Failed.'); });
 }
 
-// Tab switching
+// ── System Health Tab ───
+var SUBSYSTEMS = ['Database','Claude AI','Microsoft Graph','Ollama','Email','Webhooks','CRM (AgencyZoom)'];
+async function loadHealth() {
+  try {
+    var res = await fetch(SAGE + '/api/admin/health', { headers: { 'Authorization': 'Bearer ' + TOKEN } });
+    var data = res.ok ? await res.json() : {};
+    var subs = data.subsystems || {};
+    var grid = '';
+    SUBSYSTEMS.forEach(function(name) {
+      var key = name.toLowerCase().replace(/[^a-z]/g,'_');
+      var st = subs[key] || { status: 'unknown' };
+      var color = st.status === 'ok' ? 'var(--green)' : st.status === 'degraded' ? 'var(--amber)' : st.status === 'down' ? 'var(--red)' : 'var(--muted)';
+      grid += '<div style="padding:12px;border:1px solid var(--border);border-radius:8px;text-align:center"><span class="status-dot" style="background:' + color + ';margin-bottom:6px"></span><div style="font-size:12px;font-weight:600">' + esc(name) + '</div><div style="font-size:11px;color:var(--muted)">' + esc(st.status || 'unknown') + '</div></div>';
+    });
+    document.getElementById('health-grid').innerHTML = grid;
+    // Automations
+    var autos = data.automations || [];
+    if (autos.length) {
+      var tbl = '<table style="width:100%;font-size:12px;border-collapse:collapse"><tr style="background:#f1f5f9"><th style="text-align:left;padding:6px">Name</th><th>Status</th><th>Last Run</th></tr>';
+      autos.forEach(function(a) { tbl += '<tr><td style="padding:6px">' + esc(a.name) + '</td><td style="padding:6px">' + esc(a.status) + '</td><td style="padding:6px;color:var(--muted)">' + (a.last_run ? new Date(a.last_run).toLocaleString() : '—') + '</td></tr>'; });
+      tbl += '</table>';
+      document.getElementById('automations-table').innerHTML = tbl;
+    } else { document.getElementById('automations-table').innerHTML = '<p style="color:var(--muted);font-size:12px">No automations data</p>'; }
+    // Audit log
+    var logs = data.audit_log || [];
+    if (logs.length) {
+      var logHtml = '';
+      logs.slice(0,25).forEach(function(l) { logHtml += '<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="color:var(--muted);min-width:140px;display:inline-block">' + (l.timestamp ? new Date(l.timestamp).toLocaleString() : '') + '</span> ' + esc(l.action || l.message || '') + '</div>'; });
+      document.getElementById('audit-log').innerHTML = logHtml;
+    } else { document.getElementById('audit-log').innerHTML = '<p style="color:var(--muted);font-size:12px">No audit log entries</p>'; }
+  } catch(e) {
+    document.getElementById('health-grid').innerHTML = '<p style="color:var(--amber);font-size:12px">Failed to load health data</p>';
+  }
+}
+
+// ── Data Protection Tab ───
+async function loadDataProtection() {
+  try {
+    var res = await fetch(SAGE + '/api/admin/data-protection', { headers: { 'Authorization': 'Bearer ' + TOKEN } });
+    var data = res.ok ? await res.json() : {};
+    var resources = data.protected_resources || [];
+    var integrity = data.integrity || {};
+    var deletions = data.deletion_log || [];
+    document.getElementById('protected-resources').innerHTML = resources.length ?
+      '<table style="width:100%;font-size:12px;border-collapse:collapse"><tr style="background:#f1f5f9"><th style="text-align:left;padding:6px">Resource</th><th>Type</th><th>Protection</th></tr>' +
+      resources.map(function(r) { return '<tr><td style="padding:6px">' + esc(r.name) + '</td><td style="padding:6px">' + esc(r.type) + '</td><td style="padding:6px">' + esc(r.protection) + '</td></tr>'; }).join('') + '</table>' :
+      '<p style="color:var(--muted);font-size:12px">No protected resources configured</p>';
+    document.getElementById('integrity-status').innerHTML = integrity.status ?
+      '<div style="display:flex;align-items:center;gap:8px"><span class="status-dot" style="background:' + (integrity.status === 'ok' ? 'var(--green)' : 'var(--red)') + '"></span><span style="font-size:13px">' + esc(integrity.message || integrity.status) + '</span></div>' :
+      '<p style="color:var(--muted);font-size:12px">No integrity data</p>';
+    document.getElementById('deletion-log').innerHTML = deletions.length ?
+      deletions.slice(0,50).map(function(d) { return '<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="color:var(--muted)">' + (d.timestamp ? new Date(d.timestamp).toLocaleString() : '') + '</span> ' + esc(d.resource || '') + ' — ' + esc(d.action || 'deleted') + (d.by ? ' by ' + esc(d.by) : '') + '</div>'; }).join('') :
+      '<p style="color:var(--muted);font-size:12px">No recent deletions</p>';
+  } catch(e) {
+    document.getElementById('protected-resources').innerHTML = '<p style="color:var(--amber);font-size:12px">Failed to load</p>';
+  }
+}
+
+// ── Disaster Recovery Tab ───
+var PLAYBOOKS = [
+  { title: 'Database Corruption', steps: ['1. Activate Kill Level 4 (Emergency Mode)', '2. Stop all write operations', '3. Identify affected tables via integrity check', '4. Restore from most recent verified backup', '5. Run integrity check again', '6. Deactivate kill switch, monitor'] },
+  { title: 'API Key Compromise', steps: ['1. Activate Kill Level 2 (Pause Outbound)', '2. Rotate all affected API keys in env vars', '3. Restart sage-server to pick up new keys', '4. Review audit log for unauthorized access', '5. Deactivate kill switch'] },
+  { title: 'AI Agent Malfunction', steps: ['1. Activate Kill Level 3 (Pause AI)', '2. Check Claude API status and recent responses', '3. Review agent logs for anomalous behavior', '4. If prompt issue: fix prompt, redeploy', '5. If API issue: wait for resolution', '6. Test with single submission before deactivating'] },
+  { title: 'Email System Failure', steps: ['1. Check Microsoft Graph health', '2. Verify OAuth tokens are valid', '3. If token expired: re-authenticate', '4. If Graph is down: activate Kill Level 2', '5. Queue emails for retry when service resumes'] },
+  { title: 'Complete Server Down', steps: ['1. Check server health via SSH or hosting panel', '2. Review system logs for crash reason', '3. If memory: restart with increased limits', '4. If disk: clear logs/temp, expand storage', '5. If code: rollback to pre-sprint tag', '6. Verify all tests pass, restart'] },
+  { title: 'Data Breach Suspected', steps: ['1. Immediately activate Kill Level 5 (Full Shutdown)', '2. Preserve all logs — do NOT delete anything', '3. Change all passwords and API keys', '4. Review audit log for unauthorized access patterns', '5. Notify affected parties per KY breach notification law', '6. Engage legal counsel'] },
+];
+
+function loadDisasterRecovery() {
+  // Backup cards
+  fetch(SAGE + '/api/admin/backups', { headers: { 'Authorization': 'Bearer ' + TOKEN } })
+    .then(function(r) { return r.ok ? r.json() : {}; })
+    .then(function(data) {
+      var backups = data.backups || [
+        { type: 'Full', last: null, status: 'unknown' },
+        { type: 'Database', last: null, status: 'unknown' },
+        { type: 'Secrets', last: null, status: 'unknown' },
+      ];
+      document.getElementById('backup-cards').innerHTML = backups.map(function(b) {
+        var age = b.last ? Math.round((Date.now() - new Date(b.last).getTime()) / 3600000) : null;
+        var color = !age ? 'var(--muted)' : age < 24 ? 'var(--green)' : age < 72 ? 'var(--amber)' : 'var(--red)';
+        return '<div style="padding:16px;border:1px solid var(--border);border-radius:8px;text-align:center;border-top:3px solid ' + color + '"><div style="font-weight:600;font-size:14px">' + esc(b.type) + '</div><div style="font-size:12px;color:var(--muted);margin-top:4px">' + (b.last ? new Date(b.last).toLocaleString() : 'No backup recorded') + '</div><div style="font-size:11px;color:' + color + ';margin-top:4px">' + (age ? age + 'h ago' : 'Unknown') + '</div></div>';
+      }).join('');
+    })
+    .catch(function() { document.getElementById('backup-cards').innerHTML = '<p style="color:var(--amber);font-size:12px;grid-column:1/-1">Failed to load backup status</p>'; });
+
+  // Playbooks (static — works even when sage is down)
+  document.getElementById('playbooks').innerHTML = PLAYBOOKS.map(function(p, i) {
+    return '<details style="margin-bottom:8px;border:1px solid var(--border);border-radius:8px;overflow:hidden">' +
+      '<summary style="padding:12px 16px;font-weight:600;font-size:13px;cursor:pointer;background:#f8fafc">' + esc(p.title) + '</summary>' +
+      '<div style="padding:12px 16px;font-size:12px;line-height:1.8">' + p.steps.map(esc).join('<br>') + '</div></details>';
+  }).join('');
+}
+
+// Tab switching with data loading
 document.addEventListener('click', function(e) {
   var tab = e.target.closest('.tab[data-tab]');
   if (!tab) return;
@@ -240,6 +354,9 @@ document.addEventListener('click', function(e) {
   document.querySelectorAll('[id^="tab-"]').forEach(function(p) { p.classList.add('hidden'); });
   var target = document.getElementById('tab-' + tab.dataset.tab);
   if (target) target.classList.remove('hidden');
+  if (tab.dataset.tab === 'health') loadHealth();
+  if (tab.dataset.tab === 'data-protection') loadDataProtection();
+  if (tab.dataset.tab === 'disaster-recovery') loadDisasterRecovery();
 });
 </script>
 </body>
