@@ -72,7 +72,7 @@ function copyRootPages(SRC, BUILD, injectVersion) {
     const src = path.join(SRC, 'pages', file);
     if (fs.existsSync(src)) {
       const content = fs.readFileSync(src, 'utf8');
-      fs.writeFileSync(path.join(BUILD, file), injectVersion(content));
+      fs.writeFileSync(path.join(BUILD, file), injectVersion(content, '/' + file));
       console.log(`  ✓ ${file}`);
     }
   }
@@ -121,7 +121,7 @@ function copyPortalPages(SRC, BUILD, injectVersion) {
       const destDir = path.join(BUILD, path.dirname(page.dest));
       ensureDir(destDir);
       const pageContent = fs.readFileSync(srcFile, 'utf8');
-      fs.writeFileSync(path.join(BUILD, page.dest), injectVersion(pageContent));
+      fs.writeFileSync(path.join(BUILD, page.dest), injectVersion(pageContent, '/' + page.dest));
       console.log(`  ✓ ${page.dest}`);
     }
   }

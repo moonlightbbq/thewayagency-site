@@ -27,7 +27,7 @@ function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, render
   const versionComment = `<!-- build: ${buildVersion} | ${gitInfo.branch} | ${buildDate} -->`;
   const versionFooter = `<!-- build: ${buildVersion} -->`;
 
-  return function injectVersion(html) {
+  return function injectVersion(html, outputPath) {
     // Add meta tag after charset
     html = html.replace('<meta charset="UTF-8">', `<meta charset="UTF-8">\n  ${versionMeta}`);
     // Add build comment after doctype
@@ -48,6 +48,22 @@ function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, render
       const cssLinks = '  <link rel="stylesheet" href="/src/css/base.css">\n  <link rel="stylesheet" href="/src/css/components.css">\n  <link rel="stylesheet" href="/src/css/leadgen.css">';
       const lazyCss = `  <style>${criticalCss}</style>\n  <link rel="stylesheet" href="/src/css/base.css" media="print" onload="this.media='all'">\n  <link rel="stylesheet" href="/src/css/components.css" media="print" onload="this.media='all'">\n  <link rel="stylesheet" href="/src/css/leadgen.css" media="print" onload="this.media='all'">\n  <noscript><link rel="stylesheet" href="/src/css/base.css"><link rel="stylesheet" href="/src/css/components.css"><link rel="stylesheet" href="/src/css/leadgen.css"></noscript>`;
       html = html.replace(cssLinks, lazyCss);
+    }
+    // Add hreflang if not already present
+    if (!html.includes('hreflang')) {
+      const canonicalMatch = html.match(/<link rel="canonical" href="([^"]+)">/);
+      if (canonicalMatch) {
+        html = html.replace(canonicalMatch[0], `${canonicalMatch[0]}\n  <link rel="alternate" hreflang="en-US" href="${canonicalMatch[1]}">`);
+      }
+    }
+    // Add noindex for portal, intake, partner, login pages
+    if (!html.includes('name="robots"')) {
+      const canonicalUrl = (html.match(/<link rel="canonical" href="([^"]+)">/) || [])[1] || '';
+      const isNoindex = /\/(intake|portal|partner|login)[\/.]/.test(canonicalUrl) ||
+        (outputPath && /\/(intake|portal|partner|login)[\/.]/.test(outputPath));
+      if (isNoindex) {
+        html = html.replace('<meta charset="UTF-8">', '<meta charset="UTF-8">\n  <meta name="robots" content="noindex, nofollow">');
+      }
     }
     // Inject GTM head snippet (before </head>) and body snippet (after <body>)
     if (!html.includes('gtm.js')) {
