@@ -150,6 +150,7 @@ function renderHead({ title, description, canonical, ogTitle, ogDescription, ogU
   <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
   <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
   <link rel="icon" href="/src/assets/images/favicon.png">
+  <link rel="preload" as="image" type="image/webp" href="/src/assets/images/logo-horizontal.webp">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">${cssBlock}${schema ? (schema.includes('<script') ? `
