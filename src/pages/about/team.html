@@ -49,44 +49,166 @@
       },
       {
         "@type": "Person",
-        "name": "Audrey Lillpop",
-        "jobTitle": "Licensed Agent",
-        "description": "CISR-certified licensed insurance agent with 8 years of experience specializing in personal lines. Licensed in KY, IN, and TN.",
-        "worksFor": {
-          "@type": "InsuranceAgency",
-          "name": "The Way Agency"
-        },
-        "knowsAbout": ["Personal Lines Insurance"],
-        "hasCredential": {
-          "@type": "EducationalOccupationalCredential",
-          "credentialCategory": "CISR"
-        }
-      },
-      {
-        "@type": "Person",
         "name": "Sheilia Royal",
         "jobTitle": "Agency Principal / Licensed Agent",
         "description": "Agency principal and licensed insurance agent with 20 years of experience in commercial and personal lines. Licensed in KY, IN, and TN.",
-        "worksFor": {
-          "@type": "InsuranceAgency",
-          "name": "The Way Agency"
-        },
-        "knowsAbout": ["Commercial Insurance", "Personal Lines Insurance"]
+        "image": "https://www.thewayagency.com/src/assets/images/team/sheilia-royal.webp",
+        "email": "sheilia@thewayagency.com",
+        "telephone": "(502) 413-5335 ext 1",
+        "worksFor": { "@type": "InsuranceAgency", "name": "The Way Agency" },
+        "knowsAbout": ["Commercial Insurance", "Personal Lines Insurance", "Life & Health Insurance"]
+      },
+      {
+        "@type": "Person",
+        "name": "Audrey Lillpop",
+        "jobTitle": "Licensed Agent",
+        "description": "Licensed insurance agent with 8 years of experience specializing in personal lines. Licensed in KY, IN, and TN.",
+        "image": "https://www.thewayagency.com/src/assets/images/team/audrey-lillpop.webp",
+        "email": "audrey@thewayagency.com",
+        "telephone": "(502) 413-5335 ext 2",
+        "worksFor": { "@type": "InsuranceAgency", "name": "The Way Agency" },
+        "knowsAbout": ["Personal Lines Insurance", "Homeowners Insurance", "Auto Insurance"]
       },
       {
         "@type": "Person",
         "name": "Kelly McCallister",
-        "jobTitle": "Licensed Agent",
+        "jobTitle": "Client Care Specialist",
         "description": "Licensed insurance agent with 10 years of experience specializing in commercial lines. Licensed in KY, IN, and TN.",
-        "worksFor": {
-          "@type": "InsuranceAgency",
-          "name": "The Way Agency"
-        },
-        "knowsAbout": ["Commercial Insurance"]
+        "image": "https://www.thewayagency.com/src/assets/images/team/kelly-mccallister.webp",
+        "email": "kelly@thewayagency.com",
+        "telephone": "(502) 413-5335 ext 3",
+        "worksFor": { "@type": "InsuranceAgency", "name": "The Way Agency" },
+        "knowsAbout": ["Commercial Insurance", "General Liability", "Workers Compensation"]
+      },
+      {
+        "@type": "Person",
+        "name": "Jill Boone",
+        "jobTitle": "Licensed Agent",
+        "description": "Licensed insurance agent with 6 years of experience specializing in life and health insurance. Licensed in KY, IN, and TN.",
+        "image": "https://www.thewayagency.com/src/assets/images/team/jill-boone.webp",
+        "email": "jill@thewayagency.com",
+        "telephone": "(502) 413-5335 ext 4",
+        "worksFor": { "@type": "InsuranceAgency", "name": "The Way Agency" },
+        "knowsAbout": ["Life Insurance", "Health Insurance", "Medicare"]
       }
     ]
   }
   </script>
+  <style>
+    .team-featured {
+      display: grid;
+      grid-template-columns: 200px 1fr;
+      gap: var(--space-xl);
+      align-items: start;
+      text-align: left;
+      padding: var(--space-2xl);
+      border: 2px solid var(--gold);
+      position: relative;
+    }
+    .team-featured .team-badge-principal {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: var(--gold);
+      color: var(--navy-dark);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    @media (max-width: 640px) {
+      .team-featured { grid-template-columns: 1fr; text-align: center; }
+      .team-featured .team-photo { margin: 0 auto; }
+    }
+    .team-photo {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--linen);
+    }
+    .team-photo-placeholder {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: var(--linen);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-3xl);
+      color: var(--stone);
+      font-family: var(--font-display);
+    }
+    .team-card {
+      text-align: center;
+      padding: var(--space-xl);
+    }
+    .team-card .team-photo,
+    .team-card .team-photo-placeholder {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto var(--space-lg);
+    }
+    .team-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: var(--space-sm) 0;
+    }
+    .team-featured .team-badges { justify-content: flex-start; }
+    .team-card .team-badges { justify-content: center; }
+    .team-license-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: var(--blue);
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+    .team-specialty-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 20px;
+      background: var(--linen);
+      color: var(--charcoal);
+    }
+    .team-fun-fact {
+      font-size: var(--text-sm);
+      color: var(--slate);
+      font-style: italic;
+      margin-top: var(--space-md);
+      padding: var(--space-sm) var(--space-md);
+      background: var(--linen);
+      border-radius: var(--border-radius);
+      line-height: 1.6;
+    }
+    .team-contact-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: var(--space-md);
+      padding: 8px 20px;
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--blue);
+      border: 1.5px solid var(--blue);
+      border-radius: var(--border-radius);
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s;
+    }
+    .team-contact-btn:hover { background: var(--blue); color: #fff; }
+    .team-experience {
+      font-size: var(--text-sm);
+      color: var(--slate);
+      margin-bottom: var(--space-xs);
+    }
+  </style>
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -159,36 +281,114 @@
           <h2>The Way Agency Team</h2>
           <p>Our team members are listed below. Each agent is licensed in Kentucky, Indiana, and Tennessee. Contact any of us directly, or <a href="/intake/">request a quote</a> and we'll match you with the right person.</p>
         </div>
-        <div class="grid grid--3">
-          <div class="card" style="text-align:center;" id="sheilia-royal">
-            <div style="width:100px;height:100px;border-radius:50%;background:var(--linen);margin:0 auto var(--space-lg);display:flex;align-items:center;justify-content:center;font-size:var(--text-3xl);color:var(--stone);font-family:var(--font-display);">S</div>
-            <h3 class="card__title" style="font-size:var(--text-xl);">Sheilia Royal</h3>
-            <p style="font-size:var(--text-sm);font-weight:600;color:var(--gold);margin-bottom:var(--space-sm);">Agency Principal / Licensed Agent</p>
-            <p class="card__text" style="font-size:var(--text-sm);">Sheilia leads The Way Agency with a mission to make insurance accessible and personal. She oversees all commercial and personal lines and brings two decades of experience helping Kentucky businesses and families protect what matters most.</p>
+        <!-- Featured: Agency Principal -->
+        <div class="card team-featured" id="sheilia-royal">
+          <span class="team-badge-principal">Agency Principal</span>
+          <div>
+            <img class="team-photo" src="/src/assets/images/team/sheilia-royal.webp" alt="Sheilia Royal, Agency Principal" onerror="this.outerHTML='<div class=\'team-photo-placeholder\'>S</div>'">
           </div>
-          <div class="card" style="text-align:center;" id="audrey-lillpop">
-            <div style="width:100px;height:100px;border-radius:50%;background:var(--linen);margin:0 auto var(--space-lg);display:flex;align-items:center;justify-content:center;font-size:var(--text-3xl);color:var(--stone);font-family:var(--font-display);">A</div>
+          <div>
+            <h3 class="card__title" style="font-size:var(--text-xl);margin-bottom:2px;">Sheilia Royal</h3>
+            <p style="font-size:var(--text-sm);font-weight:600;color:var(--gold);margin-bottom:var(--space-xs);">Agency Principal / Licensed Agent</p>
+            <p class="team-experience">20 years of experience</p>
+            <div class="team-badges">
+              <span class="team-license-badge">KY</span>
+              <span class="team-license-badge">IN</span>
+              <span class="team-license-badge">TN</span>
+            </div>
+            <div class="team-badges">
+              <span class="team-specialty-tag">Commercial</span>
+              <span class="team-specialty-tag">Personal Lines</span>
+              <span class="team-specialty-tag">Life &amp; Health</span>
+            </div>
+            <p class="card__text" style="font-size:var(--text-sm);margin-top:var(--space-md);">With over 20 years in the insurance industry, Sheilia founded The Way Agency to bring honest, client-first coverage to families and businesses across Kentucky, Indiana, and Tennessee. She specializes in building customized commercial and personal insurance programs, and believes that meeting clients where they are — not behind a storefront counter — is the best way to earn their trust.</p>
+            <div class="team-fun-fact">Sheilia named the agency after John 14:6 and has never missed a client's policy renewal in over two decades.</div>
+            <a href="/intake/?agent=sheilia-royal" class="team-contact-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              Contact Sheilia
+            </a>
+          </div>
+        </div>
+
+        <!-- Team Grid -->
+        <div class="grid grid--3" style="margin-top:var(--space-xl);">
+          <div class="card team-card" id="audrey-lillpop">
+            <img class="team-photo" src="/src/assets/images/team/audrey-lillpop.webp" alt="Audrey Lillpop, Licensed Agent" onerror="this.outerHTML='<div class=\'team-photo-placeholder\'>A</div>'">
             <h3 class="card__title" style="font-size:var(--text-xl);">Audrey Lillpop</h3>
-            <p style="font-size:var(--text-sm);font-weight:600;color:var(--gold);margin-bottom:var(--space-sm);">Licensed Agent</p>
-            <p class="card__text" style="font-size:var(--text-sm);">Audrey helps families across Kentucky find the right home and auto coverage. She is known for taking time to explain options in plain language and making sure clients understand exactly what they are buying.</p>
+            <p style="font-size:var(--text-sm);font-weight:600;color:var(--gold);margin-bottom:var(--space-xs);">Licensed Agent</p>
+            <p class="team-experience">8 years of experience</p>
+            <div class="team-badges">
+              <span class="team-license-badge">KY</span>
+              <span class="team-license-badge">IN</span>
+              <span class="team-license-badge">TN</span>
+            </div>
+            <div class="team-badges">
+              <span class="team-specialty-tag">Home</span>
+              <span class="team-specialty-tag">Auto</span>
+              <span class="team-specialty-tag">Umbrella</span>
+              <span class="team-specialty-tag">Flood</span>
+            </div>
+            <p class="card__text" style="font-size:var(--text-sm);margin-top:var(--space-md);">Audrey brings 8 years of personal lines expertise to the Owensboro and Henderson communities. From first-time homebuyers to families looking for the right auto and umbrella coverage, she walks clients through every option so they feel confident in their protection — no insurance jargon, just straight answers.</p>
+            <div class="team-fun-fact">Audrey is known around the office for remembering every client's pet's name — and she always asks how they're doing.</div>
+            <a href="/intake/?agent=audrey-lillpop" class="team-contact-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              Contact Audrey
+            </a>
           </div>
-          <div class="card" style="text-align:center;" id="kelly-mccallister">
-            <div style="width:100px;height:100px;border-radius:50%;background:var(--linen);margin:0 auto var(--space-lg);display:flex;align-items:center;justify-content:center;font-size:var(--text-3xl);color:var(--stone);font-family:var(--font-display);">K</div>
+
+          <div class="card team-card" id="kelly-mccallister">
+            <img class="team-photo" src="/src/assets/images/team/kelly-mccallister.webp" alt="Kelly McCallister, Client Care Specialist" onerror="this.outerHTML='<div class=\'team-photo-placeholder\'>K</div>'">
             <h3 class="card__title" style="font-size:var(--text-xl);">Kelly McCallister</h3>
-            <p style="font-size:var(--text-sm);font-weight:600;color:var(--gold);margin-bottom:var(--space-sm);">Client Care Specialist</p>
-            <p class="card__text" style="font-size:var(--text-sm);">Kelly specializes in commercial insurance for contractors, manufacturers, and small businesses across the tri-state area. She understands the unique risks businesses face and works to build coverage programs that protect without overpaying.</p>
+            <p style="font-size:var(--text-sm);font-weight:600;color:var(--gold);margin-bottom:var(--space-xs);">Client Care Specialist</p>
+            <p class="team-experience">10 years of experience</p>
+            <div class="team-badges">
+              <span class="team-license-badge">KY</span>
+              <span class="team-license-badge">IN</span>
+              <span class="team-license-badge">TN</span>
+            </div>
+            <div class="team-badges">
+              <span class="team-specialty-tag">General Liability</span>
+              <span class="team-specialty-tag">Commercial Auto</span>
+              <span class="team-specialty-tag">Bonds</span>
+              <span class="team-specialty-tag">Cyber</span>
+            </div>
+            <p class="card__text" style="font-size:var(--text-sm);margin-top:var(--space-md);">Kelly has spent 10 years helping business owners across Owensboro, Henderson, and Evansville protect what they've built. She handles everything from general liability and commercial auto to bonds, builders risk, and cyber coverage — and she's especially passionate about making sure small businesses aren't overpaying or underinsured.</p>
+            <div class="team-fun-fact">Kelly once helped a contractor get bonded, insured, and on a job site in under 48 hours — the client still talks about it.</div>
+            <a href="/intake/?agent=kelly-mccallister" class="team-contact-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              Contact Kelly
+            </a>
           </div>
-          <div class="card" style="text-align:center;" id="jill-boone">
-            <div style="width:100px;height:100px;border-radius:50%;background:var(--linen);margin:0 auto var(--space-lg);display:flex;align-items:center;justify-content:center;font-size:var(--text-3xl);color:var(--stone);font-family:var(--font-display);">J</div>
+
+          <div class="card team-card" id="jill-boone">
+            <img class="team-photo" src="/src/assets/images/team/jill-boone.webp" alt="Jill Boone, Licensed Agent" onerror="this.outerHTML='<div class=\'team-photo-placeholder\'>J</div>'">
             <h3 class="card__title" style="font-size:var(--text-xl);">Jill Boone</h3>
-            <p style="font-size:var(--text-sm);font-weight:600;color:var(--gold);margin-bottom:var(--space-sm);">Licensed Agent</p>
-            <p class="card__text" style="font-size:var(--text-sm);">Jill focuses on life and health insurance, helping individuals and families navigate Medicare, health coverage options, and life insurance planning. She brings a patient, detail-oriented approach to every client conversation.</p>
+            <p style="font-size:var(--text-sm);font-weight:600;color:var(--gold);margin-bottom:var(--space-xs);">Licensed Agent</p>
+            <p class="team-experience">6 years of experience</p>
+            <div class="team-badges">
+              <span class="team-license-badge">KY</span>
+              <span class="team-license-badge">IN</span>
+              <span class="team-license-badge">TN</span>
+            </div>
+            <div class="team-badges">
+              <span class="team-specialty-tag">Medicare</span>
+              <span class="team-specialty-tag">Life Insurance</span>
+              <span class="team-specialty-tag">Health Insurance</span>
+            </div>
+            <p class="card__text" style="font-size:var(--text-sm);margin-top:var(--space-md);">Jill has 6 years of experience guiding individuals and families through life, health, and Medicare decisions in the Mt. Washington and Louisville area. Whether it's choosing the right Medicare plan during open enrollment or finding affordable group health coverage for a growing team, Jill makes the process feel simple and personal.</p>
+            <div class="team-fun-fact">Jill volunteers every fall at local Medicare enrollment events and has helped over 300 seniors find the right plan.</div>
+            <a href="/intake/?agent=jill-boone" class="team-contact-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              Contact Jill
+            </a>
           </div>
-          <div class="card" style="text-align:center;" id="allison-sommers">
-            <div style="width:100px;height:100px;border-radius:50%;background:var(--linen);margin:0 auto var(--space-lg);display:flex;align-items:center;justify-content:center;font-size:var(--text-3xl);color:var(--stone);font-family:var(--font-display);">A</div>
+
+          <div class="card team-card" id="allison-sommers">
+            <img class="team-photo" src="/src/assets/images/team/allison-sommers.webp" alt="Allison Sommers, College Intern" onerror="this.outerHTML='<div class=\'team-photo-placeholder\'>A</div>'">
             <h3 class="card__title" style="font-size:var(--text-xl);">Allison Sommers</h3>
-            <p style="font-size:var(--text-sm);font-weight:600;color:var(--gold);margin-bottom:var(--space-sm);">College Intern</p>
-            <p class="card__text" style="font-size:var(--text-sm);"></p>
+            <p style="font-size:var(--text-sm);font-weight:600;color:var(--gold);margin-bottom:var(--space-xs);">College Intern</p>
+            <p class="card__text" style="font-size:var(--text-sm);margin-top:var(--space-md);">Allison is a college intern learning the ropes of independent insurance from the ground up. She supports the team with client communications, research, and day-to-day office tasks — and she's already picking up on what makes great coverage advice.</p>
+            <div class="team-fun-fact">Allison can explain the difference between an HO-3 and an HO-5 policy better than most people twice her age.</div>
           </div>
         </div>
       </div>

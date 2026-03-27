@@ -457,9 +457,74 @@
   .upload-found { font-size: 14px; color: var(--navy); text-align: center; line-height: 1.6; margin-bottom: 4px; }
   .upload-found-detail { font-size: 12px; color: var(--slate); text-align: center; margin-bottom: 16px; }
   .upload-error-msg { font-size: 14px; color: #dc2626; text-align: center; margin-bottom: 16px; }
+
+  /* ─── Draft auto-save ─── */
+  .draft-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120px);
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(0,0,0,.12);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 1000;
+    max-width: 420px;
+    width: calc(100% - 32px);
+    transition: transform .35s ease-out;
+  }
+  .draft-toast.visible { transform: translateX(-50%) translateY(0); }
+  .draft-toast-text { flex: 1; font-size: 13px; color: var(--navy); line-height: 1.5; }
+  .draft-toast-text strong { display: block; font-size: 14px; margin-bottom: 2px; }
+  .draft-toast-actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .draft-toast-actions button {
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+  }
+  .draft-toast-resume { background: var(--blue); color: #fff; }
+  .draft-toast-resume:hover { background: var(--navy); }
+  .draft-toast-clear { background: var(--light); color: var(--slate); }
+  .draft-toast-clear:hover { background: var(--border); }
+  .draft-saved-indicator {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    font-size: 11px;
+    color: var(--slate);
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 10px;
+    opacity: 0;
+    transition: opacity .3s;
+    z-index: 999;
+    pointer-events: none;
+  }
+  .draft-saved-indicator.show { opacity: 1; }
 </style>
 </head>
 <body>
+
+<!-- Draft resume toast -->
+<div class="draft-toast" id="draft-toast">
+  <div class="draft-toast-text">
+    <strong>Resume your quote?</strong>
+    <span id="draft-toast-detail">You have a saved draft.</span>
+  </div>
+  <div class="draft-toast-actions">
+    <button class="draft-toast-clear" id="draft-clear-btn">Start Over</button>
+    <button class="draft-toast-resume" id="draft-resume-btn">Resume</button>
+  </div>
+</div>
+<div class="draft-saved-indicator" id="draft-saved-indicator">Draft saved</div>
 
 <a href="#main" class="skip-link">Skip to main content</a>
 <nav class="nav" id="nav">
@@ -2328,6 +2393,7 @@ async function submitIntake() {
         const msg = document.getElementById('confirm-message');
         if (msg) msg.textContent = 'Thank you for choosing The Way Agency. ' + a.name.split(' ')[0] + ' will review your information and reach out with your personalized quote within one business day.';
       }
+      clearDraft();
       trackStepComplete(5);
       trackSubmitSuccess(data.reference, selectedProducts.length);
       // Google Ads conversion (configured in GTM)
@@ -2624,6 +2690,184 @@ function skipUpload() {
 function proceedFromUpload() {
   showStep(3); // go to Coverage (products will be auto-selected)
 }
+
+// ── Form Auto-Save (localStorage) ────────────────────────────────────────────
+const DRAFT_KEY = 'twa_intake_draft';
+const DRAFT_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+// Fields to save from step 1 and step 4
+const DRAFT_FIELD_IDS = [
+  'i_fname', 'i_lname', 'i_email', 'i_phone',
+  'i_address', 'i_city', 'i_state', 'i_zip',
+  'i_notes', 'i_current_carrier', 'i_policy_expiry', 'i_dob',
+  'i_ho_value', 'i_ho_yearbuilt', 'i_ho_address', 'i_ho_city', 'i_ho_state', 'i_ho_zip',
+  'i_li_amount', 'i_li_type', 'i_li_tobacco',
+  'i_umb_limit', 'i_umb_drivers',
+  'i_fl_foundation', 'i_fl_claims',
+  'i_rent_coverage', 'i_rent_type',
+  'i_mc_year', 'i_mc_make', 'i_mc_model',
+  'i_boat_year', 'i_boat_make', 'i_boat_length', 'i_boat_type',
+  'i_rv_year', 'i_rv_make', 'i_rv_model', 'i_rv_type',
+  'i_bop_ownlease', 'i_df_use', 'i_df_value', 'i_df_address',
+  'i_cgl_limit', 'i_ca_numveh', 'i_ca_vehtype', 'i_wc_payroll',
+  'i_eo_profession', 'i_fr_type', 'i_fr_acres',
+  'i_bond_type', 'i_bond_amount', 'i_br_projtype', 'i_br_value',
+  'i_biz_name', 'i_biz_type', 'i_biz_employees', 'i_biz_years', 'i_biz_revenue',
+  'i_other_desc',
+];
+
+function collectDraft() {
+  const fields = {};
+  for (const id of DRAFT_FIELD_IDS) {
+    const el = document.getElementById(id);
+    if (el && el.value.trim()) fields[id] = el.value.trim();
+  }
+  // Collect vehicles
+  const vehicles = [];
+  document.querySelectorAll('#vehicles-container .vehicle-block').forEach(b => {
+    const yr = b.querySelector('.vh-year')?.value.trim() || '';
+    const mk = b.querySelector('.vh-make')?.value.trim() || '';
+    const md = b.querySelector('.vh-model')?.value.trim() || '';
+    if (yr || mk || md) vehicles.push({ year: yr, make: mk, model: md });
+  });
+  return {
+    fields,
+    products: [...selectedProducts],
+    vehicles,
+    step: currentStep,
+    hoSameAddr,
+    savedAt: Date.now(),
+  };
+}
+
+function saveDraft() {
+  // Don't save after submission or if no meaningful data
+  if (_submitted) return;
+  const draft = collectDraft();
+  if (!Object.keys(draft.fields).length && !draft.products.length) return;
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    // Show "Draft saved" indicator briefly
+    const indicator = document.getElementById('draft-saved-indicator');
+    if (indicator) {
+      indicator.classList.add('show');
+      clearTimeout(indicator._hideTimer);
+      indicator._hideTimer = setTimeout(() => indicator.classList.remove('show'), 2000);
+    }
+  } catch (e) { /* localStorage full or unavailable */ }
+}
+
+function clearDraft() {
+  try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+}
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    const draft = JSON.parse(raw);
+    if (Date.now() - draft.savedAt > DRAFT_MAX_AGE) { clearDraft(); return null; }
+    // Only resume if there's meaningful data (at least a name or product)
+    if (!Object.keys(draft.fields).length && !draft.products?.length) { clearDraft(); return null; }
+    return draft;
+  } catch (e) { return null; }
+}
+
+function restoreDraft(draft) {
+  // Restore fields that exist on the page now (step 1 fields)
+  for (const [id, val] of Object.entries(draft.fields)) {
+    const el = document.getElementById(id);
+    if (el) { el.value = val; el.classList.add('filled'); }
+  }
+  // Restore selected products
+  if (draft.products?.length) {
+    selectedProducts = [...draft.products];
+    // Toggle product buttons in the grid
+    for (const pid of selectedProducts) {
+      const btn = document.querySelector(`.product-opt[data-pid="${pid}"]`);
+      if (btn) btn.classList.add('selected');
+    }
+    if (typeof syncBundlePills === 'function') syncBundlePills();
+  }
+  // Restore homeowners address toggle
+  if (typeof draft.hoSameAddr === 'boolean') hoSameAddr = draft.hoSameAddr;
+  // Store vehicles to restore when step 4 renders
+  if (draft.vehicles?.length) window._draftVehicles = draft.vehicles;
+  // Navigate to the step the user was on (but cap at step 3 — step 4/5 have dynamic content)
+  const targetStep = Math.min(draft.step || 1, 3);
+  if (targetStep > 1) showStep(targetStep);
+}
+
+// Debounced auto-save on any input change
+let _draftSaveTimer = null;
+function scheduleDraftSave() {
+  clearTimeout(_draftSaveTimer);
+  _draftSaveTimer = setTimeout(saveDraft, 500);
+}
+document.addEventListener('input', scheduleDraftSave);
+document.addEventListener('change', scheduleDraftSave);
+
+// Check for saved draft on page load
+(function checkDraft() {
+  const draft = loadDraft();
+  if (!draft) return;
+  const toast = document.getElementById('draft-toast');
+  const detail = document.getElementById('draft-toast-detail');
+  if (!toast) return;
+  // Build description
+  const name = [draft.fields.i_fname, draft.fields.i_lname].filter(Boolean).join(' ');
+  const ago = Math.round((Date.now() - draft.savedAt) / (1000 * 60));
+  let agoText = ago < 60 ? `${ago} minute${ago !== 1 ? 's' : ''} ago` :
+                ago < 1440 ? `${Math.round(ago/60)} hour${Math.round(ago/60) !== 1 ? 's' : ''} ago` :
+                `${Math.round(ago/1440)} day${Math.round(ago/1440) !== 1 ? 's' : ''} ago`;
+  detail.textContent = (name ? `For ${name} — ` : '') + `saved ${agoText}`;
+  // Show toast with slight delay for smooth entrance
+  setTimeout(() => toast.classList.add('visible'), 300);
+  // Resume button
+  document.getElementById('draft-resume-btn').addEventListener('click', () => {
+    toast.classList.remove('visible');
+    restoreDraft(draft);
+  });
+  // Start Over button
+  document.getElementById('draft-clear-btn').addEventListener('click', () => {
+    toast.classList.remove('visible');
+    clearDraft();
+  });
+  // Auto-dismiss after 15 seconds
+  setTimeout(() => toast.classList.remove('visible'), 15000);
+})();
+
+// Hook into renderProductQuestions to restore draft vehicles
+const _origRenderProductQuestions = renderProductQuestions;
+renderProductQuestions = function() {
+  _origRenderProductQuestions();
+  // After product questions are rendered, restore saved vehicles from draft
+  if (window._draftVehicles && window._draftVehicles.length && selectedProducts.includes('auto')) {
+    const existingBlocks = document.querySelectorAll('#vehicles-container .vehicle-block');
+    // If we need more vehicle blocks than exist, add them
+    for (let i = existingBlocks.length; i < window._draftVehicles.length; i++) addVehicle();
+    const blocks = document.querySelectorAll('#vehicles-container .vehicle-block');
+    window._draftVehicles.forEach((vh, i) => {
+      const block = blocks[i];
+      if (!block) return;
+      const y = block.querySelector('.vh-year');
+      const m = block.querySelector('.vh-make');
+      const d = block.querySelector('.vh-model');
+      if (y && !y.value && vh.year) y.value = vh.year;
+      if (m && !m.value && vh.make) m.value = vh.make;
+      if (d && !d.value && vh.model) d.value = vh.model;
+    });
+    delete window._draftVehicles; // Only apply once
+  }
+  // Also restore any draft field values for dynamic step 4 fields
+  const draft = loadDraft();
+  if (draft?.fields) {
+    for (const [id, val] of Object.entries(draft.fields)) {
+      const el = document.getElementById(id);
+      if (el && !el.value.trim()) { el.value = val; el.classList.add('filled'); }
+    }
+  }
+};
 
 // ── Field Mapping & Prefill ─────────────────────────────────────────────────
 

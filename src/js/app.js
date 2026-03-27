@@ -436,15 +436,34 @@
 
   function initStickyMobileCTA() {
     if (window.innerWidth > 768) return;
+    const isIntake = window.location.pathname.startsWith('/intake');
+
+    if (isIntake) {
+      // On intake page: floating "Call for Help" button
+      const style = document.createElement('style');
+      style.textContent = '.intake-call-fab{display:flex;align-items:center;gap:6px;position:fixed;bottom:20px;right:16px;z-index:900;background:var(--blue);color:#fff;padding:12px 18px;border-radius:28px;font-size:13px;font-weight:600;text-decoration:none;box-shadow:0 4px 16px rgba(26,111,181,.35);transition:background .2s,transform .2s}.intake-call-fab:hover{background:var(--navy);transform:scale(1.04)}.intake-call-fab svg{flex-shrink:0}';
+      document.head.appendChild(style);
+      const fab = createElement('a', {
+        href: 'tel:' + CONFIG.phoneRaw,
+        id: 'intakeCallFab',
+        class: 'intake-call-fab',
+      }, `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
+        Call for Help
+      `);
+      document.body.appendChild(fab);
+      fab.addEventListener('click', () => {
+        track('intake_call_fab_click', { category: 'conversion', page_path: window.location.pathname });
+      });
+      return;
+    }
+
+    // Non-intake pages: sticky bottom bar with Call Now + Get a Quote
     const intakeUrl = getIntakeUrl();
     const bar = createElement('div', { id: 'stickyMobileCTA', class: 'sticky-cta' }, `
       <a href="tel:${CONFIG.phoneRaw}" class="sticky-cta__link">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72"/></svg>
-        Call
-      </a>
-      <a href="sms:${CONFIG.phoneRaw}" class="sticky-cta__link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-        Text
+        Call Now
       </a>
       <a href="${intakeUrl}" class="sticky-cta__link sticky-cta__link--primary">
         Get a Quote
