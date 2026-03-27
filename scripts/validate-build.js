@@ -149,6 +149,67 @@ for (const file of htmlFiles) {
 }
 if (missingImages === 0) pass('All referenced images exist');
 
+// 7. JSON-LD validation (syntactically valid JSON)
+let invalidJsonLd = 0;
+for (const file of htmlFiles) {
+  const html = fs.readFileSync(file, 'utf8');
+  const rel = path.relative(BUILD, file);
+  const jsonLdRegex = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g;
+  let jsonMatch;
+  while ((jsonMatch = jsonLdRegex.exec(html)) !== null) {
+    try {
+      const parsed = JSON.parse(jsonMatch[1].trim());
+      if (!parsed['@type']) warn(`JSON-LD missing @type in ${rel}`);
+    } catch (e) {
+      error(`Invalid JSON-LD in ${rel}: ${e.message.substring(0, 60)}`);
+      invalidJsonLd++;
+    }
+  }
+}
+if (invalidJsonLd === 0) pass('All JSON-LD is syntactically valid');
+
+// 8. Image size check (warn on images >500KB)
+let largeImages = 0;
+const assetsDir = path.join(BUILD, 'src', 'assets');
+function checkImageSizes(dir) {
+  if (!fs.existsSync(dir)) return;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) { checkImageSizes(full); continue; }
+    if (/\.(png|jpg|jpeg|webp|gif|svg)$/i.test(entry.name)) {
+      const size = fs.statSync(full).size;
+      if (size > 500 * 1024) {
+        warn(`Large image (${(size / 1024).toFixed(0)}KB): ${path.relative(BUILD, full)}`);
+        largeImages++;
+      }
+    }
+  }
+}
+checkImageSizes(assetsDir);
+if (largeImages === 0) pass('All images under 500KB');
+
+// 9. Redirect conflict check
+const redirectsPath = path.join(__dirname, '..', '_redirects');
+if (fs.existsSync(redirectsPath)) {
+  const redirects = fs.readFileSync(redirectsPath, 'utf8');
+  const redirectSources = [];
+  let conflicts = 0;
+  for (const line of redirects.split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const parts = trimmed.split(/\s+/);
+    if (parts.length >= 3) {
+      const source = parts[0];
+      if (redirectSources.includes(source)) {
+        warn(`Duplicate redirect source: ${source}`);
+        conflicts++;
+      }
+      redirectSources.push(source);
+    }
+  }
+  if (conflicts === 0) pass(`${redirectSources.length} redirects, no conflicts`);
+}
+
 // Summary
 console.log(`\n${errors === 0 ? '✅' : '❌'} Validation complete: ${errors} errors, ${warnings} warnings, ${htmlFiles.length} pages checked`);
 process.exit(errors > 0 ? 1 : 0);

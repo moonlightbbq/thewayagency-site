@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Admin — The Way Agency</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root { --blue:#1a6fb5; --cyan:#29b6f6; --mint:#6ec6a0; --dark:#1a2332; --text:#2d3748; --muted:#64748b; --light:#f7f9fc; --border:#e2e8f0; --white:#fff; --radius:12px; --red:#ef4444; --amber:#f59e0b; --green:#22c55e; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:300;background:var(--light);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-weight:600}
+.header{background:linear-gradient(135deg,#1e293b,#334155);color:#fff;padding:16px 20px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px}
+.header-status{display:flex;align-items:center;gap:8px;font-size:12px}
+.status-dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.container{max-width:900px;margin:0 auto;padding:20px}
+.tabs{display:flex;gap:4px;margin-bottom:20px;flex-wrap:wrap}
+.tab{padding:8px 16px;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;background:#e2e8f0;color:#475569;transition:all .2s}
+.tab.active{background:var(--blue);color:#fff}
+.card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:20px;margin-bottom:16px}
+.card h3{font-size:14px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.kill-card{border-left:4px solid var(--border)}
+.kill-card.active{border-left-color:var(--red)}
+.kill-card .level{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:#f1f5f9;color:var(--muted)}
+.kill-card .level.active{background:#fef2f2;color:var(--red)}
+.kill-toggle{padding:8px 16px;border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;background:#fff;transition:all .2s}
+.kill-toggle:hover{border-color:var(--red);color:var(--red)}
+.kill-toggle.engaged{background:var(--red);color:#fff;border-color:var(--red)}
+.kill-meta{font-size:11px;color:var(--muted);margin-top:8px}
+.confirm-input{padding:6px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;width:200px;margin-right:8px}
+.login-card{max-width:400px;margin:60px auto;text-align:center}
+.login-card input{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:14px;margin-bottom:12px}
+.login-card button{width:100%;padding:10px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
+.error{color:var(--red);font-size:12px;margin-top:8px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Admin Operations Center</h1>
+  <div class="header-status">
+    <span class="status-dot" id="api-dot" style="background:var(--muted)"></span>
+    <span id="api-status">Connecting...</span>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Login -->
+  <div id="login-view">
+    <div class="card login-card">
+      <h2 style="margin-bottom:16px">Admin Login</h2>
+      <input type="password" id="admin-token" placeholder="Admin token" autocomplete="off">
+      <button id="admin-login-btn">Sign In</button>
+      <div id="login-error" class="error hidden"></div>
+    </div>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="admin-view" class="hidden">
+    <div class="tabs" id="admin-tabs">
+      <button class="tab active" data-tab="kill-switches">Kill Switches</button>
+    </div>
+
+    <div id="tab-kill-switches">
+      <div id="kill-cards"></div>
+      <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px" id="kill-refresh">Last refresh: —</p>
+    </div>
+  </div>
+</div>
+
+<script>
+var SAGE = 'https://sage.thewayagency.com';
+var TOKEN = null;
+var KILL_DATA = null;
+var pollTimer = null;
+
+// Auth
+(function() {
+  try { TOKEN = localStorage.getItem('twa_admin_token'); } catch(e) {}
+  if (TOKEN) { showAdmin(); return; }
+  document.getElementById('admin-login-btn').addEventListener('click', login);
+  document.getElementById('admin-token').addEventListener('keydown', function(e) { if (e.key === 'Enter') login(); });
+})();
+
+function login() {
+  var token = document.getElementById('admin-token').value.trim();
+  if (!token) return;
+  TOKEN = token;
+  try { localStorage.setItem('twa_admin_token', token); } catch(e) {}
+  showAdmin();
+}
+
+function showAdmin() {
+  document.getElementById('login-view').classList.add('hidden');
+  document.getElementById('admin-view').classList.remove('hidden');
+  loadKillSwitches();
+  pollTimer = setInterval(loadKillSwitches, 10000);
+}
+
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// Kill Switches
+var LEVELS = [
+  { level: 1, name: 'Pause Single Automation', desc: 'Pause one specific automation (e.g., follow-up emails, CRM sync).', action: 'select' },
+  { level: 2, name: 'Pause All Outbound', desc: 'Stop all outbound emails, SMS, and webhook deliveries.', action: 'toggle' },
+  { level: 3, name: 'Pause All AI Agents', desc: 'Disable all AI agent processing. Human-only mode.', action: 'toggle' },
+  { level: 4, name: 'Emergency Mode', desc: 'System becomes read-only. No writes, no automations, no AI. Type EMERGENCY to activate.', action: 'confirm' },
+  { level: 5, name: 'Full Shutdown', desc: 'Complete system shutdown. All APIs return 503. Double confirm required.', action: 'doubleConfirm' },
+];
+
+async function loadKillSwitches() {
+  var dot = document.getElementById('api-dot');
+  var status = document.getElementById('api-status');
+  try {
+    var res = await fetch(SAGE + '/api/admin/kill-switches', {
+      headers: { 'Authorization': 'Bearer ' + TOKEN }
+    });
+    if (res.status === 401 || res.status === 403) {
+      TOKEN = null; try { localStorage.removeItem('twa_admin_token'); } catch(e) {}
+      document.getElementById('admin-view').classList.add('hidden');
+      document.getElementById('login-view').classList.remove('hidden');
+      document.getElementById('login-error').textContent = 'Invalid or expired token.';
+      document.getElementById('login-error').classList.remove('hidden');
+      if (pollTimer) clearInterval(pollTimer);
+      return;
+    }
+    if (!res.ok) throw new Error('API error');
+    KILL_DATA = await res.json();
+    dot.style.background = 'var(--green)';
+    status.textContent = 'Connected';
+    renderKillCards();
+  } catch(e) {
+    dot.style.background = 'var(--amber)';
+    status.textContent = 'Unreachable';
+    renderKillCardsFallback();
+  }
+  document.getElementById('kill-refresh').textContent = 'Last refresh: ' + new Date().toLocaleTimeString();
+}
+
+function renderKillCards() {
+  var activeMap = {};
+  if (KILL_DATA && KILL_DATA.switches) {
+    KILL_DATA.switches.forEach(function(s) { activeMap[s.level] = s; });
+  }
+
+  var html = '';
+  LEVELS.forEach(function(cfg) {
+    var data = activeMap[cfg.level] || null;
+    var isActive = data && data.active;
+    var cardClass = 'card kill-card' + (isActive ? ' active' : '');
+    var levelClass = 'level' + (isActive ? ' active' : '');
+
+    html += '<div class="' + cardClass + '">';
+    html += '<h3><span class="' + levelClass + '">Level ' + cfg.level + '</span> ' + esc(cfg.name) + '</h3>';
+    html += '<p style="font-size:13px;color:var(--muted);margin-bottom:12px">' + esc(cfg.desc) + '</p>';
+
+    if (cfg.action === 'toggle') {
+      html += '<button class="kill-toggle' + (isActive ? ' engaged' : '') + '" onclick="toggleKill(' + cfg.level + ',' + !isActive + ')">' + (isActive ? 'Deactivate' : 'Activate') + '</button>';
+    } else if (cfg.action === 'confirm') {
+      if (isActive) {
+        html += '<button class="kill-toggle engaged" onclick="toggleKill(' + cfg.level + ',false)">Deactivate Emergency Mode</button>';
+      } else {
+        html += '<input class="confirm-input" id="confirm-' + cfg.level + '" placeholder="Type EMERGENCY">';
+        html += '<button class="kill-toggle" onclick="confirmKill(' + cfg.level + ',\'EMERGENCY\')">Activate</button>';
+      }
+    } else if (cfg.action === 'doubleConfirm') {
+      if (isActive) {
+        html += '<button class="kill-toggle engaged" onclick="toggleKill(' + cfg.level + ',false)">Restore System</button>';
+      } else {
+        html += '<input class="confirm-input" id="confirm-' + cfg.level + '" placeholder="Type SHUTDOWN">';
+        html += '<button class="kill-toggle" onclick="confirmKill(' + cfg.level + ',\'SHUTDOWN\')">Full Shutdown</button>';
+      }
+    } else if (cfg.action === 'select') {
+      html += '<select id="auto-select-' + cfg.level + '" style="padding:6px 10px;border:1px solid var(--border);border-radius:6px;font-size:13px;margin-right:8px">';
+      html += '<option value="">Select automation...</option>';
+      var autos = (KILL_DATA && KILL_DATA.automations) || ['follow-ups','crm-sync','email-reminders','webhooks','renewals'];
+      autos.forEach(function(a) { html += '<option value="' + esc(a) + '">' + esc(a) + '</option>'; });
+      html += '</select>';
+      html += '<button class="kill-toggle" onclick="pauseAutomation()">Pause</button>';
+      if (data && data.paused_automations && data.paused_automations.length) {
+        html += '<div style="margin-top:8px;font-size:12px;color:var(--red)">Paused: ' + data.paused_automations.map(esc).join(', ') + '</div>';
+      }
+    }
+
+    if (isActive && data) {
+      html += '<div class="kill-meta">';
+      if (data.activated_at) html += 'Activated: ' + new Date(data.activated_at).toLocaleString();
+      if (data.activated_by) html += ' by ' + esc(data.activated_by);
+      html += '</div>';
+    }
+    html += '</div>';
+  });
+  document.getElementById('kill-cards').innerHTML = html;
+}
+
+function renderKillCardsFallback() {
+  var html = '<div class="card" style="text-align:center;padding:30px;color:var(--amber)"><p>Unable to reach server. Kill switch status unknown.</p><p style="font-size:12px;color:var(--muted);margin-top:8px">Retrying every 10 seconds...</p></div>';
+  document.getElementById('kill-cards').innerHTML = html;
+}
+
+async function toggleKill(level, activate) {
+  try {
+    await fetch(SAGE + '/api/admin/kill-switches/' + level, {
+      method: 'PUT', headers: { 'Authorization': 'Bearer ' + TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ active: activate })
+    });
+    loadKillSwitches();
+  } catch(e) { alert('Failed to update. Check connection.'); }
+}
+
+function confirmKill(level, expected) {
+  var input = document.getElementById('confirm-' + level);
+  if (!input || input.value.trim().toUpperCase() !== expected) {
+    input.style.borderColor = 'var(--red)';
+    return;
+  }
+  toggleKill(level, true);
+}
+
+function pauseAutomation() {
+  var sel = document.getElementById('auto-select-1');
+  if (!sel || !sel.value) return;
+  fetch(SAGE + '/api/admin/kill-switches/1/pause', {
+    method: 'PUT', headers: { 'Authorization': 'Bearer ' + TOKEN, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ automation: sel.value })
+  }).then(function() { loadKillSwitches(); }).catch(function() { alert('Failed.'); });
+}
+
+// Tab switching
+document.addEventListener('click', function(e) {
+  var tab = e.target.closest('.tab[data-tab]');
+  if (!tab) return;
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+  tab.classList.add('active');
+  document.querySelectorAll('[id^="tab-"]').forEach(function(p) { p.classList.add('hidden'); });
+  var target = document.getElementById('tab-' + tab.dataset.tab);
+  if (target) target.classList.remove('hidden');
+});
+</script>
+</body>
+</html>
