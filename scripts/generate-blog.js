@@ -127,6 +127,74 @@ const _reviews = { rating: agency.google_rating || '5.0', count: agency.google_r
 const { renderNav, renderFooter: _renderFooter, renderScripts, renderHead_GTM, renderBody_GTM } = require('./shared-templates');
 function renderFooter() { return _renderFooter(office, _reviews); }
 
+// ─── Reading Time Calculator ────────────────
+function calculateReadingTime(html) {
+  const text = html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  const words = text.split(' ').length;
+  return Math.max(1, Math.ceil(words / 200));
+}
+
+// ─── Table of Contents Generator ────────────
+function generateTOC(html) {
+  const headings = [];
+  const regex = /<h([23])>(.*?)<\/h[23]>/g;
+  let match;
+  while ((match = regex.exec(html)) !== null) {
+    const level = parseInt(match[1]);
+    const text = match[2].replace(/<[^>]+>/g, '').trim();
+    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    headings.push({ level, text, id });
+  }
+  if (headings.length < 3) return { tocHtml: '', anchoredBody: html };
+
+  // Add IDs to headings in the body
+  let anchoredBody = html;
+  for (const h of headings) {
+    const tag = `h${h.level}`;
+    // Replace first occurrence of this heading without an id
+    anchoredBody = anchoredBody.replace(
+      new RegExp(`<${tag}>${h.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</${tag}>`),
+      `<${tag} id="${h.id}">${h.text}</${tag}>`
+    );
+  }
+
+  const tocItems = headings.map(h => {
+    const indent = h.level === 3 ? 'padding-left:var(--space-lg);' : '';
+    return `<li style="${indent}margin-bottom:4px;"><a href="#${h.id}" style="color:var(--slate);text-decoration:none;font-size:var(--text-sm);font-weight:${h.level === 2 ? '500' : '300'};">${h.text}</a></li>`;
+  }).join('\n          ');
+
+  const tocHtml = `
+      <nav aria-label="Table of contents" style="background:var(--light-bg);border:1px solid var(--border);border-radius:var(--border-radius-lg);padding:var(--space-lg) var(--space-xl);margin-bottom:var(--space-2xl);">
+        <p style="font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--navy);margin-bottom:var(--space-sm);">In this article</p>
+        <ul style="list-style:none;padding:0;margin:0;">
+          ${tocItems}
+        </ul>
+      </nav>`;
+
+  return { tocHtml, anchoredBody };
+}
+
+// ─── Mid-Post CTA Injection ─────────────────
+function injectMidPostCTA(html, category) {
+  const categoryLabels = { personal: 'personal insurance', commercial: 'business insurance', life_health: 'life and health insurance' };
+  const label = categoryLabels[category] || 'insurance';
+  const ctaHtml = `
+      <div style="background:linear-gradient(135deg,var(--navy-dark),var(--navy));border-radius:var(--border-radius-lg);padding:var(--space-2xl);margin:var(--space-2xl) 0;text-align:center;">
+        <p style="color:var(--white);font-size:var(--text-xl);font-weight:600;margin-bottom:var(--space-sm);">Need help with ${label}?</p>
+        <p style="color:rgba(255,255,255,0.75);font-size:var(--text-sm);font-weight:300;margin-bottom:var(--space-lg);">Get a free quote from an independent agent. We shop dozens of carriers for you.</p>
+        <a href="/intake/" style="display:inline-block;padding:10px 24px;background:var(--cyan);color:var(--navy-dark);border-radius:var(--border-radius);font-size:var(--text-sm);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;text-decoration:none;">Get a Free Quote</a>
+      </div>`;
+
+  // Insert after the 3rd H2 if possible
+  let count = 0;
+  const result = html.replace(/<\/h2>/g, (match) => {
+    count++;
+    if (count === 3) return match + ctaHtml;
+    return match;
+  });
+  return count >= 3 ? result : html;
+}
+
 // ─── Blog post HTML template ────────────────
 function generateBlogPost(meta, bodyHtml, faqs) {
   const faqSection = faqs.length > 0 ? `
@@ -163,6 +231,16 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   const authorLink = meta.author_slug
     ? `<a href="/about/team.html#${meta.author_slug}" style="color:var(--cyan);text-decoration:none;">${meta.author}</a>`
     : meta.author;
+
+  // Reading time
+  const readingMin = calculateReadingTime(bodyHtml);
+  const readingTime = meta.reading_time || `${readingMin} min read`;
+
+  // Table of contents
+  const { tocHtml, anchoredBody } = generateTOC(bodyHtml);
+
+  // Mid-post CTA
+  const enhancedBody = injectMidPostCTA(anchoredBody, meta.category || '');
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -232,9 +310,10 @@ ${renderNav()}
         <span>|</span>
         <span>Published ${dateFormatted}</span>
         <span>|</span>
-        <span>${meta.reading_time || '5 min read'}</span>
+        <span>${readingTime}</span>
       </div>
-      ${bodyHtml}
+${tocHtml}
+      ${enhancedBody}
       ${faqSection}
 ${meta.related_page ? `
       <h2 style="margin-top:var(--space-2xl);">Related Coverage</h2>
@@ -462,40 +541,40 @@ if (fs.existsSync(calendarPath)) {
     fs.writeFileSync(path.join(BLOG_BUILD, 'index.html'), indexHtml);
     console.log(`  ✓ blog/index.html (${allPublishedFiltered.length} posts, ${allPublished.length - allPublishedFiltered.length} scheduled)`);
 
-    // Inject "Popular Articles" into each generated blog post
-    const popularPosts = allPublishedFiltered.slice(0, 3);
-    if (popularPosts.length > 0) {
-      const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-      const popularHtml = `
+    // Inject "Related Articles" into each generated blog post (prefer same category)
+    const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    for (const meta of posts) {
+      const filePath = path.join(BLOG_BUILD, `${meta.slug}.html`);
+      if (!fs.existsSync(filePath)) continue;
+      let html = fs.readFileSync(filePath, 'utf8');
+
+      // Find related posts: prefer same category, then fill with recent posts
+      const others = allPublishedFiltered.filter(p => p.slug !== meta.slug);
+      const sameCategory = meta.category ? others.filter(p => {
+        // Check if calendar entry has matching category
+        const calEntry = [...(calendar.existing_posts || []), ...(calendar.year1 || [])].find(c => c.slug === p.slug);
+        return calEntry && calEntry.category === meta.category;
+      }) : [];
+      // Also check generated posts for category match
+      const sameCategoryFromPosts = posts.filter(p => p.slug !== meta.slug && p.category === meta.category);
+      const sameCategorySlugs = new Set([...sameCategory.map(p => p.slug), ...sameCategoryFromPosts.map(p => p.slug)]);
+      const relatedFromCategory = others.filter(p => sameCategorySlugs.has(p.slug)).slice(0, 3);
+      const remaining = relatedFromCategory.length < 3 ? others.filter(p => !sameCategorySlugs.has(p.slug)).slice(0, 3 - relatedFromCategory.length) : [];
+      const related = [...relatedFromCategory, ...remaining].slice(0, 3);
+
+      if (related.length > 0) {
+        const relatedHtml = `
       <section style="margin-top:var(--space-2xl);padding-top:var(--space-2xl);border-top:1px solid var(--border);">
-        <h2 style="font-size:var(--text-2xl);">Popular Articles</h2>
+        <h2 style="font-size:var(--text-2xl);">Related Articles</h2>
         <div class="grid grid--3" style="margin-top:var(--space-lg);">
-${popularPosts.map(p => `          <a href="/blog/${p.slug}.html" class="card" style="text-decoration:none;">
+${related.map(p => `          <a href="/blog/${p.slug}.html" class="card" style="text-decoration:none;">
             <h3 class="card__title" style="font-size:var(--text-lg);">${p.title}</h3>
             <span class="card__link">Read article ${arrowSvg}</span>
           </a>`).join('\n')}
         </div>
       </section>`;
-      // Insert popular articles before the closing </article> in each generated post
-      for (const meta of posts) {
-        const filePath = path.join(BLOG_BUILD, `${meta.slug}.html`);
-        if (fs.existsSync(filePath)) {
-          let html = fs.readFileSync(filePath, 'utf8');
-          // Skip if this post is one of the popular ones (avoid self-links) — replace with next posts
-          const filteredPopular = allPublishedFiltered.filter(p => p.slug !== meta.slug).slice(0, 3);
-          const thisPopularHtml = `
-      <section style="margin-top:var(--space-2xl);padding-top:var(--space-2xl);border-top:1px solid var(--border);">
-        <h2 style="font-size:var(--text-2xl);">Popular Articles</h2>
-        <div class="grid grid--3" style="margin-top:var(--space-lg);">
-${filteredPopular.map(p => `          <a href="/blog/${p.slug}.html" class="card" style="text-decoration:none;">
-            <h3 class="card__title" style="font-size:var(--text-lg);">${p.title}</h3>
-            <span class="card__link">Read article ${arrowSvg}</span>
-          </a>`).join('\n')}
-        </div>
-      </section>`;
-          html = html.replace('</article>', thisPopularHtml + '\n    </article>');
-          fs.writeFileSync(filePath, html);
-        }
+        html = html.replace('</article>', relatedHtml + '\n    </article>');
+        fs.writeFileSync(filePath, html);
       }
     }
   }
