@@ -982,6 +982,58 @@
 <script>
 const SAGE_API = 'https://sage.thewayagency.com';
 
+// ── Offline Queue Processing ────────────────────────────────────────────────
+(function processQueue() {
+  try {
+    const raw = localStorage.getItem('twa_intake_queue');
+    if (!raw) return;
+    const queued = JSON.parse(raw);
+    if (!queued || !queued.payload) return;
+    // Try to submit with exponential backoff (3 attempts)
+    let attempt = 0;
+    function trySubmit() {
+      attempt++;
+      fetch(SAGE_API + '/api/intake', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(queued.payload)
+      }).then(r => r.json()).then(d => {
+        if (d.ok) { localStorage.removeItem('twa_intake_queue'); console.log('[Intake] Queued submission sent: ' + queued.ref); }
+        else if (attempt < 3) setTimeout(trySubmit, Math.pow(2, attempt) * 2000);
+      }).catch(() => { if (attempt < 3) setTimeout(trySubmit, Math.pow(2, attempt) * 2000); });
+    }
+    trySubmit();
+  } catch(e) {}
+})();
+window.addEventListener('online', function() {
+  try {
+    if (localStorage.getItem('twa_intake_queue')) {
+      fetch(SAGE_API + '/api/intake', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(JSON.parse(localStorage.getItem('twa_intake_queue')).payload)
+      }).then(r => r.json()).then(d => { if (d.ok) localStorage.removeItem('twa_intake_queue'); }).catch(() => {});
+    }
+  } catch(e) {}
+});
+
+// ── Connection indicator ────────────────────────────────────────────────────
+(function() {
+  const dot = document.createElement('div');
+  dot.id = 'conn-dot';
+  dot.style.cssText = 'position:fixed;top:8px;right:8px;width:8px;height:8px;border-radius:50%;z-index:999;transition:background .3s;background:#22c55e';
+  document.body.appendChild(dot);
+  function updateDot() { dot.style.background = navigator.onLine ? '#22c55e' : '#ef4444'; }
+  window.addEventListener('online', updateDot);
+  window.addEventListener('offline', updateDot);
+  updateDot();
+})();
+
+// beforeunload warning for unsaved data
+window.addEventListener('beforeunload', function(e) {
+  if (_submitted) return;
+  const hasData = v('i_fname') || v('i_email') || selectedProducts.length;
+  if (hasData) { e.preventDefault(); e.returnValue = ''; }
+});
+
 // ── System status banner ────────────────────────────────────────────────────
 (function() {
   const testBanner = new URLSearchParams(location.search).get('twa_test_banner');
@@ -2531,9 +2583,19 @@ async function submitIntake() {
       trackValidationError(5, 'submit_failed_server');
     }
   } catch (e) {
-    err.textContent = 'Network error. Please check your connection and try again.';
-    trackValidationError(5, 'submit_failed_network');
+    // Queue for offline retry
+    const queueRef = 'Q' + Date.now().toString(36).toUpperCase();
+    const payload = {
+      sessionId, firstName: v('i_fname'), lastName: v('i_lname'), email: v('i_email'), phone: v('i_phone'),
+      address: v('i_address'), city: v('i_city'), state: v('i_state'), zip: v('i_zip'),
+      products: selectedProducts, formData, notes: v('i_notes'), agent: agentParam || '',
+      _hp_company: document.getElementById('_hp_company')?.value || '', cfToken: '',
+    };
+    try { localStorage.setItem('twa_intake_queue', JSON.stringify({ payload, ref: queueRef, ts: Date.now() })); } catch(qe) {}
+    err.textContent = 'Saved! We\'ll submit when you\'re back online. Ref: ' + queueRef;
+    err.style.color = '#d97706';
     err.classList.remove('hidden');
+    trackValidationError(5, 'submit_queued_offline');
   } finally {
     btn.textContent = 'Submit Quote Request';
     btn.disabled = false;
