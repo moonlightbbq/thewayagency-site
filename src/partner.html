@@ -178,17 +178,47 @@ let PARTNER_DATA = null;
 
 async function init(){
   if(!TOKEN) return;
+  // Try cached data first
+  try { var cached = sessionStorage.getItem('twa_partner_' + TOKEN); if (cached) { PARTNER_DATA = JSON.parse(cached); document.getElementById('partner-info').textContent = 'Welcome, ' + PARTNER_DATA.partner.name + (PARTNER_DATA.partner.company ? ' — ' + PARTNER_DATA.partner.company : ''); loadDashboard(); } } catch(e) {}
   try {
     const res = await fetch(SAGE_API + '/api/partners/portal?token='+TOKEN);
     if(!res.ok) throw new Error('Invalid token');
     PARTNER_DATA = await res.json();
+    try { sessionStorage.setItem('twa_partner_' + TOKEN, JSON.stringify(PARTNER_DATA)); } catch(e) {}
     document.getElementById('partner-info').textContent = `Welcome, ${PARTNER_DATA.partner.name}${PARTNER_DATA.partner.company?' — '+PARTNER_DATA.partner.company:''}`;
     loadDashboard();
   } catch(e){
-    document.querySelector('.container').innerHTML = '<div class="card"><div class="empty">Invalid or expired portal link. Please contact The Way Agency.</div></div>';
+    if (PARTNER_DATA) { /* Already showing cached data */ return; }
+    document.querySelector('.container').innerHTML = '<div class="card"><div class="empty">Unable to connect. Please try again or call (502) 413-5335.</div></div>';
   }
 }
 init();
+
+// Queue referral submissions if API fails
+function queueReferral(payload) {
+  try {
+    var queue = JSON.parse(localStorage.getItem('twa_partner_queue') || '[]');
+    queue.push({ payload: payload, ts: Date.now() });
+    localStorage.setItem('twa_partner_queue', JSON.stringify(queue));
+  } catch(e) {}
+}
+// Process queued referrals on load
+(function() {
+  try {
+    var queue = JSON.parse(localStorage.getItem('twa_partner_queue') || '[]');
+    if (!queue.length) return;
+    var remaining = [];
+    queue.forEach(function(item) {
+      fetch(SAGE_API + '/api/partners/portal/refer?token=' + TOKEN, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(item.payload)
+      }).then(function(r) { return r.json(); }).then(function(d) {
+        if (!d.ok) remaining.push(item);
+      }).catch(function() { remaining.push(item); });
+    });
+    setTimeout(function() { localStorage.setItem('twa_partner_queue', JSON.stringify(remaining)); }, 5000);
+  } catch(e) {}
+})();
 
 function loadDashboard() {
   const container = document.getElementById('dashboard-content');
@@ -266,7 +296,9 @@ async function submitReferral(){
       err.classList.remove('hidden');
     }
   } catch(e){
-    err.textContent = 'Network error. Please try again.';
+    queueReferral({ firstName:v('p_fname'), lastName:v('p_lname'), email:v('p_email'), phone:v('p_phone'), address:v('p_address'), city:v('p_city'), state:v('p_state'), zip:v('p_zip'), products: selectedProducts, urgency: document.getElementById('p_urgency')?.value || 'normal', notes: v('p_notes') });
+    err.textContent = 'Saved offline! We\'ll submit when you\'re back online.';
+    err.style.color = '#d97706';
     err.classList.remove('hidden');
   } finally {
     btn.textContent = 'Submit Referral'; btn.disabled = false;
