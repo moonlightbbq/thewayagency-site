@@ -352,18 +352,41 @@ ${renderScripts()}
 }
 
 // ─── Blog index page template ────────────────
-function generateBlogIndex(allPosts) {
+function generateBlogIndex(allPosts, postsMeta) {
+  // Build category map from markdown posts metadata
+  const categoryMap = {};
+  for (const m of (postsMeta || [])) {
+    if (m.category) categoryMap[m.slug] = m.category;
+  }
+
+  // Enrich posts with category for JSON data
+  const postsData = allPosts.map(p => ({
+    slug: p.slug,
+    title: p.title,
+    description: p.description || '',
+    date: p.publish_date,
+    category: categoryMap[p.slug] || p.category || ''
+  }));
+
+  const categories = [...new Set(postsData.map(p => p.category).filter(Boolean))].sort();
+  const categoryLabels = { personal: 'Personal', commercial: 'Commercial', life_health: 'Life & Health' };
+
   const cards = allPosts.map(p => {
     const date = new Date(p.publish_date + 'T12:00:00');
     const dateLabel = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+    const cat = categoryMap[p.slug] || p.category || '';
     return `
-          <a href="/blog/${p.slug}.html" class="card" style="text-decoration:none;">
-            <p style="font-size:var(--text-xs);color:var(--slate);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--space-sm);">${dateLabel}</p>
+          <a href="/blog/${p.slug}.html" class="card blog-card" data-category="${cat}" data-title="${p.title.toLowerCase()}" data-desc="${(p.description || '').toLowerCase()}" style="text-decoration:none;">
+            <p style="font-size:var(--text-xs);color:var(--slate);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--space-sm);">${dateLabel}${cat ? ` · ${categoryLabels[cat] || cat}` : ''}</p>
             <h3 class="card__title" style="font-size:var(--text-xl);">${p.title}</h3>
             <p class="card__text">${p.description}</p>
             <span class="card__link">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           </a>`;
   }).join('\n');
+
+  const filterPills = categories.map(c =>
+    `<button class="blog-filter__pill" data-category="${c}">${categoryLabels[c] || c}</button>`
+  ).join('\n            ');
 
   return `<!DOCTYPE html>
 <html lang="en">

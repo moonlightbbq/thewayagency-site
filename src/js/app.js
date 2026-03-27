@@ -39,6 +39,76 @@
   }
 
   // ═══════════════════════════════════════════════
+  // A/B TESTING FRAMEWORK
+  // ═══════════════════════════════════════════════
+  const AB_EXPERIMENTS = {
+    'hero-headline': {
+      variants: {
+        control: { '[data-ab-test="hero-headline"]': null },
+        'value-prop': { '[data-ab-test="hero-headline"]': 'Insurance That Actually Fits Your Life' },
+        'action-cta': { '[data-ab-test="hero-headline"]': 'Get Covered the Right Way' },
+      },
+      weight: [50, 25, 25],
+    },
+    'hero-cta': {
+      variants: {
+        control: { '[data-ab-test="hero-cta"]': null },
+        'free-quote': { '[data-ab-test="hero-cta"]': 'Get a Free Quote' },
+        'compare': { '[data-ab-test="hero-cta"]': 'Compare Rates Now' },
+      },
+      weight: [50, 25, 25],
+    },
+  };
+
+  function getVisitorId() {
+    let id;
+    try { id = localStorage.getItem('twa_vid'); } catch(e) {}
+    if (!id) {
+      id = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      try { localStorage.setItem('twa_vid', id); } catch(e) {}
+    }
+    return id;
+  }
+
+  function hashAssign(visitorId, testName, variantCount) {
+    let hash = 0;
+    const str = visitorId + ':' + testName;
+    for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash |= 0; }
+    return Math.abs(hash) % variantCount;
+  }
+
+  function initABTests() {
+    const params = new URLSearchParams(window.location.search);
+    const forceVariant = params.get('force_variant');
+    const visitorId = getVisitorId();
+
+    Object.entries(AB_EXPERIMENTS).forEach(([testName, config]) => {
+      const variantNames = Object.keys(config.variants);
+      let chosenIdx;
+      if (forceVariant && variantNames.includes(forceVariant)) {
+        chosenIdx = variantNames.indexOf(forceVariant);
+      } else {
+        chosenIdx = hashAssign(visitorId, testName, variantNames.length);
+      }
+      const chosenName = variantNames[chosenIdx];
+      const changes = config.variants[chosenName];
+
+      // Apply DOM changes
+      Object.entries(changes).forEach(([selector, newText]) => {
+        if (newText === null) return; // control — no change
+        const el = document.querySelector(selector);
+        if (el) el.textContent = newText;
+      });
+
+      // Track exposure
+      window.dataLayer = window.dataLayer || [];
+      dataLayer.push({ event: 'ab_exposure', test_name: testName, variant: chosenName, visitor_id: visitorId });
+
+      if (CONFIG.debug) _log('AB Test: ' + testName + ' → ' + chosenName);
+    });
+  }
+
+  // ═══════════════════════════════════════════════
   // ANALYTICS ENGINE (v3 — clean taxonomy)
   // ═══════════════════════════════════════════════
 
@@ -1005,6 +1075,7 @@
   // INITIALIZE
   // ═══════════════════════════════════════════════
   document.addEventListener('DOMContentLoaded', () => {
+    initABTests();
     initNav();
     initFAQ();
     initInlineForms();
