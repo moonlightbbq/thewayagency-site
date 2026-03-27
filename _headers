@@ -4,28 +4,27 @@
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
-  Referrer-Policy: strict-origin
+  Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), accelerometer=(), gyroscope=()
   X-XSS-Protection: 1; mode=block
   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://maps.googleapis.com https://maps.gstatic.com https://static.cloudflareinsights.com https://www.googletagmanager.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://connect.facebook.net https://www.clarity.ms; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://www.googletagmanager.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://sage.thewayagency.com https://challenges.cloudflare.com https://vpic.nhtsa.dot.gov https://*.googleapis.com https://*.google.com https://www.google-analytics.com https://analytics.google.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://www.facebook.com https://connect.facebook.net https://*.clarity.ms https://region1.google-analytics.com; img-src 'self' data: https://*.gstatic.com https://*.googleapis.com https://*.google.com https://www.googletagmanager.com https://www.facebook.com https://www.google.com https://googleads.g.doubleclick.net https://*.clarity.ms; frame-src https://challenges.cloudflare.com https://www.googletagmanager.com https://td.doubleclick.net; frame-ancestors 'none'; form-action 'self'; base-uri 'self'
 
-# Cache CSS/JS — no-cache until stale caches clear, then restore to max-age=86400
+# Static assets — long cache (CSS is minified at build time, JS rarely changes)
 /src/css/*
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=31536000, immutable
 
 /src/js/*
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=31536000, immutable
 
-# Cache images/assets aggressively — these rarely change
 /src/assets/*
   Cache-Control: public, max-age=31536000, immutable
 
-# HTML pages — revalidate
+# HTML pages — short cache with stale-while-revalidate for fast loads
 /*.html
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 /
-  Cache-Control: public, max-age=0, must-revalidate
+  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 
 # Portal pages — no cache (dynamic content via API)
 /intake/*
