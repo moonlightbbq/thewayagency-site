@@ -484,7 +484,10 @@
   // ═══════════════════════════════════════════════
   function initExitIntent() {
     if (window.innerWidth < 768) return;
+    if (window.location.pathname.startsWith('/intake')) return;
     if (sessionStorage.getItem('twa_exit_shown')) return;
+    if (getCookie('twa_exit_dismissed')) return;
+    try { if (localStorage.getItem('twa_intake_submitted')) return; } catch(e) {}
     let shown = false;
     document.addEventListener('mouseout', (e) => {
       if (shown) return;
@@ -502,17 +505,10 @@
         <button id="exitClose" class="exit-popup__close" aria-label="Close">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
-        <h3 class="exit-popup__title">Before you go</h3>
-        <p class="exit-popup__desc">Get a coverage review  -  we'll look at what you have and tell you if there's a better option. No commitment, no pressure.</p>
-        <form id="exitForm">
-          <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off">
-          <div class="exit-popup__row">
-            <input type="text" name="name" placeholder="Your name" required class="exit-popup__input">
-            <input type="email" name="email" placeholder="Email address" required class="exit-popup__input">
-          </div>
-          <button type="submit" class="exit-popup__submit">Get a Coverage Review</button>
-          <p class="exit-popup__privacy">We never sell your data. A licensed agent will follow up within 1 business day. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
-        </form>
+        <h3 class="exit-popup__title">Before you go...</h3>
+        <p class="exit-popup__desc">Get a free insurance quote in under 2 minutes. No obligation, no spam.</p>
+        <a href="/intake/?src=exit-intent" id="exitCta" class="exit-popup__submit" style="display:block;text-align:center;text-decoration:none;">Get My Quote</a>
+        <button id="exitDismiss" style="background:none;border:none;color:var(--slate,#64748b);font-size:13px;cursor:pointer;padding:8px;margin-top:4px;width:100%;text-align:center;">No thanks</button>
       </div>
     `);
 
@@ -521,24 +517,21 @@
 
     function closeExit() {
       overlay.classList.remove('exit-overlay--visible');
+      setCookie('twa_exit_dismissed', true, 1);
       setTimeout(() => overlay.remove(), 300);
     }
     $('#exitClose').addEventListener('click', closeExit);
+    $('#exitDismiss').addEventListener('click', closeExit);
     overlay.addEventListener('click', (e) => { if (e.target === overlay) closeExit(); });
-
-    $('#exitForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const data = Object.fromEntries(new FormData(e.target));
-      track('exit_popup_submitted', { category: 'conversion', page_path: window.location.pathname });
-
-      const params = new URLSearchParams();
-      if (data.name) params.set('name', data.name);
-      if (data.email) params.set('email', data.email);
-      params.set('src', 'coverage-review');
-      window.location.href = '/intake/?' + params.toString();
+    document.addEventListener('keydown', function onEsc(e) {
+      if (e.key === 'Escape') { closeExit(); document.removeEventListener('keydown', onEsc); }
     });
 
-    track('exit_popup_shown', { category: 'engagement', page_path: window.location.pathname });
+    $('#exitCta').addEventListener('click', () => {
+      track('exit_intent_clicked', { category: 'conversion', page_path: window.location.pathname });
+    });
+
+    track('exit_intent_shown', { category: 'engagement', page_path: window.location.pathname });
   }
 
   // ═══════════════════════════════════════════════
