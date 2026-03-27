@@ -185,7 +185,7 @@ assets.copyRootFiles(ROOT, BUILD);
 const portalPages = assets.copyPortalPages(SRC, BUILD, injectVersion);
 
 // 9. Generate sitemap
-const sitemapUrls = generateSitemap(BUILD, { products, landingData, seoData, portalPages, SRC });
+const sitemapUrls = generateSitemap(BUILD, { products, landingData, seoData, portalPages, SRC, carriers });
 
 console.log(`\n✅ Build complete! ${generatedCount + rootPages.length + subPages.length + portalPages.length} pages in build/`);
 console.log(`   Total files: ${sitemapUrls.length} indexable URLs`);

@@ -58,6 +58,20 @@ function generateSitemap(BUILD, ctx) {
     sitemapUrls.push({ url: `/industries/${ind.slug}.html`, priority: '0.6', freq: 'monthly' });
   }
 
+  // Add carrier pages
+  if (carriers) {
+    sitemapUrls.push({ url: '/carriers/', priority: '0.6', freq: 'monthly' });
+    const seenSlugs = new Set();
+    for (const line of ['personal', 'commercial']) {
+      for (const c of (carriers[line] || [])) {
+        if (c.description && !seenSlugs.has(c.slug)) {
+          seenSlugs.add(c.slug);
+          sitemapUrls.push({ url: `/carriers/${c.slug}.html`, priority: '0.5', freq: 'monthly' });
+        }
+      }
+    }
+  }
+
   // Add blog posts
   const blogDir = path.join(BUILD, 'blog');
   if (fs.existsSync(blogDir)) {
