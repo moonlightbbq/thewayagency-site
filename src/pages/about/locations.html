@@ -24,6 +24,11 @@
   <meta property="og:site_name" content="The Way Agency">
   <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
 
+  <style>
+    @media (max-width: 640px) {
+      .loc-grid-2col { grid-template-columns: 1fr !important; }
+    }
+  </style>
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
   {
@@ -128,9 +133,72 @@
   </nav>
   <section class="hero" style="min-height:40vh;"><div class="hero__bg"></div><div class="hero__texture"></div><div class="hero__content"><p class="hero__eyebrow">Three States. Dozens of Communities.</p><h1 class="hero__title">Where we serve</h1><p class="hero__subtitle">Licensed in Kentucky, Indiana, and Tennessee. Invested in the families and businesses that make these communities home.</p></div><div class="hero__accent"></div></section>
   <main id="main">
+    <!-- Office Card -->
     <section class="section">
-      <div class="container container--narrow">
-        <p class="text-lg" style="font-size:var(--text-lg);line-height:1.8;margin-bottom:var(--space-xl);">We do not operate out of a traditional storefront &mdash; and that is by design. We invest what would be overhead back into the communities we serve. We meet you where it is convenient for you: by phone, video, email, text, or in person. Your time matters, and we work around your schedule, not ours.</p>
+      <div class="container">
+        <div class="loc-grid-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2xl);align-items:start;max-width:900px;margin:0 auto;">
+          <div class="card" style="padding:var(--space-xl);">
+            <h2 style="font-size:var(--text-xl);margin-bottom:var(--space-lg);">Owensboro Office</h2>
+            <div style="display:flex;flex-direction:column;gap:var(--space-md);">
+              <div>
+                <p style="font-size:var(--text-sm);font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Address</p>
+                <address style="font-style:normal;line-height:1.6;">PO Box 187<br>Owensboro, KY 42302</address>
+              </div>
+              <div>
+                <p style="font-size:var(--text-sm);font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Phone</p>
+                <a href="tel:+15024135335" style="font-size:var(--text-lg);font-weight:600;color:var(--navy);">(502) 413-5335</a>
+              </div>
+              <div>
+                <p style="font-size:var(--text-sm);font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Email</p>
+                <a href="mailto:hello@thewayagency.com" style="color:var(--blue);">hello@thewayagency.com</a>
+              </div>
+              <div>
+                <p style="font-size:var(--text-sm);font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Hours</p>
+                <p style="line-height:1.6;">Monday – Friday: 8:30 AM – 5:00 PM<br>Saturday &amp; Sunday: Closed</p>
+              </div>
+              <a href="https://maps.google.com/?q=Owensboro+KY+42302" target="_blank" rel="noopener" class="btn btn--outline" style="margin-top:var(--space-sm);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                Get Directions
+              </a>
+            </div>
+          </div>
+          <div>
+            <h3 style="margin-bottom:var(--space-md);">Serving KY, IN &amp; TN</h3>
+            <p style="color:var(--slate);line-height:1.8;margin-bottom:var(--space-lg);">We do not operate out of a traditional storefront — and that is by design. We invest what would be overhead back into the communities we serve. We meet you where it is convenient: by phone, video, email, text, or in person.</p>
+            <h4 style="font-size:var(--text-sm);color:var(--slate);text-transform:uppercase;letter-spacing:.5px;margin-bottom:var(--space-sm);">Your Local Team</h4>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--linen);border-radius:var(--border-radius);">
+                <img src="/src/assets/images/team/sheilia-royal.webp" alt="Sheilia Royal" style="width:44px;height:44px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'">
+                <div>
+                  <p style="font-weight:600;font-size:var(--text-sm);">Sheilia Royal</p>
+                  <p style="font-size:12px;color:var(--slate);">Agency Principal — Owensboro, Mt. Washington, Henderson, Louisville</p>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--linen);border-radius:var(--border-radius);">
+                <img src="/src/assets/images/team/audrey-lillpop.webp" alt="Audrey Lillpop" style="width:44px;height:44px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'">
+                <div>
+                  <p style="font-weight:600;font-size:var(--text-sm);">Audrey Lillpop</p>
+                  <p style="font-size:12px;color:var(--slate);">Personal Lines — Owensboro, Henderson</p>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--linen);border-radius:var(--border-radius);">
+                <img src="/src/assets/images/team/kelly-mccallister.webp" alt="Kelly McCallister" style="width:44px;height:44px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'">
+                <div>
+                  <p style="font-weight:600;font-size:var(--text-sm);">Kelly McCallister</p>
+                  <p style="font-size:12px;color:var(--slate);">Commercial Lines — Owensboro, Henderson, Evansville</p>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--linen);border-radius:var(--border-radius);">
+                <img src="/src/assets/images/team/jill-boone.webp" alt="Jill Boone" style="width:44px;height:44px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'">
+                <div>
+                  <p style="font-weight:600;font-size:var(--text-sm);">Jill Boone</p>
+                  <p style="font-size:12px;color:var(--slate);">Life &amp; Health — Mt. Washington, Louisville</p>
+                </div>
+              </div>
+            </div>
+            <a href="/about/team.html" style="display:inline-block;margin-top:var(--space-md);font-size:var(--text-sm);color:var(--blue);font-weight:600;">Meet the full team &rarr;</a>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -185,20 +253,6 @@
       </div>
     </section>
 
-    <section class="section">
-      <div class="container container--narrow">
-        <h2>How we work</h2>
-        <p>We meet you where it is convenient for you. Phone, video, email, text, or in person &mdash; whatever works best for your schedule. We handle everything from initial quotes to policy changes to claims support, all without you ever needing to visit an office.</p>
-        <div style="background:var(--linen,#f5f0eb);border-radius:12px;padding:24px;margin-top:var(--space-xl);">
-          <h3 style="margin-bottom:12px;">Reach us</h3>
-          <p style="margin-bottom:4px;"><strong>Phone:</strong> <a href="tel:+15024135335">(502) 413-5335</a></p>
-          <p style="margin-bottom:4px;"><strong>Email:</strong> <a href="mailto:hello@thewayagency.com">hello@thewayagency.com</a></p>
-          <p style="margin-bottom:4px;"><strong>Text:</strong> <a href="sms:+15024135335">(502) 413-5335</a></p>
-          <p style="margin-bottom:4px;"><strong>Mail:</strong> PO Box 187, Owensboro, KY 42302</p>
-          <p><strong>Hours:</strong> Monday &ndash; Friday, 8:30 AM &ndash; 5:00 PM</p>
-        </div>
-      </div>
-    </section>
     <section class="cta-banner"><div class="container"><h2 class="cta-banner__title">Have a question?</h2><p class="cta-banner__text">We are here to help.</p><div class="cta-banner__actions"><a href="/intake/" class="btn btn--primary btn--lg">Get a Quote</a><a href="/contact.html" class="btn btn--outline-white btn--lg">Contact Us</a></div></div></section>
   </main>
   <footer class="footer">
