@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 function generateSitemap(BUILD, ctx) {
-  const { products, landingData, seoData, portalPages, SRC } = ctx;
+  const { products, landingData, seoData, portalPages, SRC, carriers } = ctx;
   const baseUrl = 'https://www.thewayagency.com';
   const today = new Date().toISOString().split('T')[0];
 

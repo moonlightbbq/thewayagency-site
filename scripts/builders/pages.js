@@ -1010,6 +1010,195 @@ ${renderScripts()}
 </html>`;
 }
 
+// ─── Carrier Page ───────────────────────────────
+
+function generateCarrierPage(carrier, line, ctx) {
+  const { office, products, renderNav, renderFooter, renderScripts } = ctx;
+  const lineName = line === 'personal' ? 'Personal Insurance' : 'Commercial Insurance';
+  const lineSlug = line;
+
+  // Find product pages for linked lines
+  const allProducts = [...(products.personal || []), ...(products.commercial || []), ...(products.life_health || [])];
+  const linkedProducts = (carrier.lines || []).map(id => allProducts.find(p => p.id === id || p.slug === id)).filter(Boolean);
+
+  const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+
+  const productCards = linkedProducts.length > 0 ? `
+        <h2>Coverage lines we place with ${carrier.name}</h2>
+        <div class="grid grid--3" style="margin:var(--space-lg) 0 var(--space-2xl);">
+${linkedProducts.map(p => `          <a href="${p.url}" class="card" style="text-decoration:none;">
+            <h3 class="card__title" style="font-size:var(--text-lg);">${p.name}</h3>
+            <span class="card__link">Learn more ${arrowSvg}</span>
+          </a>`).join('\n')}
+        </div>` : '';
+
+  const strengthsList = (carrier.strengths || []).length > 0 ? `
+        <h2>Why we recommend ${carrier.name}</h2>
+        <ul style="list-style:disc;padding-left:var(--space-xl);margin-bottom:var(--space-xl);">
+          ${carrier.strengths.map(s => `<li>${s}</li>`).join('\n          ')}
+        </ul>` : '';
+
+  const ratingBadge = carrier.am_best_rating ? `<p style="margin-top:var(--space-lg);"><strong>AM Best Rating:</strong> ${carrier.am_best_rating}</p>` : '';
+
+  const breadcrumbs = renderBreadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'Carriers', url: '/carriers/' },
+    { name: carrier.name },
+  ]);
+
+  return `<!DOCTYPE html>
+<html lang="en">
+${renderHead({
+    title: `${carrier.name} Insurance | The Way Agency`,
+    description: `${carrier.name} insurance through The Way Agency. ${carrier.description || `We represent ${carrier.name} for ${lineName.toLowerCase()} in Kentucky, Indiana, and Tennessee.`}`,
+    canonical: `https://www.thewayagency.com/carriers/${carrier.slug}.html`,
+    ogTitle: `${carrier.name} Insurance | The Way Agency`,
+    ogDescription: carrier.description || `We represent ${carrier.name} for insurance in KY, IN & TN.`,
+    ogUrl: `https://www.thewayagency.com/carriers/${carrier.slug}.html`,
+  })}
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+${renderNav()}
+
+${renderHero({
+    eyebrow: 'Our Carriers',
+    title: carrier.name,
+    subtitle: carrier.description || `We represent ${carrier.name} for ${lineName.toLowerCase()} in Kentucky, Indiana, and Tennessee.`,
+    buttons: [
+      { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
+    ],
+    minHeight: '40vh',
+  })}
+
+${breadcrumbs.html}
+  <main id="main">
+    <section class="section">
+      <div class="container container--narrow">
+        ${ratingBadge}
+        ${productCards}
+        ${strengthsList}
+        <h2>How it works</h2>
+        <p>As an independent agency, we represent ${carrier.name} alongside dozens of other carriers. When you request a quote, we compare options from multiple companies — including ${carrier.name} — to find the best combination of coverage, service, and price for your specific situation.</p>
+        <p>You get the strength and backing of ${carrier.name} with the personal service and advocacy of a local, independent agent.</p>
+      </div>
+    </section>
+
+${renderCTA({
+      title: `Ready to see what ${carrier.name} can offer?`,
+      text: "Request a quote and we'll compare options from multiple carriers, including " + carrier.name + ".",
+      buttons: [
+        { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
+        { href: '/contact.html', text: 'Contact Us', className: 'btn btn--outline-white btn--lg' },
+      ],
+      contactMethods: true,
+    }, office)}
+  </main>
+
+${renderFooter()}
+${renderScripts()}
+</body>
+</html>`;
+}
+
+// ─── Carriers Index Page ────────────────────────
+
+function generateCarriersIndex(carriers, ctx) {
+  const { office, renderNav, renderFooter, renderScripts } = ctx;
+  const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+
+  // Deduplicate carriers across lines
+  const seen = new Set();
+  const allCarriers = [];
+  for (const line of ['personal', 'commercial']) {
+    for (const c of (carriers[line] || [])) {
+      if (!seen.has(c.slug)) {
+        seen.add(c.slug);
+        allCarriers.push({ ...c, line });
+      }
+    }
+  }
+  allCarriers.sort((a, b) => a.name.localeCompare(b.name));
+
+  // Split into featured (have descriptions) and standard
+  const featured = allCarriers.filter(c => c.description);
+  const standard = allCarriers.filter(c => !c.description);
+
+  const featuredCards = featured.map(c => `          <a href="/carriers/${c.slug}.html" class="card" style="text-decoration:none;">
+            <h3 class="card__title" style="font-size:var(--text-xl);">${c.name}</h3>
+            ${c.am_best_rating ? `<p style="font-size:var(--text-xs);color:var(--green);font-weight:600;margin-bottom:var(--space-sm);">AM Best: ${c.am_best_rating}</p>` : ''}
+            <p class="card__text">${c.description.split('.')[0]}.</p>
+            <span class="card__link">Learn more ${arrowSvg}</span>
+          </a>`).join('\n');
+
+  const standardList = standard.map(c => {
+    const rating = c.am_best_rating ? ` <span style="color:var(--green);font-size:var(--text-xs);font-weight:600;">(${c.am_best_rating})</span>` : '';
+    return `<li style="padding:var(--space-sm) 0;border-bottom:1px solid var(--border);">${c.name}${rating}</li>`;
+  }).join('\n            ');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+${renderHead({
+    title: 'Our Insurance Carriers | 30+ Companies | The Way Agency',
+    description: 'The Way Agency represents 30+ insurance carriers including Travelers, Progressive, Chubb, Safeco, The Hartford, and more. We shop the market for you.',
+    canonical: 'https://www.thewayagency.com/carriers/',
+    ogTitle: 'Our Insurance Carriers | The Way Agency',
+    ogDescription: 'We represent 30+ insurance carriers to find you the best coverage and price.',
+    ogUrl: 'https://www.thewayagency.com/carriers/',
+  })}
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+${renderNav()}
+
+${renderHero({
+    eyebrow: 'Our Carriers',
+    title: '30+ carriers.<br>One independent agent.',
+    subtitle: 'We represent over 30 insurance carriers across personal, commercial, and life lines. That means we shop the market for you and find the best combination of coverage, service, and price.',
+    buttons: [
+      { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
+    ],
+    minHeight: '45vh',
+  })}
+
+  <main id="main">
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <p class="section-header__eyebrow">Featured Carriers</p>
+          <h2>Companies we work with most</h2>
+        </div>
+        <div class="grid grid--3">
+${featuredCards}
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--light">
+      <div class="container container--narrow">
+        <h2>All carriers we represent</h2>
+        <p style="color:var(--slate);margin-bottom:var(--space-xl);">In addition to our featured partners, we have access to these carriers for specialty and standard risks:</p>
+        <ul style="list-style:none;padding:0;">
+            ${standardList}
+        </ul>
+      </div>
+    </section>
+
+${renderCTA({
+      title: 'Let us shop the market for you',
+      text: 'Tell us what you need and we\'ll compare options from our full carrier lineup.',
+      buttons: [
+        { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
+        { href: '/contact.html', text: 'Contact Us', className: 'btn btn--outline-white btn--lg' },
+      ],
+      contactMethods: true,
+    }, office)}
+  </main>
+
+${renderFooter()}
+${renderScripts()}
+</body>
+</html>`;
+}
+
 module.exports = {
   hubConfig,
   generateHubPage,
@@ -1017,6 +1206,8 @@ module.exports = {
   generateCityPage,
   generateCityProductPage,
   generateIndustryPage,
+  generateCarrierPage,
+  generateCarriersIndex,
   setCriticalCss,
   renderHead,
   renderHero,

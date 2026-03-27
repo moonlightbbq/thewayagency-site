@@ -20,7 +20,7 @@ const DATA = path.join(ROOT, 'data');
 const { createVersionInfo, createInjectVersion } = require('./builders/seo');
 const assets = require('./builders/assets');
 const { copyBlogPages, runBlogGenerator } = require('./builders/blog-helpers');
-const { hubConfig, generateHubPage, generateProductPage, generateCityPage, generateCityProductPage, generateIndustryPage, setCriticalCss } = require('./builders/pages');
+const { hubConfig, generateHubPage, generateProductPage, generateCityPage, generateCityProductPage, generateIndustryPage, generateCarrierPage, generateCarriersIndex, setCriticalCss } = require('./builders/pages');
 const { generateSitemap } = require('./builders/sitemap');
 
 // ─── Version / Build Info ───────────────────────
@@ -159,6 +159,24 @@ for (const ind of landingData.industries) {
   indCount++;
 }
 console.log(`  ✓ Generated ${indCount} industry landing pages`);
+
+// 6d. Generate carrier pages
+assets.ensureDir(path.join(BUILD, 'carriers'));
+let carrierCount = 0;
+const seenCarrierSlugs = new Set();
+for (const line of ['personal', 'commercial']) {
+  for (const carrier of (carriers[line] || [])) {
+    if (!carrier.description || seenCarrierSlugs.has(carrier.slug)) continue;
+    seenCarrierSlugs.add(carrier.slug);
+    const html = generateCarrierPage(carrier, line, ctx);
+    fs.writeFileSync(path.join(BUILD, 'carriers', `${carrier.slug}.html`), injectVersion(html));
+    carrierCount++;
+  }
+}
+// Carriers index
+const carriersIndexHtml = generateCarriersIndex(carriers, ctx);
+fs.writeFileSync(path.join(BUILD, 'carriers', 'index.html'), injectVersion(carriersIndexHtml));
+console.log(`  ✓ Generated ${carrierCount} carrier pages + index`);
 
 // 7. Copy root files
 assets.copyRootFiles(ROOT, BUILD);
