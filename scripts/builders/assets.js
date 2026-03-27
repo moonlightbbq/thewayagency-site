@@ -109,6 +109,16 @@ function copyPortalPages(SRC, BUILD, injectVersion) {
   return portalPages;
 }
 
+function minifyCss(css) {
+  return css
+    .replace(/\/\*[\s\S]*?\*\//g, '')      // remove comments
+    .replace(/\s*([{}:;,>~+])\s*/g, '$1')  // collapse whitespace around symbols
+    .replace(/;\}/g, '}')                   // remove trailing semicolons
+    .replace(/\n+/g, '')                    // remove newlines
+    .replace(/\s{2,}/g, ' ')               // collapse remaining whitespace
+    .trim();
+}
+
 module.exports = {
   ensureDir,
   copyDir,
@@ -120,4 +130,5 @@ module.exports = {
   copySubPages,
   copyRootFiles,
   copyPortalPages,
+  minifyCss,
 };

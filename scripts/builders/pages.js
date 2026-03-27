@@ -90,7 +90,23 @@ function findReviewerForProduct(team, product, lineKey) {
 
 // ─── Template Functions ─────────────────────────
 
+// Critical CSS is injected by the build orchestrator via setCriticalCss()
+let _criticalCssInline = '';
+function setCriticalCss(css) { _criticalCssInline = css; }
+
 function renderHead({ title, description, canonical, ogTitle, ogDescription, ogUrl, schema }) {
+  const cssBlock = _criticalCssInline
+    ? `
+  <style>${_criticalCssInline}</style>
+  <link rel="stylesheet" href="/src/css/base.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/src/css/components.css" media="print" onload="this.media='all'">
+  <link rel="stylesheet" href="/src/css/leadgen.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="/src/css/base.css"><link rel="stylesheet" href="/src/css/components.css"><link rel="stylesheet" href="/src/css/leadgen.css"></noscript>`
+    : `
+  <link rel="stylesheet" href="/src/css/base.css">
+  <link rel="stylesheet" href="/src/css/components.css">
+  <link rel="stylesheet" href="/src/css/leadgen.css">`;
+
   return `<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -107,10 +123,7 @@ function renderHead({ title, description, canonical, ogTitle, ogDescription, ogU
   <link rel="icon" href="/src/assets/images/favicon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/src/css/base.css">
-  <link rel="stylesheet" href="/src/css/components.css">
-  <link rel="stylesheet" href="/src/css/leadgen.css">${schema ? (schema.includes('<script') ? `
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">${cssBlock}${schema ? (schema.includes('<script') ? `
   ${schema}` : `
   <script type="application/ld+json">
   ${schema}
