@@ -1192,6 +1192,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     initABTests();
     initNav();
+    initI18n();
     initFAQ();
     initInlineForms();
     initStickyMobileCTA();
