@@ -1,0 +1,249 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "SAGE Analytics, IVANS & Export API",
+    "version": "1.0.0",
+    "description": "API documentation for The Way Agency's SAGE platform analytics, IVANS data exchange, and data export endpoints."
+  },
+  "servers": [
+    { "url": "https://sage.thewayagency.com", "description": "Production" }
+  ],
+  "endpoints": [
+    {
+      "path": "/api/analytics/overview",
+      "method": "GET",
+      "auth": "Bearer token (agent)",
+      "description": "Dashboard overview with key metrics: total submissions, conversion rate, active policies, revenue pipeline.",
+      "params": { "period": "string (7d|30d|90d|1y, default 30d)" },
+      "response": {
+        "total_submissions": 142,
+        "conversion_rate": 0.34,
+        "active_policies": 89,
+        "revenue_pipeline": 124500,
+        "period": "30d"
+      },
+      "errors": ["401 Unauthorized", "500 Internal Server Error"]
+    },
+    {
+      "path": "/api/analytics/producers",
+      "method": "GET",
+      "auth": "Bearer token (agent)",
+      "description": "Per-producer performance metrics: submissions handled, conversion rate, average response time, revenue.",
+      "params": { "period": "string (7d|30d|90d|1y)" },
+      "response": {
+        "producers": [
+          { "name": "Sheilia Royal", "submissions": 45, "conversion_rate": 0.42, "avg_response_hours": 2.1, "revenue": 52000 }
+        ]
+      },
+      "errors": ["401 Unauthorized"]
+    },
+    {
+      "path": "/api/analytics/products",
+      "method": "GET",
+      "auth": "Bearer token (agent)",
+      "description": "Product line performance: submission volume, quote rate, bind rate, average premium by product.",
+      "params": { "period": "string", "line": "string (personal|commercial|life_health)" },
+      "response": {
+        "products": [
+          { "product": "home", "submissions": 28, "quotes": 22, "binds": 14, "avg_premium": 1650 }
+        ]
+      },
+      "errors": ["401 Unauthorized"]
+    },
+    {
+      "path": "/api/analytics/trends",
+      "method": "GET",
+      "auth": "Bearer token (agent)",
+      "description": "Time-series trend data for submissions, conversions, and revenue over the specified period.",
+      "params": { "period": "string", "metric": "string (submissions|conversions|revenue)", "granularity": "string (day|week|month)" },
+      "response": {
+        "data": [
+          { "date": "2026-03-01", "value": 12 },
+          { "date": "2026-03-08", "value": 15 }
+        ],
+        "metric": "submissions",
+        "granularity": "week"
+      },
+      "errors": ["401 Unauthorized", "400 Bad Request"]
+    },
+    {
+      "path": "/api/analytics/forecast",
+      "method": "GET",
+      "auth": "Bearer token (agent)",
+      "description": "Revenue and submission forecast based on historical trends and pipeline data.",
+      "params": { "horizon": "string (30d|90d|1y)" },
+      "response": {
+        "forecast_revenue": 185000,
+        "forecast_submissions": 52,
+        "confidence": 0.78,
+        "horizon": "90d"
+      },
+      "errors": ["401 Unauthorized"]
+    },
+    {
+      "path": "/api/analytics/geo",
+      "method": "GET",
+      "auth": "Bearer token (agent)",
+      "description": "Geographic distribution of submissions, policies, and revenue by city/county/state.",
+      "params": { "level": "string (city|county|state)" },
+      "response": {
+        "regions": [
+          { "name": "Owensboro", "state": "KY", "submissions": 34, "policies": 22, "revenue": 38000 }
+        ]
+      },
+      "errors": ["401 Unauthorized"]
+    },
+    {
+      "path": "/api/analytics/segments",
+      "method": "GET",
+      "auth": "Bearer token (agent)",
+      "description": "Customer segments based on policy count, premium tier, tenure, and engagement level.",
+      "params": {},
+      "response": {
+        "segments": [
+          { "name": "High Value", "count": 15, "avg_premium": 4200, "avg_policies": 3.2, "retention_rate": 0.95 }
+        ]
+      },
+      "errors": ["401 Unauthorized"]
+    },
+    {
+      "path": "/api/analytics/customer-score",
+      "method": "GET",
+      "auth": "Bearer token (agent)",
+      "description": "Individual customer lifetime value score and risk factors.",
+      "params": { "customerId": "string (required)" },
+      "response": {
+        "customer_id": "cust_123",
+        "name": "John Smith",
+        "score": 85,
+        "annual_premium": 3200,
+        "policies": 3,
+        "tenure_years": 4,
+        "risk_factors": ["approaching renewal", "high-value home"]
+      },
+      "errors": ["401 Unauthorized", "404 Not Found"]
+    },
+    {
+      "path": "/api/analytics/at-risk",
+      "method": "GET",
+      "auth": "Bearer token (agent)",
+      "description": "Customers at risk of non-renewal based on engagement, rate changes, and claims history.",
+      "params": { "threshold": "number (0-100, default 50)" },
+      "response": {
+        "customers": [
+          { "name": "Jane Doe", "risk_score": 72, "reason": "25% rate increase at renewal", "renewal_date": "2026-05-15" }
+        ]
+      },
+      "errors": ["401 Unauthorized"]
+    },
+    {
+      "path": "/api/analytics/status",
+      "method": "GET",
+      "auth": "Bearer token (agent)",
+      "description": "Analytics engine status: last refresh, data freshness, processing queue.",
+      "params": {},
+      "response": {
+        "status": "healthy",
+        "last_refresh": "2026-03-28T10:00:00Z",
+        "data_freshness_hours": 2,
+        "queue_depth": 0
+      },
+      "errors": ["401 Unauthorized"]
+    },
+    {
+      "path": "/api/analytics/refresh",
+      "method": "POST",
+      "auth": "Bearer token (admin)",
+      "description": "Trigger a manual refresh of analytics data from AMS and submission sources.",
+      "params": {},
+      "response": {
+        "status": "refreshing",
+        "estimated_seconds": 30
+      },
+      "errors": ["401 Unauthorized", "403 Forbidden", "429 Too Many Requests"]
+    },
+    {
+      "path": "/api/ivans/upload",
+      "method": "POST",
+      "auth": "Bearer token (agent)",
+      "description": "Upload an IVANS transaction file (XML or EDI format) for processing.",
+      "body": { "file": "multipart/form-data", "type": "string (policy_download|commission|edoc)" },
+      "response": {
+        "transaction_id": "ivans_tx_456",
+        "status": "processing",
+        "records": 12
+      },
+      "errors": ["401 Unauthorized", "400 Bad Request (invalid format)", "413 Payload Too Large"]
+    },
+    {
+      "path": "/api/ivans/transactions",
+      "method": "GET",
+      "auth": "Bearer token (agent)",
+      "description": "List recent IVANS transactions with status and summary.",
+      "params": { "type": "string", "status": "string (pending|processed|error)", "limit": "number (default 50)" },
+      "response": {
+        "transactions": [
+          { "id": "ivans_tx_456", "type": "policy_download", "status": "processed", "records": 12, "processed_at": "2026-03-28T10:05:00Z" }
+        ]
+      },
+      "errors": ["401 Unauthorized"]
+    },
+    {
+      "path": "/api/ivans/files",
+      "method": "GET",
+      "auth": "Bearer token (agent)",
+      "description": "List IVANS eDocs (policy documents, certificates, endorsements) received from carriers.",
+      "params": { "carrier": "string", "policyId": "string", "limit": "number" },
+      "response": {
+        "files": [
+          { "id": "edoc_789", "carrier": "Travelers", "type": "declaration_page", "filename": "dec-page-2026.pdf", "received_at": "2026-03-27T14:00:00Z" }
+        ]
+      },
+      "errors": ["401 Unauthorized"]
+    },
+    {
+      "path": "/api/ivans/summary",
+      "method": "GET",
+      "auth": "Bearer token (agent)",
+      "description": "IVANS processing summary: total transactions, success rate, last sync, carrier connectivity.",
+      "params": {},
+      "response": {
+        "total_transactions": 1250,
+        "success_rate": 0.98,
+        "last_sync": "2026-03-28T10:00:00Z",
+        "connected_carriers": 14,
+        "pending_downloads": 3
+      },
+      "errors": ["401 Unauthorized"]
+    },
+    {
+      "path": "/api/export/table",
+      "method": "GET",
+      "auth": "Bearer token (agent)",
+      "description": "Export a data table as CSV or JSON. Supports submissions, policies, customers, commissions.",
+      "params": { "table": "string (submissions|policies|customers|commissions)", "format": "string (csv|json)", "filters": "object (optional)" },
+      "response": "Binary file download (CSV) or JSON array",
+      "errors": ["401 Unauthorized", "400 Bad Request (invalid table)"]
+    },
+    {
+      "path": "/api/export/custom",
+      "method": "POST",
+      "auth": "Bearer token (agent)",
+      "description": "Generate a custom report with selected fields, filters, and date ranges.",
+      "body": {
+        "name": "string",
+        "table": "string",
+        "fields": ["string"],
+        "filters": { "date_from": "string", "date_to": "string", "status": "string" },
+        "format": "string (csv|json|xlsx)"
+      },
+      "response": {
+        "export_id": "exp_123",
+        "status": "generating",
+        "estimated_seconds": 10,
+        "download_url": "/api/export/download/exp_123"
+      },
+      "errors": ["401 Unauthorized", "400 Bad Request", "429 Too Many Requests"]
+    }
+  ]
+}
