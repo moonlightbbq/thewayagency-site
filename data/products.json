@@ -6,11 +6,11 @@
       "slug": "home",
       "url": "/personal/home.html",
       "icon": "home",
-      "title_tag": "Home Insurance in Kentucky | The Way Agency",
-      "meta_description": "Home insurance protects your house, belongings, and liability in Kentucky. The Way Agency represents top-rated carriers to find the right coverage and price.",
-      "h1": "What does home insurance cover in Kentucky?",
+      "title_tag": "Home Insurance | The Way Agency",
+      "meta_description": "Home insurance protects your house, belongings, and liability. The Way Agency represents top-rated carriers to find the right coverage and price.",
+      "h1": "What does home insurance cover?",
       "summary": "Covers your home's structure, personal belongings, and liability if someone is injured on your property. Required by most mortgage lenders. Does not include flood or earthquake damage.",
-      "typical_cost_range": "$1,200–$2,400/year in Owensboro area",
+      "typical_cost_range": "$1,200–$2,400/year",
       "cost_factors": [
         "home replacement cost",
         "age and roof condition",
@@ -18,7 +18,7 @@
         "claims history",
         "proximity to fire station"
       ],
-      "ky_requirement": "Required by mortgage lenders. Not required by state law for homes owned outright.",
+      "requirement": "Required by mortgage lenders. Not required by law for homes owned outright.",
       "common_exclusions": [
         "flood damage",
         "earthquake damage",
@@ -40,10 +40,10 @@
       "slug": "auto",
       "url": "/personal/auto.html",
       "icon": "car",
-      "title_tag": "Auto Insurance in Kentucky | The Way Agency",
-      "meta_description": "Auto insurance in Kentucky with minimum 25/50/25 liability. The Way Agency compares top-rated carriers to find the best coverage for your situation.",
-      "h1": "What auto insurance do you need in Kentucky?",
-      "summary": "Covers liability for injuries and property damage you cause, plus optional collision, comprehensive, and uninsured motorist protection. Kentucky requires minimum 25/50/25 liability limits.",
+      "title_tag": "Auto Insurance | The Way Agency",
+      "meta_description": "Auto insurance with the right liability coverage for your situation. The Way Agency compares top-rated carriers to find the best coverage and price.",
+      "h1": "What auto insurance do you need?",
+      "summary": "Covers liability for injuries and property damage you cause, plus optional collision, comprehensive, and uninsured motorist protection. Most states require minimum liability limits — we recommend much higher coverage.",
       "typical_cost_range": "$1,000–$2,800/year depending on driving record and coverage",
       "cost_factors": [
         "driving record",
@@ -53,7 +53,7 @@
         "credit score",
         "annual mileage"
       ],
-      "ky_requirement": "Kentucky requires minimum liability limits of 25/50/25 ($25K per person, $50K per accident bodily injury, $25K property damage). Also requires $10K PIP.",
+      "requirement": "Most states require minimum liability limits (commonly 25/50/25). We recommend higher coverage to protect your assets. Personal injury protection (PIP) may also be required.",
       "common_exclusions": [
         "intentional damage",
         "wear and tear",
@@ -74,9 +74,9 @@
       "slug": "renters",
       "url": "/personal/renters.html",
       "icon": "key",
-      "title_tag": "Renters Insurance in Kentucky | The Way Agency",
-      "meta_description": "Renters insurance protects your belongings and liability as a tenant. Affordable coverage from $15/month in Kentucky.",
-      "h1": "Do you need renters insurance in Kentucky?",
+      "title_tag": "Renters Insurance | The Way Agency",
+      "meta_description": "Renters insurance protects your belongings and liability as a tenant. Affordable coverage starting around $15/month.",
+      "h1": "Do you need renters insurance?",
       "summary": "Protects your personal belongings, provides liability coverage, and covers additional living expenses if your rental becomes unlivable. Typically $15–$30/month.",
       "typical_cost_range": "$180–$360/year ($15–$30/month)",
       "cost_factors": [
@@ -85,7 +85,7 @@
         "location",
         "liability limit"
       ],
-      "ky_requirement": "Not required by Kentucky law, but many landlords require it as a lease condition.",
+      "requirement": "Not required by law, but many landlords require it as a lease condition.",
       "common_exclusions": [
         "flood damage",
         "earthquake",
@@ -105,7 +105,7 @@
       "slug": "umbrella",
       "url": "/personal/umbrella.html",
       "icon": "shield",
-      "title_tag": "Umbrella Insurance in Kentucky | The Way Agency",
+      "title_tag": "Umbrella Insurance | The Way Agency",
       "meta_description": "Umbrella insurance adds extra liability protection beyond your home and auto policy limits. Policies start at $1M for around $200–$400/year.",
       "h1": "What is umbrella insurance and do you need it?",
       "summary": "Adds an extra layer of liability protection above your home and auto policy limits. Covers lawsuits, legal fees, and judgments that exceed your underlying policy limits.",
@@ -116,7 +116,7 @@
         "underlying policy limits",
         "personal risk factors"
       ],
-      "ky_requirement": "Not required by law, but strongly recommended for homeowners, landlords, and anyone with significant assets.",
+      "requirement": "Not required by law, but strongly recommended for homeowners, landlords, and anyone with significant assets.",
       "common_exclusions": [
         "your own injuries",
         "your own property damage",
@@ -136,9 +136,9 @@
       "slug": "flood",
       "url": "/personal/flood.html",
       "icon": "droplets",
-      "title_tag": "Flood Insurance in Kentucky | The Way Agency",
-      "meta_description": "Flood damage is NOT covered by standard homeowners insurance. Learn about NFIP and private flood insurance options in Kentucky.",
-      "h1": "Is flood insurance required in Kentucky?",
+      "title_tag": "Flood Insurance | The Way Agency",
+      "meta_description": "Flood damage is NOT covered by standard homeowners insurance. Learn about NFIP and private flood insurance options.",
+      "h1": "Is flood insurance required?",
       "summary": "Standard homeowners insurance does not cover flood damage. Separate flood policies are available through the National Flood Insurance Program (NFIP) or private carriers.",
       "typical_cost_range": "$500–$2,500/year depending on flood zone and elevation",
       "cost_factors": [
@@ -148,7 +148,7 @@
         "coverage amount",
         "deductible"
       ],
-      "ky_requirement": "Required by mortgage lenders if your property is in a FEMA-designated Special Flood Hazard Area (Zone A or V). Optional but recommended for all homeowners near waterways.",
+      "requirement": "Required by mortgage lenders if your property is in a FEMA-designated Special Flood Hazard Area (Zone A or V). Recommended for all homeowners near waterways.",
       "common_exclusions": [
         "damage from sewer backup (separate endorsement)",
         "temporary housing during repairs (limited)",
@@ -167,10 +167,10 @@
       "slug": "motorcycle",
       "url": "/personal/motorcycle.html",
       "icon": "bike",
-      "title_tag": "Motorcycle Insurance in Kentucky | The Way Agency",
-      "meta_description": "Motorcycle insurance in Kentucky covers liability, collision, and comprehensive protection. Required by state law for registered bikes.",
-      "h1": "What motorcycle insurance is required in Kentucky?",
-      "summary": "Covers liability, collision, and comprehensive protection for your motorcycle. Kentucky requires the same minimum liability limits as auto insurance (25/50/25).",
+      "title_tag": "Motorcycle Insurance | The Way Agency",
+      "meta_description": "Motorcycle insurance covers liability, collision, and comprehensive protection. Required by law for registered bikes in most states.",
+      "h1": "What motorcycle insurance is required?",
+      "summary": "Covers liability, collision, and comprehensive protection for your motorcycle. Most states require the same minimum liability limits as auto insurance.",
       "typical_cost_range": "$300–$1,500/year depending on bike type and riding history",
       "cost_factors": [
         "motorcycle type and value",
@@ -179,7 +179,7 @@
         "seasonal vs. year-round use",
         "storage and anti-theft"
       ],
-      "ky_requirement": "Kentucky requires minimum liability of 25/50/25 for registered motorcycles, same as auto.",
+      "requirement": "Most states require minimum liability coverage for registered motorcycles, same as auto. We recommend higher limits.",
       "common_exclusions": [
         "racing or competition",
         "wear and tear",
@@ -199,10 +199,10 @@
       "slug": "boat",
       "url": "/personal/boat.html",
       "icon": "anchor",
-      "title_tag": "Boat Insurance in Kentucky | The Way Agency",
-      "meta_description": "Boat and watercraft insurance in Kentucky. Coverage for your vessel, liability, and passengers on the Ohio River and Kentucky Lake.",
-      "h1": "Do you need boat insurance in Kentucky?",
-      "summary": "Covers your watercraft, equipment, liability for injuries or property damage, and towing/salvage. Kentucky does not require boat insurance by law, but marinas and lenders typically do.",
+      "title_tag": "Boat Insurance | The Way Agency",
+      "meta_description": "Boat and watercraft insurance for your vessel, liability, and passengers. The Way Agency compares carriers to find the right coverage.",
+      "h1": "Do you need boat insurance?",
+      "summary": "Covers your watercraft, equipment, liability for injuries or property damage, and towing/salvage. Most states do not require boat insurance by law, but marinas and lenders typically do.",
       "typical_cost_range": "$200–$1,000/year depending on boat type and value",
       "cost_factors": [
         "boat type, size, and value",
@@ -211,7 +211,7 @@
         "experience and boating safety courses",
         "navigational territory"
       ],
-      "ky_requirement": "Not required by Kentucky law. Required by most marinas and lenders. Recommended for anyone operating on the Ohio River, Kentucky Lake, or other waterways.",
+      "requirement": "Not required by law in most states. Required by most marinas and lenders. Recommended for anyone operating on lakes, rivers, or coastal waterways.",
       "common_exclusions": [
         "normal wear and marine growth",
         "manufacturer defects",
@@ -231,7 +231,7 @@
       "slug": "classic-car",
       "url": "/personal/classic-car.html",
       "icon": "car-front",
-      "title_tag": "Classic Car Insurance in Kentucky | The Way Agency",
+      "title_tag": "Classic Car Insurance | The Way Agency",
       "meta_description": "Classic and antique car insurance with agreed value coverage. Protect your investment with specialized policies from The Way Agency.",
       "h1": "How is classic car insurance different from regular auto insurance?",
       "summary": "Insures collector, antique, and classic vehicles at an agreed value rather than depreciated actual cash value. Typically requires limited-use mileage restrictions and enclosed storage.",
@@ -243,7 +243,7 @@
         "driving record",
         "number of vehicles in collection"
       ],
-      "ky_requirement": "Same minimum liability requirements as standard auto (25/50/25). Classic car policies add agreed-value physical damage coverage.",
+      "requirement": "Same minimum liability requirements as standard auto. Classic car policies add agreed-value physical damage coverage.",
       "common_exclusions": [
         "daily driver use exceeding mileage limits",
         "racing or competition",
@@ -262,19 +262,19 @@
       "slug": "earthquake",
       "url": "/personal/earthquake.html",
       "icon": "activity",
-      "title_tag": "Earthquake Insurance in Kentucky | The Way Agency",
-      "meta_description": "Western Kentucky is in the New Madrid Seismic Zone. Earthquake damage is NOT covered by homeowners insurance. Learn about coverage options.",
-      "h1": "Do you need earthquake insurance in western Kentucky?",
-      "summary": "Standard homeowners insurance excludes earthquake damage. Western Kentucky sits on the New Madrid Seismic Zone, one of the most active fault systems east of the Rockies. Separate earthquake policies or endorsements are available.",
-      "typical_cost_range": "$100–$800/year in western Kentucky",
+      "title_tag": "Earthquake Insurance | The Way Agency",
+      "meta_description": "Earthquake damage is NOT covered by homeowners insurance. Learn about earthquake coverage options and whether you need a separate policy.",
+      "h1": "Do you need earthquake insurance?",
+      "summary": "Standard homeowners insurance excludes earthquake damage. If you live near an active fault zone, separate earthquake policies or endorsements are available to protect your home and belongings.",
+      "typical_cost_range": "$100–$800/year",
       "cost_factors": [
-        "proximity to New Madrid fault zone",
+        "proximity to active fault zones",
         "home construction type",
         "foundation type",
         "coverage amount",
         "deductible (typically 5-15% of coverage)"
       ],
-      "ky_requirement": "Not required by law or lenders, but strongly recommended in western Kentucky due to New Madrid Seismic Zone proximity.",
+      "requirement": "Not required by law or lenders, but strongly recommended if you live near an active seismic zone.",
       "common_exclusions": [
         "fire following earthquake (covered by homeowners)",
         "flood following earthquake (requires flood policy)",
@@ -293,8 +293,8 @@
       "slug": "pet",
       "url": "/personal/pet.html",
       "icon": "heart",
-      "title_tag": "Pet Insurance in Kentucky | The Way Agency",
-      "meta_description": "Pet insurance covers veterinary costs for accidents and illness. Plans available for dogs and cats in Kentucky starting around $30/month.",
+      "title_tag": "Pet Insurance | The Way Agency",
+      "meta_description": "Pet insurance covers veterinary costs for accidents and illness. Plans available for dogs and cats starting around $30/month.",
       "h1": "Is pet insurance worth it?",
       "summary": "Reimburses veterinary costs for accidents, illnesses, and sometimes routine care. Helps avoid choosing between your pet's health and a surprise $3,000+ vet bill.",
       "typical_cost_range": "$30–$80/month for dogs, $20–$50/month for cats",
@@ -305,7 +305,7 @@
         "annual limit",
         "deductible"
       ],
-      "ky_requirement": "Not required. Purely optional coverage for pet owners who want financial protection against unexpected vet costs.",
+      "requirement": "Not required. Purely optional coverage for pet owners who want financial protection against unexpected vet costs.",
       "common_exclusions": [
         "pre-existing conditions",
         "routine wellness (unless added)",
@@ -327,10 +327,10 @@
       "slug": "general-liability",
       "url": "/commercial/general-liability.html",
       "icon": "shield-check",
-      "title_tag": "General Liability Insurance in Kentucky | The Way Agency",
-      "meta_description": "General liability insurance protects your business from bodily injury and property damage claims. Required by most KY leases and contracts.",
+      "title_tag": "General Liability Insurance | The Way Agency",
+      "meta_description": "General liability insurance protects your business from bodily injury and property damage claims. Required by most commercial leases and contracts.",
       "h1": "What does general liability insurance cover?",
-      "summary": "Covers your business if a customer, vendor, or visitor is injured at your location, or if your work damages someone else's property. Most commercial leases and contracts in Kentucky require it.",
+      "summary": "Covers your business if a customer, vendor, or visitor is injured at your location, or if your work damages someone else's property. Most commercial leases and contracts require it.",
       "typical_cost_range": "$500–$3,000/year for most small businesses",
       "cost_factors": [
         "industry and risk class",
@@ -339,7 +339,7 @@
         "location",
         "claims history"
       ],
-      "ky_requirement": "Not required by Kentucky law for all businesses, but required by most commercial leases, vendor contracts, and government permits.",
+      "requirement": "Not required by law for all businesses, but required by most commercial leases, vendor contracts, and government permits.",
       "common_exclusions": [
         "employee injuries (workers comp)",
         "auto accidents (commercial auto)",
@@ -360,8 +360,8 @@
       "slug": "commercial-property",
       "url": "/commercial/commercial-property.html",
       "icon": "building",
-      "title_tag": "Commercial Property Insurance in Kentucky | The Way Agency",
-      "meta_description": "Commercial property insurance protects your building, equipment, inventory, and business income in Kentucky.",
+      "title_tag": "Commercial Property Insurance | The Way Agency",
+      "meta_description": "Commercial property insurance protects your building, equipment, inventory, and business income.",
       "h1": "What does commercial property insurance cover?",
       "summary": "Protects your business's physical assets: the building you own or lease, equipment, inventory, furniture, and business income lost during a covered event.",
       "typical_cost_range": "$750–$5,000/year depending on property value and industry",
@@ -372,7 +372,7 @@
         "industry risk",
         "deductible"
       ],
-      "ky_requirement": "Required by commercial mortgage lenders. Recommended for any business with physical assets.",
+      "requirement": "Required by commercial mortgage lenders. Recommended for any business with physical assets.",
       "common_exclusions": [
         "flood damage",
         "earthquake",
@@ -393,8 +393,8 @@
       "slug": "commercial-auto",
       "url": "/commercial/commercial-auto.html",
       "icon": "truck",
-      "title_tag": "Commercial Auto Insurance in Kentucky | The Way Agency",
-      "meta_description": "Commercial auto insurance for business vehicles, fleets, and employees who drive for work in Kentucky.",
+      "title_tag": "Commercial Auto Insurance | The Way Agency",
+      "meta_description": "Commercial auto insurance for business vehicles, fleets, and employees who drive for work.",
       "h1": "When do you need commercial auto insurance?",
       "summary": "Covers vehicles owned or used by your business, including company cars, trucks, vans, and fleets. Personal auto policies typically exclude vehicles used for business purposes.",
       "typical_cost_range": "$1,200–$4,000/year per vehicle",
@@ -405,7 +405,7 @@
         "cargo type",
         "coverage limits"
       ],
-      "ky_requirement": "Kentucky requires same minimum liability for commercial vehicles as personal (25/50/25). Higher limits are typically required by contracts and prudent risk management.",
+      "requirement": "Most states require minimum liability for commercial vehicles, same as personal auto. Higher limits are typically required by contracts and prudent risk management.",
       "common_exclusions": [
         "personal use outside policy terms",
         "vehicles not listed on policy",
@@ -425,10 +425,10 @@
       "slug": "workers-compensation",
       "url": "/commercial/workers-compensation.html",
       "icon": "hard-hat",
-      "title_tag": "Workers Compensation Insurance in Kentucky | The Way Agency",
-      "meta_description": "Workers comp covers medical costs and lost wages for employees injured on the job. Required in Kentucky for most employers.",
-      "h1": "Is workers compensation required in Kentucky?",
-      "summary": "Covers medical expenses, rehabilitation, and lost wages for employees injured on the job. Kentucky requires workers comp for most employers with one or more employees.",
+      "title_tag": "Workers Compensation Insurance | The Way Agency",
+      "meta_description": "Workers comp covers medical costs and lost wages for employees injured on the job. Required in most states for employers.",
+      "h1": "Is workers compensation required?",
+      "summary": "Covers medical expenses, rehabilitation, and lost wages for employees injured on the job. Most states require workers comp for employers with one or more employees.",
       "typical_cost_range": "Varies by payroll and industry classification. Rates range from $0.30 to $15+ per $100 of payroll.",
       "cost_factors": [
         "industry classification code",
@@ -437,7 +437,7 @@
         "number of employees",
         "safety programs"
       ],
-      "ky_requirement": "Kentucky requires workers compensation for all employers with one or more employees, with limited exceptions for certain agricultural and domestic workers.",
+      "requirement": "Required in most states for all employers with one or more employees, with limited exceptions for certain agricultural and domestic workers.",
       "common_exclusions": [
         "independent contractors (unless misclassified)",
         "intentional self-injury",
@@ -457,7 +457,7 @@
       "slug": "cyber",
       "url": "/commercial/cyber.html",
       "icon": "lock",
-      "title_tag": "Cyber Insurance in Kentucky | The Way Agency",
+      "title_tag": "Cyber Insurance | The Way Agency",
       "meta_description": "Cyber insurance covers data breaches, ransomware, and business interruption from cyber attacks. Essential for businesses handling customer data.",
       "h1": "Does your business need cyber insurance?",
       "summary": "Covers costs from data breaches, ransomware attacks, and cyber extortion: forensic investigation, customer notification, credit monitoring, legal defense, regulatory fines, and business income lost during an attack.",
@@ -469,7 +469,7 @@
         "security measures in place",
         "prior incidents"
       ],
-      "ky_requirement": "Not required by Kentucky law, but effectively required if you handle customer financial data, health records, or are subject to contractual obligations.",
+      "requirement": "Not required by law in most states, but effectively required if you handle customer financial data, health records, or are subject to contractual obligations.",
       "common_exclusions": [
         "known pre-existing vulnerabilities",
         "acts of war or terrorism",
@@ -489,8 +489,8 @@
       "slug": "bonds",
       "url": "/commercial/bonds.html",
       "icon": "file-check",
-      "title_tag": "Surety Bonds in Kentucky | The Way Agency",
-      "meta_description": "Surety bonds guarantee your contractual obligations. Required for contractors, notaries, and licensed professionals in Kentucky.",
+      "title_tag": "Surety Bonds | The Way Agency",
+      "meta_description": "Surety bonds guarantee your contractual obligations. Required for contractors, notaries, and licensed professionals in most states.",
       "h1": "What is a surety bond and when do you need one?",
       "summary": "A three-party guarantee: the bonding company guarantees to a project owner (obligee) that your business (principal) will fulfill contractual obligations. If you don't, the bond pays the claim.",
       "typical_cost_range": "1%–15% of the bond amount, depending on credit and bond type",
@@ -501,7 +501,7 @@
         "industry experience",
         "project size"
       ],
-      "ky_requirement": "Required for many Kentucky contractor licenses, notary commissions, court proceedings, and government contracts.",
+      "requirement": "Required for many contractor licenses, notary commissions, court proceedings, and government contracts.",
       "common_exclusions": [
         "Bonds are not insurance  -  if the bond company pays a claim, you owe them back. This is different from insurance where the carrier absorbs the loss."
       ],
@@ -518,8 +518,8 @@
       "slug": "builders-risk",
       "url": "/commercial/builders-risk.html",
       "icon": "construction",
-      "title_tag": "Builders Risk Insurance in Kentucky | The Way Agency",
-      "meta_description": "Builders risk insurance covers buildings and materials during construction. Essential for contractors and property owners in Kentucky.",
+      "title_tag": "Builders Risk Insurance | The Way Agency",
+      "meta_description": "Builders risk insurance covers buildings and materials during construction. Essential for contractors and property owners.",
       "h1": "What is builders risk insurance?",
       "summary": "Covers a building under construction, renovation, or addition  -  including the structure, materials, and equipment on site  -  against fire, wind, theft, and other covered perils during the construction period.",
       "typical_cost_range": "1%–4% of the total project cost",
@@ -530,7 +530,7 @@
         "location and exposure",
         "security measures on site"
       ],
-      "ky_requirement": "Not required by Kentucky law, but typically required by construction contracts, lenders, and project owners.",
+      "requirement": "Not required by law, but typically required by construction contracts, lenders, and project owners.",
       "common_exclusions": [
         "existing structures (covered by commercial property)",
         "employee injuries (workers comp)",
@@ -551,10 +551,10 @@
       "slug": "special-event",
       "url": "/commercial/special-event.html",
       "icon": "calendar",
-      "title_tag": "Special Event Insurance in Kentucky | The Way Agency",
-      "meta_description": "Special event insurance covers liability, cancellation, and property damage for weddings, festivals, and corporate events in Kentucky.",
+      "title_tag": "Special Event Insurance | The Way Agency",
+      "meta_description": "Special event insurance covers liability, cancellation, and property damage for weddings, festivals, and corporate events.",
       "h1": "Do you need insurance for your event?",
-      "summary": "Provides liability coverage and optional cancellation protection for one-time events: weddings, festivals, corporate events, fundraisers, and community gatherings. Most venues in Kentucky require proof of event insurance.",
+      "summary": "Provides liability coverage and optional cancellation protection for one-time events: weddings, festivals, corporate events, fundraisers, and community gatherings. Most venues require proof of event insurance.",
       "typical_cost_range": "$75–$500 per event depending on size and type",
       "cost_factors": [
         "number of attendees",
@@ -563,7 +563,7 @@
         "venue requirements",
         "cancellation coverage amount"
       ],
-      "ky_requirement": "Not required by law, but required by most venues, parks, and event spaces as a condition of rental.",
+      "requirement": "Not required by law, but required by most venues, parks, and event spaces as a condition of rental.",
       "common_exclusions": [
         "professional entertainer injuries (they need their own coverage)",
         "pre-existing conditions for cancellation",
@@ -582,7 +582,7 @@
       "slug": "professional-liability",
       "url": "/commercial/professional-liability.html",
       "icon": "briefcase",
-      "title_tag": "Professional Liability Insurance in Kentucky | The Way Agency",
+      "title_tag": "Professional Liability Insurance | The Way Agency",
       "meta_description": "Professional liability (E&O) insurance protects against claims of mistakes, negligence, or failure to perform professional services.",
       "h1": "What is professional liability insurance?",
       "summary": "Also called Errors & Omissions (E&O) insurance. Covers claims that your professional advice, services, or work product caused a client financial harm due to mistakes, negligence, or failure to deliver.",
@@ -594,7 +594,7 @@
         "claims history",
         "coverage limits and deductible"
       ],
-      "ky_requirement": "Not required by Kentucky law for all professions, but required by many professional licensing boards and client contracts.",
+      "requirement": "Not required by law for all professions, but required by many professional licensing boards and client contracts.",
       "common_exclusions": [
         "intentional wrongdoing",
         "bodily injury (covered by GL)",
@@ -616,9 +616,9 @@
       "slug": "medicare",
       "url": "/life-health/medicare.html",
       "icon": "heart-pulse",
-      "title_tag": "Medicare Insurance in Kentucky | The Way Agency",
-      "meta_description": "Understanding Medicare in Kentucky: Original Medicare, Medicare Advantage, Medigap supplements, and Part D drug plans explained.",
-      "h1": "How does Medicare work in Kentucky?",
+      "title_tag": "Medicare Insurance | The Way Agency",
+      "meta_description": "Understanding Medicare: Original Medicare, Medicare Advantage, Medigap supplements, and Part D drug plans explained.",
+      "h1": "How does Medicare work?",
       "summary": "Federal health insurance for people 65+ or with qualifying disabilities. Original Medicare (Parts A & B) covers hospital and medical services. Gaps can be filled with Medicare Supplement (Medigap) or Medicare Advantage (Part C) plans.",
       "related_products": [
         "supplemental-health",
@@ -633,10 +633,10 @@
       "slug": "medicaid",
       "url": "/life-health/medicaid.html",
       "icon": "heart-handshake",
-      "title_tag": "Medicaid in Kentucky | The Way Agency",
-      "meta_description": "Understanding Medicaid eligibility and coverage in Kentucky. Information about Kentucky's expanded Medicaid program.",
-      "h1": "Who qualifies for Medicaid in Kentucky?",
-      "summary": "State and federal health coverage for low-income individuals and families. Kentucky expanded Medicaid under the ACA, covering adults up to 138% of the federal poverty level.",
+      "title_tag": "Medicaid | The Way Agency",
+      "meta_description": "Understanding Medicaid eligibility and coverage. Information about expanded Medicaid programs and how to qualify.",
+      "h1": "Who qualifies for Medicaid?",
+      "summary": "State and federal health coverage for low-income individuals and families. Many states have expanded Medicaid under the ACA, covering adults up to 138% of the federal poverty level.",
       "related_products": [
         "individual-health",
         "family-health",
@@ -650,7 +650,7 @@
       "slug": "supplemental-health",
       "url": "/life-health/supplemental-health.html",
       "icon": "plus-circle",
-      "title_tag": "Supplemental Health Insurance in Kentucky | The Way Agency",
+      "title_tag": "Supplemental Health Insurance | The Way Agency",
       "meta_description": "Supplemental health insurance pays cash benefits for accidents, critical illness, and hospital stays to cover gaps in your primary health plan.",
       "h1": "What does supplemental health insurance cover?",
       "summary": "Pays cash benefits directly to you when a covered health event occurs  -  accident, critical illness, or hospital stay. Helps cover deductibles, copays, lost income, and other expenses your primary health plan doesn't pay.",
@@ -667,10 +667,10 @@
       "slug": "group-health",
       "url": "/life-health/group-health.html",
       "icon": "users",
-      "title_tag": "Group Health Insurance in Kentucky | The Way Agency",
-      "meta_description": "Group health insurance for Kentucky businesses. Compare plans, control costs, and offer competitive benefits to attract talent.",
+      "title_tag": "Group Health Insurance | The Way Agency",
+      "meta_description": "Group health insurance for businesses. Compare plans, control costs, and offer competitive benefits to attract talent.",
       "h1": "How does group health insurance work for small businesses?",
-      "summary": "Health coverage sponsored by an employer for employees and often their dependents. Small businesses (2–50 employees) in Kentucky can access group plans through the small group market with community-rated premiums.",
+      "summary": "Health coverage sponsored by an employer for employees and often their dependents. Small businesses (2–50 employees) can access group plans through the small group market with community-rated premiums.",
       "related_products": [
         "supplemental-health",
         "term-life",
@@ -685,10 +685,10 @@
       "slug": "individual-health",
       "url": "/life-health/individual-health.html",
       "icon": "user",
-      "title_tag": "Individual Health Insurance in Kentucky | The Way Agency",
-      "meta_description": "Individual and family health insurance options in Kentucky, including marketplace plans with subsidies and off-exchange alternatives.",
-      "h1": "How do you get health insurance in Kentucky without an employer plan?",
-      "summary": "Individual health plans purchased through Kentucky's health insurance marketplace (kynect) or directly from carriers. Subsidies are available based on income. Open enrollment is typically November through January.",
+      "title_tag": "Individual Health Insurance | The Way Agency",
+      "meta_description": "Individual and family health insurance options, including marketplace plans with subsidies and off-exchange alternatives.",
+      "h1": "How do you get health insurance without an employer plan?",
+      "summary": "Individual health plans purchased through your state's health insurance marketplace or directly from carriers. Subsidies are available based on income. Open enrollment is typically November through January.",
       "related_products": [
         "family-health",
         "supplemental-health",
@@ -703,10 +703,10 @@
       "slug": "family-health",
       "url": "/life-health/family-health.html",
       "icon": "users-round",
-      "title_tag": "Family Health Insurance in Kentucky | The Way Agency",
-      "meta_description": "Family health insurance plans in Kentucky. Compare marketplace plans, employer options, and CHIP for children.",
-      "h1": "What are your family health insurance options in Kentucky?",
-      "summary": "Covers you, your spouse, and dependent children under one policy. Available through employer plans, the Kentucky marketplace (kynect), or individual carriers. KCHIP provides low-cost coverage for children in families that earn too much for Medicaid.",
+      "title_tag": "Family Health Insurance | The Way Agency",
+      "meta_description": "Family health insurance plans. Compare marketplace plans, employer options, and CHIP for children.",
+      "h1": "What are your family health insurance options?",
+      "summary": "Covers you, your spouse, and dependent children under one policy. Available through employer plans, your state's marketplace, or individual carriers. CHIP provides low-cost coverage for children in families that earn too much for Medicaid.",
       "related_products": [
         "individual-health",
         "dental-vision",
@@ -721,8 +721,8 @@
       "slug": "dental-vision",
       "url": "/life-health/dental-vision.html",
       "icon": "eye",
-      "title_tag": "Dental & Vision Insurance in Kentucky | The Way Agency",
-      "meta_description": "Standalone dental, vision, and hearing insurance plans in Kentucky. Coverage for routine care and major services.",
+      "title_tag": "Dental & Vision Insurance | The Way Agency",
+      "meta_description": "Standalone dental, vision, and hearing insurance plans. Coverage for routine care and major services.",
       "h1": "Do you need separate dental and vision insurance?",
       "summary": "Most health insurance plans do not include dental, vision, or hearing coverage for adults. Standalone plans cover preventive care, exams, and major services at a fraction of out-of-pocket cost.",
       "related_products": [
@@ -739,7 +739,7 @@
       "slug": "term-life",
       "url": "/life-health/term-life.html",
       "icon": "clock",
-      "title_tag": "Term Life Insurance in Kentucky | The Way Agency",
+      "title_tag": "Term Life Insurance | The Way Agency",
       "meta_description": "Term life insurance provides affordable death benefit protection for a fixed period. Compare 10, 20, and 30-year term options.",
       "h1": "How much term life insurance do you need?",
       "summary": "Pays a death benefit to your beneficiaries if you die during the policy term (typically 10, 20, or 30 years). The most affordable type of life insurance. Does not build cash value.",
@@ -751,7 +751,7 @@
         "term length",
         "occupation"
       ],
-      "ky_requirement": "Not required. Recommended for anyone with dependents, a mortgage, or debts that would burden survivors.",
+      "requirement": "Not required. Recommended for anyone with dependents, a mortgage, or debts that would burden survivors.",
       "common_exclusions": [
         "suicide within first 2 years",
         "death from excluded activities",
@@ -771,7 +771,7 @@
       "slug": "whole-life",
       "url": "/life-health/whole-life.html",
       "icon": "infinity",
-      "title_tag": "Whole Life Insurance in Kentucky | The Way Agency",
+      "title_tag": "Whole Life Insurance | The Way Agency",
       "meta_description": "Whole life insurance provides permanent coverage with guaranteed cash value growth. Compare to term life and universal life options.",
       "h1": "What is the difference between whole life and term life insurance?",
       "summary": "Permanent life insurance that covers you for your entire life with level premiums, a guaranteed death benefit, and cash value that grows over time. More expensive than term but lasts forever and builds an asset.",
@@ -783,7 +783,7 @@
         "carrier and product type",
         "riders selected"
       ],
-      "ky_requirement": "Not required. Used for estate planning, final expenses, supplemental retirement income, and lifelong coverage needs.",
+      "requirement": "Not required. Used for estate planning, final expenses, supplemental retirement income, and lifelong coverage needs.",
       "common_exclusions": [
         "suicide within first 2 years",
         "material misrepresentation"
@@ -801,8 +801,8 @@
       "slug": "annuities",
       "url": "/life-health/annuities.html",
       "icon": "trending-up",
-      "title_tag": "Annuities in Kentucky | The Way Agency",
-      "meta_description": "Annuities provide guaranteed income in retirement. Learn about fixed, indexed, and variable annuity options in Kentucky.",
+      "title_tag": "Annuities | The Way Agency",
+      "meta_description": "Annuities provide guaranteed income in retirement. Learn about fixed, indexed, and variable annuity options.",
       "h1": "How do annuities work?",
       "summary": "A contract with an insurance company that provides guaranteed income payments, either immediately or at a future date. Used for retirement income planning, tax-deferred growth, and protection against outliving your savings.",
       "related_products": [
@@ -818,8 +818,8 @@
       "slug": "disability",
       "url": "/life-health/disability.html",
       "icon": "shield-alert",
-      "title_tag": "Disability Insurance in Kentucky | The Way Agency",
-      "meta_description": "Disability insurance replaces a portion of your income if you're unable to work due to illness or injury. Individual and group options in Kentucky.",
+      "title_tag": "Disability Insurance | The Way Agency",
+      "meta_description": "Disability insurance replaces a portion of your income if you're unable to work due to illness or injury. Individual and group options available.",
       "h1": "What does disability insurance cover?",
       "summary": "Replaces a portion of your income (typically 50–70%) if you're unable to work due to illness or injury. Available as short-term (3–6 months) or long-term (years to age 65) coverage.",
       "typical_cost_range": "1%–3% of your annual income for long-term disability",
@@ -830,7 +830,7 @@
         "elimination period (waiting period)",
         "definition of disability"
       ],
-      "ky_requirement": "Not required. Kentucky does not have state disability insurance. Social Security disability exists but has strict qualification criteria and long wait times.",
+      "requirement": "Not required in most states. Social Security disability exists but has strict qualification criteria and long wait times.",
       "common_exclusions": [
         "pre-existing conditions (during first year)",
         "self-inflicted injuries",
@@ -850,7 +850,7 @@
       "slug": "final-expense",
       "url": "/life-health/final-expense.html",
       "icon": "flower",
-      "title_tag": "Final Expense Insurance in Kentucky | The Way Agency",
+      "title_tag": "Final Expense Insurance | The Way Agency",
       "meta_description": "Final expense insurance covers funeral costs, medical bills, and outstanding debts so your family is not burdened. Simplified underwriting available.",
       "h1": "What is final expense insurance?",
       "summary": "A smaller whole life policy (typically $5,000–$25,000) designed to cover funeral and burial costs, outstanding medical bills, and small debts. Simplified underwriting means no medical exam required for most applicants.",
@@ -861,7 +861,7 @@
         "coverage amount",
         "guaranteed vs. graded benefit"
       ],
-      "ky_requirement": "Not required. Designed for seniors and those who want to ensure their family is not burdened with funeral costs averaging $7,000–$12,000.",
+      "requirement": "Not required. Designed for seniors and those who want to ensure their family is not burdened with funeral costs averaging $7,000–$12,000.",
       "common_exclusions": [
         "graded benefit policies may limit payout in first 2 years to return of premiums plus interest for non-accidental death"
       ],

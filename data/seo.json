@@ -13,14 +13,14 @@
       "last_reviewed": "2026-03"
     },
     "/commercial/": {
-      "title": "Commercial Insurance in Kentucky | Business Coverage | The Way Agency",
-      "description": "Commercial insurance for Kentucky businesses: general liability, commercial property, commercial auto, workers comp, cyber, bonds, and more from top-rated carriers.",
+      "title": "Commercial Insurance | Business Coverage | The Way Agency",
+      "description": "Commercial insurance for your business: general liability, commercial property, commercial auto, workers comp, cyber, bonds, and more from top-rated carriers.",
       "schema_types": ["InsuranceAgency", "FAQPage"],
       "last_reviewed": "2026-03"
     },
     "/life-health/": {
-      "title": "Life & Health Insurance in Kentucky | Medicare, Life & More | The Way Agency",
-      "description": "Life and health insurance in KY, IN & TN: Medicare, Medicaid, individual and group health, term and whole life, annuities, disability, and supplemental coverage.",
+      "title": "Life & Health Insurance | Medicare, Life & More | The Way Agency",
+      "description": "Life and health insurance: Medicare, Medicaid, individual and group health, term and whole life, annuities, disability, and supplemental coverage from top-rated carriers.",
       "schema_types": ["InsuranceAgency", "FAQPage"],
       "last_reviewed": "2026-03"
     },

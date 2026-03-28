@@ -227,10 +227,10 @@ ${hiddenHtml}
 
 const hubConfig = {
   personal: {
-    title: 'Personal Insurance in Kentucky | Home, Auto & More | The Way Agency',
-    description: 'Personal insurance solutions for Kentucky families: home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet. We represent top-rated carriers.',
+    title: 'Personal Insurance | Home, Auto & More | The Way Agency',
+    description: 'Personal insurance solutions: home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet. We represent top-rated carriers to find the right coverage and price.',
     canonical: '/personal/',
-    hero: { eyebrow: 'Personal Insurance', title: 'Protection for you<br>and your family', subtitle: 'From your home and vehicles to your personal liability, we help Kentucky families find the right coverage from top-rated carriers.' },
+    hero: { eyebrow: 'Personal Insurance', title: 'Protection for you<br>and your family', subtitle: 'From your home and vehicles to your personal liability, we help families find the right coverage from top-rated carriers.' },
     sectionEyebrow: 'Coverage Options',
     sectionTitle: 'Personal insurance products',
     sectionDesc: 'Each product page explains what the coverage is, who needs it, what it costs, and what it doesn\'t cover, in plain language.',
@@ -240,13 +240,13 @@ const hubConfig = {
       { href: '/commercial/', title: 'Commercial Insurance', text: 'Liability, property, auto, workers comp, and more for your business.', label: 'Explore Commercial' },
       { href: '/life-health/', title: 'Life & Health', text: 'Medicare, health, life, disability, and final expense coverage.', label: 'Explore Life & Health' },
     ],
-    schema: { serviceName: 'Personal Insurance', serviceType: 'Personal Lines Insurance', serviceDesc: 'Home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet insurance for Kentucky, Indiana, and Tennessee families.' },
+    schema: { serviceName: 'Personal Insurance', serviceType: 'Personal Lines Insurance', serviceDesc: 'Home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet insurance for families and individuals.' },
   },
   commercial: {
-    title: 'Commercial Insurance in Kentucky | The Way Agency',
-    description: 'Commercial insurance for Kentucky businesses: general liability, property, auto, workers comp, cyber, bonds, builders risk, special events, and professional liability.',
+    title: 'Commercial Insurance | The Way Agency',
+    description: 'Commercial insurance for businesses: general liability, property, auto, workers comp, cyber, bonds, builders risk, special events, and professional liability from top-rated carriers.',
     canonical: '/commercial/',
-    hero: { eyebrow: 'Commercial Insurance', title: 'Protection that lets<br>your business grow', subtitle: 'From general liability to workers comp, we help Kentucky businesses build coverage that matches real risk and real operations.' },
+    hero: { eyebrow: 'Commercial Insurance', title: 'Protection that lets<br>your business grow', subtitle: 'From general liability to workers comp, we help businesses build coverage that matches real risk and real operations.' },
     sectionEyebrow: 'Coverage Options',
     sectionTitle: 'Commercial insurance products',
     sectionDesc: 'Each product page explains who needs the coverage, what it protects against, what it costs, and what it does not cover.',
@@ -256,11 +256,11 @@ const hubConfig = {
       { href: '/personal/', title: 'Personal Insurance', text: 'Home, auto, umbrella, and specialty coverage for you and your family.', label: 'Explore Personal' },
       { href: '/life-health/', title: 'Life & Health', text: 'Medicare, group health, life insurance, and employee benefits.', label: 'Explore Life & Health' },
     ],
-    schema: { serviceName: 'Commercial Insurance', serviceType: 'Commercial Lines Insurance', serviceDesc: 'General liability, property, auto, workers comp, cyber, bonds, builders risk, special events, and professional liability for Kentucky businesses.' },
+    schema: { serviceName: 'Commercial Insurance', serviceType: 'Commercial Lines Insurance', serviceDesc: 'General liability, property, auto, workers comp, cyber, bonds, builders risk, special events, and professional liability for businesses.' },
   },
   life_health: {
-    title: 'Life & Health Insurance in Kentucky | The Way Agency',
-    description: 'Life and health insurance for Kentucky families: Medicare, Medicaid, individual health, group health, term life, whole life, annuities, disability, and final expense.',
+    title: 'Life & Health Insurance | The Way Agency',
+    description: 'Life and health insurance: Medicare, Medicaid, individual health, group health, term life, whole life, annuities, disability, and final expense from top-rated carriers.',
     canonical: '/life-health/',
     hero: { eyebrow: 'Life & Health Insurance', title: 'Plan for what<br>matters most', subtitle: 'Medicare, health coverage, life insurance, disability, and employee benefits. We help you navigate the options and choose with confidence.' },
     ctaTitle: 'Get a life & health insurance quote',
@@ -269,7 +269,7 @@ const hubConfig = {
       { href: '/personal/', title: 'Personal Insurance', text: 'Home, auto, umbrella, and specialty coverage for you and your family.', label: 'Explore Personal' },
       { href: '/commercial/', title: 'Commercial Insurance', text: 'Liability, property, auto, workers comp, and more for your business.', label: 'Explore Commercial' },
     ],
-    schema: { serviceName: 'Life & Health Insurance', serviceType: 'Life and Health Insurance', serviceDesc: 'Medicare, health, life, disability, annuities, and final expense insurance for Kentucky, Indiana, and Tennessee.' },
+    schema: { serviceName: 'Life & Health Insurance', serviceType: 'Life and Health Insurance', serviceDesc: 'Medicare, health, life, disability, annuities, and final expense insurance for individuals and families.' },
     groups: [
       { eyebrow: 'Health Coverage', title: 'Health insurance options', ids: ['medicare', 'medicaid', 'supplemental-health', 'group-health', 'individual-health', 'family-health', 'dental-vision'] },
       { eyebrow: 'Life & Income Protection', title: 'Life and income protection', ids: ['term-life', 'whole-life', 'annuities', 'disability', 'final-expense'] },
@@ -445,10 +445,10 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
       <p class="text-lg" style="font-size:var(--text-lg);line-height:1.8;margin-bottom:var(--space-xl);">${product.summary}</p>`;
 
   const whoNeedsSection = rc.who_needs_it ? `
-      <h2>Who needs ${product.name.toLowerCase()} in Kentucky?</h2>
-      <p>${rc.who_needs_it}</p>` : (product.ky_requirement ? `
-      <h2>Is ${product.name.toLowerCase()} required in Kentucky?</h2>
-      <p>${product.ky_requirement}</p>` : '');
+      <h2>Who needs ${product.name.toLowerCase()}?</h2>
+      <p>${rc.who_needs_it}</p>` : (product.requirement ? `
+      <h2>Is ${product.name.toLowerCase()} required?</h2>
+      <p>${product.requirement}</p>` : '');
 
   const coversSection = rc.what_it_covers && rc.what_it_covers.length > 0 ? `
       <h2>What does ${product.name.toLowerCase()} cover?</h2>
@@ -467,7 +467,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
       </ul>` : '');
 
   const costSection = rc.cost_narrative ? `
-      <h2>What does ${product.name.toLowerCase()} cost${lineKey === 'personal' ? ' in Kentucky' : ''}?</h2>
+      <h2>What does ${product.name.toLowerCase()} cost?</h2>
       <p>${rc.cost_narrative}</p>` : (product.typical_cost_range ? `
       <h2>What does ${product.name.toLowerCase()} cost?</h2>
       <p>
@@ -854,8 +854,8 @@ function generateCityProductPage(cityConfig, prod, ctx) {
     if (productData.typical_cost_range) {
       productDetailsHtml += `\n        <p><strong>Typical cost:</strong> ${productData.typical_cost_range}</p>`;
     }
-    if (productData.ky_requirement) {
-      productDetailsHtml += `\n        <p><strong>${stateFull} requirements:</strong> ${productData.ky_requirement}</p>`;
+    if (productData.requirement) {
+      productDetailsHtml += `\n        <p><strong>${stateFull} requirements:</strong> ${productData.requirement}</p>`;
     }
     if (productData.common_exclusions && productData.common_exclusions.length > 0) {
       productDetailsHtml += `\n        <p><strong>Common exclusions:</strong></p>\n        <ul>\n${productData.common_exclusions.map(e => `          <li>${e}</li>`).join('\n')}\n        </ul>`;

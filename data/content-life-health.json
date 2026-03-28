@@ -1,7 +1,7 @@
 {
   "medicare": {
     "direct_answer": "Medicare is the federal health insurance program for Americans 65 and older, as well as certain younger people with disabilities or end-stage renal disease. It consists of Part A (hospital insurance, premium-free for most people), Part B (medical insurance, approximately $185/month in 2026), Part C (Medicare Advantage plans offered by private insurers), and Part D (prescription drug coverage). Original Medicare covers about 80% of approved costs, leaving significant gaps that supplemental coverage can fill.",
-    "who_needs_it": "If you are approaching 65 or already enrolled, Medicare is your primary health insurance in Kentucky. The Initial Enrollment Period starts three months before your 65th birthday month and ends three months after. In the Owensboro and western Kentucky area, many retirees transition from employer coverage or kynect marketplace plans to Medicare, and making the right choice between Original Medicare with a Medigap supplement versus a Medicare Advantage plan can save thousands of dollars annually. Kentucky has a high rate of chronic conditions like diabetes and heart disease, making comprehensive Medicare coverage especially important. The Way Agency helps Kentucky residents compare all available plans during Annual Enrollment (October 15 through December 7) and advises on Special Enrollment Periods for qualifying life events.",
+    "who_needs_it": "If you are approaching 65 or already enrolled, Medicare is your primary health insurance. The Initial Enrollment Period starts three months before your 65th birthday month and ends three months after. Many retirees transition from employer coverage or marketplace plans to Medicare, and making the right choice between Original Medicare with a Medigap supplement versus a Medicare Advantage plan can save thousands of dollars annually. Chronic conditions like diabetes and heart disease make comprehensive Medicare coverage especially important. The Way Agency helps clients compare all available plans during Annual Enrollment (October 15 through December 7) and advises on Special Enrollment Periods for qualifying life events.",
     "what_it_covers": [
       "Part A: Inpatient hospital stays, skilled nursing facility care (up to 100 days), hospice care, some home health services",
       "Part B: Doctor visits, outpatient surgery, preventive screenings, durable medical equipment, mental health services",
@@ -17,7 +17,7 @@
       "Concierge or private-duty nursing",
       "Most prescription drugs under Original Medicare alone (requires Part D or Advantage plan)"
     ],
-    "cost_narrative": "Medicare Part A is premium-free for most people who paid Medicare taxes for at least 10 years. Part B costs approximately $185 per month in 2026, with higher earners paying more through Income-Related Monthly Adjustment Amounts (IRMAA). Beyond premiums, Original Medicare has a Part A hospital deductible of around $1,632 per benefit period and a Part B deductible of approximately $257 annually. After the deductible, you typically pay 20% of approved costs with no out-of-pocket maximum, which is why most Kentuckians add a Medigap supplement or choose a Medicare Advantage plan. The Way Agency can walk you through the actual cost comparison based on your medications and doctors.",
+    "cost_narrative": "Medicare Part A is premium-free for most people who paid Medicare taxes for at least 10 years. Part B costs approximately $185 per month in 2026, with higher earners paying more through Income-Related Monthly Adjustment Amounts (IRMAA). Beyond premiums, Original Medicare has a Part A hospital deductible of around $1,632 per benefit period and a Part B deductible of approximately $257 annually. After the deductible, you typically pay 20% of approved costs with no out-of-pocket maximum, which is why most Medicare enrollees add a Medigap supplement or choose a Medicare Advantage plan. The Way Agency can walk you through the actual cost comparison based on your medications and doctors.",
     "faqs": [
       {
         "question": "When should I enroll in Medicare?",
@@ -25,7 +25,7 @@
       },
       {
         "question": "What is the difference between Medicare Supplement (Medigap) and Medicare Advantage?",
-        "answer": "Medigap policies fill the gaps in Original Medicare (Parts A and B), covering copays, coinsurance, and deductibles. You keep full freedom to see any Medicare-accepting provider nationwide. Medicare Advantage replaces Original Medicare with a private plan that often includes drug, dental, and vision benefits with lower premiums but uses provider networks. In western Kentucky, network size matters because specialist access can be more limited in rural areas."
+        "answer": "Medigap policies fill the gaps in Original Medicare (Parts A and B), covering copays, coinsurance, and deductibles. You keep full freedom to see any Medicare-accepting provider nationwide. Medicare Advantage replaces Original Medicare with a private plan that often includes drug, dental, and vision benefits with lower premiums but uses provider networks. In rural areas, network size matters because specialist access can be more limited."
       },
       {
         "question": "Can I change my Medicare plan after I enroll?",
@@ -33,7 +33,7 @@
       },
       {
         "question": "Does Medicare cover prescription drugs?",
-        "answer": "Original Medicare (Parts A and B) does not cover most outpatient prescriptions. You need a standalone Part D plan or a Medicare Advantage plan with drug coverage. In 2026, the Inflation Reduction Act caps annual out-of-pocket drug spending at $2,000 for Medicare Part D enrollees, which is a significant benefit for Kentuckians managing chronic conditions with expensive medications."
+        "answer": "Original Medicare (Parts A and B) does not cover most outpatient prescriptions. You need a standalone Part D plan or a Medicare Advantage plan with drug coverage. In 2026, the Inflation Reduction Act caps annual out-of-pocket drug spending at $2,000 for Medicare Part D enrollees, which is a significant benefit for anyone managing chronic conditions with expensive medications."
       },
       {
         "question": "I am still working at 65. Do I need to sign up for Medicare?",
@@ -42,8 +42,8 @@
     ]
   },
   "medicaid": {
-    "direct_answer": "Medicaid is a joint federal and state health insurance program that provides free or low-cost coverage to low-income individuals and families. In Kentucky, Medicaid was expanded under the Affordable Care Act to cover adults with household incomes up to 138% of the federal poverty level (approximately $20,783 for an individual in 2026). Enrollment and applications are handled through kynect, Kentucky's health benefits exchange.",
-    "who_needs_it": "Kentucky's Medicaid expansion has provided coverage to over 500,000 Kentuckians who previously had no affordable insurance options. If you are an adult under 65 with income at or below 138% of the federal poverty level, you likely qualify. Families with children may qualify at higher income levels, and pregnant women are covered up to 195% FPL in Kentucky. The program is particularly significant in western Kentucky, where lower median incomes and higher rates of uninsurance historically left many residents without access to preventive care. You apply through kynect (kynect.ky.gov), and unlike marketplace plans, Medicaid enrollment is open year-round with no limited enrollment period. The Way Agency can help you determine whether Medicaid, a kynect marketplace plan with subsidies, or another option is the best fit for your situation.",
+    "direct_answer": "Medicaid is a joint federal and state health insurance program that provides free or low-cost coverage to low-income individuals and families. Many states have expanded Medicaid under the Affordable Care Act to cover adults with household incomes up to 138% of the federal poverty level (approximately $20,783 for an individual in 2026). Enrollment and applications are handled through your state's health insurance marketplace or Medicaid office.",
+    "who_needs_it": "Medicaid expansion has provided coverage to millions of Americans who previously had no affordable insurance options. If you are an adult under 65 with income at or below 138% of the federal poverty level, you likely qualify in states that have expanded Medicaid. Families with children may qualify at higher income levels, and pregnant women are often covered at higher FPL thresholds depending on your state. The program is particularly significant in areas where lower median incomes and higher rates of uninsurance historically left many residents without access to preventive care. You apply through your state's health insurance marketplace, and unlike marketplace plans, Medicaid enrollment is open year-round with no limited enrollment period. The Way Agency can help you determine whether Medicaid, a marketplace plan with subsidies, or another option is the best fit for your situation.",
     "what_it_covers": [
       "Doctor visits and specialist care",
       "Hospital inpatient and outpatient services",
@@ -59,20 +59,20 @@
     "what_it_doesnt_cover": [
       "Cosmetic or elective surgery",
       "Experimental treatments not approved by the program",
-      "Services outside of the Kentucky Medicaid provider network (except emergencies)",
+      "Services outside of the Medicaid provider network (except emergencies)",
       "Adult dental coverage is limited (basic extractions and dentures, but not comprehensive restorative work)",
       "Long-term care abroad or out-of-state non-emergency care (without prior approval)",
       "Certain over-the-counter medications"
     ],
-    "cost_narrative": "For most enrollees, Kentucky Medicaid has zero premiums and minimal copays (typically $1 to $4 per service). There are no deductibles. Children, pregnant women, and those in certain categories pay nothing out of pocket. The coverage is comprehensive and immediate once approved. However, the application process requires income verification, and some applicants may be found eligible for marketplace plans with subsidies rather than Medicaid. The Way Agency helps people navigate the sometimes confusing line between Medicaid eligibility and kynect marketplace plans so you end up with the coverage you actually qualify for.",
+    "cost_narrative": "For most enrollees, Medicaid has zero premiums and minimal copays (typically $1 to $4 per service). There are no deductibles. Children, pregnant women, and those in certain categories pay nothing out of pocket. The coverage is comprehensive and immediate once approved. However, the application process requires income verification, and some applicants may be found eligible for marketplace plans with subsidies rather than Medicaid. The Way Agency helps people navigate the sometimes confusing line between Medicaid eligibility and marketplace plans so you end up with the coverage you actually qualify for.",
     "faqs": [
       {
-        "question": "How do I apply for Medicaid in Kentucky?",
-        "answer": "Apply online through kynect.ky.gov, by phone at 1-855-459-6328, or in person at your local Department for Community Based Services (DCBS) office. The application takes about 30 to 45 minutes and requires proof of income, identity, and Kentucky residency. Most applications are processed within 45 days. Unlike marketplace health insurance, Medicaid enrollment is available year-round."
+        "question": "How do I apply for Medicaid?",
+        "answer": "Apply online through your state's health insurance marketplace or Medicaid website, by phone, or in person at your local social services office. The application takes about 30 to 45 minutes and requires proof of income, identity, and residency. Most applications are processed within 45 days. Unlike marketplace health insurance, Medicaid enrollment is available year-round."
       },
       {
-        "question": "What is the income limit for Medicaid in Kentucky?",
-        "answer": "For adults aged 19 to 64 under Medicaid expansion, the income limit is 138% of the federal poverty level. In 2026, that is approximately $20,783 for an individual, $28,208 for a family of two, and $35,632 for a family of three. Children qualify at higher income levels through KCHIP, and pregnant women qualify at up to 195% of the federal poverty level. Income is calculated based on Modified Adjusted Gross Income (MAGI)."
+        "question": "What is the income limit for Medicaid?",
+        "answer": "For adults aged 19 to 64 under Medicaid expansion, the income limit is 138% of the federal poverty level. In 2026, that is approximately $20,783 for an individual, $28,208 for a family of two, and $35,632 for a family of three. Children often qualify at higher income levels through your state's Children's Health Insurance Program (CHIP), and pregnant women may qualify at higher FPL thresholds depending on your state. Income is calculated based on Modified Adjusted Gross Income (MAGI)."
       },
       {
         "question": "Can I have Medicaid and other insurance at the same time?",
@@ -80,17 +80,17 @@
       },
       {
         "question": "What happens if my income increases above the Medicaid limit?",
-        "answer": "If your income rises above 138% FPL, you will transition off Medicaid, but you may qualify for subsidized marketplace plans through kynect. Kentucky has a transition period, and you will receive notice before coverage ends. The Way Agency can help you find affordable marketplace coverage during a Special Enrollment Period triggered by losing Medicaid eligibility."
+        "answer": "If your income rises above 138% FPL, you will transition off Medicaid, but you may qualify for subsidized marketplace plans through your state's exchange. Most states provide a transition period, and you will receive notice before coverage ends. The Way Agency can help you find affordable marketplace coverage during a Special Enrollment Period triggered by losing Medicaid eligibility."
       },
       {
-        "question": "Does Kentucky Medicaid cover mental health and addiction treatment?",
-        "answer": "Yes. Kentucky Medicaid covers behavioral health services including outpatient therapy, inpatient psychiatric care, medication-assisted treatment for substance use disorders, and residential treatment. Given Kentucky's ongoing struggles with opioid addiction, the state has expanded Medicaid behavioral health benefits significantly. There is no separate deductible or copay for most mental health services."
+        "question": "Does Medicaid cover mental health and addiction treatment?",
+        "answer": "Yes. Medicaid covers behavioral health services including outpatient therapy, inpatient psychiatric care, medication-assisted treatment for substance use disorders, and residential treatment. Many states have expanded Medicaid behavioral health benefits significantly in response to the opioid crisis. There is no separate deductible or copay for most mental health services."
       }
     ]
   },
   "supplemental-health": {
     "direct_answer": "Supplemental health insurance pays cash benefits directly to you when a covered health event occurs, such as an accident, critical illness diagnosis, or hospital stay. It does not replace your primary health insurance but fills the financial gaps by providing money you can use for deductibles, copays, lost wages, childcare, or any other expense. These policies pay regardless of what your primary insurance covers.",
-    "who_needs_it": "Supplemental health insurance is especially valuable for Kentuckians with high-deductible health plans (HDHPs), which have become increasingly common both on the kynect marketplace and through employer group plans. If your health plan has a $3,000 to $8,000 deductible, a single ER visit or surgery could be financially devastating. Workers in physically demanding industries common in western Kentucky, such as manufacturing, agriculture, and construction, face higher injury risks and often benefit from accident coverage. Families with children involved in sports or outdoor activities also see value. The Way Agency helps clients identify the specific gaps in their current health plan and recommends supplemental coverage only where it genuinely adds financial protection, not as a blanket upsell.",
+    "who_needs_it": "Supplemental health insurance is especially valuable for anyone with a high-deductible health plan (HDHP), which have become increasingly common both on the marketplace and through employer group plans. If your health plan has a $3,000 to $8,000 deductible, a single ER visit or surgery could be financially devastating. Workers in physically demanding industries such as manufacturing, agriculture, and construction face higher injury risks and often benefit from accident coverage. Families with children involved in sports or outdoor activities also see value. The Way Agency helps clients identify the specific gaps in their current health plan and recommends supplemental coverage only where it genuinely adds financial protection, not as a blanket upsell.",
     "what_it_covers": [
       "Accident policies: ER visits, fractures, dislocations, burns, lacerations, ambulance rides, follow-up care",
       "Critical illness policies: Lump-sum payment upon diagnosis of cancer, heart attack, stroke, organ failure, or other named conditions",
@@ -128,8 +128,8 @@
     ]
   },
   "group-health": {
-    "direct_answer": "Group health insurance is employer-sponsored health coverage that a business provides to its employees and typically their dependents. The employer usually pays a significant portion of the premium (often 50% or more), and employees pay the remainder through payroll deductions. In Kentucky, small group plans (2-50 employees) are community-rated, meaning premiums are based on age, tobacco use, and location rather than individual health history.",
-    "who_needs_it": "Any Kentucky business with two or more employees should evaluate group health insurance. It is one of the most effective tools for attracting and retaining talent in the competitive western Kentucky labor market, where employers across manufacturing, healthcare, and service industries vie for the same workforce. Under the ACA, businesses with 50 or more full-time equivalent employees are required to offer health coverage or face penalties. But even smaller businesses benefit, as group rates are typically 10 to 30 percent less expensive than individual plans. In Kentucky, the small group market is accessible through carriers like Anthem, Humana, and others, and plans must cover the ten essential health benefits. The Way Agency works with Kentucky small businesses to design benefit packages that balance cost control with meaningful coverage.",
+    "direct_answer": "Group health insurance is employer-sponsored health coverage that a business provides to its employees and typically their dependents. The employer usually pays a significant portion of the premium (often 50% or more), and employees pay the remainder through payroll deductions. Under the ACA, small group plans (2-50 employees) are community-rated, meaning premiums are based on age, tobacco use, and location rather than individual health history.",
+    "who_needs_it": "Any business with two or more employees should evaluate group health insurance. It is one of the most effective tools for attracting and retaining talent in a competitive labor market, where employers across manufacturing, healthcare, and service industries vie for the same workforce. Under the ACA, businesses with 50 or more full-time equivalent employees are required to offer health coverage or face penalties. But even smaller businesses benefit, as group rates are typically 10 to 30 percent less expensive than individual plans. The small group market is accessible through major carriers, and plans must cover the ten ACA-mandated essential health benefits. The Way Agency works with small businesses to design benefit packages that balance cost control with meaningful coverage.",
     "what_it_covers": [
       "All ACA-mandated essential health benefits: hospitalization, outpatient care, prescriptions, maternity, mental health, preventive care",
       "Preventive services with no employee cost-sharing (annual physicals, immunizations, screenings)",
@@ -147,11 +147,11 @@
       "Long-term custodial care",
       "Services from out-of-network providers (in HMO plans) or at higher cost (in PPO plans)"
     ],
-    "cost_narrative": "In Kentucky, the average small group health premium runs approximately $550 to $750 per month for single employee coverage. Employers are required to contribute at least 50% of the employee-only premium in most cases. Family premiums can exceed $1,800 per month, and employer contribution levels for dependent coverage vary widely. Plan design choices such as deductible levels ($1,000 to $6,000), copay structures, and network type (HMO, PPO, or HDHP with HSA) significantly affect premium costs. The Way Agency helps businesses model multiple plan designs to find the best balance between budget and benefits.",
+    "cost_narrative": "The average small group health premium runs approximately $550 to $750 per month for single employee coverage. Employers are required to contribute at least 50% of the employee-only premium in most cases. Family premiums can exceed $1,800 per month, and employer contribution levels for dependent coverage vary widely. Plan design choices such as deductible levels ($1,000 to $6,000), copay structures, and network type (HMO, PPO, or HDHP with HSA) significantly affect premium costs. The Way Agency helps businesses model multiple plan designs to find the best balance between budget and benefits.",
     "faqs": [
       {
-        "question": "How many employees do I need to qualify for group health insurance in Kentucky?",
-        "answer": "Most carriers in Kentucky require a minimum of two eligible employees (not including spouses) to form a group. Some carriers require higher participation rates. Sole proprietors with no employees generally cannot access group plans and should look at individual marketplace coverage through kynect or direct-to-carrier options. The Way Agency can help determine which market is best for your business structure."
+        "question": "How many employees do I need to qualify for group health insurance?",
+        "answer": "Most carriers require a minimum of two eligible employees (not including spouses) to form a group. Some carriers require higher participation rates. Sole proprietors with no employees generally cannot access group plans and should look at individual marketplace coverage or direct-to-carrier options. The Way Agency can help determine which market is best for your business structure."
       },
       {
         "question": "When can employees enroll in or change their group health plan?",
@@ -163,7 +163,7 @@
       },
       {
         "question": "What happens to an employee's coverage if they leave the company?",
-        "answer": "Under federal COBRA law (for employers with 20+ employees) or Kentucky mini-COBRA (for smaller employers), departing employees can continue their group coverage for up to 18 months by paying the full premium plus a 2% administrative fee. Alternatively, they can enroll in an individual plan through kynect during a Special Enrollment Period triggered by loss of employer coverage."
+        "answer": "Under federal COBRA law (for employers with 20+ employees) or state mini-COBRA (for smaller employers in many states), departing employees can continue their group coverage for up to 18 months by paying the full premium plus a 2% administrative fee. Alternatively, they can enroll in an individual plan through the marketplace during a Special Enrollment Period triggered by loss of employer coverage."
       },
       {
         "question": "Is an HSA-compatible high-deductible plan a good option for my small business?",
@@ -172,8 +172,8 @@
     ]
   },
   "individual-health": {
-    "direct_answer": "Individual health insurance is a policy you purchase on your own rather than receiving through an employer. In Kentucky, you can buy individual plans through the state marketplace, kynect (kynect.ky.gov), or directly from insurance carriers. Marketplace plans may qualify for premium tax credits and cost-sharing reductions based on your household income, making comprehensive coverage affordable for many Kentuckians who do not have employer-sponsored insurance.",
-    "who_needs_it": "Individual health insurance is essential for self-employed Kentuckians, freelancers, gig workers, small business owners who cannot form a group, early retirees not yet eligible for Medicare, and anyone between jobs. In western Kentucky, where small businesses and self-employment are common, individual plans through kynect are often the primary coverage option. If your household income is between 100% and 400% of the federal poverty level, you likely qualify for premium subsidies; enhanced subsidies extended through recent legislation have made even higher earners eligible for assistance. Open enrollment on kynect runs from November 1 through January 15 annually, and the Way Agency helps clients in the Owensboro area navigate plan selection, subsidy calculations, and enrollment every year.",
+    "direct_answer": "Individual health insurance is a policy you purchase on your own rather than receiving through an employer. You can buy individual plans through your state's health insurance marketplace or directly from insurance carriers. Marketplace plans may qualify for premium tax credits and cost-sharing reductions based on your household income, making comprehensive coverage affordable for many people who do not have employer-sponsored insurance.",
+    "who_needs_it": "Individual health insurance is essential for the self-employed, freelancers, gig workers, small business owners who cannot form a group, early retirees not yet eligible for Medicare, and anyone between jobs. In areas where small businesses and self-employment are common, individual marketplace plans are often the primary coverage option. If your household income is between 100% and 400% of the federal poverty level, you likely qualify for premium subsidies; enhanced subsidies extended through recent legislation have made even higher earners eligible for assistance. Open enrollment typically runs from November 1 through January 15 annually, and the Way Agency helps clients navigate plan selection, subsidy calculations, and enrollment every year.",
     "what_it_covers": [
       "All ACA essential health benefits: hospitalization, prescriptions, maternity, mental health, preventive care",
       "Preventive services with no cost-sharing (annual physicals, cancer screenings, immunizations)",
@@ -192,14 +192,14 @@
       "Experimental treatments not approved by the plan",
       "Non-emergency care outside the U.S."
     ],
-    "cost_narrative": "Monthly premiums for individual plans in Kentucky vary widely by metal tier: Bronze plans (lowest premium, highest deductible) start around $250 to $350 per month for a 40-year-old before subsidies, while Gold plans run $450 to $650. With premium tax credits, many Kentuckians pay significantly less. A 40-year-old earning $35,000 might pay $100 to $200 per month after subsidies. Silver plans are often the best value because they unlock cost-sharing reductions for those earning under 250% FPL, lowering deductibles and copays substantially. The Way Agency runs actual subsidy calculations before recommending a metal tier, because the cheapest premium is not always the cheapest total cost of care.",
+    "cost_narrative": "Monthly premiums for individual plans vary widely by metal tier: Bronze plans (lowest premium, highest deductible) start around $250 to $350 per month for a 40-year-old before subsidies, while Gold plans run $450 to $650. With premium tax credits, many people pay significantly less. A 40-year-old earning $35,000 might pay $100 to $200 per month after subsidies. Silver plans are often the best value because they unlock cost-sharing reductions for those earning under 250% FPL, lowering deductibles and copays substantially. The Way Agency runs actual subsidy calculations before recommending a metal tier, because the cheapest premium is not always the cheapest total cost of care.",
     "faqs": [
       {
-        "question": "When can I enroll in an individual health plan in Kentucky?",
-        "answer": "The annual Open Enrollment Period on kynect runs from November 1 through January 15. Outside of open enrollment, you can only enroll during a Special Enrollment Period triggered by a qualifying life event such as losing other coverage, getting married, having a baby, or moving to a new area. Medicaid and KCHIP enrollment through kynect is available year-round."
+        "question": "When can I enroll in an individual health plan?",
+        "answer": "The annual Open Enrollment Period typically runs from November 1 through January 15. Outside of open enrollment, you can only enroll during a Special Enrollment Period triggered by a qualifying life event such as losing other coverage, getting married, having a baby, or moving to a new area. Medicaid and CHIP enrollment is available year-round."
       },
       {
-        "question": "How do I know if I qualify for subsidies on kynect?",
+        "question": "How do I know if I qualify for marketplace subsidies?",
         "answer": "Premium tax credits are based on your household income relative to the federal poverty level. If your income is between 100% and 400% FPL, you likely qualify, and enhanced subsidies currently extend assistance to higher earners as well. For a single person in 2026, 400% FPL is approximately $60,240. The Way Agency can estimate your subsidy amount before you apply by reviewing your expected annual income."
       },
       {
@@ -207,18 +207,18 @@
         "answer": "The metal tiers reflect how costs are shared between you and the insurer. Bronze plans cover about 60% of costs (low premiums, high deductibles). Silver covers 70% and unlocks extra cost-sharing reductions for lower-income enrollees. Gold covers 80% with moderate premiums and lower out-of-pocket costs. Platinum covers 90% with the highest premiums but lowest cost at the point of care. All tiers cover the same essential benefits."
       },
       {
-        "question": "Can I buy a health plan outside of kynect in Kentucky?",
-        "answer": "Yes. You can purchase individual health plans directly from carriers like Anthem, Humana, or others without going through kynect. However, if you buy off-marketplace, you cannot receive premium tax credits or cost-sharing reductions. For most people who qualify for subsidies, buying through kynect saves significant money. The Way Agency helps determine whether on- or off-marketplace enrollment is the better path."
+        "question": "Can I buy a health plan outside of the marketplace?",
+        "answer": "Yes. You can purchase individual health plans directly from carriers without going through your state's marketplace. However, if you buy off-marketplace, you cannot receive premium tax credits or cost-sharing reductions. For most people who qualify for subsidies, buying through the marketplace saves significant money. The Way Agency helps determine whether on- or off-marketplace enrollment is the better path."
       },
       {
         "question": "What happens if I miss open enrollment and do not have a qualifying event?",
-        "answer": "You would be uninsured until the next open enrollment period or until you experience a qualifying life event. In Kentucky, short-term health plans are available as temporary gap coverage but do not cover pre-existing conditions and are not ACA-compliant. Going without coverage carries financial risk but there is currently no federal penalty for being uninsured. The Way Agency strongly recommends enrolling during open enrollment to avoid gaps."
+        "answer": "You would be uninsured until the next open enrollment period or until you experience a qualifying life event. In many states, short-term health plans are available as temporary gap coverage but do not cover pre-existing conditions and are not ACA-compliant. Going without coverage carries financial risk but there is currently no federal penalty for being uninsured. The Way Agency strongly recommends enrolling during open enrollment to avoid gaps."
       }
     ]
   },
   "family-health": {
-    "direct_answer": "Family health insurance covers you, your spouse, and your dependent children under a single policy. In Kentucky, family plans are available through employer group coverage, the kynect marketplace, or directly from carriers. Marketplace family plans may qualify for premium tax credits based on household income, and children may qualify for Kentucky Children's Health Insurance Program (KCHIP) if household income is too high for Medicaid but purchasing private coverage is a hardship.",
-    "who_needs_it": "Any Kentucky family without employer-sponsored coverage should explore family health plans on kynect, especially during open enrollment from November 1 through January 15. Families in the Owensboro area often face a patchwork of coverage situations: one spouse may have employer insurance that does not extend to dependents at an affordable rate, a child may age off a parent's plan at 26, or a family may be transitioning between jobs. Kentucky's KCHIP program covers children in families earning up to 218% of the federal poverty level at little or no cost, and families earning up to 300% FPL may qualify for reduced premiums. The Way Agency helps families evaluate whether one combined plan, separate individual plans, or a mix of marketplace coverage and KCHIP provides the best value.",
+    "direct_answer": "Family health insurance covers you, your spouse, and your dependent children under a single policy. Family plans are available through employer group coverage, the health insurance marketplace, or directly from carriers. Marketplace family plans may qualify for premium tax credits based on household income, and children may qualify for your state's Children's Health Insurance Program (CHIP) if household income is too high for Medicaid but purchasing private coverage is a hardship.",
+    "who_needs_it": "Any family without employer-sponsored coverage should explore family health plans on the marketplace, especially during open enrollment from November 1 through January 15. Many families face a patchwork of coverage situations: one spouse may have employer insurance that does not extend to dependents at an affordable rate, a child may age off a parent's plan at 26, or a family may be transitioning between jobs. Your state's CHIP program may cover children in families at moderate income levels at little or no cost. The Way Agency helps families evaluate whether one combined plan, separate individual plans, or a mix of marketplace coverage and CHIP provides the best value.",
     "what_it_covers": [
       "All ACA essential health benefits for every covered family member",
       "Pediatric dental and vision care (included in marketplace plans for children under 19)",
@@ -237,23 +237,23 @@
       "Experimental treatments",
       "Long-term custodial care"
     ],
-    "cost_narrative": "Family health plan premiums in Kentucky are significantly higher than individual plans, often $1,200 to $2,000 per month before subsidies for a family of four on a Silver plan. Premium tax credits can reduce this dramatically. A family of four earning $60,000 per year might pay $300 to $500 per month after subsidies. There is a family cap on ACA marketplace out-of-pocket costs (approximately $18,900 for 2026), which limits your total spending. Cost-sharing reductions on Silver plans further lower deductibles and copays for families earning below 250% FPL. The Way Agency models total annual healthcare costs, not just premiums, to find the most cost-effective family coverage strategy.",
+    "cost_narrative": "Family health plan premiums are significantly higher than individual plans, often $1,200 to $2,000 per month before subsidies for a family of four on a Silver plan. Premium tax credits can reduce this dramatically. A family of four earning $60,000 per year might pay $300 to $500 per month after subsidies. There is a family cap on ACA marketplace out-of-pocket costs (approximately $18,900 for 2026), which limits your total spending. Cost-sharing reductions on Silver plans further lower deductibles and copays for families earning below 250% FPL. The Way Agency models total annual healthcare costs, not just premiums, to find the most cost-effective family coverage strategy.",
     "faqs": [
       {
         "question": "Should my whole family be on one plan, or should we use separate plans?",
-        "answer": "It depends on your family's needs and income. In many cases, a single family plan is simplest and works well with premium tax credits. However, if one spouse has access to affordable employer coverage, it may be cheaper for that spouse to stay on the employer plan while the rest of the family enrolls on kynect. The Way Agency compares both scenarios using actual premium and subsidy numbers."
+        "answer": "It depends on your family's needs and income. In many cases, a single family plan is simplest and works well with premium tax credits. However, if one spouse has access to affordable employer coverage, it may be cheaper for that spouse to stay on the employer plan while the rest of the family enrolls on the marketplace. The Way Agency compares both scenarios using actual premium and subsidy numbers."
       },
       {
-        "question": "What is KCHIP and does my child qualify?",
-        "answer": "The Kentucky Children's Health Insurance Program (KCHIP) provides low-cost or free health coverage for children under 19 in families that earn too much for Medicaid but find private insurance unaffordable. Children in families earning up to 218% of the federal poverty level qualify for Medicaid-level benefits, while those in families earning up to 300% FPL can get coverage with small premiums. You apply through kynect, and enrollment is year-round."
+        "question": "What is CHIP and does my child qualify?",
+        "answer": "The Children's Health Insurance Program (CHIP) provides low-cost or free health coverage for children under 19 in families that earn too much for Medicaid but find private insurance unaffordable. Income limits vary by state, but many states cover children in families earning up to 200% or more of the federal poverty level. You apply through your state's health insurance marketplace or Medicaid office, and enrollment is year-round."
       },
       {
         "question": "At what age does my child lose coverage on my plan?",
-        "answer": "Under the ACA, children can remain on a parent's health plan until they turn 26, regardless of whether they are married, living at home, in school, or financially independent. This applies to both marketplace and employer-sponsored plans. After 26, they need their own coverage through an employer, kynect, or another source."
+        "answer": "Under the ACA, children can remain on a parent's health plan until they turn 26, regardless of whether they are married, living at home, in school, or financially independent. This applies to both marketplace and employer-sponsored plans. After 26, they need their own coverage through an employer, the marketplace, or another source."
       },
       {
         "question": "Can I add a new baby to my plan mid-year?",
-        "answer": "Yes. The birth or adoption of a child triggers a Special Enrollment Period of 60 days, allowing you to add the child to your existing plan or change plans. The child's coverage is effective from the date of birth. If you have a marketplace plan, contact kynect promptly to update your household size, as your subsidy amount may also change."
+        "answer": "Yes. The birth or adoption of a child triggers a Special Enrollment Period of 60 days, allowing you to add the child to your existing plan or change plans. The child's coverage is effective from the date of birth. If you have a marketplace plan, contact the marketplace promptly to update your household size, as your subsidy amount may also change."
       },
       {
         "question": "What if one family member has expensive medical needs?",
@@ -263,7 +263,7 @@
   },
   "dental-vision": {
     "direct_answer": "Dental, vision, and hearing insurance are standalone policies that cover preventive care, exams, and treatments that most health insurance plans exclude for adults. Dental plans typically cover two cleanings per year, X-rays, fillings, and a portion of major work like crowns and root canals. Vision plans cover annual eye exams and provide allowances for glasses or contact lenses. Hearing plans cover hearing tests and discounts on hearing aids.",
-    "who_needs_it": "Most adults in Kentucky need separate dental and vision coverage because standard health insurance, including marketplace plans on kynect, only includes dental and vision benefits for children under 19. Original Medicare also excludes routine dental, vision, and hearing (though some Medicare Advantage plans include them). This coverage gap means a single root canal ($1,000 to $1,500) or pair of prescription glasses ($200 to $600) comes entirely out of pocket. In western Kentucky, where access to dental providers is already limited in some rural areas, having a dental plan that reduces costs at available providers is especially valuable. The Way Agency offers standalone dental, vision, and hearing plans from multiple carriers, and can bundle them for families or individuals.",
+    "who_needs_it": "Most adults need separate dental and vision coverage because standard health insurance, including marketplace plans, only includes dental and vision benefits for children under 19. Original Medicare also excludes routine dental, vision, and hearing (though some Medicare Advantage plans include them). This coverage gap means a single root canal ($1,000 to $1,500) or pair of prescription glasses ($200 to $600) comes entirely out of pocket. In rural areas where access to dental providers may be limited, having a dental plan that reduces costs at available providers is especially valuable. The Way Agency offers standalone dental, vision, and hearing plans from multiple carriers, and can bundle them for families or individuals.",
     "what_it_covers": [
       "Dental: Preventive care (cleanings, exams, X-rays) typically at 100% coverage",
       "Dental: Basic procedures (fillings, extractions, periodontics) typically at 70-80% coverage",
@@ -281,7 +281,7 @@
       "Dental work that exceeds annual maximums (typically $1,000-$2,000 per year)",
       "Pre-existing dental conditions may have waiting periods of 6-12 months for major services"
     ],
-    "cost_narrative": "Standalone dental plans in Kentucky typically cost $25 to $60 per month for individual coverage and $75 to $150 for family coverage. Vision plans run $10 to $25 per month individually. At these prices, the math works well for people who use preventive care: two dental cleanings alone cost $200 to $400 without insurance, which often exceeds the annual premium. However, if you need major dental work, be aware that most plans have annual maximums of $1,000 to $2,000 and waiting periods of 6 to 12 months for major services. The Way Agency helps clients evaluate whether a DHMO plan (lower cost, limited network) or a DPPO plan (higher cost, broader access) is the right fit.",
+    "cost_narrative": "Standalone dental plans typically cost $25 to $60 per month for individual coverage and $75 to $150 for family coverage. Vision plans run $10 to $25 per month individually. At these prices, the math works well for people who use preventive care: two dental cleanings alone cost $200 to $400 without insurance, which often exceeds the annual premium. However, if you need major dental work, be aware that most plans have annual maximums of $1,000 to $2,000 and waiting periods of 6 to 12 months for major services. The Way Agency helps clients evaluate whether a DHMO plan (lower cost, limited network) or a DPPO plan (higher cost, broader access) is the right fit.",
     "faqs": [
       {
         "question": "Does Medicare cover dental, vision, or hearing?",
@@ -303,7 +303,7 @@
   },
   "term-life": {
     "direct_answer": "Term life insurance pays a tax-free death benefit to your beneficiaries if you die during the policy term, which is typically 10, 20, or 30 years. It is the most affordable type of life insurance because it provides pure death benefit protection without building cash value. A healthy 35-year-old can typically get $500,000 in coverage for $25 to $50 per month, making it accessible for most families.",
-    "who_needs_it": "Term life insurance is essential for anyone whose death would create a financial burden for their family. If you have a mortgage, children, a spouse who depends on your income, student loans with a co-signer, or business debts, term life protects against the financial devastation of losing that income. In Kentucky, where the median household income is approximately $55,000 and the average mortgage balance in the Owensboro area ranges from $130,000 to $200,000, a $250,000 to $500,000 term policy can keep a family in their home and maintain their standard of living. Most financial advisors recommend coverage equal to 10 to 12 times your annual income. The Way Agency shops multiple carriers to find the best rates based on your health profile, age, and coverage needs.",
+    "who_needs_it": "Term life insurance is essential for anyone whose death would create a financial burden for their family. If you have a mortgage, children, a spouse who depends on your income, student loans with a co-signer, or business debts, term life protects against the financial devastation of losing that income. With the average mortgage balance ranging from $150,000 to $300,000 in many markets, a $250,000 to $500,000 term policy can keep a family in their home and maintain their standard of living. Most financial advisors recommend coverage equal to 10 to 12 times your annual income. The Way Agency shops multiple carriers to find the best rates based on your health profile, age, and coverage needs.",
     "what_it_covers": [
       "Tax-free lump-sum death benefit paid to your named beneficiaries",
       "Death from any cause (accident, illness, natural causes) after the contestability period",
@@ -344,7 +344,7 @@
   },
   "whole-life": {
     "direct_answer": "Whole life insurance is permanent coverage that lasts your entire lifetime, with level premiums that never increase, a guaranteed death benefit, and a cash value component that grows at a guaranteed rate over time. Unlike term life, whole life does not expire and builds an asset you can borrow against or surrender for cash. It costs significantly more than term life, typically 5 to 10 times more for the same death benefit amount.",
-    "who_needs_it": "Whole life insurance is appropriate for Kentuckians with lifelong coverage needs that term insurance cannot address. If you want to ensure your family receives a death benefit no matter when you die, fund final expenses without burdening your family, create a tax-advantaged legacy for heirs, or build a conservative cash value asset for retirement supplement, whole life serves those purposes. Business owners in the Owensboro area use whole life for buy-sell agreement funding and key person insurance. Wealthier individuals use it for estate planning and wealth transfer. However, whole life is not the right choice for most young families who simply need large amounts of affordable coverage; term life is better for pure income replacement. The Way Agency helps clients honestly evaluate whether whole life, term life, or a combination is the best fit for their financial goals.",
+    "who_needs_it": "Whole life insurance is appropriate for anyone with lifelong coverage needs that term insurance cannot address. If you want to ensure your family receives a death benefit no matter when you die, fund final expenses without burdening your family, create a tax-advantaged legacy for heirs, or build a conservative cash value asset for retirement supplement, whole life serves those purposes. Business owners use whole life for buy-sell agreement funding and key person insurance. Wealthier individuals use it for estate planning and wealth transfer. However, whole life is not the right choice for most young families who simply need large amounts of affordable coverage; term life is better for pure income replacement. The Way Agency helps clients honestly evaluate whether whole life, term life, or a combination is the best fit for their financial goals.",
     "what_it_covers": [
       "Guaranteed death benefit paid to beneficiaries at any age of death",
       "Level premiums for life that never increase",
@@ -387,7 +387,7 @@
   },
   "annuities": {
     "direct_answer": "An annuity is a contract with an insurance company where you make a lump-sum payment or series of payments, and in return, the insurer provides guaranteed income payments either immediately or starting at a future date. Annuities are primarily used for retirement income planning, offering protection against the risk of outliving your savings. They come in three main types: fixed (guaranteed interest rate), fixed indexed (returns tied to a market index with downside protection), and variable (invested in sub-accounts with market risk).",
-    "who_needs_it": "Annuities serve Kentuckians who are approaching or in retirement and want guaranteed income they cannot outlive. If Social Security and any pension do not fully cover your monthly expenses, an annuity can fill the gap with predictable payments. They are also valuable for risk-averse savers who want tax-deferred growth without stock market volatility (fixed and fixed indexed annuities). In western Kentucky, where many workers do not have pension plans and rely on Social Security and personal savings, annuities can provide the income floor that creates retirement confidence. The Way Agency works with clients to determine whether an annuity belongs in their retirement plan and, if so, which type and how much of their savings to annuitize. We are transparent about the tradeoffs, including fees, surrender charges, and liquidity limitations.",
+    "who_needs_it": "Annuities serve people who are approaching or in retirement and want guaranteed income they cannot outlive. If Social Security and any pension do not fully cover your monthly expenses, an annuity can fill the gap with predictable payments. They are also valuable for risk-averse savers who want tax-deferred growth without stock market volatility (fixed and fixed indexed annuities). For workers who do not have pension plans and rely on Social Security and personal savings, annuities can provide the income floor that creates retirement confidence. The Way Agency works with clients to determine whether an annuity belongs in their retirement plan and, if so, which type and how much of their savings to annuitize. We are transparent about the tradeoffs, including fees, surrender charges, and liquidity limitations.",
     "what_it_covers": [
       "Guaranteed income payments for life or a set period (depending on payout option selected)",
       "Tax-deferred growth on earnings until withdrawal",
@@ -416,7 +416,7 @@
       },
       {
         "question": "Are annuities safe if the insurance company fails?",
-        "answer": "Annuities are backed by the financial strength of the issuing insurance company, not by the FDIC. Kentucky has a guaranty association that protects annuity owners up to $250,000 in present value of annuity benefits if a carrier becomes insolvent. The Way Agency recommends annuities only from carriers with strong financial ratings (A-rated or better by AM Best) to minimize this risk."
+        "answer": "Annuities are backed by the financial strength of the issuing insurance company, not by the FDIC. Every state has a guaranty association that protects annuity owners up to certain limits (typically $250,000 in present value of annuity benefits) if a carrier becomes insolvent. The Way Agency recommends annuities only from carriers with strong financial ratings (A-rated or better by AM Best) to minimize this risk."
       },
       {
         "question": "Can I get my money back if I change my mind about an annuity?",
@@ -430,7 +430,7 @@
   },
   "disability": {
     "direct_answer": "Disability insurance replaces a portion of your income, typically 50 to 70 percent, if you are unable to work due to illness or injury. It is available as short-term disability (covering 3 to 6 months) or long-term disability (covering years or until age 65). This is income protection, not health insurance; it pays you a monthly benefit to cover your bills, mortgage, and living expenses when you cannot earn a paycheck.",
-    "who_needs_it": "Disability insurance is critically important for working Kentuckians because Kentucky has no state disability insurance program. Unlike states such as California, New York, or New Jersey that provide state-mandated short-term disability benefits, Kentucky workers who become disabled have only Social Security Disability Insurance (SSDI) as a public safety net, and SSDI has strict qualification criteria, a 5-month waiting period, and approval rates below 30% on initial application. If your paycheck stops and you have a mortgage, car payment, or family to support, the financial impact is immediate. Workers in physically demanding jobs common in western Kentucky, including manufacturing, construction, and agriculture, face higher disability risk. Even office workers face significant risk from conditions like cancer, back injuries, and mental health disorders. The Way Agency helps individuals and businesses in the Owensboro area secure disability coverage that matches their income and obligations.",
+    "who_needs_it": "Disability insurance is critically important for working adults because most states have no state disability insurance program. Only a handful of states (such as California, New York, and New Jersey) provide state-mandated short-term disability benefits. In most states, workers who become disabled have only Social Security Disability Insurance (SSDI) as a public safety net, and SSDI has strict qualification criteria, a 5-month waiting period, and approval rates below 30% on initial application. If your paycheck stops and you have a mortgage, car payment, or family to support, the financial impact is immediate. Workers in physically demanding jobs, including manufacturing, construction, and agriculture, face higher disability risk. Even office workers face significant risk from conditions like cancer, back injuries, and mental health disorders. The Way Agency helps individuals and businesses secure disability coverage that matches their income and obligations.",
     "what_it_covers": [
       "Monthly income benefit (typically 50-70% of pre-disability earnings) during covered disability",
       "Short-term disability: Benefits begin after a brief elimination period (0-14 days) and last 3-6 months",
@@ -452,8 +452,8 @@
     "cost_narrative": "Disability insurance typically costs 1 to 3 percent of your annual income. A worker earning $60,000 per year might pay $50 to $150 per month for a long-term disability policy with a 90-day elimination period and benefits to age 65. Premiums are lower with longer elimination periods (90 or 180 days versus 30 days) and shorter benefit periods. Occupation class significantly affects pricing; office workers pay less than construction workers. If your employer offers group disability, the rates are typically lower than individual policies, but group coverage often ends if you leave the company. The Way Agency recommends evaluating both employer group and individual options, as a supplemental individual policy can fill gaps in group coverage.",
     "faqs": [
       {
-        "question": "Does Kentucky have state disability insurance?",
-        "answer": "No. Kentucky does not have a state disability insurance program. Workers who become disabled must rely on employer-provided disability benefits, individual disability policies, or Social Security Disability Insurance (SSDI). SSDI requires that you be unable to perform any substantial gainful activity and has a mandatory 5-month waiting period before benefits begin. Approval rates for initial SSDI applications are below 30%, making private disability insurance essential for income protection."
+        "question": "Does my state have disability insurance?",
+        "answer": "Most states do not have a state disability insurance program. Only a few states (California, New York, New Jersey, Rhode Island, and Hawaii) mandate short-term disability benefits. In other states, workers who become disabled must rely on employer-provided disability benefits, individual disability policies, or Social Security Disability Insurance (SSDI). SSDI requires that you be unable to perform any substantial gainful activity and has a mandatory 5-month waiting period before benefits begin. Approval rates for initial SSDI applications are below 30%, making private disability insurance essential for income protection."
       },
       {
         "question": "What is the difference between own-occupation and any-occupation disability?",
@@ -465,7 +465,7 @@
       },
       {
         "question": "Can I get disability insurance if I am self-employed?",
-        "answer": "Yes, and it is arguably more important for the self-employed because you have no employer group benefits to fall back on. Individual disability policies are available based on your income, occupation, and health. You will need to document your income with tax returns or financial statements. Coverage amounts are typically capped at 60 to 70% of your proven income. The Way Agency works with self-employed clients throughout Kentucky to secure coverage that protects their livelihood."
+        "answer": "Yes, and it is arguably more important for the self-employed because you have no employer group benefits to fall back on. Individual disability policies are available based on your income, occupation, and health. You will need to document your income with tax returns or financial statements. Coverage amounts are typically capped at 60 to 70% of your proven income. The Way Agency works with self-employed clients to secure coverage that protects their livelihood."
       },
       {
         "question": "Is the disability benefit taxable?",
@@ -475,7 +475,7 @@
   },
   "final-expense": {
     "direct_answer": "Final expense insurance is a small whole life policy, typically ranging from $5,000 to $25,000, designed to cover funeral and burial costs, outstanding medical bills, and small debts so your family is not burdened with these expenses after your death. It features simplified underwriting with no medical exam, making it accessible to older adults and those with health conditions that might disqualify them from traditional life insurance.",
-    "who_needs_it": "Final expense insurance is designed for seniors and older adults in Kentucky who want to ensure their families are not left paying for funeral costs, which average $7,000 to $12,000 in the state. It is particularly relevant for Kentuckians who do not have enough savings designated for burial costs, who were declined for traditional life insurance due to health conditions, or who let earlier life insurance policies lapse. Many retirees in the Owensboro area carry small outstanding debts or medical bills that would pass to their estate or burden surviving family members. Unlike traditional whole life or term life, final expense policies are available to applicants ages 50 to 85 with only a health questionnaire rather than a medical exam. The Way Agency helps families in western Kentucky choose between guaranteed-issue and simplified-issue policies based on health status and budget.",
+    "who_needs_it": "Final expense insurance is designed for seniors and older adults who want to ensure their families are not left paying for funeral costs, which average $7,000 to $12,000 nationally. It is particularly relevant for those who do not have enough savings designated for burial costs, who were declined for traditional life insurance due to health conditions, or who let earlier life insurance policies lapse. Many retirees carry small outstanding debts or medical bills that would pass to their estate or burden surviving family members. Unlike traditional whole life or term life, final expense policies are available to applicants ages 50 to 85 with only a health questionnaire rather than a medical exam. The Way Agency helps families choose between guaranteed-issue and simplified-issue policies based on health status and budget.",
     "what_it_covers": [
       "Funeral and burial or cremation costs",
       "Outstanding medical bills",
@@ -507,8 +507,8 @@
         "answer": "The death benefit is paid as a lump sum to your named beneficiary with no restrictions on how the money is used. While it is designed and sized for funeral expenses and small debts, your beneficiary can use the funds for any purpose: funeral costs, medical bills, mortgage payments, travel expenses for family, or anything else. There is no requirement to use it for burial."
       },
       {
-        "question": "How much does a funeral cost in Kentucky?",
-        "answer": "According to the National Funeral Directors Association, the median cost of a funeral with burial in the United States is approximately $7,800 to $9,000, and costs in Kentucky are similar. A casket alone averages $2,500 to $5,000. Adding a burial vault, cemetery plot, headstone, and service fees can push total costs to $10,000 to $15,000. Cremation is less expensive, averaging $3,000 to $7,000 depending on services. A final expense policy of $10,000 to $15,000 covers most funeral scenarios."
+        "question": "How much does a funeral cost?",
+        "answer": "According to the National Funeral Directors Association, the median cost of a funeral with burial in the United States is approximately $7,800 to $9,000. A casket alone averages $2,500 to $5,000. Adding a burial vault, cemetery plot, headstone, and service fees can push total costs to $10,000 to $15,000. Cremation is less expensive, averaging $3,000 to $7,000 depending on services. A final expense policy of $10,000 to $15,000 covers most funeral scenarios."
       },
       {
         "question": "I am over 70 with health problems. Can I still get final expense insurance?",
