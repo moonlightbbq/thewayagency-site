@@ -68,7 +68,7 @@ if (missingModules === 0) pass(`All ${requiredModules.length} builder modules pr
 
 // 5. Blog frontmatter validation
 if (fs.existsSync(BLOG_SRC)) {
-  const mdFiles = fs.readdirSync(BLOG_SRC).filter(f => f.endsWith('.md'));
+  const mdFiles = fs.readdirSync(BLOG_SRC).filter(f => f.endsWith('.md') && f !== 'README.md');
   let fmErrors = 0;
   for (const file of mdFiles) {
     const content = fs.readFileSync(path.join(BLOG_SRC, file), 'utf8');
