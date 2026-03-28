@@ -85,6 +85,7 @@ function copySubPages(SRC, BUILD, injectVersion) {
     ['about', 'team.html'],
     ['about', 'locations.html'],
     ['about', 'community.html'],
+    ['about', 'claims.html'],
     ['about', 'careers.html'],
   ];
   for (const [dir, file] of subPages) {

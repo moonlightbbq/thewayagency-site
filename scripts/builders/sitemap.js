@@ -30,6 +30,7 @@ function generateSitemap(BUILD, ctx) {
     { url: '/about/', priority: '0.7', freq: 'monthly', lastmod: seoLastmod('/about/') },
     { url: '/about/team.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/about/team.html') },
     { url: '/about/locations.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/about/locations.html') },
+    { url: '/about/claims.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/about/claims.html') },
     { url: '/blog/', priority: '0.7', freq: 'weekly', lastmod: seoLastmod('/blog/') },
     { url: '/contact.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/contact.html') },
   ];
