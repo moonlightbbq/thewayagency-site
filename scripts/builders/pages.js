@@ -341,7 +341,6 @@ ${lineProducts.map(p => productCard(p)).join('\n')}
 
   return `<!DOCTYPE html>
 <html lang="en">
-<head>
 ${renderHead({
     title: config.title,
     description: config.description,
@@ -381,7 +380,6 @@ ${renderHead({
   ${hubBreadcrumbs.schema}
   </script>`,
   })}
-</head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
 ${renderNav()}
