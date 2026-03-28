@@ -146,14 +146,6 @@
   // A/B TESTING FRAMEWORK
   // ═══════════════════════════════════════════════
   const AB_EXPERIMENTS = {
-    'hero-headline': {
-      variants: {
-        control: { '[data-ab-test="hero-headline"]': null },
-        'value-prop': { '[data-ab-test="hero-headline"]': 'Insurance That Actually Fits Your Life' },
-        'action-cta': { '[data-ab-test="hero-headline"]': 'Get Covered the Right Way' },
-      },
-      weight: [50, 25, 25],
-    },
     'hero-cta': {
       variants: {
         control: { '[data-ab-test="hero-cta"]': null },
