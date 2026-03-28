@@ -8,6 +8,8 @@
     "build": "node scripts/build.js",
     "postbuild": "node scripts/build-rollback.js archive",
     "check-data": "node scripts/check-data-integrity.js",
+    "safe-build": "node scripts/pre-build-check.js && node scripts/build.js && node scripts/validate-build.js",
+    "deploy": "node scripts/deploy.js",
     "admin": "node scripts/admin.js"
   },
   "engines": {

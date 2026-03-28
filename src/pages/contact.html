@@ -226,25 +226,27 @@
           <!-- Contact Form -->
           <div>
             <h2 id="contact-form-heading">Send us a message</h2>
-            <form id="contactForm" novalidate>
+            <form id="contactForm" novalidate action="mailto:hello@thewayagency.com" method="POST" enctype="text/plain">
+              <!-- Honeypot -->
+              <div style="position:absolute;left:-9999px" aria-hidden="true"><label for="_hp_co">Company</label><input type="text" id="_hp_co" name="_hp_company" tabindex="-1" autocomplete="off"></div>
               <div class="grid grid--2">
                 <div class="form-group">
                   <label for="c_fname">First Name *</label>
-                  <input type="text" id="c_fname" name="firstName" required autocomplete="given-name">
+                  <input type="text" id="c_fname" name="firstName" required autocomplete="given-name" maxlength="100">
                 </div>
                 <div class="form-group">
                   <label for="c_lname">Last Name *</label>
-                  <input type="text" id="c_lname" name="lastName" required autocomplete="family-name">
+                  <input type="text" id="c_lname" name="lastName" required autocomplete="family-name" maxlength="100">
                 </div>
               </div>
               <div class="grid grid--2">
                 <div class="form-group">
                   <label for="c_email">Email *</label>
-                  <input type="email" id="c_email" name="email" required autocomplete="email">
+                  <input type="email" id="c_email" name="email" required autocomplete="email" maxlength="254">
                 </div>
                 <div class="form-group">
                   <label for="c_phone">Phone *</label>
-                  <input type="tel" id="c_phone" name="phone" required autocomplete="tel" placeholder="(555) 555-5555">
+                  <input type="tel" id="c_phone" name="phone" required autocomplete="tel" placeholder="(555) 555-5555" maxlength="20">
                 </div>
               </div>
               <div class="form-group">
@@ -259,14 +261,28 @@
                 </select>
               </div>
               <div class="form-group">
-                <label for="message">Message *</label>
-                <textarea id="message" name="message" required placeholder="Tell us how we can help..."></textarea>
+                <label for="message">Message * <span id="msg-counter" style="font-weight:400;color:var(--slate);float:right"></span></label>
+                <textarea id="message" name="message" required placeholder="Tell us how we can help..." maxlength="5000"></textarea>
               </div>
-              <button type="submit" class="btn btn--primary btn--lg" style="width:100%;">Send Message</button>
+              <div id="contact-error" style="display:none;color:#ef4444;font-size:12px;margin-bottom:12px" role="alert" aria-live="polite"></div>
+              <div id="contact-success" style="display:none;text-align:center;padding:var(--space-lg);background:#f0fdf4;border-radius:var(--border-radius);margin-bottom:12px">
+                <div style="font-size:28px;margin-bottom:8px">&#10003;</div>
+                <h3 style="color:#166534;margin-bottom:4px">Message Sent!</h3>
+                <p style="font-size:var(--text-sm);color:#166534" id="contact-success-msg">We'll get back to you soon.</p>
+              </div>
+              <button type="submit" id="contact-submit-btn" class="btn btn--primary btn--lg" style="width:100%;">Send Message</button>
               <p class="form-privacy">
                 Your information is safe with us. We never sell your data. <a href="/privacy.html">Privacy Policy</a>
               </p>
             </form>
+            <noscript>
+              <div style="padding:var(--space-lg);background:var(--linen);border-radius:var(--border-radius);margin-top:var(--space-lg);text-align:center;">
+                <p style="font-weight:600;margin-bottom:8px;">Contact us directly:</p>
+                <p>Phone: <a href="tel:+15024135335">(502) 413-5335</a></p>
+                <p>Email: <a href="mailto:hello@thewayagency.com">hello@thewayagency.com</a></p>
+                <p style="margin-top:8px;font-size:var(--text-sm);color:var(--slate);">PO Box 187, Owensboro, KY 42302</p>
+              </div>
+            </noscript>
           </div>
         </div>
       </div>
@@ -375,6 +391,75 @@
       btn.disabled = false;
     });
   });
+
+  // ── Contact Form Validation + Submit ──
+  (function() {
+    var form = document.getElementById('contactForm');
+    var btn = document.getElementById('contact-submit-btn');
+    var errEl = document.getElementById('contact-error');
+    var successEl = document.getElementById('contact-success');
+    var msgInput = document.getElementById('message');
+    var counter = document.getElementById('msg-counter');
+
+    // Message character counter
+    if (msgInput && counter) {
+      msgInput.addEventListener('input', function() { counter.textContent = this.value.length + '/5000'; });
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      errEl.style.display = 'none';
+
+      var fname = document.getElementById('c_fname').value.trim();
+      var lname = document.getElementById('c_lname').value.trim();
+      var email = document.getElementById('c_email').value.trim();
+      var phone = document.getElementById('c_phone').value.trim();
+      var msg = msgInput.value.trim();
+      var hp = document.getElementById('_hp_co').value;
+
+      // Honeypot
+      if (hp) return;
+
+      // Validation
+      if (!fname || fname.length > 100) { showErr('Please enter a valid first name.'); return; }
+      if (!lname || lname.length > 100) { showErr('Please enter a valid last name.'); return; }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 254) { showErr('Please enter a valid email address.'); return; }
+      if (phone && phone.replace(/\D/g, '').length < 7) { showErr('Please enter a valid phone number.'); return; }
+      if (!msg || msg.length > 5000) { showErr('Please enter a message (max 5000 characters).'); return; }
+
+      // Rate limit: 3 per hour
+      try {
+        var stamps = JSON.parse(localStorage.getItem('twa_contact_ts') || '[]');
+        var hourAgo = Date.now() - 3600000;
+        stamps = stamps.filter(function(t) { return t > hourAgo; });
+        if (stamps.length >= 3) { showErr('You\'ve sent multiple messages recently. Please wait a bit or call us at (502) 413-5335.'); return; }
+        stamps.push(Date.now());
+        localStorage.setItem('twa_contact_ts', JSON.stringify(stamps));
+      } catch(e) {}
+
+      // Double-submit prevention
+      btn.disabled = true; btn.textContent = 'Sending...';
+      var reenableTimer = setTimeout(function() { btn.disabled = false; btn.textContent = 'Send Message'; }, 5000);
+
+      fetch('https://sage.thewayagency.com/api/intake/lead', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ firstName: fname, lastName: lname, email: email, phone: phone, subject: document.getElementById('subject').value, message: msg, source: 'contact_form', _hp_company: hp })
+      }).then(function(r) { return r.json(); }).then(function(d) {
+        clearTimeout(reenableTimer);
+        if (d.ok) {
+          form.style.display = 'none';
+          successEl.style.display = 'block';
+          document.getElementById('contact-success-msg').textContent = 'Thanks, ' + fname + '! We\'ll get back to you within one business day.' + (d.reference ? ' Ref: #' + d.reference : '');
+        } else { showErr(d.error || 'Submission failed. Please try again.'); btn.disabled = false; btn.textContent = 'Send Message'; }
+      }).catch(function() {
+        clearTimeout(reenableTimer);
+        showErr('Connection error. Please try emailing us at hello@thewayagency.com or call (502) 413-5335.');
+        btn.disabled = false; btn.textContent = 'Send Message';
+      });
+    });
+
+    function showErr(msg) { errEl.textContent = msg; errEl.style.display = 'block'; }
+  })();
   </script>
 
   <footer class="footer">
