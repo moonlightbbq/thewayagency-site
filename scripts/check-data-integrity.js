@@ -173,6 +173,58 @@ if (calendar) {
   else pass(`Cross-ref: ${missingBlogs} calendar posts missing source files (may be future)`);
 }
 
+// Every carrier in carriers.json should have at least one product page linkable
+if (carriers && products) {
+  const allProductIds = new Set();
+  for (const [line, prods] of Object.entries(products)) {
+    for (const p of prods) allProductIds.add(p.id);
+  }
+  let orphanCarriers = 0;
+  const seen = new Set();
+  for (const [line, carrs] of Object.entries(carriers)) {
+    for (const c of carrs) {
+      if (seen.has(c.slug)) continue;
+      seen.add(c.slug);
+      if (c.lines && c.lines.length > 0) {
+        const hasMatch = c.lines.some(l => allProductIds.has(l));
+        if (!hasMatch) { warn(`carriers.json: "${c.name}" lines [${c.lines.join(',')}] don't match any product IDs`); orphanCarriers++; }
+      }
+    }
+  }
+  if (orphanCarriers === 0) pass('Cross-ref: all enriched carriers link to valid products');
+}
+
+// Every product should have at least 3 FAQs in knowledge-base
+if (products && kb) {
+  const faqCounts = {};
+  for (const e of (kb.entries || [])) {
+    if (e.product) faqCounts[e.product] = (faqCounts[e.product] || 0) + 1;
+  }
+  let lowFaqProducts = 0;
+  for (const [line, prods] of Object.entries(products)) {
+    for (const p of prods) {
+      const count = faqCounts[p.id] || 0;
+      if (count < 3) { warn(`Product "${p.id}" has only ${count} FAQs (recommend 3+)`); lowFaqProducts++; }
+    }
+  }
+  if (lowFaqProducts === 0) pass('Cross-ref: all products have 3+ FAQs');
+  else pass(`Cross-ref: ${lowFaqProducts} products have fewer than 3 FAQs`);
+}
+
+// Verify sage-api-docs.json if it exists (optional — created in Task 29)
+if (fs.existsSync(path.join(DATA, 'sage-api-docs.json'))) {
+  const apiDocs = loadJson('sage-api-docs.json');
+  if (apiDocs) {
+    let docErrors = 0;
+    const endpoints = apiDocs.endpoints || [];
+    for (const ep of endpoints) {
+      if (!ep.path) { error('sage-api-docs.json: endpoint missing path'); docErrors++; }
+      if (!ep.method) { error(`sage-api-docs.json: ${ep.path || 'unknown'} missing method`); docErrors++; }
+    }
+    if (docErrors === 0) pass(`sage-api-docs.json: ${endpoints.length} endpoints documented`);
+  }
+}
+
 // ─── Sanity Checks ──────────────────────────────
 
 console.log();

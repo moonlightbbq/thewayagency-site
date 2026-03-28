@@ -168,6 +168,43 @@ for (const file of htmlFiles) {
 }
 if (invalidJsonLd === 0) pass('All JSON-LD is syntactically valid');
 
+// 7b. JSON-LD URL validation
+let jsonLdUrlIssues = 0;
+for (const file of htmlFiles) {
+  const html = fs.readFileSync(file, 'utf8');
+  const rel = path.relative(BUILD, file);
+  const jsonLdRegex = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g;
+  let jsonMatch;
+  while ((jsonMatch = jsonLdRegex.exec(html)) !== null) {
+    try {
+      const parsed = JSON.parse(jsonMatch[1].trim());
+      const urls = JSON.stringify(parsed).match(/https:\/\/www\.thewayagency\.com[^"]+/g) || [];
+      for (const url of urls) {
+        const urlPath = url.replace('https://www.thewayagency.com', '');
+        // Skip anchors, image/asset paths, and root
+        if (!urlPath || urlPath === '/' || urlPath.includes('#') || urlPath.startsWith('/src/')) continue;
+        if (!allPaths.has(urlPath) && !allPaths.has(urlPath + 'index.html') && !allPaths.has(urlPath.replace(/\/$/, '/index.html'))) {
+          if (!allPaths.has(urlPath + '/')) {
+            warn(`JSON-LD URL in ${rel} may not resolve: ${urlPath}`);
+            jsonLdUrlIssues++;
+          }
+        }
+      }
+    } catch {}
+  }
+}
+if (jsonLdUrlIssues === 0) pass('JSON-LD URLs reference valid paths');
+
+// 7c. Carrier pages check
+const carrierDir = path.join(BUILD, 'carriers');
+if (fs.existsSync(carrierDir)) {
+  const carrierPages = fs.readdirSync(carrierDir).filter(f => f.endsWith('.html'));
+  const hasIndex = carrierPages.includes('index.html');
+  if (!hasIndex) warn('Carrier index page missing');
+  if (carrierPages.length < 2) warn(`Only ${carrierPages.length} carrier pages — expected more`);
+  else pass(`${carrierPages.length} carrier pages (including index)`);
+}
+
 // 8. Image size check (warn on images >500KB)
 let largeImages = 0;
 const assetsDir = path.join(BUILD, 'src', 'assets');
