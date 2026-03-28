@@ -46,6 +46,12 @@
     .upload-zone__file-remove{background:none;border:none;color:var(--gray);cursor:pointer;padding:4px;font-size:18px;line-height:1}
     .upload-zone__file-remove:hover{color:var(--error)}
     .apply-error{background:#fef2f2;border:1px solid #fecaca;border-radius:var(--border-radius);padding:var(--space-md);color:#991b1b;font-size:var(--text-sm);margin-bottom:var(--space-lg);display:none}
+    .field-hint{font-size:var(--text-xs);margin-top:4px;display:none;align-items:center;gap:4px}
+    .field-hint--error{color:#991b1b;display:flex}
+    .field-hint--success{color:#166534;display:flex}
+    .field-hint--loading{color:var(--gray);display:flex}
+    .apply-form .form-group input.input--valid{border-color:#65C5B3}
+    .apply-form .form-group input.input--invalid{border-color:#ef4444}
     .apply-success{text-align:center;padding:var(--space-3xl) 0}
     .apply-success__icon{width:64px;height:64px;margin:0 auto var(--space-lg);color:var(--green)}
     .apply-success h2{color:var(--navy);margin-bottom:var(--space-md)}
@@ -165,10 +171,12 @@
               <div class="form-group">
                 <label for="apply-email">Email *</label>
                 <input type="email" id="apply-email" required autocomplete="email" maxlength="254">
+                <div id="email-hint" class="field-hint"></div>
               </div>
               <div class="form-group">
                 <label for="apply-phone">Phone *</label>
                 <input type="tel" id="apply-phone" required autocomplete="tel" placeholder="(555) 555-5555" maxlength="20">
+                <div id="phone-hint" class="field-hint"></div>
               </div>
             </div>
 
@@ -201,11 +209,11 @@
               <input type="text" id="_hp_company" name="_hp_company" tabindex="-1" autocomplete="off">
             </div>
 
-            <div id="turnstile-container" style="margin:var(--space-md) 0;"></div>
+            <div id="turnstile-container" style="margin:var(--space-md) 0;display:flex;justify-content:center;"></div>
 
             <button type="submit" id="apply-submit" class="btn btn--primary btn--lg" style="width:100%;">Submit Application</button>
 
-            <p class="form-privacy" style="margin-top:var(--space-lg);">Your information is kept confidential and will only be used to evaluate your application. By submitting, you agree to our <a href="/privacy.html">privacy policy</a>.</p>
+            <p class="form-privacy" style="margin-top:var(--space-lg);text-align:center;">Your information is kept confidential and will only be used to evaluate your application. By submitting, you agree to our <a href="/privacy.html">privacy policy</a>.</p>
           </form>
         </div>
 
@@ -302,6 +310,7 @@
   <script>
   (function() {
     var API_URL = 'https://sage.thewayagency.com/api/careers/apply';
+    var VALIDATE_URL = 'https://sage.thewayagency.com/api/intake/validate';
     var TURNSTILE_KEY = '0x4AAAAAACuOvP2DfWPQJz9W';
     var MAX_FILE_SIZE = 5 * 1024 * 1024;
 
@@ -314,9 +323,14 @@
     var fileNameEl = document.getElementById('upload-file-name');
     var fileSizeEl = document.getElementById('upload-file-size');
     var removeBtn = document.getElementById('upload-remove');
+    var emailInput = document.getElementById('apply-email');
+    var emailHint = document.getElementById('email-hint');
+    var phoneHint = document.getElementById('phone-hint');
 
     var selectedFile = null;
     var turnstileToken = null;
+    var emailValid = null;
+    var phoneValid = null;
     var turnstileWidgetId = null;
 
     // Pre-select position from URL param
@@ -407,8 +421,91 @@
       });
     }
 
-    // Phone formatting
+    // ─── Email & Phone Validation (on blur) ───
+    function setHint(el, input, state, msg) {
+      el.className = 'field-hint field-hint--' + state;
+      el.textContent = msg;
+      if (input) {
+        input.classList.remove('input--valid', 'input--invalid');
+        if (state === 'success') input.classList.add('input--valid');
+        else if (state === 'error') input.classList.add('input--invalid');
+      }
+    }
+    function clearHint(el, input) {
+      el.className = 'field-hint';
+      el.textContent = '';
+      if (input) input.classList.remove('input--valid', 'input--invalid');
+    }
+
+    var emailValidateTimer = null;
+    emailInput.addEventListener('blur', function() {
+      var val = emailInput.value.trim();
+      if (!val) { clearHint(emailHint, emailInput); emailValid = null; return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+        setHint(emailHint, emailInput, 'error', 'Please enter a valid email address.');
+        emailValid = false;
+        return;
+      }
+      setHint(emailHint, emailInput, 'loading', 'Verifying email...');
+      emailValid = null;
+      clearTimeout(emailValidateTimer);
+      emailValidateTimer = setTimeout(function() {
+        fetch(VALIDATE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: val }),
+        }).then(function(r) { return r.json(); }).then(function(d) {
+          if (emailInput.value.trim() !== val) return;
+          if (d.email && d.email.valid === false) {
+            setHint(emailHint, emailInput, 'error', d.email.reason || 'Email could not be verified.');
+            emailValid = false;
+          } else {
+            setHint(emailHint, emailInput, 'success', 'Email verified');
+            emailValid = true;
+          }
+        }).catch(function() {
+          clearHint(emailHint, emailInput);
+          emailValid = true;
+        });
+      }, 300);
+    });
+
+    var phoneValidateTimer = null;
     var phoneInput = document.getElementById('apply-phone');
+    phoneInput.addEventListener('blur', function() {
+      var val = phoneInput.value.trim();
+      var digits = val.replace(/\D/g, '');
+      if (!val) { clearHint(phoneHint, phoneInput); phoneValid = null; return; }
+      if (digits.length < 10) {
+        setHint(phoneHint, phoneInput, 'error', 'Please enter a valid 10-digit phone number.');
+        phoneValid = false;
+        return;
+      }
+      setHint(phoneHint, phoneInput, 'loading', 'Verifying phone...');
+      phoneValid = null;
+      clearTimeout(phoneValidateTimer);
+      phoneValidateTimer = setTimeout(function() {
+        fetch(VALIDATE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: val }),
+        }).then(function(r) { return r.json(); }).then(function(d) {
+          if (phoneInput.value.trim() !== val) return;
+          if (d.phone && d.phone.valid === false) {
+            setHint(phoneHint, phoneInput, 'error', d.phone.reason || 'Phone could not be verified.');
+            phoneValid = false;
+          } else {
+            setHint(phoneHint, phoneInput, 'success', 'Phone verified');
+            phoneValid = true;
+          }
+        }).catch(function() {
+          clearHint(phoneHint, phoneInput);
+          phoneValid = true;
+        });
+      }, 300);
+    });
+
+    // Phone formatting
     phoneInput.addEventListener('input', function() {
       var digits = this.value.replace(/\D/g, '').substring(0, 10);
       if (digits.length >= 7) this.value = '(' + digits.substring(0,3) + ') ' + digits.substring(3,6) + '-' + digits.substring(6);
@@ -433,7 +530,9 @@
       if (!firstName) { showError('First name is required.'); return; }
       if (!lastName) { showError('Last name is required.'); return; }
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('Please enter a valid email address.'); return; }
+      if (emailValid === false) { showError('Please fix the email address above before submitting.'); return; }
       if (!phone || phone.replace(/\D/g, '').length < 10) { showError('Please enter a valid phone number.'); return; }
+      if (phoneValid === false) { showError('Please fix the phone number above before submitting.'); return; }
 
       // Ensure Turnstile
       if (!turnstileToken) {
