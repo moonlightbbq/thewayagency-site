@@ -64,7 +64,7 @@
         },
         {
           "slug": "commercial-insurance",
-          "product_id": "cgl",
+          "product_id": "general-liability",
           "line": "commercial",
           "name": "Commercial Insurance",
           "h1": "Business Insurance for Owensboro Companies",
@@ -137,7 +137,7 @@
         },
         {
           "slug": "commercial-insurance",
-          "product_id": "cgl",
+          "product_id": "general-liability",
           "line": "commercial",
           "name": "Commercial Insurance",
           "h1": "Business Insurance for Mt. Washington Companies",

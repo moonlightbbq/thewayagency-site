@@ -16,6 +16,15 @@ const SRC = path.join(ROOT, 'src');
 const BUILD = path.join(ROOT, 'build');
 const DATA = path.join(ROOT, 'data');
 
+function loadJson(filepath) {
+  try {
+    return JSON.parse(fs.readFileSync(filepath, 'utf8'));
+  } catch (e) {
+    console.error('Failed to parse ' + path.basename(filepath) + ':', e.message);
+    process.exit(1);
+  }
+}
+
 // ─── Modules ────────────────────────────────────
 const { createVersionInfo, createInjectVersion } = require('./builders/seo');
 const assets = require('./builders/assets');
@@ -28,14 +37,14 @@ const { gitInfo, buildDate, buildVersion } = createVersionInfo(ROOT);
 console.log(`\nBuild version: ${buildVersion} (branch: ${gitInfo.branch})`);
 
 // ─── Load Data ──────────────────────────────────
-const products = JSON.parse(fs.readFileSync(path.join(DATA, 'products.json'), 'utf8'));
-const locations = JSON.parse(fs.readFileSync(path.join(DATA, 'locations.json'), 'utf8'));
-const team = JSON.parse(fs.readFileSync(path.join(DATA, 'team.json'), 'utf8'));
-const knowledgeBase = JSON.parse(fs.readFileSync(path.join(DATA, 'knowledge-base.json'), 'utf8'));
-const carriers = JSON.parse(fs.readFileSync(path.join(DATA, 'carriers.json'), 'utf8'));
-const testimonials = JSON.parse(fs.readFileSync(path.join(DATA, 'testimonials.json'), 'utf8'));
-const seoData = JSON.parse(fs.readFileSync(path.join(DATA, 'seo.json'), 'utf8'));
-const landingData = JSON.parse(fs.readFileSync(path.join(DATA, 'landing-pages.json'), 'utf8'));
+const products = loadJson(path.join(DATA, 'products.json'));
+const locations = loadJson(path.join(DATA, 'locations.json'));
+const team = loadJson(path.join(DATA, 'team.json'));
+const knowledgeBase = loadJson(path.join(DATA, 'knowledge-base.json'));
+const carriers = loadJson(path.join(DATA, 'carriers.json'));
+const testimonials = loadJson(path.join(DATA, 'testimonials.json'));
+const seoData = loadJson(path.join(DATA, 'seo.json'));
+const landingData = loadJson(path.join(DATA, 'landing-pages.json'));
 const agency = locations.agency;
 const office = locations.offices[0];
 
