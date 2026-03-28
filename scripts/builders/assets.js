@@ -90,6 +90,7 @@ function copySubPages(SRC, BUILD, injectVersion) {
     ['about/careers', 'employee-benefits-leader.html'],
     ['about/careers', 'pc-insurance-agent.html'],
     ['about/careers', 'intern.html'],
+    ['about/careers', 'apply.html'],
   ];
   for (const [dir, file] of subPages) {
     const src = path.join(SRC, 'pages', dir, file);

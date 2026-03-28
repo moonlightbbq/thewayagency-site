@@ -1213,14 +1213,15 @@
     // ─── Styles (all inline via <style> tag) ─────
     var style = document.createElement('style');
     style.textContent = [
-      '.twa-cb-bubble{position:fixed;bottom:20px;right:20px;z-index:1002;width:56px;height:56px;border-radius:50%;background:#173358;color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;transition:transform .2s}',
+      '.twa-cb-bubble{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom, 0px));right:20px;z-index:1002;width:56px;height:56px;border-radius:50%;background:#173358;color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;transition:transform .2s;-webkit-tap-highlight-color:transparent}',
       '.twa-cb-bubble:hover{transform:scale(1.08)}',
       '.twa-cb-panel{position:fixed;bottom:86px;right:20px;z-index:1003;width:360px;height:480px;max-width:calc(100% - 40px);background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.18);display:none;flex-direction:column;overflow:hidden}',
       '.twa-cb-panel.open{display:flex}',
-      '@media(max-width:767px){.twa-cb-panel.open{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;max-width:100%;border-radius:0;z-index:1003}.twa-cb-bubble{bottom:80px}}',
+      '@media(max-width:767px){.twa-cb-panel.open{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;max-width:100%;border-radius:0;z-index:1003}.twa-cb-bubble{bottom:calc(80px + env(safe-area-inset-bottom, 0px))}.twa-cb-input{padding-bottom:env(safe-area-inset-bottom, 0px)}.twa-cb-action-btn{padding:14px 20px;font-size:15px;min-height:48px}.twa-cb-powered{display:none}}',
+      '@media(max-width:767px) and (max-height:500px){.twa-cb-header{padding:8px 16px;font-size:14px}.twa-cb-msg{padding:6px 10px;font-size:13px}.twa-cb-input input{padding:8px 14px}}',
       '.twa-cb-header{background:linear-gradient(135deg,#173358,#1a4a7a);color:#fff;padding:14px 16px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}',
-      '.twa-cb-close{background:none;border:none;color:#fff;cursor:pointer;font-size:22px;padding:0 4px;line-height:1}',
-      '.twa-cb-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}',
+      '.twa-cb-close{background:none;border:none;color:#fff;cursor:pointer;font-size:22px;padding:10px;line-height:1;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}',
+      '.twa-cb-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px;-webkit-overflow-scrolling:touch}',
       '.twa-cb-msg{max-width:85%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.5;word-wrap:break-word;white-space:pre-wrap}',
       '.twa-cb-msg.bot{align-self:flex-start;background:#f1f5f9;color:#1e293b;border-bottom-left-radius:4px}',
       '.twa-cb-msg.user{align-self:flex-end;background:#1a6fb5;color:#fff;border-bottom-right-radius:4px}',
@@ -1231,7 +1232,7 @@
       '.twa-cb-typing span:nth-child(3){animation-delay:.4s}',
       '@keyframes twaCbBounce{from{transform:translateY(0)}to{transform:translateY(-6px)}}',
       '.twa-cb-input{display:flex;border-top:1px solid #e2e8f0;flex-shrink:0}',
-      '.twa-cb-input input{flex:1;border:none;padding:12px 14px;font-size:14px;outline:none;background:transparent}',
+      '.twa-cb-input input{flex:1;border:none;padding:12px 14px;font-size:16px;outline:none;background:transparent}',
       '.twa-cb-input button{background:none;border:none;padding:0 14px;cursor:pointer;color:#1a6fb5;font-size:18px}',
       '.twa-cb-input button:disabled{color:#cbd5e1;cursor:not-allowed}',
       '.twa-cb-actions{display:flex;flex-direction:column;gap:8px;margin-top:8px;align-self:flex-start;max-width:85%}',
@@ -1241,7 +1242,10 @@
       '.twa-cb-action-btn.secondary{background:#f1f5f9;color:#173358;border:1px solid #e2e8f0}',
       '.twa-cb-action-btn.secondary:hover{background:#e2e8f0}',
       '.twa-cb-action-btn:disabled{opacity:.6;cursor:not-allowed}',
-      '.twa-cb-powered{text-align:center;font-size:10px;color:#94a3b8;padding:4px 0 8px;flex-shrink:0}'
+      '.twa-cb-powered{text-align:center;font-size:10px;color:#94a3b8;padding:4px 0 8px;flex-shrink:0}',
+      '.twa-cb-bubble:active{transform:scale(0.95)}',
+      '.twa-cb-input button:active:not(:disabled){color:#173358}',
+      '.twa-cb-action-btn:active:not(:disabled){opacity:0.8}'
     ].join('');
     document.head.appendChild(style);
 
@@ -1255,7 +1259,7 @@
 
     var header = document.createElement('div');
     header.className = 'twa-cb-header';
-    header.innerHTML = '<span>The Way Agency</span><div style="display:flex;gap:8px;align-items:center;"><button class="twa-cb-new" aria-label="New chat" title="New chat" style="background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:4px;padding:2px 8px;font-size:12px;cursor:pointer;">New</button><button class="twa-cb-close" aria-label="Close chat">&times;</button></div>';
+    header.innerHTML = '<span>The Way Agency</span><div style="display:flex;gap:8px;align-items:center;"><button class="twa-cb-new" aria-label="New chat" title="New chat" style="background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:4px;padding:8px 12px;font-size:12px;cursor:pointer;min-height:44px;display:flex;align-items:center;-webkit-tap-highlight-color:transparent">New</button><button class="twa-cb-close" aria-label="Close chat">&times;</button></div>';
 
     var msgsArea = document.createElement('div');
     msgsArea.className = 'twa-cb-msgs';
@@ -1592,6 +1596,19 @@
         sendMessage(inputField.value);
       }
     });
+
+    // ─── Virtual keyboard resize handling ────────
+    if (window.visualViewport) {
+      var vpHandler = function() {
+        if (!isOpen || window.innerWidth > 767) return;
+        var vv = window.visualViewport;
+        panel.style.height = vv.height + 'px';
+        panel.style.top = vv.offsetTop + 'px';
+        msgsArea.scrollTop = msgsArea.scrollHeight;
+      };
+      window.visualViewport.addEventListener('resize', vpHandler);
+      window.visualViewport.addEventListener('scroll', vpHandler);
+    }
 
     } // end renderChatWidget
   }
