@@ -37,6 +37,55 @@ h1,h2,h3,h4{font-weight:600}
 .login-card button{width:100%;padding:10px;background:var(--blue);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}
 .error{color:var(--red);font-size:12px;margin-top:8px}
 .hidden{display:none!important}
+/* Analytics styles */
+.metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.metric-card{background:#fff;border-radius:10px;padding:16px;text-align:center;border:1px solid var(--border)}
+.metric-val{font-size:26px;font-weight:700;color:#1e3a8a;line-height:1.1}
+.metric-label{font-size:11px;color:var(--muted);margin-top:4px}
+.metric-delta{font-size:10px;margin-top:2px}
+.metric-delta.up{color:var(--green)}.metric-delta.down{color:var(--red)}
+.funnel{display:flex;flex-direction:column;gap:0;margin:12px 0}
+.funnel-stage{display:flex;align-items:center;gap:12px;padding:10px 16px;font-size:13px}
+.funnel-bar{height:24px;border-radius:4px;min-width:24px;transition:width .3s;display:flex;align-items:center;padding-left:8px;color:#fff;font-size:11px;font-weight:600}
+.funnel-drop{font-size:10px;color:var(--red);text-align:center;padding:2px 0}
+.period-sel{display:flex;gap:4px;margin-bottom:12px}
+.period-btn{padding:4px 12px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:11px;font-weight:600;color:var(--muted);transition:all .2s}
+.period-btn.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+.trend-chart{display:flex;align-items:flex-end;gap:8px;height:120px;padding:8px 0}
+.trend-bar{flex:1;background:linear-gradient(to top,var(--blue),var(--cyan));border-radius:4px 4px 0 0;min-height:4px;position:relative;transition:height .3s}
+.trend-bar:hover{opacity:.8}
+.trend-label{font-size:9px;color:var(--muted);text-align:center;margin-top:4px}
+.sub-tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:8px}
+.sub-tab{padding:6px 12px;border:none;border-radius:6px 6px 0 0;cursor:pointer;font-size:12px;font-weight:600;background:transparent;color:var(--muted);transition:all .2s}
+.sub-tab.active{background:var(--blue);color:#fff}
+.donut-wrap{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.donut{width:120px;height:120px;border-radius:50%;position:relative;flex-shrink:0}
+.donut-center{position:absolute;inset:20px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:11px}
+.donut-legend{display:flex;flex-direction:column;gap:6px;font-size:12px}
+.donut-legend span{display:flex;align-items:center;gap:6px}
+.donut-legend .dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.at-risk-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
+.risk-badge{padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;color:#fff}
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;padding:8px 6px;background:#f1f5f9;font-weight:600;cursor:pointer;user-select:none}
+.tbl th:hover{background:#e2e8f0}
+.tbl td{padding:8px 6px;border-bottom:1px solid var(--border)}
+.tbl tr:hover td{background:#f8fafc}
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:border-color .2s}
+.upload-zone.over{border-color:var(--blue);background:#eff6ff}
+.search-input{width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;outline:none}
+.search-input:focus{border-color:var(--blue)}
+.skeleton{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px;height:20px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.export-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.export-card{border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center}
+.export-card h4{font-size:13px;margin-bottom:4px}
+.export-card .count{font-size:11px;color:var(--muted);margin-bottom:8px}
+.export-btn{padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:11px;font-weight:600;color:var(--blue);margin:2px}
+.export-btn:hover{background:var(--blue);color:#fff}
+@media(max-width:768px){.metric-row,.export-grid{grid-template-columns:1fr 1fr}.donut-wrap{flex-direction:column;align-items:center}.tbl{display:block;overflow-x:auto}}
+@media(max-width:480px){.metric-row,.export-grid{grid-template-columns:1fr}.tabs{gap:2px}.tab{padding:6px 10px;font-size:11px}}
+@media print{.header,.tabs,.sub-tabs,.login-card,#login-view{display:none!important}.container{max-width:100%;padding:0}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}.hidden{display:block!important}#tab-analytics,#tab-analytics .hidden{display:block!important}}
 </style>
 </head>
 <body>
@@ -67,6 +116,7 @@ h1,h2,h3,h4{font-weight:600}
       <button class="tab" data-tab="health">System Health</button>
       <button class="tab" data-tab="data-protection">Data Protection</button>
       <button class="tab" data-tab="disaster-recovery">Disaster Recovery</button>
+      <button class="tab" data-tab="analytics">Analytics</button>
     </div>
 
     <div id="tab-kill-switches">
@@ -89,6 +139,63 @@ h1,h2,h3,h4{font-weight:600}
     <div id="tab-disaster-recovery" class="hidden">
       <div class="card"><h3>Backup Status</h3><div id="backup-cards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px"></div></div>
       <div class="card"><h3>Recovery Playbooks</h3><div id="playbooks"></div></div>
+    </div>
+
+    <!-- ═══ ANALYTICS TAB ═══ -->
+    <div id="tab-analytics" class="hidden">
+      <div class="sub-tabs">
+        <button class="sub-tab active" data-subtab="overview">Overview</button>
+        <button class="sub-tab" data-subtab="customers">Customers</button>
+        <button class="sub-tab" data-subtab="ivans">IVANS</button>
+        <button class="sub-tab" data-subtab="team">Team</button>
+        <button class="sub-tab" data-subtab="export">Export</button>
+      </div>
+
+      <!-- Period Selector -->
+      <div class="period-sel" id="period-sel">
+        <button class="period-btn" data-period="30d">30d</button>
+        <button class="period-btn active" data-period="90d">90d</button>
+        <button class="period-btn" data-period="12mo">12mo</button>
+        <button class="period-btn" data-period="all">All Time</button>
+      </div>
+
+      <!-- Overview Sub-tab -->
+      <div id="subtab-overview">
+        <div class="metric-row" id="a-metrics"><div class="skeleton" style="height:80px"></div><div class="skeleton" style="height:80px"></div><div class="skeleton" style="height:80px"></div><div class="skeleton" style="height:80px"></div></div>
+        <div class="card"><h3>Conversion Funnel</h3><div id="a-funnel"><div class="skeleton" style="height:200px"></div></div></div>
+        <div class="card"><h3>Revenue Trend (6 Months)</h3><div id="a-trend"><div class="skeleton" style="height:140px"></div></div></div>
+        <p style="font-size:10px;color:var(--muted);text-align:right;margin-top:4px" id="a-refreshed">Last refreshed: —</p>
+      </div>
+
+      <!-- Customers Sub-tab -->
+      <div id="subtab-customers" class="hidden">
+        <div class="card"><h3>Customer Search</h3><input type="text" class="search-input" id="cust-search" placeholder="Search by name, email, or phone..."><div id="cust-search-results" style="margin-top:12px"></div></div>
+        <div class="card"><h3>Segment Distribution</h3><div id="a-segments"><div class="skeleton" style="height:140px"></div></div></div>
+        <div class="card"><h3>At-Risk Customers <span style="font-size:10px;color:var(--red);font-weight:400">(churn risk >70%)</span></h3><div id="a-atrisk"><div class="skeleton" style="height:100px"></div></div></div>
+        <div class="card"><h3>Geographic Distribution</h3><div id="a-geo"><div class="skeleton" style="height:100px"></div></div></div>
+      </div>
+
+      <!-- IVANS Sub-tab -->
+      <div id="subtab-ivans" class="hidden">
+        <div class="metric-row" id="ivans-metrics"><div class="skeleton" style="height:80px"></div><div class="skeleton" style="height:80px"></div><div class="skeleton" style="height:80px"></div><div class="skeleton" style="height:80px"></div></div>
+        <div class="card"><h3>Upload IVANS File</h3><div class="upload-zone" id="ivans-drop"><p style="font-size:14px;font-weight:600;margin-bottom:4px">Drop IVANS file here</p><p style="font-size:12px;color:var(--muted)">or click to browse</p><input type="file" id="ivans-file" accept=".csv,.txt,.xml" style="display:none"><div id="ivans-upload-status" style="margin-top:8px;font-size:12px"></div></div></div>
+        <div class="card"><h3>Recent Files</h3><div id="ivans-files"><div class="skeleton" style="height:100px"></div></div></div>
+        <div class="card"><h3>Transaction Browser</h3><div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap"><select id="ivans-carrier" style="padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:11px"><option value="">All Carriers</option></select><select id="ivans-status" style="padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:11px"><option value="">All Status</option><option value="matched">Matched</option><option value="unmatched">Unmatched</option></select></div><div id="ivans-txns"><div class="skeleton" style="height:100px"></div></div></div>
+      </div>
+
+      <!-- Team Sub-tab -->
+      <div id="subtab-team" class="hidden">
+        <div class="card"><h3>Producer Leaderboard</h3><div id="a-leaderboard"><div class="skeleton" style="height:150px"></div></div></div>
+        <div class="card"><h3>Compare Producers</h3><div style="display:flex;gap:8px;margin-bottom:12px"><select id="compare-a" style="flex:1;padding:6px;border:1px solid var(--border);border-radius:6px;font-size:12px"><option value="">Select agent...</option></select><span style="align-self:center;font-weight:600;color:var(--muted)">vs</span><select id="compare-b" style="flex:1;padding:6px;border:1px solid var(--border);border-radius:6px;font-size:12px"><option value="">Select agent...</option></select><button class="export-btn" onclick="compareProducers()">Compare</button></div><div id="compare-result"></div></div>
+        <div class="card"><h3>Agent Detail</h3><div id="agent-detail"><p style="font-size:12px;color:var(--muted)">Click a row in the leaderboard to see agent details.</p></div></div>
+      </div>
+
+      <!-- Export Sub-tab -->
+      <div id="subtab-export" class="hidden">
+        <div class="card"><h3>Quick Exports</h3><div class="export-grid" id="export-presets"></div></div>
+        <div class="card"><h3>Custom Export Builder</h3><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px"><div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:4px">Table</label><select id="exp-table" style="width:100%;padding:6px;border:1px solid var(--border);border-radius:6px;font-size:12px" onchange="loadExportColumns()"><option value="">Select...</option><option value="submissions">Submissions</option><option value="customers">Customers</option><option value="leads">Leads</option><option value="quotes">Quotes</option><option value="ivans">IVANS Transactions</option><option value="producers">Producers</option></select></div><div><label style="font-size:11px;font-weight:600;display:block;margin-bottom:4px">Date Range</label><div style="display:flex;gap:4px"><input type="date" id="exp-from" style="flex:1;padding:6px;border:1px solid var(--border);border-radius:6px;font-size:11px"><input type="date" id="exp-to" style="flex:1;padding:6px;border:1px solid var(--border);border-radius:6px;font-size:11px"></div></div></div><div id="exp-columns" style="margin-bottom:12px"></div><div style="display:flex;gap:8px"><button class="export-btn" onclick="previewExport()">Preview</button><button class="export-btn" onclick="runExport('csv')">Export CSV</button><button class="export-btn" onclick="runExport('json')">Export JSON</button></div><div id="exp-preview" style="margin-top:12px;overflow-x:auto"></div></div>
+        <div class="card"><h3>Export History</h3><div id="export-history"><div class="skeleton" style="height:80px"></div></div><p style="font-size:10px;color:var(--muted);margin-top:8px;text-align:center">All data exports are logged for compliance.</p></div>
+      </div>
     </div>
   </div>
 </div>
@@ -345,6 +452,384 @@ function loadDisasterRecovery() {
   }).join('');
 }
 
+// ═══ ANALYTICS MODULE ═══
+var A_PERIOD = '90d';
+var A_CACHE = {};
+var CACHE_TTL = 5 * 60 * 1000;
+
+function cacheGet(key) { var c = A_CACHE[key]; if (c && Date.now() - c.ts < CACHE_TTL) return c.data; return null; }
+function cacheSet(key, data) { A_CACHE[key] = { data: data, ts: Date.now() }; }
+
+async function aFetch(path) {
+  var key = path + '|' + A_PERIOD;
+  var cached = cacheGet(key);
+  if (cached) return cached;
+  try {
+    var url = SAGE + path + (path.indexOf('?') > -1 ? '&' : '?') + 'period=' + A_PERIOD;
+    var res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + TOKEN } });
+    if (!res.ok) return null;
+    var data = await res.json();
+    cacheSet(key, data);
+    return data;
+  } catch(e) { return null; }
+}
+
+function fmtNum(n) { if (n >= 1000000) return (n/1000000).toFixed(1)+'M'; if (n >= 1000) return (n/1000).toFixed(1)+'K'; return String(n||0); }
+function fmtMoney(n) { return '$' + (n||0).toLocaleString(); }
+
+// ── Overview ──
+async function loadAnalyticsOverview() {
+  var data = await aFetch('/api/analytics/overview');
+  var el = document.getElementById('a-metrics');
+  if (!data) { el.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--amber);font-size:12px">Unable to load metrics. <button onclick="loadAnalyticsOverview()" class="export-btn">Retry</button></div>'; return; }
+  var metrics = [
+    { label: 'Total Customers', val: fmtNum(data.total_customers), delta: data.customer_delta },
+    { label: 'Active Policies', val: fmtNum(data.active_policies), delta: data.policy_delta },
+    { label: 'Monthly Premium', val: fmtMoney(data.monthly_premium), delta: data.premium_delta },
+    { label: 'Avg LTV', val: fmtMoney(data.avg_ltv), delta: data.ltv_delta },
+  ];
+  el.innerHTML = metrics.map(function(m) {
+    var dCls = m.delta > 0 ? 'up' : m.delta < 0 ? 'down' : '';
+    var dTxt = m.delta ? (m.delta > 0 ? '+' : '') + m.delta + '%' : '';
+    return '<div class="metric-card"><div class="metric-val">' + m.val + '</div><div class="metric-label">' + m.label + '</div>' + (dTxt ? '<div class="metric-delta ' + dCls + '">' + dTxt + ' vs prior</div>' : '') + '</div>';
+  }).join('');
+  document.getElementById('a-refreshed').textContent = 'Last refreshed: ' + new Date().toLocaleTimeString();
+
+  // Funnel
+  var funnel = data.funnel || [{ stage:'Lead',count:100 },{ stage:'Contacted',count:70 },{ stage:'Quoting',count:45 },{ stage:'Quoted',count:30 },{ stage:'Bound',count:18 }];
+  var maxF = Math.max.apply(null, funnel.map(function(f) { return f.count; })) || 1;
+  var fHtml = '<div class="funnel">';
+  funnel.forEach(function(f, i) {
+    var pct = Math.round(f.count / maxF * 100);
+    var colors = ['#3b82f6','#6366f1','#8b5cf6','#a855f7','#22c55e'];
+    fHtml += '<div class="funnel-stage"><span style="min-width:70px;font-weight:600">' + esc(f.stage) + '</span><div class="funnel-bar" style="width:' + pct + '%;background:' + colors[i%5] + '">' + fmtNum(f.count) + '</div></div>';
+    if (i < funnel.length - 1) {
+      var drop = Math.round((1 - funnel[i+1].count / f.count) * 100);
+      fHtml += '<div class="funnel-drop">&darr; ' + drop + '% drop-off</div>';
+    }
+  });
+  fHtml += '</div>';
+  document.getElementById('a-funnel').innerHTML = fHtml;
+
+  // Revenue trend
+  var trend = await aFetch('/api/analytics/trends?metric=premium&period=monthly');
+  var months = (trend && trend.data) || data.trend || [];
+  if (months.length) {
+    var maxV = Math.max.apply(null, months.map(function(m) { return m.value; })) || 1;
+    document.getElementById('a-trend').innerHTML = '<div class="trend-chart">' + months.map(function(m) {
+      var h = Math.round(m.value / maxV * 100);
+      return '<div style="flex:1;text-align:center"><div class="trend-bar" style="height:' + h + '%" title="' + fmtMoney(m.value) + '"></div><div class="trend-label">' + esc(m.label || m.month || '') + '</div></div>';
+    }).join('') + '</div>';
+  }
+}
+
+// ── Customers ──
+async function loadCustomers() {
+  // Segments
+  var seg = await aFetch('/api/analytics/customers/segments');
+  var segEl = document.getElementById('a-segments');
+  if (seg && seg.segments) {
+    var total = seg.segments.reduce(function(a,s) { return a + s.count; }, 0) || 1;
+    var colors = { Champion:'#22c55e', Loyal:'#3b82f6', 'At-Risk':'#f59e0b', Dormant:'#94a3b8', New:'#8b5cf6' };
+    var conic = '', offset = 0;
+    seg.segments.forEach(function(s) { var pct = s.count / total * 100; conic += (conic ? ',' : '') + (colors[s.name]||'#ccc') + ' ' + offset + '% ' + (offset+pct) + '%'; offset += pct; });
+    segEl.innerHTML = '<div class="donut-wrap"><div class="donut" style="background:conic-gradient(' + conic + ')"><div class="donut-center"><strong>' + fmtNum(total) + '</strong>Total</div></div><div class="donut-legend">' + seg.segments.map(function(s) { return '<span><span class="dot" style="background:' + (colors[s.name]||'#ccc') + '"></span>' + esc(s.name) + ': ' + s.count + ' (' + Math.round(s.count/total*100) + '%)</span>'; }).join('') + '</div></div>';
+  } else { segEl.innerHTML = '<p style="color:var(--muted);font-size:12px">No segment data available. <button onclick="loadCustomers()" class="export-btn">Retry</button></p>'; }
+
+  // At-Risk
+  var risk = await aFetch('/api/analytics/customers/at-risk');
+  var riskEl = document.getElementById('a-atrisk');
+  if (risk && risk.customers && risk.customers.length) {
+    riskEl.innerHTML = risk.customers.slice(0,15).map(function(c) {
+      var bg = c.risk_score >= 90 ? 'var(--red)' : c.risk_score >= 80 ? '#dc2626' : 'var(--amber)';
+      return '<div class="at-risk-row"><div><strong>' + esc(c.name) + '</strong><br><span style="color:var(--muted)">' + (c.days_since_contact ? c.days_since_contact + 'd since contact' : '') + (c.renewal_date ? ' · Renews ' + c.renewal_date : '') + '</span></div><span class="risk-badge" style="background:' + bg + '">' + c.risk_score + '%</span></div>';
+    }).join('');
+  } else { riskEl.innerHTML = '<p style="color:var(--green);font-size:12px">No at-risk customers.</p>'; }
+
+  // Geo
+  var geo = await aFetch('/api/analytics/geo');
+  var geoEl = document.getElementById('a-geo');
+  if (geo && geo.data) {
+    var gHtml = '<table class="tbl"><tr><th>Location</th><th>Customers</th><th>Avg Premium</th></tr>';
+    geo.data.slice(0,15).forEach(function(g) { gHtml += '<tr><td>' + esc(g.location) + '</td><td>' + g.count + '</td><td>' + fmtMoney(g.avg_premium) + '</td></tr>'; });
+    gHtml += '</table>';
+    geoEl.innerHTML = gHtml;
+  } else { geoEl.innerHTML = '<p style="color:var(--muted);font-size:12px">No geographic data.</p>'; }
+}
+
+// Customer search
+var _searchTimer;
+document.addEventListener('input', function(e) {
+  if (e.target.id !== 'cust-search') return;
+  clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(function() { searchCustomer(e.target.value.trim()); }, 400);
+});
+async function searchCustomer(q) {
+  var el = document.getElementById('cust-search-results');
+  if (!q || q.length < 2) { el.innerHTML = ''; return; }
+  el.innerHTML = '<div class="skeleton" style="height:40px"></div>';
+  try {
+    var res = await fetch(SAGE + '/api/analytics/customers/search?q=' + encodeURIComponent(q), { headers: { 'Authorization': 'Bearer ' + TOKEN } });
+    var data = await res.json();
+    if (!data.customers || !data.customers.length) { el.innerHTML = '<p style="font-size:12px;color:var(--muted)">No results.</p>'; return; }
+    el.innerHTML = data.customers.slice(0,10).map(function(c) {
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid var(--border);cursor:pointer" onclick="loadCustomerProfile(\'' + esc(c.id) + '\')"><div><strong style="font-size:13px">' + esc(c.name) + '</strong><br><span style="font-size:11px;color:var(--muted)">' + esc(c.email||'') + ' · ' + esc(c.phone||'') + '</span></div><span style="font-size:11px;color:var(--blue)">' + esc(c.segment||'') + '</span></div>';
+    }).join('');
+  } catch(e) { el.innerHTML = '<p style="color:var(--red);font-size:12px">Search failed.</p>'; }
+}
+async function loadCustomerProfile(id) {
+  var el = document.getElementById('cust-search-results');
+  el.innerHTML = '<div class="skeleton" style="height:100px"></div>';
+  try {
+    var res = await fetch(SAGE + '/api/analytics/customer/' + id + '/score', { headers: { 'Authorization': 'Bearer ' + TOKEN } });
+    var c = await res.json();
+    el.innerHTML = '<div class="card" style="margin-top:8px"><h3>' + esc(c.name||'Customer') + '</h3>' +
+      '<div class="metric-row" style="margin:12px 0"><div class="metric-card"><div class="metric-val">' + fmtMoney(c.ltv) + '</div><div class="metric-label">LTV</div></div><div class="metric-card"><div class="metric-val">' + (c.churn_risk||0) + '%</div><div class="metric-label">Churn Risk</div></div><div class="metric-card"><div class="metric-val">' + esc(c.segment||'—') + '</div><div class="metric-label">Segment</div></div><div class="metric-card"><div class="metric-val">' + (c.policies?c.policies.length:0) + '</div><div class="metric-label">Policies</div></div></div>' +
+      (c.policies ? '<h4 style="font-size:12px;margin:8px 0">Policies</h4>' + c.policies.map(function(p) { return '<div style="font-size:12px;padding:4px 0;border-bottom:1px solid var(--border)">' + esc(p.product||p.type||'') + ' — ' + esc(p.carrier||'') + ' — ' + fmtMoney(p.premium) + '</div>'; }).join('') : '') +
+      (c.timeline ? '<h4 style="font-size:12px;margin:8px 0">Activity</h4>' + c.timeline.slice(0,10).map(function(t) { return '<div style="font-size:11px;padding:2px 0;color:var(--muted)">' + (t.date||'') + ' — ' + esc(t.action||t.message||'') + '</div>'; }).join('') : '') +
+      '</div>';
+  } catch(e) { el.innerHTML = '<p style="color:var(--red);font-size:12px">Failed to load profile.</p>'; }
+}
+
+// ── IVANS ──
+async function loadIvans() {
+  // Summary cards
+  var data = await aFetch('/api/ivans/summary');
+  var el = document.getElementById('ivans-metrics');
+  if (!data) {
+    el.innerHTML = '<div style="grid-column:1/-1" class="card"><p style="text-align:center;color:var(--muted);font-size:13px">IVANS integration coming soon. This dashboard will display transaction data, match rates, and file uploads once the IVANS connection is configured.</p></div>';
+    document.getElementById('ivans-files').innerHTML = '<p style="color:var(--muted);font-size:12px">No files yet.</p>';
+    document.getElementById('ivans-txns').innerHTML = '';
+    return;
+  }
+  el.innerHTML = [
+    { label:'This Month', val: fmtNum(data.txn_count) },
+    { label:'Match Rate', val: (data.match_rate||0) + '%' },
+    { label:'Unmatched', val: fmtNum(data.unmatched) },
+    { label:'Premium Volume', val: fmtMoney(data.premium_volume) },
+  ].map(function(m) { return '<div class="metric-card"><div class="metric-val">' + m.val + '</div><div class="metric-label">' + m.label + '</div></div>'; }).join('');
+
+  // Recent files
+  var files = await aFetch('/api/ivans/files');
+  var fEl = document.getElementById('ivans-files');
+  if (files && files.files && files.files.length) {
+    fEl.innerHTML = '<table class="tbl"><tr><th>File</th><th>Date</th><th>Records</th><th>Match %</th></tr>' + files.files.slice(0,20).map(function(f) { return '<tr><td>' + esc(f.filename) + '</td><td style="color:var(--muted)">' + (f.date?new Date(f.date).toLocaleDateString():'') + '</td><td>' + (f.records||0) + '</td><td>' + (f.match_rate||0) + '%</td></tr>'; }).join('') + '</table>';
+  } else { fEl.innerHTML = '<p style="font-size:12px;color:var(--muted)">No files uploaded yet.</p>'; }
+
+  // Transactions
+  var txns = await aFetch('/api/ivans/transactions');
+  renderIvansTxns(txns);
+}
+
+function renderIvansTxns(txns) {
+  var el = document.getElementById('ivans-txns');
+  if (!txns || !txns.transactions || !txns.transactions.length) { el.innerHTML = '<p style="font-size:12px;color:var(--muted)">No transactions.</p>'; return; }
+  el.innerHTML = '<table class="tbl"><tr><th>Date</th><th>Carrier</th><th>Type</th><th>Premium</th><th>Status</th></tr>' + txns.transactions.slice(0,50).map(function(t) { return '<tr><td style="color:var(--muted)">' + (t.date?new Date(t.date).toLocaleDateString():'') + '</td><td>' + esc(t.carrier) + '</td><td>' + esc(t.type) + '</td><td>' + fmtMoney(t.premium) + '</td><td><span style="font-size:10px;font-weight:700;color:' + (t.matched?'var(--green)':'var(--red)') + '">' + (t.matched?'Matched':'Unmatched') + '</span></td></tr>'; }).join('') + '</table>';
+}
+
+// IVANS upload
+(function() {
+  var zone = document.getElementById('ivans-drop');
+  var input = document.getElementById('ivans-file');
+  if (!zone || !input) return;
+  zone.addEventListener('click', function() { input.click(); });
+  zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.classList.add('over'); });
+  zone.addEventListener('dragleave', function() { zone.classList.remove('over'); });
+  zone.addEventListener('drop', function(e) { e.preventDefault(); zone.classList.remove('over'); if (e.dataTransfer.files.length) uploadIvans(e.dataTransfer.files[0]); });
+  input.addEventListener('change', function() { if (input.files.length) uploadIvans(input.files[0]); });
+})();
+async function uploadIvans(file) {
+  var status = document.getElementById('ivans-upload-status');
+  status.textContent = 'Uploading ' + file.name + '...'; status.style.color = 'var(--blue)';
+  var fd = new FormData(); fd.append('file', file);
+  try {
+    var res = await fetch(SAGE + '/api/ivans/upload', { method:'POST', headers:{'Authorization':'Bearer '+TOKEN}, body:fd });
+    var data = await res.json();
+    if (data.ok) { status.style.color = 'var(--green)'; status.textContent = 'Done! ' + (data.records||0) + ' records, ' + (data.matched||0) + ' matched, ' + (data.new_records||0) + ' new.'; A_CACHE = {}; loadIvans(); }
+    else { status.style.color = 'var(--red)'; status.textContent = data.error || 'Upload failed.'; }
+  } catch(e) { status.style.color = 'var(--red)'; status.textContent = 'Upload failed. Check connection.'; }
+}
+
+// ── Team ──
+var PRODUCERS = [];
+async function loadTeam() {
+  var data = await aFetch('/api/analytics/producers');
+  var el = document.getElementById('a-leaderboard');
+  if (!data || !data.producers) { el.innerHTML = '<p style="color:var(--muted);font-size:12px">No producer data. <button onclick="loadTeam()" class="export-btn">Retry</button></p>'; return; }
+  PRODUCERS = data.producers;
+  renderLeaderboard('submissions');
+  // Populate compare selects
+  var opts = '<option value="">Select agent...</option>' + PRODUCERS.map(function(p) { return '<option value="' + esc(p.id||p.name) + '">' + esc(p.name) + '</option>'; }).join('');
+  document.getElementById('compare-a').innerHTML = opts;
+  document.getElementById('compare-b').innerHTML = opts;
+}
+
+var _sortCol = 'submissions';
+var _sortDir = -1;
+function renderLeaderboard(sortBy) {
+  if (sortBy === _sortCol) _sortDir *= -1; else { _sortCol = sortBy; _sortDir = -1; }
+  var sorted = PRODUCERS.slice().sort(function(a,b) { return ((a[_sortCol]||0) - (b[_sortCol]||0)) * _sortDir; });
+  var arrow = _sortDir > 0 ? '&uarr;' : '&darr;';
+  var cols = [['name','Agent'],['submissions','Subs'],['conversion_rate','Conv %'],['avg_response_time','Resp Time'],['pipeline','Pipeline']];
+  var html = '<table class="tbl"><tr>' + cols.map(function(c) { return '<th onclick="renderLeaderboard(\'' + c[0] + '\')">' + c[1] + (c[0]===_sortCol ? ' ' + arrow : '') + '</th>'; }).join('') + '</tr>';
+  sorted.forEach(function(p, i) {
+    html += '<tr style="cursor:pointer" onclick="showAgentDrill(\'' + esc(p.id||p.name) + '\')">';
+    html += '<td><strong>' + (i+1) + '. ' + esc(p.name) + '</strong></td>';
+    html += '<td>' + (p.submissions||0) + '</td>';
+    html += '<td>' + (p.conversion_rate||0) + '%</td>';
+    html += '<td>' + (p.avg_response_time||'—') + '</td>';
+    html += '<td>' + (p.pipeline||0) + '</td>';
+    html += '</tr>';
+  });
+  html += '</table>';
+  document.getElementById('a-leaderboard').innerHTML = html;
+}
+
+function compareProducers() {
+  var aId = document.getElementById('compare-a').value;
+  var bId = document.getElementById('compare-b').value;
+  if (!aId || !bId) return;
+  var a = PRODUCERS.find(function(p) { return (p.id||p.name) === aId; });
+  var b = PRODUCERS.find(function(p) { return (p.id||p.name) === bId; });
+  if (!a || !b) return;
+  var fields = [['submissions','Submissions'],['conversion_rate','Conv %'],['avg_response_time','Resp Time'],['pipeline','Pipeline'],['customers','Customers']];
+  document.getElementById('compare-result').innerHTML = '<table class="tbl"><tr><th>Metric</th><th>' + esc(a.name) + '</th><th>' + esc(b.name) + '</th></tr>' +
+    fields.map(function(f) { var av = a[f[0]]||0, bv = b[f[0]]||0; return '<tr><td>' + f[1] + '</td><td style="font-weight:' + (av>=bv?'700':'400') + '">' + av + '</td><td style="font-weight:' + (bv>=av?'700':'400') + '">' + bv + '</td></tr>'; }).join('') + '</table>';
+}
+
+async function showAgentDrill(id) {
+  var el = document.getElementById('agent-detail');
+  el.innerHTML = '<div class="skeleton" style="height:100px"></div>';
+  try {
+    var res = await fetch(SAGE + '/api/analytics/producer/' + encodeURIComponent(id), { headers: { 'Authorization': 'Bearer ' + TOKEN } });
+    var p = await res.json();
+    el.innerHTML = '<h4 style="margin-bottom:8px">' + esc(p.name||id) + '</h4>' +
+      '<div class="metric-row" style="margin-bottom:12px"><div class="metric-card"><div class="metric-val">' + (p.submissions||0) + '</div><div class="metric-label">Submissions</div></div><div class="metric-card"><div class="metric-val">' + (p.conversion_rate||0) + '%</div><div class="metric-label">Conversion</div></div><div class="metric-card"><div class="metric-val">' + (p.customers||0) + '</div><div class="metric-label">Customers</div></div><div class="metric-card"><div class="metric-val">' + (p.pipeline||0) + '</div><div class="metric-label">Pipeline</div></div></div>' +
+      (p.top_products ? '<h4 style="font-size:12px;margin:8px 0">Top Products</h4>' + p.top_products.map(function(pr) { return '<span style="display:inline-block;padding:2px 8px;margin:2px;background:#eff6ff;color:#1e3a8a;border-radius:4px;font-size:11px">' + esc(pr) + '</span>'; }).join('') : '') +
+      (p.activity ? '<h4 style="font-size:12px;margin:8px 0">Recent Activity</h4>' + p.activity.slice(0,10).map(function(a) { return '<div style="font-size:11px;padding:2px 0;color:var(--muted)">' + (a.date||'') + ' — ' + esc(a.action||'') + '</div>'; }).join('') : '');
+  } catch(e) { el.innerHTML = '<p style="color:var(--red);font-size:12px">Failed to load agent detail.</p>'; }
+}
+
+// ── Export ──
+var EXPORT_PRESETS = [
+  { name:'Submissions', table:'submissions', icon:'&#128195;' },
+  { name:'Customers', table:'customers', icon:'&#128101;' },
+  { name:'Leads', table:'leads', icon:'&#128233;' },
+  { name:'Quotes', table:'quotes', icon:'&#128200;' },
+  { name:'IVANS', table:'ivans', icon:'&#128230;' },
+  { name:'Producers', table:'producers', icon:'&#128100;' },
+];
+
+function loadExport() {
+  // Presets
+  document.getElementById('export-presets').innerHTML = EXPORT_PRESETS.map(function(p) {
+    return '<div class="export-card"><div style="font-size:24px;margin-bottom:4px">' + p.icon + '</div><h4>' + p.name + '</h4><div class="count" id="exp-count-' + p.table + '">—</div><button class="export-btn" onclick="quickExport(\'' + p.table + '\',\'csv\')">CSV</button><button class="export-btn" onclick="quickExport(\'' + p.table + '\',\'json\')">JSON</button></div>';
+  }).join('');
+  // Get counts
+  aFetch('/api/analytics/export/counts').then(function(data) {
+    if (!data) return;
+    EXPORT_PRESETS.forEach(function(p) { var el = document.getElementById('exp-count-' + p.table); if (el && data[p.table] !== undefined) el.textContent = fmtNum(data[p.table]) + ' rows'; });
+  });
+  // Export history
+  loadExportHistory();
+}
+
+async function quickExport(table, format) {
+  try {
+    var res = await fetch(SAGE + '/api/analytics/export?table=' + table + '&format=' + format + '&period=' + A_PERIOD, { headers: { 'Authorization': 'Bearer ' + TOKEN } });
+    if (!res.ok) { alert('Export failed.'); return; }
+    var blob = await res.blob();
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href = url; a.download = table + '_' + A_PERIOD + '.' + (format==='json'?'json':'csv'); a.click();
+    URL.revokeObjectURL(url);
+    loadExportHistory();
+  } catch(e) { alert('Export failed. Check connection.'); }
+}
+
+function loadExportColumns() {
+  var table = document.getElementById('exp-table').value;
+  var el = document.getElementById('exp-columns');
+  if (!table) { el.innerHTML = ''; return; }
+  var COLS = { submissions:['id','reference','customer_name','email','phone','products','status','created_at','agent'], customers:['id','name','email','phone','segment','ltv','churn_risk','policies_count'], leads:['id','name','email','phone','source','status','created_at'], quotes:['id','customer','products','premium','carrier','status','created_at'], ivans:['id','carrier','type','premium','date','matched','submission_id'], producers:['id','name','submissions','conversion_rate','pipeline','customers'] };
+  var cols = COLS[table] || [];
+  el.innerHTML = '<label style="font-size:11px;font-weight:600;display:block;margin-bottom:4px">Columns</label><div style="display:flex;flex-wrap:wrap;gap:6px">' + cols.map(function(c) { return '<label style="font-size:11px;display:flex;align-items:center;gap:3px"><input type="checkbox" class="exp-col" value="' + c + '" checked> ' + c + '</label>'; }).join('') + '</div>';
+}
+
+async function previewExport() {
+  var table = document.getElementById('exp-table').value;
+  if (!table) return;
+  var cols = Array.from(document.querySelectorAll('.exp-col:checked')).map(function(c) { return c.value; });
+  var el = document.getElementById('exp-preview');
+  el.innerHTML = '<div class="skeleton" style="height:60px"></div>';
+  try {
+    var res = await fetch(SAGE + '/api/analytics/export/preview?table=' + table + '&columns=' + cols.join(',') + '&period=' + A_PERIOD, { headers: { 'Authorization': 'Bearer ' + TOKEN } });
+    var data = await res.json();
+    if (!data.rows || !data.rows.length) { el.innerHTML = '<p style="font-size:12px;color:var(--muted)">No data.</p>'; return; }
+    el.innerHTML = '<table class="tbl"><tr>' + cols.map(function(c) { return '<th>' + c + '</th>'; }).join('') + '</tr>' + data.rows.slice(0,5).map(function(r) { return '<tr>' + cols.map(function(c) { return '<td>' + esc(r[c]!==undefined?r[c]:'') + '</td>'; }).join('') + '</tr>'; }).join('') + '</table><p style="font-size:10px;color:var(--muted);margin-top:4px">Showing 5 of ' + (data.total||'?') + ' rows</p>';
+  } catch(e) { el.innerHTML = '<p style="color:var(--red);font-size:12px">Preview failed.</p>'; }
+}
+
+async function runExport(format) {
+  var table = document.getElementById('exp-table').value;
+  if (!table) return;
+  var cols = Array.from(document.querySelectorAll('.exp-col:checked')).map(function(c) { return c.value; });
+  var from = document.getElementById('exp-from').value;
+  var to = document.getElementById('exp-to').value;
+  var url = SAGE + '/api/analytics/export?table=' + table + '&format=' + format + '&columns=' + cols.join(',') + '&period=' + A_PERIOD + (from?'&from='+from:'') + (to?'&to='+to:'');
+  try {
+    var res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + TOKEN } });
+    if (!res.ok) { alert('Export failed.'); return; }
+    var blob = await res.blob();
+    var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = table + '_custom.' + (format==='json'?'json':'csv'); a.click();
+    loadExportHistory();
+  } catch(e) { alert('Export failed.'); }
+}
+
+async function loadExportHistory() {
+  var data = await aFetch('/api/analytics/export/history');
+  var el = document.getElementById('export-history');
+  if (!data || !data.exports || !data.exports.length) { el.innerHTML = '<p style="font-size:12px;color:var(--muted)">No exports yet.</p>'; return; }
+  el.innerHTML = '<table class="tbl"><tr><th>Table</th><th>Format</th><th>Rows</th><th>Date</th><th>User</th></tr>' + data.exports.slice(0,20).map(function(e) { return '<tr><td>' + esc(e.table) + '</td><td>' + esc(e.format) + '</td><td>' + (e.rows||'—') + '</td><td style="color:var(--muted)">' + (e.date?new Date(e.date).toLocaleString():'') + '</td><td>' + esc(e.user||'') + '</td></tr>'; }).join('') + '</table>';
+}
+
+// ── Analytics Initialization ──
+function loadAnalytics() {
+  loadAnalyticsOverview();
+}
+
+// Period selector
+document.getElementById('period-sel').addEventListener('click', function(e) {
+  var btn = e.target.closest('.period-btn');
+  if (!btn) return;
+  document.querySelectorAll('.period-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  A_PERIOD = btn.dataset.period;
+  A_CACHE = {};
+  // Reload current sub-tab
+  var active = document.querySelector('.sub-tab.active');
+  if (active) loadSubTab(active.dataset.subtab);
+});
+
+function loadSubTab(name) {
+  if (name === 'overview') loadAnalyticsOverview();
+  else if (name === 'customers') loadCustomers();
+  else if (name === 'ivans') loadIvans();
+  else if (name === 'team') loadTeam();
+  else if (name === 'export') loadExport();
+}
+
+// Sub-tab switching
+document.addEventListener('click', function(e) {
+  var st = e.target.closest('.sub-tab[data-subtab]');
+  if (!st) return;
+  document.querySelectorAll('.sub-tab').forEach(function(t) { t.classList.remove('active'); });
+  st.classList.add('active');
+  document.querySelectorAll('[id^="subtab-"]').forEach(function(p) { p.classList.add('hidden'); });
+  var target = document.getElementById('subtab-' + st.dataset.subtab);
+  if (target) target.classList.remove('hidden');
+  loadSubTab(st.dataset.subtab);
+});
+
 // Tab switching with data loading
 document.addEventListener('click', function(e) {
   var tab = e.target.closest('.tab[data-tab]');
@@ -357,6 +842,7 @@ document.addEventListener('click', function(e) {
   if (tab.dataset.tab === 'health') loadHealth();
   if (tab.dataset.tab === 'data-protection') loadDataProtection();
   if (tab.dataset.tab === 'disaster-recovery') loadDisasterRecovery();
+  if (tab.dataset.tab === 'analytics') loadAnalytics();
 });
 </script>
 </body>
