@@ -1583,6 +1583,106 @@
       "tags": ["annuities", "retirement", "tax-deferred"],
       "source_page": "/life-health/annuities.html",
       "last_reviewed": "2026-03"
+    },
+    {
+      "id": "data-better-rates",
+      "question": "How does your agency use data to find me better rates?",
+      "answer": "We use carrier appetite data, loss ratio trends, and rate filing information to match you with carriers that are most competitive for your specific risk profile. Instead of guessing which carrier might be cheapest, we analyze which ones are actively seeking your type of business and offering the best rates in your area right now.",
+      "category": "general",
+      "product": null,
+      "tags": ["data-analytics", "rates", "technology", "independent-agent"],
+      "source_page": "/about/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "ivans-benefits",
+      "question": "What is IVANS and how does it help my policy?",
+      "answer": "IVANS is an insurance data exchange network that connects our agency directly with your carriers in real time. This means policy changes, renewals, and documents flow electronically instead of through mail or fax. For you, it means faster processing, fewer errors, and we can catch problems with your coverage before they become issues.",
+      "category": "general",
+      "product": null,
+      "tags": ["IVANS", "technology", "data-exchange", "policy-management"],
+      "source_page": "/about/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "renewal-tracking",
+      "question": "How do you track my policy renewals?",
+      "answer": "Our system flags every policy 60 to 90 days before renewal. We review your current rate, check for better options across our carrier panel, and contact you with a recommendation before your renewal date. You never have to worry about your policy lapsing or auto-renewing at a rate that is no longer competitive.",
+      "category": "general",
+      "product": null,
+      "tags": ["renewal", "policy-management", "proactive-service"],
+      "source_page": "/about/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "policy-data-online",
+      "question": "Can I see my policy data online?",
+      "answer": "Yes. Through our customer portal, you can view your active policies, upload documents, check the status of your submissions, and communicate with your agent. We also provide dec page summaries and coverage details so you always know what you are paying for and what is covered.",
+      "category": "general",
+      "product": null,
+      "tags": ["portal", "online-access", "policy-data", "customer-service"],
+      "source_page": "/portal/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "data-privacy",
+      "question": "How do you protect my personal information?",
+      "answer": "We follow industry-standard security practices including encrypted data transmission, secure storage, and strict access controls. We never sell your personal information to third parties. Our data exchange with carriers uses IVANS, which is encrypted and audited. We collect only the information needed to service your policies and provide accurate quotes.",
+      "category": "general",
+      "product": null,
+      "tags": ["privacy", "security", "data-protection", "compliance"],
+      "source_page": "/privacy.html",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "data-portability",
+      "question": "What happens to my data if I switch agencies?",
+      "answer": "Your policy data belongs to you and your carrier, not to us. If you choose to move to another agency, your carrier transfers your policy records to the new agent. We will provide any documentation you need to make the transition smooth. We never hold your data hostage — our goal is to earn your business through service, not lock-in.",
+      "category": "general",
+      "product": null,
+      "tags": ["data-portability", "switching", "customer-rights"],
+      "source_page": "/about/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "rate-comparison-process",
+      "question": "How do independent agents compare rates from multiple carriers?",
+      "answer": "We have direct appointments with over 30 carriers. When you request a quote, we submit your information to multiple carriers simultaneously and compare the results side by side. We look at more than just price — we evaluate coverage terms, deductible options, carrier financial strength, and claims reputation to give you a complete picture.",
+      "category": "general",
+      "product": null,
+      "tags": ["independent-agent", "rate-comparison", "carriers", "quoting"],
+      "source_page": "/carriers/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "clv-insurance",
+      "question": "What is customer lifetime value in insurance?",
+      "answer": "Customer lifetime value is the total relationship value between you and your agency over time — not just this year's premium. Agencies that track this invest in long-term service: proactive reviews, coverage recommendations as your life changes, claims advocacy, and fair pricing over decades. It means we are motivated to keep you well-covered, not just to close a sale.",
+      "category": "general",
+      "product": null,
+      "tags": ["customer-service", "lifetime-value", "relationship", "agency-values"],
+      "source_page": "/about/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "policy-endorsements",
+      "question": "How does your agency handle policy endorsements?",
+      "answer": "An endorsement is a change to your existing policy — adding a driver, updating your address, increasing coverage limits, or adding a new vehicle. You can request endorsements by calling, emailing, or through the customer portal. We process most endorsements same-day and confirm the changes with you before they take effect.",
+      "category": "general",
+      "product": null,
+      "tags": ["endorsements", "policy-changes", "customer-service"],
+      "source_page": "/about/",
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "accurate-quote-data",
+      "question": "What data do you need to provide an accurate quote?",
+      "answer": "For most quotes, we need your name, address, date of birth, and basic information about what you want to insure (vehicle year/make/model, home square footage, business type). The more accurate the information, the more accurate the quote. We also check your claims history and credit-based insurance score, which carriers use to determine rates.",
+      "category": "general",
+      "product": null,
+      "tags": ["quoting", "data-requirements", "accuracy", "intake"],
+      "source_page": "/intake/",
+      "last_reviewed": "2026-03"
     }
   ]
 }
