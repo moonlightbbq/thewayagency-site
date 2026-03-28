@@ -1576,6 +1576,8 @@
         var cta = document.getElementById('stickyMobileCTA');
         if (cta) cta.style.display = '';
         document.body.style.overflow = '';
+        panel.style.height = '';
+        panel.style.top = '';
       }
     }
 
