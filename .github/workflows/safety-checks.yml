@@ -1,0 +1,55 @@
+name: Weekly Safety Checks
+
+on:
+  schedule:
+    # Monday at 2:00 PM UTC (10:00 AM Eastern)
+    - cron: '0 14 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  data-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Check data integrity
+        run: node scripts/check-data-integrity.js
+
+  build-safety:
+    runs-on: ubuntu-latest
+    needs: data-integrity
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - name: Pre-build checks
+        run: node scripts/pre-build-check.js
+      - name: Build site
+        run: node scripts/build.js
+      - name: Validate build
+        run: node scripts/validate-build.js
+      - name: Check build size
+        run: |
+          SIZE=$(du -sk build/ | cut -f1)
+          echo "Build size: ${SIZE}KB"
+          if [ "$SIZE" -lt 100 ]; then
+            echo "::error::Build is suspiciously small (${SIZE}KB)"
+            exit 1
+          fi
+
+  content-dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Content calendar status
+        run: node scripts/content-dashboard.js

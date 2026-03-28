@@ -1,0 +1,63 @@
+name: Deploy Protection
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  data-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Check data integrity
+        run: node scripts/check-data-integrity.js
+
+  safe-build:
+    runs-on: ubuntu-latest
+    needs: data-integrity
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - name: Pre-build checks
+        run: node scripts/pre-build-check.js
+      - name: Build site
+        run: node scripts/build.js
+      - name: Validate build
+        run: node scripts/validate-build.js
+
+  content-guard:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Content guard (warning only)
+        run: node scripts/content-backup.js guard || echo "::warning::Content guard detected potential data loss"
+        continue-on-error: true
+
+  blog-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Build site (needed for blog validation)
+        run: node scripts/build.js
+      - name: Check blog feed
+        run: test -f build/blog/feed.xml && echo "RSS feed exists" || exit 1
+      - name: Check blog index
+        run: test -f build/blog/index.html && echo "Blog index exists" || exit 1
