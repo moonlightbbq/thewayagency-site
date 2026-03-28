@@ -626,33 +626,23 @@
 <div id="intake-system-banner" style="display:none;padding:10px 20px;text-align:center;font-size:13px;font-weight:600;cursor:pointer;max-width:580px;margin:8px auto 0;border-radius:8px" onclick="this.style.display='none'" role="alert"></div>
 <div class="container">
   <!-- Headline + response time promise -->
-  <div style="text-align:center;padding:var(--space-xl) 0 var(--space-md);">
+  <div style="text-align:center;padding:var(--space-lg) 0 var(--space-sm);">
     <h1 id="intake-headline" style="font-size:clamp(1.5rem,3.5vw,2rem);color:var(--navy);margin-bottom:8px;">Get a Quote</h1>
     <p id="intake-subtitle" style="color:var(--slate);font-size:var(--text-sm);margin-bottom:12px;">A licensed agent will follow up within one business day.</p>
-    <a href="https://g.page/r/CSHCy85xJ8VOEBM/review" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:var(--white);border:1px solid var(--border);border-radius:var(--border-radius);text-decoration:none;color:var(--charcoal);font-size:var(--text-sm);font-weight:500;">
-      <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-      <span style="display:flex;align-items:center;gap:4px;">
-        <strong style="color:var(--navy);">5.0</strong>
-        <span style="color:#FBBC05;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-        <span style="color:var(--slate);">(19 reviews)</span>
-      </span>
-    </a>
   </div>
 
   <div class="progress-wrap" id="progress-wrap">
     <div class="progress-labels">
       <span class="progress-label active" data-step="1">Contact</span>
-      <span class="progress-label" data-step="2">Upload</span>
-      <span class="progress-label" data-step="3">Coverage</span>
-      <span class="progress-label" data-step="4">Details</span>
-      <span class="progress-label" data-step="5">Review</span>
+      <span class="progress-label" data-step="2">Coverage</span>
+      <span class="progress-label" data-step="3">Details</span>
+      <span class="progress-label" data-step="4">Review</span>
     </div>
     <div class="progress-track">
       <div class="progress-seg active" data-step="1"></div>
       <div class="progress-seg" data-step="2"></div>
       <div class="progress-seg" data-step="3"></div>
       <div class="progress-seg" data-step="4"></div>
-      <div class="progress-seg" data-step="5"></div>
     </div>
   </div>
   <div class="intake-trust-bar">
@@ -696,77 +686,8 @@
     </div>
   </div>
 
-  <!-- Step 2: Upload (optional doc upload) -->
+  <!-- Step 2: Products -->
   <div id="step-2" class="card hidden">
-    <!-- State: Choice -->
-    <div id="upload-choice-view">
-      <h2>Speed up your quote</h2>
-      <p class="card-desc">Have your current insurance dec page handy? Upload it and we'll pre-fill the form for you.</p>
-      <div class="upload-choices">
-        <div class="upload-choice" id="upload-choose-file">
-          <div class="upload-choice-icon">&#128196;</div>
-          <div class="upload-choice-title">Upload dec page</div>
-          <div class="upload-choice-desc">PDF, photo, or screenshot — we'll extract your info automatically</div>
-          <input type="file" id="doc-upload-input" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" capture="environment" class="hidden" aria-label="Upload insurance document">
-        </div>
-        <div class="upload-choice" data-action="skip-upload">
-          <div class="upload-choice-icon">&#9997;&#65039;</div>
-          <div class="upload-choice-title">Fill out manually</div>
-          <div class="upload-choice-desc">Choose your coverage and enter your details step by step</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- State: Drag-drop zone (shown after clicking "Upload dec page") -->
-    <div id="upload-dropzone-view" class="hidden">
-      <h2>Upload your document</h2>
-      <p class="card-desc">Drag and drop or choose a file below.</p>
-      <div class="upload-zone" id="upload-zone">
-        <div class="upload-zone-icon">&#128196;</div>
-        <div class="upload-zone-text">Drop your file here</div>
-        <div class="upload-zone-sub">PDF, JPEG, or PNG — max 10MB</div>
-        <button type="button" class="btn btn-primary" id="upload-zone-btn">Choose File</button>
-        <input type="file" id="doc-upload-input-zone" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" capture="environment" class="hidden" aria-label="Upload insurance document">
-      </div>
-      <div class="btn-row" style="margin-top:16px">
-        <button class="btn btn-outline" id="upload-back-btn">Back</button>
-        <span></span>
-      </div>
-    </div>
-
-    <!-- State: Processing -->
-    <div id="upload-progress-view" class="hidden" style="padding:40px 20px;">
-      <div class="upload-spinner"></div>
-      <p class="upload-status">Analyzing your document...</p>
-      <p class="upload-detail">This usually takes 5-15 seconds</p>
-    </div>
-
-    <!-- State: Success -->
-    <div id="upload-success-view" class="hidden" style="padding:40px 20px;">
-      <div class="upload-success-icon">&#10003;</div>
-      <p class="upload-found" id="upload-found-text"></p>
-      <p class="upload-found-detail" id="upload-found-detail"></p>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-        <button class="btn btn-primary" data-action="upload-continue">Continue with pre-filled data</button>
-        <button class="btn btn-outline" style="font-size:13px;" data-action="skip-upload">Skip — I'll fill it out myself</button>
-      </div>
-    </div>
-
-    <!-- State: Error -->
-    <div id="upload-error-view" class="hidden" style="padding:40px 20px;">
-      <p class="upload-error-msg" id="upload-error-msg"></p>
-      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-        <button class="btn btn-outline" id="upload-retry-btn">Try Again</button>
-        <button class="btn btn-outline" style="font-size:13px;" data-action="skip-upload">Skip — I'll fill it out manually</button>
-      </div>
-    </div>
-
-    <!-- Turnstile container for upload (rendered early) -->
-    <div id="upload-turnstile-container" style="margin:12px auto;text-align:center;"></div>
-  </div>
-
-  <!-- Step 3: Products -->
-  <div id="step-3" class="card hidden">
     <h2>What coverage do you need?</h2>
     <p class="card-desc">Select all that apply — we'll tailor your quote accordingly.</p>
     <div id="bundle-banner" class="bundle-banner hidden">
@@ -785,15 +706,15 @@
       </div>
     </div>
     <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--slate);">Not sure what you need? <a href="tel:+15024135335" style="color:var(--blue);text-decoration:underline;">Call us at (502) 413-5335</a></p>
-    <div id="step3-error" class="error hidden" role="alert" aria-live="polite"></div>
+    <div id="step2-error" class="error hidden" role="alert" aria-live="polite"></div>
     <div class="btn-row">
-      <button class="btn btn-outline" data-action="prev-step" data-step="3">Back</button>
-      <button class="btn btn-primary" data-action="next-step" data-step="3">Continue</button>
+      <button class="btn btn-outline" data-action="prev-step" data-step="2">Back</button>
+      <button class="btn btn-primary" data-action="next-step" data-step="2">Continue</button>
     </div>
   </div>
 
-  <!-- Step 4: Your Details + Product-Specific Questions -->
-  <div id="step-4" class="card hidden">
+  <!-- Step 3: Your Details + Product-Specific Questions -->
+  <div id="step-3" class="card hidden">
     <h2>Your details</h2>
     <p class="card-desc">This helps us get you the most accurate quote.</p>
 
@@ -844,15 +765,15 @@
       <label for="i_notes">Anything else we should know?</label>
       <textarea id="i_notes" rows="3" placeholder="Special requirements, additional details, or questions..."></textarea>
     </div>
-    <div id="step4-error" class="error hidden" role="alert" aria-live="polite"></div>
+    <div id="step3-error" class="error hidden" role="alert" aria-live="polite"></div>
     <div class="btn-row">
-      <button class="btn btn-outline" data-action="prev-step" data-step="4">Back</button>
-      <button class="btn btn-primary" data-action="next-step" data-step="4">Review</button>
+      <button class="btn btn-outline" data-action="prev-step" data-step="3">Back</button>
+      <button class="btn btn-primary" data-action="next-step" data-step="3">Review</button>
     </div>
   </div>
 
-  <!-- Step 5: Review & Submit -->
-  <div id="step-5" class="card hidden">
+  <!-- Step 4: Review & Submit -->
+  <div id="step-4" class="card hidden">
     <h2>Review your information</h2>
     <p class="card-desc">Please confirm everything looks correct before submitting.</p>
     <div id="review-summary"></div>
@@ -862,9 +783,9 @@
       <input type="text" id="_hp_company" name="_hp_company" tabindex="-1" autocomplete="off">
     </div>
     <div id="turnstile-container" style="margin:12px 0"></div>
-    <div id="step5-error" class="error hidden" role="alert" aria-live="polite"></div>
+    <div id="step4-error" class="error hidden" role="alert" aria-live="polite"></div>
     <div class="btn-row">
-      <button class="btn btn-outline" data-action="prev-step" data-step="5">Back</button>
+      <button class="btn btn-outline" data-action="prev-step" data-step="4">Back</button>
       <button class="btn btn-primary" id="submit-btn" data-action="submit-intake">Submit Quote Request</button>
     </div>
   </div>
@@ -1129,7 +1050,7 @@ function showIntakeBanner(color, msg) {
 // All events include intake_source and intake_agent for attribution.
 // ═══════════════════════════════════════════════════════════════════════════════
 
-const STEP_NAMES = { 1: 'contact', 2: 'upload', 3: 'products', 4: 'details', 5: 'review' };
+const STEP_NAMES = { 1: 'contact', 2: 'products', 3: 'details', 4: 'review' };
 const _stepTimestamps = {};
 const _funnelData = {
   entryTime: Date.now(),
@@ -1733,10 +1654,10 @@ async function validateContacts() {
 }
 
 // ── Step navigation ─────────────────────────────────────────────────────────
-const TIME_ESTIMATES = { 1: 'About 3 minutes left', 2: 'About 2 minutes left', 3: 'About 2 minutes left', 4: 'About 1 minute left', 5: 'Almost done!' };
+const TIME_ESTIMATES = { 1: 'About 3 minutes left', 2: 'About 2 minutes left', 3: 'About 1 minute left', 4: 'Almost done!' };
 
 function showStep(n) {
-  for (let i = 1; i <= 5; i++) document.getElementById('step-' + i).classList.toggle('hidden', i !== n);
+  for (let i = 1; i <= 4; i++) document.getElementById('step-' + i).classList.toggle('hidden', i !== n);
   document.querySelectorAll('.progress-seg').forEach(s => {
     const step = parseInt(s.dataset.step);
     s.classList.toggle('active', step === n);
@@ -1761,10 +1682,8 @@ function showStep(n) {
   // Track step completion for the step we're leaving
   if (currentStep && currentStep !== n) trackStepComplete(currentStep);
   currentStep = n;
-  if (n === 2) trackIntake('intake_upload_shown');
-  if (n === 3) applyExtractedProducts(); // auto-select products from doc upload
-  if (n === 4) renderProductQuestions();
-  if (n === 5) { renderReview(); initTurnstileOnReview(); }
+  if (n === 3) renderProductQuestions();
+  if (n === 4) { renderReview(); initTurnstileOnReview(); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
   // Track step enter (includes virtual pageview for GA4 funnel reports)
   trackStepEnter(n);
@@ -1794,13 +1713,13 @@ async function nextStep(from) {
       if (!valid) return;
     }
   }
-  if (from === 3) {
-    const err = document.getElementById('step3-error');
-    if (!selectedProducts.length) { err.textContent = 'Please select at least one type of coverage.'; err.classList.remove('hidden'); trackValidationError(3, 'no_products'); return; }
+  if (from === 2) {
+    const err = document.getElementById('step2-error');
+    if (!selectedProducts.length) { err.textContent = 'Please select at least one type of coverage.'; err.classList.remove('hidden'); trackValidationError(2, 'no_products'); return; }
     err.classList.add('hidden');
   }
-  if (from === 4) {
-    const err = document.getElementById('step4-error');
+  if (from === 3) {
+    const err = document.getElementById('step3-error');
     const problems = [];
     // Validate auto: at least one vehicle with year+make+model
     if (selectedProducts.includes('auto')) {
@@ -2385,7 +2304,7 @@ async function submitIntake() {
   const btn = document.getElementById('submit-btn');
   btn.textContent = 'Submitting...';
   btn.disabled = true;
-  const err = document.getElementById('step5-error');
+  const err = document.getElementById('step4-error');
 
   // If Turnstile token expired or never loaded, try to refresh it
   if (!turnstileToken && window.turnstile) {
@@ -2570,7 +2489,7 @@ async function submitIntake() {
     const data = await res.json();
     if (data.ok) {
       clearInterval(pollTimer);
-      document.getElementById('step-5').classList.add('hidden');
+      document.getElementById('step-4').classList.add('hidden');
       document.getElementById('step-confirm').classList.remove('hidden');
       document.getElementById('ref-number').textContent = 'Reference: #' + data.reference;
       document.getElementById('progress-wrap').classList.add('hidden');
@@ -2581,7 +2500,7 @@ async function submitIntake() {
         if (msg) msg.textContent = 'Thank you for choosing The Way Agency. ' + a.name.split(' ')[0] + ' will review your information and reach out with your personalized quote within one business day.';
       }
       clearDraft();
-      trackStepComplete(5);
+      trackStepComplete(4);
       trackSubmitSuccess(data.reference, selectedProducts.length);
       // Google Ads conversion (configured in GTM)
       if (window.dataLayer) {
@@ -2596,7 +2515,7 @@ async function submitIntake() {
     } else {
       err.textContent = data.error || 'Submission failed. Please try again.';
       err.classList.remove('hidden');
-      trackValidationError(5, 'submit_failed_server');
+      trackValidationError(4, 'submit_failed_server');
     }
   } catch (e) {
     // Queue for offline retry
@@ -2611,7 +2530,7 @@ async function submitIntake() {
     err.textContent = 'Saved! We\'ll submit when you\'re back online. Ref: ' + queueRef;
     err.style.color = '#d97706';
     err.classList.remove('hidden');
-    trackValidationError(5, 'submit_queued_offline');
+    trackValidationError(4, 'submit_queued_offline');
   } finally {
     btn.textContent = 'Submit Quote Request';
     btn.disabled = false;

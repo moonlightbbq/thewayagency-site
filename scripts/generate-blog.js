@@ -431,6 +431,7 @@ function generateBlogIndex(allPosts, postsMeta) {
   <link rel="stylesheet" href="/src/css/base.css">
   <link rel="stylesheet" href="/src/css/components.css">
   <link rel="stylesheet" href="/src/css/leadgen.css">
+  <link rel="stylesheet" href="/src/css/blog.css">
   <link rel="alternate" type="application/rss+xml" title="The Way Agency Blog" href="/blog/feed.xml">
 
   <!-- Open Graph -->
