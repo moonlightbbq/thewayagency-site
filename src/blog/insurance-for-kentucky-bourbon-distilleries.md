@@ -2,8 +2,8 @@
 title: "Insurance for Kentucky Bourbon Distilleries: What Craft Spirits Producers Need"
 slug: insurance-for-kentucky-bourbon-distilleries
 description: "Kentucky bourbon distilleries face unique insurance risks from barrel aging to tasting rooms. Learn what coverage craft spirits producers need and how an independent agent can help."
-author: Kelly Bartley
-author_slug: kelly-bartley
+author: Kelly McCallister
+author_slug: kelly-mccallister
 author_title: Licensed Agent
 date: 2026-03-27
 modified: 2026-03-27

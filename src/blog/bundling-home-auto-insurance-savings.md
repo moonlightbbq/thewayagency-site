@@ -2,8 +2,8 @@
 title: "Bundling Home and Auto Insurance: How Much Can You Really Save?"
 slug: bundling-home-auto-insurance-savings
 description: "Bundling home and auto insurance typically saves 15-25% on premiums. Learn how multi-policy discounts work, when bundling makes sense, and when it doesn't."
-author: Audrey Phelps
-author_slug: audrey-phelps
+author: Audrey Lillpop
+author_slug: audrey-lillpop
 author_title: Licensed Agent
 date: 2026-03-27
 modified: 2026-03-27

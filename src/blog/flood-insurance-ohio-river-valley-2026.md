@@ -2,8 +2,8 @@
 title: "Flood Insurance in the Ohio River Valley: What Homeowners Need to Know in 2026"
 slug: flood-insurance-ohio-river-valley-2026
 description: "Flood risk is real along the Ohio River from Louisville to Henderson. Learn about NFIP vs private flood insurance, flood zones, and what homeowners insurance won't cover."
-author: Audrey Phelps
-author_slug: audrey-phelps
+author: Audrey Lillpop
+author_slug: audrey-lillpop
 author_title: Licensed Agent
 date: 2026-03-27
 modified: 2026-03-27

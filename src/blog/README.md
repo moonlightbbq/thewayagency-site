@@ -32,8 +32,8 @@ tags: home insurance, kentucky, weather
 | Name | Title | Slug |
 |------|-------|------|
 | Sheilia Royal | Agency Principal / Licensed Agent | sheilia-royal |
-| Audrey Lillpop | Licensed Agent, CISR | audrey-lillpop |
-| Kelly McCallister | Licensed Agent | kelly-mccallister |
+| Audrey Lillpop | Licensed Agent | audrey-lillpop |
+| Kelly McCallister | Client Care Specialist | kelly-mccallister |
 | Jill Boone | Licensed Agent | jill-boone |
 
 ## Markdown Formatting

@@ -2,8 +2,8 @@
 title: "How to Read Your Insurance Declarations Page: A Plain-Language Guide"
 slug: understanding-your-insurance-declarations-page
 description: "Your declarations page is the most important document in your insurance policy. Learn how to read it, what each section means, and what to check every renewal."
-author: Audrey Phelps
-author_slug: audrey-phelps
+author: Audrey Lillpop
+author_slug: audrey-lillpop
 author_title: Licensed Agent
 date: 2026-03-27
 modified: 2026-03-27

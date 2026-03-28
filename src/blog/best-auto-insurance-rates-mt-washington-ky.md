@@ -2,8 +2,8 @@
 title: "Auto Insurance in Mt. Washington, KY: How to Get the Best Rates in Bullitt County"
 slug: best-auto-insurance-rates-mt-washington-ky
 description: "Auto insurance rates in Mt. Washington and Bullitt County depend on your driving record, vehicle, and coverage. Here's how to get the best price without sacrificing coverage."
-author: Audrey Phelps
-author_slug: audrey-phelps
+author: Audrey Lillpop
+author_slug: audrey-lillpop
 author_title: Licensed Agent
 date: 2026-03-27
 modified: 2026-03-27

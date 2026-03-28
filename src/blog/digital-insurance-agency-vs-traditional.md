@@ -2,8 +2,8 @@
 title: "Digital Insurance Agency vs Traditional: How Modern Agents Serve You Better"
 slug: digital-insurance-agency-vs-traditional
 description: "Modern insurance agencies blend technology with personal service. Learn how digital tools mean faster quotes, better coverage reviews, and proactive policy management."
-author: Audrey Phelps
-author_slug: audrey-phelps
+author: Audrey Lillpop
+author_slug: audrey-lillpop
 author_title: Licensed Agent
 date: 2026-03-28
 modified: 2026-03-28

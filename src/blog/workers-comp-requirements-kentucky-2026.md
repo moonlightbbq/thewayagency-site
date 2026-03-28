@@ -2,8 +2,8 @@
 title: "Workers Comp in Kentucky: Requirements, Costs, and What Employers Need to Know in 2026"
 slug: workers-comp-requirements-kentucky-2026
 description: "Kentucky requires workers compensation for most employers with one or more employees. Learn the requirements, exemptions, costs, and penalties for non-compliance."
-author: Kelly Bartley
-author_slug: kelly-bartley
+author: Kelly McCallister
+author_slug: kelly-mccallister
 author_title: Licensed Agent
 date: 2026-03-27
 modified: 2026-03-27
