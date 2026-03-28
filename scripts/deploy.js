@@ -61,4 +61,7 @@ try {
   console.log('! Git push failed — changes are committed locally');
 }
 
-console.log('\n✅ Deploy complete!');
+// 8. Purge Cloudflare cache
+run('Purge CDN cache', 'node scripts/purge-cache.js');
+
+console.log('\n✅ Deploy complete — changes are live!');

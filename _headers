@@ -24,12 +24,12 @@
 /src/assets/*
   Cache-Control: public, max-age=31536000, immutable
 
-# HTML pages — short cache with stale-while-revalidate for fast loads
+# HTML pages — 5 min cache, serve stale up to 1 hour while revalidating
 /*.html
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
 
 /
-  Cache-Control: public, max-age=3600, stale-while-revalidate=86400
+  Cache-Control: public, max-age=300, stale-while-revalidate=3600
 
 # Portal pages — no cache (dynamic content via API)
 /intake/*
