@@ -91,10 +91,18 @@ strong{font-weight:600}
 .nav__dropdown-item:hover{background:var(--light-bg);color:var(--blue)}
 .nav__toggle{display:none;background:none;border:none;cursor:pointer;padding:var(--space-sm)}
 .nav__toggle span{display:block;width:24px;height:2px;background:var(--charcoal);margin:5px 0;transition:all var(--transition-base)}
+body.nav-open{overflow:hidden}
+body.nav-open::after{content:'';position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;background:rgba(0,0,0,.35);z-index:999}
 @media(max-width:968px){
   .nav__toggle{display:block}
-  .nav__links{position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;background:var(--white);flex-direction:column;align-items:flex-start;padding:var(--space-xl);gap:var(--space-md);transform:translateX(100%);transition:transform var(--transition-slow);overflow-y:auto}
+  .nav__toggle--open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  .nav__toggle--open span:nth-child(2){opacity:0}
+  .nav__toggle--open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+  .nav__links{position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;background:var(--white);flex-direction:column;align-items:flex-start;padding:var(--space-xl);gap:var(--space-md);transform:translateX(100%);transition:transform var(--transition-slow);overflow-y:auto;z-index:1001}
   .nav__links--open{transform:translateX(0)}
+  .nav__links .btn--primary{margin-top:auto;width:100%;text-align:center;padding:1rem;font-size:var(--text-base)}
+  .nav__dropdown > .nav__link::after{content:'';position:static;display:inline-block;width:6px;height:6px;border-right:2px solid var(--charcoal);border-bottom:2px solid var(--charcoal);transform:rotate(45deg);margin-left:var(--space-sm);background:none;vertical-align:middle;transition:transform var(--transition-base)}
+  .nav__dropdown--open > .nav__link::after{transform:rotate(-135deg)}
   .nav__dropdown-menu{position:static;transform:none;opacity:1;visibility:visible;box-shadow:none;border:none;padding:0 0 0 var(--space-md);min-width:auto;display:none;grid-template-columns:1fr}
   .nav__dropdown--open .nav__dropdown-menu{display:grid}
 }
