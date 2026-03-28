@@ -25,8 +25,33 @@
   <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
 
   <style>
+    .loc-grid-2col { display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2xl);align-items:start;max-width:900px;margin:0 auto; }
+    .loc-office { padding:var(--space-xl); }
+    .loc-office-label { font-size:var(--text-sm);font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px; }
+    .loc-team-card { display:flex;align-items:center;gap:12px;padding:12px;background:var(--linen);border-radius:var(--border-radius); }
+    .loc-team-card img { width:44px;height:44px;border-radius:50%;object-fit:cover; }
+    .loc-team-card p:first-child { font-weight:600;font-size:var(--text-sm); }
+    .loc-team-card p:last-child { font-size:12px;color:var(--slate); }
+    .loc-state-header { display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:var(--space-sm); }
+    .loc-state-header h2 { margin:0; }
+    .loc-state-badge { display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:var(--navy);color:#fff;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.5px; }
+    .loc-city-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:12px; }
+    .loc-city-card { display:flex;align-items:center;gap:12px;padding:16px 20px;background:#fff;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy);transition:box-shadow .2s,border-color .2s,transform .2s; }
+    .loc-city-card:hover { box-shadow:0 4px 12px rgba(0,0,0,.08);border-color:var(--cyan);transform:translateY(-2px); }
+    .loc-city-icon { width:36px;height:36px;border-radius:8px;background:var(--light-bg,#f4f7fa);display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+    .loc-city-icon svg { width:16px;height:16px;stroke:var(--blue);fill:none;stroke-width:2; }
+    .loc-city-name { font-size:15px;font-weight:600;display:block; }
+    .loc-city-county { font-size:12px;color:var(--slate,#64748b);font-weight:400; }
+    .loc-state-desc { color:var(--slate);font-weight:300;max-width:560px;margin:0 auto var(--space-xl);text-align:center; }
+    @media (max-width: 900px) {
+      .loc-city-grid { grid-template-columns:repeat(2,1fr); }
+    }
     @media (max-width: 640px) {
-      .loc-grid-2col { grid-template-columns: 1fr !important; }
+      .loc-grid-2col { grid-template-columns:1fr; }
+      .loc-city-grid { grid-template-columns:1fr 1fr; }
+    }
+    @media (max-width: 400px) {
+      .loc-city-grid { grid-template-columns:1fr; }
     }
   </style>
   <!-- JSON-LD Structured Data -->
@@ -138,24 +163,24 @@
     <!-- Office Card -->
     <section class="section">
       <div class="container">
-        <div class="loc-grid-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2xl);align-items:start;max-width:900px;margin:0 auto;">
-          <div class="card" style="padding:var(--space-xl);">
+        <div class="loc-grid-2col">
+          <div class="card loc-office">
             <h2 style="font-size:var(--text-xl);margin-bottom:var(--space-lg);">Owensboro Office</h2>
             <div style="display:flex;flex-direction:column;gap:var(--space-md);">
               <div>
-                <p style="font-size:var(--text-sm);font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Address</p>
+                <p class="loc-office-label">Address</p>
                 <address style="font-style:normal;line-height:1.6;">PO Box 187<br>Owensboro, KY 42302</address>
               </div>
               <div>
-                <p style="font-size:var(--text-sm);font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Phone</p>
+                <p class="loc-office-label">Phone</p>
                 <a href="tel:+15024135335" style="font-size:var(--text-lg);font-weight:600;color:var(--navy);">(502) 413-5335</a>
               </div>
               <div>
-                <p style="font-size:var(--text-sm);font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Email</p>
+                <p class="loc-office-label">Email</p>
                 <a href="mailto:hello@thewayagency.com" style="color:var(--blue);">hello@thewayagency.com</a>
               </div>
               <div>
-                <p style="font-size:var(--text-sm);font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;">Hours</p>
+                <p class="loc-office-label">Hours</p>
                 <p style="line-height:1.6;">Monday – Friday: 8:30 AM – 5:00 PM<br>Saturday &amp; Sunday: Closed</p>
               </div>
               <a href="https://maps.google.com/?q=Owensboro+KY+42302" target="_blank" rel="noopener" class="btn btn--outline" style="margin-top:var(--space-sm);">
@@ -167,35 +192,23 @@
           <div>
             <h3 style="margin-bottom:var(--space-md);">Serving KY, IN &amp; TN</h3>
             <p style="color:var(--slate);line-height:1.8;margin-bottom:var(--space-lg);">We do not operate out of a traditional storefront — and that is by design. We invest what would be overhead back into the communities we serve. We meet you where it is convenient: by phone, video, email, text, or in person.</p>
-            <h4 style="font-size:var(--text-sm);color:var(--slate);text-transform:uppercase;letter-spacing:.5px;margin-bottom:var(--space-sm);">Your Local Team</h4>
+            <h4 class="loc-office-label" style="margin-bottom:var(--space-sm);">Your Local Team</h4>
             <div style="display:flex;flex-direction:column;gap:12px;">
-              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--linen);border-radius:var(--border-radius);">
-                <img src="/src/assets/images/team/sheilia-royal.webp" alt="Sheilia Royal" style="width:44px;height:44px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'">
-                <div>
-                  <p style="font-weight:600;font-size:var(--text-sm);">Sheilia Royal</p>
-                  <p style="font-size:12px;color:var(--slate);">Licensed Agent - Principal</p>
-                </div>
+              <div class="loc-team-card">
+                <img src="/src/assets/images/team/sheilia-royal.webp" alt="Sheilia Royal" onerror="this.style.display='none'">
+                <div><p>Sheilia Royal</p><p>Licensed Agent - Principal</p></div>
               </div>
-              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--linen);border-radius:var(--border-radius);">
-                <img src="/src/assets/images/team/audrey-lillpop.webp" alt="Audrey Lillpop" style="width:44px;height:44px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'">
-                <div>
-                  <p style="font-weight:600;font-size:var(--text-sm);">Audrey Lillpop</p>
-                  <p style="font-size:12px;color:var(--slate);">Licensed Agent</p>
-                </div>
+              <div class="loc-team-card">
+                <img src="/src/assets/images/team/audrey-lillpop.webp" alt="Audrey Lillpop" onerror="this.style.display='none'">
+                <div><p>Audrey Lillpop</p><p>Licensed Agent</p></div>
               </div>
-              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--linen);border-radius:var(--border-radius);">
-                <img src="/src/assets/images/team/kelly-mccallister.webp" alt="Kelly McCallister" style="width:44px;height:44px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'">
-                <div>
-                  <p style="font-weight:600;font-size:var(--text-sm);">Kelly McCallister</p>
-                  <p style="font-size:12px;color:var(--slate);">Client Care Specialist</p>
-                </div>
+              <div class="loc-team-card">
+                <img src="/src/assets/images/team/kelly-mccallister.webp" alt="Kelly McCallister" onerror="this.style.display='none'">
+                <div><p>Kelly McCallister</p><p>Client Care Specialist</p></div>
               </div>
-              <div style="display:flex;align-items:center;gap:12px;padding:12px;background:var(--linen);border-radius:var(--border-radius);">
-                <img src="/src/assets/images/team/jill-boone.webp" alt="Jill Boone" style="width:44px;height:44px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'">
-                <div>
-                  <p style="font-weight:600;font-size:var(--text-sm);">Jill Boone</p>
-                  <p style="font-size:12px;color:var(--slate);">Licensed Agent</p>
-                </div>
+              <div class="loc-team-card">
+                <img src="/src/assets/images/team/jill-boone.webp" alt="Jill Boone" onerror="this.style.display='none'">
+                <div><p>Jill Boone</p><p>Licensed Agent</p></div>
               </div>
             </div>
             <a href="/about/team.html" style="display:inline-block;margin-top:var(--space-md);font-size:var(--text-sm);color:var(--blue);font-weight:600;">Meet the full team &rarr;</a>
@@ -206,51 +219,132 @@
 
     <section class="section section--light">
       <div class="container">
-        <div class="section-header">
+        <div class="loc-state-header">
           <h2>Kentucky</h2>
-          <p>Where we started. Where our roots run deepest.</p>
+          <span class="loc-state-badge">8 Cities</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:var(--space-lg);">
-          <a href="/insurance/owensboro-ky.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s,border-color .2s;"><span style="display:block;font-size:15px;">Owensboro</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Daviess County</span></a>
-          <a href="/insurance/henderson-ky.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Henderson</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Henderson County</span></a>
-          <a href="/insurance/louisville-ky.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Louisville</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Jefferson County</span></a>
-          <a href="/insurance/lexington-ky.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Lexington</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Fayette County</span></a>
-          <a href="/insurance/bowling-green-ky.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Bowling Green</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Warren County</span></a>
-          <a href="/insurance/elizabethtown-ky.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Elizabethtown</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Hardin County</span></a>
-          <a href="/insurance/mt-washington-ky.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Mt. Washington</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Bullitt County</span></a>
-          <a href="/insurance/frankfort-ky.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Frankfort</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Franklin County</span></a>
+        <p class="loc-state-desc">Where we started. Where our roots run deepest.</p>
+        <div class="loc-city-grid">
+          <a href="/insurance/owensboro-ky.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Owensboro</span><span class="loc-city-county">Daviess County</span></div>
+          </a>
+          <a href="/insurance/henderson-ky.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Henderson</span><span class="loc-city-county">Henderson County</span></div>
+          </a>
+          <a href="/insurance/louisville-ky.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Louisville</span><span class="loc-city-county">Jefferson County</span></div>
+          </a>
+          <a href="/insurance/lexington-ky.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Lexington</span><span class="loc-city-county">Fayette County</span></div>
+          </a>
+          <a href="/insurance/bowling-green-ky.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Bowling Green</span><span class="loc-city-county">Warren County</span></div>
+          </a>
+          <a href="/insurance/elizabethtown-ky.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Elizabethtown</span><span class="loc-city-county">Hardin County</span></div>
+          </a>
+          <a href="/insurance/mt-washington-ky.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Mt. Washington</span><span class="loc-city-county">Bullitt County</span></div>
+          </a>
+          <a href="/insurance/frankfort-ky.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Frankfort</span><span class="loc-city-county">Franklin County</span></div>
+          </a>
         </div>
       </div>
     </section>
 
     <section class="section">
       <div class="container">
-        <div class="section-header">
+        <div class="loc-state-header">
           <h2>Indiana</h2>
-          <p>Serving Hoosier families and businesses across the state.</p>
+          <span class="loc-state-badge">8 Cities</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:var(--space-lg);">
-          <a href="/insurance/evansville-in.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Evansville</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Vanderburgh County</span></a>
-          <a href="/insurance/indianapolis-in.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Indianapolis</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Marion County</span></a>
-          <a href="/insurance/fort-wayne-in.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Fort Wayne</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Allen County</span></a>
-          <a href="/insurance/carmel-in.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Carmel</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Hamilton County</span></a>
-          <a href="/insurance/fishers-in.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Fishers</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Hamilton County</span></a>
+        <p class="loc-state-desc">Serving Hoosier families and businesses across the state.</p>
+        <div class="loc-city-grid">
+          <a href="/insurance/indianapolis-in.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Indianapolis</span><span class="loc-city-county">Marion County</span></div>
+          </a>
+          <a href="/insurance/fort-wayne-in.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Fort Wayne</span><span class="loc-city-county">Allen County</span></div>
+          </a>
+          <a href="/insurance/evansville-in.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Evansville</span><span class="loc-city-county">Vanderburgh County</span></div>
+          </a>
+          <a href="/insurance/south-bend-in.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">South Bend</span><span class="loc-city-county">St. Joseph County</span></div>
+          </a>
+          <a href="/insurance/carmel-in.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Carmel</span><span class="loc-city-county">Hamilton County</span></div>
+          </a>
+          <a href="/insurance/fishers-in.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Fishers</span><span class="loc-city-county">Hamilton County</span></div>
+          </a>
+          <a href="/insurance/bloomington-in.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Bloomington</span><span class="loc-city-county">Monroe County</span></div>
+          </a>
+          <a href="/insurance/lafayette-in.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Lafayette</span><span class="loc-city-county">Tippecanoe County</span></div>
+          </a>
         </div>
       </div>
     </section>
 
     <section class="section section--light">
       <div class="container">
-        <div class="section-header">
+        <div class="loc-state-header">
           <h2>Tennessee</h2>
-          <p>Protecting families and businesses from Nashville to Memphis and beyond.</p>
+          <span class="loc-state-badge">8 Cities</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:var(--space-lg);">
-          <a href="/insurance/nashville-tn.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Nashville</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Davidson County</span></a>
-          <a href="/insurance/memphis-tn.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Memphis</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Shelby County</span></a>
-          <a href="/insurance/knoxville-tn.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Knoxville</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Knox County</span></a>
-          <a href="/insurance/chattanooga-tn.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Chattanooga</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Hamilton County</span></a>
-          <a href="/insurance/clarksville-tn.html" style="display:block;padding:16px 20px;background:white;border-radius:10px;border:1px solid var(--border,#e2e8f0);text-decoration:none;color:var(--navy,#173358);font-weight:600;transition:box-shadow .2s;"><span style="display:block;font-size:15px;">Clarksville</span><span style="font-size:12px;color:var(--slate,#64748b);font-weight:400;">Montgomery County</span></a>
+        <p class="loc-state-desc">Protecting families and businesses from Nashville to Memphis and beyond.</p>
+        <div class="loc-city-grid">
+          <a href="/insurance/nashville-tn.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Nashville</span><span class="loc-city-county">Davidson County</span></div>
+          </a>
+          <a href="/insurance/memphis-tn.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Memphis</span><span class="loc-city-county">Shelby County</span></div>
+          </a>
+          <a href="/insurance/knoxville-tn.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Knoxville</span><span class="loc-city-county">Knox County</span></div>
+          </a>
+          <a href="/insurance/chattanooga-tn.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Chattanooga</span><span class="loc-city-county">Hamilton County</span></div>
+          </a>
+          <a href="/insurance/clarksville-tn.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Clarksville</span><span class="loc-city-county">Montgomery County</span></div>
+          </a>
+          <a href="/insurance/murfreesboro-tn.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Murfreesboro</span><span class="loc-city-county">Rutherford County</span></div>
+          </a>
+          <a href="/insurance/franklin-tn.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Franklin</span><span class="loc-city-county">Williamson County</span></div>
+          </a>
+          <a href="/insurance/johnson-city-tn.html" class="loc-city-card">
+            <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div><span class="loc-city-name">Johnson City</span><span class="loc-city-county">Washington County</span></div>
+          </a>
         </div>
       </div>
     </section>
