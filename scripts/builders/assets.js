@@ -87,6 +87,9 @@ function copySubPages(SRC, BUILD, injectVersion) {
     ['about', 'community.html'],
     ['about', 'claims.html'],
     ['about', 'careers.html'],
+    ['about/careers', 'employee-benefits-leader.html'],
+    ['about/careers', 'pc-insurance-agent.html'],
+    ['about/careers', 'intern.html'],
   ];
   for (const [dir, file] of subPages) {
     const src = path.join(SRC, 'pages', dir, file);
