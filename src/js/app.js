@@ -655,7 +655,7 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
         <h3 class="exit-popup__title">Before you go...</h3>
-        <p class="exit-popup__desc">Get a free insurance quote in under 2 minutes. No obligation, no spam.</p>
+        <p class="exit-popup__desc">Get a free insurance quote — no obligation, no spam. A licensed agent will follow up within one business day.</p>
         <a href="/intake/?src=exit-intent" id="exitCta" class="exit-popup__submit" style="display:block;text-align:center;text-decoration:none;">Get My Quote</a>
         <button id="exitDismiss" style="background:none;border:none;color:var(--slate,#64748b);font-size:13px;cursor:pointer;padding:8px;margin-top:4px;width:100%;text-align:center;">No thanks</button>
       </div>
