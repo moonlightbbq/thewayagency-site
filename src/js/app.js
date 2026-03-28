@@ -1425,7 +1425,9 @@
               }
               if (chunk.text) {
                 botText += chunk.text;
-                botEl.textContent = botText;
+                // Hide JSON action block from display as it streams in
+                var displayText = botText.replace(/\s*\{"action"\s*:\s*"connect_agent"[\s\S]*$/m, '').trim();
+                botEl.textContent = displayText;
                 msgsArea.scrollTop = msgsArea.scrollHeight;
               }
               if (chunk.done) {
@@ -1455,6 +1457,9 @@
         }
 
         if (botText) {
+          // Strip the JSON action block from visible text
+          botText = botText.replace(/\s*\{"action"\s*:\s*"connect_agent"[\s\S]*?\}\s*$/m, '').trim();
+          if (botEl) botEl.textContent = botText;
           var msgEntry = { role: 'bot', text: botText };
           if (actionData) msgEntry.action = actionData;
           chatMessages.push(msgEntry);
