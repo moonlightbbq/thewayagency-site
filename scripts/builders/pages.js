@@ -516,12 +516,12 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
     return `<li><a href="${rp.url}"><strong>${rp.name}</strong></a>  -  ${rp.summary ? rp.summary.split('.')[0] + '.' : ''}</li>`;
   }).filter(Boolean).join('\n        ');
 
-  const crossLines = {
-    personal: { text: 'Own a business? We can help with that too.', link: '/commercial/', label: 'Explore Commercial Insurance' },
-    commercial: { text: 'We also protect your family at home.', link: '/personal/', label: 'Explore Personal Insurance' },
-    life_health: { text: 'Need home, auto, or business coverage?', link: '/personal/', label: 'Explore Personal Insurance' },
+  const allLines = {
+    personal: { name: 'Personal Insurance', text: 'Home, auto, umbrella, and specialty coverage for you and your family.', link: '/personal/', label: 'Explore Personal' },
+    commercial: { name: 'Commercial Insurance', text: 'General liability, commercial property, workers\' comp, and more for your business.', link: '/commercial/', label: 'Explore Commercial' },
+    life_health: { name: 'Life & Health', text: 'Medicare, individual and group health, life insurance, and employee benefits.', link: '/life-health/', label: 'Explore Life & Health' },
   };
-  const crossLine = crossLines[lineKey] || crossLines.personal;
+  const otherLines = Object.entries(allLines).filter(([key]) => key !== lineKey).map(([, info]) => info);
 
   const relatedSection = relatedLinks ? `
       <h2>Related coverage to consider</h2>
@@ -532,9 +532,18 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
 
   const crossSellSection = `
       <section class="section section--light" style="margin-top:var(--space-2xl);">
-        <div class="container" style="text-align:center;">
-          <p style="font-weight:600;color:var(--navy);margin-bottom:var(--space-sm);">${crossLine.text}</p>
-          <a href="${crossLine.link}" class="btn btn--outline">${crossLine.label}</a>
+        <div class="container">
+          <div class="section-header">
+            <p class="section-header__eyebrow">Also Available</p>
+            <h2>Need other coverage?</h2>
+          </div>
+          <div class="grid grid--2" style="max-width:800px;margin:0 auto;">
+            ${otherLines.map(line => `<a href="${line.link}" class="card" style="text-decoration:none;text-align:center;">
+              <h3 class="card__title">${line.name}</h3>
+              <p class="card__text">${line.text}</p>
+              <span class="card__link">${line.label} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+            </a>`).join('\n            ')}
+          </div>
         </div>
       </section>`;
 
