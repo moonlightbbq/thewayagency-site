@@ -1237,6 +1237,115 @@
   }
 
   // ═══════════════════════════════════════════════
+  // 16. CONVERSION BASELINE & MEASUREMENT
+  // ═══════════════════════════════════════════════
+  /*
+   * GA4 Event Schema Reference:
+   * - page_engagement: page_type, entry_source, time_to_first_interaction, scroll_at_exit, cta_visible, form_started
+   * - intake_funnel: steps[{name,enter_ms,complete_ms}], total_ms, completed, products
+   * - ab_exposure: test_name, variant, visitor_id
+   * - exit_intent_shown/clicked: page_path
+   * - phone_click: page_path, link_text, position
+   * - cta_visible: cta_text, page_path, position
+   * - scroll_depth: threshold (25/50/75/100)
+   * - time_on_page: threshold (15/30/60/120/300)
+   * - chat_widget_opened/submitted: type
+   * - intake_entry: source, product, city, line
+   * - login_attempt: method (magic_link/password)
+   * - nav_click: link_text, destination
+   */
+
+  function initConversionBaseline() {
+    const baseline = {
+      page_type: detectPageType(),
+      entry_source: (function() {
+        const p = new URLSearchParams(location.search);
+        return p.get('utm_source') || p.get('src') || (document.referrer ? new URL(document.referrer).hostname : 'direct');
+      })(),
+      first_interaction_ms: null,
+      cta_was_visible: false,
+      form_was_started: false,
+      max_scroll: 0,
+      load_time: Date.now(),
+    };
+
+    // Time to first interaction
+    function onFirstInteraction() {
+      if (!baseline.first_interaction_ms) baseline.first_interaction_ms = Date.now() - baseline.load_time;
+      document.removeEventListener('click', onFirstInteraction);
+      document.removeEventListener('scroll', onFirstInteraction);
+      document.removeEventListener('keydown', onFirstInteraction);
+    }
+    document.addEventListener('click', onFirstInteraction, { once: false, passive: true });
+    document.addEventListener('scroll', onFirstInteraction, { once: false, passive: true });
+    document.addEventListener('keydown', onFirstInteraction, { once: false, passive: true });
+
+    // Track max scroll
+    window.addEventListener('scroll', function() {
+      const pct = Math.round((window.scrollY / Math.max(1, document.body.scrollHeight - window.innerHeight)) * 100);
+      if (pct > baseline.max_scroll) baseline.max_scroll = pct;
+    }, { passive: true });
+
+    // CTA visibility
+    if (FEATURES.intersectionObserver) {
+      const obs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) { if (e.isIntersecting) baseline.cta_was_visible = true; });
+      }, { threshold: 0.5 });
+      document.querySelectorAll('a[href*="/intake"], .btn--primary').forEach(function(el) { obs.observe(el); });
+    }
+
+    // Form started
+    document.addEventListener('focusin', function(e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+        baseline.form_was_started = true;
+      }
+    }, { passive: true });
+
+    // Push on unload
+    function pushBaseline() {
+      window.dataLayer = window.dataLayer || [];
+      dataLayer.push({
+        event: 'page_engagement',
+        page_type: baseline.page_type,
+        entry_source: baseline.entry_source,
+        time_to_first_interaction: baseline.first_interaction_ms,
+        scroll_at_exit: baseline.max_scroll,
+        cta_visible: baseline.cta_was_visible,
+        form_started: baseline.form_was_started,
+        time_on_page_sec: Math.round((Date.now() - baseline.load_time) / 1000),
+      });
+    }
+    document.addEventListener('visibilitychange', function() { if (document.visibilityState === 'hidden') pushBaseline(); });
+    window.addEventListener('pagehide', pushBaseline);
+  }
+
+  // Metrics overlay (admin-only, via ?twa_metrics=1)
+  function initMetricsOverlay() {
+    if (!new URLSearchParams(location.search).has('twa_metrics')) return;
+    const overlay = createElement('div', { id: 'twaMetrics' });
+    overlay.style.cssText = 'position:fixed;top:60px;right:10px;width:260px;background:rgba(15,23,42,.92);color:#e2e8f0;font-size:11px;padding:12px;border-radius:8px;z-index:9999;font-family:monospace;line-height:1.6;max-height:70vh;overflow-y:auto;';
+    overlay.innerHTML = '<div style="font-weight:bold;margin-bottom:6px;color:#38bdf8;">Metrics Overlay</div><div id="twaMetricsBody"></div>';
+    document.body.appendChild(overlay);
+
+    setInterval(function() {
+      const body = document.getElementById('twaMetricsBody');
+      if (!body) return;
+      const scrollPct = Math.round((window.scrollY / Math.max(1, document.body.scrollHeight - window.innerHeight)) * 100);
+      const timeOnPage = Math.round((Date.now() - performance.timing.navigationStart) / 1000);
+      const visibleCtas = document.querySelectorAll('.btn--primary, a[href*="/intake"]').length;
+      const events = (window.dataLayer || []).filter(function(e) { return e.event; }).length;
+      body.innerHTML =
+        '<div>Page: ' + detectPageType() + '</div>' +
+        '<div>Scroll: ' + scrollPct + '%</div>' +
+        '<div>Time: ' + timeOnPage + 's</div>' +
+        '<div>CTAs on page: ' + visibleCtas + '</div>' +
+        '<div>Events fired: ' + events + '</div>' +
+        '<div>Lang: ' + _currentLang + '</div>' +
+        '<div>Visitor: ' + (getVisitorId() || '').slice(0, 8) + '...</div>';
+    }, 1000);
+  }
+
+  // ═══════════════════════════════════════════════
   // INITIALIZE
   // ═══════════════════════════════════════════════
   document.addEventListener('DOMContentLoaded', () => {
@@ -1256,6 +1365,8 @@
     initScrollAnimations();
     initEngagementTracking();
     initChatWidget();
+    initConversionBaseline();
+    initMetricsOverlay();
     initTestimonialCarousel('[data-testimonials]', {});
     // Auto-init carousels with mode attribute
     $$('[data-testimonial-mode]').forEach(function(el) {
