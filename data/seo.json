@@ -2,7 +2,7 @@
   "pages": {
     "/": {
       "title": "The Way Agency | Independent Insurance in Owensboro, KY",
-      "description": "The Way Agency is an independent insurance agency serving Kentucky, Indiana, and Tennessee since 1998. We represent dozens of carriers to find the right personal, commercial, and life insurance for your situation.",
+      "description": "The Way Agency is an independent insurance agency serving Kentucky, Indiana, and Tennessee since 1998. We represent top-rated carriers to find the right personal, commercial, and life insurance for your situation.",
       "schema_types": ["InsuranceAgency", "LocalBusiness", "WebSite", "FAQPage"],
       "last_reviewed": "2026-03"
     },
@@ -14,7 +14,7 @@
     },
     "/commercial/": {
       "title": "Commercial Insurance in Kentucky | Business Coverage | The Way Agency",
-      "description": "Commercial insurance for Kentucky businesses: general liability, commercial property, commercial auto, workers comp, cyber, bonds, and more from 14+ carriers.",
+      "description": "Commercial insurance for Kentucky businesses: general liability, commercial property, commercial auto, workers comp, cyber, bonds, and more from top-rated carriers.",
       "schema_types": ["InsuranceAgency", "FAQPage"],
       "last_reviewed": "2026-03"
     },
@@ -26,7 +26,7 @@
     },
     "/about/": {
       "title": "About The Way Agency | Independent Insurance in Kentucky",
-      "description": "Learn about The Way Agency  -  an independent insurance agency serving Kentucky, Indiana, and Tennessee since 1998. We represent dozens of carriers to find you the right coverage.",
+      "description": "Learn about The Way Agency  -  an independent insurance agency serving Kentucky, Indiana, and Tennessee since 1998. We represent top-rated carriers to find you the right coverage.",
       "schema_types": ["InsuranceAgency", "LocalBusiness"],
       "last_reviewed": "2026-03"
     },

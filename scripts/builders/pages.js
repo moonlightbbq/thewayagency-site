@@ -228,14 +228,14 @@ ${hiddenHtml}
 const hubConfig = {
   personal: {
     title: 'Personal Insurance in Kentucky | Home, Auto & More | The Way Agency',
-    description: 'Personal insurance solutions for Kentucky families: home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet. We represent dozens of carriers.',
+    description: 'Personal insurance solutions for Kentucky families: home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet. We represent top-rated carriers.',
     canonical: '/personal/',
-    hero: { eyebrow: 'Personal Insurance', title: 'Protection for you<br>and your family', subtitle: 'From your home and vehicles to your personal liability, we help Kentucky families find the right coverage from dozens of carriers.' },
+    hero: { eyebrow: 'Personal Insurance', title: 'Protection for you<br>and your family', subtitle: 'From your home and vehicles to your personal liability, we help Kentucky families find the right coverage from top-rated carriers.' },
     sectionEyebrow: 'Coverage Options',
     sectionTitle: 'Personal insurance products',
     sectionDesc: 'Each product page explains what the coverage is, who needs it, what it costs, and what it doesn\'t cover, in plain language.',
     ctaTitle: 'Get a personal insurance quote',
-    ctaText: 'Tell us what you need and we\'ll shop dozens of carriers for the best options.',
+    ctaText: 'Tell us what you need and we\'ll shop top-rated carriers for the best options.',
     crossSell: [
       { href: '/commercial/', title: 'Commercial Insurance', text: 'Liability, property, auto, workers comp, and more for your business.', label: 'Explore Commercial' },
       { href: '/life-health/', title: 'Life & Health', text: 'Medicare, health, life, disability, and final expense coverage.', label: 'Explore Life & Health' },
@@ -251,7 +251,7 @@ const hubConfig = {
     sectionTitle: 'Commercial insurance products',
     sectionDesc: 'Each product page explains who needs the coverage, what it protects against, what it costs, and what it does not cover.',
     ctaTitle: 'Get a commercial insurance quote',
-    ctaText: 'Tell us about your business and we\'ll build a coverage program from dozens of carriers.',
+    ctaText: 'Tell us about your business and we\'ll build a coverage program from top-rated carriers.',
     crossSell: [
       { href: '/personal/', title: 'Personal Insurance', text: 'Home, auto, umbrella, and specialty coverage for you and your family.', label: 'Explore Personal' },
       { href: '/life-health/', title: 'Life & Health', text: 'Medicare, group health, life insurance, and employee benefits.', label: 'Explore Life & Health' },
@@ -473,7 +473,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
       <p>
         In our experience: <strong>${product.typical_cost_range}</strong>.
         ${product.cost_factors ? 'Key factors that affect your premium include: ' + product.cost_factors.join(', ') + '.' : ''}
-        As an independent agency, we represent dozens of carriers and match you with the right one for your situation.
+        As an independent agency, we represent top-rated carriers and match you with the right one for your situation.
       </p>` : '');
 
   const faqSection = displayFaqs.length > 0 ? `
@@ -698,7 +698,7 @@ ${renderNav()}
 ${renderHero({
     eyebrow: `Serving ${city.county}`,
     title: `Insurance in ${city.city}, ${city.state}`,
-    subtitle: `We represent dozens of carriers so you get the right coverage at the right price. Personal, commercial, and life insurance for ${city.city} families and businesses.`,
+    subtitle: `We represent top-rated carriers so you get the right coverage at the right price. Personal, commercial, and life insurance for ${city.city} families and businesses.`,
     buttons: [
       { href: `/intake/?city=${encodeURIComponent(city.city)}&state=${encodeURIComponent(city.state)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
       { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
@@ -719,7 +719,7 @@ ${renderHero({
       <div class="container container--narrow">
         <h2>Why ${city.city} families and businesses choose The Way Agency</h2>
         <p>${city.context}</p>
-        <p>As an independent agency, we are not tied to one insurance company. We represent dozens of carriers  -  including Travelers, Progressive, Safeco, Chubb, The Hartford, and more  -  and we match you with the right ones for your specific situation in ${city.county}.</p>
+        <p>As an independent agency, we are not tied to one insurance company. We represent top-rated carriers  -  including Travelers, Progressive, Safeco, Chubb, The Hartford, and more  -  and we match you with the right ones for your specific situation in ${city.county}.</p>
 
         <h2>Insurance options in ${city.city}</h2>
         ${(() => {
@@ -727,7 +727,7 @@ ${renderHero({
           const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
           if (cityProductConfig) {
             const productCards = cityProductConfig.products.map(p =>
-              `          <a href="/insurance/${p.slug}-${city.slug}.html" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">${p.name}</h3><p class="card__text">${p.name} for ${city.city} families and businesses. Compare rates from dozens of carriers.</p><span class="card__link">Learn more ${arrowSvg}</span></a>`
+              `          <a href="/insurance/${p.slug}-${city.slug}.html" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">${p.name}</h3><p class="card__text">${p.name} for ${city.city} families and businesses. Compare rates from top-rated carriers.</p><span class="card__link">Learn more ${arrowSvg}</span></a>`
             ).join('\n');
             return `<div class="grid grid--3" style="margin:var(--space-xl) 0;">
 ${productCards}
@@ -748,7 +748,7 @@ ${cityFormHtml}
 
         <h2>How it works</h2>
         <p><strong>1. Tell us what you need.</strong> Request a quote online or call ${office.phone}. We just need basic info to get started.</p>
-        <p><strong>2. We find the right carriers.</strong> We compare options across dozens of carriers to find the best coverage and price for your situation in ${city.city}.</p>
+        <p><strong>2. We find the right carriers.</strong> We compare options across top-rated carriers to find the best coverage and price for your situation in ${city.city}.</p>
         <p><strong>3. You choose with confidence.</strong> We present clear recommendations and help you understand exactly what you're buying. No pressure, no jargon.</p>
         <p style="color:var(--slate);font-size:var(--text-sm);">We aim to respond same-day during business hours (Mon\u2013Fri, 8:30 AM \u2013 5:00 PM).</p>
       </div>
@@ -881,10 +881,10 @@ ${prod.faqs.map(f => `          <details class="faq-item">
 <html lang="en">
 ${renderHead({
     title: `${prod.name} in ${city}, ${state} | The Way Agency`,
-    description: `${prod.name} for ${city}, ${state} families and businesses. Compare rates from dozens of carriers. Independent agency serving ${county} since 1998.`,
+    description: `${prod.name} for ${city}, ${state} families and businesses. Compare rates from top-rated carriers. Independent agency serving ${county} since 1998.`,
     canonical: canonical,
     ogTitle: `${prod.name} in ${city}, ${state} | The Way Agency`,
-    ogDescription: `${prod.name} for ${city}, ${state}. Compare rates from dozens of carriers. Get a quote today.`,
+    ogDescription: `${prod.name} for ${city}, ${state}. Compare rates from top-rated carriers. Get a quote today.`,
     ogUrl: canonical,
     schema: schemaBlock,
   })}
@@ -895,7 +895,7 @@ ${renderNav()}
 ${renderHero({
     eyebrow: `${prod.name} \u00B7 ${county}`,
     title: prod.h1,
-    subtitle: `Compare ${prod.name.toLowerCase()} rates from dozens of carriers in ${city}, ${state}. Independent agency, no sales pressure.`,
+    subtitle: `Compare ${prod.name.toLowerCase()} rates from top-rated carriers in ${city}, ${state}. Independent agency, no sales pressure.`,
     buttons: [
       { href: `/intake/?product=${encodeURIComponent(prod.product_id)}&city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
       { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
@@ -917,7 +917,7 @@ ${relatedLinksHtml}
 
 ${renderCTA({
       title: `Ready to compare ${prod.name.toLowerCase()} in ${city}?`,
-      text: `Request a quote or call us directly. We shop dozens of carriers to find the right ${prod.name.toLowerCase()} for your situation in ${county}.`,
+      text: `Request a quote or call us directly. We shop top-rated carriers to find the right ${prod.name.toLowerCase()} for your situation in ${county}.`,
       buttons: [
         { href: `/intake/?product=${encodeURIComponent(prod.product_id)}&city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
         { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
@@ -983,7 +983,7 @@ ${renderHero({
 
         <h2>Kentucky-specific requirements</h2>
         <p>${ind.ky_notes}</p>
-        <p>We represent dozens of carriers including specialty markets for ${ind.name.toLowerCase()}, which means we can often find coverage that generalist agencies cannot. We also handle certificates of insurance, additional insured endorsements, and audit support.</p>
+        <p>We represent top-rated carriers including specialty markets for ${ind.name.toLowerCase()}, which means we can often find coverage that generalist agencies cannot. We also handle certificates of insurance, additional insured endorsements, and audit support.</p>
 
 ${indFormHtml}
 
@@ -1083,7 +1083,7 @@ ${breadcrumbs.html}
         ${productCards}
         ${strengthsList}
         <h2>How it works</h2>
-        <p>As an independent agency, we represent ${carrier.name} alongside dozens of other carriers. When you request a quote, we compare options from multiple companies — including ${carrier.name} — to find the best combination of coverage, service, and price for your specific situation.</p>
+        <p>As an independent agency, we represent ${carrier.name} alongside many other top-rated carriers. When you request a quote, we compare options from multiple companies — including ${carrier.name} — to find the best combination of coverage, service, and price for your specific situation.</p>
         <p>You get the strength and backing of ${carrier.name} with the personal service and advocacy of a local, independent agent.</p>
       </div>
     </section>
@@ -1143,18 +1143,18 @@ function generateCarriersIndex(carriers, ctx) {
   return `<!DOCTYPE html>
 <html lang="en">
 ${renderHead({
-    title: 'Our Insurance Carriers | 30+ Companies | The Way Agency',
-    description: 'The Way Agency represents 30+ insurance carriers including Travelers, Progressive, Chubb, Safeco, The Hartford, and more. We shop the market for you.',
+    title: 'Our Insurance Carriers | Top-Rated Companies | The Way Agency',
+    description: 'The Way Agency represents top-rated insurance carriers including Travelers, Progressive, Chubb, Safeco, The Hartford, and more. We shop the market for you.',
     canonical: 'https://www.thewayagency.com/carriers/',
     ogTitle: 'Our Insurance Carriers | The Way Agency',
-    ogDescription: 'We represent 30+ insurance carriers to find you the best coverage and price.',
+    ogDescription: 'We represent top-rated insurance carriers to find you the best coverage and price.',
     ogUrl: 'https://www.thewayagency.com/carriers/',
     schema: JSON.stringify({
       "@context": "https://schema.org",
       "@type": "InsuranceAgency",
       "name": "The Way Agency",
       "url": "https://www.thewayagency.com",
-      "description": "Independent insurance agency representing 30+ carriers across personal, commercial, and life lines.",
+      "description": "Independent insurance agency representing top-rated carriers across personal, commercial, and life lines.",
       "areaServed": [
         { "@type": "State", "name": "Kentucky" },
         { "@type": "State", "name": "Indiana" },
@@ -1168,8 +1168,8 @@ ${renderNav()}
 
 ${renderHero({
     eyebrow: 'Our Carriers',
-    title: '30+ carriers.<br>One independent agent.',
-    subtitle: 'We represent over 30 insurance carriers across personal, commercial, and life lines. That means we shop the market for you and find the best combination of coverage, service, and price.',
+    title: 'Top-rated carriers.<br>One independent agent.',
+    subtitle: 'We represent top-rated insurance carriers across personal, commercial, and life lines. That means we shop the market for you and find the best combination of coverage, service, and price.',
     buttons: [
       { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
     ],
