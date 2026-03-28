@@ -6,6 +6,56 @@
 (function() {
   'use strict';
 
+  // ═══════════════════════════════════════════════
+  // ERROR BOUNDARY & FEATURE DETECTION
+  // ═══════════════════════════════════════════════
+  var _errorCount = 0;
+  var FEATURES = {
+    fetch: typeof fetch === 'function',
+    localStorage: (function() { try { localStorage.setItem('_t', '1'); localStorage.removeItem('_t'); return true; } catch(e) { return false; } })(),
+    crypto: !!(window.crypto && window.crypto.subtle),
+    intersectionObserver: typeof IntersectionObserver === 'function',
+  };
+
+  window.onerror = function(msg, src, line, col, err) {
+    if (_errorCount >= 5) return;
+    _errorCount++;
+    try {
+      if (FEATURES.fetch) {
+        fetch('https://sage.thewayagency.com/api/errors/client', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: String(msg).slice(0, 500), source: src, line: line, col: col, stack: err && err.stack ? err.stack.slice(0, 1000) : '', url: location.href, ua: navigator.userAgent }),
+        }).catch(function() {});
+      }
+    } catch(e) {}
+  };
+
+  window.addEventListener('unhandledrejection', function(e) {
+    if (_errorCount >= 5) return;
+    _errorCount++;
+    var reason = e.reason ? String(e.reason.message || e.reason).slice(0, 500) : 'Unknown';
+    try {
+      if (FEATURES.fetch) {
+        fetch('https://sage.thewayagency.com/api/errors/client', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'Unhandled rejection: ' + reason, url: location.href, ua: navigator.userAgent }),
+        }).catch(function() {});
+      }
+    } catch(e) {}
+  });
+
+  // Broken image handler
+  document.addEventListener('error', function(e) {
+    if (e.target.tagName === 'IMG') {
+      e.target.outerHTML = '<span style="display:inline-flex;align-items:center;justify-content:center;width:' + (e.target.width || 40) + 'px;height:' + (e.target.height || 40) + 'px;background:#f1f5f9;border-radius:8px;color:#94a3b8;font-size:14px;">&#128247;</span>';
+    }
+  }, true);
+
+  // Test trigger
+  if (new URLSearchParams(location.search).has('twa_test_error')) {
+    setTimeout(function() { throw new Error('TWA test error — this is intentional'); }, 100);
+  }
+
   // ─── Configuration ───────────────────────────
   const CONFIG = {
     webhookUrl: 'https://sage.thewayagency.com/api/intake/lead',
