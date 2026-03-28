@@ -1225,7 +1225,7 @@
 
     var header = document.createElement('div');
     header.className = 'twa-cb-header';
-    header.innerHTML = '<span>The Way Agency</span><button class="twa-cb-close" aria-label="Close chat">&times;</button>';
+    header.innerHTML = '<span>The Way Agency</span><div style="display:flex;gap:8px;align-items:center;"><button class="twa-cb-new" aria-label="New chat" title="New chat" style="background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:4px;padding:2px 8px;font-size:12px;cursor:pointer;">New</button><button class="twa-cb-close" aria-label="Close chat">&times;</button></div>';
 
     var msgsArea = document.createElement('div');
     msgsArea.className = 'twa-cb-msgs';
@@ -1486,6 +1486,27 @@
         inputField.focus();
       }
     }
+
+    // ─── New chat (reset) ─────────────────────────
+    function resetChat() {
+      chatSessionId = '';
+      chatMessages = [];
+      sessionStorage.removeItem('twa_chat_sid');
+      sessionStorage.removeItem('twa_chat_messages');
+      msgsArea.innerHTML = '';
+      hasOpened = false;
+      // Show fresh welcome
+      var welcome = 'Hi! I\'m here to help you find the right coverage. What can I help you with?';
+      chatMessages.push({ role: 'bot', text: welcome });
+      addMessageEl('bot', welcome);
+      saveState();
+      inputField.focus();
+    }
+
+    header.querySelector('.twa-cb-new').addEventListener('click', function(e) {
+      e.stopPropagation();
+      resetChat();
+    });
 
     // ─── Toggle panel ────────────────────────────
     function openChat() {
