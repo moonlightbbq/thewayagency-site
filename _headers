@@ -1,4 +1,9 @@
 # Security & Cache Headers for The Way Agency
+#
+# Changes log:
+# - Batch 1: Initial security headers, CSP, HSTS, caching rules
+# - Batch 2: Upgraded Referrer-Policy, long cache for static assets, stale-while-revalidate for HTML
+# - Batch 5: Added /admin/* no-store, X-Content-Type-Options on exports
 
 /*
   X-Frame-Options: DENY
@@ -35,3 +40,8 @@
 
 /partner/*
   Cache-Control: no-store
+
+# Admin panel — no cache (sensitive analytics data)
+/admin/*
+  Cache-Control: no-store
+  X-Content-Type-Options: nosniff
