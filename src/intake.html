@@ -997,7 +997,7 @@ const SAGE_API = 'https://sage.thewayagency.com';
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(queued.payload)
       }).then(r => r.json()).then(d => {
-        if (d.ok) { localStorage.removeItem('twa_intake_queue'); console.log('[Intake] Queued submission sent: ' + queued.ref); }
+        if (d.ok) { localStorage.removeItem('twa_intake_queue'); }
         else if (attempt < 3) setTimeout(trySubmit, Math.pow(2, attempt) * 2000);
       }).catch(() => { if (attempt < 3) setTimeout(trySubmit, Math.pow(2, attempt) * 2000); });
     }
@@ -2515,18 +2515,31 @@ async function submitIntake() {
   formData.lead_referrer = document.referrer || 'direct';
   formData.lead_page = window.location.pathname + window.location.search;
 
-  // Push enhanced conversion data for Google Ads + Meta
-  if (window.dataLayer) {
-    dataLayer.push({
-      event: 'enhanced_conversion',
-      enhanced_conversion_data: {
-        email: v('i_email').toLowerCase(),
-        phone_number: v('i_phone').replace(/\D/g, ''),
-        first_name: v('i_fname'),
-        last_name: v('i_lname'),
-        address: { postal_code: v('i_zip'), region: v('i_state'), country: 'US' },
-      },
-    });
+  // Push enhanced conversion data for Google Ads + Meta (PII hashed with SHA-256)
+  if (window.dataLayer && window.crypto && window.crypto.subtle) {
+    const _sha256 = async function(str) {
+      if (!str) return '';
+      const data = new TextEncoder().encode(str.toLowerCase().trim());
+      const hash = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+    };
+    Promise.all([
+      _sha256(v('i_email')),
+      _sha256(v('i_phone').replace(/\D/g, '')),
+      _sha256(v('i_fname')),
+      _sha256(v('i_lname')),
+    ]).then(function([hashedEmail, hashedPhone, hashedFn, hashedLn]) {
+      dataLayer.push({
+        event: 'enhanced_conversion',
+        enhanced_conversion_data: {
+          email: hashedEmail,
+          phone_number: hashedPhone,
+          first_name: hashedFn,
+          last_name: hashedLn,
+          address: { postal_code: v('i_zip'), region: v('i_state'), country: 'US' },
+        },
+      });
+    }).catch(function() {});
   }
 
   try {

@@ -143,6 +143,7 @@ export default {
 
       if (!emailRes.ok) {
         console.error('MailChannels error:', await emailRes.text());
+        return Response.json({ ok: false, error: 'Email delivery failed' }, { status: 502, headers: cors });
       }
 
       return Response.json({ ok: true }, { headers: cors });

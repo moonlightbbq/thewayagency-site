@@ -355,7 +355,7 @@
 
 .badge--recommended {
   background: rgba(101, 197, 179, 0.1);
-  color: #0F6E56;
+  color: var(--green-dark);
 }
 
 /* ── Response Time Indicator ── */
@@ -493,7 +493,7 @@
   position: fixed;
   inset: 0;
   z-index: 10000;
-  background: rgba(15,34,64,0.6);
+  background: rgba(15,34,64,0.6); /* rgba(15,34,64,0.6) maps to --navy-dark: #0F2240 at 60% opacity */
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -504,7 +504,7 @@
 }
 .exit-overlay--visible { opacity: 1 }
 .exit-popup {
-  background: white;
+  background: var(--white);
   border-radius: 12px;
   max-width: 460px;
   width: 100%;

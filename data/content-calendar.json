@@ -6,7 +6,7 @@
   "default_author_title": "Independent Insurance Agency",
   "existing_posts": [
     {
-      "slug": "bundling-home-auto",
+      "slug": "bundling-home-auto-insurance-savings",
       "title": "Should You Bundle Home and Auto Insurance in Kentucky?",
       "description": "Bundling home and auto insurance can save 5-25% in Kentucky. Learn when bundling makes sense, when it doesn't, and how independent agents can mix carriers for the best deal.",
       "publish_date": "2026-03-15",
@@ -69,10 +69,10 @@
       "source": "html",
       "author": "Sheilia Royal",
       "author_slug": "sheilia-royal",
-      "status": "published"
+      "status": "planned"
     },
     {
-      "slug": "workers-comp-kentucky",
+      "slug": "workers-comp-requirements-kentucky-2026",
       "title": "Do Contractors Need Workers Comp in KY?",
       "description": "Kentucky requires workers comp for businesses with one or more employees. Here are the rules, penalties, and exemptions.",
       "publish_date": "2026-01-15",
@@ -134,7 +134,7 @@
       "source": "html",
       "author": "Sheilia Royal",
       "author_slug": "sheilia-royal",
-      "status": "published"
+      "status": "planned"
     },
     {
       "slug": "understanding-deductibles",
@@ -168,10 +168,10 @@
       "source": "html",
       "author": "Sheilia Royal",
       "author_slug": "sheilia-royal",
-      "status": "published"
+      "status": "planned"
     },
     {
-      "slug": "medicare-enrollment-guide",
+      "slug": "medicare-enrollment-guide-louisville-2026",
       "title": "Medicare Enrollment in Kentucky",
       "description": "Deadlines, enrollment periods, Parts A through D, late penalties, and how kynect can help.",
       "publish_date": "2025-10-15",
@@ -233,7 +233,7 @@
       "is_link_target": true,
       "receives_future_links": true,
       "source": "html",
-      "status": "published"
+      "status": "planned"
     },
     {
       "slug": "pet-insurance-guide",
@@ -264,7 +264,7 @@
       "is_link_target": false,
       "receives_future_links": false,
       "source": "html",
-      "status": "published"
+      "status": "planned"
     },
     {
       "slug": "earthquake-insurance",
@@ -298,10 +298,10 @@
       "is_link_target": true,
       "receives_future_links": true,
       "source": "html",
-      "status": "published"
+      "status": "planned"
     },
     {
-      "slug": "cyber-safety",
+      "slug": "cyber-insurance-small-business-essentials",
       "title": "Cyber Safety for Small Businesses",
       "description": "Practical steps to prevent costly cyber attacks and why cyber insurance matters.",
       "publish_date": "2025-06-15",
@@ -364,7 +364,7 @@
       "is_link_target": true,
       "receives_future_links": true,
       "source": "html",
-      "status": "published"
+      "status": "planned"
     },
     {
       "slug": "winter-storm",
@@ -397,7 +397,7 @@
       "is_link_target": true,
       "receives_future_links": true,
       "source": "html",
-      "status": "published"
+      "status": "planned"
     },
     {
       "slug": "how-independent-agents-use-data-better-rates",

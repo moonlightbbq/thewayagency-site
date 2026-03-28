@@ -18,7 +18,12 @@ const BUILD = path.join(ROOT, 'build');
 const suggestions = [];
 
 // Products
-const products = JSON.parse(fs.readFileSync(path.join(DATA, 'products.json'), 'utf8'));
+let products;
+try {
+  products = JSON.parse(fs.readFileSync(path.join(DATA, 'products.json'), 'utf8'));
+} catch (e) {
+  throw new Error('Failed to parse products.json: ' + e.message);
+}
 for (const [line, prods] of Object.entries(products)) {
   for (const p of prods) {
     const keywords = [p.name.toLowerCase(), p.slug.replace(/-/g, ' '), p.id];

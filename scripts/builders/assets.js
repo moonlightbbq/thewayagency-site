@@ -92,7 +92,7 @@ function copySubPages(SRC, BUILD, injectVersion) {
     if (fs.existsSync(src)) {
       ensureDir(path.join(BUILD, dir));
       const content = fs.readFileSync(src, 'utf8');
-      fs.writeFileSync(path.join(BUILD, dir, file), injectVersion(content));
+      fs.writeFileSync(path.join(BUILD, dir, file), injectVersion(content, '/' + dir + '/' + file));
       console.log(`  ✓ ${dir}/${file} (hand-crafted)`);
     }
   }

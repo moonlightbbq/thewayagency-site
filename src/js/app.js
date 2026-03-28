@@ -82,6 +82,7 @@
       else el.setAttribute(k, v);
     });
     if (children) {
+      // WARNING: caller must ensure children is trusted HTML or use textContent
       if (typeof children === 'string') el.innerHTML = children;
       else if (Array.isArray(children)) children.forEach(c => el.appendChild(c));
     }
@@ -983,17 +984,19 @@
   // 12. SCROLL ANIMATIONS
   // ═══════════════════════════════════════════════
   function initScrollAnimations() {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) { entry.target.classList.add('animate-in'); observer.unobserve(entry.target); }
+    if (FEATURES.intersectionObserver) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) { entry.target.classList.add('animate-in'); observer.unobserve(entry.target); }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+      $$('.card, .step, .testimonial-card, .section-header, .lob-card').forEach(el => {
+        // Skip cards inside blog/product article content — they break grid layout
+        if (el.closest('.product-content, .blog-content')) return;
+        el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(el);
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-    $$('.card, .step, .testimonial-card, .section-header, .lob-card').forEach(el => {
-      // Skip cards inside blog/product article content — they break grid layout
-      if (el.closest('.product-content, .blog-content')) return;
-      el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-      observer.observe(el);
-    });
+    }
   }
 
   const animStyle = document.createElement('style');

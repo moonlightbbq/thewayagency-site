@@ -28,7 +28,7 @@ function runBlogGenerator(ROOT) {
   try {
     execSync('node scripts/generate-blog.js', { cwd: ROOT, stdio: 'inherit' });
   } catch (e) {
-    console.log('  ! Blog generation had errors (non-fatal, continuing build)');
+    console.log('  ! Blog generation error: ' + e.message);
   }
 }
 

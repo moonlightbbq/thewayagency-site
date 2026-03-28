@@ -200,7 +200,7 @@ const sitemapUrls = generateSitemap(BUILD, { products, landingData, seoData, por
 try {
   require('./generate-404-data');
 } catch (e) {
-  console.log('  ! 404 suggestions generation had errors (non-fatal)');
+  console.log('  ! 404 suggestions: ' + e.message);
 }
 
 console.log(`\n✅ Build complete! ${generatedCount + rootPages.length + subPages.length + portalPages.length} pages in build/`);
