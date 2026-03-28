@@ -61,7 +61,7 @@ Louisville homeowners typically pay more for insurance than those in rural Kentu
 - **Older housing stock** increases the risk of fire and water damage
 - **Population density** means more liability exposure
 
-The good news is that as an independent agency, we can compare rates from dozens of carriers to find the best fit. Some carriers are better at pricing older Louisville homes. Others offer better rates for newer construction in the suburbs. The right carrier depends on your specific home and situation.
+The good news is that as an independent agency, we can compare rates from top-rated carriers to find the best fit. Some carriers are better at pricing older Louisville homes. Others offer better rates for newer construction in the suburbs. The right carrier depends on your specific home and situation.
 
 ## Earthquake risk
 

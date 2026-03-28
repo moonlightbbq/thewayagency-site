@@ -79,7 +79,7 @@ Factors that can lower your rate:
 
 Do not just pick the first quote your real estate agent suggests. And do not pick the cheapest option you find online. Here is a better approach:
 
-**Get quotes from multiple carriers.** As an independent agency, we work with dozens of insurance companies. That means we can compare rates and coverage across carriers in a single conversation, rather than you calling five different companies.
+**Get quotes from multiple carriers.** As an independent agency, we work with top-rated insurance companies. That means we can compare rates and coverage across carriers in a single conversation, rather than you calling five different companies.
 
 **Compare coverage, not just price.** Two policies at different price points may have very different coverage. Check your [declarations page](/blog/how-to-read-declarations-page.html) to see exactly what is included. Look at dwelling limits, deductible amounts, personal property coverage, and liability limits.
 

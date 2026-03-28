@@ -80,7 +80,7 @@ We wrote a full step-by-step guide: [What to Do After a Car Accident in KY](/blo
 
 ## How an independent agent helps
 
-An independent agent is not tied to one insurance company. We compare rates from dozens of carriers to find the best combination of price and coverage for your specific situation.
+An independent agent is not tied to one insurance company. We compare rates from top-rated carriers to find the best combination of price and coverage for your specific situation.
 
 Sometimes that means [bundling your home and auto](/blog/bundling-home-auto.html) with one carrier for a multi-policy discount. Sometimes it means splitting them across two carriers because one has better auto rates and another has better home rates. An independent agent can do both.
 

@@ -62,7 +62,7 @@ We are grateful for every client, partner, and community member who made 2026 a 
 
 If you are looking for an insurance agency that cares about more than policies and premiums, we would love to connect. Learn more [about us](/about/) or visit our [community page](/about/community.html) to see how we are involved.
 
-And if you need insurance — for your home, your car, your business, or your family — we are here to help. We represent dozens of carriers, we are licensed in Kentucky, Indiana, and Tennessee, and we work for you, not for one insurance company.
+And if you need insurance — for your home, your car, your business, or your family — we are here to help. We represent top-rated carriers, we are licensed in Kentucky, Indiana, and Tennessee, and we work for you, not for one insurance company.
 
 ### FAQ: Why does The Way Agency invest in community involvement?
 

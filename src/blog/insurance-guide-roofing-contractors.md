@@ -76,7 +76,7 @@ Roofing insurance is expensive, but not all carriers price it the same way. Here
 
 ### Work with an independent agent
 
-Captive agents represent one carrier. If that carrier does not like roofing risk, you are stuck with a high quote or a declination. An independent agent works with dozens of carriers, including specialty markets that focus on construction and trades. We can shop your coverage across multiple companies to find the best rate for your specific situation.
+Captive agents represent one carrier. If that carrier does not like roofing risk, you are stuck with a high quote or a declination. An independent agent works with top-rated carriers, including specialty markets that focus on construction and trades. We can shop your coverage across multiple companies to find the best rate for your specific situation.
 
 ### Maintain a clean safety record
 

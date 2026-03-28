@@ -136,7 +136,7 @@ The worst time to find out your general liability is inadequate is after a claim
 
 **Are you covered for completed operations?** If you perform work at customer locations, completed operations coverage protects you against claims that arise after the work is done.
 
-We work with dozens of carriers that write [general liability in Kentucky](/commercial/general-liability.html) and across our service area. Whether you are starting a new business or reviewing existing coverage, we can help you find the right policy at a competitive price.
+We work with top-rated carriers that write [general liability in Kentucky](/commercial/general-liability.html) and across our service area. Whether you are starting a new business or reviewing existing coverage, we can help you find the right policy at a competitive price.
 
 ### FAQ: Do I need general liability insurance if I work from home?
 

@@ -66,7 +66,7 @@ This is especially valuable in a hard market, when rates across the industry are
 
 A captive agent, someone who works for a single carrier like State Farm or Allstate, can only see their own company's data. They know their rates and their programs, but they have no visibility into what the rest of the market is doing. If their company raises rates, the captive agent has no alternative to offer you.
 
-An independent agent sees across the entire market. We work with [dozens of carriers](/carriers/) and have access to rate data, appetite information, and program details from all of them. It is not just that we have data. It is that we have data from across the market, which gives us context no single carrier can provide.
+An independent agent sees across the entire market. We work with [top-rated carriers](/carriers/) and have access to rate data, appetite information, and program details from all of them. It is not just that we have data. It is that we have data from across the market, which gives us context no single carrier can provide.
 
 This is also why working with a local independent agent matters. National online quote tools can compare prices, but they cannot tell you which carrier is pulling back from writing in your county or which one just launched a program that fits your situation. That takes local knowledge combined with market-wide data.
 

@@ -83,7 +83,7 @@ An independent agent who understands the Indianapolis market can find carriers t
 
 ## Working with an independent agent in Indiana
 
-We are licensed in Indiana and work with homeowners across the [Indianapolis metro area](/insurance/indianapolis-in.html). As an independent agency, we are not tied to one carrier. We shop your coverage across dozens of options and find the best combination of price, coverage, and claims service for your situation.
+We are licensed in Indiana and work with homeowners across the [Indianapolis metro area](/insurance/indianapolis-in.html). As an independent agency, we are not tied to one carrier. We shop your coverage across top-rated carriers and find the best combination of price, coverage, and claims service for your situation.
 
 If you are an Indianapolis homeowner who has not reviewed your coverage recently, a quick conversation can identify gaps, savings opportunities, or both. We are here to help.
 

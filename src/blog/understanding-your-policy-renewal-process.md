@@ -34,7 +34,7 @@ When that renewal offer lands on our desk, we do not just glance at the premium 
 
 **Coverage review.** We look at your current limits, deductibles, and endorsements to make sure they still make sense for your situation. If you finished a home renovation, added a vehicle, or had a life change, your coverage needs may have shifted since the last renewal. We check your [declarations page](/blog/understanding-your-insurance-declarations-page.html) line by line.
 
-**Carrier comparison.** If the renewal rate does not look competitive, or if we think another carrier might offer a better fit, we run quotes. We compare not just premiums but coverage forms, deductible options, and any endorsements that matter for your situation. We work with dozens of [carriers](/carriers/), and each one prices risk differently.
+**Carrier comparison.** If the renewal rate does not look competitive, or if we think another carrier might offer a better fit, we run quotes. We compare not just premiums but coverage forms, deductible options, and any endorsements that matter for your situation. We work with [top-rated carriers](/carriers/), and each one prices risk differently.
 
 **Discount verification.** We make sure you are receiving every discount you qualify for. Carriers update their discount programs regularly, and a discount you were not eligible for last year might apply now.
 

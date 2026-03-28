@@ -73,7 +73,7 @@ We meet our clients where they are. We do not have a flashy storefront. We come 
 
 ## What working with an independent agency means
 
-When you work with an independent agent like us, you get access to [dozens of insurance carriers](/about/), not just one. That means we can find the right fit for your specific business, whether that is a national carrier with broad coverage options or a regional carrier that specializes in your industry.
+When you work with an independent agent like us, you get access to [top-rated insurance carriers](/about/), not just one. That means we can find the right fit for your specific business, whether that is a national carrier with broad coverage options or a regional carrier that specializes in your industry.
 
 If your rates go up at renewal, we shop alternatives and bring you options. If you need a certificate of insurance for a new contract, we turn it around quickly. If you have a claim, we advocate for you with the carrier.
 
@@ -81,7 +81,7 @@ We are not a call center. We are a local agency that knows the businesses and th
 
 ### FAQ: What types of businesses does The Way Agency insure?
 
-We insure a wide range of small and mid-size businesses across Kentucky, Indiana, and Tennessee, including restaurants, contractors, retailers, professional service firms, nonprofits, agricultural operations, and more. As an independent agency, we work with dozens of carriers to find the right coverage for each business.
+We insure a wide range of small and mid-size businesses across Kentucky, Indiana, and Tennessee, including restaurants, contractors, retailers, professional service firms, nonprofits, agricultural operations, and more. As an independent agency, we work with top-rated carriers to find the right coverage for each business.
 
 ### FAQ: Why should a small business work with an independent insurance agent?
 

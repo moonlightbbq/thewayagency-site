@@ -98,7 +98,7 @@ Not all final expense insurance is created equal. A few things to be careful abo
 
 ## How to get final expense insurance in Kentucky
 
-Final expense insurance is widely available in Kentucky from dozens of carriers. As an independent agency, we compare options across multiple companies to find the right coverage and price for your situation. There is no medical exam, and most applications can be completed in a single phone call or meeting.
+Final expense insurance is widely available in Kentucky from top-rated carriers. As an independent agency, we compare options across multiple companies to find the right coverage and price for your situation. There is no medical exam, and most applications can be completed in a single phone call or meeting.
 
 If you want to make sure your family is not burdened with funeral costs, [reach out for a final expense consultation](/life-health/final-expense.html). We will walk you through your options and help you find a policy that fits your budget.
 

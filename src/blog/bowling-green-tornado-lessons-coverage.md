@@ -81,7 +81,7 @@ Here is what you can do today:
 
 The Bowling Green tornado was a reminder that severe weather does not care about county lines, income levels, or how long you have lived somewhere. It hits without warning, and the financial recovery depends entirely on decisions you made before the storm arrived.
 
-We work with dozens of carriers, which means we can shop your coverage to find the right combination of protection and price. But more than that, we can sit down with you and walk through your policy to find the gaps before a storm finds them for you.
+We work with top-rated carriers, which means we can shop your coverage to find the right combination of protection and price. But more than that, we can sit down with you and walk through your policy to find the gaps before a storm finds them for you.
 
 If it has been more than a year since you reviewed your [homeowners policy](/personal/home.html), now is a good time. If you are in the Bowling Green area or anywhere in Kentucky, we are here to help.
 

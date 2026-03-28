@@ -54,7 +54,7 @@ function generateCarrierMarquee(carriers, lineKey) {
   ).join('\n          ');
   return `
     <section class="carriers">
-      <p class="carriers__label">We represent ${lineCarriers.length}+ carriers</p>
+      <p class="carriers__label">We represent top-rated carriers</p>
       <div style="overflow:hidden;">
         <div class="carriers__track">
           ${carrierItems}
@@ -710,7 +710,7 @@ ${renderHero({
     <div class="trust-bar"><div class="trust-bar__inner">
       <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Since 1998</div>
       <div class="trust-bar__divider"></div>
-      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Dozens of Carriers</div>
+      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Top-Rated Carriers</div>
       <div class="trust-bar__divider"></div>
       <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Licensed in ${city.state}</div>
     </div></div>

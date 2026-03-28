@@ -54,7 +54,7 @@ Most homeowners in the area pay between $1,100 and $2,200 per year. The biggest 
 - Claims history
 - Whether you bundle with auto insurance
 
-Because we are an independent agency, we compare rates from dozens of carriers. That means we can find the best combination of price and coverage without you having to call five different companies.
+Because we are an independent agency, we compare rates from top-rated carriers. That means we can find the best combination of price and coverage without you having to call five different companies.
 
 ## Flood insurance in Bullitt County
 
@@ -64,6 +64,6 @@ If your mortgage lender requires flood insurance, we can quote it alongside your
 
 ## What to do next
 
-If you are buying a home in Mt. Washington, renewing your current policy, or just want to make sure you are not overpaying, we can help. We compare rates from dozens of carriers and explain what each policy covers in plain language.
+If you are buying a home in Mt. Washington, renewing your current policy, or just want to make sure you are not overpaying, we can help. We compare rates from top-rated carriers and explain what each policy covers in plain language.
 
 [Get a home insurance quote for Mt. Washington](/insurance/home-insurance-mt-washington-ky.html) or [learn more about our Mt. Washington coverage options](/insurance/mt-washington-ky.html). You can also [read more about what home insurance covers in Kentucky](/personal/home.html).

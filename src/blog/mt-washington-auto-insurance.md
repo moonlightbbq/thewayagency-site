@@ -52,7 +52,7 @@ Price matters, and there are real ways to reduce your premium without cutting co
 - **Bundle home and auto**: Most carriers offer a 5 to 25 percent multi-policy discount. If you are insuring a home and vehicles separately, bundling is the single easiest way to save.
 - **Defensive driving course**: Kentucky offers a premium discount for completing an approved defensive driving course. This is especially valuable for drivers over 55.
 - **Higher deductible**: Raising your comprehensive and collision deductible from $500 to $1,000 can save 10 to 15 percent on those coverages.
-- **Shop multiple carriers**: This is the biggest one. Different carriers price the same driver very differently. Because we are independent, we compare rates from dozens of carriers and find the best price for your specific driving profile.
+- **Shop multiple carriers**: This is the biggest one. Different carriers price the same driver very differently. Because we are independent, we compare rates from top-rated carriers and find the best price for your specific driving profile.
 
 ## Teenage drivers in Mt. Washington
 
@@ -64,6 +64,6 @@ If you have a teenage driver on your policy, your premium is going to increase. 
 
 ## What to do next
 
-If you are paying too much for auto insurance, or if you are not sure your coverage is adequate for your daily commute, we can help. We compare rates from dozens of carriers and show you exactly what each option covers.
+If you are paying too much for auto insurance, or if you are not sure your coverage is adequate for your daily commute, we can help. We compare rates from top-rated carriers and show you exactly what each option covers.
 
 [Get an auto insurance quote for Mt. Washington](/insurance/auto-insurance-mt-washington-ky.html) or [see all insurance options in Mt. Washington](/insurance/mt-washington-ky.html). You can also [learn more about auto insurance requirements in Kentucky](/personal/auto.html).

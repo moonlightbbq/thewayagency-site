@@ -106,7 +106,7 @@ If your business owns vehicles that are parked outside during a hailstorm, your 
 
 Summer weather in Kentucky is not a matter of "if" but "when." The question is whether your business can recover financially when a storm hits. [Commercial property insurance](/commercial/commercial-property.html) and business income coverage work together to keep your business solvent during the worst-case scenario. [General liability](/commercial/general-liability.html) covers third-party injuries and property damage, but it will not pay to fix your building or replace your income.
 
-If you have not reviewed your commercial coverage recently, summer is the time to do it. We work with dozens of carriers and can help you find the right coverage at a competitive price for your specific situation.
+If you have not reviewed your commercial coverage recently, summer is the time to do it. We work with top-rated carriers and can help you find the right coverage at a competitive price for your specific situation.
 
 ### FAQ: Does commercial property insurance cover flood damage?
 

@@ -78,7 +78,7 @@ Costs depend on your industry, revenue, employee count, and coverage needs. Here
 
 Nashville has no shortage of insurance options. National carriers, direct writers, and online quote engines all compete for your business. The problem is that each one only offers their own products.
 
-An independent agent represents dozens of carriers. That means we can compare coverage and pricing across multiple companies in a single conversation. We also know Tennessee's requirements, Nashville's specific risks, and which carriers perform well for different industries.
+An independent agent represents top-rated carriers. That means we can compare coverage and pricing across multiple companies in a single conversation. We also know Tennessee's requirements, Nashville's specific risks, and which carriers perform well for different industries.
 
 If you are starting a business in Nashville or reviewing your current coverage, [reach out for a commercial insurance quote](/commercial/general-liability.html). We are licensed in Tennessee and ready to help you find the right coverage at a fair price. You can also visit our [Nashville insurance page](/insurance/nashville-tn.html) for more local information.
 

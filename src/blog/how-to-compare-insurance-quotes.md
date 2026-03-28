@@ -112,7 +112,7 @@ Some carriers include these endorsements in their base policy. Others charge ext
 
 Here is the practical reality: comparing insurance quotes properly takes time and expertise. You need to read policy forms, understand exclusions, evaluate carriers, and compare coverage side by side. Most people do not have the time or the background to do this effectively.
 
-That is where an [independent agent](/blog/how-independent-agents-save-money.html) adds value. We represent dozens of carriers, not just one. We can pull quotes from multiple companies, compare them side by side, and explain the differences in plain language. We know which carriers handle claims well in our area, which ones offer the best value for different risk profiles, and which endorsements are worth adding.
+That is where an [independent agent](/blog/how-independent-agents-save-money.html) adds value. We represent top-rated carriers, not just one. We can pull quotes from multiple companies, compare them side by side, and explain the differences in plain language. We know which carriers handle claims well in our area, which ones offer the best value for different risk profiles, and which endorsements are worth adding.
 
 You do not pay extra for this service — independent agents are compensated by the carriers, not by you.
 

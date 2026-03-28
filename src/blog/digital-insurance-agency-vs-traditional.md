@@ -28,7 +28,7 @@ Think of it the way you think about your bank. You still have a banker you can c
 
 One of the most immediate differences between a tech-enhanced agency and a traditional one is speed. In a conventional setup, getting quotes from multiple [carriers](/carriers/) often meant your agent had to manually enter your information into each carrier's system one at a time. That could take days, sometimes longer, especially for more complex policies.
 
-With modern quoting platforms, your agent can enter your information once and pull comparative rates from a dozen or more carriers in minutes. This is not just faster for you — it is more thorough. When the process is quick, your agent can afford to check more options, which means you are more likely to end up with the best combination of price and coverage rather than settling for whichever carrier happened to come back first.
+With modern quoting platforms, your agent can enter your information once and pull comparative rates from top-rated carriers in minutes. This is not just faster for you — it is more thorough. When the process is quick, your agent can afford to check more options, which means you are more likely to end up with the best combination of price and coverage rather than settling for whichever carrier happened to come back first.
 
 The application process itself has gotten faster too. Digital applications with pre-filled data, electronic signatures, and instant submission mean that once you decide on a policy, it can often be bound the same day. Compare that to the old process of mailing paper applications back and forth, and the difference is measured in weeks, not hours. For clients who need coverage quickly — a new home closing, a vehicle purchase, a business launching — that speed matters.
 

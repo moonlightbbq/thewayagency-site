@@ -1,7 +1,7 @@
 ---
 title: How Independent Insurance Agents Save You Money
 slug: how-independent-agents-save-money
-description: Independent agents compare rates from dozens of carriers, not just one. Learn how the independent agency model works and why it usually means better coverage at lower cost.
+description: Independent agents compare rates from top-rated carriers, not just one. Learn how the independent agency model works and why it usually means better coverage at lower cost.
 author: The Way Agency
 author_title: Independent Insurance Agency
 date: 2026-06-10
@@ -13,7 +13,7 @@ tags: independent agent, insurance agent, captive agent, save money, insurance b
 
 When most people think about buying insurance, they picture one of two things: calling a big-name company they have seen on TV, or going online and filling out a form. In both cases, you are dealing with a single insurance company that can only offer you their products at their prices.
 
-An independent insurance agent works differently. We are not employed by any one carrier. We represent dozens of them, and our job is to find the best combination of coverage and price for your specific situation.
+An independent insurance agent works differently. We are not employed by any one carrier. We represent top-rated carriers, and our job is to find the best combination of coverage and price for your specific situation.
 
 Here is how that works in practice and why it usually saves you money.
 
@@ -25,7 +25,7 @@ Understanding the difference between captive and independent agents is the key t
 
 Well-known captive agencies include State Farm, Allstate, and Farmers. When you call them, you are talking to someone who can only quote their company.
 
-**An independent agent** is appointed with multiple insurance carriers. At The Way Agency, we work with dozens of carriers across personal, commercial, and specialty lines. When you ask us for a quote, we can compare options from multiple companies and recommend the one that best fits your coverage needs and budget.
+**An independent agent** is appointed with multiple insurance carriers. At The Way Agency, we work with top-rated carriers across personal, commercial, and specialty lines. When you ask us for a quote, we can compare options from multiple companies and recommend the one that best fits your coverage needs and budget.
 
 We work for you, not for the carrier.
 
@@ -99,7 +99,7 @@ When renewal comes around, we review your coverage again and reshop if it makes 
 
 We are an [independent insurance agency](/about/) based in Owensboro, Kentucky, licensed in Kentucky, Indiana, and Tennessee. Our [team](/about/team.html) has deep experience across personal, commercial, and specialty lines, and we take the time to understand your situation before recommending coverage.
 
-We represent dozens of carriers, which means we can find the right fit whether you need auto insurance in Louisville, homeowners coverage in Henderson, or a commercial package for your business anywhere in the region.
+We represent top-rated carriers, which means we can find the right fit whether you need auto insurance in Louisville, homeowners coverage in Henderson, or a commercial package for your business anywhere in the region.
 
 ### FAQ: Do independent agents charge fees?
 
@@ -107,7 +107,7 @@ Most independent agents, including The Way Agency, do not charge fees to their c
 
 ### FAQ: How many insurance companies do independent agents represent?
 
-It varies by agency, but most independent agents represent between 10 and 50 or more carriers. The Way Agency works with dozens of carriers across personal, commercial, and specialty lines. This allows us to compare rates and coverage options from multiple companies for every client.
+It varies by agency, but most independent agents represent between 10 and 50 or more carriers. The Way Agency works with top-rated carriers across personal, commercial, and specialty lines. This allows us to compare rates and coverage options from multiple companies for every client.
 
 ### FAQ: Can an independent agent help me if I already have insurance?
 

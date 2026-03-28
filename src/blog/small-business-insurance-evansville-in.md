@@ -88,7 +88,7 @@ Evansville's food and hospitality scene has grown significantly. Restaurants nee
 
 ## Why work with an independent agent across the river?
 
-You might wonder why an agency based in Owensboro serves businesses in Indiana. The answer is simple: we are licensed in Indiana, we are 30 minutes from downtown Evansville, and we represent dozens of carriers that write business in both states.
+You might wonder why an agency based in Owensboro serves businesses in Indiana. The answer is simple: we are licensed in Indiana, we are 30 minutes from downtown Evansville, and we represent top-rated carriers that write business in both states.
 
 Being independent means we are not locked into a single insurance company. We shop your coverage across multiple carriers to find the best combination of coverage and price. If one carrier has a great rate for your general liability but another is more competitive on workers comp, we can mix and match.
 
