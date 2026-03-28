@@ -961,7 +961,7 @@ function trackSubmitSuccess(reference, productCount) {
     time_to_complete_sec: Math.round((Date.now() - _funnelData.entryTime) / 1000),
   });
   // Meta Lead event (single, clean fire — no duplicate)
-  if (window.fbq) fbq('track', 'Lead', { content_name: selectedProducts.join(','), content_category: 'quote_request', currency: 'USD' });
+  if (window.fbq) fbq('track', 'Lead', { content_name: selectedProducts.join(','), content_category: 'quote_request', currency: 'USD' }, { eventID: reference });
 }
 
 // ─── Form field focus tracking (Phase 2: friction detection) ────────────────
@@ -993,6 +993,31 @@ initFieldFocusTracking();
 
 // Show version in footer
 fetch(SAGE_API + '/api/health').then(r=>r.json()).then(d=>{ const el=document.getElementById('intake-version'); if(el&&d.version) el.textContent='v'+d.version; }).catch(()=>{});
+
+function getVisitorId() {
+  var id;
+  try { id = localStorage.getItem('twa_vid'); } catch(e) {}
+  if (!id) {
+    id = Math.random().toString(36).slice(2) + Date.now().toString(36);
+    try { localStorage.setItem('twa_vid', id); } catch(e) {}
+  }
+  return id;
+}
+
+function getTrackingIds() {
+  function getCookieVal(name) {
+    var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : '';
+  }
+  return {
+    fbp: getCookieVal('_fbp'),
+    fbc: getCookieVal('_fbc') || (function() {
+      var fbclid = new URLSearchParams(window.location.search).get('fbclid');
+      return fbclid ? 'fb.1.' + Date.now() + '.' + fbclid : '';
+    })(),
+    ga_client_id: (getCookieVal('_ga') || '').replace(/^GA\d+\.\d+\./, ''),
+  };
+}
 
 let currentStep = 1;
 let selectedProducts = [];
@@ -1297,6 +1322,8 @@ async function trackPartial() {
         step: currentStep,
         _hp_company: document.getElementById('_hp_company')?.value || '',
         cfToken: turnstileToken || '',
+        twa_vid: sessionId || getVisitorId(),
+        _tracking: getTrackingIds(),
       })
     });
     const data = await res.json();
@@ -2308,6 +2335,8 @@ async function submitIntake() {
         agent: agentParam || '',
         _hp_company: document.getElementById('_hp_company')?.value || '',
         cfToken: turnstileToken || '',
+        twa_vid: sessionId || getVisitorId(),
+        _tracking: getTrackingIds(),
       })
     });
     const data = await res.json();

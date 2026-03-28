@@ -114,6 +114,21 @@
     return id;
   }
 
+  function getTrackingIds() {
+    function getCookieVal(name) {
+      const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+      return m ? decodeURIComponent(m[1]) : '';
+    }
+    return {
+      fbp: getCookieVal('_fbp'),
+      fbc: getCookieVal('_fbc') || (function() {
+        var fbclid = new URLSearchParams(window.location.search).get('fbclid');
+        return fbclid ? 'fb.1.' + Date.now() + '.' + fbclid : '';
+      })(),
+      ga_client_id: (getCookieVal('_ga') || '').replace(/^GA\d+\.\d+\./, ''),
+    };
+  }
+
   function hashAssign(visitorId, testName, variantCount) {
     let hash = 0;
     const str = visitorId + ':' + testName;
@@ -322,6 +337,7 @@
         ln: (data.lastName || '').toLowerCase().trim(),
         zp: (data.zip || '').trim(),
         country: 'us',
+        external_id: getVisitorId(),
       });
     }
     _log('enhanced_conversion', { email: '***', phone: '***' });
@@ -379,6 +395,8 @@
     data.source = source || 'website';
     data.page = window.location.pathname;
     data.referrer = document.referrer || 'direct';
+    data.twa_vid = getVisitorId();
+    data._tracking = getTrackingIds();
 
     // Attach full attribution data
     const attr = getAttribution();
@@ -915,6 +933,8 @@
       first_touch: attr.first_touch,
       last_touch: attr.last_touch,
       landing_page: attr.landing_page,
+      visitor_id: getVisitorId(),
+      user_properties: { twa_vid: { value: getVisitorId() } },
     });
   }
 
