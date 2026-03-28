@@ -34,7 +34,7 @@
 .nav__toggle span{display:block;width:24px;height:2px;background:var(--charcoal);margin:5px 0;transition:all var(--transition-base)}
 
 body.nav-open{overflow:hidden}
-body.nav-open::after{content:'';position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;background:rgba(0,0,0,.35);z-index:999}
+body.nav-open::after{content:'';position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;background:rgba(0,0,0,.35);z-index:1000}
 @media(max-width:968px){
   .nav__toggle{display:block}
   .nav__toggle--open span:nth-child(1){transform:translateY(7px) rotate(45deg)}

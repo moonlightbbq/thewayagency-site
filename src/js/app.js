@@ -638,10 +638,9 @@
     let shown = false;
     window.addEventListener('scroll', () => {
       const shouldShow = window.scrollY > 400;
-      if (shouldShow && !shown) { bar.classList.add('sticky-cta--visible'); shown = true; }
-      else if (!shouldShow && shown) { bar.classList.remove('sticky-cta--visible'); shown = false; }
+      if (shouldShow && !shown) { bar.classList.add('sticky-cta--visible'); shown = true; document.body.style.paddingBottom = '64px'; }
+      else if (!shouldShow && shown) { bar.classList.remove('sticky-cta--visible'); shown = false; document.body.style.paddingBottom = ''; }
     }, { passive: true });
-    document.body.style.paddingBottom = '64px';
   }
 
   // ═══════════════════════════════════════════════
@@ -1194,11 +1193,11 @@
     // ─── Styles (all inline via <style> tag) ─────
     var style = document.createElement('style');
     style.textContent = [
-      '.twa-cb-bubble{position:fixed;bottom:20px;right:20px;z-index:800;width:56px;height:56px;border-radius:50%;background:#173358;color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;transition:transform .2s}',
+      '.twa-cb-bubble{position:fixed;bottom:20px;right:20px;z-index:1002;width:56px;height:56px;border-radius:50%;background:#173358;color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;transition:transform .2s}',
       '.twa-cb-bubble:hover{transform:scale(1.08)}',
-      '.twa-cb-panel{position:fixed;bottom:86px;right:20px;z-index:801;width:360px;height:480px;max-width:calc(100vw - 40px);background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.18);display:none;flex-direction:column;overflow:hidden}',
+      '.twa-cb-panel{position:fixed;bottom:86px;right:20px;z-index:1003;width:360px;height:480px;max-width:calc(100% - 40px);background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.18);display:none;flex-direction:column;overflow:hidden}',
       '.twa-cb-panel.open{display:flex}',
-      '@media(max-width:767px){.twa-cb-panel.open{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;max-width:100%;border-radius:0}.twa-cb-bubble{bottom:80px}}',
+      '@media(max-width:767px){.twa-cb-panel.open{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;max-width:100%;border-radius:0;z-index:1003}.twa-cb-bubble{bottom:80px}}',
       '.twa-cb-header{background:linear-gradient(135deg,#173358,#1a4a7a);color:#fff;padding:14px 16px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}',
       '.twa-cb-close{background:none;border:none;color:#fff;cursor:pointer;font-size:22px;padding:0 4px;line-height:1}',
       '.twa-cb-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}',
@@ -1536,12 +1535,24 @@
           restoreMessages();
         }
       }
+      // On mobile, hide sticky CTA and prevent body scroll while chat is open
+      if (window.innerWidth <= 767) {
+        var cta = document.getElementById('stickyMobileCTA');
+        if (cta) cta.style.display = 'none';
+        document.body.style.overflow = 'hidden';
+      }
       inputField.focus();
     }
 
     function closeChat() {
       isOpen = false;
       panel.classList.remove('open');
+      // Restore sticky CTA and body scroll on mobile
+      if (window.innerWidth <= 767) {
+        var cta = document.getElementById('stickyMobileCTA');
+        if (cta) cta.style.display = '';
+        document.body.style.overflow = '';
+      }
     }
 
     function toggleChat() {
