@@ -1665,10 +1665,9 @@
   // FOOTER ACCORDION (mobile)
   // ═══════════════════════════════════════════════
   function initFooterAccordion() {
-    var mq = window.matchMedia('(max-width:768px)');
-    if (!mq.matches) return;
     $$('.footer__heading').forEach(function(heading) {
       heading.addEventListener('click', function() {
+        if (window.innerWidth > 768) return;
         heading.classList.toggle('footer__heading--open');
       });
     });
