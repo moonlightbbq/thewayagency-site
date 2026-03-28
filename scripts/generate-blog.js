@@ -54,6 +54,21 @@ function markdownToHtml(md) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
+    // Horizontal rules (--- on its own line)
+    .replace(/^\n?---\n?$/gm, '<hr>')
+    // Stat highlights: !!!stat Value | Label
+    .replace(/^!!!stat (.+?) \| (.+)$/gm,
+      '<div class="stat-highlight"><span class="stat-highlight__number">$1</span><span class="stat-highlight__label">$2</span></div>')
+    // Blockquotes / callout boxes (> lines, escaped to &gt;)
+    .replace(/(^&gt; .+(\n|$))+/gm, (match) => {
+      const content = match.replace(/^&gt; /gm, '').trim();
+      let cls = '';
+      if (/^\*\*Key takeaway/.test(content)) cls = ' callout--takeaway';
+      else if (/^\*\*Important/.test(content)) cls = ' callout--important';
+      else if (/^\*\*Tip/.test(content)) cls = ' callout--tip';
+      else if (/^\*\*Example/.test(content)) cls = ' callout--example';
+      return `<blockquote class="${cls.trim()}">${content}</blockquote>\n`;
+    })
     // Headers
     .replace(/^#### (.+)$/gm, '<h4>$1</h4>')
     .replace(/^### (.+)$/gm, '<h3>$1</h3>')
@@ -73,7 +88,7 @@ function markdownToHtml(md) {
     .map(block => {
       block = block.trim();
       if (!block) return '';
-      if (block.startsWith('<h') || block.startsWith('<ul') || block.startsWith('<ol') || block.startsWith('<div') || block.startsWith('<section') || block.startsWith('<table')) {
+      if (block.startsWith('<h') || block.startsWith('<ul') || block.startsWith('<ol') || block.startsWith('<div') || block.startsWith('<section') || block.startsWith('<table') || block.startsWith('<blockquote') || block.startsWith('<hr')) {
         return block;
       }
       return `<p>${block}</p>`;

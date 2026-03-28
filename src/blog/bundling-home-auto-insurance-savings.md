@@ -48,6 +48,8 @@ For most households, bundling is the right call. Here are the situations where i
 
 ## When NOT to bundle
 
+> **Tip:** Always compare the bundled total to the sum of the best individual rates. A bundle discount means nothing if the carrier's base rates are higher than the competition.
+
 Bundling is popular for good reason, but there are real scenarios where splitting your policies across different carriers saves you more money or gets you better coverage.
 
 **One carrier is significantly cheaper on one line.** This happens more often than people realize. Company A might have the best auto rates in your area, while Company B has much better home insurance pricing. If the gap between them is large enough, the bundle discount with either one might not make up the difference. This is exactly the kind of math your agent should be running for you.

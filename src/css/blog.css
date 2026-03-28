@@ -1,12 +1,31 @@
 /* ── Blog post typography ── */
 .blog-content{max-width:780px;margin:0 auto;padding:var(--space-2xl) var(--space-xl)}
-.blog-content h2{margin-top:var(--space-2xl);margin-bottom:var(--space-md)}
+.blog-content h2{margin-top:var(--space-2xl);margin-bottom:var(--space-md);padding-top:var(--space-xl);border-top:1px solid var(--border)}
+.blog-content h2:first-of-type{border-top:none;padding-top:0}
 .blog-content h3{margin-top:var(--space-xl);margin-bottom:var(--space-sm)}
 .blog-content p{margin-bottom:var(--space-md);line-height:1.8}
-.blog-content ul,.blog-content ol{margin-bottom:var(--space-md);padding-left:var(--space-xl)}
+.blog-content ul,.blog-content ol{margin-bottom:var(--space-lg);padding-left:var(--space-xl)}
 .blog-content li{margin-bottom:var(--space-sm);line-height:1.7}
-.blog-content blockquote{border-left:3px solid var(--cyan);margin:var(--space-xl) 0;padding:var(--space-md) var(--space-xl);background:var(--light-bg)}
+.blog-content li::marker{color:var(--cyan)}
+.blog-content a:not([class]){text-decoration:underline;text-decoration-color:var(--cyan);text-underline-offset:3px;transition:text-decoration-color var(--transition-fast)}
+.blog-content a:not([class]):hover{text-decoration-color:var(--blue)}
+.blog-content blockquote{border-left:4px solid var(--cyan);margin:var(--space-xl) 0;padding:var(--space-lg) var(--space-xl);background:var(--light-bg);border-radius:0 var(--border-radius) var(--border-radius) 0;line-height:1.7}
+.blog-content blockquote p{margin-bottom:0}
 .blog-meta{font-size:var(--text-sm);color:var(--slate);margin-bottom:var(--space-xl)}
+
+/* ── Callout variants ── */
+.blog-content .callout--takeaway{border-left-color:#65c5b3;background:rgba(101,197,179,.06)}
+.blog-content .callout--important{border-left-color:var(--blue);background:rgba(48,151,211,.06)}
+.blog-content .callout--tip{border-left-color:var(--cyan);background:rgba(32,188,238,.06)}
+.blog-content .callout--example{border-left-color:var(--slate);background:rgba(100,116,139,.05)}
+
+/* ── Stat highlight ── */
+.blog-content .stat-highlight{text-align:center;padding:var(--space-xl) var(--space-2xl);margin:var(--space-xl) 0;background:linear-gradient(135deg,var(--navy-dark),var(--navy));border-radius:var(--border-radius-lg);color:var(--white)}
+.stat-highlight__number{display:block;font-size:var(--text-3xl);font-weight:700;color:var(--cyan);margin-bottom:var(--space-xs);font-family:var(--font-heading)}
+.stat-highlight__label{font-size:var(--text-sm);font-weight:300;opacity:.8}
+
+/* ── Horizontal rule ── */
+.blog-content hr{border:none;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:var(--space-2xl) auto;max-width:200px}
 
 /* ── Blog index search & filter ── */
 .blog-filter{

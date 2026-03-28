@@ -13,7 +13,11 @@ tags: disability insurance, income protection, short term disability, long term 
 
 You insure your car. You insure your home. You probably have life insurance. But do you insure the thing that pays for all of it: your ability to earn a living?
 
-Most people do not. And the numbers say they should. According to the Social Security Administration, more than one in four of today's 20-year-olds will become disabled before reaching age 67. Not all of those disabilities are permanent, but even a temporary inability to work can devastate a family's finances.
+Most people do not. And the numbers say they should.
+
+!!!stat 1 in 4 | Today's 20-year-olds who will become disabled before age 67 (Social Security Administration)
+
+Not all of those disabilities are permanent, but even a temporary inability to work can devastate a family's finances.
 
 [Disability insurance](/life-health/disability.html) replaces a portion of your income if you cannot work due to injury or illness. It is not glamorous, and it is not something most people think about until they need it. But it is one of the most important types of coverage you can carry.
 
@@ -66,6 +70,8 @@ If you depend on your income to pay bills, you need disability insurance. That c
 ## What Social Security disability covers (and why it is not enough)
 
 Social Security Disability Insurance (SSDI) is a federal program that pays benefits to people who cannot work due to a severe disability expected to last at least 12 months or result in death.
+
+> **Important:** SSDI is not a substitute for private disability insurance. It has a strict definition, a 65% initial denial rate, a five-month waiting period, and average benefits of only $1,537/month.
 
 The problems with relying on SSDI:
 

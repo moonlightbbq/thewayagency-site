@@ -15,6 +15,8 @@ If there is one type of insurance that nearly every business needs, it is genera
 
 Yet many small business owners in Kentucky do not fully understand what general liability covers, what it does not cover, and how it fits into a broader insurance program. Here is a clear explanation without the jargon.
 
+> **Key takeaway:** General liability is the foundation of any business insurance program. It covers third-party bodily injury, property damage, and legal defense costs — and it is often required before you can sign a lease, bid on a contract, or get licensed.
+
 ## What general liability insurance covers
 
 [General liability insurance](/commercial/general-liability.html) protects your business against claims from third parties, meaning people outside your company, for three main categories of loss:
@@ -90,6 +92,8 @@ General liability premiums depend on several factors:
 - **Location.** Kentucky rates are generally moderate compared to states like New York or California.
 - **Claims history.** A clean loss history keeps your rates low. Past claims increase them.
 - **Coverage limits.** Higher limits cost more, but the increase from $1M to $2M per occurrence is not proportional; it is often a modest additional cost.
+
+!!!stat $400 – $15,000+ per year | Typical general liability cost range for Kentucky businesses
 
 General ranges for Kentucky businesses:
 
