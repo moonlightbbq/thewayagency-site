@@ -1134,69 +1134,395 @@
   window.initTestimonialCarousel = initTestimonialCarousel;
 
   // ═══════════════════════════════════════════════
-  // 15. LIVE CHAT WIDGET
+  // 15. LIVE CHAT WIDGET (AI Chatbot with Streaming)
   // ═══════════════════════════════════════════════
   function initChatWidget() {
     const path = window.location.pathname;
     if (path.startsWith('/intake') || path.startsWith('/portal') || path.startsWith('/partner') || path.startsWith('/admin')) return;
 
-    const style = document.createElement('style');
-    style.textContent = '.twa-chat-bubble{position:fixed;bottom:20px;right:20px;z-index:800;width:56px;height:56px;border-radius:50%;background:var(--navy,#173358);color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;transition:transform .2s}.twa-chat-bubble:hover{transform:scale(1.08)}.twa-chat-panel{position:fixed;bottom:86px;right:20px;z-index:801;width:340px;max-width:calc(100vw - 40px);background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.15);display:none;overflow:hidden}.twa-chat-panel.open{display:block}.twa-chat-header{background:var(--navy,#173358);color:#fff;padding:16px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center}.twa-chat-close{background:none;border:none;color:#fff;cursor:pointer;font-size:20px;padding:0 4px}.twa-chat-body{padding:16px}.twa-chat-body .form-group{margin-bottom:12px}.twa-chat-body label{display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:4px}.twa-chat-body input,.twa-chat-body select,.twa-chat-body textarea{width:100%;padding:8px 10px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none}.twa-chat-body input:focus,.twa-chat-body select:focus,.twa-chat-body textarea:focus{border-color:var(--blue,#1a6fb5)}.twa-chat-submit{width:100%;padding:10px;background:var(--blue,#1a6fb5);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer}.twa-chat-submit:hover{background:var(--navy,#173358)}.twa-chat-submit:disabled{opacity:.6;cursor:not-allowed}';
+    var SAGE_API = 'https://sage.thewayagency.com';
+    var chatSessionId = sessionStorage.getItem('twa_chat_sid') || '';
+    var chatMessages = [];
+    var isSending = false;
+    var isOpen = false;
+    var hasOpened = false;
+
+    // Restore message history from sessionStorage
+    try {
+      var saved = sessionStorage.getItem('twa_chat_messages');
+      if (saved) chatMessages = JSON.parse(saved);
+    } catch(e) {}
+
+    function saveState() {
+      try {
+        sessionStorage.setItem('twa_chat_sid', chatSessionId);
+        sessionStorage.setItem('twa_chat_messages', JSON.stringify(chatMessages));
+      } catch(e) {}
+    }
+
+    // Detect product from URL
+    function detectProduct() {
+      var p = location.pathname.toLowerCase();
+      if (p.includes('/auto')) return 'auto';
+      if (p.includes('/home') || p.includes('/homeowner')) return 'home';
+      if (p.includes('/commercial') || p.includes('/business')) return 'commercial';
+      if (p.includes('/life')) return 'life';
+      if (p.includes('/health')) return 'health';
+      if (p.includes('/renters')) return 'renters';
+      return '';
+    }
+
+    // Agent name lookup
+    var AGENT_NAMES = {
+      'sheilia-royal': 'Sheilia Royal',
+      'audrey-lillpop': 'Audrey Lillpop',
+      'kelly-mccallister': 'Kelly McCallister',
+      'jill-boone': 'Jill Boone'
+    };
+
+    // ─── Styles (all inline via <style> tag) ─────
+    var style = document.createElement('style');
+    style.textContent = [
+      '.twa-cb-bubble{position:fixed;bottom:20px;right:20px;z-index:800;width:56px;height:56px;border-radius:50%;background:#173358;color:#fff;border:none;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;transition:transform .2s}',
+      '.twa-cb-bubble:hover{transform:scale(1.08)}',
+      '.twa-cb-panel{position:fixed;bottom:86px;right:20px;z-index:801;width:360px;height:480px;max-width:calc(100vw - 40px);background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.18);display:none;flex-direction:column;overflow:hidden}',
+      '.twa-cb-panel.open{display:flex}',
+      '@media(max-width:767px){.twa-cb-panel.open{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;max-width:100%;border-radius:0}.twa-cb-bubble{bottom:80px}}',
+      '.twa-cb-header{background:linear-gradient(135deg,#173358,#1a4a7a);color:#fff;padding:14px 16px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}',
+      '.twa-cb-close{background:none;border:none;color:#fff;cursor:pointer;font-size:22px;padding:0 4px;line-height:1}',
+      '.twa-cb-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}',
+      '.twa-cb-msg{max-width:85%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.5;word-wrap:break-word;white-space:pre-wrap}',
+      '.twa-cb-msg.bot{align-self:flex-start;background:#f1f5f9;color:#1e293b;border-bottom-left-radius:4px}',
+      '.twa-cb-msg.user{align-self:flex-end;background:#1a6fb5;color:#fff;border-bottom-right-radius:4px}',
+      '.twa-cb-msg.error{align-self:flex-start;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;font-size:13px}',
+      '.twa-cb-typing{align-self:flex-start;padding:10px 14px;display:flex;gap:4px;align-items:center}',
+      '.twa-cb-typing span{width:6px;height:6px;background:#94a3b8;border-radius:50%;animation:twaCbBounce .6s infinite alternate}',
+      '.twa-cb-typing span:nth-child(2){animation-delay:.2s}',
+      '.twa-cb-typing span:nth-child(3){animation-delay:.4s}',
+      '@keyframes twaCbBounce{from{transform:translateY(0)}to{transform:translateY(-6px)}}',
+      '.twa-cb-input{display:flex;border-top:1px solid #e2e8f0;flex-shrink:0}',
+      '.twa-cb-input input{flex:1;border:none;padding:12px 14px;font-size:14px;outline:none;background:transparent}',
+      '.twa-cb-input button{background:none;border:none;padding:0 14px;cursor:pointer;color:#1a6fb5;font-size:18px}',
+      '.twa-cb-input button:disabled{color:#cbd5e1;cursor:not-allowed}',
+      '.twa-cb-actions{display:flex;flex-direction:column;gap:8px;margin-top:8px;align-self:flex-start;max-width:85%}',
+      '.twa-cb-action-btn{padding:10px 16px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:background .15s}',
+      '.twa-cb-action-btn.primary{background:#1a6fb5;color:#fff}',
+      '.twa-cb-action-btn.primary:hover{background:#173358}',
+      '.twa-cb-action-btn.secondary{background:#f1f5f9;color:#173358;border:1px solid #e2e8f0}',
+      '.twa-cb-action-btn.secondary:hover{background:#e2e8f0}',
+      '.twa-cb-action-btn:disabled{opacity:.6;cursor:not-allowed}',
+      '.twa-cb-powered{text-align:center;font-size:10px;color:#94a3b8;padding:4px 0 8px;flex-shrink:0}'
+    ].join('');
     document.head.appendChild(style);
 
-    const bubble = createElement('button', { class: 'twa-chat-bubble', 'aria-label': 'Chat with us' },
+    // ─── Build DOM ───────────────────────────────
+    var bubble = createElement('button', { class: 'twa-cb-bubble', 'aria-label': 'Chat with us' },
       '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>');
 
-    const panel = createElement('div', { class: 'twa-chat-panel', id: 'twaChatPanel' }, `
-      <div class="twa-chat-header">
-        <span>Send us a message</span>
-        <button class="twa-chat-close" id="twaChatClose" aria-label="Close chat">&times;</button>
-      </div>
-      <div class="twa-chat-body">
-        <div class="form-group"><label for="chat_name">Your Name</label><input type="text" id="chat_name" placeholder="Name"></div>
-        <div class="form-group"><label for="chat_type">What do you need?</label><select id="chat_type"><option value="">Select...</option><option value="quote">Insurance quote</option><option value="question">Coverage question</option><option value="claim">Claims help</option><option value="other">Something else</option></select></div>
-        <div class="form-group"><label for="chat_message">Message</label><textarea id="chat_message" rows="3" placeholder="How can we help?"></textarea></div>
-        <button class="twa-chat-submit" id="twaChatSubmit">Send Message</button>
-        <div id="twaChatStatus" style="display:none;margin-top:8px;font-size:12px;text-align:center" role="alert" aria-live="polite"></div>
-      </div>
-    `);
+    var panel = document.createElement('div');
+    panel.className = 'twa-cb-panel';
+    panel.setAttribute('id', 'twaChatPanel');
+
+    var header = document.createElement('div');
+    header.className = 'twa-cb-header';
+    header.innerHTML = '<span>The Way Agency</span><button class="twa-cb-close" aria-label="Close chat">&times;</button>';
+
+    var msgsArea = document.createElement('div');
+    msgsArea.className = 'twa-cb-msgs';
+
+    var inputBar = document.createElement('div');
+    inputBar.className = 'twa-cb-input';
+    var inputField = document.createElement('input');
+    inputField.type = 'text';
+    inputField.placeholder = 'Type a message...';
+    inputField.setAttribute('aria-label', 'Type a message');
+    var sendBtn = document.createElement('button');
+    sendBtn.setAttribute('aria-label', 'Send');
+    sendBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>';
+    inputBar.appendChild(inputField);
+    inputBar.appendChild(sendBtn);
+
+    var powered = document.createElement('div');
+    powered.className = 'twa-cb-powered';
+    powered.textContent = 'Powered by SAGE';
+
+    panel.appendChild(header);
+    panel.appendChild(msgsArea);
+    panel.appendChild(inputBar);
+    panel.appendChild(powered);
 
     document.body.appendChild(panel);
     document.body.appendChild(bubble);
 
-    let isOpen = false;
-    function toggleChat() { isOpen = !isOpen; panel.classList.toggle('open', isOpen); if (isOpen) track('chat_widget_opened', { category: 'engagement' }); }
+    // ─── Message rendering ───────────────────────
+    function addMessageEl(role, text) {
+      var el = document.createElement('div');
+      el.className = 'twa-cb-msg ' + role;
+      el.textContent = text;
+      msgsArea.appendChild(el);
+      msgsArea.scrollTop = msgsArea.scrollHeight;
+      return el;
+    }
 
-    bubble.addEventListener('click', toggleChat);
-    panel.querySelector('#twaChatClose').addEventListener('click', toggleChat);
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && isOpen) toggleChat(); });
+    function addErrorEl(text) {
+      var el = document.createElement('div');
+      el.className = 'twa-cb-msg error';
+      el.textContent = text;
+      msgsArea.appendChild(el);
+      msgsArea.scrollTop = msgsArea.scrollHeight;
+    }
 
-    panel.querySelector('#twaChatSubmit').addEventListener('click', async () => {
-      const name = panel.querySelector('#chat_name').value.trim();
-      const type = panel.querySelector('#chat_type').value;
-      const message = panel.querySelector('#chat_message').value.trim();
-      const status = panel.querySelector('#twaChatStatus');
-      const btn = panel.querySelector('#twaChatSubmit');
+    function showTyping() {
+      var el = document.createElement('div');
+      el.className = 'twa-cb-typing';
+      el.id = 'twaCbTyping';
+      el.innerHTML = '<span></span><span></span><span></span>';
+      msgsArea.appendChild(el);
+      msgsArea.scrollTop = msgsArea.scrollHeight;
+    }
 
-      if (!message) { status.style.display = 'block'; status.style.color = '#ef4444'; status.textContent = 'Please enter a message.'; return; }
+    function hideTyping() {
+      var el = msgsArea.querySelector('#twaCbTyping');
+      if (el) el.remove();
+    }
 
-      btn.disabled = true; btn.textContent = 'Sending...';
-      const ctrl = new AbortController();
-      const timer = setTimeout(function() { ctrl.abort(); }, 10000);
+    function addActionButtons(actionData) {
+      var container = document.createElement('div');
+      container.className = 'twa-cb-actions';
+
+      var agentSlug = (actionData && actionData.agent) || 'sheilia-royal';
+      var agentName = AGENT_NAMES[agentSlug] || 'our team';
+      var product = (actionData && actionData.product) || detectProduct() || '';
+      var visitorName = (actionData && actionData.name) || '';
+      var email = (actionData && actionData.email) || '';
+      var phone = (actionData && actionData.phone) || '';
+      var state = (actionData && actionData.state) || '';
+      var city = (actionData && actionData.city) || '';
+
+      // "Start a Quote" button
+      var quoteBtn = document.createElement('button');
+      quoteBtn.className = 'twa-cb-action-btn primary';
+      quoteBtn.textContent = 'Start a Quote \u2192';
+      quoteBtn.addEventListener('click', function() {
+        var params = new URLSearchParams();
+        if (visitorName) params.set('name', visitorName);
+        if (email) params.set('email', email);
+        if (product) params.set('product', product);
+        params.set('agent', agentSlug);
+        params.set('src', 'chatbot');
+        track('chatbot_quote_clicked', { category: 'conversion', agent: agentSlug, product: product });
+        window.location.href = '/intake/?' + params.toString();
+      });
+
+      // "Request a Callback" button
+      var callbackBtn = document.createElement('button');
+      callbackBtn.className = 'twa-cb-action-btn secondary';
+      callbackBtn.textContent = 'Request a Callback';
+      callbackBtn.addEventListener('click', async function() {
+        callbackBtn.disabled = true;
+        callbackBtn.textContent = 'Sending...';
+        track('chatbot_callback_requested', { category: 'conversion', agent: agentSlug, product: product });
+        try {
+          var nameParts = visitorName.split(' ');
+          await fetch(SAGE_API + '/api/intake/lead', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              firstName: nameParts[0] || '',
+              lastName: nameParts.slice(1).join(' ') || '',
+              phone: phone,
+              email: email,
+              product: product,
+              state: state,
+              city: city,
+              source: 'chatbot_callback',
+              agent: agentSlug
+            })
+          });
+          callbackBtn.textContent = 'Done! ' + agentName + ' will reach out shortly.';
+          callbackBtn.style.background = '#dcfce7';
+          callbackBtn.style.color = '#166534';
+          callbackBtn.style.borderColor = '#bbf7d0';
+        } catch(e) {
+          callbackBtn.textContent = 'Error - call us at ' + CONFIG.phone;
+          callbackBtn.style.color = '#dc2626';
+          callbackBtn.disabled = false;
+        }
+      });
+
+      container.appendChild(quoteBtn);
+      container.appendChild(callbackBtn);
+      msgsArea.appendChild(container);
+      msgsArea.scrollTop = msgsArea.scrollHeight;
+    }
+
+    // Restore saved messages into the DOM
+    function restoreMessages() {
+      chatMessages.forEach(function(m) {
+        addMessageEl(m.role, m.text);
+        if (m.action) addActionButtons(m.action);
+      });
+    }
+
+    // ─── Streaming chat ──────────────────────────
+    async function sendMessage(text) {
+      if (!text.trim() || isSending) return;
+      isSending = true;
+      sendBtn.disabled = true;
+      inputField.value = '';
+
+      // Add user message
+      chatMessages.push({ role: 'user', text: text });
+      addMessageEl('user', text);
+      saveState();
+      track('chatbot_message_sent', { category: 'engagement' });
+
+      showTyping();
+
+      var botText = '';
+      var botEl = null;
+      var actionData = null;
+
       try {
-        await fetch(CONFIG.webhookUrl, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: name || 'Chat visitor', message, subject: type, source: 'chat_widget', page: window.location.pathname }),
-          signal: ctrl.signal,
+        var response = await fetch(SAGE_API + '/api/chat/message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: chatSessionId,
+            message: text,
+            page: location.pathname,
+            product: detectProduct()
+          })
         });
-        clearTimeout(timer);
-        status.style.display = 'block'; status.style.color = '#16a34a'; status.textContent = 'Sent! We\'ll get back to you soon.';
-        panel.querySelector('#chat_name').value = ''; panel.querySelector('#chat_message').value = '';
-        track('chat_widget_submitted', { category: 'conversion', type });
-      } catch(e) {
-        clearTimeout(timer);
-        status.style.display = 'block'; status.style.color = '#ef4444'; status.textContent = 'Failed to send. Call us at ' + CONFIG.phone;
-      } finally { btn.disabled = false; btn.textContent = 'Send Message'; }
+
+        if (!response.ok) {
+          throw new Error('HTTP ' + response.status);
+        }
+
+        var reader = response.body.getReader();
+        var decoder = new TextDecoder();
+        var buffer = '';
+
+        hideTyping();
+        botEl = addMessageEl('bot', '');
+
+        while (true) {
+          var result = await reader.read();
+          if (result.done) break;
+
+          buffer += decoder.decode(result.value, { stream: true });
+          var lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+            if (!line.startsWith('data: ')) continue;
+            var jsonStr = line.slice(6);
+            try {
+              var chunk = JSON.parse(jsonStr);
+              if (chunk.sessionId) {
+                chatSessionId = chunk.sessionId;
+              }
+              if (chunk.text) {
+                botText += chunk.text;
+                botEl.textContent = botText;
+                msgsArea.scrollTop = msgsArea.scrollHeight;
+              }
+              if (chunk.done) {
+                if (chunk.action === 'connect_agent' && chunk.data) {
+                  actionData = chunk.data;
+                  track('chatbot_agent_suggested', { category: 'engagement', agent: chunk.data.agent || '' });
+                }
+              }
+            } catch(pe) { /* skip malformed lines */ }
+          }
+        }
+
+        // Process any remaining buffer
+        if (buffer.trim().startsWith('data: ')) {
+          try {
+            var lastChunk = JSON.parse(buffer.trim().slice(6));
+            if (lastChunk.sessionId) chatSessionId = lastChunk.sessionId;
+            if (lastChunk.text) {
+              botText += lastChunk.text;
+              if (botEl) botEl.textContent = botText;
+            }
+            if (lastChunk.done && lastChunk.action === 'connect_agent' && lastChunk.data) {
+              actionData = lastChunk.data;
+              track('chatbot_agent_suggested', { category: 'engagement', agent: lastChunk.data.agent || '' });
+            }
+          } catch(pe2) {}
+        }
+
+        if (botText) {
+          var msgEntry = { role: 'bot', text: botText };
+          if (actionData) msgEntry.action = actionData;
+          chatMessages.push(msgEntry);
+          saveState();
+        }
+
+        if (actionData) {
+          addActionButtons(actionData);
+        }
+
+      } catch(err) {
+        hideTyping();
+        if (botText && botEl) {
+          // Partial response received before error
+          chatMessages.push({ role: 'bot', text: botText });
+          saveState();
+          addErrorEl('Connection lost. Partial response shown above.');
+        } else {
+          addErrorEl('Connection issue \u2014 please call us at ' + CONFIG.phone);
+        }
+      } finally {
+        isSending = false;
+        sendBtn.disabled = false;
+        inputField.focus();
+      }
+    }
+
+    // ─── Toggle panel ────────────────────────────
+    function openChat() {
+      isOpen = true;
+      panel.classList.add('open');
+      track('chatbot_opened', { category: 'engagement' });
+      if (!hasOpened) {
+        hasOpened = true;
+        if (chatMessages.length === 0) {
+          // Show welcome message
+          var welcome = 'Hi! I\'m here to help you find the right coverage. What can I help you with?';
+          chatMessages.push({ role: 'bot', text: welcome });
+          addMessageEl('bot', welcome);
+          saveState();
+        } else {
+          restoreMessages();
+        }
+      }
+      inputField.focus();
+    }
+
+    function closeChat() {
+      isOpen = false;
+      panel.classList.remove('open');
+    }
+
+    function toggleChat() {
+      if (isOpen) closeChat();
+      else openChat();
+    }
+
+    // ─── Event listeners ─────────────────────────
+    bubble.addEventListener('click', toggleChat);
+    header.querySelector('.twa-cb-close').addEventListener('click', closeChat);
+    document.addEventListener('keydown', function(e) { if (e.key === 'Escape' && isOpen) closeChat(); });
+
+    sendBtn.addEventListener('click', function() { sendMessage(inputField.value); });
+    inputField.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage(inputField.value);
+      }
     });
   }
 
