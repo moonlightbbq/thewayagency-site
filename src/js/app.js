@@ -1141,6 +1141,17 @@
     if (path.startsWith('/intake') || path.startsWith('/portal') || path.startsWith('/partner') || path.startsWith('/admin')) return;
 
     var SAGE_API = 'https://sage.thewayagency.com';
+
+    // Check kill switch status before rendering — hide bubble if chat is disabled
+    var statusController = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var statusTimeout = setTimeout(function() { if (statusController) statusController.abort(); }, 3000);
+    fetch(SAGE_API + '/api/status', statusController ? { signal: statusController.signal } : {})
+      .then(function(r) { clearTimeout(statusTimeout); return r.json(); })
+      .then(function(data) { if (data && data.chatEnabled === false) return; renderChatWidget(); })
+      .catch(function() { clearTimeout(statusTimeout); renderChatWidget(); });
+
+    function renderChatWidget() {
+
     var chatSessionId = sessionStorage.getItem('twa_chat_sid') || '';
     var chatMessages = [];
     var isSending = false;
@@ -1550,6 +1561,8 @@
         sendMessage(inputField.value);
       }
     });
+
+    } // end renderChatWidget
   }
 
   // ═══════════════════════════════════════════════
