@@ -1149,6 +1149,18 @@ ${renderHead({
     ogTitle: 'Our Insurance Carriers | The Way Agency',
     ogDescription: 'We represent 30+ insurance carriers to find you the best coverage and price.',
     ogUrl: 'https://www.thewayagency.com/carriers/',
+    schema: JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "InsuranceAgency",
+      "name": "The Way Agency",
+      "url": "https://www.thewayagency.com",
+      "description": "Independent insurance agency representing 30+ carriers across personal, commercial, and life lines.",
+      "areaServed": [
+        { "@type": "State", "name": "Kentucky" },
+        { "@type": "State", "name": "Indiana" },
+        { "@type": "State", "name": "Tennessee" }
+      ]
+    }, null, 2),
   })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>

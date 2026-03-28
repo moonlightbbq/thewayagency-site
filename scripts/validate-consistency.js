@@ -192,28 +192,44 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
   let cssJsErrors = 0;
   const requiredCss = ['base.css', 'components.css', 'leadgen.css'];
 
+  // Pages that embed ALL styles inline (no external CSS refs — intentionally self-contained)
+  const inlineOnlyPages = new Set([
+    'portal/index.html',   // SPA portal, fully inline
+    'partner/index.html',  // SPA partner portal, fully inline
+    'privacy.html',        // Legal page with full inline styles
+    'terms.html',          // Legal page with full inline styles
+  ]);
+
+  // Pages that don't use app.js (self-contained SPAs with own inline JS)
+  const noAppJsPages = new Set([
+    'portal/index.html',
+    'partner/index.html',
+  ]);
+
   for (const file of htmlFiles) {
     const fileClass = classify(file);
     if (fileClass === 'utility') continue;
+    const r = rel(file);
+    if (inlineOnlyPages.has(r)) continue;
 
     const html = fs.readFileSync(file, 'utf8');
-    const isBlogPost = rel(file).startsWith('blog/') && rel(file) !== 'blog/index.html';
+    const isBlogPost = r.startsWith('blog/') && r !== 'blog/index.html';
 
     for (const css of requiredCss) {
       // Accept in link tag, noscript, or inline style block reference
       if (!html.includes(css)) {
-        error(`Missing ${css} in ${rel(file)}`);
+        error(`Missing ${css} in ${r}`);
         cssJsErrors++;
       }
     }
 
-    if (!html.includes('app.js')) {
-      error(`Missing app.js in ${rel(file)}`);
+    if (!noAppJsPages.has(r) && !html.includes('app.js')) {
+      error(`Missing app.js in ${r}`);
       cssJsErrors++;
     }
 
     if (isBlogPost && !html.includes('blog.css')) {
-      error(`Blog post missing blog.css: ${rel(file)}`);
+      error(`Blog post missing blog.css: ${r}`);
       cssJsErrors++;
     }
   }
@@ -248,8 +264,9 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
       structErrors++;
     }
 
-    // Count <h1> tags (but skip utility pages — they may have 0)
-    if (classify(file) !== 'utility') {
+    // Count <h1> tags (skip utility pages and SPA portals that don't have semantic h1)
+    const spaPages = new Set(['portal/index.html', 'partner/index.html']);
+    if (classify(file) !== 'utility' && !spaPages.has(r)) {
       const h1Count = (html.match(/<h1[\s>]/g) || []).length;
       if (h1Count === 0) {
         error(`No <h1> found: ${r}`);
@@ -452,9 +469,17 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
   let jsonLdErrors = 0;
   const jsonLdRe = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g;
 
+  // Skip legal/utility pages and noindexed pages — they don't need structured data
+  const jsonLdSkip = new Set(['privacy.html', 'terms.html', 'login.html']);
+
   for (const file of publicPages) {
-    const html = fs.readFileSync(file, 'utf8');
     const r = rel(file);
+    const html = fs.readFileSync(file, 'utf8');
+
+    // Skip explicitly excluded pages and noindexed pages
+    if (jsonLdSkip.has(r)) continue;
+    if (html.includes('name="robots" content="noindex')) continue;
+
     jsonLdRe.lastIndex = 0;
 
     let found = false;
@@ -484,7 +509,7 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
   }
 
   if (jsonLdErrors === 0) {
-    console.log(`  ✓ All ${publicPages.length} public pages have valid JSON-LD`);
+    console.log(`  ✓ All applicable public pages have valid JSON-LD`);
   } else {
     console.log(`  ✗ ${jsonLdErrors} JSON-LD issue(s)`);
     for (const msg of errorList.filter(m =>
@@ -501,6 +526,9 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
   let scriptErrors = 0;
   const nonUtility = htmlFiles.filter(f => classify(f) !== 'utility');
 
+  // SPA portals have their own inline JS and don't use app.js
+  const spaPortals = new Set(['portal/index.html', 'partner/index.html']);
+
   for (const file of nonUtility) {
     const html = fs.readFileSync(file, 'utf8');
     const r = rel(file);
@@ -510,17 +538,18 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
       scriptErrors++;
     }
 
-    if (!html.includes('app.js')) {
+    if (!spaPortals.has(r) && !html.includes('app.js')) {
       error(`Missing app.js script: ${r}`);
       scriptErrors++;
     }
   }
 
-  for (const file of portalPages) {
-    const html = fs.readFileSync(file, 'utf8');
-    const r = rel(file);
+  // Only intake requires Turnstile (it's the form submission portal)
+  const intakePage = htmlFiles.find(f => rel(f) === 'intake/index.html');
+  if (intakePage) {
+    const html = fs.readFileSync(intakePage, 'utf8');
     if (!html.includes('challenges.cloudflare.com/turnstile')) {
-      error(`Portal page missing Turnstile: ${r}`);
+      error(`Intake page missing Turnstile: intake/index.html`);
       scriptErrors++;
     }
   }
@@ -542,8 +571,9 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
   console.log('\n[Cache-Busting]');
   let cacheErrors = 0;
 
-  // Skip portal pages (they use inline styles without version params)
-  const checkPages = htmlFiles.filter(f => classify(f) !== 'portal');
+  // Skip portal pages and inline-only pages (they use inline styles without external asset refs)
+  const cacheSkipPages = new Set(['portal/index.html', 'partner/index.html', 'privacy.html', 'terms.html']);
+  const checkPages = htmlFiles.filter(f => !cacheSkipPages.has(rel(f)));
 
   for (const file of checkPages) {
     const html = fs.readFileSync(file, 'utf8');
