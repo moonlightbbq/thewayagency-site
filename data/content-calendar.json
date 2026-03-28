@@ -398,6 +398,56 @@
       "receives_future_links": true,
       "source": "html",
       "status": "published"
+    },
+    {
+      "slug": "how-independent-agents-use-data-better-rates",
+      "title": "How Independent Agents Use Data to Find You Better Insurance Rates",
+      "description": "Independent agents don't just shop carriers — they use data analytics to match you with the right one.",
+      "publish_date": "2026-03-28",
+      "status": "published",
+      "category": "general",
+      "reviewer": "Sheilia Royal",
+      "reviewer_slug": "sheilia-royal"
+    },
+    {
+      "slug": "what-is-ivans-insurance-data",
+      "title": "What Is IVANS? How Insurance Data Exchange Benefits You",
+      "description": "IVANS connects insurance agencies and carriers with real-time policy data.",
+      "publish_date": "2026-03-28",
+      "status": "published",
+      "category": "general",
+      "reviewer": "Kelly Bartley",
+      "reviewer_slug": "kelly-bartley"
+    },
+    {
+      "slug": "insurance-customer-lifetime-value-explained",
+      "title": "Customer Lifetime Value in Insurance: Why Your Agent Should Care About More Than This Year's Premium",
+      "description": "Insurance agencies that focus on customer lifetime value invest in long-term relationships.",
+      "publish_date": "2026-03-28",
+      "status": "published",
+      "category": "general",
+      "reviewer": "Sheilia Royal",
+      "reviewer_slug": "sheilia-royal"
+    },
+    {
+      "slug": "digital-insurance-agency-vs-traditional",
+      "title": "Digital Insurance Agency vs Traditional: How Modern Agents Serve You Better",
+      "description": "Modern insurance agencies blend technology with personal service.",
+      "publish_date": "2026-03-28",
+      "status": "published",
+      "category": "general",
+      "reviewer": "Audrey Phelps",
+      "reviewer_slug": "audrey-phelps"
+    },
+    {
+      "slug": "understanding-your-policy-renewal-process",
+      "title": "What Happens When Your Insurance Renews: Inside the Process Your Agent Follows",
+      "description": "Your policy renewal isn't automatic. Here's what your independent agent actually does behind the scenes.",
+      "publish_date": "2026-03-28",
+      "status": "published",
+      "category": "general",
+      "reviewer": "Jill Boone",
+      "reviewer_slug": "jill-boone"
     }
   ],
   "year1": [
