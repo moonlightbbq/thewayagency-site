@@ -70,6 +70,10 @@ function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, render
         html = html.replace('<meta charset="UTF-8">', '<meta charset="UTF-8">\n  <meta name="robots" content="noindex, nofollow">');
       }
     }
+    // Cache-bust JS and CSS with build version
+    html = html.replace(/src="\/src\/js\/app\.js"/g, `src="/src/js/app.js?v=${buildVersion}"`);
+    html = html.replace(/href="\/src\/css\/(\w+)\.css"/g, `href="/src/css/$1.css?v=${buildVersion}"`);
+
     // Inject GTM head snippet (before </head>) and body snippet (after <body>)
     if (!html.includes('gtm.js')) {
       html = html.replace('</head>', renderHead_GTM() + '\n</head>');
