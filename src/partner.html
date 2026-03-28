@@ -58,14 +58,18 @@
   .history-detail td{padding:12px 8px}
   @media(max-width:600px){.stat-grid{grid-template-columns:1fr 1fr}}
   @media(max-width:480px){.form-row{grid-template-columns:1fr}.product-grid{grid-template-columns:1fr 1fr}}
+  .skip-link{position:absolute;top:-40px;left:0;background:#3b82f6;color:#fff;padding:8px 16px;z-index:9999;transition:top .2s}
+  .skip-link:focus{top:0}
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 <div id="system-banner" style="display:none;padding:10px 20px;text-align:center;font-size:13px;font-weight:600;cursor:pointer" onclick="this.style.display='none'" role="alert"></div>
 <div class="header">
   <h1>The Way Agency</h1>
   <p>Referral Partner Portal</p>
 </div>
+<main id="main-content">
 <div class="container">
   <div class="partner-info" id="partner-info"></div>
 
@@ -146,6 +150,7 @@
     <div id="history-content"><div class="empty">Loading...</div></div>
   </div>
 </div>
+</main>
 
 <script>
 const SAGE_API = 'https://sage.thewayagency.com';

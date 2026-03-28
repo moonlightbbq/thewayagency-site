@@ -86,9 +86,12 @@ h1,h2,h3,h4{font-weight:600}
 @media(max-width:768px){.metric-row,.export-grid{grid-template-columns:1fr 1fr}.donut-wrap{flex-direction:column;align-items:center}.tbl{display:block;overflow-x:auto}}
 @media(max-width:480px){.metric-row,.export-grid{grid-template-columns:1fr}.tabs{gap:2px}.tab{padding:6px 10px;font-size:11px}}
 @media print{.header,.tabs,.sub-tabs,.login-card,#login-view{display:none!important}.container{max-width:100%;padding:0}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}.hidden{display:block!important}#tab-analytics,#tab-analytics .hidden{display:block!important}}
+.skip-link{position:absolute;top:-40px;left:0;background:#1a6fb5;color:#fff;padding:8px 16px;z-index:9999;transition:top .2s}
+.skip-link:focus{top:0}
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
 <div class="header">
   <h1>Admin Operations Center</h1>
@@ -98,6 +101,7 @@ h1,h2,h3,h4{font-weight:600}
   </div>
 </div>
 
+<main id="main-content">
 <div class="container">
   <!-- Login -->
   <div id="login-view">
@@ -199,6 +203,7 @@ h1,h2,h3,h4{font-weight:600}
     </div>
   </div>
 </div>
+</main>
 
 <script>
 var SAGE = 'https://sage.thewayagency.com';

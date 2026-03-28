@@ -954,6 +954,9 @@ ${renderHead({
     ogTitle: `Insurance for ${ind.name} in Kentucky | The Way Agency`,
     ogDescription: `Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. Get a quote from top-rated carriers.`,
     ogUrl: `https://www.thewayagency.com/industries/${ind.slug}.html`,
+    schema: `<script type="application/ld+json">
+  ${JSON.stringify({"@context":"https://schema.org","@type":"InsuranceAgency","name":"The Way Agency","knowsAbout":ind.name})}
+  </script>`,
   })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -1056,6 +1059,9 @@ ${renderHead({
     ogTitle: `${carrier.name} Insurance | The Way Agency`,
     ogDescription: carrier.description || `We represent ${carrier.name} for insurance in KY, IN & TN.`,
     ogUrl: `https://www.thewayagency.com/carriers/${carrier.slug}.html`,
+    schema: `<script type="application/ld+json">
+  ${JSON.stringify({"@context":"https://schema.org","@type":"Organization","name":carrier.name,"description":carrier.description||`${carrier.name} insurance carrier represented by The Way Agency in Kentucky, Indiana, and Tennessee.`})}
+  </script>`,
   })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>

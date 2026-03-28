@@ -346,9 +346,12 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Montserrat', -apple-system, BlinkMacSystemFont
   .site-header { padding: 24px 16px 28px }
   .header-title { font-size: 18px }
 }
+.skip-link{position:absolute;top:-40px;left:0;background:#1a6fb5;color:#fff;padding:8px 16px;z-index:9999;transition:top .2s}
+.skip-link:focus{top:0}
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
 <div class="site-header">
   <a href="/" style="text-decoration:none"><picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img class="header-logo" src="/src/assets/images/logo-horizontal.png" alt="The Way Agency — Back to Home"></picture></a>
@@ -356,6 +359,7 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Montserrat', -apple-system, BlinkMacSystemFont
   <div class="header-sub">The Way Agency — your trusted insurance partner</div>
 </div>
 
+<main id="main-content">
 <div class="trust-bar">
   <div class="trust-item">
     <div class="trust-icon">&#10003;</div>
@@ -389,6 +393,7 @@ h1,h2,h3,h4,h5,h6 { font-family: 'Montserrat', -apple-system, BlinkMacSystemFont
   <br>PO Box 187, Owensboro, KY 42302
   <span id="portal-version" style="display:none"></span>
 </div>
+</main>
 
 <div id="system-banner" style="display:none;padding:10px 20px;text-align:center;font-size:13px;font-weight:600;cursor:pointer" onclick="this.style.display='none'" role="alert"></div>
 
