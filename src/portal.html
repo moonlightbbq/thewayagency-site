@@ -502,6 +502,8 @@ function renderStatusDashboard() {
 
   // Agent card
   if (agent && agent.name) {
+    // Validate photo URL to only allow https:// origins before injecting into src
+    if (agent.photo && !agent.photo.startsWith('https://')) agent.photo = '';
     const photo = agent.photo ? `<img src="${esc(agent.photo)}" alt="${esc(agent.name)}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">` : '';
     html += `<div class="card" style="padding:20px;margin-bottom:16px;display:flex;align-items:center;gap:16px">
       ${photo}

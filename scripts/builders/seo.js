@@ -47,7 +47,12 @@ function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, render
     if (criticalCss && html.includes('<link rel="stylesheet" href="/src/css/base.css">') && !html.includes('<style>')) {
       const cssLinks = '  <link rel="stylesheet" href="/src/css/base.css">\n  <link rel="stylesheet" href="/src/css/components.css">\n  <link rel="stylesheet" href="/src/css/leadgen.css">';
       const lazyCss = `  <style>${criticalCss}</style>\n  <link rel="stylesheet" href="/src/css/base.css" media="print" onload="this.media='all'">\n  <link rel="stylesheet" href="/src/css/components.css" media="print" onload="this.media='all'">\n  <link rel="stylesheet" href="/src/css/leadgen.css" media="print" onload="this.media='all'">\n  <noscript><link rel="stylesheet" href="/src/css/base.css"><link rel="stylesheet" href="/src/css/components.css"><link rel="stylesheet" href="/src/css/leadgen.css"></noscript>`;
-      html = html.replace(cssLinks, lazyCss);
+      if (html.includes(cssLinks)) {
+        html = html.replace(cssLinks, lazyCss);
+      } else {
+        // CSS link block doesn't match exact pattern — skip critical CSS injection, leaving original links intact
+        console.warn(`  ⚠ Critical CSS: link block pattern not found in ${outputPath || 'unknown page'}, skipping injection`);
+      }
     }
     // Add hreflang if not already present
     if (!html.includes('hreflang')) {

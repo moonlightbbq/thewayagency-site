@@ -1225,15 +1225,20 @@
       if (!message) { status.style.display = 'block'; status.style.color = '#ef4444'; status.textContent = 'Please enter a message.'; return; }
 
       btn.disabled = true; btn.textContent = 'Sending...';
+      const ctrl = new AbortController();
+      const timer = setTimeout(function() { ctrl.abort(); }, 10000);
       try {
         await fetch(CONFIG.webhookUrl, {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: name || 'Chat visitor', message, subject: type, source: 'chat_widget', page: window.location.pathname }),
+          signal: ctrl.signal,
         });
+        clearTimeout(timer);
         status.style.display = 'block'; status.style.color = '#16a34a'; status.textContent = 'Sent! We\'ll get back to you soon.';
         panel.querySelector('#chat_name').value = ''; panel.querySelector('#chat_message').value = '';
         track('chat_widget_submitted', { category: 'conversion', type });
       } catch(e) {
+        clearTimeout(timer);
         status.style.display = 'block'; status.style.color = '#ef4444'; status.textContent = 'Failed to send. Call us at ' + CONFIG.phone;
       } finally { btn.disabled = false; btn.textContent = 'Send Message'; }
     });

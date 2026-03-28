@@ -13,7 +13,14 @@ const ROOT = path.resolve(__dirname, '..');
 const CALENDAR_PATH = path.join(ROOT, 'data', 'content-calendar.json');
 const BLOG_SRC = path.join(ROOT, 'src', 'blog');
 
-const calendar = JSON.parse(fs.readFileSync(CALENDAR_PATH, 'utf8'));
+let calendar;
+try {
+  calendar = JSON.parse(fs.readFileSync(CALENDAR_PATH, 'utf8'));
+} catch (e) {
+  console.error(`Failed to load content calendar from ${CALENDAR_PATH}: ${e.message}`);
+  console.error('Ensure data/content-calendar.json exists and is valid JSON.');
+  process.exit(1);
+}
 const today = new Date().toISOString().split('T')[0];
 
 const allPosts = [...(calendar.existing_posts || []), ...(calendar.year1 || [])];

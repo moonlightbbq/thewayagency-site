@@ -1,3 +1,4 @@
+/* Critical CSS — manually maintained subset of base.css + components.css for above-fold rendering. Keep in sync with source files. */
 /* ═══════════════════════════════════════════════
    CRITICAL CSS — Above-the-fold styles
    Inlined in <head> for fast first paint.

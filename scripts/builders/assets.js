@@ -111,7 +111,7 @@ function copyRootFiles(ROOT, BUILD) {
 
 function copyPortalPages(SRC, BUILD, injectVersion) {
   const portalPages = [
-    { src: 'intake.html', dest: 'intake/index.html', sitemap: '/intake/' },
+    { src: 'intake.html', dest: 'intake/index.html', sitemap: null }, // noindexed — exclude from sitemap
     { src: 'portal.html', dest: 'portal/index.html', sitemap: null },
     { src: 'partner.html', dest: 'partner/index.html', sitemap: null },
   ];

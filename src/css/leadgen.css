@@ -454,9 +454,9 @@
   right: 0;
   z-index: 999;
   background: var(--navy);
-  padding: 10px 16px;
+  padding: var(--space-sm) var(--space-md);
   display: flex;
-  gap: 8px;
+  gap: var(--space-sm);
   justify-content: center;
   align-items: center;
   box-shadow: 0 -2px 12px rgba(0,0,0,0.15);
@@ -473,9 +473,9 @@
   padding: 10px;
   background: transparent;
   border: 1.5px solid rgba(255,255,255,0.3);
-  border-radius: 6px;
+  border-radius: var(--border-radius);
   color: white;
-  font-size: 13px;
+  font-size: var(--text-xs);
   font-weight: 600;
   text-decoration: none;
   text-transform: uppercase;
@@ -505,10 +505,10 @@
 .exit-overlay--visible { opacity: 1 }
 .exit-popup {
   background: var(--white);
-  border-radius: 12px;
+  border-radius: 12px; /* --border-radius-lg is 10px; 12px intentional for larger modal */
   max-width: 460px;
   width: 100%;
-  padding: 40px;
+  padding: 40px; /* 2.5rem — no exact token; closest is --space-2xl (3rem) or --space-3xl (4rem) */
   position: relative;
   transform: translateY(20px);
   transition: transform 0.3s ease;

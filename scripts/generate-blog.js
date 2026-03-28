@@ -98,6 +98,10 @@ function parseFrontMatter(content) {
       if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
         value = value.slice(1, -1);
       }
+      // Parse inline YAML arrays: [item1, item2, item3]
+      if (value.startsWith('[') && value.endsWith(']')) {
+        value = value.slice(1, -1).split(',').map(s => s.trim()).filter(Boolean);
+      }
       meta[key] = value;
     }
   });
@@ -262,7 +266,7 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   <meta property="article:modified_time" content="${meta.modified || meta.date}">
   <meta property="article:author" content="${meta.author}">
   <meta property="article:section" content="${meta.category || 'insurance'}">
-  ${(meta.tags || '').replace(/[\[\]]/g, '').split(',').map(t => t.trim()).filter(Boolean).map(t => `<meta property="article:tag" content="${t}">`).join('\n  ')}
+  ${(Array.isArray(meta.tags) ? meta.tags : (meta.tags || '').replace(/[\[\]]/g, '').split(',')).map(t => t.trim()).filter(Boolean).map(t => `<meta property="article:tag" content="${t}">`).join('\n  ')}
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${meta.title}">
   <meta name="twitter:description" content="${meta.description || ''}">

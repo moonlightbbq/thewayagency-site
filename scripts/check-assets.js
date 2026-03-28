@@ -83,7 +83,7 @@ if (fs.existsSync(jsDir)) {
 
     // Syntax check
     try {
-      execSync(`node -c "${fp}"`, { stdio: 'pipe' });
+      execSync('node -c ' + JSON.stringify(fp), { stdio: 'pipe' });
     } catch {
       error(`JS syntax error in ${file}`);
       jsErrors++;

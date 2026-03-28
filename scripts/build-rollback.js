@@ -91,7 +91,12 @@ if (cmd === 'snapshot') {
   if (!fs.existsSync(BUILD)) { console.log('No build/ directory found.'); process.exit(1); }
   const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
   const archivePath = path.join(HISTORY, `build-${timestamp}.tar.gz`);
-  execSync(`tar -czf "${archivePath}" -C "${ROOT}" build/`, { stdio: 'pipe' });
+  try {
+    execSync(`tar -czf "${archivePath}" -C "${ROOT}" build/`, { stdio: 'pipe' });
+  } catch (e) {
+    console.error('Failed to create archive:', e.message);
+    process.exit(1);
+  }
 
   // Keep only last 5 archives
   const archives = fs.readdirSync(HISTORY).filter(f => f.startsWith('build-') && f.endsWith('.tar.gz')).sort();
@@ -154,7 +159,8 @@ if (cmd === 'snapshot') {
     const backupTs = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
     execSync(`tar -czf "${path.join(HISTORY, `pre-rollback-${backupTs}.tar.gz`)}" -C "${ROOT}" build/`, { stdio: 'pipe' });
   }
-  execSync(`rm -rf "${BUILD}" && tar -xzf "${archivePath}" -C "${ROOT}"`, { stdio: 'pipe' });
+  fs.rmSync(BUILD, { recursive: true, force: true });
+  execSync(`tar -xzf "${archivePath}" -C "${ROOT}"`, { stdio: 'pipe' });
   console.log(`Rolled back to ${arg}. Previous build backed up.`);
 
 } else {

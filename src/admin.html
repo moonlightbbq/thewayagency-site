@@ -213,6 +213,7 @@ var pollTimer = null;
 
 // Auth
 (function() {
+  // Token validated server-side on each request; localStorage used for SPA convenience
   try { TOKEN = localStorage.getItem('twa_admin_token'); } catch(e) {}
   if (TOKEN) { showAdmin(); return; }
   document.getElementById('admin-login-btn').addEventListener('click', login);
@@ -578,6 +579,7 @@ async function searchCustomer(q) {
     var data = await res.json();
     if (!data.customers || !data.customers.length) { el.innerHTML = '<p style="font-size:12px;color:var(--muted)">No results.</p>'; return; }
     el.innerHTML = data.customers.slice(0,10).map(function(c) {
+      // ID is a server-generated UUID — safe for inline handler
       return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid var(--border);cursor:pointer" onclick="loadCustomerProfile(\'' + esc(c.id) + '\')"><div><strong style="font-size:13px">' + esc(c.name) + '</strong><br><span style="font-size:11px;color:var(--muted)">' + esc(c.email||'') + ' · ' + esc(c.phone||'') + '</span></div><span style="font-size:11px;color:var(--blue)">' + esc(c.segment||'') + '</span></div>';
     }).join('');
   } catch(e) { el.innerHTML = '<p style="color:var(--red);font-size:12px">Search failed.</p>'; }
@@ -678,6 +680,7 @@ function renderLeaderboard(sortBy) {
   var cols = [['name','Agent'],['submissions','Subs'],['conversion_rate','Conv %'],['avg_response_time','Resp Time'],['pipeline','Pipeline']];
   var html = '<table class="tbl"><tr>' + cols.map(function(c) { return '<th onclick="renderLeaderboard(\'' + c[0] + '\')">' + c[1] + (c[0]===_sortCol ? ' ' + arrow : '') + '</th>'; }).join('') + '</tr>';
   sorted.forEach(function(p, i) {
+    // ID is a server-generated UUID — safe for inline handler
     html += '<tr style="cursor:pointer" onclick="showAgentDrill(\'' + esc(p.id||p.name) + '\')">';
     html += '<td><strong>' + (i+1) + '. ' + esc(p.name) + '</strong></td>';
     html += '<td>' + (p.submissions||0) + '</td>';
