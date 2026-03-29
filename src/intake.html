@@ -1374,6 +1374,8 @@ async function checkTakeover() {
       document.getElementById('step-takeover').classList.remove('hidden');
       document.getElementById('takeover-ref').textContent = 'Reference: #' + (data.reference || sessionId.slice(0, 8));
       document.getElementById('progress-wrap').classList.add('hidden');
+      var _timeEl2 = document.getElementById('time-estimate');
+      if (_timeEl2) _timeEl2.style.display = 'none';
       // Set agent name
       const agentName = data.agentName || 'An agent';
       document.getElementById('takeover-agent-name').textContent = agentName;
@@ -2355,6 +2357,8 @@ async function submitIntake() {
       document.getElementById('step-confirm').classList.remove('hidden');
       document.getElementById('ref-number').textContent = 'Reference: #' + data.reference;
       document.getElementById('progress-wrap').classList.add('hidden');
+      var _timeEl = document.getElementById('time-estimate');
+      if (_timeEl) _timeEl.style.display = 'none';
       // Personalize confirmation if agent is assigned
       if (window._assignedAgent) {
         const a = window._assignedAgent;
