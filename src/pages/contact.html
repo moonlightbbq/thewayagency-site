@@ -150,9 +150,9 @@
           <p>Select the type of coverage you need and we'll connect you with the right person.</p>
         </div>
         <div id="agent-wizard" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:var(--space-xl);">
-          <button class="btn btn--outline btn--lg" data-line="personal" onclick="showAgentsForLine('personal')" style="min-width:160px;">Personal</button>
-          <button class="btn btn--outline btn--lg" data-line="commercial" onclick="showAgentsForLine('commercial')" style="min-width:160px;">Commercial</button>
-          <button class="btn btn--outline btn--lg" data-line="life_health" onclick="showAgentsForLine('life_health')" style="min-width:160px;">Life &amp; Health</button>
+          <button type="button" class="btn btn--outline btn--lg" data-line="personal" style="min-width:160px;">Personal</button>
+          <button type="button" class="btn btn--outline btn--lg" data-line="commercial" style="min-width:160px;">Commercial</button>
+          <button type="button" class="btn btn--outline btn--lg" data-line="life_health" style="min-width:160px;">Life &amp; Health</button>
         </div>
         <div id="agent-results" style="display:none;">
           <div id="agent-cards" style="display:flex;gap:var(--space-lg);justify-content:center;flex-wrap:wrap;"></div>
@@ -165,7 +165,7 @@
     <section class="section">
       <div class="container">
         <div class="grid grid--2" style="gap:var(--space-3xl);">
-          <!-- Contact Info + Office -->
+          <!-- Contact Info -->
           <div>
             <h2>Reach us directly</h2>
             <p style="margin-bottom:var(--space-2xl);color:var(--slate);">We aim to respond within one business day. Phone is fastest, but email and text work too.</p>
@@ -191,44 +191,12 @@
                 <p style="color:var(--slate);">Monday – Friday: 8:30 AM – 5:00 PM<br>Saturday &amp; Sunday: Closed</p>
               </div>
             </div>
-
-            <!-- Request a Callback -->
-            <div style="margin-top:var(--space-2xl);padding:var(--space-xl);background:var(--linen);border-radius:var(--border-radius);">
-              <h3 style="font-size:var(--text-lg);margin-bottom:var(--space-sm);">Request a Callback</h3>
-              <p style="font-size:var(--text-sm);color:var(--slate);margin-bottom:var(--space-lg);">Leave your info and we'll call you back at a time that works.</p>
-              <form id="callbackForm" novalidate>
-                <div class="form-group">
-                  <label for="cb_name">Your Name *</label>
-                  <input type="text" id="cb_name" name="name" required autocomplete="name">
-                </div>
-                <div class="form-group">
-                  <label for="cb_phone">Phone Number *</label>
-                  <input type="tel" id="cb_phone" name="phone" required autocomplete="tel" placeholder="(555) 555-5555">
-                </div>
-                <div class="form-group">
-                  <label for="cb_time">Preferred Time</label>
-                  <select id="cb_time" name="preferred_time">
-                    <option value="">Any time during business hours</option>
-                    <option value="morning">Morning (8:30 – 11:00 AM)</option>
-                    <option value="afternoon">Afternoon (12:00 – 3:00 PM)</option>
-                    <option value="evening">Late Afternoon (3:00 – 5:00 PM)</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="cb_desc">What's this about?</label>
-                  <textarea id="cb_desc" name="description" rows="2" placeholder="Brief description (optional)"></textarea>
-                </div>
-                <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off">
-                <button type="submit" class="btn btn--primary" style="width:100%;">Request Callback</button>
-                <div id="cb-status" style="display:none;margin-top:var(--space-sm);font-size:var(--text-sm);text-align:center;" role="alert" aria-live="polite"></div>
-              </form>
-            </div>
           </div>
 
           <!-- Contact Form -->
           <div>
             <h2 id="contact-form-heading">Send us a message</h2>
-            <form id="contactForm" novalidate action="mailto:hello@thewayagency.com" method="POST" enctype="text/plain">
+            <form id="contactForm" novalidate>
               <!-- Honeypot -->
               <div style="position:absolute;left:-9999px" aria-hidden="true"><label for="_hp_co">Company</label><input type="text" id="_hp_co" name="_hp_company" tabindex="-1" autocomplete="off"></div>
               <div class="grid grid--2">
@@ -252,9 +220,10 @@
                 </div>
               </div>
               <div class="form-group">
-                <label for="subject">What can we help with?</label>
-                <select id="subject" name="subject">
+                <label for="subject">What can we help with? *</label>
+                <select id="subject" name="subject" required>
                   <option value="">Select one...</option>
+                  <option value="callback">Request a callback</option>
                   <option value="quote">I need a quote</option>
                   <option value="review">I want a coverage review</option>
                   <option value="claim">I have a question about a claim</option>
@@ -262,9 +231,18 @@
                   <option value="other">Something else</option>
                 </select>
               </div>
+              <div id="callback-time-group" class="form-group" style="display:none;">
+                <label for="cb_time">Preferred Callback Time</label>
+                <select id="cb_time" name="preferred_time">
+                  <option value="">Any time during business hours</option>
+                  <option value="morning">Morning (8:30 – 11:00 AM)</option>
+                  <option value="afternoon">Afternoon (12:00 – 3:00 PM)</option>
+                  <option value="evening">Late Afternoon (3:00 – 5:00 PM)</option>
+                </select>
+              </div>
               <div class="form-group">
-                <label for="message">Message * <span id="msg-counter" style="font-weight:400;color:var(--slate);float:right"></span></label>
-                <textarea id="message" name="message" required placeholder="Tell us how we can help..." maxlength="5000"></textarea>
+                <label for="message">Message <span id="msg-counter" style="font-weight:400;color:var(--slate);float:right"></span></label>
+                <textarea id="message" name="message" placeholder="Tell us how we can help..." maxlength="5000"></textarea>
               </div>
               <div id="contact-error" style="display:none;color:#ef4444;font-size:12px;margin-bottom:12px" role="alert" aria-live="polite"></div>
               <div id="contact-success" style="display:none;text-align:center;padding:var(--space-lg);background:#f0fdf4;border-radius:var(--border-radius);margin-bottom:12px">
@@ -292,7 +270,7 @@
   </main>
 
   <script>
-  // Agent data (from team.json)
+  // Agent data
   var AGENTS = [
     { slug: 'sheilia-royal', name: 'Sheilia Royal', title: 'Agency Principal', photo: '/src/assets/images/team/sheilia-royal.webp', lines: ['personal', 'commercial', 'life_health'], areas: ['Owensboro', 'Mt. Washington', 'Henderson', 'Louisville'] },
     { slug: 'audrey-lillpop', name: 'Audrey Lillpop', title: 'Licensed Agent', photo: '/src/assets/images/team/audrey-lillpop.webp', lines: ['personal'], areas: ['Owensboro', 'Henderson'] },
@@ -300,27 +278,37 @@
     { slug: 'jill-boone', name: 'Jill Boone', title: 'Licensed Agent', photo: '/src/assets/images/team/jill-boone.webp', lines: ['life_health'], areas: ['Mt. Washington', 'Louisville'] }
   ];
 
-  function showAgentsForLine(line) {
-    var btns = document.querySelectorAll('#agent-wizard button');
-    btns.forEach(function(b) { b.classList.toggle('btn--primary', b.getAttribute('data-line') === line); b.classList.toggle('btn--outline', b.getAttribute('data-line') !== line); });
-    var matches = AGENTS.filter(function(a) { return a.lines.indexOf(line) !== -1; });
-    var container = document.getElementById('agent-cards');
-    container.innerHTML = matches.map(function(a) {
-      return '<div class="card" style="text-align:center;padding:var(--space-xl);max-width:240px;flex:1;">' +
-        '<img src="' + a.photo + '" alt="' + a.name + '" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto var(--space-md);" onerror="this.outerHTML=\'<div style=\\\'width:80px;height:80px;border-radius:50%;background:var(--linen);margin:0 auto var(--space-md);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--stone);\\\'>' + a.name.charAt(0) + '</div>\'">' +
-        '<h3 style="font-size:var(--text-lg);margin-bottom:2px;">' + a.name + '</h3>' +
-        '<p style="font-size:var(--text-sm);color:var(--gold);font-weight:600;margin-bottom:var(--space-sm);">' + a.title + '</p>' +
-        '<p style="font-size:var(--text-xs);color:var(--slate);margin-bottom:var(--space-md);">' + a.areas.join(' · ') + '</p>' +
-        '<a href="#contact-form-heading" class="btn btn--primary btn--sm" onclick="prefillAgent(\'' + a.slug + '\', \'' + a.name.split(\' \')[0] + '\')">Contact ' + a.name.split(' ')[0] + '</a>' +
-        '</div>';
-    }).join('');
-    document.getElementById('agent-results').style.display = 'block';
-  }
+  // Agent wizard buttons
+  var wizardBtns = document.querySelectorAll('#agent-wizard button');
+  wizardBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var line = btn.getAttribute('data-line');
+      wizardBtns.forEach(function(b) {
+        b.classList.toggle('btn--primary', b.getAttribute('data-line') === line);
+        b.classList.toggle('btn--outline', b.getAttribute('data-line') !== line);
+      });
+      var matches = AGENTS.filter(function(a) { return a.lines.indexOf(line) !== -1; });
+      var container = document.getElementById('agent-cards');
+      container.innerHTML = matches.map(function(a) {
+        return '<div class="card" style="text-align:center;padding:var(--space-xl);max-width:240px;flex:1;">' +
+          '<img src="' + a.photo + '" alt="' + a.name + '" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto var(--space-md);" onerror="this.style.display=\'none\'">' +
+          '<h3 style="font-size:var(--text-lg);margin-bottom:2px;">' + a.name + '</h3>' +
+          '<p style="font-size:var(--text-sm);color:var(--gold);font-weight:600;margin-bottom:var(--space-sm);">' + a.title + '</p>' +
+          '<p style="font-size:var(--text-xs);color:var(--slate);margin-bottom:var(--space-md);">' + a.areas.join(' &middot; ') + '</p>' +
+          '<a href="#contact-form-heading" class="btn btn--primary btn--sm" data-agent="' + a.slug + '" data-first="' + a.name.split(' ')[0] + '">Contact ' + a.name.split(' ')[0] + '</a>' +
+          '</div>';
+      }).join('');
+      document.getElementById('agent-results').style.display = 'block';
 
-  function prefillAgent(slug, firstName) {
-    var msg = document.getElementById('message');
-    if (msg && !msg.value.trim()) msg.value = "I'd like to speak with " + firstName + ".";
-  }
+      // Bind contact buttons
+      container.querySelectorAll('[data-agent]').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+          var msg = document.getElementById('message');
+          if (msg && !msg.value.trim()) msg.value = "I'd like to speak with " + link.getAttribute('data-first') + ".";
+        });
+      });
+    });
+  });
 
   // ?agent= pre-selection
   (function() {
@@ -335,66 +323,17 @@
       '<img src="' + agent.photo + '" alt="' + agent.name + '" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'">' +
       '<div><h3 style="font-size:var(--text-lg);margin-bottom:2px;">' + agent.name + '</h3>' +
       '<p style="font-size:var(--text-sm);color:var(--gold);font-weight:600;">' + agent.title + '</p>' +
-      '<p style="font-size:var(--text-sm);color:var(--slate);margin-top:4px;">' + agent.areas.join(' · ') + '</p></div></div>';
+      '<p style="font-size:var(--text-sm);color:var(--slate);margin-top:4px;">' + agent.areas.join(' &middot; ') + '</p></div></div>';
     var msg = document.getElementById('message');
     if (msg && !msg.value.trim()) msg.value = "I'd like to speak with " + agent.name.split(' ')[0] + ".";
   })();
 
-  // Callback form submission
-  document.getElementById('callbackForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    var form = e.target;
-    var name = form.querySelector('#cb_name').value.trim();
-    var phone = form.querySelector('#cb_phone').value.trim();
-    var time = form.querySelector('#cb_time').value;
-    var desc = form.querySelector('#cb_desc').value.trim();
-    var hp = form.querySelector('[name="_hp_company"]').value;
-    var status = document.getElementById('cb-status');
-
-    if (!name || !phone) {
-      status.style.display = 'block';
-      status.style.color = '#ef4444';
-      status.textContent = 'Please enter your name and phone number.';
-      return;
-    }
-
-    var btn = form.querySelector('button[type="submit"]');
-    btn.textContent = 'Sending...';
-    btn.disabled = true;
-
-    fetch('https://sage.thewayagency.com/api/intake/lead', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: name,
-        phone: phone,
-        source: 'callback_request',
-        notes: (time ? 'Preferred time: ' + time + '. ' : '') + desc,
-        _hp_company: hp,
-        page: '/contact.html',
-        referrer: document.referrer || 'direct'
-      })
-    }).then(function(r) { return r.json(); }).then(function(data) {
-      status.style.display = 'block';
-      if (data.ok) {
-        status.style.color = '#16a34a';
-        status.textContent = 'Got it! We\'ll call you back soon.';
-        form.reset();
-      } else {
-        status.style.color = '#ef4444';
-        status.textContent = data.error || 'Something went wrong. Please try again.';
-      }
-    }).catch(function() {
-      status.style.display = 'block';
-      status.style.color = '#ef4444';
-      status.textContent = 'Connection error. Please try again or call us directly.';
-    }).finally(function() {
-      btn.textContent = 'Request Callback';
-      btn.disabled = false;
-    });
+  // Show/hide callback time field based on subject
+  document.getElementById('subject').addEventListener('change', function() {
+    document.getElementById('callback-time-group').style.display = this.value === 'callback' ? '' : 'none';
   });
 
-  // ── Contact Form Validation + Submit ──
+  // ── Contact Form ──
   (function() {
     var form = document.getElementById('contactForm');
     var btn = document.getElementById('contact-submit-btn');
@@ -403,7 +342,6 @@
     var msgInput = document.getElementById('message');
     var counter = document.getElementById('msg-counter');
 
-    // Message character counter
     if (msgInput && counter) {
       msgInput.addEventListener('input', function() { counter.textContent = this.value.length + '/5000'; });
     }
@@ -416,20 +354,27 @@
       var lname = document.getElementById('c_lname').value.trim();
       var email = document.getElementById('c_email').value.trim();
       var phone = document.getElementById('c_phone').value.trim();
+      var subject = document.getElementById('subject').value;
       var msg = msgInput.value.trim();
       var hp = document.getElementById('_hp_co').value;
+      var cbTime = document.getElementById('cb_time').value;
 
-      // Honeypot
       if (hp) return;
 
-      // Validation
       if (!fname || fname.length > 100) { showErr('Please enter a valid first name.'); return; }
       if (!lname || lname.length > 100) { showErr('Please enter a valid last name.'); return; }
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 254) { showErr('Please enter a valid email address.'); return; }
       if (phone && phone.replace(/\D/g, '').length < 7) { showErr('Please enter a valid phone number.'); return; }
-      if (!msg || msg.length > 5000) { showErr('Please enter a message (max 5000 characters).'); return; }
+      if (!subject) { showErr('Please select what we can help with.'); return; }
+      if (msg && msg.length > 5000) { showErr('Message must be under 5000 characters.'); return; }
 
-      // Rate limit: 3 per hour
+      // For callbacks, require phone
+      if (subject === 'callback' && (!phone || phone.replace(/\D/g, '').length < 7)) {
+        showErr('Please enter a valid phone number for callback requests.');
+        return;
+      }
+
+      // Rate limit
       try {
         var stamps = JSON.parse(localStorage.getItem('twa_contact_ts') || '[]');
         var hourAgo = Date.now() - 3600000;
@@ -439,19 +384,31 @@
         localStorage.setItem('twa_contact_ts', JSON.stringify(stamps));
       } catch(e) {}
 
-      // Double-submit prevention
       btn.disabled = true; btn.textContent = 'Sending...';
       var reenableTimer = setTimeout(function() { btn.disabled = false; btn.textContent = 'Send Message'; }, 5000);
 
+      var payload = {
+        firstName: fname, lastName: lname, email: email, phone: phone,
+        subject: subject, message: msg,
+        source: subject === 'callback' ? 'callback_request' : 'contact_form',
+        _hp_company: hp, page: '/contact.html'
+      };
+      if (subject === 'callback' && cbTime) {
+        payload.message = (cbTime ? 'Preferred callback time: ' + cbTime + '. ' : '') + (msg || '');
+      }
+
       fetch('https://sage.thewayagency.com/api/intake/lead', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ firstName: fname, lastName: lname, email: email, phone: phone, subject: document.getElementById('subject').value, message: msg, source: 'contact_form', _hp_company: hp })
+        body: JSON.stringify(payload)
       }).then(function(r) { return r.json(); }).then(function(d) {
         clearTimeout(reenableTimer);
         if (d.ok) {
           form.style.display = 'none';
           successEl.style.display = 'block';
-          document.getElementById('contact-success-msg').textContent = 'Thanks, ' + fname + '! We\'ll get back to you within one business day.' + (d.reference ? ' Ref: #' + d.reference : '');
+          var successMsg = subject === 'callback'
+            ? 'Thanks, ' + fname + '! We\'ll call you back soon.'
+            : 'Thanks, ' + fname + '! We\'ll get back to you within one business day.';
+          document.getElementById('contact-success-msg').textContent = successMsg + (d.reference ? ' Ref: #' + d.reference : '');
         } else { showErr(d.error || 'Submission failed. Please try again.'); btn.disabled = false; btn.textContent = 'Send Message'; }
       }).catch(function() {
         clearTimeout(reenableTimer);
