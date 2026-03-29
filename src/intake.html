@@ -1303,7 +1303,7 @@ function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').
 
 // ── Auto-save / abandoned form tracking ─────────────────────────────────────
 // As soon as we have name + contact info, save partial data to server
-async function trackPartial() {
+async function trackPartial(notify) {
   const firstName = v('i_fname'), lastName = v('i_lname');
   const email = v('i_email'), phone = v('i_phone');
   if (!firstName || !lastName) return;
@@ -1322,6 +1322,7 @@ async function trackPartial() {
         products: selectedProducts,
         step: currentStep,
         agent: _agentParam,
+        notify: !!notify,
         _hp_company: document.getElementById('_hp_company')?.value || '',
         cfToken: turnstileToken || '',
         twa_vid: sessionId || getVisitorId(),
@@ -1568,8 +1569,8 @@ async function nextStep(from) {
       if (!valid) return;
     }
 
-    // Fire tracking immediately on step 1 completion (don't rely on debounce)
-    trackPartial();
+    // Fire tracking immediately on step 1 completion with notify flag
+    trackPartial(true);
   }
   if (from === 2) {
     const err = document.getElementById('step2-error');
