@@ -1156,6 +1156,7 @@
   // 15. LIVE CHAT WIDGET (AI Chatbot with Streaming)
   // ═══════════════════════════════════════════════
   function initChatWidget() {
+    return; // Chat widget temporarily disabled
     const path = window.location.pathname;
     if (path.startsWith('/intake') || path.startsWith('/portal') || path.startsWith('/partner') || path.startsWith('/admin')) return;
 
