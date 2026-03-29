@@ -2586,6 +2586,11 @@ function restoreDraft(draft) {
   // Navigate to the step the user was on (but cap at step 2 — step 3/4 have dynamic content)
   const targetStep = Math.min(draft.step || 1, 2);
   if (targetStep > 1) showStep(targetStep);
+  // If resuming with contact info already filled, fire notify so agent gets assigned
+  if (draft.fields.i_email && draft.fields.i_phone && draft.fields.i_fname && draft.fields.i_lname) {
+    contactValidated = true; // skip re-validation on resume
+    setTimeout(() => trackPartial(true), 500);
+  }
 }
 
 // Debounced auto-save on any input change
