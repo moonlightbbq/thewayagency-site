@@ -142,26 +142,6 @@
   </section>
 
   <main id="main">
-    <!-- Find Your Agent -->
-    <section class="section" style="padding-bottom:0;">
-      <div class="container">
-        <div class="section-header">
-          <h2>Find Your Agent</h2>
-          <p>Select the type of coverage you need and we'll connect you with the right person.</p>
-        </div>
-        <div id="agent-wizard" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:var(--space-xl);">
-          <button type="button" class="btn btn--outline btn--lg" data-line="personal" style="min-width:160px;">Personal</button>
-          <button type="button" class="btn btn--outline btn--lg" data-line="commercial" style="min-width:160px;">Commercial</button>
-          <button type="button" class="btn btn--outline btn--lg" data-line="life_health" style="min-width:160px;">Life &amp; Health</button>
-        </div>
-        <div id="agent-results" style="display:none;">
-          <div id="agent-cards" style="display:flex;gap:var(--space-lg);justify-content:center;flex-wrap:wrap;"></div>
-        </div>
-        <!-- Pre-selected agent highlight -->
-        <div id="agent-preselect" style="display:none;margin-bottom:var(--space-xl);"></div>
-      </div>
-    </section>
-
     <section class="section">
       <div class="container">
         <div class="grid grid--2" style="gap:var(--space-3xl);">
@@ -270,64 +250,6 @@
   </main>
 
   <script>
-  // Agent data
-  var AGENTS = [
-    { slug: 'sheilia-royal', name: 'Sheilia Royal', title: 'Agency Principal', photo: '/src/assets/images/team/sheilia-royal.webp', lines: ['personal', 'commercial', 'life_health'], areas: ['Owensboro', 'Mt. Washington', 'Henderson', 'Louisville'] },
-    { slug: 'audrey-lillpop', name: 'Audrey Lillpop', title: 'Licensed Agent', photo: '/src/assets/images/team/audrey-lillpop.webp', lines: ['personal'], areas: ['Owensboro', 'Henderson'] },
-    { slug: 'kelly-mccallister', name: 'Kelly McCallister', title: 'Client Care Specialist', photo: '/src/assets/images/team/kelly-mccallister.webp', lines: ['commercial'], areas: ['Owensboro', 'Henderson', 'Evansville'] },
-    { slug: 'jill-boone', name: 'Jill Boone', title: 'Licensed Agent', photo: '/src/assets/images/team/jill-boone.webp', lines: ['life_health'], areas: ['Mt. Washington', 'Louisville'] }
-  ];
-
-  // Agent wizard buttons
-  var wizardBtns = document.querySelectorAll('#agent-wizard button');
-  wizardBtns.forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var line = btn.getAttribute('data-line');
-      wizardBtns.forEach(function(b) {
-        b.classList.toggle('btn--primary', b.getAttribute('data-line') === line);
-        b.classList.toggle('btn--outline', b.getAttribute('data-line') !== line);
-      });
-      var matches = AGENTS.filter(function(a) { return a.lines.indexOf(line) !== -1; });
-      var container = document.getElementById('agent-cards');
-      container.innerHTML = matches.map(function(a) {
-        return '<div class="card" style="text-align:center;padding:var(--space-xl);max-width:240px;flex:1;">' +
-          '<img src="' + a.photo + '" alt="' + a.name + '" style="width:80px;height:80px;border-radius:50%;object-fit:cover;margin:0 auto var(--space-md);" onerror="this.style.display=\'none\'">' +
-          '<h3 style="font-size:var(--text-lg);margin-bottom:2px;">' + a.name + '</h3>' +
-          '<p style="font-size:var(--text-sm);color:var(--gold);font-weight:600;margin-bottom:var(--space-sm);">' + a.title + '</p>' +
-          '<p style="font-size:var(--text-xs);color:var(--slate);margin-bottom:var(--space-md);">' + a.areas.join(' &middot; ') + '</p>' +
-          '<a href="#contact-form-heading" class="btn btn--primary btn--sm" data-agent="' + a.slug + '" data-first="' + a.name.split(' ')[0] + '">Contact ' + a.name.split(' ')[0] + '</a>' +
-          '</div>';
-      }).join('');
-      document.getElementById('agent-results').style.display = 'block';
-
-      // Bind contact buttons
-      container.querySelectorAll('[data-agent]').forEach(function(link) {
-        link.addEventListener('click', function(e) {
-          var msg = document.getElementById('message');
-          if (msg && !msg.value.trim()) msg.value = "I'd like to speak with " + link.getAttribute('data-first') + ".";
-        });
-      });
-    });
-  });
-
-  // ?agent= pre-selection
-  (function() {
-    var params = new URLSearchParams(window.location.search);
-    var agentSlug = params.get('agent');
-    if (!agentSlug) return;
-    var agent = AGENTS.find(function(a) { return a.slug === agentSlug; });
-    if (!agent) return;
-    var container = document.getElementById('agent-preselect');
-    container.style.display = 'block';
-    container.innerHTML = '<div class="card" style="display:flex;align-items:center;gap:var(--space-lg);padding:var(--space-lg);border:2px solid var(--gold);">' +
-      '<img src="' + agent.photo + '" alt="' + agent.name + '" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display=\'none\'">' +
-      '<div><h3 style="font-size:var(--text-lg);margin-bottom:2px;">' + agent.name + '</h3>' +
-      '<p style="font-size:var(--text-sm);color:var(--gold);font-weight:600;">' + agent.title + '</p>' +
-      '<p style="font-size:var(--text-sm);color:var(--slate);margin-top:4px;">' + agent.areas.join(' &middot; ') + '</p></div></div>';
-    var msg = document.getElementById('message');
-    if (msg && !msg.value.trim()) msg.value = "I'd like to speak with " + agent.name.split(' ')[0] + ".";
-  })();
-
   // Show/hide callback time field based on subject
   document.getElementById('subject').addEventListener('change', function() {
     document.getElementById('callback-time-group').style.display = this.value === 'callback' ? '' : 'none';

@@ -1570,8 +1570,8 @@ async function nextStep(from) {
       if (!valid) return;
     }
 
-    // Fire tracking immediately on step 1 completion with notify flag
-    trackPartial(true);
+    // Fire tracking immediately on step 1 completion with notify flag (awaited so sessionId is set before step 2)
+    await trackPartial(true);
   }
   if (from === 2) {
     const err = document.getElementById('step2-error');
