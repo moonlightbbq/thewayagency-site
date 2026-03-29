@@ -1028,6 +1028,7 @@ let contactValidated = false;  // Whether silent validation has passed
 let pollTimer = null;          // Polls for agent takeover
 let turnstileToken = null;     // Cloudflare Turnstile token
 let turnstileWidgetId = null;  // Widget ID for reset
+const _agentParam = new URLSearchParams(window.location.search).get('agent') || '';
 
 // ── Product catalog (drives the dynamic grid) ───────────────────────────────
 const PRODUCTS = [
@@ -1320,6 +1321,7 @@ async function trackPartial() {
         address: v('i_address'), city: v('i_city'), state: v('i_state'), zip: v('i_zip'),
         products: selectedProducts,
         step: currentStep,
+        agent: _agentParam,
         _hp_company: document.getElementById('_hp_company')?.value || '',
         cfToken: turnstileToken || '',
         twa_vid: sessionId || getVisitorId(),
@@ -1565,6 +1567,9 @@ async function nextStep(from) {
       const valid = await validateContacts();
       if (!valid) return;
     }
+
+    // Fire tracking immediately on step 1 completion (don't rely on debounce)
+    trackPartial();
   }
   if (from === 2) {
     const err = document.getElementById('step2-error');
