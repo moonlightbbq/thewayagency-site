@@ -25,13 +25,12 @@
   <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
 
   <style>
-    .loc-grid-2col { display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2xl);align-items:start;max-width:900px;margin:0 auto; }
-    .loc-office { padding:var(--space-xl); }
-    .loc-office-label { font-size:var(--text-sm);font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px; }
-    .loc-team-card { display:flex;align-items:center;gap:12px;padding:12px;background:var(--linen);border-radius:var(--border-radius); }
-    .loc-team-card img { width:44px;height:44px;border-radius:50%;object-fit:cover; }
-    .loc-team-card p:first-child { font-weight:600;font-size:var(--text-sm); }
-    .loc-team-card p:last-child { font-size:12px;color:var(--slate); }
+    .loc-contact-strip { display:flex;justify-content:center;gap:var(--space-2xl);flex-wrap:wrap; }
+    .loc-contact-strip > div { display:flex;align-items:flex-start;gap:10px;text-align:left; }
+    .loc-contact-strip svg { flex-shrink:0;margin-top:2px; }
+    .loc-contact-label { display:block;font-size:11px;font-weight:600;color:var(--slate);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px; }
+    .loc-contact-strip a { color:var(--navy);font-weight:600;text-decoration:none; }
+    .loc-contact-strip a:hover { color:var(--blue); }
     .loc-state-header { display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:var(--space-sm); }
     .loc-state-header h2 { margin:0; }
     .loc-state-badge { display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:var(--navy);color:#fff;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.5px; }
@@ -47,8 +46,9 @@
       .loc-city-grid { grid-template-columns:repeat(2,1fr); }
     }
     @media (max-width: 640px) {
-      .loc-grid-2col { grid-template-columns:1fr; }
       .loc-city-grid { grid-template-columns:1fr 1fr; }
+      .loc-contact-strip { gap:var(--space-lg);flex-direction:column;align-items:center; }
+      .loc-contact-strip > div { text-align:center;flex-direction:column;align-items:center; }
     }
     @media (max-width: 400px) {
       .loc-city-grid { grid-template-columns:1fr; }
@@ -158,46 +158,8 @@
       <button class="nav__toggle" id="navToggle" aria-label="Toggle menu"><span></span><span></span><span></span></button>
     </div>
   </nav>
-  <section class="hero" style="min-height:40vh;"><div class="hero__bg"></div><div class="hero__texture"></div><div class="hero__content"><p class="hero__eyebrow">Three States. Dozens of Communities.</p><h1 class="hero__title">Where we serve</h1><p class="hero__subtitle">Licensed in Kentucky, Indiana, and Tennessee. Invested in the families and businesses that make these communities home.</p></div><div class="hero__accent"></div></section>
+  <section class="hero" style="min-height:40vh;"><div class="hero__bg"></div><div class="hero__texture"></div><div class="hero__content"><p class="hero__eyebrow">Three States. Dozens of Communities.</p><h1 class="hero__title">Where we serve</h1><p class="hero__subtitle">Licensed in Kentucky, Indiana, and Tennessee. Invested in the families and businesses that make these communities home. We meet you where it is convenient — by phone, video, email, text, or in person.</p><div style="margin-top:var(--space-lg);"><a href="/about/team.html" class="btn btn--outline-white">Meet Our Team</a></div></div><div class="hero__accent"></div></section>
   <main id="main">
-    <!-- Office Card -->
-    <section class="section">
-      <div class="container">
-        <div class="loc-grid-2col">
-          <div class="card loc-office">
-            <h2 style="font-size:var(--text-xl);margin-bottom:var(--space-lg);">Owensboro Office</h2>
-            <div style="display:flex;flex-direction:column;gap:var(--space-md);">
-              <div>
-                <p class="loc-office-label">Address</p>
-                <address style="font-style:normal;line-height:1.6;">PO Box 187<br>Owensboro, KY 42302</address>
-              </div>
-              <div>
-                <p class="loc-office-label">Phone</p>
-                <a href="tel:+15024135335" style="font-size:var(--text-lg);font-weight:600;color:var(--navy);">(502) 413-5335</a>
-              </div>
-              <div>
-                <p class="loc-office-label">Email</p>
-                <a href="mailto:hello@thewayagency.com" style="color:var(--blue);">hello@thewayagency.com</a>
-              </div>
-              <div>
-                <p class="loc-office-label">Hours</p>
-                <p style="line-height:1.6;">Monday – Friday: 8:30 AM – 5:00 PM<br>Saturday &amp; Sunday: Closed</p>
-              </div>
-              <a href="https://maps.google.com/?q=Owensboro+KY+42302" target="_blank" rel="noopener" class="btn btn--outline" style="margin-top:var(--space-sm);">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:4px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                Get Directions
-              </a>
-            </div>
-          </div>
-          <div>
-            <h3 style="margin-bottom:var(--space-md);">Serving KY, IN &amp; TN</h3>
-            <p style="color:var(--slate);line-height:1.8;margin-bottom:var(--space-lg);">We do not operate out of a traditional storefront — and that is by design. We invest what would be overhead back into the communities we serve. We meet you where it is convenient: by phone, video, email, text, or in person.</p>
-            <a href="/about/team.html" class="btn btn--outline" style="margin-top:var(--space-sm);">Meet Our Team &rarr;</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <section class="section section--light">
       <div class="container">
         <div class="loc-state-header">
@@ -323,6 +285,30 @@
             <div class="loc-city-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
             <div><span class="loc-city-name">Johnson City</span><span class="loc-city-county">Washington County</span></div>
           </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container" style="text-align:center;">
+        <h2 style="font-size:var(--text-xl);margin-bottom:var(--space-lg);">Get in Touch</h2>
+        <div class="loc-contact-strip">
+          <div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <div><span class="loc-contact-label">Address</span><span>PO Box 187, Owensboro, KY 42302</span></div>
+          </div>
+          <div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            <div><span class="loc-contact-label">Phone</span><a href="tel:+15024135335">(502) 413-5335</a></div>
+          </div>
+          <div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            <div><span class="loc-contact-label">Email</span><a href="mailto:hello@thewayagency.com">hello@thewayagency.com</a></div>
+          </div>
+          <div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <div><span class="loc-contact-label">Hours</span><span>Mon–Fri: 8:30 AM – 5:00 PM</span></div>
+          </div>
         </div>
       </div>
     </section>
