@@ -1335,7 +1335,7 @@ async function trackPartial(notify) {
       contactTracked = true;
       // Start polling for agent takeover
       if (!pollTimer) {
-        pollTimer = setInterval(checkTakeover, 5000);
+        pollTimer = setInterval(checkTakeover, _pollInterval);
       }
     }
   } catch (e) { /* silent */ }
@@ -1363,6 +1363,7 @@ async function checkTakeover() {
   if (!sessionId) return;
   try {
     const res = await fetch(SAGE_API + `/api/intake/status/${sessionId}`);
+    if (res.status === 429) throw new Error('rate limited');
     const data = await res.json();
     if (data.claimed && !_takeoverShown) {
       _takeoverShown = true;
@@ -1393,7 +1394,7 @@ async function checkTakeover() {
     }
   }
 }
-let _pollInterval = 5000;
+let _pollInterval = 10000;
 
 // ── Prospect responds to the agent's call offer ─────────────────────────────
 async function respondToOffer(choice) {
