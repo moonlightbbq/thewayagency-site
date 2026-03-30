@@ -1448,16 +1448,18 @@
       if (el) el.remove();
     }
 
-    function addConfirmationCard(actionData) {
-      var agentSlug = (actionData && actionData.agent) || '';
-      var agentName = AGENT_NAMES[agentSlug] || 'Our team';
+    function addConfirmationCard(eventData) {
+      // Use actual agent name from backend (not the bot's guess)
+      var agentName = (eventData && eventData.agentName) || 'Our team';
+      var reference = (eventData && eventData.reference) || '';
       var card = document.createElement('div');
       card.style.cssText = 'margin:8px 0;padding:12px 14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-size:13px;color:#166534;line-height:1.5;';
+      var refLine = reference ? '<div style="margin-top:4px;font-size:12px;color:#166534;">Reference: #' + reference + '</div>' : '';
       card.innerHTML = '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-weight:600;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg> Info submitted</div>' +
-        agentName + ' will reach out within one business day.';
+        agentName + ' will reach out within one business day.' + refLine;
       msgsArea.appendChild(card);
       msgsArea.scrollTop = msgsArea.scrollHeight;
-      track('chatbot_lead_submitted', { category: 'conversion', agent: agentSlug });
+      track('chatbot_lead_submitted', { category: 'conversion', agent: agentName, reference: reference });
     }
 
     // Restore saved messages into the DOM
@@ -1537,7 +1539,10 @@
               if (chunk.done) {
                 if (chunk.action === 'connect_agent' && chunk.data) {
                   actionData = chunk.data;
-                  track('chatbot_agent_suggested', { category: 'engagement', agent: chunk.data.agent || '' });
+                  // Capture actual assignment from backend (not bot's guess)
+                  if (chunk.agentName) actionData.agentName = chunk.agentName;
+                  if (chunk.reference) actionData.reference = chunk.reference;
+                  track('chatbot_agent_suggested', { category: 'engagement', agent: chunk.agentName || chunk.data.agent || '' });
                 }
               }
             } catch(pe) { /* skip malformed lines */ }
@@ -1555,7 +1560,9 @@
             }
             if (lastChunk.done && lastChunk.action === 'connect_agent' && lastChunk.data) {
               actionData = lastChunk.data;
-              track('chatbot_agent_suggested', { category: 'engagement', agent: lastChunk.data.agent || '' });
+              if (lastChunk.agentName) actionData.agentName = lastChunk.agentName;
+              if (lastChunk.reference) actionData.reference = lastChunk.reference;
+              track('chatbot_agent_suggested', { category: 'engagement', agent: lastChunk.agentName || lastChunk.data.agent || '' });
             }
           } catch(pe2) {}
         }
