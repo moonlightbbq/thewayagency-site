@@ -1295,7 +1295,7 @@
     fetch(SAGE_API + '/api/status', statusController ? { signal: statusController.signal } : {})
       .then(function(r) { clearTimeout(statusTimeout); return r.json(); })
       .then(function(data) { if (data && data.chatEnabled === false) return; renderChatWidget(); })
-      .catch(function() { clearTimeout(statusTimeout); renderChatWidget(); });
+      .catch(function() { clearTimeout(statusTimeout); /* fail closed — do not render chat */ });
 
     function renderChatWidget() {
 
@@ -1639,8 +1639,8 @@
     }
 
     var afterHours = isAfterHours();
-    var afterHoursWelcome = 'Hey there! You\u2019ve reached us after hours, but I can get your info to an agent who will reach out first thing next business day. What can I help you with?';
-    var defaultWelcome = 'Hi! I can help connect you with one of our licensed agents. What are you looking for today?';
+    var afterHoursWelcome = 'Hey there! You\u2019ve reached us after hours. I\u2019m an AI assistant \u2014 I can get your info to a licensed agent who will reach out first thing next business day. What can I help you with?';
+    var defaultWelcome = 'Hi! I\u2019m an AI assistant for The Way Agency \u2014 I can collect your info and connect you with a licensed agent. What are you looking for today?';
 
     // ─── Toggle panel ────────────────────────────
     function openChat() {
