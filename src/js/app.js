@@ -452,24 +452,64 @@
     const nav = $('#nav');
     if (!toggle || !links) return;
 
+    // Create backdrop element for smooth opacity animation
+    const backdrop = document.createElement('div');
+    backdrop.className = 'nav__backdrop';
+    backdrop.setAttribute('aria-hidden', 'true');
+    nav.parentElement.insertBefore(backdrop, nav.nextSibling);
+
+    // iOS-safe scroll lock
+    function lockScroll() {
+      document.documentElement.style.setProperty('--scroll-y', window.scrollY + 'px');
+      document.body.classList.add('nav-open');
+    }
+    function unlockScroll() {
+      const scrollY = parseInt(document.documentElement.style.getPropertyValue('--scroll-y') || '0', 10);
+      document.body.classList.remove('nav-open');
+      document.documentElement.style.removeProperty('--scroll-y');
+      window.scrollTo(0, scrollY);
+    }
+
+    function closeAllDropdowns() {
+      $$('.nav__dropdown').forEach(d => d.classList.remove('nav__dropdown--open'));
+      $$('.nav__dropdown > .nav__link').forEach(l => l.setAttribute('aria-expanded', 'false'));
+    }
+
     function closeMenu() {
       links.classList.remove('nav__links--open');
       toggle.classList.remove('nav__toggle--open');
-      document.body.classList.remove('nav-open');
+      backdrop.classList.remove('nav__backdrop--visible');
       toggle.setAttribute('aria-expanded', 'false');
+      closeAllDropdowns();
+      unlockScroll();
     }
 
     toggle.addEventListener('click', () => {
       const opening = !links.classList.contains('nav__links--open');
-      links.classList.toggle('nav__links--open');
-      toggle.classList.toggle('nav__toggle--open');
-      document.body.classList.toggle('nav-open');
-      toggle.setAttribute('aria-expanded', String(opening));
+      if (opening) {
+        lockScroll();
+        links.classList.add('nav__links--open');
+        toggle.classList.add('nav__toggle--open');
+        backdrop.classList.add('nav__backdrop--visible');
+        toggle.setAttribute('aria-expanded', 'true');
+      } else {
+        closeMenu();
+      }
     });
 
+    backdrop.addEventListener('click', closeMenu);
+
     document.addEventListener('click', (e) => {
-      if (links.classList.contains('nav__links--open') && !links.contains(e.target) && !toggle.contains(e.target)) {
+      if (links.classList.contains('nav__links--open') && !links.contains(e.target) && !toggle.contains(e.target) && !backdrop.contains(e.target)) {
         closeMenu();
+      }
+    });
+
+    // Escape key closes entire menu
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && links.classList.contains('nav__links--open')) {
+        closeMenu();
+        toggle.focus();
       }
     });
 
@@ -477,22 +517,28 @@
       if (nav) nav.classList.toggle('nav--scrolled', window.scrollY > 10);
     }, { passive: true });
 
+    // Dropdown accordion behavior (only one open at a time)
     $$('.nav__dropdown > .nav__link').forEach(link => {
       link.setAttribute('aria-expanded', 'false');
       link.addEventListener('click', (e) => {
         if (window.innerWidth <= 968) {
           e.preventDefault();
-          const isOpen = link.parentElement.classList.toggle('nav__dropdown--open');
-          link.setAttribute('aria-expanded', isOpen);
+          const dropdown = link.parentElement;
+          const wasOpen = dropdown.classList.contains('nav__dropdown--open');
+          closeAllDropdowns();
+          if (!wasOpen) {
+            dropdown.classList.add('nav__dropdown--open');
+            link.setAttribute('aria-expanded', 'true');
+          }
         }
       });
-      // Keyboard: Enter/Space opens, Escape closes, ArrowDown moves into menu
       link.addEventListener('keydown', (e) => {
         const dropdown = link.parentElement;
         const menu = dropdown.querySelector('.nav__dropdown-menu');
         if (!menu) return;
         if (e.key === 'ArrowDown') {
           e.preventDefault();
+          closeAllDropdowns();
           dropdown.classList.add('nav__dropdown--open');
           link.setAttribute('aria-expanded', 'true');
           const firstItem = menu.querySelector('.nav__dropdown-item');
@@ -521,7 +567,7 @@
       });
     });
 
-    // Track nav link clicks (Phase 2: CRO measurement)
+    // Track nav link clicks
     $$('.nav__dropdown-item, .nav__link').forEach(link => {
       link.addEventListener('click', () => {
         track('nav_click', {
@@ -1156,7 +1202,6 @@
   // 15. LIVE CHAT WIDGET (AI Chatbot with Streaming)
   // ═══════════════════════════════════════════════
   function initChatWidget() {
-    return; // Chat widget temporarily disabled
     const path = window.location.pathname;
     if (path.startsWith('/intake') || path.startsWith('/portal') || path.startsWith('/partner') || path.startsWith('/admin')) return;
 
@@ -1321,81 +1366,23 @@
       if (el) el.remove();
     }
 
-    function addActionButtons(actionData) {
-      var container = document.createElement('div');
-      container.className = 'twa-cb-actions';
-
-      var agentSlug = (actionData && actionData.agent) || 'sheilia-royal';
-      var agentName = AGENT_NAMES[agentSlug] || 'our team';
-      var product = (actionData && actionData.product) || detectProduct() || '';
-      var visitorName = (actionData && actionData.name) || '';
-      var email = (actionData && actionData.email) || '';
-      var phone = (actionData && actionData.phone) || '';
-      var state = (actionData && actionData.state) || '';
-      var city = (actionData && actionData.city) || '';
-
-      // "Start a Quote" button
-      var quoteBtn = document.createElement('button');
-      quoteBtn.className = 'twa-cb-action-btn primary';
-      quoteBtn.textContent = 'Start a Quote \u2192';
-      quoteBtn.addEventListener('click', function() {
-        var params = new URLSearchParams();
-        if (visitorName) params.set('name', visitorName);
-        if (email) params.set('email', email);
-        if (product) params.set('product', product);
-        params.set('agent', agentSlug);
-        params.set('src', 'chatbot');
-        track('chatbot_quote_clicked', { category: 'conversion', agent: agentSlug, product: product });
-        window.location.href = '/intake/?' + params.toString();
-      });
-
-      // "Request a Callback" button
-      var callbackBtn = document.createElement('button');
-      callbackBtn.className = 'twa-cb-action-btn secondary';
-      callbackBtn.textContent = 'Request a Callback';
-      callbackBtn.addEventListener('click', async function() {
-        callbackBtn.disabled = true;
-        callbackBtn.textContent = 'Sending...';
-        track('chatbot_callback_requested', { category: 'conversion', agent: agentSlug, product: product });
-        try {
-          var nameParts = visitorName.split(' ');
-          await fetch(SAGE_API + '/api/intake/lead', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              firstName: nameParts[0] || '',
-              lastName: nameParts.slice(1).join(' ') || '',
-              phone: phone,
-              email: email,
-              product: product,
-              state: state,
-              city: city,
-              source: 'chatbot_callback',
-              agent: agentSlug
-            })
-          });
-          callbackBtn.textContent = 'Done! ' + agentName + ' will reach out shortly.';
-          callbackBtn.style.background = '#dcfce7';
-          callbackBtn.style.color = '#166534';
-          callbackBtn.style.borderColor = '#bbf7d0';
-        } catch(e) {
-          callbackBtn.textContent = 'Error - call us at ' + CONFIG.phone;
-          callbackBtn.style.color = '#dc2626';
-          callbackBtn.disabled = false;
-        }
-      });
-
-      container.appendChild(quoteBtn);
-      container.appendChild(callbackBtn);
-      msgsArea.appendChild(container);
+    function addConfirmationCard(actionData) {
+      var agentSlug = (actionData && actionData.agent) || '';
+      var agentName = AGENT_NAMES[agentSlug] || 'Our team';
+      var card = document.createElement('div');
+      card.style.cssText = 'margin:8px 0;padding:12px 14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-size:13px;color:#166534;line-height:1.5;';
+      card.innerHTML = '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-weight:600;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg> Info submitted</div>' +
+        agentName + ' will reach out within one business day.';
+      msgsArea.appendChild(card);
       msgsArea.scrollTop = msgsArea.scrollHeight;
+      track('chatbot_lead_submitted', { category: 'conversion', agent: agentSlug });
     }
 
     // Restore saved messages into the DOM
     function restoreMessages() {
       chatMessages.forEach(function(m) {
         addMessageEl(m.role, m.text);
-        if (m.action) addActionButtons(m.action);
+        if (m.action) addConfirmationCard(m.action);
       });
     }
 
@@ -1502,7 +1489,7 @@
         }
 
         if (actionData) {
-          addActionButtons(actionData);
+          addConfirmationCard(actionData);
         }
 
       } catch(err) {

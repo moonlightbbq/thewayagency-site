@@ -26,27 +26,43 @@
 
 .nav__dropdown{position:relative}
 .nav__dropdown-menu{position:absolute;top:calc(100% + var(--space-sm));left:50%;transform:translateX(-50%) translateY(8px);background:var(--white);border:1px solid var(--border);border-radius:12px;box-shadow:0 12px 40px rgba(23,51,88,.12),0 2px 8px rgba(23,51,88,.06);padding:var(--space-xl) var(--space-xl);min-width:340px;opacity:0;visibility:hidden;transition:all var(--transition-base);display:grid;grid-template-columns:1fr 1fr;gap:4px}
-.nav__dropdown:hover .nav__dropdown-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+.nav__dropdown:hover .nav__dropdown-menu,.nav__dropdown:focus-within .nav__dropdown-menu{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
 .nav__dropdown-item{display:block;padding:10px 14px;font-size:var(--text-sm);color:var(--charcoal);border-radius:8px;transition:all var(--transition-fast);font-weight:400;line-height:1.3}
 .nav__dropdown-item:hover{background:linear-gradient(135deg,rgba(48,151,211,.06),rgba(0,206,209,.06));color:var(--blue)}
 
 .nav__toggle{display:none;background:none;border:none;cursor:pointer;padding:var(--space-sm)}
 .nav__toggle span{display:block;width:24px;height:2px;background:var(--charcoal);margin:5px 0;transition:all var(--transition-base)}
 
-body.nav-open{overflow:hidden}
-body.nav-open::after{content:'';position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;background:rgba(0,0,0,.35);z-index:1000}
+/* iOS-safe scroll lock: position:fixed + saved scroll offset (JS sets --scroll-y) */
+body.nav-open{position:fixed;top:calc(var(--scroll-y,0) * -1);left:0;right:0;overflow:hidden}
+.nav__backdrop{position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:1000;opacity:0;visibility:hidden;transition:opacity var(--transition-base),visibility var(--transition-base);-webkit-tap-highlight-color:transparent}
+.nav__backdrop--visible{opacity:1;visibility:visible}
 @media(max-width:968px){
   .nav__toggle{display:block}
   .nav__toggle--open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
   .nav__toggle--open span:nth-child(2){opacity:0}
   .nav__toggle--open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-  .nav__links{position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;background:var(--white);flex-direction:column;align-items:flex-start;padding:var(--space-xl);gap:var(--space-md);transform:translateX(100%);transition:transform var(--transition-slow);overflow-y:auto;z-index:1001}
+  /* ── Slide-in panel ── */
+  .nav__links{position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;background:var(--white);flex-direction:column;align-items:stretch;padding:var(--space-lg) 0 calc(var(--space-xl) + env(safe-area-inset-bottom,0px));gap:0;transform:translateX(100%);transition:transform var(--transition-slow) cubic-bezier(.32,.72,.37,1);overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:1001;overscroll-behavior:contain}
   .nav__links--open{transform:translateX(0)}
-  .nav__links .btn--primary{margin-top:auto;width:100%;text-align:center;padding:1rem;font-size:var(--text-base)}
-  .nav__dropdown > .nav__link::after{content:'';position:static;display:inline-block;width:6px;height:6px;border-right:2px solid var(--charcoal);border-bottom:2px solid var(--charcoal);transform:rotate(45deg);margin-left:var(--space-sm);background:none;vertical-align:middle;transition:transform var(--transition-base)}
+  /* ── Category links — bold, full-width, 48px tap target ── */
+  .nav__dropdown > .nav__link{display:flex;align-items:center;justify-content:space-between;width:100%;padding:14px var(--space-xl);font-size:var(--text-base);font-weight:600;color:var(--navy);min-height:48px;border-bottom:1px solid var(--border)}
+  .nav__dropdown > .nav__link::after{content:'';position:static;display:block;width:8px;height:8px;border-right:2px solid var(--gray);border-bottom:2px solid var(--gray);transform:rotate(45deg);background:none;flex-shrink:0;transition:transform var(--transition-base) cubic-bezier(.4,0,.2,1)}
   .nav__dropdown--open > .nav__link::after{transform:rotate(-135deg)}
-  .nav__dropdown-menu{position:static;transform:none;opacity:1;visibility:visible;box-shadow:none;border:none;padding:0 0 0 var(--space-md);min-width:auto;display:none;grid-template-columns:1fr}
-  .nav__dropdown--open .nav__dropdown-menu{display:grid}
+  .nav__dropdown--open > .nav__link{color:var(--blue);background:var(--light-bg)}
+  /* ── Dropdown sub-menu — animated max-height ── */
+  .nav__dropdown-menu{position:static;transform:none;opacity:1;visibility:visible;box-shadow:none;border:none;border-radius:0;min-width:auto;display:grid;grid-template-columns:1fr;gap:0;max-height:0;overflow:hidden;padding:0;background:var(--light-bg);transition:max-height var(--transition-slow) cubic-bezier(.4,0,.2,1),padding var(--transition-slow) cubic-bezier(.4,0,.2,1)}
+  .nav__dropdown--open .nav__dropdown-menu{max-height:600px;padding:var(--space-sm) 0;border-bottom:1px solid var(--border)}
+  /* ── Sub-items — indented, smaller, dot indicator ── */
+  .nav__dropdown-item{display:flex;align-items:center;padding:10px var(--space-xl) 10px calc(var(--space-xl) + 16px);font-size:var(--text-sm);font-weight:400;color:var(--slate);border-radius:0;min-height:44px;line-height:1.3;position:relative;transition:color var(--transition-fast),background var(--transition-fast)}
+  .nav__dropdown-item::before{content:'';position:absolute;left:var(--space-xl);top:50%;width:6px;height:6px;border-radius:50%;background:var(--border);transform:translateY(-50%);transition:background var(--transition-fast)}
+  .nav__dropdown-item:hover,.nav__dropdown-item:focus-visible{background:rgba(48,151,211,.06);color:var(--blue)}
+  .nav__dropdown-item:hover::before,.nav__dropdown-item:focus-visible::before{background:var(--cyan)}
+  .nav__dropdown-item:active{background:rgba(48,151,211,.1)}
+  /* ── Standalone links (Blog) ── */
+  .nav__links > .nav__link:not(.btn){display:flex;align-items:center;padding:14px var(--space-xl);font-size:var(--text-base);font-weight:600;color:var(--navy);min-height:48px;border-bottom:1px solid var(--border)}
+  /* ── CTA button ── */
+  .nav__links .btn--primary{margin:auto var(--space-xl) 0;width:calc(100% - var(--space-xl) * 2);text-align:center;padding:14px;font-size:var(--text-base);min-height:48px;border-radius:var(--border-radius)}
 }
 
 /* ── Hero ── */
