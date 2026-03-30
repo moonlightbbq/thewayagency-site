@@ -1501,10 +1501,14 @@
       var botEl = null;
       var actionData = null;
 
+      var chatAbort = new AbortController();
+      var chatAbortTimer = setTimeout(function() { chatAbort.abort(); }, 45000);
+
       try {
         var response = await fetch(SAGE_API + '/api/chat/message', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: chatAbort.signal,
           body: JSON.stringify({
             sessionId: chatSessionId,
             message: text,
@@ -1599,6 +1603,7 @@
           addErrorEl('Connection issue \u2014 please call us at ' + CONFIG.phone);
         }
       } finally {
+        clearTimeout(chatAbortTimer);
         isSending = false;
         sendBtn.disabled = false;
         inputField.focus();
