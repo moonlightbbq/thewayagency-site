@@ -456,7 +456,7 @@
     const backdrop = document.createElement('div');
     backdrop.className = 'nav__backdrop';
     backdrop.setAttribute('aria-hidden', 'true');
-    nav.parentElement.insertBefore(backdrop, nav.nextSibling);
+    document.body.appendChild(backdrop);
 
     // iOS-safe scroll lock
     function lockScroll() {

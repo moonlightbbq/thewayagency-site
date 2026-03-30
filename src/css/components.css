@@ -35,8 +35,8 @@
 
 /* iOS-safe scroll lock: position:fixed + saved scroll offset (JS sets --scroll-y) */
 body.nav-open{position:fixed;top:calc(var(--scroll-y,0) * -1);left:0;right:0;overflow:hidden}
-.nav__backdrop{position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:1000;opacity:0;visibility:hidden;transition:opacity var(--transition-base),visibility var(--transition-base);-webkit-tap-highlight-color:transparent}
-.nav__backdrop--visible{opacity:1;visibility:visible}
+.nav__backdrop{position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:999;opacity:0;visibility:hidden;transition:opacity var(--transition-base),visibility var(--transition-base);-webkit-tap-highlight-color:transparent;pointer-events:none}
+.nav__backdrop--visible{opacity:1;visibility:visible;pointer-events:auto}
 /* ── Active page indicator (desktop + mobile) ── */
 .nav__link--active{color:var(--blue)}
 .nav__link--active::after{width:100%;background:var(--cyan)}
