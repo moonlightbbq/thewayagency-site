@@ -529,6 +529,15 @@
           if (!wasOpen) {
             dropdown.classList.add('nav__dropdown--open');
             link.setAttribute('aria-expanded', 'true');
+            // Inject "View All" link if not already present
+            const menu = dropdown.querySelector('.nav__dropdown-menu');
+            if (menu && !menu.querySelector('.nav__dropdown-item--viewall')) {
+              const viewAll = document.createElement('a');
+              viewAll.href = link.getAttribute('href');
+              viewAll.className = 'nav__dropdown-item nav__dropdown-item--viewall';
+              viewAll.textContent = 'View All ' + link.textContent.trim();
+              menu.insertBefore(viewAll, menu.firstChild);
+            }
           }
         }
       });
@@ -576,6 +585,35 @@
           destination: link.getAttribute('href') || '',
         });
       });
+    });
+
+    // Close menu on navigation (fixes back-button leaving menu open)
+    $$('.nav__dropdown-item, .nav__links > .nav__link:not(.btn)').forEach(link => {
+      link.addEventListener('click', () => {
+        if (links.classList.contains('nav__links--open')) closeMenu();
+      });
+    });
+
+    // Inject phone number in mobile nav
+    if (window.innerWidth <= 968) {
+      const cta = links.querySelector('.btn--primary');
+      if (cta && !links.querySelector('.nav__phone')) {
+        const phone = document.createElement('a');
+        phone.href = 'tel:+15024135335';
+        phone.className = 'nav__phone';
+        phone.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> (502) 413-5335';
+        links.insertBefore(phone, cta);
+      }
+    }
+
+    // Active page indicator
+    const path = window.location.pathname;
+    $$('.nav__dropdown > .nav__link, .nav__links > .nav__link:not(.btn)').forEach(link => {
+      const href = link.getAttribute('href') || '';
+      if (path.startsWith(href) && href !== '/') {
+        link.classList.add('nav__link--active');
+        link.setAttribute('aria-current', 'page');
+      }
     });
   }
 

@@ -37,6 +37,9 @@
 body.nav-open{position:fixed;top:calc(var(--scroll-y,0) * -1);left:0;right:0;overflow:hidden}
 .nav__backdrop{position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:1000;opacity:0;visibility:hidden;transition:opacity var(--transition-base),visibility var(--transition-base);-webkit-tap-highlight-color:transparent}
 .nav__backdrop--visible{opacity:1;visibility:visible}
+/* ── Active page indicator (desktop + mobile) ── */
+.nav__link--active{color:var(--blue)}
+.nav__link--active::after{width:100%;background:var(--cyan)}
 @media(max-width:968px){
   .nav__toggle{display:block}
   .nav__toggle--open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
@@ -61,8 +64,18 @@ body.nav-open{position:fixed;top:calc(var(--scroll-y,0) * -1);left:0;right:0;ove
   .nav__dropdown-item:active{background:rgba(48,151,211,.1)}
   /* ── Standalone links (Blog) ── */
   .nav__links > .nav__link:not(.btn){display:flex;align-items:center;padding:14px var(--space-xl);font-size:var(--text-base);font-weight:600;color:var(--navy);min-height:48px;border-bottom:1px solid var(--border)}
+  /* ── "View All" link in dropdowns ── */
+  .nav__dropdown-item--viewall{font-weight:600;color:var(--blue)}
+  .nav__dropdown-item--viewall::before{background:var(--cyan)}
+  /* ── Active page indicator (mobile) ── */
+  .nav__dropdown > .nav__link--active{color:var(--blue);border-left:3px solid var(--cyan)}
+  .nav__links > .nav__link--active:not(.btn){color:var(--blue);border-left:3px solid var(--cyan)}
+  /* ── Phone link ── */
+  .nav__phone{display:flex;align-items:center;justify-content:center;gap:var(--space-sm);margin:auto var(--space-xl) 0;padding:12px;font-size:var(--text-sm);font-weight:600;color:var(--navy);border:2px solid var(--border);border-radius:var(--border-radius);text-decoration:none;min-height:48px}
+  .nav__phone:active{border-color:var(--navy);background:var(--light-bg)}
+  .nav__phone svg{flex-shrink:0}
   /* ── CTA button ── */
-  .nav__links .btn--primary{margin:auto var(--space-xl) 0;width:calc(100% - var(--space-xl) * 2);text-align:center;padding:14px;font-size:var(--text-base);min-height:48px;border-radius:var(--border-radius)}
+  .nav__links .btn--primary{margin:var(--space-sm) var(--space-xl) 0;width:calc(100% - var(--space-xl) * 2);text-align:center;padding:14px;font-size:var(--text-base);min-height:48px;border-radius:var(--border-radius)}
 }
 
 /* ── Hero ── */
