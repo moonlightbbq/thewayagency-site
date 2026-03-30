@@ -148,11 +148,23 @@ function renderHead({ title, description, canonical, ogTitle, ogDescription, ogU
   <meta property="og:url" content="${ogUrl || canonical}">
   <meta property="og:site_name" content="The Way Agency">
   <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
+  <meta property="og:image:width" content="631">
+  <meta property="og:image:height" content="631">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="${ogTitle || title}">
+  <meta name="twitter:description" content="${ogDescription || description}">
+  <meta name="twitter:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
+  <meta name="theme-color" content="#173358">
   <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
   <link rel="icon" href="/src/assets/images/favicon.png">
+  <link rel="apple-touch-icon" href="/src/assets/images/apple-touch-icon.png">
   <link rel="preload" as="image" type="image/webp" href="/src/assets/images/logo-horizontal.webp">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+  <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
+  <link rel="dns-prefetch" href="https://sage.thewayagency.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">${cssBlock}${schema ? (schema.includes('<script') ? `
   ${schema}` : `
   <script type="application/ld+json">

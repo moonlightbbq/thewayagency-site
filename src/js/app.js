@@ -1324,7 +1324,7 @@
 
     var powered = document.createElement('div');
     powered.className = 'twa-cb-powered';
-    powered.textContent = 'Powered by SAGE';
+    powered.textContent = 'Typically responds in minutes';
 
     panel.appendChild(header);
     panel.appendChild(msgsArea);
@@ -1448,7 +1448,7 @@
               if (chunk.text) {
                 botText += chunk.text;
                 // Hide JSON action block from display as it streams in
-                var displayText = botText.replace(/\s*\{"action"\s*:\s*"connect_agent"[\s\S]*$/m, '').trim();
+                var displayText = botText.replace(/\s*\{"action"\s*:\s*"(?:connect_agent|update_lead)"[\s\S]*$/m, '').trim();
                 botEl.textContent = displayText;
                 msgsArea.scrollTop = msgsArea.scrollHeight;
               }
@@ -1480,7 +1480,7 @@
 
         if (botText) {
           // Strip the JSON action block from visible text
-          botText = botText.replace(/\s*\{"action"\s*:\s*"connect_agent"[\s\S]*?\}\s*$/m, '').trim();
+          botText = botText.replace(/\s*\{"action"\s*:\s*"(?:connect_agent|update_lead)"[\s\S]*?\}\s*$/m, '').trim();
           if (botEl) botEl.textContent = botText;
           var msgEntry = { role: 'bot', text: botText };
           if (actionData) msgEntry.action = actionData;
@@ -1518,7 +1518,7 @@
       msgsArea.innerHTML = '';
       hasOpened = false;
       // Show fresh welcome
-      var welcome = 'Hi! I\'m here to help you find the right coverage. What can I help you with?';
+      var welcome = afterHours ? afterHoursWelcome : defaultWelcome;
       chatMessages.push({ role: 'bot', text: welcome });
       addMessageEl('bot', welcome);
       saveState();
@@ -1530,16 +1530,31 @@
       resetChat();
     });
 
+    // ─── After-hours detection (Eastern Time) ────
+    function isAfterHours() {
+      var now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+      var day = now.getDay(); // 0=Sun, 6=Sat
+      var hour = now.getHours();
+      var min = now.getMinutes();
+      if (day === 0 || day === 6) return true; // weekend
+      if (hour < 8 || (hour === 8 && min < 30)) return true; // before 8:30 AM
+      if (hour >= 17) return true; // after 5 PM
+      return false;
+    }
+
+    var afterHours = isAfterHours();
+    var afterHoursWelcome = 'Our office is closed right now, but I can get your info to an agent who will reach out first thing next business day. What can I help you with?';
+    var defaultWelcome = 'Hi! I can help connect you with one of our licensed agents. What are you looking for today?';
+
     // ─── Toggle panel ────────────────────────────
     function openChat() {
       isOpen = true;
       panel.classList.add('open');
-      track('chatbot_opened', { category: 'engagement' });
+      track('chatbot_opened', { category: 'engagement', afterHours: afterHours });
       if (!hasOpened) {
         hasOpened = true;
         if (chatMessages.length === 0) {
-          // Show welcome message
-          var welcome = 'Hi! I\'m here to help you find the right coverage. What can I help you with?';
+          var welcome = afterHours ? afterHoursWelcome : defaultWelcome;
           chatMessages.push({ role: 'bot', text: welcome });
           addMessageEl('bot', welcome);
           saveState();
@@ -1586,6 +1601,32 @@
         sendMessage(inputField.value);
       }
     });
+
+    // ─── After-hours auto-engage ──────────────────
+    if (afterHours && chatMessages.length === 0) {
+      if (window.innerWidth > 767) {
+        // Desktop: auto-open chat after 3 seconds
+        setTimeout(function() { if (!isOpen) openChat(); }, 3000);
+      } else {
+        // Mobile: pulsing dot on bubble + dismissable toast
+        var dot = document.createElement('span');
+        dot.style.cssText = 'position:absolute;top:2px;right:2px;width:12px;height:12px;background:#ef4444;border-radius:50%;border:2px solid #173358;animation:twaCbPulse 1.5s ease infinite;';
+        bubble.style.position = 'relative';
+        bubble.appendChild(dot);
+        var style = document.createElement('style');
+        style.textContent = '@keyframes twaCbPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.7}}';
+        document.head.appendChild(style);
+
+        var toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;bottom:calc(84px + env(safe-area-inset-bottom,0px));right:20px;background:#173358;color:#fff;padding:10px 16px;border-radius:20px;font-family:Montserrat,Arial,sans-serif;font-size:13px;font-weight:500;box-shadow:0 4px 14px rgba(0,0,0,.25);z-index:1002;opacity:0;transform:translateY(10px);transition:all .3s ease;cursor:pointer;';
+        toast.textContent = 'Office closed \u2014 chat with us!';
+        document.body.appendChild(toast);
+        setTimeout(function() { toast.style.opacity = '1'; toast.style.transform = 'translateY(0)'; }, 500);
+        setTimeout(function() { toast.style.opacity = '0'; toast.style.transform = 'translateY(10px)'; setTimeout(function() { toast.remove(); }, 300); }, 5500);
+        toast.addEventListener('click', function() { toast.remove(); dot.remove(); openChat(); });
+        bubble.addEventListener('click', function() { dot.remove(); toast.remove(); }, { once: true });
+      }
+    }
 
     // ─── Virtual keyboard resize handling ────────
     if (window.visualViewport) {

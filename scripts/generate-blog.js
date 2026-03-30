@@ -268,8 +268,10 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${meta.title} | The Way Agency</title>
   <meta name="description" content="${meta.description || ''}">
+  <meta name="theme-color" content="#173358">
   <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
   <link rel="icon" href="/src/assets/images/favicon.png">
+  <link rel="apple-touch-icon" href="/src/assets/images/apple-touch-icon.png">
   <link rel="canonical" href="https://www.thewayagency.com/blog/${meta.slug}.html">
   <meta property="og:title" content="${meta.title} | The Way Agency">
   <meta property="og:description" content="${meta.description || ''}">
@@ -277,6 +279,9 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   <meta property="og:url" content="https://www.thewayagency.com/blog/${meta.slug}.html">
   <meta property="og:site_name" content="The Way Agency">
   <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
+  <meta property="og:image:width" content="631">
+  <meta property="og:image:height" content="631">
+  <meta property="og:image:type" content="image/jpeg">
   <meta property="article:published_time" content="${meta.date}">
   <meta property="article:modified_time" content="${meta.modified || meta.date}">
   <meta property="article:author" content="${meta.author}">
@@ -289,6 +294,9 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   <link rel="alternate" type="application/rss+xml" title="The Way Agency Blog" href="/blog/feed.xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+  <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
+  <link rel="dns-prefetch" href="https://sage.thewayagency.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/src/css/base.css">
   <link rel="stylesheet" href="/src/css/components.css">
@@ -437,10 +445,15 @@ function generateBlogIndex(allPosts, postsMeta) {
   <title>Insurance Blog | Tips & Insights | The Way Agency</title>
   <meta name="description" content="Insurance insights, tips, and Kentucky-specific guidance from The Way Agency team. Practical advice in plain language.">
   <link rel="canonical" href="https://www.thewayagency.com/blog/">
-    <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
+    <meta name="theme-color" content="#173358">
+  <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
   <link rel="icon" href="/src/assets/images/favicon.png">
+  <link rel="apple-touch-icon" href="/src/assets/images/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
+  <link rel="preconnect" href="https://challenges.cloudflare.com" crossorigin>
+  <link rel="dns-prefetch" href="https://sage.thewayagency.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="/src/css/base.css">
@@ -456,6 +469,13 @@ function generateBlogIndex(allPosts, postsMeta) {
   <meta property="og:url" content="https://www.thewayagency.com/blog/">
   <meta property="og:site_name" content="The Way Agency">
   <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
+  <meta property="og:image:width" content="631">
+  <meta property="og:image:height" content="631">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Insurance Blog | Tips &amp; Insights | The Way Agency">
+  <meta name="twitter:description" content="Insurance insights, tips, and Kentucky-specific guidance from The Way Agency team. Practical advice in plain language.">
+  <meta name="twitter:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
 
   <!-- JSON-LD Structured Data -->
   <script type="application/ld+json">
