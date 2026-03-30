@@ -1625,7 +1625,7 @@
     }
 
     var afterHours = isAfterHours();
-    var afterHoursWelcome = 'Our office is closed right now, but I can get your info to an agent who will reach out first thing next business day. What can I help you with?';
+    var afterHoursWelcome = 'Hey there! You\u2019ve reached us after hours, but I can get your info to an agent who will reach out first thing next business day. What can I help you with?';
     var defaultWelcome = 'Hi! I can help connect you with one of our licensed agents. What are you looking for today?';
 
     // ─── Toggle panel ────────────────────────────
@@ -1701,7 +1701,7 @@
 
         var toast = document.createElement('div');
         toast.style.cssText = 'position:fixed;bottom:calc(84px + env(safe-area-inset-bottom,0px));right:20px;background:#173358;color:#fff;padding:10px 16px;border-radius:20px;font-family:Montserrat,Arial,sans-serif;font-size:13px;font-weight:500;box-shadow:0 4px 14px rgba(0,0,0,.25);z-index:1002;opacity:0;transform:translateY(10px);transition:all .3s ease;cursor:pointer;';
-        toast.textContent = 'Office closed \u2014 chat with us!';
+        toast.textContent = 'After hours? Chat with us!';
         document.body.appendChild(toast);
         setTimeout(function() { toast.style.opacity = '1'; toast.style.transform = 'translateY(0)'; }, 500);
         setTimeout(function() { toast.style.opacity = '0'; toast.style.transform = 'translateY(10px)'; setTimeout(function() { toast.remove(); }, 300); }, 5500);
