@@ -1420,7 +1420,7 @@
 
     var powered = document.createElement('div');
     powered.className = 'twa-cb-powered';
-    powered.textContent = 'Typically responds in minutes';
+    powered.innerHTML = '<a href="/privacy.html" target="_blank" style="color:#94a3b8;text-decoration:underline;">Privacy Policy</a>';
 
     panel.appendChild(header);
     panel.appendChild(msgsArea);
