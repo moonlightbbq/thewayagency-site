@@ -6,6 +6,18 @@
 const fs = require('fs');
 const path = require('path');
 
+// ─── HTML Escape Helper ────────────────────────
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function escJson(str) {
+  if (!str) return '';
+  return String(str).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
+}
+
 // ─── Breadcrumb Helper ──────────────────────────
 
 function renderBreadcrumbs(items) {
@@ -218,17 +230,20 @@ ${buttons.map(b => `          <a href="${b.href}" class="${b.className || 'btn b
 
 function renderInlineForm(formId, hiddenFields) {
   const hiddenHtml = Object.entries(hiddenFields).map(([k, v]) =>
-    `          <input type="hidden" name="${k}" value="${v}">`
+    `          <input type="hidden" name="${esc(k)}" value="${esc(v)}">`
   ).join('\n');
   return `        <div class="inline-quote-section">
           <h3>%%FORM_HEADING%%</h3>
           <p>%%FORM_SUBTEXT%%</p>
           <form class="inline-quote-form" novalidate>
 ${hiddenHtml}
-            <input type="text" name="name" placeholder="Your name" required autocomplete="name" aria-label="Your name">
-            <input type="email" name="email" placeholder="Email address" required autocomplete="email" aria-label="Email address">
-            <input type="tel" name="phone" placeholder="Phone (optional)" autocomplete="tel" aria-label="Phone (optional)">
-            <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off">
+            <label for="${formId}-name" class="sr-only">Your name</label>
+            <input id="${formId}-name" type="text" name="name" placeholder="Your name" required autocomplete="name">
+            <label for="${formId}-email" class="sr-only">Email address</label>
+            <input id="${formId}-email" type="email" name="email" placeholder="Email address" required autocomplete="email">
+            <label for="${formId}-phone" class="sr-only">Phone (optional)</label>
+            <input id="${formId}-phone" type="tel" name="phone" placeholder="Phone (optional)" autocomplete="tel">
+            <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
             <button type="submit">Get Quote</button>
           </form>
           <p style="font-size:11px;color:var(--slate,#64748b);margin-top:8px;text-align:center;">We never sell your data. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
@@ -585,7 +600,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
       { "@type": "State", "name": "Indiana" },
       { "@type": "State", "name": "Tennessee" }
     ],
-    "description": "${product.summary.replace(/"/g, '\\"')}"
+    "description": "${escJson(product.summary)}"
   }
   </script>${faqSchema}`;
 
@@ -693,7 +708,7 @@ function generateCityPage(city, ctx) {
     "url": "https://www.thewayagency.com",
     "telephone": "${office.phone}",
     "address": {"@type": "PostalAddress", "streetAddress": "${office.street}", "addressLocality": "${office.city}", "addressRegion": "${office.state}", "postalCode": "${office.zip}"},
-    "areaServed": {"@type": "City", "name": "${city.city}", "containedIn": {"@type": "State", "name": "${city.state === 'KY' ? 'Kentucky' : city.state === 'IN' ? 'Indiana' : 'Tennessee'}"}}
+    "areaServed": {"@type": "City", "name": "${escJson(city.city)}", "containedIn": {"@type": "State", "name": "${city.state === 'KY' ? 'Kentucky' : city.state === 'IN' ? 'Indiana' : 'Tennessee'}"}}
   }
   </script>`;
 

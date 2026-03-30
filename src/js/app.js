@@ -248,9 +248,11 @@
     }
 
     // Session landing page (set once per session via sessionStorage)
-    if (!sessionStorage.getItem('twa_lp')) {
-      sessionStorage.setItem('twa_lp', window.location.pathname);
-    }
+    try {
+      if (!sessionStorage.getItem('twa_lp')) {
+        sessionStorage.setItem('twa_lp', window.location.pathname);
+      }
+    } catch (e) { /* private browsing */ }
 
     return touchData;
   }
@@ -259,7 +261,8 @@
   function getAttribution() {
     const ft = getCookie('twa_ft') || {};
     const lt = getCookie('twa_lt') || {};
-    const lp = sessionStorage.getItem('twa_lp') || window.location.pathname;
+    let lp = window.location.pathname;
+    try { lp = sessionStorage.getItem('twa_lp') || lp; } catch (e) { /* private browsing */ }
     return {
       first_touch: ft,
       last_touch: lt,
@@ -374,15 +377,17 @@
   function getTurnstileToken() {
     return new Promise((resolve) => {
       if (!CONFIG.turnstileSiteKey || !window.turnstile) { resolve(''); return; }
+      let resolved = false;
       const container = document.createElement('div');
       container.style.display = 'none';
       document.body.appendChild(container);
+      const timeout = setTimeout(() => { if (!resolved) { resolved = true; container.remove(); resolve(''); } }, 5000);
       window.turnstile.render(container, {
         sitekey: CONFIG.turnstileSiteKey,
         size: 'invisible',
-        callback: (token) => { container.remove(); resolve(token); },
-        'error-callback': () => { container.remove(); resolve(''); },
-        'expired-callback': () => { container.remove(); resolve(''); },
+        callback: (token) => { if (!resolved) { resolved = true; clearTimeout(timeout); container.remove(); resolve(token); } },
+        'error-callback': () => { if (!resolved) { resolved = true; clearTimeout(timeout); container.remove(); resolve(''); } },
+        'expired-callback': () => { if (!resolved) { resolved = true; clearTimeout(timeout); container.remove(); resolve(''); } },
       });
     });
   }
@@ -650,13 +655,13 @@
       form.addEventListener('submit', (e) => {
         e.preventDefault();
         form.querySelectorAll('.field-error').forEach(el => el.remove());
-        form.querySelectorAll('input').forEach(el => el.style.borderColor = '');
+        form.querySelectorAll('input').forEach(el => { el.style.borderColor = ''; el.removeAttribute('aria-invalid'); el.removeAttribute('aria-describedby'); });
         const data = Object.fromEntries(new FormData(form));
         let hasError = false;
         function showErr(field, msg) {
           hasError = true;
           const el = form.querySelector(`[name="${field}"]`);
-          if (el) { el.style.borderColor = 'var(--error)'; el.insertAdjacentHTML('afterend', `<p class="field-error" style="color:var(--error);font-size:12px;margin:4px 0 0;">${msg}</p>`); }
+          if (el) { const errId = 'err-' + field + '-' + Date.now(); el.style.borderColor = 'var(--error)'; el.setAttribute('aria-invalid', 'true'); el.setAttribute('aria-describedby', errId); el.insertAdjacentHTML('afterend', `<p id="${errId}" class="field-error" role="alert" style="color:var(--error);font-size:12px;margin:4px 0 0;">${msg}</p>`); }
         }
         if (!data.name || !data.name.trim()) showErr('name', 'Name is required');
         if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) showErr('email', 'Please enter a valid email address');
@@ -763,7 +768,7 @@
   function initExitIntent() {
     if (window.innerWidth < 768) return;
     if (window.location.pathname.startsWith('/intake')) return;
-    if (sessionStorage.getItem('twa_exit_shown')) return;
+    try { if (sessionStorage.getItem('twa_exit_shown')) return; } catch (e) { /* private browsing */ }
     if (getCookie('twa_exit_dismissed')) return;
     try { if (localStorage.getItem('twa_intake_submitted')) return; } catch(e) {}
     let shown = false;
@@ -771,7 +776,7 @@
       if (shown) return;
       if (e.clientY < 10 && e.relatedTarget === null) {
         shown = true;
-        sessionStorage.setItem('twa_exit_shown', '1');
+        try { sessionStorage.setItem('twa_exit_shown', '1'); } catch (e) { /* private browsing */ }
         showExitPopup();
       }
     });
@@ -790,20 +795,34 @@
       </div>
     `);
 
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Before you go');
     document.body.appendChild(overlay);
     requestAnimationFrame(() => overlay.classList.add('exit-overlay--visible'));
+
+    // Focus trap
+    const focusable = overlay.querySelectorAll('a, button');
+    const firstFocusable = focusable[0];
+    const lastFocusable = focusable[focusable.length - 1];
+    if (firstFocusable) firstFocusable.focus();
 
     function closeExit() {
       overlay.classList.remove('exit-overlay--visible');
       setCookie('twa_exit_dismissed', true, 1);
-      setTimeout(() => overlay.remove(), 300);
+      setTimeout(() => { overlay.remove(); document.removeEventListener('keydown', onKeyDown); }, 300);
+    }
+    function onKeyDown(e) {
+      if (e.key === 'Escape') { closeExit(); return; }
+      if (e.key === 'Tab') {
+        if (e.shiftKey) { if (document.activeElement === firstFocusable) { e.preventDefault(); lastFocusable.focus(); } }
+        else { if (document.activeElement === lastFocusable) { e.preventDefault(); firstFocusable.focus(); } }
+      }
     }
     $('#exitClose').addEventListener('click', closeExit);
     $('#exitDismiss').addEventListener('click', closeExit);
     overlay.addEventListener('click', (e) => { if (e.target === overlay) closeExit(); });
-    document.addEventListener('keydown', function onEsc(e) {
-      if (e.key === 'Escape') { closeExit(); document.removeEventListener('keydown', onEsc); }
-    });
+    document.addEventListener('keydown', onKeyDown);
 
     $('#exitCta').addEventListener('click', () => {
       track('exit_intent_clicked', { category: 'conversion', page_path: window.location.pathname });
@@ -818,7 +837,6 @@
   function initClickTracking() {
     $$('a[href^="tel:"]').forEach(el => {
       el.addEventListener('click', () => {
-        track('lead_phone_call', { category: 'conversion', page_path: window.location.pathname });
         track('phone_click', { category: 'conversion', page_path: window.location.pathname, link_text: el.textContent.trim().slice(0, 30), position: getElementPosition(el) });
         fireConversion('phone_call', { source: window.location.pathname });
       });
@@ -899,12 +917,13 @@
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       form.querySelectorAll('.field-error').forEach(el => el.remove());
+      form.querySelectorAll('input, select').forEach(el => { el.removeAttribute('aria-invalid'); el.removeAttribute('aria-describedby'); });
       const data = Object.fromEntries(new FormData(form));
       let hasError = false;
       function showErr(field, msg) {
         hasError = true;
         const el = form.querySelector(`[name="${field}"]`);
-        if (el) { el.style.borderColor = 'var(--error)'; el.insertAdjacentHTML('afterend', `<p class="field-error" style="color:var(--error);font-size:12px;margin:4px 0 0;">${msg}</p>`); }
+        if (el) { const errId = 'err-' + field + '-' + Date.now(); el.style.borderColor = 'var(--error)'; el.setAttribute('aria-invalid', 'true'); el.setAttribute('aria-describedby', errId); el.insertAdjacentHTML('afterend', `<p id="${errId}" class="field-error" role="alert" style="color:var(--error);font-size:12px;margin:4px 0 0;">${msg}</p>`); }
       }
       if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) showErr('email', 'Please enter a valid email address');
       if (data.phone) { const digits = data.phone.replace(/\D/g, ''); if (digits.length > 0 && digits.length < 10) showErr('phone', 'Please enter a valid 10-digit phone number'); }
@@ -989,10 +1008,10 @@
       function showError(field, msg) {
         hasError = true;
         const el = form.querySelector(`[name="${field}"]`);
-        if (el) { el.style.borderColor = 'var(--error)'; el.insertAdjacentHTML('afterend', `<p class="field-error" style="color:var(--error);font-size:12px;margin:4px 0 0;">${msg}</p>`); }
+        if (el) { const errId = 'err-' + field + '-' + Date.now(); el.style.borderColor = 'var(--error)'; el.setAttribute('aria-invalid', 'true'); el.setAttribute('aria-describedby', errId); el.insertAdjacentHTML('afterend', `<p id="${errId}" class="field-error" role="alert" style="color:var(--error);font-size:12px;margin:4px 0 0;">${msg}</p>`); }
       }
       const data = Object.fromEntries(new FormData(form));
-      form.querySelectorAll('input, textarea, select').forEach(el => el.style.borderColor = '');
+      form.querySelectorAll('input, textarea, select').forEach(el => { el.style.borderColor = ''; el.removeAttribute('aria-invalid'); el.removeAttribute('aria-describedby'); });
       if (!data.firstName || !data.firstName.trim()) showError('firstName', 'First name is required');
       if (!data.lastName || !data.lastName.trim()) showError('lastName', 'Last name is required');
       if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) showError('email', 'Please enter a valid email address');
@@ -1095,7 +1114,9 @@
     const scrollThresholds = [25, 50, 75, 100];
     const scrollFired = new Set();
     window.addEventListener('scroll', () => {
-      const pct = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+      const scrollable = document.body.scrollHeight - window.innerHeight;
+      if (scrollable < 200) return; // skip scroll tracking on short pages
+      const pct = Math.round((window.scrollY / scrollable) * 100);
       for (const t of scrollThresholds) {
         if (pct >= t && !scrollFired.has(t)) {
           scrollFired.add(t);
@@ -1745,9 +1766,9 @@
       document.removeEventListener('scroll', onFirstInteraction);
       document.removeEventListener('keydown', onFirstInteraction);
     }
-    document.addEventListener('click', onFirstInteraction, { once: false, passive: true });
-    document.addEventListener('scroll', onFirstInteraction, { once: false, passive: true });
-    document.addEventListener('keydown', onFirstInteraction, { once: false, passive: true });
+    document.addEventListener('click', onFirstInteraction, { once: true, passive: true });
+    document.addEventListener('scroll', onFirstInteraction, { once: true, passive: true });
+    document.addEventListener('keydown', onFirstInteraction, { once: true, passive: true });
 
     // Track max scroll
     window.addEventListener('scroll', function() {
@@ -1800,7 +1821,8 @@
       const body = document.getElementById('twaMetricsBody');
       if (!body) return;
       const scrollPct = Math.round((window.scrollY / Math.max(1, document.body.scrollHeight - window.innerHeight)) * 100);
-      const timeOnPage = Math.round((Date.now() - performance.timing.navigationStart) / 1000);
+      const navStart = performance.timeOrigin || (performance.timing && performance.timing.navigationStart) || Date.now();
+      const timeOnPage = Math.round((Date.now() - navStart) / 1000);
       const visibleCtas = document.querySelectorAll('.btn--primary, a[href*="/intake"]').length;
       const events = (window.dataLayer || []).filter(function(e) { return e.event; }).length;
       body.innerHTML =
@@ -1809,7 +1831,7 @@
         '<div>Time: ' + timeOnPage + 's</div>' +
         '<div>CTAs on page: ' + visibleCtas + '</div>' +
         '<div>Events fired: ' + events + '</div>' +
-        '<div>Lang: ' + _currentLang + '</div>' +
+        '<div>Lang: ' + (document.documentElement.lang || 'en') + '</div>' +
         '<div>Visitor: ' + (getVisitorId() || '').slice(0, 8) + '...</div>';
     }, 1000);
   }

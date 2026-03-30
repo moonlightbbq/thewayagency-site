@@ -17,7 +17,7 @@
   --navy-light: #1E4470;
   --charcoal: #1A1A1A;
   --slate: #555555;
-  --gray: #888888;
+  --gray: #6B7280;
   --border: #D8DDE3;
   --light-bg: #F4F7FA;
   --white: #FFFFFF;
@@ -103,6 +103,8 @@ a:focus-visible {
   outline: 2px solid var(--cyan);
   outline-offset: 2px;
 }
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
 @media print {
   .nav, .footer, .sticky-cta, .exit-overlay, .intake-help-float { display: none !important; }
