@@ -1299,22 +1299,36 @@
 
     function renderChatWidget() {
 
-    var chatSessionId = sessionStorage.getItem('twa_chat_sid') || '';
+    var chatSessionId = localStorage.getItem('twa_chat_sid') || '';
     var chatMessages = [];
+    var chatResumeData = null; // populated from /api/chat/resume
     var isSending = false;
     var isOpen = false;
     var hasOpened = false;
 
-    // Restore message history from sessionStorage
+    // Restore message history from localStorage
     try {
-      var saved = sessionStorage.getItem('twa_chat_messages');
+      var saved = localStorage.getItem('twa_chat_messages');
       if (saved) chatMessages = JSON.parse(saved);
     } catch(e) {}
 
+    // If we have a sessionId but no messages (e.g. cache cleared), try server resume
+    if (chatSessionId && chatMessages.length === 0) {
+      fetch(SAGE_API + '/api/chat/resume/' + chatSessionId)
+        .then(function(r) { return r.ok ? r.json() : null; })
+        .then(function(data) {
+          if (data && data.messages && data.messages.length > 0) {
+            chatMessages = data.messages;
+            chatResumeData = data;
+            saveState();
+          }
+        }).catch(function() {});
+    }
+
     function saveState() {
       try {
-        sessionStorage.setItem('twa_chat_sid', chatSessionId);
-        sessionStorage.setItem('twa_chat_messages', JSON.stringify(chatMessages));
+        localStorage.setItem('twa_chat_sid', chatSessionId);
+        localStorage.setItem('twa_chat_messages', JSON.stringify(chatMessages));
       } catch(e) {}
     }
 
@@ -1448,18 +1462,16 @@
       if (el) el.remove();
     }
 
-    function addConfirmationCard(eventData) {
-      // Use actual agent name from backend (not the bot's guess)
-      var agentName = (eventData && eventData.agentName) || 'Our team';
-      var reference = (eventData && eventData.reference) || '';
+    function addConfirmationCard(actionData) {
+      var agentSlug = (actionData && actionData.agent) || '';
+      var agentName = AGENT_NAMES[agentSlug] || 'Our team';
       var card = document.createElement('div');
       card.style.cssText = 'margin:8px 0;padding:12px 14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;font-size:13px;color:#166534;line-height:1.5;';
-      var refLine = reference ? '<div style="margin-top:4px;font-size:12px;color:#166534;">Reference: #' + reference + '</div>' : '';
       card.innerHTML = '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;font-weight:600;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg> Info submitted</div>' +
-        agentName + ' will reach out within one business day.' + refLine;
+        agentName + ' will reach out within one business day.';
       msgsArea.appendChild(card);
       msgsArea.scrollTop = msgsArea.scrollHeight;
-      track('chatbot_lead_submitted', { category: 'conversion', agent: agentName, reference: reference });
+      track('chatbot_lead_submitted', { category: 'conversion', agent: agentSlug });
     }
 
     // Restore saved messages into the DOM
@@ -1539,10 +1551,7 @@
               if (chunk.done) {
                 if (chunk.action === 'connect_agent' && chunk.data) {
                   actionData = chunk.data;
-                  // Capture actual assignment from backend (not bot's guess)
-                  if (chunk.agentName) actionData.agentName = chunk.agentName;
-                  if (chunk.reference) actionData.reference = chunk.reference;
-                  track('chatbot_agent_suggested', { category: 'engagement', agent: chunk.agentName || chunk.data.agent || '' });
+                  track('chatbot_agent_suggested', { category: 'engagement', agent: chunk.data.agent || '' });
                 }
               }
             } catch(pe) { /* skip malformed lines */ }
@@ -1560,9 +1569,7 @@
             }
             if (lastChunk.done && lastChunk.action === 'connect_agent' && lastChunk.data) {
               actionData = lastChunk.data;
-              if (lastChunk.agentName) actionData.agentName = lastChunk.agentName;
-              if (lastChunk.reference) actionData.reference = lastChunk.reference;
-              track('chatbot_agent_suggested', { category: 'engagement', agent: lastChunk.agentName || lastChunk.data.agent || '' });
+              track('chatbot_agent_suggested', { category: 'engagement', agent: lastChunk.data.agent || '' });
             }
           } catch(pe2) {}
         }
@@ -1602,8 +1609,8 @@
     function resetChat() {
       chatSessionId = '';
       chatMessages = [];
-      sessionStorage.removeItem('twa_chat_sid');
-      sessionStorage.removeItem('twa_chat_messages');
+      localStorage.removeItem('twa_chat_sid');
+      localStorage.removeItem('twa_chat_messages');
       msgsArea.innerHTML = '';
       hasOpened = false;
       // Show fresh welcome
@@ -1649,6 +1656,10 @@
           saveState();
         } else {
           restoreMessages();
+          // If we resumed from server and a lead was submitted, show confirmation card
+          if (chatResumeData && chatResumeData.agentName) {
+            addConfirmationCard({ agentName: chatResumeData.agentName, reference: chatResumeData.reference });
+          }
         }
       }
       // On mobile, hide sticky CTA and prevent body scroll while chat is open
