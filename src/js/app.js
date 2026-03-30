@@ -611,7 +611,19 @@
     $$('.inline-quote-form').forEach(form => {
       form.addEventListener('submit', (e) => {
         e.preventDefault();
+        form.querySelectorAll('.field-error').forEach(el => el.remove());
+        form.querySelectorAll('input').forEach(el => el.style.borderColor = '');
         const data = Object.fromEntries(new FormData(form));
+        let hasError = false;
+        function showErr(field, msg) {
+          hasError = true;
+          const el = form.querySelector(`[name="${field}"]`);
+          if (el) { el.style.borderColor = 'var(--error)'; el.insertAdjacentHTML('afterend', `<p class="field-error" style="color:var(--error);font-size:12px;margin:4px 0 0;">${msg}</p>`); }
+        }
+        if (!data.name || !data.name.trim()) showErr('name', 'Name is required');
+        if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) showErr('email', 'Please enter a valid email address');
+        if (hasError) return;
+
         track('lead_quote_submitted', { category: 'conversion', source: 'inline-product-form', products: data.product || '' });
 
         const params = new URLSearchParams();
@@ -848,7 +860,18 @@
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      form.querySelectorAll('.field-error').forEach(el => el.remove());
       const data = Object.fromEntries(new FormData(form));
+      let hasError = false;
+      function showErr(field, msg) {
+        hasError = true;
+        const el = form.querySelector(`[name="${field}"]`);
+        if (el) { el.style.borderColor = 'var(--error)'; el.insertAdjacentHTML('afterend', `<p class="field-error" style="color:var(--error);font-size:12px;margin:4px 0 0;">${msg}</p>`); }
+      }
+      if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) showErr('email', 'Please enter a valid email address');
+      if (data.phone) { const digits = data.phone.replace(/\D/g, ''); if (digits.length > 0 && digits.length < 10) showErr('phone', 'Please enter a valid 10-digit phone number'); }
+      if (hasError) return;
+
       const btn = form.querySelector('button[type="submit"]');
       btn.textContent = 'Sending...'; btn.disabled = true;
       const result = await submitLead(data, 'quote-wizard');
