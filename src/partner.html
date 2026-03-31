@@ -474,6 +474,23 @@
     </div>
   </div>
 
+  <!-- ═══ AUTH FAILURE STATE ═══ -->
+  <div id="view-auth-failed" class="hidden">
+    <div class="portal-card">
+      <div class="empty-state">
+        <div class="empty-state__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        </div>
+        <h3 id="auth-fail-title">Unable to Verify Your Link</h3>
+        <p id="auth-fail-message">We couldn't connect to our system right now. This could be a temporary issue — try refreshing the page. If the problem continues, give us a call.</p>
+        <p style="margin-top:16px">
+          <button onclick="location.reload()" style="padding:8px 20px;border:1.5px solid var(--border);border-radius:var(--border-radius);background:var(--white);color:var(--navy);font-size:var(--text-sm);font-weight:600;font-family:var(--font-body);cursor:pointer;margin-right:8px">Try Again</button>
+          <a href="tel:+15024135335" style="color:var(--blue);font-weight:500">(502) 413-5335</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <footer class="portal-footer">
@@ -568,10 +585,14 @@ async function authenticate(token) {
     personalizeUI();
   } catch(e) {
     if (PARTNER_DATA) return; // cached data is fine
-    // Token is invalid — still show the form is not useful, show error
     document.getElementById('view-refer').classList.add('hidden');
-    document.getElementById('view-no-token').classList.remove('hidden');
     document.getElementById('header-nav').classList.add('hidden');
+    // Distinguish between invalid token (401) and network/server error
+    if (e.message === 'auth_failed') {
+      document.getElementById('auth-fail-title').textContent = 'This Link Is No Longer Active';
+      document.getElementById('auth-fail-message').textContent = 'Your partner access link may have been deactivated or replaced. Please contact us for a new link.';
+    }
+    document.getElementById('view-auth-failed').classList.remove('hidden');
   }
 }
 
