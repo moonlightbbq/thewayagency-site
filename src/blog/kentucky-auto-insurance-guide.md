@@ -2,8 +2,9 @@
 title: What Every Kentucky Driver Should Know About Auto Insurance
 slug: kentucky-auto-insurance-guide
 description: Kentucky is a choice no-fault state with unique auto insurance requirements. Learn about minimum coverage, PIP, and how to get the right protection without overpaying.
-author: The Way Agency
-author_title: Independent Insurance Agency
+author: Audrey Lillpop
+author_title: Licensed Agent
+author_slug: audrey-lillpop
 date: 2026-04-01
 modified: 2026-04-01
 reading_time: 7 min read
