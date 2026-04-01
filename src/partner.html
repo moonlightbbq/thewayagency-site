@@ -121,6 +121,9 @@
   .portal-form .form-group select.field-error {
     border-color: var(--error); box-shadow: 0 0 0 3px rgba(217,64,64,.08);
   }
+  .portal-form .form-group input.field-valid {
+    border-color: var(--green); box-shadow: 0 0 0 3px rgba(101,197,179,.12);
+  }
   .portal-form .form-group textarea { min-height: 90px; resize: vertical }
   .portal-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
   .portal-form .form-row-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px }
@@ -416,6 +419,20 @@
           <div class="product-grid" id="product-grid"></div>
         </div>
 
+        <div id="lienholder-section" class="hidden" style="background:var(--light-bg);border-radius:10px;padding:14px 16px;margin-bottom:4px">
+          <label style="font-size:var(--text-xs);font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:10px">Lienholder / Mortgagee Info</label>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Mortgagee Name</label>
+              <input type="text" id="p_mortgagee" placeholder="Bank or lienholder name" autocomplete="organization">
+            </div>
+            <div class="form-group">
+              <label>Loan Number</label>
+              <input type="text" id="p_loannum" placeholder="Loan / account number" autocomplete="off">
+            </div>
+          </div>
+        </div>
+
         <div class="form-group">
           <label>Urgency</label>
           <select id="p_urgency">
@@ -667,6 +684,10 @@ function toggleProduct(el) {
   el.classList.toggle('selected');
   selectedProducts = [];
   document.querySelectorAll('.product-opt.selected').forEach(function(e) { selectedProducts.push(e.dataset.pid); });
+  // Show lienholder section when property products are selected
+  var propertyProducts = ['homeowners', 'flood', 'bop', 'cgl'];
+  var hasProperty = selectedProducts.some(function(p) { return propertyProducts.indexOf(p) !== -1; });
+  document.getElementById('lienholder-section').classList.toggle('hidden', !hasProperty);
 }
 
 /* ── Validation & Submission ── */
@@ -678,7 +699,7 @@ function validateEmail(email) {
 }
 function validatePhone(phone) {
   if (!phone) return true;
-  return phone.replace(/\D/g, '').length >= 7;
+  return phone.replace(/\D/g, '').length === 10;
 }
 function markError(id) {
   var el = document.getElementById(id);
@@ -717,6 +738,8 @@ async function submitReferral() {
     products: selectedProducts,
     urgency: document.getElementById('p_urgency').value || 'normal',
     notes: val('p_notes'),
+    mortgagee: val('p_mortgagee') || undefined,
+    loanNumber: val('p_loannum') || undefined,
   };
 
   try {
@@ -747,10 +770,11 @@ async function submitReferral() {
 }
 
 function resetForm() {
-  ['p_fname','p_lname','p_email','p_phone','p_address','p_city','p_state','p_zip','p_notes'].forEach(function(id) {
-    var el = document.getElementById(id); if (el) { el.value = ''; el.classList.remove('field-error'); }
+  ['p_fname','p_lname','p_email','p_phone','p_address','p_city','p_state','p_zip','p_notes','p_mortgagee','p_loannum'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) { el.value = ''; el.classList.remove('field-error', 'field-valid'); }
   });
   document.getElementById('p_urgency').value = 'normal';
+  document.getElementById('lienholder-section').classList.add('hidden');
   document.querySelectorAll('.product-opt').forEach(function(e) { e.classList.remove('selected'); });
   selectedProducts = [];
   document.getElementById('refer-form').classList.remove('hidden');
@@ -878,6 +902,72 @@ function formatStatus(s) {
   var map = { draft: 'Draft', submitted: 'Submitted', in_review: 'In Review', quoted: 'Quoted', bound: 'Bound' };
   return map[s] || s || 'Draft';
 }
+/* ── Phone Auto-Format (XXX) XXX-XXXX ── */
+(function() {
+  var phoneEl = document.getElementById('p_phone');
+  if (!phoneEl) return;
+  phoneEl.addEventListener('input', function() {
+    var digits = this.value.replace(/\D/g, '');
+    if (digits.length <= 3) this.value = digits;
+    else if (digits.length <= 6) this.value = '(' + digits.slice(0,3) + ') ' + digits.slice(3);
+    else this.value = '(' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6,10);
+  });
+  // Blur validation
+  phoneEl.addEventListener('blur', function() {
+    this.classList.remove('field-error', 'field-valid');
+    if (!this.value.trim()) return;
+    if (validatePhone(this.value)) this.classList.add('field-valid');
+    else this.classList.add('field-error');
+  });
+})();
+
+/* ── Email Blur Validation ── */
+(function() {
+  var emailEl = document.getElementById('p_email');
+  if (!emailEl) return;
+  emailEl.addEventListener('blur', function() {
+    this.classList.remove('field-error', 'field-valid');
+    if (!this.value.trim()) return;
+    if (validateEmail(this.value)) this.classList.add('field-valid');
+    else this.classList.add('field-error');
+  });
+})();
+
+/* ── Google Places Address Autocomplete ── */
+window._initPartnerAutocomplete = function() {
+  var input = document.getElementById('p_address');
+  if (!input || !window.google || !window.google.maps || !window.google.maps.places) return;
+  input.setAttribute('autocomplete', 'off');
+  try {
+    var ac = new google.maps.places.Autocomplete(input, { types: ['address'], componentRestrictions: { country: 'us' } });
+    ac.addListener('place_changed', function() {
+      var place = ac.getPlace();
+      if (!place || !place.address_components) return;
+      var parts = {};
+      place.address_components.forEach(function(c) {
+        if (c.types.indexOf('street_number') !== -1) parts.number = c.long_name;
+        if (c.types.indexOf('route') !== -1) parts.street = c.long_name;
+        if (c.types.indexOf('locality') !== -1) parts.city = c.long_name;
+        if (c.types.indexOf('administrative_area_level_1') !== -1) parts.state = c.short_name;
+        if (c.types.indexOf('postal_code') !== -1) parts.zip = c.long_name;
+      });
+      if (parts.number && parts.street) input.value = parts.number + ' ' + parts.street;
+      if (parts.city) document.getElementById('p_city').value = parts.city;
+      if (parts.state) document.getElementById('p_state').value = parts.state;
+      if (parts.zip) document.getElementById('p_zip').value = parts.zip;
+    });
+  } catch(err) { /* graceful fallback — plain text input still works */ }
+};
+(function() {
+  fetch(SAGE_API + '/api/config').then(function(r) { return r.json(); }).then(function(cfg) {
+    if (!cfg.googleMapsKey) return;
+    var s = document.createElement('script');
+    s.src = 'https://maps.googleapis.com/maps/api/js?key=' + cfg.googleMapsKey + '&libraries=places&callback=_initPartnerAutocomplete&v=weekly';
+    s.async = true; s.defer = true;
+    document.head.appendChild(s);
+  }).catch(function() {});
+})();
+
 </script>
 </body>
 </html>
