@@ -541,18 +541,13 @@ var TOKEN = null;
 var selectedProducts = [];
 
 var PRODUCTS = [
-  { id: 'homeowners', label: 'Homeowners', icon: '\uD83C\uDFE0' },
-  { id: 'auto', label: 'Auto', icon: '\uD83D\uDE97' },
-  { id: 'umbrella', label: 'Umbrella', icon: '\u2602\uFE0F' },
+  { id: 'homeowners', label: 'Home', icon: '\uD83C\uDFE0' },
   { id: 'flood', label: 'Flood', icon: '\uD83C\uDF0A' },
+  { id: 'auto', label: 'Auto', icon: '\uD83D\uDE97' },
   { id: 'life', label: 'Life', icon: '\uD83D\uDC9A' },
+  { id: 'umbrella', label: 'Umbrella', icon: '\u2602\uFE0F' },
   { id: 'renters', label: 'Renters', icon: '\uD83D\uDDDD\uFE0F' },
-  { id: 'bop', label: 'BOP', icon: '\uD83C\uDFEA' },
-  { id: 'cgl', label: 'Gen Liability', icon: '\uD83D\uDEE1\uFE0F' },
-  { id: 'workers_comp', label: 'Workers Comp', icon: '\uD83D\uDC77' },
-  { id: 'commercial_auto', label: 'Comm Auto', icon: '\uD83D\uDE9A' },
-  { id: 'bonds', label: 'Bonds', icon: '\uD83D\uDCDC' },
-  { id: 'cyber', label: 'Cyber', icon: '\uD83D\uDD12' },
+  { id: 'business', label: 'Business', icon: '\uD83C\uDFE2' },
 ];
 
 /* ── System Status ── */
@@ -686,7 +681,7 @@ function toggleProduct(el) {
   selectedProducts = [];
   document.querySelectorAll('.product-opt.selected').forEach(function(e) { selectedProducts.push(e.dataset.pid); });
   // Show lienholder section when property products are selected
-  var propertyProducts = ['homeowners', 'flood', 'bop', 'cgl'];
+  var propertyProducts = ['homeowners', 'flood'];
   var hasProperty = selectedProducts.some(function(p) { return propertyProducts.indexOf(p) !== -1; });
   document.getElementById('lienholder-section').classList.toggle('hidden', !hasProperty);
 }
