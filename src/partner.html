@@ -124,6 +124,7 @@
   .portal-form .form-group input.field-valid {
     border-color: var(--green); box-shadow: 0 0 0 3px rgba(101,197,179,.12);
   }
+  @keyframes spin { to { transform: rotate(360deg) } }
   .portal-form .form-group textarea { min-height: 90px; resize: vertical }
   .portal-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
   .portal-form .form-row-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px }
@@ -728,7 +729,9 @@ async function submitReferral() {
   }
 
   var btn = document.getElementById('refer-btn');
-  btn.textContent = 'Submitting\u2026'; btn.disabled = true;
+  btn.disabled = true;
+  btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px"><span class="spinner" style="width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block"></span> Submitting\u2026</span>';
+  errEl.textContent = ''; errEl.style.display = 'none';
 
   var payload = {
     firstName: val('p_fname'), lastName: val('p_lname'),
@@ -765,7 +768,7 @@ async function submitReferral() {
     errEl.classList.add('visible', 'form-offline');
     errEl.style.display = 'block';
   } finally {
-    btn.textContent = 'Submit Referral'; btn.disabled = false;
+    btn.innerHTML = 'Submit Referral'; btn.disabled = false;
   }
 }
 
@@ -962,7 +965,7 @@ window._initPartnerAutocomplete = function() {
   fetch(SAGE_API + '/api/config').then(function(r) { return r.json(); }).then(function(cfg) {
     if (!cfg.googleMapsKey) return;
     var s = document.createElement('script');
-    s.src = 'https://maps.googleapis.com/maps/api/js?key=' + cfg.googleMapsKey + '&libraries=places&callback=_initPartnerAutocomplete&v=weekly';
+    s.src = 'https://maps.googleapis.com/maps/api/js?key=' + cfg.googleMapsKey + '&libraries=places&callback=_initPartnerAutocomplete&loading=async&v=weekly';
     s.async = true; s.defer = true;
     document.head.appendChild(s);
   }).catch(function() {});
