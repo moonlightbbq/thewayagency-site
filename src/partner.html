@@ -549,12 +549,9 @@
         </div>
 
         <div class="form-group quick-hideable">
-          <label>Urgency</label>
-          <select id="p_urgency">
-            <option value="normal">Normal — within a few days</option>
-            <option value="high">High — needs attention today</option>
-            <option value="low">Low — no rush</option>
-          </select>
+          <label>Need By Date</label>
+          <input type="text" id="p_need_by" placeholder="MM/DD/YYYY" maxlength="10" autocomplete="off"
+            oninput="autoFormatDate(this)" onblur="validateNeedByDate(this)">
         </div>
 
         <div class="form-group quick-hideable">
@@ -884,7 +881,7 @@ async function submitReferral() {
     state: isQuick ? undefined : val('p_state'),
     zip: isQuick ? undefined : val('p_zip'),
     products: selectedProducts,
-    urgency: isQuick ? 'normal' : (document.getElementById('p_urgency').value || 'normal'),
+    urgency: isQuick ? undefined : (val('p_need_by') ? 'Need by ' + val('p_need_by') : 'normal'),
     notes: isQuick ? undefined : val('p_notes'),
     mortgagee: isQuick ? undefined : (val('p_mortgagee') || undefined),
     loanNumber: isQuick ? undefined : (val('p_loannum') || undefined),
@@ -918,10 +915,9 @@ async function submitReferral() {
 }
 
 function resetForm() {
-  ['p_fname','p_lname','p_email','p_phone','p_address','p_city','p_state','p_zip','p_notes','p_mortgagee','p_loannum'].forEach(function(id) {
+  ['p_fname','p_lname','p_email','p_phone','p_phone_quick','p_address','p_city','p_state','p_zip','p_notes','p_mortgagee','p_loannum','p_need_by'].forEach(function(id) {
     var el = document.getElementById(id); if (el) { el.value = ''; el.classList.remove('field-error', 'field-valid'); }
   });
-  document.getElementById('p_urgency').value = 'normal';
   document.getElementById('lienholder-section').classList.add('hidden');
   document.querySelectorAll('.product-opt').forEach(function(e) { e.classList.remove('selected'); });
   selectedProducts = [];
@@ -1170,6 +1166,25 @@ function formatStatus(s) {
   var map = { draft: 'Draft', submitted: 'Submitted', in_review: 'In Review', quoted: 'Quoted', bound: 'Bound', declined: 'Declined', expired: 'Expired', closed: 'Completed' };
   return map[s] || s || 'Draft';
 }
+/* ── Date Auto-Format MM/DD/YYYY ── */
+function autoFormatDate(el) {
+  var v = el.value.replace(/[^\d]/g, '');
+  if (v.length > 8) v = v.slice(0, 8);
+  if (v.length >= 5) el.value = v.slice(0, 2) + '/' + v.slice(2, 4) + '/' + v.slice(4);
+  else if (v.length >= 3) el.value = v.slice(0, 2) + '/' + v.slice(2);
+  else el.value = v;
+}
+
+function validateNeedByDate(el) {
+  if (!el.value) { el.classList.remove('field-error', 'field-valid'); return; }
+  var parts = el.value.split('/');
+  if (parts.length !== 3 || parts[2].length !== 4) { el.classList.add('field-error'); el.classList.remove('field-valid'); return; }
+  var d = new Date(parts[2], parts[0] - 1, parts[1]);
+  var valid = d instanceof Date && !isNaN(d) && d >= new Date(new Date().toDateString());
+  el.classList.toggle('field-error', !valid);
+  el.classList.toggle('field-valid', valid);
+}
+
 /* ── Phone Auto-Format (XXX) XXX-XXXX ── */
 (function() {
   var phoneEl = document.getElementById('p_phone');
