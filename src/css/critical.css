@@ -132,8 +132,8 @@ body.nav-open::after{content:'';position:fixed;top:var(--nav-height);left:0;righ
 .btn--lg{padding:1rem 2.2rem;font-size:var(--text-base)}
 
 /* Skip link */
-.skip-link{position:absolute;top:-40px;left:0;background:var(--navy);color:var(--white);padding:var(--space-sm) var(--space-md);z-index:9999;transition:top var(--transition-fast)}
-.skip-link:focus{top:0}
+.skip-link{position:absolute;top:-100%;left:0;background:var(--navy);color:var(--white);padding:var(--space-sm) var(--space-md);z-index:9999;clip:rect(0,0,0,0);overflow:hidden;white-space:nowrap}
+.skip-link:focus{top:0;clip:auto;overflow:visible}
 
 /* Reduced Motion */
 @media(prefers-reduced-motion:reduce){
