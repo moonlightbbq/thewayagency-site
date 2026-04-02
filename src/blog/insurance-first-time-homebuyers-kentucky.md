@@ -81,7 +81,7 @@ Do not just pick the first quote your real estate agent suggests. And do not pic
 
 **Get quotes from multiple carriers.** As an independent agency, we work with top-rated insurance companies. That means we can compare rates and coverage across carriers in a single conversation, rather than you calling five different companies.
 
-**Compare coverage, not just price.** Two policies at different price points may have very different coverage. Check your [declarations page](/blog/how-to-read-declarations-page.html) to see exactly what is included. Look at dwelling limits, deductible amounts, personal property coverage, and liability limits.
+**Compare coverage, not just price.** Two policies at different price points may have very different coverage. Check your [declarations page](/blog/understanding-your-insurance-declarations-page.html) to see exactly what is included. Look at dwelling limits, deductible amounts, personal property coverage, and liability limits.
 
 **Ask about replacement cost vs. actual cash value.** Replacement cost pays to replace your belongings at today's prices. Actual cash value deducts depreciation, which means you get less. Replacement cost is almost always worth the small additional premium.
 

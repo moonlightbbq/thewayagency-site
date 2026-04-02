@@ -19,7 +19,7 @@ Here is a practical checklist to walk through before the calendar turns.
 
 ## Home insurance review
 
-Pull out your homeowners [declarations page](/blog/how-to-read-declarations-page.html) and check these items:
+Pull out your homeowners [declarations page](/blog/understanding-your-insurance-declarations-page.html) and check these items:
 
 **Is your dwelling coverage still accurate?** Construction costs have risen significantly in recent years. If your policy insures your home for $200,000 but it would cost $280,000 to rebuild today, you are underinsured. Ask your agent to run a replacement cost estimate.
 
@@ -113,4 +113,4 @@ Yes. Often the savings come from adjusting coverage levels, raising deductibles,
 
 ### FAQ: What should I bring to an insurance review meeting?
 
-Bring your current [declarations pages](/blog/how-to-read-declarations-page.html) for all policies (home, auto, umbrella, life), a list of any changes from the past year (new vehicles, renovations, life events), and any questions about your coverage. If you work with an independent agent, they can pull much of this information directly.
+Bring your current [declarations pages](/blog/understanding-your-insurance-declarations-page.html) for all policies (home, auto, umbrella, life), a list of any changes from the past year (new vehicles, renovations, life events), and any questions about your coverage. If you work with an independent agent, they can pull much of this information directly.

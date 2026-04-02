@@ -23,7 +23,7 @@ You cannot control the weather. But you can control whether your insurance is re
 
 This is the single most important number on your homeowners policy. Your dwelling coverage (Coverage A) should reflect what it would cost to rebuild your home today, not what you paid for it and not what it would sell for.
 
-Construction costs have continued to climb, and if your dwelling coverage has not kept pace, you are underinsured. A home that cost $200,000 to build five years ago might cost $260,000 or more to rebuild today. Check your [declarations page](/blog/how-to-read-declarations-page.html) and compare your Coverage A limit to current local rebuild estimates.
+Construction costs have continued to climb, and if your dwelling coverage has not kept pace, you are underinsured. A home that cost $200,000 to build five years ago might cost $260,000 or more to rebuild today. Check your [declarations page](/blog/understanding-your-insurance-declarations-page.html) and compare your Coverage A limit to current local rebuild estimates.
 
 Many carriers offer an inflation guard endorsement that automatically increases your dwelling coverage each year. If you do not have one, ask about it. If you do have one, verify that the automatic increase has kept pace with actual construction costs in your area.
 

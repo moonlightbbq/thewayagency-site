@@ -57,7 +57,7 @@ Replacement cost and actual cash value can apply to different parts of your poli
 
 **Roofing** has become a special case. Some carriers have moved to ACV for roofs over a certain age, typically 15 or 20 years. Even if the rest of your dwelling is covered at replacement cost, your roof might be on an ACV basis. This is a relatively recent trend driven by rising roofing claims, and it catches a lot of homeowners off guard.
 
-If you are unsure what your policy says, check your [declarations page](/blog/how-to-read-declarations-page.html) or call your agent. The answer is in your policy documents, and it is worth knowing before you need it.
+If you are unsure what your policy says, check your [declarations page](/blog/understanding-your-insurance-declarations-page.html) or call your agent. The answer is in your policy documents, and it is worth knowing before you need it.
 
 ## Which one should you choose?
 

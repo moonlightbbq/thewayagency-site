@@ -69,7 +69,7 @@ The biggest factors that affect your rate:
 
 **Skipping uninsured motorist coverage.** With roughly 1 in 8 Kentucky drivers uninsured, this coverage is not optional in any practical sense. It is inexpensive and could save you tens of thousands of dollars.
 
-**Not reviewing coverage after life changes.** A new car, a teen driver, a move to a different county, or a change in commute all affect your insurance. Review your policy at least once a year. [Here is how to read your declarations page](/blog/how-to-read-declarations-page.html) to check what you actually have.
+**Not reviewing coverage after life changes.** A new car, a teen driver, a move to a different county, or a change in commute all affect your insurance. Review your policy at least once a year. [Here is how to read your declarations page](/blog/understanding-your-insurance-declarations-page.html) to check what you actually have.
 
 **Choosing the cheapest quote without comparing coverage.** Two quotes at different prices may have very different coverage. Always compare limits, deductibles, and exclusions, not just the bottom-line number.
 

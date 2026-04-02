@@ -116,7 +116,7 @@ That is where an [independent agent](/blog/how-independent-agents-save-money.htm
 
 You do not pay extra for this service — independent agents are compensated by the carriers, not by you.
 
-If you want to compare your current coverage or see what options are available, [read your declarations page](/blog/how-to-read-declarations-page.html) to understand what you have now, then reach out for a side-by-side comparison.
+If you want to compare your current coverage or see what options are available, [read your declarations page](/blog/understanding-your-insurance-declarations-page.html) to understand what you have now, then reach out for a side-by-side comparison.
 
 ### FAQ: Why is one insurance quote so much cheaper than another?
 

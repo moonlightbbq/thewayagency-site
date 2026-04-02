@@ -23,7 +23,7 @@ Pull out your declarations page for every active policy. If you have not looked 
 - **Liability limits on your auto and home policies.** The minimum liability limits in Kentucky are $25,000 per person for bodily injury on auto. That does not go far in a serious accident. If your income or assets have grown, your liability exposure has grown too.
 - **Business coverage limits.** Revenue growth is a good problem to have, but your general liability and commercial property limits should reflect your current operations, not what they looked like when you started.
 
-If you are not sure [how to read your declarations page](/blog/how-to-read-declarations-page.html), it is worth learning. That document is the single best summary of what you actually have.
+If you are not sure [how to read your declarations page](/blog/understanding-your-insurance-declarations-page.html), it is worth learning. That document is the single best summary of what you actually have.
 
 ## Resolution 2: Shop your rates (the right way)
 

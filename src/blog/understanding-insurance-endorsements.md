@@ -115,7 +115,7 @@ In most cases, the cost of a beneficial endorsement is small relative to the cov
 
 ## How to know which endorsements you have
 
-Your policy documents include a list of all active endorsements. Each has a form number and a brief description. Your [declarations page](/blog/how-to-read-declarations-page.html) summarizes your coverage, and the endorsement schedule lists every modification to your base policy.
+Your policy documents include a list of all active endorsements. Each has a form number and a brief description. Your [declarations page](/blog/understanding-your-insurance-declarations-page.html) summarizes your coverage, and the endorsement schedule lists every modification to your base policy.
 
 If you are not sure what endorsements are on your policy, ask your agent for a review. We can walk through each endorsement, explain what it does, and recommend additions or changes based on your current situation. Understanding your [deductibles](/blog/understanding-deductibles.html) and endorsements together gives you the full picture of what your policy actually covers.
 
