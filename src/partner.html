@@ -1207,10 +1207,9 @@ window._initPartnerAutocomplete = function() {
         if (c.types.indexOf('administrative_area_level_1') !== -1) parts.state = c.short_name;
         if (c.types.indexOf('postal_code') !== -1) parts.zip = c.long_name;
       });
-      if (parts.number && parts.street) input.value = parts.number + ' ' + parts.street;
-      if (parts.city) document.getElementById('p_city').value = parts.city;
-      if (parts.state) document.getElementById('p_state').value = parts.state;
-      if (parts.zip) document.getElementById('p_zip').value = parts.zip;
+      var street = [parts.number, parts.street].filter(Boolean).join(' ');
+      var full = [street, parts.city, [parts.state, parts.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+      input.value = full || input.value;
     });
   } catch(err) { /* graceful fallback — plain text input still works */ }
 };
