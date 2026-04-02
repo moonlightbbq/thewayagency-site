@@ -309,19 +309,15 @@
   }
   @keyframes spin { to { transform: rotate(360deg) } }
 
-  /* ── Quick Refer Toggle ── */
-  .mode-toggle {
-    display: flex; gap: 0; margin-bottom: 16px; border-radius: 8px; overflow: hidden;
-    border: 1.5px solid var(--border);
+  /* ── Text Preference ── */
+  .text-pref {
+    display: flex; align-items: center; gap: 6px; margin-top: 6px;
+    font-size: var(--text-xs); font-weight: 400; color: var(--gray);
+    text-transform: none; letter-spacing: 0; cursor: pointer;
   }
-  .mode-toggle__btn {
-    flex: 1; padding: 8px 14px; font-size: var(--text-sm); font-weight: 500;
-    text-align: center; cursor: pointer; background: #fff; color: var(--gray);
-    border: none; font-family: var(--font); transition: var(--transition-fast);
+  .text-pref input[type="checkbox"] {
+    width: 14px; height: 14px; accent-color: var(--cyan); cursor: pointer;
   }
-  .mode-toggle__btn.active { background: var(--navy); color: #fff }
-  .mode-toggle__btn:hover:not(.active) { background: var(--light-bg) }
-  .quick-hidden { display: none !important }
 
   /* ── Tracker View ── */
   .tracker-header {
@@ -481,10 +477,6 @@
     </div>
 
     <div class="portal-card">
-      <div class="mode-toggle" id="mode-toggle">
-        <button class="mode-toggle__btn active" id="mode-full" onclick="setReferMode('full')">Full Form</button>
-        <button class="mode-toggle__btn" id="mode-quick" onclick="setReferMode('quick')">Quick Refer</button>
-      </div>
       <div id="refer-form" class="portal-form">
         <div class="form-row">
           <div class="form-group">
@@ -496,37 +488,20 @@
             <input type="text" id="p_lname" autocomplete="family-name">
           </div>
         </div>
-        <div class="form-row quick-hideable">
+        <div class="form-row">
           <div class="form-group">
-            <label>Email</label>
+            <label>Email <span class="req">*</span> <span style="font-weight:300;text-transform:none;letter-spacing:0;color:var(--gray)">(email or phone required)</span></label>
             <input type="email" id="p_email" autocomplete="email">
           </div>
           <div class="form-group">
-            <label>Phone</label>
-            <input type="tel" id="p_phone" autocomplete="tel">
+            <label>Phone <span class="req">*</span></label>
+            <input type="tel" id="p_phone" autocomplete="tel" oninput="toggleTextPref()">
+            <label class="text-pref hidden" id="text-pref"><input type="checkbox" id="p_text_ok" checked> OK to text this number</label>
           </div>
         </div>
-        <div class="form-group quick-phone-only hidden">
-          <label>Phone <span class="req">*</span></label>
-          <input type="tel" id="p_phone_quick" autocomplete="tel">
-        </div>
-        <div class="form-group quick-hideable">
+        <div class="form-group">
           <label>Address</label>
-          <input type="text" id="p_address" autocomplete="street-address">
-        </div>
-        <div class="form-row-3 quick-hideable">
-          <div class="form-group">
-            <label>City</label>
-            <input type="text" id="p_city" autocomplete="address-level2">
-          </div>
-          <div class="form-group">
-            <label>State</label>
-            <input type="text" id="p_state" maxlength="2" autocomplete="address-level1" placeholder="KY">
-          </div>
-          <div class="form-group">
-            <label>ZIP</label>
-            <input type="text" id="p_zip" maxlength="10" autocomplete="postal-code">
-          </div>
+          <input type="text" id="p_address" placeholder="123 Main St, Louisville, KY 40202" autocomplete="street-address">
         </div>
 
         <div class="form-group">
@@ -548,13 +523,13 @@
           </div>
         </div>
 
-        <div class="form-group quick-hideable">
+        <div class="form-group">
           <label>Need By Date</label>
           <input type="text" id="p_need_by" placeholder="MM/DD/YYYY" maxlength="10" autocomplete="off"
             oninput="autoFormatDate(this)" onblur="validateNeedByDate(this)">
         </div>
 
-        <div class="form-group quick-hideable">
+        <div class="form-group">
           <label>Notes</label>
           <textarea id="p_notes" placeholder="Closing date, special circumstances, anything we should know..."></textarea>
         </div>
@@ -844,20 +819,14 @@ async function submitReferral() {
   errEl.style.display = 'none';
   document.querySelectorAll('.field-error').forEach(function(el) { el.classList.remove('field-error'); });
 
-  var isQuick = _referMode === 'quick';
-  var phoneVal = isQuick ? val('p_phone_quick') : val('p_phone');
+  var phoneVal = val('p_phone');
 
   var errors = [];
   if (!val('p_fname')) { errors.push('First name is required'); markError('p_fname'); }
   if (!val('p_lname')) { errors.push('Last name is required'); markError('p_lname'); }
-  if (isQuick) {
-    if (!phoneVal) { errors.push('Phone is required'); markError('p_phone_quick'); }
-    else if (!validatePhone(phoneVal)) { errors.push('Please enter a valid phone number'); markError('p_phone_quick'); }
-  } else {
-    if (!val('p_email') && !val('p_phone')) { errors.push('Email or phone is required'); markError('p_email'); markError('p_phone'); }
-    if (!validateEmail(val('p_email'))) { errors.push('Please enter a valid email'); markError('p_email'); }
-    if (!validatePhone(val('p_phone'))) { errors.push('Please enter a valid phone number'); markError('p_phone'); }
-  }
+  if (!val('p_email') && !phoneVal) { errors.push('Email or phone is required'); markError('p_email'); markError('p_phone'); }
+  if (val('p_email') && !validateEmail(val('p_email'))) { errors.push('Please enter a valid email'); markError('p_email'); }
+  if (phoneVal && !validatePhone(phoneVal)) { errors.push('Please enter a valid phone number'); markError('p_phone'); }
   if (!selectedProducts.length) errors.push('Select at least one product');
 
   if (errors.length) {
@@ -872,19 +841,22 @@ async function submitReferral() {
   btn.innerHTML = '<span style="display:inline-flex;align-items:center;gap:8px"><span class="spinner" style="width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block"></span> Submitting\u2026</span>';
   errEl.textContent = ''; errEl.style.display = 'none';
 
+  var textOk = document.getElementById('p_text_ok')?.checked ?? true;
+  var notesVal = val('p_notes');
+  if (phoneVal && !textOk) {
+    notesVal = (notesVal ? notesVal + '\n' : '') + '[Do NOT text this number]';
+  }
+
   var payload = {
     firstName: val('p_fname'), lastName: val('p_lname'),
-    email: isQuick ? undefined : val('p_email'),
-    phone: phoneVal,
-    address: isQuick ? undefined : val('p_address'),
-    city: isQuick ? undefined : val('p_city'),
-    state: isQuick ? undefined : val('p_state'),
-    zip: isQuick ? undefined : val('p_zip'),
+    email: val('p_email') || undefined,
+    phone: phoneVal || undefined,
+    address: val('p_address') || undefined,
     products: selectedProducts,
-    urgency: isQuick ? undefined : (val('p_need_by') ? 'Need by ' + val('p_need_by') : 'normal'),
-    notes: isQuick ? undefined : val('p_notes'),
-    mortgagee: isQuick ? undefined : (val('p_mortgagee') || undefined),
-    loanNumber: isQuick ? undefined : (val('p_loannum') || undefined),
+    urgency: val('p_need_by') ? 'Need by ' + val('p_need_by') : undefined,
+    notes: notesVal || undefined,
+    mortgagee: val('p_mortgagee') || undefined,
+    loanNumber: val('p_loannum') || undefined,
   };
 
   try {
@@ -915,10 +887,12 @@ async function submitReferral() {
 }
 
 function resetForm() {
-  ['p_fname','p_lname','p_email','p_phone','p_phone_quick','p_address','p_city','p_state','p_zip','p_notes','p_mortgagee','p_loannum','p_need_by'].forEach(function(id) {
+  ['p_fname','p_lname','p_email','p_phone','p_address','p_notes','p_mortgagee','p_loannum','p_need_by'].forEach(function(id) {
     var el = document.getElementById(id); if (el) { el.value = ''; el.classList.remove('field-error', 'field-valid'); }
   });
   document.getElementById('lienholder-section').classList.add('hidden');
+  document.getElementById('text-pref').classList.add('hidden');
+  var textCb = document.getElementById('p_text_ok'); if (textCb) textCb.checked = true;
   document.querySelectorAll('.product-opt').forEach(function(e) { e.classList.remove('selected'); });
   selectedProducts = [];
   document.getElementById('refer-form').classList.remove('hidden');
@@ -1040,30 +1014,6 @@ function toggleDetail(idx) {
   document.getElementById('ref-card-' + idx).classList.toggle('expanded');
 }
 
-/* ── Quick Refer Mode ── */
-var _referMode = localStorage.getItem('twa_refer_mode') || 'full';
-
-function setReferMode(mode) {
-  _referMode = mode;
-  localStorage.setItem('twa_refer_mode', mode);
-  document.getElementById('mode-full').classList.toggle('active', mode === 'full');
-  document.getElementById('mode-quick').classList.toggle('active', mode === 'quick');
-  document.querySelectorAll('.quick-hideable').forEach(function(el) {
-    el.classList.toggle('quick-hidden', mode === 'quick');
-  });
-  // Show the quick-mode phone field, hide the full-mode phone row
-  var quickPhone = document.querySelector('.quick-phone-only');
-  if (quickPhone) quickPhone.classList.toggle('hidden', mode !== 'quick');
-  // Update button text
-  var btn = document.getElementById('refer-btn');
-  if (btn) btn.textContent = mode === 'quick' ? 'Quick Refer' : 'Submit Referral';
-}
-
-// Restore saved mode on load
-(function() {
-  if (_referMode === 'quick') setReferMode('quick');
-})();
-
 /* ── Referral Tracker ── */
 var _trackerInterval = null;
 var _trackerSubmissionId = null;
@@ -1165,6 +1115,11 @@ function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&
 function formatStatus(s) {
   var map = { draft: 'Draft', submitted: 'Submitted', in_review: 'In Review', quoted: 'Quoted', bound: 'Bound', declined: 'Declined', expired: 'Expired', closed: 'Completed' };
   return map[s] || s || 'Draft';
+}
+/* ── Text Preference Toggle ── */
+function toggleTextPref() {
+  var phone = val('p_phone');
+  document.getElementById('text-pref').classList.toggle('hidden', !phone);
 }
 /* ── Date Auto-Format MM/DD/YYYY ── */
 function autoFormatDate(el) {
