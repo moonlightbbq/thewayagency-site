@@ -63,6 +63,10 @@
   }
   .portal-header__link:hover { color: var(--white); background: rgba(255,255,255,.1) }
   .portal-header__link.active { color: var(--white); background: rgba(255,255,255,.15) }
+  .portal-header__user {
+    font-size: var(--text-xs); color: rgba(255,255,255,.55);
+    font-weight: 400; padding: 0 4px; white-space: nowrap;
+  }
 
   /* ── Main Container ── */
   .portal-container {
@@ -465,8 +469,12 @@
       </div>
     </div>
     <nav class="portal-header__nav" id="header-nav">
-      <button class="portal-header__link active" data-view="refer" onclick="showView('refer',this)">New Referral</button>
-      <button class="portal-header__link" data-view="history" onclick="showView('history',this)">My Referrals</button>
+      <button class="portal-header__link" id="login-btn" onclick="showLoginFlow()">Login</button>
+      <div id="logged-in-nav" style="display:none;align-items:center;gap:16px">
+        <button class="portal-header__link active" data-view="refer" onclick="showView('refer',this)">New Referral</button>
+        <button class="portal-header__link" data-view="history" onclick="showView('history',this)">My Referrals</button>
+        <span class="portal-header__user" id="logged-in-label"></span>
+      </div>
     </nav>
   </div>
   <div class="portal-header__accent"></div>
@@ -697,7 +705,16 @@ var PRODUCTS = [
   try { SESSION_TOKEN = localStorage.getItem('twa_partner_session_' + TOKEN); } catch(e) {}
 
   // Token present — authenticate in background, show form immediately
-  authenticate(TOKEN);
+  authenticate(TOKEN).then(function() {
+    // After auth completes, check if we have a valid session with referral data
+    if (PARTNER_DATA && PARTNER_DATA.referrals !== null && SESSION_TOKEN) {
+      onLoginSuccess();
+    } else if (SESSION_TOKEN && PARTNER_DATA && PARTNER_DATA.referrals === null) {
+      // Session expired — clear it
+      SESSION_TOKEN = null;
+      try { localStorage.removeItem('twa_partner_session_' + TOKEN); } catch(e) {}
+    }
+  });
   processQueue();
 })();
 
@@ -750,7 +767,8 @@ async function authenticate(token) {
   } catch(e) {
     if (PARTNER_DATA) return; // cached data is fine
     document.getElementById('view-refer').classList.add('hidden');
-    document.getElementById('header-nav').classList.add('hidden');
+    document.getElementById('login-btn').style.display = 'none';
+    document.getElementById('logged-in-nav').style.display = 'none';
     // Distinguish between invalid token (401) and network/server error
     if (e.message === 'auth_failed') {
       document.getElementById('auth-fail-title').textContent = 'This Link Is No Longer Active';
@@ -1145,6 +1163,23 @@ function relativeDate(dateStr) {
   if (diffDays < 30) return Math.floor(diffDays / 7) + 'w ago';
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: now.getFullYear() !== d.getFullYear() ? 'numeric' : undefined });
 }
+/* ── Login / Session Flow ── */
+
+function showLoginFlow() {
+  // Switch to history view which will show the verification gate
+  showView('history');
+}
+
+function onLoginSuccess() {
+  // Hide login button, show nav tabs + logged-in label
+  document.getElementById('login-btn').style.display = 'none';
+  document.getElementById('logged-in-nav').style.display = 'flex';
+  var p = PARTNER_DATA ? PARTNER_DATA.partner : null;
+  if (p && p.name) {
+    document.getElementById('logged-in-label').textContent = p.name.split(' ')[0];
+  }
+}
+
 /* ── Session Verification Gate ── */
 var _verifyCooldown = 0;
 
@@ -1239,6 +1274,7 @@ async function checkVerifyCode() {
       // Clear stale sessionStorage cache and re-fetch with session
       try { sessionStorage.removeItem('twa_partner_' + TOKEN); } catch(e) {}
       await refreshData();
+      onLoginSuccess();
       loadHistory();
     } else {
       if (statusEl) {
