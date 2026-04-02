@@ -67,6 +67,11 @@
     font-size: var(--text-xs); color: rgba(255,255,255,.55);
     font-weight: 400; padding: 0 4px; white-space: nowrap;
   }
+  .portal-header__logout {
+    color: rgba(255,255,255,.45) !important; font-size: 11px !important;
+    border-left: 1px solid rgba(255,255,255,.15); padding-left: 16px !important; margin-left: 4px;
+  }
+  .portal-header__logout:hover { color: rgba(255,255,255,.8) !important }
 
   /* ── Main Container ── */
   .portal-container {
@@ -474,6 +479,7 @@
         <button class="portal-header__link active" data-view="refer" onclick="showView('refer',this)">New Referral</button>
         <button class="portal-header__link" data-view="history" onclick="showView('history',this)">My Referrals</button>
         <span class="portal-header__user" id="logged-in-label"></span>
+        <button class="portal-header__link portal-header__logout" onclick="logoutPartner()">Logout</button>
       </div>
     </nav>
   </div>
@@ -757,9 +763,9 @@ async function authenticate(token) {
   } catch(e) {}
 
   try {
-    var headers = { 'X-Partner-Token': token };
+    var headers = {};
     if (SESSION_TOKEN) headers['X-Partner-Session'] = SESSION_TOKEN;
-    var res = await fetch(SAGE_API + '/api/partners/portal', { headers: headers });
+    var res = await fetch(SAGE_API + '/api/partners/portal?token=' + encodeURIComponent(token), { headers: Object.keys(headers).length ? headers : undefined });
     if (!res.ok) throw new Error('auth_failed');
     PARTNER_DATA = await res.json();
     try { sessionStorage.setItem('twa_partner_' + token, JSON.stringify(PARTNER_DATA)); } catch(e) {}
@@ -965,9 +971,9 @@ function processQueue() {
 /* ── Refresh partner data ── */
 async function refreshData() {
   try {
-    var headers = { 'X-Partner-Token': TOKEN };
+    var headers = {};
     if (SESSION_TOKEN) headers['X-Partner-Session'] = SESSION_TOKEN;
-    var res = await fetch(SAGE_API + '/api/partners/portal', { headers: headers });
+    var res = await fetch(SAGE_API + '/api/partners/portal?token=' + encodeURIComponent(TOKEN), { headers: Object.keys(headers).length ? headers : undefined });
     if (res.ok) {
       PARTNER_DATA = await res.json();
       try { sessionStorage.setItem('twa_partner_' + TOKEN, JSON.stringify(PARTNER_DATA)); } catch(e) {}
@@ -1065,9 +1071,9 @@ function stopTrackerPolling() {
 }
 
 function loadTrackerData(submissionId) {
-  var headers = { 'X-Partner-Token': TOKEN };
+  var headers = {};
   if (SESSION_TOKEN) headers['X-Partner-Session'] = SESSION_TOKEN;
-  fetch(SAGE_API + '/api/partners/portal/referrals/' + encodeURIComponent(submissionId) + '/tracker', { headers: headers })
+  fetch(SAGE_API + '/api/partners/portal/referrals/' + encodeURIComponent(submissionId) + '/tracker?token=' + encodeURIComponent(TOKEN), { headers: Object.keys(headers).length ? headers : undefined })
     .then(function(r) {
       if (r.status === 403) { showView('history'); return null; }
       if (!r.ok) throw new Error('Failed to load');
@@ -1180,6 +1186,20 @@ function onLoginSuccess() {
   }
 }
 
+function logoutPartner() {
+  // Clear session
+  SESSION_TOKEN = null;
+  try { localStorage.removeItem('twa_partner_session_' + TOKEN); } catch(e) {}
+  try { sessionStorage.removeItem('twa_partner_' + TOKEN); } catch(e) {}
+  // Reset PARTNER_DATA referrals to null (keep partner info for personalization)
+  if (PARTNER_DATA) PARTNER_DATA.referrals = null;
+  // Revert nav to login button
+  document.getElementById('logged-in-nav').style.display = 'none';
+  document.getElementById('login-btn').style.display = '';
+  // Switch to referral form
+  showView('refer');
+}
+
 /* ── Session Verification Gate ── */
 var _verifyCooldown = 0;
 
@@ -1208,9 +1228,9 @@ async function sendVerifyCode() {
   if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = 'Sending\u2026'; }
 
   try {
-    var res = await fetch(SAGE_API + '/api/partners/portal/verify/send', {
+    var res = await fetch(SAGE_API + '/api/partners/portal/verify/send?token=' + encodeURIComponent(TOKEN), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Partner-Token': TOKEN },
+      headers: { 'Content-Type': 'application/json' },
     });
     var data = await res.json();
     if (res.status === 429) {
@@ -1262,9 +1282,9 @@ async function checkVerifyCode() {
   if (statusEl) { statusEl.textContent = 'Verifying\u2026'; statusEl.style.color = 'var(--slate)'; }
 
   try {
-    var res = await fetch(SAGE_API + '/api/partners/portal/verify/check', {
+    var res = await fetch(SAGE_API + '/api/partners/portal/verify/check?token=' + encodeURIComponent(TOKEN), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Partner-Token': TOKEN },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code: code }),
     });
     var data = await res.json();
