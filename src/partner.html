@@ -979,6 +979,25 @@ function personalizeUI() {
   if (cardEmail) contactHtml += '<li class="producer-card__contact-item"><a href="mailto:' + esc(cardEmail) + '"><span class="producer-card__contact-icon">&#9993;</span> ' + esc(cardEmail) + '</a></li>';
   document.getElementById('producer-contact').innerHTML = contactHtml;
   document.getElementById('producer-card').classList.remove('hidden');
+
+  // Keep agent card aligned with form — scrolls but never above form top
+  if (window.innerWidth > 1080) {
+    var _prodCard = document.getElementById('producer-card');
+    var _formCard = document.querySelector('.portal-card');
+    if (_prodCard && _formCard) {
+      function _positionAgentCard() {
+        var formRect = _formCard.getBoundingClientRect();
+        var minTop = Math.max(formRect.top, 20);
+        _prodCard.style.top = minTop + 'px';
+      }
+      _positionAgentCard();
+      window.addEventListener('scroll', _positionAgentCard, { passive: true });
+      window.addEventListener('resize', function() {
+        if (window.innerWidth <= 1080) _prodCard.style.top = '';
+        else _positionAgentCard();
+      });
+    }
+  }
 }
 
 /* ── View Navigation ── */
