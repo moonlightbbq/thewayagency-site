@@ -420,17 +420,68 @@
 
   /* ── Producer Card ── */
   .producer-card {
-    display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap;
-    background: var(--light-bg); border: 1px solid var(--border); border-radius: var(--border-radius);
-    padding: 12px 20px; margin-bottom: 20px; animation: fadeUp .4s ease;
+    position: fixed; right: max(calc((100vw - 680px) / 2 - 260px), 20px); top: 140px;
+    width: 220px; background: var(--white);
+    border: 1px solid var(--border); border-radius: var(--border-radius-lg);
+    box-shadow: 0 1px 3px rgba(23,51,88,.06), 0 4px 14px rgba(23,51,88,.05);
+    padding: 24px 20px; text-align: center;
+    animation: fadeUp .5s ease; z-index: 10;
+  }
+  .producer-card__avatar {
+    width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 12px;
+    overflow: hidden; border: 3px solid var(--light-bg);
+    box-shadow: 0 2px 8px rgba(23,51,88,.1);
+  }
+  .producer-card__avatar img { width: 100%; height: 100%; object-fit: cover; display: block }
+  .producer-card__avatar-initials {
+    width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--navy), var(--blue-dark));
+    color: var(--white); font-size: 22px; font-weight: 600;
   }
   .producer-card__label {
-    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
-    color: var(--gray);
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--gray); margin-bottom: 4px;
   }
-  .producer-card__name { font-size: var(--text-sm); font-weight: 600; color: var(--navy) }
-  .producer-card__contact { font-size: var(--text-xs); color: var(--slate) }
-  .producer-card__contact a { color: var(--blue); font-weight: 500 }
+  .producer-card__name { font-size: var(--text-base); font-weight: 600; color: var(--navy); line-height: 1.3 }
+  .producer-card__title { font-size: var(--text-xs); color: var(--slate); margin-top: 1px; font-weight: 300 }
+  .producer-card__divider {
+    width: 32px; height: 2px; margin: 14px auto;
+    background: linear-gradient(90deg, var(--blue), var(--cyan));
+    border-radius: 1px;
+  }
+  .producer-card__contact-list { list-style: none; padding: 0; margin: 0 }
+  .producer-card__contact-item {
+    font-size: var(--text-xs); padding: 6px 0;
+    border-bottom: 1px solid var(--light-bg);
+  }
+  .producer-card__contact-item:last-child { border-bottom: none }
+  .producer-card__contact-item a {
+    color: var(--slate); font-weight: 400; transition: color var(--transition-fast);
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .producer-card__contact-item a:hover { color: var(--blue) }
+  .producer-card__contact-icon { font-size: 13px; opacity: .6 }
+
+  /* Mobile: card moves inline above form */
+  @media (max-width: 1080px) {
+    .producer-card {
+      position: static; width: 100%; max-width: 680px; margin: 0 auto 20px;
+      display: flex; align-items: center; gap: 16px; text-align: left; padding: 16px 20px;
+    }
+    .producer-card__avatar { width: 48px; height: 48px; margin: 0; flex-shrink: 0 }
+    .producer-card__avatar-initials { font-size: 16px }
+    .producer-card__divider { display: none }
+    .producer-card__info { flex: 1; min-width: 0 }
+    .producer-card__label { margin-bottom: 2px }
+    .producer-card__name { font-size: var(--text-sm) }
+    .producer-card__contact-list { display: flex; gap: 12px; flex-wrap: wrap }
+    .producer-card__contact-item { border-bottom: none; padding: 2px 0 }
+  }
+  @media (max-width: 480px) {
+    .producer-card { padding: 12px 16px; gap: 12px }
+    .producer-card__avatar { width: 40px; height: 40px }
+    .producer-card__contact-list { gap: 8px }
+  }
 
   /* ── Milestone Banner ── */
   .milestone-banner {
@@ -554,9 +605,14 @@
 
   <!-- ═══ PRODUCER CARD (shown when assigned) ═══ -->
   <div id="producer-card" class="producer-card hidden">
-    <span class="producer-card__label">Your Agent</span>
-    <span class="producer-card__name" id="producer-name"></span>
-    <span class="producer-card__contact" id="producer-contact"></span>
+    <div class="producer-card__avatar" id="producer-avatar"></div>
+    <div class="producer-card__info">
+      <div class="producer-card__label">Your Agent</div>
+      <div class="producer-card__name" id="producer-name"></div>
+      <div class="producer-card__title" id="producer-title"></div>
+      <div class="producer-card__divider"></div>
+      <ul class="producer-card__contact-list" id="producer-contact"></ul>
+    </div>
   </div>
 
   <!-- ═══ REFERRAL FORM (default view) ═══ -->
@@ -896,19 +952,33 @@ function personalizeUI() {
 
   // Producer card
   var prod = PARTNER_DATA.producer;
-  if (prod && prod.name) {
-    document.getElementById('producer-name').textContent = prod.name;
-    var contactParts = [];
-    if (prod.phone) contactParts.push('<a href="tel:' + esc(prod.phone) + '">' + esc(prod.phone) + '</a>');
-    if (prod.email) contactParts.push('<a href="mailto:' + esc(prod.email) + '">' + esc(prod.email) + '</a>');
-    document.getElementById('producer-contact').innerHTML = contactParts.join(' &middot; ');
-    document.getElementById('producer-card').classList.remove('hidden');
+  var cardName = (prod && prod.name) ? prod.name : 'The Way Agency';
+  var cardTitle = (prod && prod.title) ? prod.title : '';
+  var cardPhone = (prod && prod.phone) ? prod.phone : '(502) 413-5335';
+  var cardEmail = (prod && prod.email) ? prod.email : 'partners@thewayagency.com';
+  var cardAvatar = (prod && prod.avatar_url) ? prod.avatar_url : null;
+
+  // Avatar
+  var avatarEl = document.getElementById('producer-avatar');
+  if (cardAvatar) {
+    avatarEl.innerHTML = '<img src="' + SAGE_API + esc(cardAvatar) + '" alt="' + esc(cardName) + '">';
   } else {
-    // Fallback: show agency contact
-    document.getElementById('producer-name').textContent = 'The Way Agency';
-    document.getElementById('producer-contact').innerHTML = '<a href="tel:+15024135335">(502) 413-5335</a> &middot; <a href="mailto:partners@thewayagency.com">partners@thewayagency.com</a>';
-    document.getElementById('producer-card').classList.remove('hidden');
+    var initials = cardName.split(' ').map(function(w) { return w.charAt(0); }).join('').slice(0, 2).toUpperCase();
+    avatarEl.innerHTML = '<div class="producer-card__avatar-initials">' + esc(initials) + '</div>';
   }
+
+  // Name + title
+  document.getElementById('producer-name').textContent = cardName;
+  var titleEl = document.getElementById('producer-title');
+  if (cardTitle) { titleEl.textContent = cardTitle; titleEl.style.display = ''; }
+  else titleEl.style.display = 'none';
+
+  // Contact links
+  var contactHtml = '';
+  if (cardPhone) contactHtml += '<li class="producer-card__contact-item"><a href="tel:' + esc(cardPhone.replace(/\D/g,'').replace(/^(\d{10})$/,'+1$1')) + '"><span class="producer-card__contact-icon">&#128222;</span> ' + esc(cardPhone) + '</a></li>';
+  if (cardEmail) contactHtml += '<li class="producer-card__contact-item"><a href="mailto:' + esc(cardEmail) + '"><span class="producer-card__contact-icon">&#9993;</span> ' + esc(cardEmail) + '</a></li>';
+  document.getElementById('producer-contact').innerHTML = contactHtml;
+  document.getElementById('producer-card').classList.remove('hidden');
 }
 
 /* ── View Navigation ── */
