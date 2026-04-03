@@ -1431,10 +1431,22 @@
     document.body.appendChild(bubble);
 
     // ─── Message rendering ───────────────────────
+    function formatChatText(text) {
+      // Lightweight markdown: bold, line breaks. Escape HTML first for safety.
+      return (text || '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br>');
+    }
+
     function addMessageEl(role, text) {
       var el = document.createElement('div');
       el.className = 'twa-cb-msg ' + role;
-      el.textContent = text;
+      if (role === 'assistant') {
+        el.innerHTML = formatChatText(text);
+      } else {
+        el.textContent = text;
+      }
       msgsArea.appendChild(el);
       msgsArea.scrollTop = msgsArea.scrollHeight;
       return el;
@@ -1549,7 +1561,7 @@
                 botText += chunk.text;
                 // Hide JSON action block from display as it streams in
                 var displayText = botText.replace(/\s*\{"action"\s*:\s*"(?:connect_agent|update_lead)"[\s\S]*$/m, '').trim();
-                botEl.textContent = displayText;
+                botEl.innerHTML = formatChatText(displayText);
                 msgsArea.scrollTop = msgsArea.scrollHeight;
               }
               if (chunk.done) {
@@ -1569,7 +1581,7 @@
             if (lastChunk.sessionId) chatSessionId = lastChunk.sessionId;
             if (lastChunk.text) {
               botText += lastChunk.text;
-              if (botEl) botEl.textContent = botText;
+              if (botEl) botEl.innerHTML = formatChatText(botText);
             }
             if (lastChunk.done && lastChunk.action === 'connect_agent' && lastChunk.data) {
               actionData = lastChunk.data;
@@ -1581,7 +1593,7 @@
         if (botText) {
           // Strip the JSON action block from visible text
           botText = botText.replace(/\s*\{"action"\s*:\s*"(?:connect_agent|update_lead)"[\s\S]*?\}\s*$/m, '').trim();
-          if (botEl) botEl.textContent = botText;
+          if (botEl) botEl.innerHTML = formatChatText(botText);
           var msgEntry = { role: 'bot', text: botText };
           if (actionData) msgEntry.action = actionData;
           chatMessages.push(msgEntry);
