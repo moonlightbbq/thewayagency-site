@@ -987,7 +987,7 @@ function personalizeUI() {
     if (_prodCard && _formCard) {
       function _positionAgentCard() {
         var formRect = _formCard.getBoundingClientRect();
-        var minTop = Math.max(formRect.top, 20);
+        var minTop = Math.max(formRect.top - 1, 20);
         _prodCard.style.top = minTop + 'px';
       }
       _positionAgentCard();
