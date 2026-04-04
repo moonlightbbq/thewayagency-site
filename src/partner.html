@@ -749,6 +749,10 @@
         <h3>Referral Submitted</h3>
         <p>We'll reach out to your client and keep you posted on their progress.</p>
         <div class="ref-badge" id="refer-ref"></div>
+        <div id="refer-files-badge" class="hidden" style="font-size:var(--text-sm);color:var(--text-muted);margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg>
+          <span id="refer-files-count"></span>
+        </div>
         <div class="success-actions">
           <button class="portal-btn" onclick="resetForm()" style="width:auto;padding:12px 32px">Submit Another</button>
           <button class="btn-secondary" onclick="showView('history',document.querySelector('[data-view=history]'))">View My Referrals</button>
@@ -1157,10 +1161,20 @@ async function submitReferral() {
     var data = await res.json();
     if (data.ok) {
       // Upload attached files (non-blocking — referral already saved)
-      if (pendingFiles.length && data.submissionId) {
+      var uploadedCount = pendingFiles.length;
+      if (uploadedCount && data.submissionId) {
         await uploadFiles(data.submissionId);
       }
       document.getElementById('refer-ref').textContent = '#' + data.reference;
+      var filesBadge = document.getElementById('refer-files-badge');
+      if (uploadedCount) {
+        document.getElementById('refer-files-count').textContent = uploadedCount + ' file' + (uploadedCount > 1 ? 's' : '') + ' attached';
+        filesBadge.classList.remove('hidden');
+        filesBadge.style.display = 'flex';
+      } else {
+        filesBadge.classList.add('hidden');
+        filesBadge.style.display = 'none';
+      }
       document.getElementById('refer-form').classList.add('hidden');
       document.getElementById('refer-success').classList.remove('hidden');
       pendingFiles = [];
@@ -1302,6 +1316,7 @@ function resetForm() {
   pendingFiles = [];
   renderFileList();
   document.getElementById('file-progress').style.display = 'none';
+  document.getElementById('refer-files-badge').style.display = 'none';
   document.getElementById('refer-form').classList.remove('hidden');
   document.getElementById('refer-success').classList.add('hidden');
   document.getElementById('refer-error').style.display = 'none';
