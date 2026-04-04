@@ -588,10 +588,11 @@ function buildForm() {
   // Group fields into steps (3-4 fields per step)
   // If verification needed, first step is verify, then remaining fields, then review
   STEPS = [];
+  const visibleFields = FIELDS.filter(f => !f.hidden);
   if (needsVerify) {
     // Pull out phone and email for verification step
-    const verifyFields = FIELDS.filter(f => f.key === 'phone' || f.key === 'email');
-    const otherFields = FIELDS.filter(f => f.key !== 'phone' && f.key !== 'email');
+    const verifyFields = visibleFields.filter(f => f.key === 'phone' || f.key === 'email');
+    const otherFields = visibleFields.filter(f => f.key !== 'phone' && f.key !== 'email');
     STEPS.push({ type: 'verify', fields: verifyFields });
     const PER_STEP = 3;
     for (let i = 0; i < otherFields.length; i += PER_STEP) {
@@ -599,8 +600,8 @@ function buildForm() {
     }
   } else {
     const PER_STEP = 3;
-    for (let i = 0; i < FIELDS.length; i += PER_STEP) {
-      STEPS.push({ type: 'fields', fields: FIELDS.slice(i, i + PER_STEP) });
+    for (let i = 0; i < visibleFields.length; i += PER_STEP) {
+      STEPS.push({ type: 'fields', fields: visibleFields.slice(i, i + PER_STEP) });
     }
   }
   STEPS.push({ type: 'review' });
@@ -614,10 +615,10 @@ function buildMissingFields(requested) {
     'Last Name': { key: 'lastName', type: 'text', target: 'customer', placeholder: 'Doe' },
     'Phone Number': { key: 'phone', type: 'tel', target: 'customer', placeholder: '(555) 123-4567' },
     'Email Address': { key: 'email', type: 'email', target: 'customer', placeholder: 'john@example.com' },
-    'Street Address': { key: 'address', type: 'text', target: 'customer', placeholder: '123 Main St', autocomplete: 'address' },
-    'City': { key: 'city', type: 'text', target: 'customer', placeholder: 'Springfield' },
-    'State': { key: 'state', type: 'select', target: 'customer', options: ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'] },
-    'ZIP Code': { key: 'zip', type: 'text', target: 'customer', placeholder: '12345', pattern: '[0-9]{5}' },
+    'Street Address': { key: 'address', type: 'text', target: 'customer', placeholder: '123 Main St, Louisville, KY 40202', autocomplete: 'off' },
+    'City': { key: 'city', type: 'text', target: 'customer', placeholder: 'Springfield', hidden: true },
+    'State': { key: 'state', type: 'text', target: 'customer', hidden: true },
+    'ZIP Code': { key: 'zip', type: 'text', target: 'customer', placeholder: '12345', hidden: true },
     'Date of Birth': { key: 'dob', type: 'date', target: 'customer' },
     // Homeowners
     'Dwelling Coverage Amount': { key: 'ho_dwellamt', type: 'text', target: 'form_data', placeholder: 'e.g. $350,000' },
@@ -701,10 +702,10 @@ function buildFullAppFields(products) {
     { key: 'phone', type: 'tel', target: 'customer', label: 'Phone Number', placeholder: '(555) 123-4567' },
     { key: 'email', type: 'email', target: 'customer', label: 'Email Address', placeholder: 'john@example.com' },
     { key: 'dob', type: 'date', target: 'customer', label: 'Date of Birth' },
-    { key: 'address', type: 'text', target: 'customer', label: 'Street Address', placeholder: '123 Main St' },
-    { key: 'city', type: 'text', target: 'customer', label: 'City', placeholder: '' },
-    { key: 'state', type: 'select', target: 'customer', label: 'State', options: ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'] },
-    { key: 'zip', type: 'text', target: 'customer', label: 'ZIP Code', placeholder: '12345' },
+    { key: 'address', type: 'text', target: 'customer', label: 'Street Address', placeholder: '123 Main St, Louisville, KY 40202', autocomplete: 'off' },
+    { key: 'city', type: 'text', target: 'customer', label: 'City', hidden: true },
+    { key: 'state', type: 'text', target: 'customer', label: 'State', hidden: true },
+    { key: 'zip', type: 'text', target: 'customer', label: 'ZIP Code', hidden: true },
   ];
 
   // Add product-specific fields
@@ -911,12 +912,14 @@ function renderStep() {
       </div>`;
     }
     const needsValidation = ['zip','dob'].includes(f.key);
+    const displayVal = f.key === 'address' ? (FORM_DATA.address_display || val) : val;
+    const addrOninput = f.key === 'address' ? `FORM_DATA.address_display=''; saveField('${f.key}',this.value)` : `saveField('${f.key}',this.value)`;
     return `<div class="field">
       <label for="f_${f.key}">${f.label}</label>
-      <input id="f_${f.key}" type="${f.type}" value="${esc(val)}" placeholder="${f.placeholder||''}"
+      <input id="f_${f.key}" type="${f.type}" value="${esc(displayVal)}" placeholder="${f.placeholder||''}"
         ${f.pattern ? 'pattern="'+f.pattern+'"' : ''}
-        ${f.key==='address'?'autocomplete="street-address"':''}
-        oninput="saveField('${f.key}',this.value)"
+        ${f.autocomplete ? 'autocomplete="'+f.autocomplete+'"' : ''}
+        oninput="${addrOninput}"
         onblur="onFieldBlur(this,'${f.key}')">
       ${needsValidation ? '<div class="error-msg"></div>' : ''}
     </div>`;
@@ -1171,7 +1174,7 @@ function checkVerifyReady() {
 
 // ─── Review ───
 function renderReview() {
-  const filled = FIELDS.filter(f => FORM_DATA[f.key]);
+  const filled = FIELDS.filter(f => !f.hidden && FORM_DATA[f.key]);
   const rows = filled.map(f =>
     `<div class="review-row"><span class="review-label">${esc(f.label)}</span><span class="review-value">${esc(FORM_DATA[f.key])}</span></div>`
   ).join('');
@@ -1482,22 +1485,16 @@ function initAddressAutocomplete() {
     }
 
     const address = [streetNumber, route].filter(Boolean).join(' ');
+    const full = [address, city, [state, zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
     saveField('address', address);
-    addressField.value = address;
+    FORM_DATA.address_display = full;
+    addressField.value = full;
     addressField.classList.add('filled');
 
-    // Auto-fill city, state, zip on current step or save for later
-    const cityEl = document.getElementById('f_city');
-    const stateEl = document.getElementById('f_state');
-    const zipEl = document.getElementById('f_zip');
-    if (cityEl && city) { cityEl.value = city; saveField('city', city); cityEl.classList.add('filled'); }
-    if (stateEl && state) { stateEl.value = state; saveField('state', state); stateEl.classList.add('filled'); }
-    if (zipEl && zip) { zipEl.value = zip; saveField('zip', zip); zipEl.classList.add('filled'); }
-
-    // Even if city/state/zip not on this step, save the data
-    if (city) FORM_DATA.city = city;
-    if (state) FORM_DATA.state = state;
-    if (zip) FORM_DATA.zip = zip;
+    // Save city/state/zip to FORM_DATA (hidden fields, not in DOM)
+    if (city) { FORM_DATA.city = city; }
+    if (state) { FORM_DATA.state = state; }
+    if (zip) { FORM_DATA.zip = zip; }
   });
 }
 

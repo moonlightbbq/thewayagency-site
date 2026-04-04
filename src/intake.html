@@ -135,6 +135,8 @@
     user-select: none;
     -webkit-tap-highlight-color: transparent;
     min-height: 44px;
+    position: relative;
+    overflow: hidden;
   }
   .product-opt:hover { border-color: var(--cyan); background: #f0faff }
   .product-opt.selected {
@@ -143,6 +145,47 @@
     color: var(--blue);
   }
   .product-opt .icon { font-size: 28px; margin-bottom: 6px; display: block }
+
+  /* ─── Cross-sell tile enhancements ─── */
+  .product-opt .xsell-badge {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-top: 4px;
+    padding: 2px 0;
+    opacity: 0;
+    transform: translateY(4px);
+    animation: xsellFadeIn .35s ease-out forwards;
+  }
+  @keyframes xsellFadeIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .product-opt.xsell-discount .xsell-badge { color: #16a34a; }
+  .product-opt.xsell-required .xsell-badge { color: #d97706; }
+  .product-opt.xsell-risk     .xsell-badge { color: var(--blue); }
+  .product-opt.xsell-upsell   .xsell-badge { color: #0891b2; }
+
+  .product-opt.xsell-discount { border-color: #86efac; background: #f0fdf4; }
+  .product-opt.xsell-required { border-color: #fcd34d; background: #fffbeb; }
+  .product-opt.xsell-risk     { border-color: #93c5fd; background: #eff6ff; }
+  .product-opt.xsell-upsell   { border-color: #67e8f9; background: #ecfeff; }
+
+  .product-opt.selected .xsell-badge { display: none; }
+  .product-opt.selected.xsell-discount,
+  .product-opt.selected.xsell-required,
+  .product-opt.selected.xsell-risk,
+  .product-opt.selected.xsell-upsell {
+    border-color: var(--blue);
+    background: linear-gradient(135deg, rgba(26,111,181,.06), rgba(41,182,246,.08));
+  }
+
+  .product-opt[data-xsell-fresh] { animation: xsellPulse .6s ease-out; }
+  @keyframes xsellPulse {
+    0%   { box-shadow: 0 0 0 0 rgba(134,239,172,.4); }
+    70%  { box-shadow: 0 0 0 8px rgba(134,239,172,0); }
+    100% { box-shadow: none; }
+  }
 
   /* ─── Buttons ─── */
   .btn {
@@ -608,22 +651,12 @@
       <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Your Information</div>
       <div class="form-group">
         <label for="i_address">Mailing Address <span style="color:#ef4444">*</span></label>
-        <input type="text" id="i_address" required autocomplete="street-address">
+        <input type="text" id="i_address" required autocomplete="off" placeholder="123 Main St, Louisville, KY 40202" oninput="_onAddrInput(this)">
       </div>
-      <div class="form-row-3">
-        <div class="form-group">
-          <label for="i_city">City <span style="color:#ef4444">*</span></label>
-          <input type="text" id="i_city" required autocomplete="address-level2">
-        </div>
-        <div class="form-group">
-          <label for="i_state">State <span style="color:#ef4444">*</span></label>
-          <input type="text" id="i_state" maxlength="2" required autocomplete="address-level1">
-        </div>
-        <div class="form-group">
-          <label for="i_zip">ZIP <span style="color:#ef4444">*</span></label>
-          <input type="text" id="i_zip" maxlength="10" required autocomplete="postal-code">
-        </div>
-      </div>
+      <input type="hidden" id="i_address_street">
+      <input type="hidden" id="i_city">
+      <input type="hidden" id="i_state">
+      <input type="hidden" id="i_zip">
       <div class="form-row">
         <div class="form-group" id="dob-group">
           <label for="i_dob">Date of Birth</label>
@@ -1100,6 +1133,7 @@ function renderProductGrid(priorityLine) {
 
   mainGrid.innerHTML = sorted.slice(0, MAIN_GRID_SIZE).map(renderOpt).join('');
   otherGrid.innerHTML = sorted.slice(MAIN_GRID_SIZE).map(renderOpt).join('');
+  if (typeof applyEnhancers === 'function') applyEnhancers();
 }
 
 // Render grid — check for ?line= param first, otherwise default (personal first)
@@ -1129,6 +1163,106 @@ const BUNDLE_MAP = {
   workers_comp:    { products: ['cgl', 'commercial_auto'],  msg: "Bundle with general liability and commercial auto for a complete package." },
   cyber:           { products: ['bop', 'eo'],               msg: "Bundle with BOP and professional liability for full digital protection." },
 };
+
+// ── Cross-sell tile enhancer map ────────────────────────────────────────────
+const CROSS_SELL_ENHANCERS = {
+  homeowners:      [{ target: 'auto',     badge: 'Add & Save 25%',  type: 'discount' },
+                    { target: 'umbrella', badge: 'Bundle & Save',    type: 'discount' },
+                    { target: 'flood',    badge: 'Protect your home', type: 'risk' }],
+  auto:            [{ target: 'homeowners', badge: 'Add & Save 25%', type: 'discount' },
+                    { target: 'umbrella',   badge: 'Bundle & Save',  type: 'discount' }],
+  renters:         [{ target: 'auto',     badge: 'Add & Save 15%',   type: 'discount' },
+                    { target: 'umbrella', badge: 'Bundle & Save',     type: 'discount' }],
+  umbrella:        [{ target: 'homeowners', badge: 'Required for umbrella', type: 'required' },
+                    { target: 'auto',       badge: 'Required for umbrella', type: 'required' }],
+  flood:           [{ target: 'homeowners', badge: 'Discount when bundled', type: 'discount' }],
+  life:            [{ target: 'homeowners', badge: 'Save when bundled', type: 'discount' },
+                    { target: 'auto',       badge: 'Save when bundled', type: 'discount' }],
+  motorcycle:      [{ target: 'auto',       badge: 'Add & Save 15%', type: 'discount' },
+                    { target: 'homeowners', badge: 'Bundle & Save',   type: 'discount' }],
+  boat:            [{ target: 'homeowners', badge: 'Bundle & Save',   type: 'discount' }],
+  bop:             [{ target: 'cyber',           badge: 'Add cyber protection', type: 'upsell' },
+                    { target: 'commercial_auto', badge: 'Bundle & Save 15%',    type: 'discount' },
+                    { target: 'workers_comp',    badge: 'Complete your package', type: 'upsell' }],
+  cgl:             [{ target: 'bop',             badge: 'Save 10-20% vs standalone', type: 'discount' },
+                    { target: 'commercial_auto', badge: 'Bundle & Save',             type: 'discount' }],
+  commercial_auto: [{ target: 'cgl',          badge: 'Bundle & Save',        type: 'discount' },
+                    { target: 'workers_comp', badge: 'Complete your package', type: 'upsell' }],
+  workers_comp:    [{ target: 'cgl',             badge: 'Bundle & Save',        type: 'discount' },
+                    { target: 'commercial_auto', badge: 'Bundle & Save',        type: 'discount' }],
+  cyber:           [{ target: 'bop', badge: 'Bundle & Save',     type: 'discount' },
+                    { target: 'eo',  badge: 'Full digital shield', type: 'upsell' }],
+};
+
+function clearEnhancers() {
+  document.querySelectorAll('.product-opt[data-xsell-source]').forEach(tile => {
+    tile.classList.remove('xsell-discount', 'xsell-required', 'xsell-risk', 'xsell-upsell');
+    tile.removeAttribute('data-xsell-source');
+    tile.removeAttribute('data-xsell-fresh');
+    const badge = tile.querySelector('.xsell-badge');
+    if (badge) badge.remove();
+  });
+}
+
+function applyEnhancers() {
+  clearEnhancers();
+
+  const enhancements = new Map();
+
+  // Product-based triggers
+  for (const pid of selectedProducts) {
+    const rules = CROSS_SELL_ENHANCERS[pid];
+    if (!rules) continue;
+    for (const rule of rules) {
+      if (selectedProducts.includes(rule.target)) continue;
+      if (enhancements.has(rule.target)) continue;
+      enhancements.set(rule.target, { ...rule, source: pid });
+    }
+  }
+
+  // Contextual: geographic flood risk
+  const stateEl = document.getElementById('i_state');
+  const state = (stateEl?.value || '').toUpperCase();
+  if (state && selectedProducts.includes('homeowners') && !selectedProducts.includes('flood')) {
+    const floodStates = ['KY', 'TN', 'IN', 'FL', 'TX', 'LA', 'NC', 'SC'];
+    if (floodStates.includes(state) && !enhancements.has('flood')) {
+      enhancements.set('flood', { target: 'flood', badge: 'Common in ' + state, type: 'risk', source: 'geo' });
+    }
+  }
+
+  // Contextual: storm season (Mar-Jun) umbrella nudge
+  const month = new Date().getMonth();
+  if (month >= 2 && month <= 5 && !selectedProducts.includes('umbrella')) {
+    if (!enhancements.has('umbrella') && selectedProducts.some(p => ['homeowners', 'auto'].includes(p))) {
+      enhancements.set('umbrella', { target: 'umbrella', badge: 'Storm season protection', type: 'risk', source: 'seasonal' });
+    }
+  }
+
+  // Apply to DOM
+  for (const [targetPid, enh] of enhancements) {
+    const tile = document.querySelector(`.product-opt[data-pid="${targetPid}"]`);
+    if (!tile) continue;
+
+    tile.classList.add('xsell-' + enh.type);
+    tile.setAttribute('data-xsell-source', enh.source);
+    tile.setAttribute('data-xsell-fresh', '');
+
+    const badge = document.createElement('span');
+    badge.className = 'xsell-badge';
+    badge.textContent = enh.badge;
+    tile.appendChild(badge);
+
+    setTimeout(() => tile.removeAttribute('data-xsell-fresh'), 700);
+  }
+
+  if (enhancements.size > 0) {
+    trackIntake('xsell_enhancers_shown', {
+      count: enhancements.size,
+      targets: [...enhancements.keys()].join(','),
+      sources: [...new Set([...enhancements.values()].map(e => e.source))].join(','),
+    });
+  }
+}
 
 const PRODUCT_NAMES = {
   homeowners:'Homeowners', auto:'Auto', umbrella:'Umbrella', flood:'Flood', life:'Life',
@@ -1225,6 +1359,7 @@ function syncBundlePills() {
 
   // Show bundle suggestion banner
   renderBundleBanner(pid);
+  applyEnhancers();
 })();
 
 // ── Pre-fill form fields from URL params (from inline forms, geo pages, etc.) ─
@@ -1329,7 +1464,7 @@ async function trackPartial(notify) {
       body: JSON.stringify({
         sessionId,
         firstName, lastName, email, phone,
-        address: v('i_address'), city: v('i_city'), state: v('i_state'), zip: v('i_zip'),
+        address: v('i_address_street') || v('i_address'), city: v('i_city'), state: v('i_state'), zip: v('i_zip'),
         products: selectedProducts,
         step: currentStep,
         agent: _agentParam,
@@ -1360,7 +1495,7 @@ function scheduleTrack() {
 }
 
 // Attach to contact fields — fires on blur so we capture as they tab through
-['i_fname', 'i_lname', 'i_email', 'i_phone', 'i_address', 'i_city', 'i_state', 'i_zip'].forEach(id => {
+['i_fname', 'i_lname', 'i_email', 'i_phone', 'i_address'].forEach(id => {
   const el = document.getElementById(id);
   if (el) {
     el.addEventListener('blur', scheduleTrack);
@@ -1457,6 +1592,13 @@ function returnToForm() {
 function toggleProd(el) {
   el.classList.toggle('selected');
   const wasSelected = el.classList.contains('selected');
+  // Track cross-sell conversion before clearing enhancers
+  if (wasSelected && el.hasAttribute('data-xsell-source')) {
+    trackIntake('xsell_conversion', {
+      product_id: el.dataset.pid,
+      source_product: el.getAttribute('data-xsell-source'),
+    });
+  }
   selectedProducts = [...document.querySelectorAll('.product-opt.selected')].map(e => e.dataset.pid);
   trackProductToggle(el.dataset.pid, wasSelected);
   // If source product was deselected, hide bundle banner
@@ -1465,8 +1607,9 @@ function toggleProd(el) {
     if (banner) banner.classList.add('hidden');
     bundleSourceProduct = null;
   }
-  // Sync bundle pill states
+  // Sync bundle pill states + cross-sell tile enhancers
   syncBundlePills();
+  applyEnhancers();
 }
 
 function toggleOtherProducts() {
@@ -1610,7 +1753,7 @@ async function nextStep(from) {
       if (!v('i_other_desc')) problems.push('Please describe the other coverage you need.');
     }
     // Validate address
-    if (!v('i_address') || !v('i_city') || !v('i_state') || !v('i_zip')) problems.push('Please complete your full mailing address.');
+    if (!v('i_address')) problems.push('Please enter your mailing address.');
     if (problems.length) { err.textContent = problems[0]; err.classList.remove('hidden'); return; }
     err.classList.add('hidden');
   }
@@ -1684,7 +1827,7 @@ function renderProductQuestions() {
   // ═══ Per-product sections (lighter headers, no icons) ═══
 
   if (selectedProducts.includes('homeowners')) {
-    const addr = [v('i_address'), v('i_city'), v('i_state'), v('i_zip')].filter(Boolean).join(', ');
+    const addr = v('i_address');
     html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
       <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Homeowners</div>
       <div class="toggle-row">
@@ -1694,12 +1837,11 @@ function renderProductQuestions() {
       </div>
       ${addr ? `<div id="ho-addr-display" style="font-size:13px;color:var(--slate);margin-bottom:12px;padding:8px 12px;background:var(--light);border-radius:8px">${esc(addr)}</div>` : ''}
       <div id="ho-diff-addr" class="hidden" style="margin-bottom:12px">
-        <div class="form-group"><label>Property Address</label><input type="text" id="i_ho_address" placeholder="Property street address"></div>
-        <div class="form-row-3">
-          <div class="form-group"><label>City</label><input type="text" id="i_ho_city"></div>
-          <div class="form-group"><label>State</label><input type="text" id="i_ho_state" maxlength="2"></div>
-          <div class="form-group"><label>ZIP</label><input type="text" id="i_ho_zip" maxlength="10"></div>
-        </div>
+        <div class="form-group"><label>Property Address</label><input type="text" id="i_ho_address" placeholder="123 Main St, Louisville, KY 40202" autocomplete="off" oninput="_onHoAddrInput(this)"></div>
+        <input type="hidden" id="i_ho_address_street">
+        <input type="hidden" id="i_ho_city">
+        <input type="hidden" id="i_ho_state">
+        <input type="hidden" id="i_ho_zip">
       </div>
       <div class="form-row">
         <div class="form-group"><label>Estimated Home Value</label><select id="i_ho_value">
@@ -2088,7 +2230,7 @@ function renderReview() {
   html += `<div class="summary-row"><span class="label">Name</span><span class="value">${esc(v('i_fname'))} ${esc(v('i_lname'))}</span></div>`;
   if (v('i_email')) html += `<div class="summary-row"><span class="label">Email</span><span class="value">${esc(v('i_email'))}</span></div>`;
   if (v('i_phone')) html += `<div class="summary-row"><span class="label">Phone</span><span class="value">${esc(v('i_phone'))}</span></div>`;
-  const addr = [v('i_address'), v('i_city'), v('i_state'), v('i_zip')].filter(Boolean).join(', ');
+  const addr = v('i_address');
   if (addr) html += `<div class="summary-row"><span class="label">Mailing Address</span><span class="value">${esc(addr)}</span></div>`;
   const prods = selectedProducts.map(p => PROD_LABELS[p] || p).join(', ');
   html += `<div class="summary-row"><span class="label">Coverage</span><span class="value">${esc(prods)}</span></div>`;
@@ -2106,7 +2248,7 @@ function renderReview() {
     if (hoSameAddr) {
       html += `<div class="summary-row"><span class="label">Property Address</span><span class="value">Same as mailing</span></div>`;
     } else {
-      const hoAddr = [rv('i_ho_address'), rv('i_ho_city'), rv('i_ho_state'), rv('i_ho_zip')].filter(Boolean).join(', ');
+      const hoAddr = rv('i_ho_address');
       html += `<div class="summary-row"><span class="label">Property Address</span><span class="value">${hoAddr ? esc(hoAddr) : '<span style="color:#dc6803">Not provided</span>'}</span></div>`;
     }
     if (rv('i_ho_value')) html += `<div class="summary-row"><span class="label">Estimated Home Value</span><span class="value">${esc(rv('i_ho_value'))}</span></div>`;
@@ -2216,7 +2358,7 @@ async function submitIntake() {
   if (el('i_ho_value')) formData.ho_value = el('i_ho_value');
   if (el('i_ho_yearbuilt')) formData.ho_yearbuilt = el('i_ho_yearbuilt');
   if (!hoSameAddr) {
-    if (el('i_ho_address')) formData.ho_address = el('i_ho_address');
+    if (el('i_ho_address_street') || el('i_ho_address')) formData.ho_address = el('i_ho_address_street') || el('i_ho_address');
     if (el('i_ho_city')) formData.ho_city = el('i_ho_city');
     if (el('i_ho_state')) formData.ho_state = el('i_ho_state');
     if (el('i_ho_zip')) formData.ho_zip = el('i_ho_zip');
@@ -2347,7 +2489,7 @@ async function submitIntake() {
         lastName: v('i_lname'),
         email: v('i_email'),
         phone: v('i_phone'),
-        address: v('i_address'),
+        address: v('i_address_street') || v('i_address'),
         city: v('i_city'),
         state: v('i_state'),
         zip: v('i_zip'),
@@ -2399,7 +2541,7 @@ async function submitIntake() {
     const queueRef = 'Q' + Date.now().toString(36).toUpperCase();
     const payload = {
       sessionId, firstName: v('i_fname'), lastName: v('i_lname'), email: v('i_email'), phone: v('i_phone'),
-      address: v('i_address'), city: v('i_city'), state: v('i_state'), zip: v('i_zip'),
+      address: v('i_address_street') || v('i_address'), city: v('i_city'), state: v('i_state'), zip: v('i_zip'),
       products: selectedProducts, formData, notes: v('i_notes'), agent: agentParam || '',
       _hp_company: document.getElementById('_hp_company')?.value || '', cfToken: '',
     };
@@ -2432,41 +2574,62 @@ document.querySelectorAll('.form-group input').forEach(inp => {
   inp.addEventListener('blur', function() { this.classList.toggle('filled', !!this.value.trim()); });
 });
 
+// ── Address input helpers (sync visible → hidden street, clear parsed components) ──
+function _onAddrInput(el) {
+  var s = document.getElementById('i_address_street');
+  if (s) s.value = el.value;
+  ['i_city','i_state','i_zip'].forEach(function(id) { var e = document.getElementById(id); if (e) e.value = ''; });
+}
+function _onHoAddrInput(el) {
+  var s = document.getElementById('i_ho_address_street');
+  if (s) s.value = el.value;
+  ['i_ho_city','i_ho_state','i_ho_zip'].forEach(function(id) { var e = document.getElementById(id); if (e) e.value = ''; });
+}
+function _parsePlaceAddress(place) {
+  let streetNum = '', route = '', city = '', state = '', zip = '';
+  for (const c of place.address_components) {
+    if (c.types.includes('street_number')) streetNum = c.long_name;
+    if (c.types.includes('route')) route = c.long_name;
+    if (c.types.includes('locality') || c.types.includes('sublocality_level_1')) city = c.long_name;
+    if (c.types.includes('administrative_area_level_1')) state = c.short_name;
+    if (c.types.includes('postal_code')) zip = c.long_name;
+  }
+  const street = [streetNum, route].filter(Boolean).join(' ');
+  const full = [street, city, [state, zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+  return { street, city, state, zip, full };
+}
+function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
+  const input = document.getElementById(inputId);
+  if (!input || !window.google?.maps?.places) return;
+  input.setAttribute('autocomplete', 'off');
+  try {
+    const ac = new google.maps.places.Autocomplete(input, {
+      types: ['address'], componentRestrictions: { country: 'us' }
+    });
+    ac.addListener('place_changed', () => {
+      const place = ac.getPlace();
+      if (!place.address_components) return;
+      const p = _parsePlaceAddress(place);
+      input.value = p.full;
+      const fill = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+      fill(streetId, p.street);
+      fill(cityId, p.city);
+      fill(stateId, p.state);
+      fill(zipId, p.zip);
+      scheduleTrack();
+    });
+  } catch (err) { console.error('[Maps] Autocomplete init error:', err); }
+}
+
 // ── Google Maps Address Autocomplete ────────────────────────────────────────
 (async function loadIntakeGoogleMaps() {
   try {
     const cfg = await fetch(SAGE_API + '/api/config').then(r => r.json());
     if (!cfg.googleMapsKey) { console.warn('[Maps] No Google Maps key'); return; }
     window._initIntakeAutocomplete = function() {
-      const input = document.getElementById('i_address');
-      if (!input) { console.warn('[Maps] No i_address input'); return; }
-      if (!window.google?.maps?.places) { console.warn('[Maps] Places library not loaded'); return; }
-      // Disable browser autocomplete so Google dropdown is visible
-      input.setAttribute('autocomplete', 'off');
-      try {
-        const ac = new google.maps.places.Autocomplete(input, {
-          types: ['address'], componentRestrictions: { country: 'us' }
-        });
-        ac.addListener('place_changed', () => {
-          const place = ac.getPlace();
-          if (!place.address_components) return;
-          let streetNum = '', route = '', city = '', state = '', zip = '';
-          for (const c of place.address_components) {
-            if (c.types.includes('street_number')) streetNum = c.long_name;
-            if (c.types.includes('route')) route = c.long_name;
-            if (c.types.includes('locality') || c.types.includes('sublocality_level_1')) city = c.long_name;
-            if (c.types.includes('administrative_area_level_1')) state = c.short_name;
-            if (c.types.includes('postal_code')) zip = c.long_name;
-          }
-          input.value = [streetNum, route].filter(Boolean).join(' ');
-          const fill = (id, val) => { const el = document.getElementById(id); if (el && val) { el.value = val; el.classList.add('filled'); } };
-          fill('i_city', city);
-          fill('i_state', state);
-          fill('i_zip', zip);
-          scheduleTrack();
-        });
-        console.log('[Maps] Autocomplete initialized');
-      } catch (err) { console.error('[Maps] Autocomplete init error:', err); }
+      _bindPlacesAutocomplete('i_address', 'i_address_street', 'i_city', 'i_state', 'i_zip');
+      _bindPlacesAutocomplete('i_ho_address', 'i_ho_address_street', 'i_ho_city', 'i_ho_state', 'i_ho_zip');
+      console.log('[Maps] Autocomplete initialized');
     };
     const s = document.createElement('script');
     s.src = `https://maps.googleapis.com/maps/api/js?key=${cfg.googleMapsKey}&libraries=places&callback=_initIntakeAutocomplete&v=weekly`;
@@ -2504,9 +2667,9 @@ const DRAFT_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
 // Fields to save from step 1 and step 4
 const DRAFT_FIELD_IDS = [
   'i_fname', 'i_lname', 'i_email', 'i_phone',
-  'i_address', 'i_city', 'i_state', 'i_zip',
+  'i_address', 'i_address_street', 'i_city', 'i_state', 'i_zip',
   'i_notes', 'i_current_carrier', 'i_policy_expiry', 'i_dob',
-  'i_ho_value', 'i_ho_yearbuilt', 'i_ho_address', 'i_ho_city', 'i_ho_state', 'i_ho_zip',
+  'i_ho_value', 'i_ho_yearbuilt', 'i_ho_address', 'i_ho_address_street', 'i_ho_city', 'i_ho_state', 'i_ho_zip',
   'i_li_amount', 'i_li_type', 'i_li_tobacco',
   'i_umb_limit', 'i_umb_drivers',
   'i_fl_foundation', 'i_fl_claims',
@@ -2594,6 +2757,7 @@ function restoreDraft(draft) {
       if (btn) btn.classList.add('selected');
     }
     if (typeof syncBundlePills === 'function') syncBundlePills();
+    if (typeof applyEnhancers === 'function') applyEnhancers();
   }
   // Restore homeowners address toggle
   if (typeof draft.hoSameAddr === 'boolean') hoSameAddr = draft.hoSameAddr;
