@@ -521,7 +521,7 @@
 
   /* ── Agent Card (shown when ?agent= param present) ── */
   .agent-card {
-    position: fixed; right: max(calc((100vw - 680px) / 2 - 260px), 20px); top: 210px;
+    position: fixed; right: max(calc((100vw - 680px) / 2 - 260px), 20px); top: 280px;
     width: 220px; background: var(--white, #fff);
     border: 1px solid var(--border, #e5e7eb); border-radius: 14px;
     box-shadow: 0 1px 3px rgba(23,51,88,.06), 0 4px 14px rgba(23,51,88,.05);
@@ -939,11 +939,11 @@ function showIntakeBanner(color, msg) {
 
         // Keep card aligned with form on desktop
         if (window.innerWidth > 1080) {
-          const formWrap = document.querySelector('.container');
+          const formCard = document.getElementById('step-1') || document.querySelector('.card');
           function posCard() {
             if (window.innerWidth <= 1080) { card.style.top = ''; return; }
-            const rect = formWrap.getBoundingClientRect();
-            card.style.top = Math.max(rect.top - 1, 20) + 'px';
+            const rect = formCard.getBoundingClientRect();
+            card.style.top = Math.max(rect.top, 20) + 'px';
           }
           posCard();
           window.addEventListener('scroll', posCard, { passive: true });
