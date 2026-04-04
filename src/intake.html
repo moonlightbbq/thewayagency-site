@@ -932,7 +932,11 @@ function showIntakeBanner(color, msg) {
         if (agent.title) { titleEl.textContent = agent.title; titleEl.style.display = ''; }
         else titleEl.style.display = 'none';
         let contactHtml = '';
-        if (agent.phone) contactHtml += '<li><a href="tel:+1' + agent.phone.replace(/\D/g, '') + '"><span style="font-size:13px;opacity:.6">&#128222;</span> ' + agent.phone + '</a></li>';
+        if (agent.phone) {
+          var digits = agent.phone.replace(/\D/g, '');
+          var display = digits.length === 10 ? '(' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6) : agent.phone;
+          contactHtml += '<li><a href="tel:+1' + digits + '"><span style="font-size:13px;opacity:.6">&#128222;</span> ' + display + '</a></li>';
+        }
         if (agent.email) contactHtml += '<li><a href="mailto:' + agent.email + '"><span style="font-size:13px;opacity:.6">&#9993;</span> ' + agent.email + '</a></li>';
         document.getElementById('agent-contact').innerHTML = contactHtml;
         card.classList.remove('hidden');
