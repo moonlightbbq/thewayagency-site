@@ -1884,6 +1884,63 @@
   }
 
   // ═══════════════════════════════════════════════
+  // AGENT CARD (intake page ?agent= param)
+  // ═══════════════════════════════════════════════
+  var TEAM_DATA = [
+    { slug: 'sheilia-royal', name: 'Sheilia Royal', title: 'Agency Principal / Licensed Agent', photo: '/src/assets/images/team/sheilia-royal.webp', email: 'sheilia@thewayagency.com', phone: '(502) 413-5335 ext 1' },
+    { slug: 'audrey-lillpop', name: 'Audrey Lillpop', title: 'Licensed Agent', photo: '/src/assets/images/team/audrey-lillpop.webp', email: 'audrey@thewayagency.com', phone: '(502) 413-5335 ext 2' },
+    { slug: 'kelly-mccallister', name: 'Kelly McCallister', title: 'Client Care Specialist', photo: '/src/assets/images/team/kelly-mccallister.webp', email: 'kelly@thewayagency.com', phone: '(502) 413-5335 ext 3' },
+    { slug: 'jill-boone', name: 'Jill Boone', title: 'Licensed Agent', photo: '/src/assets/images/team/jill-boone.webp', email: 'jill@thewayagency.com', phone: '(502) 413-5335 ext 4' },
+    { slug: 'luke-royal', name: 'Luke Royal', title: 'Agency Owner', photo: '', email: 'partner@thewayagency.com', phone: '(502) 413-5335' },
+  ];
+
+  function initAgentCard() {
+    var params = new URLSearchParams(window.location.search);
+    var slug = params.get('agent');
+    if (!slug) return;
+
+    var agent = TEAM_DATA.find(function(t) { return t.slug === slug; });
+    if (!agent) return;
+
+    var card = document.getElementById('agent-card');
+    if (!card) return;
+
+    // Avatar
+    var avatarEl = document.getElementById('agent-avatar');
+    if (agent.photo) {
+      avatarEl.innerHTML = '<img src="' + agent.photo + '" alt="' + agent.name + '">';
+    } else {
+      var initials = agent.name.split(' ').map(function(w) { return w.charAt(0); }).join('').slice(0, 2).toUpperCase();
+      avatarEl.innerHTML = '<div class="agent-card__avatar-initials">' + initials + '</div>';
+    }
+
+    document.getElementById('agent-name').textContent = agent.name;
+    var titleEl = document.getElementById('agent-title');
+    if (agent.title) { titleEl.textContent = agent.title; titleEl.style.display = ''; }
+    else titleEl.style.display = 'none';
+
+    var contactHtml = '';
+    if (agent.phone) contactHtml += '<li><a href="tel:' + agent.phone.replace(/\D/g, '').replace(/^(\d{10})$/, '+1$1') + '"><span style="font-size:13px;opacity:.6">&#128222;</span> ' + agent.phone + '</a></li>';
+    if (agent.email) contactHtml += '<li><a href="mailto:' + agent.email + '"><span style="font-size:13px;opacity:.6">&#9993;</span> ' + agent.email + '</a></li>';
+    document.getElementById('agent-contact').innerHTML = contactHtml;
+
+    card.classList.remove('hidden');
+
+    // Keep card aligned with form on desktop
+    if (window.innerWidth > 1080) {
+      var formWrap = document.querySelector('.container');
+      function positionCard() {
+        if (window.innerWidth <= 1080) { card.style.top = ''; return; }
+        var rect = formWrap.getBoundingClientRect();
+        card.style.top = Math.max(rect.top - 1, 20) + 'px';
+      }
+      positionCard();
+      window.addEventListener('scroll', positionCard, { passive: true });
+      window.addEventListener('resize', positionCard);
+    }
+  }
+
+  // ═══════════════════════════════════════════════
   // AFTER-HOURS HELP BUTTON
   // ═══════════════════════════════════════════════
   function initAfterHoursHelp() {
@@ -1930,6 +1987,7 @@
     initScrollAnimations();
     initEngagementTracking();
     initChatWidget();
+    initAgentCard();
     initAfterHoursHelp();
     initConversionBaseline();
     initMetricsOverlay();
