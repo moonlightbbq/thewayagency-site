@@ -1031,7 +1031,11 @@ function personalizeUI() {
 
   // Contact links
   var contactHtml = '';
-  if (cardPhone) contactHtml += '<li class="producer-card__contact-item"><a href="tel:' + esc(cardPhone.replace(/\D/g,'').replace(/^(\d{10})$/,'+1$1')) + '"><span class="producer-card__contact-icon">&#128222;</span> ' + esc(cardPhone) + '</a></li>';
+  if (cardPhone) {
+    var phoneDigits = cardPhone.replace(/\D/g, '');
+    var phoneDisplay = phoneDigits.length === 10 ? '(' + phoneDigits.slice(0,3) + ') ' + phoneDigits.slice(3,6) + '-' + phoneDigits.slice(6) : cardPhone;
+    contactHtml += '<li class="producer-card__contact-item"><a href="tel:+1' + phoneDigits + '"><span class="producer-card__contact-icon">&#128222;</span> ' + esc(phoneDisplay) + '</a></li>';
+  }
   if (cardEmail) contactHtml += '<li class="producer-card__contact-item"><a href="mailto:' + esc(cardEmail) + '"><span class="producer-card__contact-icon">&#9993;</span> ' + esc(cardEmail) + '</a></li>';
   document.getElementById('producer-contact').innerHTML = contactHtml;
   document.getElementById('producer-card').classList.remove('hidden');
@@ -1180,15 +1184,22 @@ async function submitReferral() {
 var ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
 var MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
+var MAX_FILES = 10;
+
 function handleFileSelect(fileListObj) {
+  var warnings = [];
   for (var i = 0; i < fileListObj.length; i++) {
     var file = fileListObj[i];
+    if (pendingFiles.length >= MAX_FILES) {
+      warnings.push('Maximum ' + MAX_FILES + ' files allowed.');
+      break;
+    }
     if (!ALLOWED_TYPES.includes(file.type)) {
-      alert(file.name + ' is not a supported file type. Use PDF, JPEG, or PNG.');
+      warnings.push(file.name + ': unsupported type (use PDF, JPEG, or PNG)');
       continue;
     }
     if (file.size > MAX_FILE_SIZE) {
-      alert(file.name + ' exceeds 10MB limit.');
+      warnings.push(file.name + ': exceeds 10MB limit');
       continue;
     }
     // Avoid duplicates by name+size
@@ -1197,6 +1208,13 @@ function handleFileSelect(fileListObj) {
   }
   document.getElementById('file-input').value = '';
   renderFileList();
+  if (warnings.length) {
+    var errEl = document.getElementById('refer-error');
+    errEl.textContent = warnings.join(' ');
+    errEl.classList.add('visible');
+    errEl.style.display = 'block';
+    setTimeout(function() { errEl.style.display = 'none'; }, 5000);
+  }
 }
 
 function removeFile(idx) {
