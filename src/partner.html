@@ -158,6 +158,46 @@
   }
   .product-opt .p-icon { display: block; font-size: 20px; margin-bottom: 2px }
 
+  /* ── File Upload ── */
+  .file-upload-area {
+    border: 2px dashed var(--border); border-radius: var(--border-radius);
+    padding: 20px; text-align: center; cursor: pointer;
+    transition: all .2s; background: var(--white);
+  }
+  .file-upload-area:hover, .file-upload-area.dragover {
+    border-color: var(--cyan); background: rgba(32,188,238,.04);
+  }
+  .file-upload-area svg { width: 28px; height: 28px; color: var(--text-muted); margin-bottom: 6px }
+  .file-upload-area p { font-size: var(--text-sm); color: var(--text-muted); margin: 0 }
+  .file-upload-area .upload-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; opacity: .7 }
+  .file-list { margin-top: 10px }
+  .file-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; background: var(--light-bg); border-radius: var(--border-radius);
+    margin-bottom: 6px; font-size: var(--text-sm);
+  }
+  .file-item .file-icon { flex-shrink: 0; font-size: 18px }
+  .file-item .file-info { flex: 1; min-width: 0 }
+  .file-item .file-name { font-weight: 600; color: var(--charcoal); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+  .file-item .file-size { font-size: 11px; color: var(--text-muted) }
+  .file-item .file-remove {
+    flex-shrink: 0; width: 24px; height: 24px; border: none; background: none;
+    color: var(--text-muted); cursor: pointer; font-size: 16px; line-height: 1;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  }
+  .file-item .file-remove:hover { background: #fef2f2; color: var(--error) }
+  .file-upload-progress {
+    margin-top: 8px; font-size: 11px; color: var(--text-muted);
+    display: none; align-items: center; gap: 8px;
+  }
+  .file-upload-progress .progress-bar {
+    flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden;
+  }
+  .file-upload-progress .progress-fill {
+    height: 100%; background: linear-gradient(90deg, var(--blue), var(--cyan));
+    border-radius: 2px; transition: width .3s; width: 0%;
+  }
+
   .form-error {
     padding: 10px 16px; background: #fef2f2; border: 1px solid #fecaca;
     border-radius: var(--border-radius); font-size: var(--text-sm); color: var(--error);
@@ -683,6 +723,21 @@
           <textarea id="p_notes" placeholder="Closing date, special circumstances, anything we should know..."></textarea>
         </div>
 
+        <div class="form-group">
+          <label>Attachments <span style="font-weight:400;color:var(--text-muted)">(optional)</span></label>
+          <div class="file-upload-area" id="file-drop-area" onclick="document.getElementById('file-input').click()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 16V4m0 0l-4 4m4-4l4 4"/><path d="M2 17l.621 2.485A2 2 0 004.561 21h14.878a2 2 0 001.94-1.515L22 17"/></svg>
+            <p>Drop files here or tap to browse</p>
+            <p class="upload-hint">PDF, JPEG, or PNG &mdash; up to 10MB each</p>
+          </div>
+          <input type="file" id="file-input" multiple accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" style="display:none" onchange="handleFileSelect(this.files)">
+          <div class="file-list" id="file-list"></div>
+          <div class="file-upload-progress" id="file-progress">
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <span id="progress-text">Uploading...</span>
+          </div>
+        </div>
+
         <div class="form-error" id="refer-error"></div>
         <button class="portal-btn" id="refer-btn" onclick="submitReferral()">Submit Referral</button>
       </div>
@@ -793,6 +848,7 @@ var PARTNER_DATA = null;
 var TOKEN = null;
 var SESSION_TOKEN = null;
 var selectedProducts = [];
+var pendingFiles = [];
 
 var PRODUCTS = [
   { id: 'homeowners', label: 'Home', icon: '\uD83C\uDFE0' },
@@ -1096,9 +1152,14 @@ async function submitReferral() {
     });
     var data = await res.json();
     if (data.ok) {
+      // Upload attached files (non-blocking — referral already saved)
+      if (pendingFiles.length && data.submissionId) {
+        await uploadFiles(data.submissionId);
+      }
       document.getElementById('refer-ref').textContent = '#' + data.reference;
       document.getElementById('refer-form').classList.add('hidden');
       document.getElementById('refer-success').classList.remove('hidden');
+      pendingFiles = [];
       refreshData();
     } else {
       errEl.textContent = data.error || 'Submission failed. Please try again.';
@@ -1115,6 +1176,102 @@ async function submitReferral() {
   }
 }
 
+/* ── File Upload Handling ── */
+var ALLOWED_TYPES = ['application/pdf', 'image/jpeg', 'image/png'];
+var MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+function handleFileSelect(fileListObj) {
+  for (var i = 0; i < fileListObj.length; i++) {
+    var file = fileListObj[i];
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      alert(file.name + ' is not a supported file type. Use PDF, JPEG, or PNG.');
+      continue;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      alert(file.name + ' exceeds 10MB limit.');
+      continue;
+    }
+    // Avoid duplicates by name+size
+    if (pendingFiles.some(function(f) { return f.name === file.name && f.size === file.size; })) continue;
+    pendingFiles.push(file);
+  }
+  document.getElementById('file-input').value = '';
+  renderFileList();
+}
+
+function removeFile(idx) {
+  pendingFiles.splice(idx, 1);
+  renderFileList();
+}
+
+function renderFileList() {
+  var container = document.getElementById('file-list');
+  if (!pendingFiles.length) { container.innerHTML = ''; return; }
+  container.innerHTML = pendingFiles.map(function(f, i) {
+    var icon = f.type === 'application/pdf' ? '\uD83D\uDCC4' : '\uD83D\uDDBC\uFE0F';
+    var size = f.size < 1024 * 1024 ? (f.size / 1024).toFixed(0) + ' KB' : (f.size / (1024 * 1024)).toFixed(1) + ' MB';
+    return '<div class="file-item">' +
+      '<span class="file-icon">' + icon + '</span>' +
+      '<div class="file-info"><div class="file-name">' + escapeHtml(f.name) + '</div><div class="file-size">' + size + '</div></div>' +
+      '<button type="button" class="file-remove" onclick="removeFile(' + i + ')" title="Remove">&times;</button>' +
+    '</div>';
+  }).join('');
+}
+
+function escapeHtml(s) {
+  var d = document.createElement('div'); d.textContent = s; return d.innerHTML;
+}
+
+function fileToBase64(file) {
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function() { resolve(reader.result.split(',')[1]); };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+async function uploadFiles(submissionId) {
+  if (!pendingFiles.length) return;
+  var progressEl = document.getElementById('file-progress');
+  var fillEl = document.getElementById('progress-fill');
+  var textEl = document.getElementById('progress-text');
+  progressEl.style.display = 'flex';
+
+  for (var i = 0; i < pendingFiles.length; i++) {
+    var file = pendingFiles[i];
+    textEl.textContent = 'Uploading ' + (i + 1) + ' of ' + pendingFiles.length + '...';
+    fillEl.style.width = ((i / pendingFiles.length) * 100) + '%';
+    try {
+      var b64 = await fileToBase64(file);
+      await fetch(SAGE_API + '/api/partners/portal/refer/' + encodeURIComponent(submissionId) + '/documents?token=' + encodeURIComponent(TOKEN), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: file.name, mime_type: file.type, data: b64 })
+      });
+    } catch(e) {
+      // Non-blocking — referral already submitted, just log
+      console.warn('File upload failed:', file.name, e);
+    }
+  }
+  fillEl.style.width = '100%';
+  textEl.textContent = 'Upload complete';
+  setTimeout(function() { progressEl.style.display = 'none'; }, 2000);
+}
+
+// Drag and drop
+(function initDragDrop() {
+  var area = document.getElementById('file-drop-area');
+  if (!area) return;
+  ['dragenter','dragover'].forEach(function(evt) {
+    area.addEventListener(evt, function(e) { e.preventDefault(); e.stopPropagation(); area.classList.add('dragover'); });
+  });
+  ['dragleave','drop'].forEach(function(evt) {
+    area.addEventListener(evt, function(e) { e.preventDefault(); e.stopPropagation(); area.classList.remove('dragover'); });
+  });
+  area.addEventListener('drop', function(e) { handleFileSelect(e.dataTransfer.files); });
+})();
+
 function resetForm() {
   ['p_fname','p_lname','p_email','p_phone','p_address','p_notes','p_mortgagee','p_loannum','p_need_by'].forEach(function(id) {
     var el = document.getElementById(id); if (el) { el.value = ''; el.classList.remove('field-error', 'field-valid'); }
@@ -1124,6 +1281,9 @@ function resetForm() {
   var textCb = document.getElementById('p_text_ok'); if (textCb) textCb.checked = true;
   document.querySelectorAll('.product-opt').forEach(function(e) { e.classList.remove('selected'); });
   selectedProducts = [];
+  pendingFiles = [];
+  renderFileList();
+  document.getElementById('file-progress').style.display = 'none';
   document.getElementById('refer-form').classList.remove('hidden');
   document.getElementById('refer-success').classList.add('hidden');
   document.getElementById('refer-error').style.display = 'none';
