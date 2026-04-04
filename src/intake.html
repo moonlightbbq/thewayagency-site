@@ -917,6 +917,39 @@ function showIntakeBanner(color, msg) {
           navPhone.innerHTML = phoneSvg + ' ' + agent.phone;
         }
       }
+      // Populate floating agent card
+      const card = document.getElementById('agent-card');
+      const avatarEl = document.getElementById('agent-avatar');
+      if (card && avatarEl) {
+        if (agent.avatar_url) {
+          avatarEl.innerHTML = '<img src="' + SAGE_API + agent.avatar_url + '" alt="' + agent.name + '">';
+        } else {
+          const initials = agent.name.split(' ').map(w => w.charAt(0)).join('').slice(0, 2).toUpperCase();
+          avatarEl.innerHTML = '<div class="agent-card__avatar-initials">' + initials + '</div>';
+        }
+        document.getElementById('agent-name').textContent = agent.name;
+        const titleEl = document.getElementById('agent-title');
+        if (agent.title) { titleEl.textContent = agent.title; titleEl.style.display = ''; }
+        else titleEl.style.display = 'none';
+        let contactHtml = '';
+        if (agent.phone) contactHtml += '<li><a href="tel:+1' + agent.phone.replace(/\D/g, '') + '"><span style="font-size:13px;opacity:.6">&#128222;</span> ' + agent.phone + '</a></li>';
+        if (agent.email) contactHtml += '<li><a href="mailto:' + agent.email + '"><span style="font-size:13px;opacity:.6">&#9993;</span> ' + agent.email + '</a></li>';
+        document.getElementById('agent-contact').innerHTML = contactHtml;
+        card.classList.remove('hidden');
+
+        // Keep card aligned with form on desktop
+        if (window.innerWidth > 1080) {
+          const formWrap = document.querySelector('.container');
+          function posCard() {
+            if (window.innerWidth <= 1080) { card.style.top = ''; return; }
+            const rect = formWrap.getBoundingClientRect();
+            card.style.top = Math.max(rect.top - 1, 20) + 'px';
+          }
+          posCard();
+          window.addEventListener('scroll', posCard, { passive: true });
+          window.addEventListener('resize', posCard);
+        }
+      }
       // Store for confirmation screen personalization
       window._assignedAgent = agent;
     })
