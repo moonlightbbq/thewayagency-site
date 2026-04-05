@@ -31,6 +31,7 @@ const assets = require('./builders/assets');
 const { copyBlogPages, runBlogGenerator } = require('./builders/blog-helpers');
 const { hubConfig, generateHubPage, generateProductPage, generateCityPage, generateCityProductPage, generateIndustryPage, generateCarrierPage, generateCarriersIndex, setCriticalCss } = require('./builders/pages');
 const { generateSitemap } = require('./builders/sitemap');
+const { createSchemaInjector } = require('./builders/schema-generator');
 
 // ─── Version / Build Info ───────────────────────
 const { gitInfo, buildDate, buildVersion } = createVersionInfo(ROOT);
@@ -76,6 +77,9 @@ if (fs.existsSync(criticalCssPath)) {
 
 // ─── Version Injection ──────────────────────────
 const injectVersion = createInjectVersion({ buildVersion, gitInfo, buildDate, reviews: _reviews, renderHead_GTM, renderBody_GTM, criticalCss: criticalCssMinified });
+
+// ─── Schema Markup ──────────────────────────────
+const injectSchema = createSchemaInjector({ agency, office, reviews: _reviews });
 
 // ─── Shared Context ─────────────────────────────
 const ctx = { products, office, team, knowledgeBase, carriers, testimonials, reviews: _reviews, richContent, landingData, seoData, renderNav, renderFooter, renderScripts };
@@ -148,9 +152,10 @@ for (const [lineKey, lineInfo] of Object.entries(lineMap)) {
   assets.ensureDir(path.join(BUILD, lineInfo.slug));
 
   for (const product of lineProducts) {
-    const html = generateProductPage(product, lineInfo.name, lineInfo.slug, lineKey, ctx);
+    let html = generateProductPage(product, lineInfo.name, lineInfo.slug, lineKey, ctx);
+    html = injectSchema(injectVersion(html), 'product', { product, lineName: lineInfo.name, lineSlug: lineInfo.slug });
     const filename = `${product.slug}.html`;
-    fs.writeFileSync(path.join(BUILD, lineInfo.slug, filename), injectVersion(html));
+    fs.writeFileSync(path.join(BUILD, lineInfo.slug, filename), html);
     generatedCount++;
   }
 }
@@ -160,8 +165,9 @@ console.log(`  ✓ Generated ${generatedCount} product pages from JSON`);
 assets.ensureDir(path.join(BUILD, 'insurance'));
 let geoCount = 0;
 for (const city of landingData.cities) {
-  const pageHtml = generateCityPage(city, ctx);
-  fs.writeFileSync(path.join(BUILD, 'insurance', `${city.slug}.html`), injectVersion(pageHtml));
+  let pageHtml = generateCityPage(city, ctx);
+  pageHtml = injectSchema(injectVersion(pageHtml), 'city', { city });
+  fs.writeFileSync(path.join(BUILD, 'insurance', `${city.slug}.html`), pageHtml);
   geoCount++;
 }
 console.log(`  ✓ Generated ${geoCount} geo-targeted city pages`);
@@ -171,8 +177,9 @@ const cityProducts = landingData.city_products || [];
 let cityProductCount = 0;
 for (const cityConfig of cityProducts) {
   for (const prod of cityConfig.products) {
-    const html = generateCityProductPage(cityConfig, prod, ctx);
-    fs.writeFileSync(path.join(BUILD, 'insurance', `${prod.slug}-${cityConfig.city_slug}.html`), injectVersion(html));
+    let html = generateCityProductPage(cityConfig, prod, ctx);
+    html = injectSchema(injectVersion(html), 'city-product', { product: prod, city: { city: cityConfig.city, state: cityConfig.state || 'KY', slug: cityConfig.city_slug } });
+    fs.writeFileSync(path.join(BUILD, 'insurance', `${prod.slug}-${cityConfig.city_slug}.html`), html);
     cityProductCount++;
   }
 }
@@ -182,8 +189,9 @@ console.log(`  ✓ Generated ${cityProductCount} city+product bridge pages`);
 assets.ensureDir(path.join(BUILD, 'industries'));
 let indCount = 0;
 for (const ind of landingData.industries) {
-  const indHtml = generateIndustryPage(ind, ctx);
-  fs.writeFileSync(path.join(BUILD, 'industries', `${ind.slug}.html`), injectVersion(indHtml));
+  let indHtml = generateIndustryPage(ind, ctx);
+  indHtml = injectSchema(injectVersion(indHtml), 'industry', ind);
+  fs.writeFileSync(path.join(BUILD, 'industries', `${ind.slug}.html`), indHtml);
   indCount++;
 }
 console.log(`  ✓ Generated ${indCount} industry landing pages`);
@@ -196,8 +204,9 @@ for (const line of ['personal', 'commercial']) {
   for (const carrier of (carriers[line] || [])) {
     if (!carrier.description || seenCarrierSlugs.has(carrier.slug)) continue;
     seenCarrierSlugs.add(carrier.slug);
-    const html = generateCarrierPage(carrier, line, ctx);
-    fs.writeFileSync(path.join(BUILD, 'carriers', `${carrier.slug}.html`), injectVersion(html));
+    let html = generateCarrierPage(carrier, line, ctx);
+    html = injectSchema(injectVersion(html), 'carrier', carrier);
+    fs.writeFileSync(path.join(BUILD, 'carriers', `${carrier.slug}.html`), html);
     carrierCount++;
   }
 }
@@ -205,6 +214,17 @@ for (const line of ['personal', 'commercial']) {
 const carriersIndexHtml = generateCarriersIndex(carriers, ctx);
 fs.writeFileSync(path.join(BUILD, 'carriers', 'index.html'), injectVersion(carriersIndexHtml));
 console.log(`  ✓ Generated ${carrierCount} carrier pages + index`);
+
+// 6e. Inject homepage schema
+{
+  const homePath = path.join(BUILD, 'index.html');
+  if (fs.existsSync(homePath)) {
+    let homeHtml = fs.readFileSync(homePath, 'utf8');
+    homeHtml = injectSchema(homeHtml, 'homepage');
+    fs.writeFileSync(homePath, homeHtml);
+    console.log('  ✓ Injected schema markup into homepage');
+  }
+}
 
 // 7. Copy root files
 assets.copyRootFiles(ROOT, BUILD);
