@@ -406,6 +406,7 @@
   }
   .bundle-pill.added:hover { background: #1565a0 }
   [data-action]:active { transform: scale(0.97); }
+  #quick-lead-link:hover { opacity: 1 !important; text-decoration: underline !important; }
   .bundle-done {
     font-size: 13px;
     color: var(--mint);
@@ -690,8 +691,12 @@
     <div id="step2-error" class="error hidden" role="alert" aria-live="polite"></div>
     <div class="btn-row">
       <button class="btn btn-outline" data-action="prev-step" data-step="2">Back</button>
-      <button class="btn btn-primary" data-action="next-step" data-step="2">Continue</button>
+      <button class="btn btn-primary" data-action="next-step" data-step="2">Continue for Quote Details</button>
     </div>
+    <div style="text-align:center;margin-top:12px;">
+      <a href="#" id="quick-lead-link" data-action="quick-lead" style="font-size:13px;color:var(--blue);text-decoration:none;opacity:0.85;transition:opacity .15s;">or just have someone reach out &rarr;</a>
+    </div>
+    <div id="turnstile-quick" style="position:absolute;left:-9999px;"></div>
   </div>
 
   <!-- Step 3: Your Details + Product-Specific Questions -->
@@ -2402,6 +2407,116 @@ function renderReview() {
   summary.innerHTML = html;
 }
 
+// ── Quick Lead (skip details, submit from step 2) ───────────────────────────
+async function submitQuickLead() {
+  const err = document.getElementById('step2-error');
+  if (!selectedProducts.length) {
+    err.textContent = 'Please select at least one type of coverage.';
+    err.classList.remove('hidden');
+    trackValidationError(2, 'no_products');
+    return;
+  }
+  err.classList.add('hidden');
+
+  const link = document.getElementById('quick-lead-link');
+  const origText = link.textContent;
+  link.textContent = 'Submitting...';
+  link.style.pointerEvents = 'none';
+
+  // Initialize Turnstile if not already loaded (normally deferred to step 4)
+  if (!turnstileToken && _turnstileSiteKey && window.turnstile) {
+    try {
+      turnstile.render('#turnstile-quick', {
+        sitekey: _turnstileSiteKey,
+        callback: (token) => { turnstileToken = token; },
+        'expired-callback': () => { turnstileToken = null; },
+        'error-callback': () => { turnstileToken = null; },
+        theme: 'light',
+      });
+    } catch (e) { /* Turnstile may already be rendered */ }
+    // Wait for token (up to 5 seconds)
+    for (let i = 0; i < 25 && !turnstileToken; i++) {
+      await new Promise(r => setTimeout(r, 200));
+    }
+  }
+
+  // Build minimal formData with tracking info only
+  const formData = { quick_lead: 'true' };
+  const urlParams = new URLSearchParams(window.location.search);
+  const srcParam = urlParams.get('src');
+  if (srcParam) formData.lead_source = srcParam;
+  const agentParam = urlParams.get('agent');
+  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(key => {
+    const val = urlParams.get(key); if (val) formData[key] = val;
+  });
+  const utmCookie = document.cookie.match(/twa_utm=([^;]+)/);
+  if (utmCookie) { try { const s = JSON.parse(decodeURIComponent(utmCookie[1])); for (const k in s) { if (!formData[k]) formData[k] = s[k]; } } catch(e) {} }
+  const gclid = urlParams.get('gclid'), fbclid = urlParams.get('fbclid');
+  if (gclid) formData.gclid = gclid;
+  if (fbclid) formData.fbclid = fbclid;
+  const ltCookie = document.cookie.match(/twa_lt=([^;]+)/);
+  if (ltCookie) { try { const lt = JSON.parse(decodeURIComponent(ltCookie[1])); if (lt.gclid && !formData.gclid) formData.gclid = lt.gclid; if (lt.fbclid && !formData.fbclid) formData.fbclid = lt.fbclid; } catch(e) {} }
+  formData.lead_referrer = document.referrer || 'direct';
+  formData.lead_page = window.location.pathname + window.location.search;
+  if (window._intakeIndustry) formData.industry = window._intakeIndustry;
+
+  try {
+    const res = await fetch(SAGE_API + '/api/intake', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId,
+        firstName: v('i_fname'),
+        lastName: v('i_lname'),
+        email: v('i_email'),
+        phone: v('i_phone'),
+        products: selectedProducts,
+        formData,
+        notes: '',
+        agent: agentParam || '',
+        _hp_company: document.getElementById('_hp_company')?.value || '',
+        cfToken: turnstileToken || '',
+        twa_vid: sessionId || getVisitorId(),
+        _tracking: getTrackingIds(),
+      })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      clearInterval(pollTimer);
+      document.getElementById('step-2').classList.add('hidden');
+      document.getElementById('step-confirm').classList.remove('hidden');
+      document.getElementById('ref-number').textContent = 'Reference: #' + data.reference;
+      document.getElementById('progress-wrap').classList.add('hidden');
+      const _timeEl = document.getElementById('time-estimate');
+      if (_timeEl) _timeEl.style.display = 'none';
+      // Quick lead confirmation message
+      const msg = document.getElementById('confirm-message');
+      if (window._assignedAgent) {
+        const a = window._assignedAgent;
+        msg.textContent = 'Thank you! ' + a.name.split(' ')[0] + ' will reach out to discuss your ' + selectedProducts.map(p => PRODUCT_NAMES[p] || p).join(', ') + ' coverage shortly.';
+      } else {
+        msg.textContent = 'Thank you! A licensed agent will reach out to discuss your coverage options shortly.';
+      }
+      clearDraft();
+      // Tracking
+      if (window.gtag) gtag('event', 'intake_quick_lead', { products: selectedProducts.join(','), product_count: selectedProducts.length });
+      if (window.dataLayer) {
+        dataLayer.push({ event: 'conversion', conversion_type: 'quick_lead', conversion_products: selectedProducts.join(','), conversion_reference: data.reference, conversion_source: srcParam || 'intake' });
+      }
+      if (window.fbq) fbq('track', 'Lead', { content_name: selectedProducts.join(','), content_category: 'quick_lead', currency: 'USD' }, { eventID: data.reference });
+    } else {
+      err.textContent = data.error || 'Submission failed. Please try again.';
+      err.classList.remove('hidden');
+    }
+  } catch (e) {
+    err.textContent = 'Network error. Please check your connection and try again.';
+    err.classList.remove('hidden');
+  }
+
+  link.textContent = origText;
+  link.style.pointerEvents = '';
+}
+
 // ── Submit ───────────────────────────────────────────────────────────────────
 async function submitIntake() {
   const btn = document.getElementById('submit-btn');
@@ -2743,6 +2858,7 @@ document.addEventListener('click', (e) => {
     case 'remove-vehicle': removeVehicle(parseInt(el.dataset.vehicle)); break;
     case 'respond-offer': respondToOffer(el.dataset.choice); break;
     case 'submit-intake': submitIntake(); break;
+    case 'quick-lead': e.preventDefault(); submitQuickLead(); break;
     case 'add-vehicle': addVehicle(); break;
     case 'toggle-bundle-pill': toggleBundlePill(el.dataset.pid); break;
     case 'return-to-form': returnToForm(); break;
