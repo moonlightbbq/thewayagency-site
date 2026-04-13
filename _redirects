@@ -95,6 +95,7 @@ https://thewayagency.com/* https://www.thewayagency.com/:splat 301!
 /construction-contracting/* /industries/general-contractors.html 301
 /business/builders_risk_quote.aspx /commercial/builders-risk.html 301
 /business/* /commercial/ 301
+/promotion-disclaimer /privacy.html 301
 
 # Common typos and alternate paths
 /insurance /personal/ 301
