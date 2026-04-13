@@ -135,7 +135,7 @@ function findReviewerForProduct(team, product, lineKey) {
 let _criticalCssInline = '';
 function setCriticalCss(css) { _criticalCssInline = css; }
 
-function renderHead({ title, description, canonical, ogTitle, ogDescription, ogUrl, schema }) {
+function renderHead({ title, description, canonical, ogTitle, ogDescription, ogUrl, schema, robots }) {
   const cssBlock = _criticalCssInline
     ? `
   <style>${_criticalCssInline}</style>
@@ -153,7 +153,8 @@ function renderHead({ title, description, canonical, ogTitle, ogDescription, ogU
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title}</title>
   <meta name="description" content="${description}">
-  <link rel="canonical" href="${canonical}">
+  <link rel="canonical" href="${canonical}">${robots ? `
+  <meta name="robots" content="${robots}">` : ''}
   <meta property="og:title" content="${ogTitle || title}">
   <meta property="og:description" content="${ogDescription || description}">
   <meta property="og:type" content="website">
@@ -923,6 +924,7 @@ ${renderHead({
     ogDescription: `${prod.name} for ${city}, ${state}. Compare rates from top-rated carriers. Get a quote today.`,
     ogUrl: canonical,
     schema: schemaBlock,
+    robots: 'noindex, follow',
   })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>

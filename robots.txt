@@ -9,3 +9,13 @@ Sitemap: https://www.thewayagency.com/sitemap.xml
 Disallow: /build/
 Disallow: /scripts/
 Disallow: /data/
+
+# Admin is auth-gated (returns 401) — block it so Google stops trying.
+# /portal/, /partner/, /intake/ rely on noindex meta only — DON'T disallow,
+# or Google can't see the noindex tag and may keep stale entries.
+Disallow: /admin/
+
+# Allow CSS/JS so Google can render pages
+Allow: /src/assets/
+Allow: /src/css/
+Allow: /src/js/

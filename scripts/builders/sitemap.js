@@ -16,6 +16,17 @@ function generateSitemap(BUILD, ctx) {
     return entry && entry.last_reviewed ? entry.last_reviewed + '-01' : null;
   }
 
+  function fileLastmod(urlPath) {
+    let rel = urlPath;
+    if (rel.endsWith('/')) rel += 'index.html';
+    const filePath = path.join(BUILD, rel.replace(/^\//, ''));
+    try {
+      return fs.statSync(filePath).mtime.toISOString().split('T')[0];
+    } catch {
+      return null;
+    }
+  }
+
   const lineMap = {
     personal: { name: 'Personal Insurance', slug: 'personal' },
     commercial: { name: 'Commercial Insurance', slug: 'commercial' },
@@ -47,12 +58,9 @@ function generateSitemap(BUILD, ctx) {
     sitemapUrls.push({ url: `/insurance/${city.slug}.html`, priority: '0.8', freq: 'monthly' });
   }
 
-  // Add city+product bridge pages
-  for (const cityConfig of (landingData.city_products || [])) {
-    for (const prod of cityConfig.products) {
-      sitemapUrls.push({ url: `/insurance/${prod.slug}-${cityConfig.city_slug}.html`, priority: '0.7', freq: 'monthly' });
-    }
-  }
+  // City+product bridge pages are intentionally omitted from the sitemap.
+  // They render with <meta name="robots" content="noindex, follow"> and serve
+  // as ad/landing destinations only — keeps Google's crawl budget on hub pages.
 
   // Add industry pages
   for (const ind of landingData.industries) {
@@ -94,7 +102,7 @@ function generateSitemap(BUILD, ctx) {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${sitemapUrls.map(u => `  <url>
     <loc>${baseUrl}${u.url}</loc>
-    <lastmod>${u.lastmod || today}</lastmod>
+    <lastmod>${u.lastmod || fileLastmod(u.url) || today}</lastmod>
     <changefreq>${u.freq}</changefreq>
     <priority>${u.priority}</priority>
   </url>`).join('\n')}

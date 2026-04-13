@@ -7,6 +7,9 @@
 # from /path/slug to /path/slug.html — that causes redirect loops.
 # Only redirect when the OLD slug differs from the NEW slug.
 
+# Canonical host: force www (matches <link rel="canonical"> on every page)
+https://thewayagency.com/* https://www.thewayagency.com/:splat 301!
+
 # Homepage
 /home /  301
 
