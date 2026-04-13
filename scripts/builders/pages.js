@@ -760,6 +760,8 @@ ${renderHero({
       <div class="container container--narrow">
         <h2>Why ${city.city} families and businesses choose The Way Agency</h2>
 ${city.context.split(/\n\n+/).map(p => `        <p>${p.trim()}</p>`).join('\n')}
+${(city.context_sections || []).map(s => `        <h3>${s.heading}</h3>\n        <p>${s.body}</p>`).join('\n')}
+${city.context_closing ? `        <p>${city.context_closing}</p>` : ''}
         <p>As an independent agency, we are not tied to one insurance company. We represent top-rated carriers &mdash; including Travelers, Progressive, Safeco, Chubb, The Hartford, and more &mdash; and we match you with the right ones for your specific situation in ${city.county}.</p>
 
         <h2>Insurance options in ${city.city}</h2>

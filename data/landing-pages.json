@@ -54,7 +54,26 @@
       "slug": "mt-washington-ky",
       "county": "Bullitt County",
       "pop": "18,000+",
-      "context": "Mt. Washington is one of the fastest-growing communities in Bullitt County and a priority service area for The Way Agency. Located along the I-65 corridor between Louisville and Elizabethtown, Mt. Washington offers a mix of established neighborhoods and new residential developments that attract young families, first-time homebuyers, and professionals who commute to Louisville, Fort Knox, and the surrounding region.\n\nThe local housing market includes everything from century-old farmhouses along Bardstown Road to new construction in planned communities off KY-44 and KY-480. This range means homeowners insurance needs vary significantly. Newer homes may qualify for lower premiums and modern building code credits, while older properties may need additional coverage for plumbing, electrical, and roof age. Properties near Floyds Fork and low-lying areas should also consider flood insurance, as standard homeowners policies do not cover flood damage.\n\nFor auto insurance, the I-65 commute is a defining factor. Most Mt. Washington residents drive to Louisville or Elizabethtown daily, and highway exposure increases the risk of serious accidents. We recommend liability limits above the Kentucky minimum and uninsured motorist coverage, given the state's high rate of uninsured drivers.\n\nMt. Washington's business community has grown alongside its residential base. Contractors, trades, service companies, and retail businesses along US-31E all need commercial insurance that meets Kentucky licensing and bonding requirements. We represent specialty commercial carriers that understand the needs of growing Bullitt County businesses.\n\nFor Medicare and life insurance, Mt. Washington residents benefit from proximity to Baptist Health, UofL Health, and Louisville's specialist network. We help seniors and families navigate plan options with a focus on keeping preferred providers in-network while managing costs.\n\nWe serve Mt. Washington with the same personal, independent approach we have brought to Owensboro since 1998. Every client gets access to top-rated carriers, a licensed agent who knows the local market, and ongoing service that does not end when the policy is signed."
+      "context": "Mt. Washington is one of the fastest-growing communities in Bullitt County and a priority service area for The Way Agency. Located along the I-65 corridor between Louisville and Elizabethtown, Mt. Washington offers a mix of established neighborhoods and new residential developments that attract young families, first-time homebuyers, and professionals who commute to Louisville, Fort Knox, and the surrounding region.",
+      "context_sections": [
+        {
+          "heading": "Homeowners insurance in Mt. Washington",
+          "body": "The local housing market includes everything from century-old farmhouses along Bardstown Road to new construction in planned communities off KY-44 and KY-480. This range means homeowners insurance needs vary significantly. Newer homes may qualify for lower premiums and modern building code credits, while older properties may need additional coverage for plumbing, electrical, and roof age. Properties near Floyds Fork and low-lying areas should also consider flood insurance, as standard homeowners policies do not cover flood damage."
+        },
+        {
+          "heading": "Auto insurance and the I-65 commute",
+          "body": "For auto insurance, the I-65 commute is a defining factor. Most Mt. Washington residents drive to Louisville or Elizabethtown daily, and highway exposure increases the risk of serious accidents. We recommend liability limits above the Kentucky minimum and uninsured motorist coverage, given the state's high rate of uninsured drivers."
+        },
+        {
+          "heading": "Commercial insurance for Bullitt County businesses",
+          "body": "Mt. Washington's business community has grown alongside its residential base. Contractors, trades, service companies, and retail businesses along US-31E all need commercial insurance that meets Kentucky licensing and bonding requirements. We represent specialty commercial carriers that understand the needs of growing Bullitt County businesses."
+        },
+        {
+          "heading": "Medicare and life insurance",
+          "body": "For Medicare and life insurance, Mt. Washington residents benefit from proximity to Baptist Health, UofL Health, and Louisville's specialist network. We help seniors and families navigate plan options with a focus on keeping preferred providers in-network while managing costs."
+        }
+      ],
+      "context_closing": "We serve Mt. Washington with the same personal, independent approach we have brought to Owensboro since 1998. Every client gets access to top-rated carriers, a licensed agent who knows the local market, and ongoing service that does not end when the policy is signed."
     },
     {
       "city": "Frankfort",
