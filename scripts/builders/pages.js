@@ -759,8 +759,8 @@ ${renderHero({
     <section class="section">
       <div class="container container--narrow">
         <h2>Why ${city.city} families and businesses choose The Way Agency</h2>
-        <p>${city.context}</p>
-        <p>As an independent agency, we are not tied to one insurance company. We represent top-rated carriers  -  including Travelers, Progressive, Safeco, Chubb, The Hartford, and more  -  and we match you with the right ones for your specific situation in ${city.county}.</p>
+${city.context.split(/\n\n+/).map(p => `        <p>${p.trim()}</p>`).join('\n')}
+        <p>As an independent agency, we are not tied to one insurance company. We represent top-rated carriers &mdash; including Travelers, Progressive, Safeco, Chubb, The Hartford, and more &mdash; and we match you with the right ones for your specific situation in ${city.county}.</p>
 
         <h2>Insurance options in ${city.city}</h2>
         ${(() => {
