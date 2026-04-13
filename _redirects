@@ -72,6 +72,30 @@ https://thewayagency.com/* https://www.thewayagency.com/:splat 301!
 /post/fur-real-dont-let-vet-bills-bite-you /blog/pet-insurance-guide.html 301
 /post/is-earthquake-insurance-necessary /blog/earthquake-insurance.html 301
 
+# ─── Legacy URL cleanup (from GSC 404 audit, 2026-04) ───
+
+# Old Mount Washington micro-site → city hub
+/mount-washington/* /insurance/mt-washington-ky.html 301
+
+# Old /locations/{product}-{city}-ky pattern → city hub when known, else /about/locations.html
+/locations/*-louisville-ky /insurance/louisville-ky.html 301
+/locations/*-lexington-ky /insurance/lexington-ky.html 301
+/locations/*-frankfort-ky /insurance/frankfort-ky.html 301
+/locations/*-henderson-ky /insurance/henderson-ky.html 301
+/locations/* /about/locations.html 301
+
+# Old blog/resource URLs → blog index (specific posts already redirected above)
+/post/* /blog/ 301
+/resource-center/* /blog/ 301
+
+# Misc legacy paths
+/about-us /about/ 301
+/privecy-policy /privacy.html 301
+/default.aspx / 301
+/construction-contracting/* /industries/general-contractors.html 301
+/business/builders_risk_quote.aspx /commercial/builders-risk.html 301
+/business/* /commercial/ 301
+
 # Common typos and alternate paths
 /insurance /personal/ 301
 /products /personal/ 301
