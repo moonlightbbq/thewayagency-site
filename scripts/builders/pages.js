@@ -186,13 +186,14 @@ function renderHead({ title, description, canonical, ogTitle, ogDescription, ogU
 </head>`;
 }
 
-function renderHero({ eyebrow, title, subtitle, buttons, minHeight, bgStyle }) {
+function renderHero({ eyebrow, title, subtitle, buttons, minHeight, bgStyle, variant }) {
   const height = minHeight || '40vh';
+  const variantClass = variant ? ` hero--${variant}` : '';
   const eyebrowHtml = eyebrow ? `\n      <p class="hero__eyebrow">${eyebrow}</p>` : '';
   const subtitleHtml = subtitle ? `\n      <p class="hero__subtitle">${subtitle}</p>` : '';
   const bgStyleAttr = bgStyle ? ` style="${bgStyle}"` : '';
   const buttonsHtml = buttons && buttons.length > 0 ? `\n      <div class="hero__actions">\n${buttons.map(b => `        <a href="${b.href}" class="${b.className || 'btn btn--primary btn--lg'}">${b.text}</a>`).join('\n')}\n      </div>` : '';
-  return `  <section class="hero" style="min-height:${height};">
+  return `  <section class="hero${variantClass}" style="min-height:${height};">
     <div class="hero__bg"${bgStyleAttr}></div>
     <div class="hero__texture"></div>
     <div class="hero__content">${eyebrowHtml}
@@ -733,14 +734,15 @@ ${renderHead({
 ${renderNav()}
 
 ${renderHero({
-    eyebrow: `Serving ${city.county}`,
-    title: `Insurance in ${city.city}, ${city.state}`,
-    subtitle: `We represent top-rated carriers so you get the right coverage at the right price. Personal, commercial, and life insurance for ${city.city} families and businesses.`,
+    eyebrow: `Independent agency · Serving ${city.county} since 1998`,
+    title: `Insurance in <span class="hero__title-accent">${city.city}</span>, ${city.state}`,
+    subtitle: `Top-rated carriers, right-sized coverage, local service. Personal, commercial, and life insurance for ${city.city} families and businesses.`,
     buttons: [
       { href: `/intake/?city=${encodeURIComponent(city.city)}&state=${encodeURIComponent(city.state)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
       { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
     ],
-    minHeight: '45vh',
+    minHeight: '38vh',
+    variant: 'compact',
   })}
 
   <main id="main">

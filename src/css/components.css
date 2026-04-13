@@ -86,6 +86,11 @@ body.nav-open{position:fixed;top:calc(var(--scroll-y,0) * -1);left:0;right:0;ove
 .hero__subtitle{font-size:var(--text-lg);font-weight:300;line-height:1.8;max-width:560px;color:rgba(255,255,255,.8);margin-bottom:var(--space-2xl);opacity:0;animation:fadeUp .6s ease .6s forwards}
 .hero__actions{display:flex;gap:var(--space-md);flex-wrap:wrap;opacity:0;animation:fadeUp .6s ease .8s forwards}
 .hero__accent{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--blue) 0%,var(--cyan) 40%,var(--green) 100%);z-index:2}
+.hero__title-accent{color:var(--cyan)}
+.hero--compact .hero__content{padding:var(--space-3xl) var(--space-xl)}
+.hero--compact .hero__title{font-size:clamp(1.875rem,3.2vw,2.75rem);max-width:640px;line-height:1.15}
+.hero--compact .hero__subtitle{font-size:var(--text-base);line-height:1.65;max-width:540px;margin-bottom:var(--space-xl)}
+.hero--compact .hero__eyebrow{margin-bottom:var(--space-sm)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:768px){.hero{min-height:60vh}.hero__content{padding:var(--space-3xl) var(--space-xl)}}
 
