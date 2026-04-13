@@ -418,7 +418,8 @@ ${renderHero({
     title: config.hero.title,
     subtitle: config.hero.subtitle,
     buttons: [{ href: `/intake/?line=${lineSlug}`, text: `Get a ${config.hero.eyebrow} Quote`, className: 'btn btn--primary btn--lg' }],
-    minHeight: '45vh',
+    minHeight: '38vh',
+    variant: 'compact',
   })}
 
 ${hubBreadcrumbs.html}
@@ -638,7 +639,8 @@ ${renderHero({
     eyebrow: lineName,
     title: product.h1 || product.name,
     buttons: [{ href: `/intake/?product=${product.id}`, text: `Get a ${product.name} Quote`, className: 'btn btn--primary btn--lg' }],
-    minHeight: '40vh',
+    minHeight: '38vh',
+    variant: 'compact',
   })}
 
   ${generateCarrierMarquee(carriers, lineKey)}
@@ -940,7 +942,8 @@ ${renderHero({
       { href: `/intake/?product=${encodeURIComponent(prod.product_id)}&city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
       { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
     ],
-    minHeight: '45vh',
+    minHeight: '38vh',
+    variant: 'compact',
   })}
 
   <main id="main">
@@ -1008,8 +1011,9 @@ ${renderHero({
       { href: `/intake/?line=commercial&industry=${ind.slug}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
       { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
     ],
-    minHeight: '45vh',
+    minHeight: '38vh',
     bgStyle: 'background:linear-gradient(135deg, #0F2240 0%, #173358 40%, #2680B5 100%);',
+    variant: 'compact',
   })}
 
   <main id="main">
@@ -1112,7 +1116,8 @@ ${renderHero({
     buttons: [
       { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
     ],
-    minHeight: '40vh',
+    minHeight: '38vh',
+    variant: 'compact',
   })}
 
 ${breadcrumbs.html}
@@ -1213,7 +1218,8 @@ ${renderHero({
     buttons: [
       { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
     ],
-    minHeight: '45vh',
+    minHeight: '38vh',
+    variant: 'compact',
   })}
 
   <main id="main">
