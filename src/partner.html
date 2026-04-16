@@ -1129,6 +1129,10 @@ async function submitReferral() {
   if (val('p_email') && !validateEmail(val('p_email'))) { errors.push('Please enter a valid email'); markError('p_email'); }
   if (phoneVal && !validatePhone(phoneVal)) { errors.push('Please enter a valid phone number'); markError('p_phone'); }
   if (!selectedProducts.length) errors.push('Select at least one product');
+  if (selectedProducts.indexOf('business') !== -1 && !val('p_business_name')) {
+    errors.push('Business name is required for commercial referrals');
+    markError('p_business_name');
+  }
 
   if (errors.length) {
     errEl.textContent = errors[0];

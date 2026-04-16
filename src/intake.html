@@ -2522,9 +2522,19 @@ async function submitQuickLead() {
 // ── Submit ───────────────────────────────────────────────────────────────────
 async function submitIntake() {
   const btn = document.getElementById('submit-btn');
+  const err = document.getElementById('step4-error');
+
+  // Require Business Name when a commercial product is selected.
+  const hasCommercialSubmit = selectedProducts.some(p => COMMERCIAL_PRODUCTS.includes(p));
+  const bizNameVal = (() => { const e = document.getElementById('i_biz_name'); return e ? e.value.trim() : ''; })();
+  if (hasCommercialSubmit && !bizNameVal) {
+    err.textContent = 'Business name is required for commercial quotes. Go back to Step 3 to enter it.';
+    err.classList.remove('hidden');
+    return;
+  }
+
   btn.textContent = 'Submitting...';
   btn.disabled = true;
-  const err = document.getElementById('step4-error');
 
   // If Turnstile token expired or never loaded, try to refresh and wait
   if (!turnstileToken && window.turnstile) {
