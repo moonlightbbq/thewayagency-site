@@ -1358,7 +1358,9 @@ async function refreshData() {
       PARTNER_DATA = await res.json();
       try { sessionStorage.setItem('twa_partner_' + TOKEN, JSON.stringify(PARTNER_DATA)); } catch(e) {}
     }
-  } catch(e) {}
+  } catch(e) {
+    console.warn('[partner] Data refresh failed:', e.message);
+  }
 }
 
 /* ── History ── */

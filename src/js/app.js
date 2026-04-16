@@ -434,6 +434,11 @@
           signal: controller.signal,
         });
         clearTimeout(timeout);
+        if (!res.ok) {
+          const errBody = await res.text().catch(() => '');
+          console.error('[TWA] Webhook HTTP error:', res.status, errBody.slice(0, 200));
+          return { ok: false, error: 'http_' + res.status };
+        }
         const result = await res.json();
         if (result.sessionId) {
           try { localStorage.setItem('twa_last_session', result.sessionId); } catch(e) {}

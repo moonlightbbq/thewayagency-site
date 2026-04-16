@@ -586,6 +586,11 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
+        if (!resp.ok) {
+          var errMsg = 'Submission failed (HTTP ' + resp.status + ')';
+          try { var d = await resp.json(); errMsg = d.error || errMsg; } catch(pe) {}
+          throw new Error(errMsg);
+        }
         var data = await resp.json();
 
         if (data.ok) {

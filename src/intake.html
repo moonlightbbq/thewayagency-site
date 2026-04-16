@@ -2477,6 +2477,11 @@ async function submitQuickLead() {
         _tracking: getTrackingIds(),
       })
     });
+    if (!res.ok) {
+      let msg = 'Submission failed (HTTP ' + res.status + ')';
+      try { const d = await res.json(); msg = d.error || msg; } catch(pe) {}
+      throw new Error(msg);
+    }
     const data = await res.json();
     if (data.ok) {
       clearInterval(pollTimer);
@@ -2705,6 +2710,16 @@ async function submitIntake() {
         _tracking: getTrackingIds(),
       })
     });
+    if (!res.ok) {
+      let msg = 'Submission failed (HTTP ' + res.status + ')';
+      try { const d = await res.json(); msg = d.error || msg; } catch(pe) {}
+      err.textContent = msg;
+      err.classList.remove('hidden');
+      btn.textContent = 'Submit Quote Request';
+      btn.disabled = false;
+      if (window.turnstile && turnstileWidgetId != null) { turnstile.reset(turnstileWidgetId); turnstileToken = null; }
+      return;
+    }
     const data = await res.json();
     if (data.ok) {
       clearInterval(pollTimer);
