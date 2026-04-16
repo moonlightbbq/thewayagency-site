@@ -2700,6 +2700,7 @@ async function submitIntake() {
         city: v('i_city'),
         state: v('i_state'),
         zip: v('i_zip'),
+        businessName: v('i_biz_name') || undefined,
         products: selectedProducts,
         formData,
         notes: v('i_notes'),
@@ -2759,6 +2760,7 @@ async function submitIntake() {
     const payload = {
       sessionId, firstName: v('i_fname'), lastName: v('i_lname'), email: v('i_email'), phone: v('i_phone'),
       address: v('i_address_street') || v('i_address'), city: v('i_city'), state: v('i_state'), zip: v('i_zip'),
+      businessName: v('i_biz_name') || undefined,
       products: selectedProducts, formData, notes: v('i_notes'), agent: agentParam || '',
       _hp_company: document.getElementById('_hp_company')?.value || '', cfToken: '',
     };

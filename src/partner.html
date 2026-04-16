@@ -698,6 +698,11 @@
           <div class="product-grid" id="product-grid"></div>
         </div>
 
+        <div id="business-section" class="form-group hidden">
+          <label>Business Name <span class="req">*</span> <span style="font-weight:300;text-transform:none;letter-spacing:0;color:var(--gray)">(required for commercial quotes)</span></label>
+          <input type="text" id="p_business_name" placeholder="e.g., Plumber United LLC" autocomplete="organization">
+        </div>
+
         <div id="lienholder-section" class="hidden" style="background:var(--light-bg);border-radius:10px;padding:14px 16px;margin-bottom:4px">
           <label style="font-size:var(--text-xs);font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:10px">Lienholder / Mortgagee Info</label>
           <div class="form-row">
@@ -1088,6 +1093,9 @@ function toggleProduct(el) {
   var propertyProducts = ['homeowners', 'flood'];
   var hasProperty = selectedProducts.some(function(p) { return propertyProducts.indexOf(p) !== -1; });
   document.getElementById('lienholder-section').classList.toggle('hidden', !hasProperty);
+  // Show Business Name when commercial product is selected
+  var hasBusiness = selectedProducts.indexOf('business') !== -1;
+  document.getElementById('business-section').classList.toggle('hidden', !hasBusiness);
 }
 
 /* ── Validation & Submission ── */
@@ -1145,6 +1153,7 @@ async function submitReferral() {
     email: val('p_email') || undefined,
     phone: phoneVal || undefined,
     address: val('p_address') || undefined,
+    businessName: val('p_business_name') || undefined,
     products: selectedProducts,
     urgency: val('p_need_by') ? 'Need by ' + val('p_need_by') : undefined,
     notes: notesVal || undefined,
