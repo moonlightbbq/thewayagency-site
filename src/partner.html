@@ -79,18 +79,6 @@
     padding: 28px 20px 48px; flex: 1;
   }
 
-  /* ── Welcome + Partner Info ── */
-  .partner-welcome {
-    text-align: center; margin-bottom: 28px;
-    animation: fadeUp .4s ease;
-  }
-  .partner-welcome h1 {
-    font-size: var(--text-2xl); color: var(--navy); margin-bottom: 6px;
-  }
-  .partner-welcome p {
-    font-size: var(--text-sm); color: var(--slate); font-weight: 300;
-  }
-
   /* ── Cards ── */
   .portal-card {
     background: var(--white); border-radius: var(--border-radius-lg);
@@ -598,7 +586,6 @@
     .portal-form .form-row-3 { grid-template-columns: 1fr }
     .product-grid { grid-template-columns: 1fr 1fr }
     .portal-card { padding: 20px 16px }
-    .partner-welcome h1 { font-size: var(--text-xl) }
     .success-actions { flex-direction: column }
     .success-actions button { width: 100% }
     .referral-card { padding: 16px }
@@ -657,11 +644,6 @@
 
   <!-- ═══ REFERRAL FORM (default view) ═══ -->
   <div id="view-refer">
-    <div class="partner-welcome">
-      <h1 id="welcome-heading">Submit a Referral</h1>
-      <p id="welcome-subtext">Send us a client and we'll take great care of them.</p>
-    </div>
-
     <div class="portal-card">
       <div id="refer-form" class="portal-form">
         <div class="form-row">
@@ -1006,13 +988,6 @@ function personalizeUI() {
       if (textEl) brandEl.insertBefore(logoImg, textEl);
       else brandEl.appendChild(logoImg);
     }
-  }
-
-  // Welcome text
-  if (name) {
-    document.getElementById('welcome-heading').textContent = 'Send Us a Referral';
-    document.getElementById('welcome-subtext').textContent =
-      'Hi ' + name.split(' ')[0] + ' \u2014 fill in the basics and we\u2019ll take it from here.';
   }
 
   // Producer card
