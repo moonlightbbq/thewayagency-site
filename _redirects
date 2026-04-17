@@ -60,9 +60,9 @@ https://thewayagency.com/* https://www.thewayagency.com/:splat 301!
 /partner.html /partner/ 301
 
 # Retired pages
-/quote.html /intake/ 301
-/quote /intake/ 301
-/quotes /intake/ 301
+/quote.html /intake/?agent=audrey-lillpop 301
+/quote /intake/?agent=audrey-lillpop 301
+/quotes /intake/?agent=audrey-lillpop 301
 
 # Blog (individual posts — add as discovered)
 /post/cyber-safety-for-small-businesses-prevention-checklist /blog/cyber-safety.html 301
