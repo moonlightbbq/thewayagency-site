@@ -755,7 +755,7 @@
       "canonical_priority": "secondary",
       "is_link_target": true,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "published",
       "source": "markdown",
       "notes": ""
     },
