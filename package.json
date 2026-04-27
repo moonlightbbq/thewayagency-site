@@ -4,6 +4,7 @@
   "private": true,
   "description": "The Way Agency marketing website — static site on Cloudflare Pages",
   "scripts": {
+    "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
     "prebuild": "node scripts/build-rollback.js snapshot",
     "build": "node scripts/build.js",
     "postbuild": "node scripts/build-rollback.js archive",

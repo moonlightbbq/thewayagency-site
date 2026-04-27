@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Pre-commit guard: blocks PII-bearing files + runs secret scanner.
+#
+# Wired via:  git config core.hooksPath .githooks
+# Auto-wired on `npm install` via the package.json "prepare" script.
+#
+# To bypass intentionally (rare, dangerous):  git commit --no-verify
+set -euo pipefail
+
+# 1) PII file blocklist by extension/path.
+#    Customer exports, DB dumps, document scans, broken/restored DB copies.
+PII_PATTERNS='(\.csv|\.xlsx|\.xls|\.sqlite|\.sqlite3|\.dump)$|^(imports/|backups/)|/sage\.db\.(corrupted|broken|restored|bak|dump)'
+
+# Schema/reference files that are NOT PII and should pass.
+EXEMPT_PATTERNS='^docs/(ezlynx|agencyzoom)-reference/|^scripts/check-secrets\.sh$|^\.githooks/'
+
+STAGED=$(git diff --cached --name-only --diff-filter=AM)
+if [ -n "$STAGED" ]; then
+  HITS=$(echo "$STAGED" | grep -E "$PII_PATTERNS" 2>/dev/null | grep -vE "$EXEMPT_PATTERNS" 2>/dev/null || true)
+  if [ -n "$HITS" ]; then
+    echo ""
+    echo "BLOCKED: refusing to commit PII-bearing files."
+    echo "$HITS" | sed 's/^/  - /'
+    echo ""
+    echo "These match the PII blocklist (CSV/XLSX/DB dumps/imports/backups)."
+    echo "If this is a false positive, add the path to EXEMPT_PATTERNS in .githooks/pre-commit."
+    echo "To bypass intentionally (DANGEROUS — verify no PII manually):  git commit --no-verify"
+    exit 1
+  fi
+fi
+
+# 2) Secret scanner (gitleaks if installed, grep fallback).
+if [ -x scripts/check-secrets.sh ]; then
+  scripts/check-secrets.sh || {
+    echo ""
+    echo "BLOCKED: secret scanner found a hit. Review above and remove before committing."
+    echo "To bypass (DANGEROUS):  git commit --no-verify"
+    exit 1
+  }
+fi
+
+exit 0
