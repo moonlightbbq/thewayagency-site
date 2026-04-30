@@ -29,7 +29,7 @@ function loadJson(filepath) {
 const { createVersionInfo, createInjectVersion } = require('./builders/seo');
 const assets = require('./builders/assets');
 const { copyBlogPages, runBlogGenerator } = require('./builders/blog-helpers');
-const { hubConfig, generateHubPage, generateProductPage, generateCityPage, generateCityProductPage, generateIndustryPage, generateCarrierPage, generateCarriersIndex, setCriticalCss } = require('./builders/pages');
+const { hubConfig, generateHubPage, generateProductPage, generateCityPage, generateIndustryPage, generateCarrierPage, generateCarriersIndex, setCriticalCss } = require('./builders/pages');
 const { generateSitemap } = require('./builders/sitemap');
 const { createSchemaInjector } = require('./builders/schema-generator');
 
@@ -171,19 +171,6 @@ for (const city of landingData.cities) {
   geoCount++;
 }
 console.log(`  ✓ Generated ${geoCount} geo-targeted city pages`);
-
-// 6b-2. Generate city+product bridge pages
-const cityProducts = landingData.city_products || [];
-let cityProductCount = 0;
-for (const cityConfig of cityProducts) {
-  for (const prod of cityConfig.products) {
-    let html = generateCityProductPage(cityConfig, prod, ctx);
-    html = injectSchema(injectVersion(html), 'city-product', { product: prod, city: { city: cityConfig.city, state: cityConfig.state || 'KY', slug: cityConfig.city_slug } });
-    fs.writeFileSync(path.join(BUILD, 'insurance', `${prod.slug}-${cityConfig.city_slug}.html`), html);
-    cityProductCount++;
-  }
-}
-console.log(`  ✓ Generated ${cityProductCount} city+product bridge pages`);
 
 // 6c. Generate industry landing pages
 assets.ensureDir(path.join(BUILD, 'industries'));

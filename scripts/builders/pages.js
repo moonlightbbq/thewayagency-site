@@ -766,25 +766,12 @@ ${city.context_closing ? '' : `        <p>As an independent agency, we are not t
 
         <h2>Insurance options in ${city.city}</h2>
         ${(() => {
-          const cityProductConfig = (landingData.city_products || []).find(cp => cp.city_slug === city.slug);
           const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-          if (cityProductConfig) {
-            const productCards = cityProductConfig.products.map(p =>
-              `          <a href="/insurance/${p.slug}-${city.slug}.html" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">${p.name}</h3><p class="card__text">${p.name} for ${city.city} families and businesses. Compare rates from top-rated carriers.</p><span class="card__link">Learn more ${arrowSvg}</span></a>`
-            ).join('\n');
-            return `<div class="grid grid--3" style="margin:var(--space-xl) 0;">
-${productCards}
-          <a href="/personal/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">All Personal Insurance</h3><p class="card__text">Renters, flood, motorcycle, boat, classic car, earthquake, and pet coverage.</p><span class="card__link">View options ${arrowSvg}</span></a>
-          <a href="/commercial/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">All Commercial Insurance</h3><p class="card__text">Property, auto, workers comp, cyber, bonds, and more.</p><span class="card__link">View options ${arrowSvg}</span></a>
-          <a href="/life-health/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">All Life &amp; Health</h3><p class="card__text">Health, life, disability, and employee benefits.</p><span class="card__link">View options ${arrowSvg}</span></a>
-        </div>`;
-          } else {
-            return `<div class="grid grid--3" style="margin:var(--space-xl) 0;">
+          return `<div class="grid grid--3" style="margin:var(--space-xl) 0;">
           <a href="/personal/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Personal Insurance</h3><p class="card__text">Home, auto, umbrella, renters, flood, and specialty coverage.</p><span class="card__link">View options ${arrowSvg}</span></a>
           <a href="/commercial/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Commercial Insurance</h3><p class="card__text">Liability, property, auto, workers comp, cyber, bonds.</p><span class="card__link">View options ${arrowSvg}</span></a>
           <a href="/life-health/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Life &amp; Health</h3><p class="card__text">Medicare, health, life, disability, and employee benefits.</p><span class="card__link">View options ${arrowSvg}</span></a>
         </div>`;
-          }
         })()}
 
 ${cityFormHtml}
@@ -802,169 +789,6 @@ ${renderCTA({
       text: "Request a quote or call us directly. We're here to help.",
       buttons: [
         { href: `/intake/?city=${encodeURIComponent(city.city)}&state=${encodeURIComponent(city.state)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
-        { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
-      ],
-      contactMethods: true,
-    }, office)}
-  </main>
-
-${renderFooter()}
-${renderScripts()}
-</body>
-</html>`;
-}
-
-// ─── City+Product Bridge Page ───────────────────
-
-function generateCityProductPage(cityConfig, prod, ctx) {
-  const { products, office, reviews, renderNav, renderFooter, renderScripts } = ctx;
-  const { city_slug, city, state, county } = cityConfig;
-  const stateFull = state === 'KY' ? 'Kentucky' : state === 'IN' ? 'Indiana' : 'Tennessee';
-  const lineSlug = prod.line === 'life_health' ? 'life-health' : prod.line;
-  const canonical = `https://www.thewayagency.com/insurance/${prod.slug}-${city_slug}.html`;
-
-  const lineProducts = products[prod.line] || [];
-  const productData = lineProducts.find(p => p.id === prod.product_id) || {};
-
-  let parentProductUrl;
-  if (prod.line === 'commercial') {
-    parentProductUrl = `/commercial/${productData.slug || 'general-liability'}.html`;
-  } else if (prod.line === 'life_health') {
-    parentProductUrl = `/life-health/${productData.slug || 'medicare'}.html`;
-  } else {
-    parentProductUrl = `/personal/${productData.slug || 'home'}.html`;
-  }
-
-  const serviceSchema = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Service",
-    "name": `${prod.name} in ${city}, ${state}`,
-    "description": prod.intro.substring(0, 200),
-    "provider": {
-      "@type": "InsuranceAgency",
-      "name": "The Way Agency",
-      "url": "https://www.thewayagency.com",
-      "telephone": office.phone,
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": office.street,
-        "addressLocality": office.city,
-        "addressRegion": office.state,
-        "postalCode": office.zip
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": reviews.rating,
-        "reviewCount": reviews.count
-      }
-    },
-    "areaServed": {
-      "@type": "City",
-      "name": city,
-      "containedIn": { "@type": "State", "name": stateFull }
-    }
-  }, null, 2);
-
-  const faqSchema = prod.faqs && prod.faqs.length > 0 ? JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": prod.faqs.map(f => ({
-      "@type": "Question",
-      "name": f.q,
-      "acceptedAnswer": { "@type": "Answer", "text": f.a }
-    }))
-  }, null, 2) : null;
-
-  const schemaBlock = `<script type="application/ld+json">
-  ${serviceSchema}
-  </script>${faqSchema ? `
-  <script type="application/ld+json">
-  ${faqSchema}
-  </script>` : ''}`;
-
-  let productDetailsHtml = '';
-  if (productData.typical_cost_range || productData.common_exclusions) {
-    productDetailsHtml += `\n        <h2>${prod.name} coverage details</h2>`;
-    if (productData.typical_cost_range) {
-      productDetailsHtml += `\n        <p><strong>Typical cost:</strong> ${productData.typical_cost_range}</p>`;
-    }
-    if (productData.requirement) {
-      productDetailsHtml += `\n        <p><strong>${stateFull} requirements:</strong> ${productData.requirement}</p>`;
-    }
-    if (productData.common_exclusions && productData.common_exclusions.length > 0) {
-      productDetailsHtml += `\n        <p><strong>Common exclusions:</strong></p>\n        <ul>\n${productData.common_exclusions.map(e => `          <li>${e}</li>`).join('\n')}\n        </ul>`;
-    }
-  }
-
-  let faqHtml = '';
-  if (prod.faqs && prod.faqs.length > 0) {
-    faqHtml = `
-        <h2>Frequently asked questions about ${prod.name.toLowerCase()} in ${city}</h2>
-        <div class="faq-list">
-${prod.faqs.map(f => `          <details class="faq-item">
-            <summary class="faq-item__question">${f.q}</summary>
-            <div class="faq-item__answer"><p>${f.a}</p></div>
-          </details>`).join('\n')}
-        </div>`;
-  }
-
-  const formHtml = renderInlineForm(`${prod.slug}-${city_slug}`, { product: prod.product_id, city: city, state: state })
-    .replace('%%FORM_HEADING%%', `Get a ${prod.name.toLowerCase()} quote in ${city}`)
-    .replace('%%FORM_SUBTEXT%%', 'Tell us your name and email and a licensed agent will follow up with options.');
-
-  const relatedLinksHtml = `
-        <h2>Learn more</h2>
-        <ul>
-          <li><a href="${parentProductUrl}">${productData.name || prod.name} in ${stateFull}</a> &mdash; Coverage details, costs, and requirements</li>
-          <li><a href="/insurance/${city_slug}.html">All insurance options in ${city}, ${state}</a></li>
-          <li><a href="/intake/?product=${encodeURIComponent(prod.product_id)}&city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}">Get a ${prod.name.toLowerCase()} quote</a></li>
-        </ul>`;
-
-  return `<!DOCTYPE html>
-<html lang="en">
-${renderHead({
-    title: `${prod.name} in ${city}, ${state} | The Way Agency`,
-    description: `${prod.name} for ${city}, ${state} families and businesses. Compare rates from top-rated carriers. Independent agency serving ${county} since 1998.`,
-    canonical: canonical,
-    ogTitle: `${prod.name} in ${city}, ${state} | The Way Agency`,
-    ogDescription: `${prod.name} for ${city}, ${state}. Compare rates from top-rated carriers. Get a quote today.`,
-    ogUrl: canonical,
-    schema: schemaBlock,
-    robots: 'noindex, follow',
-  })}
-<body>
-  <a href="#main" class="skip-link">Skip to main content</a>
-${renderNav()}
-
-${renderHero({
-    eyebrow: `${prod.name} \u00B7 ${county}`,
-    title: prod.h1,
-    subtitle: `Compare ${prod.name.toLowerCase()} rates from top-rated carriers in ${city}, ${state}. Independent agency, no sales pressure.`,
-    buttons: [
-      { href: `/intake/?product=${encodeURIComponent(prod.product_id)}&city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
-      { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
-    ],
-    minHeight: '38vh',
-    variant: 'compact',
-  })}
-
-  <main id="main">
-    <section class="section">
-      <div class="container container--narrow">
-        <p style="font-size:var(--text-lg);line-height:1.7;">${prod.intro}</p>
-${productDetailsHtml}
-${faqHtml}
-
-${formHtml}
-${relatedLinksHtml}
-      </div>
-    </section>
-
-${renderCTA({
-      title: `Ready to compare ${prod.name.toLowerCase()} in ${city}?`,
-      text: `Request a quote or call us directly. We shop top-rated carriers to find the right ${prod.name.toLowerCase()} for your situation in ${county}.`,
-      buttons: [
-        { href: `/intake/?product=${encodeURIComponent(prod.product_id)}&city=${encodeURIComponent(city)}&state=${encodeURIComponent(state)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
         { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
       ],
       contactMethods: true,
@@ -1269,7 +1093,6 @@ module.exports = {
   generateHubPage,
   generateProductPage,
   generateCityPage,
-  generateCityProductPage,
   generateIndustryPage,
   generateCarrierPage,
   generateCarriersIndex,

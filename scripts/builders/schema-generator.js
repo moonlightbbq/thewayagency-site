@@ -21,7 +21,7 @@ function createSchemaInjector({ agency, office, reviews }) {
   /**
    * Inject JSON-LD schema markup into an HTML page.
    * @param {string} html - the page HTML
-   * @param {string} pageType - 'homepage' | 'product' | 'city' | 'city-product' | 'blog' | 'carrier' | 'industry'
+   * @param {string} pageType - 'homepage' | 'product' | 'city' | 'blog' | 'carrier' | 'industry'
    * @param {object} context - page-specific data
    * @returns {string} HTML with schema injected before </head>
    */
@@ -47,11 +47,6 @@ function createSchemaInjector({ agency, office, reviews }) {
       case 'city':
         schemas.push(_buildLocalBusiness(agency, office, reviews, context.city));
         schemas.push(_buildInsuranceAgency(agency, office, context.city));
-        break;
-
-      case 'city-product':
-        schemas.push(_buildService(context, agency, context.city));
-        schemas.push(_buildLocalBusiness(agency, office, reviews, context.city));
         break;
 
       case 'blog':
@@ -247,15 +242,6 @@ function _buildBreadcrumbs(pageType, context) {
       items.push({ name: 'Insurance', url: `${SITE_URL}/insurance/` });
       if (context.city?.city) {
         items.push({ name: `${context.city.city}, ${context.city.state}`, url: `${SITE_URL}/insurance/${context.city.slug}.html` });
-      }
-      break;
-    case 'city-product':
-      items.push({ name: 'Insurance', url: `${SITE_URL}/insurance/` });
-      if (context.city?.city) {
-        items.push({ name: `${context.city.city}, ${context.city.state}`, url: `${SITE_URL}/insurance/${context.city.slug}.html` });
-      }
-      if (context.product?.name) {
-        items.push({ name: context.product.name });
       }
       break;
     case 'blog':
