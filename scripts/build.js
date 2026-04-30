@@ -98,7 +98,7 @@ assets.writeVersionJson(BUILD, {
 
 // 2. Copy static assets
 assets.copyCss(SRC, BUILD, true);
-assets.copyJs(SRC, BUILD);
+assets.copyJs(SRC, BUILD, true);
 assets.copyAssets(SRC, BUILD);
 
 // 3. Copy hand-crafted pages

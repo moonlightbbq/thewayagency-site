@@ -5,6 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execFileSync } = require('child_process');
 
 function ensureDir(dir) {
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
@@ -52,11 +53,39 @@ function copyCss(SRC, BUILD, minify) {
   console.log(`  ✓ CSS copied${minify ? ` (minified: ${(totalBefore / 1024).toFixed(1)}KB → ${(totalAfter / 1024).toFixed(1)}KB)` : ''}`);
 }
 
-function copyJs(SRC, BUILD) {
-  if (fs.existsSync(path.join(SRC, 'js'))) {
-    copyDir(path.join(SRC, 'js'), path.join(BUILD, 'src', 'js'));
-    console.log('  ✓ JS copied');
+function copyJs(SRC, BUILD, minify) {
+  const srcDir = path.join(SRC, 'js');
+  if (!fs.existsSync(srcDir)) return;
+  const destDir = path.join(BUILD, 'src', 'js');
+  ensureDir(destDir);
+
+  let terserBin = null;
+  if (minify) {
+    try {
+      terserBin = require.resolve('terser/bin/terser');
+    } catch (e) {
+      console.warn('  ⚠ terser not installed — falling back to raw JS copy');
+    }
   }
+
+  let totalBefore = 0, totalAfter = 0;
+  for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
+    const srcPath = path.join(srcDir, entry.name);
+    const destPath = path.join(destDir, entry.name);
+    if (entry.isDirectory()) {
+      copyDir(srcPath, destPath);
+    } else if (entry.isFile() && entry.name.endsWith('.js') && terserBin) {
+      totalBefore += fs.statSync(srcPath).size;
+      execFileSync(process.execPath, [terserBin, srcPath, '--compress', 'passes=2', '--mangle', '--output', destPath], { stdio: ['ignore', 'ignore', 'inherit'] });
+      totalAfter += fs.statSync(destPath).size;
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+      const sz = fs.statSync(srcPath).size;
+      totalBefore += sz;
+      totalAfter += sz;
+    }
+  }
+  console.log(`  ✓ JS copied${terserBin ? ` (minified: ${(totalBefore / 1024).toFixed(1)}KB → ${(totalAfter / 1024).toFixed(1)}KB)` : ''}`);
 }
 
 function copyAssets(SRC, BUILD) {
