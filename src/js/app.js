@@ -102,6 +102,32 @@
       },
       weight: [50, 25, 25],
     },
+    'dob-required': {
+      variants: {
+        control: {},
+        required: {},
+      },
+      // Variant requires DOB for all personal lines (vs. life-only in control), upgrades input to type=date
+      // for native mobile picker, and adds microcopy. Validation in src/intake.html keys off the body class.
+      apply: function(variant) {
+        if (variant !== 'required') return;
+        document.body.classList.add('twa-ab-dob-required');
+        const input = document.getElementById('i_dob');
+        if (!input) return;
+        input.type = 'date';
+        input.removeAttribute('maxlength');
+        input.removeAttribute('placeholder');
+        input.removeAttribute('inputmode');
+        const label = document.querySelector('label[for="i_dob"]');
+        if (label && !label.parentNode.querySelector('.twa-form-microcopy')) {
+          const micro = document.createElement('p');
+          micro.className = 'twa-form-microcopy';
+          micro.textContent = 'Needed for accurate quote.';
+          micro.style.cssText = 'font-size:12px;color:var(--slate,#64748b);margin:2px 0 0;';
+          label.insertAdjacentElement('afterend', micro);
+        }
+      },
+    },
   };
 
   function getVisitorId() {
@@ -158,6 +184,11 @@
         const el = document.querySelector(selector);
         if (el) el.textContent = newText;
       });
+
+      // Optional behavior callback (for variants that need more than text-swap)
+      if (typeof config.apply === 'function') {
+        try { config.apply(chosenName); } catch (e) { console.error('[TWA] AB apply failed for ' + testName + ':', e); }
+      }
 
       // Track exposure
       window.dataLayer = window.dataLayer || [];
@@ -691,6 +722,33 @@
   }
 
   // ═══════════════════════════════════════════════
+  // 3b. FORM START TRACKING (first-touch per form, per session)
+  // ═══════════════════════════════════════════════
+  function initFormStartTracking() {
+    const selectors = ['#quoteWizard', '#quoteForm', '#contactForm', '#applyForm', '.inline-quote-form'];
+    for (const sel of selectors) {
+      document.querySelectorAll(sel).forEach(form => {
+        let fired = false;
+        const onFirstTouch = (e) => {
+          if (fired) return;
+          fired = true;
+          const formId = form.id || (form.classList[0] || 'form');
+          track('form_start', {
+            category: 'engagement',
+            form_id: formId,
+            page_path: window.location.pathname,
+            field: (e.target && e.target.name) || '',
+          });
+          form.removeEventListener('input', onFirstTouch);
+          form.removeEventListener('change', onFirstTouch);
+        };
+        form.addEventListener('input', onFirstTouch);
+        form.addEventListener('change', onFirstTouch);
+      });
+    }
+  }
+
+  // ═══════════════════════════════════════════════
   // 4. STICKY MOBILE CTA BAR
   // ═══════════════════════════════════════════════
   function getIntakeUrl() {
@@ -939,6 +997,7 @@
       const result = await submitLead(data, 'quote-wizard');
       if (result && result.ok === false) {
         btn.textContent = 'Send Quote Request'; btn.disabled = false;
+        track('form_error', { category: 'conversion', form_id: 'quoteWizard', source: 'quote-wizard', error: result.error || 'unknown', page_path: window.location.pathname });
         form.insertAdjacentHTML('afterbegin', '<p style="color:var(--error);font-size:var(--text-sm);margin-bottom:var(--space-md);">Something went wrong. Please try again or call us at ' + CONFIG.phone + '.</p>');
         return;
       }
@@ -980,6 +1039,7 @@
       const result = await submitLead(data, 'main-quote-form');
       if (result && result.ok === false) {
         btn.textContent = 'Send'; btn.disabled = false;
+        track('form_error', { category: 'conversion', form_id: 'quoteForm', source: 'main-quote-form', error: result.error || 'unknown', page_path: window.location.pathname });
         form.insertAdjacentHTML('afterbegin', '<p style="color:var(--error);font-size:var(--text-sm);margin-bottom:var(--space-md);">Something went wrong. Please try again or call us at ' + CONFIG.phone + '.</p>');
         return;
       }
@@ -1029,6 +1089,7 @@
       const result = await submitLead(data, 'contact-form');
       if (result && result.ok === false) {
         if (btn) { btn.textContent = 'Send Message'; btn.disabled = false; }
+        track('form_error', { category: 'conversion', form_id: 'contactForm', source: 'contact-form', error: result.error || 'unknown', page_path: window.location.pathname });
         form.insertAdjacentHTML('afterbegin', '<p style="color:var(--error);font-size:var(--text-sm);margin-bottom:var(--space-md);">Something went wrong. Please try again or call us at ' + CONFIG.phone + '.</p>');
         return;
       }
@@ -1892,10 +1953,10 @@
   // AGENT CARD (intake page ?agent= param)
   // ═══════════════════════════════════════════════
   var TEAM_DATA = [
-    { slug: 'sheilia-royal', name: 'Sheilia Royal', title: 'Agency Principal / Licensed Agent', photo: '/src/assets/images/team/sheilia-royal.webp', email: 'sheilia@thewayagency.com', phone: '(502) 413-5335 ext 1' },
+    { slug: 'sheilia-royal', name: 'Sheilia Royal', title: 'Agency Principal / Licensed Agent', photo: '', email: 'sheilia@thewayagency.com', phone: '(502) 413-5335 ext 1' },
     { slug: 'audrey-lillpop', name: 'Audrey Lillpop', title: 'Licensed Agent', photo: '/src/assets/images/team/audrey-lillpop.webp', email: 'audrey@thewayagency.com', phone: '(502) 413-5335 ext 2' },
     { slug: 'kelly-mccallister', name: 'Kelly McCallister', title: 'Client Care Specialist', photo: '/src/assets/images/team/kelly-mccallister.webp', email: 'kelly@thewayagency.com', phone: '(502) 413-5335 ext 3' },
-    { slug: 'jill-boone', name: 'Jill Boone', title: 'Licensed Agent', photo: '/src/assets/images/team/jill-boone.webp', email: 'jill@thewayagency.com', phone: '(502) 413-5335 ext 4' },
+    { slug: 'jill-boone', name: 'Jill Boone', title: 'Licensed Agent', photo: '', email: 'jill@thewayagency.com', phone: '(502) 413-5335 ext 4' },
     { slug: 'luke-royal', name: 'Luke Royal', title: 'Agency Owner', photo: '', email: 'partner@thewayagency.com', phone: '(502) 413-5335' },
   ];
 
@@ -1981,6 +2042,7 @@
     initNav();
     initFAQ();
     initInlineForms();
+    initFormStartTracking();
     initStickyMobileCTA();
     initExitIntent();
     initClickTracking();

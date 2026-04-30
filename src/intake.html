@@ -1835,10 +1835,19 @@ async function nextStep(from) {
       if (!vehs.length || !vehs.some(v => v.year && v.make && v.model))
         problems.push('Please enter at least one complete vehicle (year, make, and model).');
     }
-    // Validate life: DOB required
-    if (selectedProducts.includes('life')) {
-      const dobVal = v('i_dob');
-      if (!dobVal || dobVal.length !== 10) problems.push('Please enter your date of birth for life insurance.');
+    // Validate DOB: required for life always; required for all personal lines under A/B 'dob-required' variant
+    {
+      const lifeSelected = selectedProducts.includes('life');
+      const abDobRequired = document.body.classList.contains('twa-ab-dob-required');
+      const dobGroup = document.getElementById('dob-group');
+      const dobVisible = dobGroup && dobGroup.style.display !== 'none';
+      if (lifeSelected || (abDobRequired && dobVisible)) {
+        const dobVal = v('i_dob');
+        // type=date yields YYYY-MM-DD (10 chars); type=text auto-format yields MM/DD/YYYY (10 chars)
+        if (!dobVal || dobVal.length !== 10) {
+          problems.push(lifeSelected ? 'Please enter your date of birth for life insurance.' : 'Please enter your date of birth.');
+        }
+      }
     }
     // Validate other: description required
     if (selectedProducts.includes('other')) {
@@ -1877,8 +1886,9 @@ document.getElementById('i_phone').addEventListener('input', function() {
   }
 });
 
-// ── DOB auto-format (MM/DD/YYYY) ────────────────────────────────────────────
+// ── DOB auto-format (MM/DD/YYYY) — skipped when input is type=date (browser handles) ─────
 document.getElementById('i_dob').addEventListener('input', function() {
+  if (this.type === 'date') return; // native date input
   let digits = this.value.replace(/\D/g, '');
   if (digits.length > 8) digits = digits.slice(0, 8);
   let formatted = '';
