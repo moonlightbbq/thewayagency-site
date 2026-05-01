@@ -124,3 +124,17 @@
 .service-card:hover {
     transform: translateY(-4px);
 }
+
+/* ── Carrier Marquee ── */
+.carriers{padding:var(--space-2xl) 0;overflow:hidden;background:var(--white);border-bottom:1px solid var(--border)}
+.carriers__label{text-align:center;font-size:var(--text-xs);font-weight:600;text-transform:uppercase;letter-spacing:.15em;color:var(--gray);margin-bottom:var(--space-lg)}
+.carriers__track{display:flex;gap:var(--space-3xl);animation:scroll-left 40s linear infinite;width:max-content}
+.carriers__track:hover{animation-play-state:paused}
+.carriers__logo{height:36px;width:auto;opacity:.45;filter:grayscale(100%);transition:all var(--transition-base);flex-shrink:0;display:flex;align-items:center;font-size:14px;font-weight:600;color:var(--gray);white-space:nowrap}
+.carriers__logo:hover{opacity:1;filter:grayscale(0%);color:var(--blue)}
+@keyframes scroll-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.carriers__track{animation:none}}
+
+/* ── Testimonial stars ── */
+.testimonial-card__stars{display:flex;gap:2px;margin-bottom:var(--space-md);color:var(--cyan)}
+.testimonial-card__stars svg{width:18px;height:18px}
