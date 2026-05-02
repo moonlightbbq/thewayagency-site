@@ -35,11 +35,9 @@ jobs:
             echo "reviews_sent=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # Step 1b: Update Google review count
+      # Step 1b: Update Google reviews from sage public endpoint
       - name: Update Google reviews
-        id: reviews
-        env:
-          GOOGLE_MAPS_KEY: ${{ secrets.GOOGLE_MAPS_KEY }}
+        id: google_reviews
         run: |
           if node scripts/update-reviews.js; then
             echo "reviews_updated=true" >> "$GITHUB_OUTPUT"
@@ -60,11 +58,11 @@ jobs:
 
       # Step 3: Commit any changes (review status updates + published posts)
       - name: Commit and push
-        if: steps.review.outputs.reviews_sent == 'true' || steps.publish.outputs.published == 'true' || steps.reviews.outputs.reviews_updated == 'true'
+        if: steps.review.outputs.reviews_sent == 'true' || steps.publish.outputs.published == 'true' || steps.google_reviews.outputs.reviews_updated == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/content-calendar.json data/locations.json src/blog/
+          git add data/content-calendar.json data/locations.json data/testimonials.json data/google-reviews-status.json src/blog/
           git diff --cached --quiet && exit 0
-          git commit -m "weekly: blog publish + review updates for $(date +%Y-%m-%d)"
+          git commit -m "weekly: blog publish + Google review sync for $(date +%Y-%m-%d)"
           git push

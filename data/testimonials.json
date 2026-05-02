@@ -1,7 +1,7 @@
 {
   "reviews": {
     "count": 24,
-    "rating": 5.0,
+    "rating": 5,
     "source": "google"
   },
   "testimonials": [
@@ -14,8 +14,13 @@
       "source_url": "https://www.google.com/maps/contrib/102715349158228233817/reviews",
       "date": "2024-06-15",
       "agent": "audrey-lillpop",
-      "product_lines": ["personal"],
-      "products": ["home", "auto"]
+      "product_lines": [
+        "personal"
+      ],
+      "products": [
+        "home",
+        "auto"
+      ]
     },
     {
       "id": "olivia-mitchell",
@@ -26,7 +31,9 @@
       "source_url": "",
       "date": "2024-05-20",
       "agent": "",
-      "product_lines": ["personal"],
+      "product_lines": [
+        "personal"
+      ],
       "products": []
     },
     {
@@ -38,7 +45,9 @@
       "source_url": "https://www.google.com/maps/contrib/102715349158228233817/reviews",
       "date": "2024-04-10",
       "agent": "audrey-lillpop",
-      "product_lines": ["personal"],
+      "product_lines": [
+        "personal"
+      ],
       "products": []
     },
     {
@@ -50,8 +59,12 @@
       "source_url": "",
       "date": "2024-03-15",
       "agent": "",
-      "product_lines": ["personal"],
-      "products": ["auto"]
+      "product_lines": [
+        "personal"
+      ],
+      "products": [
+        "auto"
+      ]
     },
     {
       "id": "poseidon-crc",
@@ -62,7 +75,9 @@
       "source_url": "https://www.google.com/maps/contrib/102715349158228233817/reviews",
       "date": "2024-02-20",
       "agent": "",
-      "product_lines": ["commercial"],
+      "product_lines": [
+        "commercial"
+      ],
       "products": []
     },
     {
@@ -74,7 +89,9 @@
       "source_url": "",
       "date": "2024-01-25",
       "agent": "",
-      "product_lines": ["life_health"],
+      "product_lines": [
+        "life_health"
+      ],
       "products": []
     },
     {
@@ -86,8 +103,13 @@
       "source_url": "",
       "date": "2023-12-10",
       "agent": "",
-      "product_lines": ["personal"],
-      "products": ["home", "auto"]
+      "product_lines": [
+        "personal"
+      ],
+      "products": [
+        "home",
+        "auto"
+      ]
     },
     {
       "id": "mark-hensley",
@@ -98,8 +120,13 @@
       "source_url": "",
       "date": "2025-08-14",
       "agent": "kelly-mccallister",
-      "product_lines": ["commercial"],
-      "products": ["general-liability", "commercial-auto"]
+      "product_lines": [
+        "commercial"
+      ],
+      "products": [
+        "general-liability",
+        "commercial-auto"
+      ]
     },
     {
       "id": "dana-crawford",
@@ -110,8 +137,12 @@
       "source_url": "",
       "date": "2025-11-02",
       "agent": "jill-boone",
-      "product_lines": ["life_health"],
-      "products": ["medicare"]
+      "product_lines": [
+        "life_health"
+      ],
+      "products": [
+        "medicare"
+      ]
     },
     {
       "id": "travis-and-emily-rogers",
@@ -122,8 +153,14 @@
       "source_url": "",
       "date": "2025-09-20",
       "agent": "audrey-lillpop",
-      "product_lines": ["personal"],
-      "products": ["home", "auto", "umbrella"]
+      "product_lines": [
+        "personal"
+      ],
+      "products": [
+        "home",
+        "auto",
+        "umbrella"
+      ]
     },
     {
       "id": "randy-pike",
@@ -134,8 +171,12 @@
       "source_url": "",
       "date": "2025-06-08",
       "agent": "sheilia-royal",
-      "product_lines": ["personal"],
-      "products": ["home"]
+      "product_lines": [
+        "personal"
+      ],
+      "products": [
+        "home"
+      ]
     },
     {
       "id": "jason-whitfield",
@@ -146,8 +187,13 @@
       "source_url": "",
       "date": "2025-10-15",
       "agent": "kelly-mccallister",
-      "product_lines": ["commercial"],
-      "products": ["bonds", "workers-compensation"]
+      "product_lines": [
+        "commercial"
+      ],
+      "products": [
+        "bonds",
+        "workers-compensation"
+      ]
     },
     {
       "id": "patricia-owens",
@@ -158,8 +204,12 @@
       "source_url": "",
       "date": "2025-07-22",
       "agent": "jill-boone",
-      "product_lines": ["life_health"],
-      "products": ["term-life"]
+      "product_lines": [
+        "life_health"
+      ],
+      "products": [
+        "term-life"
+      ]
     },
     {
       "id": "michael-bennett",
@@ -170,8 +220,12 @@
       "source_url": "",
       "date": "2025-12-03",
       "agent": "audrey-lillpop",
-      "product_lines": ["personal"],
-      "products": ["auto"]
+      "product_lines": [
+        "personal"
+      ],
+      "products": [
+        "auto"
+      ]
     },
     {
       "id": "amanda-stokes",
@@ -182,8 +236,12 @@
       "source_url": "",
       "date": "2025-05-11",
       "agent": "kelly-mccallister",
-      "product_lines": ["commercial"],
-      "products": ["general-liability"]
+      "product_lines": [
+        "commercial"
+      ],
+      "products": [
+        "general-liability"
+      ]
     },
     {
       "id": "carl-and-nancy-taylor",
@@ -194,8 +252,12 @@
       "source_url": "",
       "date": "2026-01-18",
       "agent": "sheilia-royal",
-      "product_lines": ["personal"],
-      "products": ["auto"]
+      "product_lines": [
+        "personal"
+      ],
+      "products": [
+        "auto"
+      ]
     },
     {
       "id": "derek-lang",
@@ -206,8 +268,13 @@
       "source_url": "",
       "date": "2026-02-05",
       "agent": "kelly-mccallister",
-      "product_lines": ["commercial"],
-      "products": ["commercial-property", "cyber"]
+      "product_lines": [
+        "commercial"
+      ],
+      "products": [
+        "commercial-property",
+        "cyber"
+      ]
     },
     {
       "id": "sarah-klein",
@@ -218,8 +285,12 @@
       "source_url": "",
       "date": "2025-04-30",
       "agent": "audrey-lillpop",
-      "product_lines": ["personal"],
-      "products": ["flood"]
+      "product_lines": [
+        "personal"
+      ],
+      "products": [
+        "flood"
+      ]
     },
     {
       "id": "robert-miles",
@@ -230,8 +301,77 @@
       "source_url": "",
       "date": "2025-03-17",
       "agent": "jill-boone",
-      "product_lines": ["life_health"],
-      "products": ["individual-health"]
+      "product_lines": [
+        "life_health"
+      ],
+      "products": [
+        "individual-health"
+      ]
+    },
+    {
+      "id": "bradley-back--absolutelylove",
+      "name": "Bradley Back",
+      "rating": 5,
+      "text": "Absolutely love The Way Agency. Kelly is amazing she has always taken care of my family I wouldn’t have insurance anywhere else.",
+      "source": "google",
+      "source_url": "",
+      "date": "",
+      "agent": "",
+      "product_lines": [],
+      "products": [],
+      "google_review_id": "bradley-back--absolutelylove"
+    },
+    {
+      "id": "mitchell-capt-mitch-davis--kellyisjustth",
+      "name": "Mitchell “Capt.Mitch” Davis",
+      "rating": 5,
+      "text": "Kelly is just the best so helpful.",
+      "source": "google",
+      "source_url": "",
+      "date": "",
+      "agent": "",
+      "product_lines": [],
+      "products": [],
+      "google_review_id": "mitchell-capt-mitch-davis--kellyisjustth"
+    },
+    {
+      "id": "brooke-white--ilovesupportin",
+      "name": "Brooke White",
+      "rating": 5,
+      "text": "I love supporting a Faith Based Company any chance I get. You won’t find anyone more genuine, compassionate and caring than Audrey Lilpop and Sheila Royal. Truly a dynamic pair and no one I’d rather have taking care of all my insurance needs. Audrey walked me through each step, ensuring it was a smooth transition and was able to save us over $4,000/year—providing the same coverage at a fraction of the cost. She’s honest and trustworthy. I knew I was in the best hands throughout the transition and will continue to be protected each day moving forward too.",
+      "source": "google",
+      "source_url": "",
+      "date": "",
+      "agent": "",
+      "product_lines": [],
+      "products": [],
+      "google_review_id": "brooke-white--ilovesupportin"
+    },
+    {
+      "id": "stephanie-burger--iappreciateaud",
+      "name": "Stephanie Burger",
+      "rating": 5,
+      "text": "I appreciate Audrey Lillpop and her dedication, honesty, and knowledge while walking me through the insurance process",
+      "source": "google",
+      "source_url": "",
+      "date": "",
+      "agent": "",
+      "product_lines": [],
+      "products": [],
+      "google_review_id": "stephanie-burger--iappreciateaud"
+    },
+    {
+      "id": "caleb-royal--agreatfamilyo",
+      "name": "Caleb Royal",
+      "rating": 5,
+      "text": "A great family owned business. They saved me several hundred dollars on my insurance plan! They were also extremely quick with my quotes as well!",
+      "source": "google",
+      "source_url": "",
+      "date": "",
+      "agent": "",
+      "product_lines": [],
+      "products": [],
+      "google_review_id": "caleb-royal--agreatfamilyo"
     }
   ]
 }

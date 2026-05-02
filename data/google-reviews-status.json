@@ -1,0 +1,6 @@
+{
+  "ok": false,
+  "fetchedAt": "2026-05-02T15:12:59.777Z",
+  "error": "HTTP 401 Unauthorized",
+  "endpoint": "https://sage.thewayagency.com/api/public/nonexistent"
+}
