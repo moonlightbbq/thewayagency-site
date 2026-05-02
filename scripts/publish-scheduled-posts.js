@@ -10,7 +10,10 @@
  *
  * Exit codes:
  *   0 = posts were published (caller should commit and push)
- *   1 = no posts due today (no action needed)
+ *   1 = no posts due today (no action needed) OR a scheduled post is
+ *       missing its markdown file (loud-fail; surfaces a red workflow
+ *       run + marks the calendar entry status='error' so an operator
+ *       can see what's stuck).
  *
  * Usage: node scripts/publish-scheduled-posts.js
  */
@@ -27,23 +30,45 @@ const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 const calendar = JSON.parse(fs.readFileSync(CALENDAR_PATH, 'utf8'));
 
 let published = 0;
+const errors = [];
+let calendarChanged = false;
 
 for (const post of calendar.year1) {
   // Publish posts that are "planned" or "in-review" when their date arrives
   if (post.status !== 'planned' && post.status !== 'in-review') continue;
   if (post.publish_date > today) continue;
 
-  // Readiness check: markdown file must exist
+  // Readiness check: markdown file must exist. If a post is on the
+  // calendar with a publish_date in the past and there's no markdown,
+  // sage's BlogPlannerAdapter and BlogDraftsCronAdapter dropped the ball
+  // somewhere upstream. Mark the entry status='error' so it's visible
+  // and surface a non-zero exit so the GitHub Actions run shows red.
   const mdFile = path.join(BLOG_SRC, `${post.slug}.md`);
   if (!fs.existsSync(mdFile)) {
-    console.log(`  ! Skipping "${post.title}" - markdown file not found: src/blog/${post.slug}.md`);
+    const reason = 'missing_markdown';
+    console.log(`  ! ERROR: "${post.title}" (${post.slug}) - markdown file not found: src/blog/${post.slug}.md`);
+    if (post.status !== 'error' || post.error_reason !== reason) {
+      post.status = 'error';
+      post.error_reason = reason;
+      post.error_at = new Date().toISOString();
+      calendarChanged = true;
+    }
+    errors.push({ slug: post.slug, reason });
     continue;
   }
 
   // Readiness check: file must have title and description in frontmatter
   const mdContent = fs.readFileSync(mdFile, 'utf8');
   if (!mdContent.includes('title:') || !mdContent.includes('description:')) {
-    console.log(`  ! Skipping "${post.title}" - missing title or description in frontmatter`);
+    const reason = 'missing_frontmatter';
+    console.log(`  ! ERROR: "${post.title}" (${post.slug}) - missing title or description in frontmatter`);
+    if (post.status !== 'error' || post.error_reason !== reason) {
+      post.status = 'error';
+      post.error_reason = reason;
+      post.error_at = new Date().toISOString();
+      calendarChanged = true;
+    }
+    errors.push({ slug: post.slug, reason });
     continue;
   }
 
@@ -51,7 +76,15 @@ for (const post of calendar.year1) {
   const bodyText = mdContent.replace(/---[\s\S]*?---/, '').trim();
   const wordCount = bodyText.split(/\s+/).length;
   if (wordCount < 200) {
-    console.log(`  ! Skipping "${post.title}" - content too short (${wordCount} words, need 200+)`);
+    const reason = 'content_too_short';
+    console.log(`  ! ERROR: "${post.title}" (${post.slug}) - content too short (${wordCount} words, need 200+)`);
+    if (post.status !== 'error' || post.error_reason !== reason) {
+      post.status = 'error';
+      post.error_reason = reason;
+      post.error_at = new Date().toISOString();
+      calendarChanged = true;
+    }
+    errors.push({ slug: post.slug, reason });
     continue;
   }
 
@@ -71,14 +104,31 @@ for (const post of calendar.year1) {
 
   post.status = 'published';
   published++;
+  calendarChanged = true;
   console.log(`  Published: "${post.title}" (${post.publish_date}) — byline: ${post.reviewer || 'The Way Agency'}`);
 }
 
-if (published > 0) {
+// Persist any calendar mutations (publishes + error markings)
+if (calendarChanged) {
   fs.writeFileSync(CALENDAR_PATH, JSON.stringify(calendar, null, 2) + '\n');
-  console.log(`\n  ${published} post(s) published. Calendar updated.`);
-  process.exit(0);
-} else {
-  console.log('  No posts due for publishing today.');
+}
+
+if (errors.length > 0) {
+  console.log('');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log(`  ${errors.length} scheduled post(s) failed readiness checks:`);
+  for (const e of errors) console.log(`    - ${e.slug}: ${e.reason}`);
+  console.log('');
+  console.log('  Calendar status set to "error" with error_reason and error_at.');
+  console.log('  Investigate sage Hive blog-writer pipeline.');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   process.exit(1);
 }
+
+if (published > 0) {
+  console.log(`\n  ${published} post(s) published. Calendar updated.`);
+  process.exit(0);
+}
+
+console.log('  No posts due for publishing today.');
+process.exit(1);

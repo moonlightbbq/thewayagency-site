@@ -223,28 +223,61 @@ function formatReviewEmail(post, content, reviewer) {
 }
 
 // ─── Send email via sage API ───────────────
+//
+// SAGE_API_TOKEN is a long-lived MCP API key (sage_<hex>) tied to the
+// sage-bot service user — sent via the x-api-key header. JWTs aren't
+// suitable here (24h expiry doesn't survive a weekly cron). Retries on
+// network errors, 5xx, and 429. Does NOT retry 4xx — bad request stays
+// bad. Each attempt is logged so the workflow run UI shows the timeline.
+const SEND_RETRY_DELAYS = [1000, 2000, 4000];
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function sendEmail(to, subject, htmlBody) {
-  const resp = await fetch(`${SAGE_API_URL}/api/email-drafts`, {
+  const url = `${SAGE_API_URL}/api/email-drafts`;
+  const opts = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${SAGE_API_TOKEN}`
+      'x-api-key': SAGE_API_TOKEN,
     },
     body: JSON.stringify({
       to,
       cc: REVIEW_CC,
       subject,
       body: htmlBody,
-      send: true
-    })
-  });
+      send: true,
+    }),
+  };
 
-  if (!resp.ok) {
-    const text = await resp.text();
-    throw new Error(`Email send failed (${resp.status}): ${text}`);
+  let lastErr;
+  for (let attempt = 0; attempt <= SEND_RETRY_DELAYS.length; attempt++) {
+    try {
+      const resp = await fetch(url, opts);
+      if (resp.ok) {
+        if (attempt > 0) console.log(`    ✓ succeeded on attempt ${attempt + 1}`);
+        return resp.json();
+      }
+      const text = await resp.text();
+      const retryable = resp.status >= 500 || resp.status === 429;
+      lastErr = new Error(`Email send failed (${resp.status}): ${text}`);
+      if (!retryable) throw lastErr;
+      console.log(`    ! attempt ${attempt + 1}: HTTP ${resp.status} (retryable)`);
+    } catch (err) {
+      // Distinguish thrown 4xx (already logged above) from network errors
+      if (err === lastErr) throw err;
+      lastErr = err;
+      console.log(`    ! attempt ${attempt + 1}: ${err.message} (network error)`);
+    }
+    if (attempt < SEND_RETRY_DELAYS.length) {
+      const delay = SEND_RETRY_DELAYS[attempt];
+      console.log(`    … waiting ${delay}ms before retry`);
+      await sleep(delay);
+    }
   }
-
-  return resp.json();
+  throw lastErr;
 }
 
 // ─── Main ──────────────────────────────────
