@@ -2,8 +2,10 @@ name: Publish Scheduled Blog Posts
 
 on:
   schedule:
-    # Every Wednesday at 10:00 UTC (6:00 AM Eastern)
-    - cron: '0 10 * * 3'
+    # Wednesday + Saturday at 10:00 UTC (6:00 AM Eastern). Calendar runs
+    # on a 2×/week cadence; running both days lets posts ship on the day
+    # they're scheduled rather than waiting up to 4 days for a Wednesday.
+    - cron: '0 10 * * 3,6'
   workflow_dispatch:
     # Allow manual trigger from GitHub Actions UI
 

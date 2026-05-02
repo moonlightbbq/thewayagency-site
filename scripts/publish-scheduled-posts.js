@@ -80,5 +80,5 @@ if (published > 0) {
   process.exit(0);
 } else {
   console.log('  No posts due for publishing today.');
-  process.exit(0);
+  process.exit(1);
 }
