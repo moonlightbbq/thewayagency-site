@@ -1,5 +1,5 @@
 {
-  "_doc": "Content calendar for The Way Agency blog. Single source of truth for all blog content \u2014 planned, in-progress, and published.\n\nUpdated 2026-05-02: Re-paced future entries from 1\u00d7/week (Wed) to 2\u00d7/week (Wed + Sat). Fixed entries (week 1-5) untouched. New schedule runs through ~2026-10-14; plan year-2 content by mid-September.",
+  "_doc": "Content calendar for The Way Agency blog. Single source of truth for all blog content — planned, in-progress, and published.\n\nUpdated 2026-05-02: Re-paced future entries from 1×/week (Wed) to 2×/week (Wed + Sat). Fixed entries (week 1-5) untouched. New schedule runs through ~2026-10-14; plan year-2 content by mid-September.",
   "version": "1.1",
   "program_start": "2026-04-01",
   "default_author": "The Way Agency",
@@ -402,7 +402,7 @@
     {
       "slug": "how-independent-agents-use-data-better-rates",
       "title": "How Independent Agents Use Data to Find You Better Insurance Rates",
-      "description": "Independent agents don't just shop carriers \u2014 they use data analytics to match you with the right one.",
+      "description": "Independent agents don't just shop carriers — they use data analytics to match you with the right one.",
       "publish_date": "2026-03-28",
       "status": "published",
       "category": "general",
@@ -451,7 +451,7 @@
     },
     {
       "slug": "cheap-motorcycle-insurance-kentucky",
-      "title": "Cheap Motorcycle Insurance Kentucky \u2014 What You Need to Know",
+      "title": "Cheap Motorcycle Insurance Kentucky — What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"cheap motorcycle insurance kentucky\" (23 impressions, position 48.9)",
       "publish_date": "2026-04-15",
       "pillar": "education",
@@ -478,7 +478,7 @@
     },
     {
       "slug": "commercial-auto-insurance-kentucky",
-      "title": "Commercial Auto Insurance Kentucky \u2014 What You Need to Know",
+      "title": "Commercial Auto Insurance Kentucky — What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"commercial auto insurance kentucky\" (23 impressions, position 61.7)",
       "publish_date": "2026-04-22",
       "pillar": "education",
@@ -505,7 +505,7 @@
     },
     {
       "slug": "cheap-car-insurance-in-mount-washington-ky",
-      "title": "Cheap Car Insurance In Mount Washington Ky \u2014 What You Need to Know",
+      "title": "Cheap Car Insurance In Mount Washington Ky — What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"cheap car insurance in mount washington ky\" (19 impressions, position 13.1)",
       "publish_date": "2026-04-29",
       "pillar": "education",
@@ -532,7 +532,7 @@
     },
     {
       "slug": "advance-quote-discount",
-      "title": "Advance Quote Discount \u2014 What You Need to Know",
+      "title": "Advance Quote Discount — What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"advance quote discount\" (18 impressions, position 1.7)",
       "publish_date": "2026-05-06",
       "pillar": "education",
@@ -559,7 +559,7 @@
     },
     {
       "slug": "business-insurance-owensboro-ky",
-      "title": "Business Insurance Owensboro, Ky \u2014 What You Need to Know",
+      "title": "Business Insurance Owensboro, Ky — What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"business insurance owensboro, ky\" (15 impressions, position 56.8)",
       "publish_date": "2026-05-13",
       "pillar": "education",
@@ -586,7 +586,7 @@
     },
     {
       "slug": "auto-insurance-owensboro-ky",
-      "title": "Auto Insurance Owensboro, Ky \u2014 What You Need to Know",
+      "title": "Auto Insurance Owensboro, Ky — What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"auto insurance owensboro, ky\" (18 impressions, position 49.6)",
       "publish_date": "2026-05-20",
       "pillar": "education",
@@ -613,7 +613,7 @@
     },
     {
       "slug": "business-insurance-in-memphis-tn",
-      "title": "Business Insurance In Memphis, Tn \u2014 What You Need to Know",
+      "title": "Business Insurance In Memphis, Tn — What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"business insurance in memphis, tn\" (14 impressions, position 40.7)",
       "publish_date": "2026-05-27",
       "pillar": "education",
@@ -640,7 +640,7 @@
     },
     {
       "slug": "3-way-insurance",
-      "title": "3 Way Insurance \u2014 What You Need to Know",
+      "title": "3 Way Insurance — What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"3 way insurance\" (13 impressions, position 69.2)",
       "publish_date": "2026-06-03",
       "pillar": "education",
@@ -667,7 +667,7 @@
     },
     {
       "slug": "auto-insurance",
-      "title": "Auto Insurance \u2014 What You Need to Know",
+      "title": "Auto Insurance — What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"auto insurance\" (15 impressions, position 15.2)",
       "publish_date": "2026-06-10",
       "pillar": "education",
@@ -694,7 +694,7 @@
     },
     {
       "slug": "auto-insurance-mt-washington-ky",
-      "title": "Auto Insurance Mt Washington Ky \u2014 What You Need to Know",
+      "title": "Auto Insurance Mt Washington Ky — What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"auto insurance mt washington ky\" (14 impressions, position 10.3)",
       "publish_date": "2026-06-17",
       "pillar": "education",
@@ -721,7 +721,7 @@
     },
     {
       "slug": "bowling-green-ky-car-insurance-quotes",
-      "title": "Bowling Green Ky Car Insurance Quotes \u2014 What You Need to Know",
+      "title": "Bowling Green Ky Car Insurance Quotes — What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"bowling green ky car insurance quotes\" (14 impressions, position 70.5)",
       "publish_date": "2026-06-24",
       "pillar": "education",
@@ -878,7 +878,7 @@
       "receives_future_links": true,
       "status": "in-draft",
       "source": "markdown",
-      "notes": "High link target \u2014 many future posts can reference this."
+      "notes": "High link target — many future posts can reference this."
     },
     {
       "week": 4,
@@ -1110,9 +1110,13 @@
       "canonical_priority": "secondary",
       "is_link_target": true,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "in-review",
       "source": "markdown",
-      "notes": "Umbrella product page has no supporting blog content yet."
+      "notes": "Umbrella product page has no supporting blog content yet.",
+      "reviewer": "Kelly McCallister",
+      "reviewer_email": "kelly@thewayagency.com",
+      "reviewer_slug": "kelly-mccallister",
+      "review_sent_date": "2026-05-02"
     },
     {
       "week": 8,
@@ -1644,7 +1648,7 @@
       "publish_date": "2026-07-08",
       "title": "Fall Home Maintenance That Protects Your Insurance Coverage",
       "slug": "fall-home-maintenance-insurance",
-      "description": "Preparing your home for winter isn't just smart maintenance \u2014 it's required by most insurance policies. Here's your fall checklist for Kentucky homeowners.",
+      "description": "Preparing your home for winter isn't just smart maintenance — it's required by most insurance policies. Here's your fall checklist for Kentucky homeowners.",
       "pillar": "seasonal",
       "topic_type": "checklist",
       "search_intent": "informational",
@@ -1902,7 +1906,7 @@
       "publish_date": "2026-08-01",
       "title": "Understanding Your Auto Insurance Coverage Options",
       "slug": "understanding-auto-insurance-coverage-options",
-      "description": "Liability, collision, comprehensive, PIP, uninsured motorist \u2014 auto insurance has a lot of parts. Here's what each one does and how to choose the right combination.",
+      "description": "Liability, collision, comprehensive, PIP, uninsured motorist — auto insurance has a lot of parts. Here's what each one does and how to choose the right combination.",
       "pillar": "education",
       "topic_type": "explainer",
       "search_intent": "informational",
@@ -2273,7 +2277,7 @@
       "publish_date": "2026-09-05",
       "title": "Surety Bonds Explained: What They Are and When You Need One",
       "slug": "surety-bonds-explained",
-      "description": "Surety bonds aren't insurance \u2014 they're a guarantee. Learn how bonds work, the difference between bid, performance, and payment bonds, and when Kentucky businesses need them.",
+      "description": "Surety bonds aren't insurance — they're a guarantee. Learn how bonds work, the difference between bid, performance, and payment bonds, and when Kentucky businesses need them.",
       "pillar": "product",
       "topic_type": "deep-dive",
       "search_intent": "informational",
