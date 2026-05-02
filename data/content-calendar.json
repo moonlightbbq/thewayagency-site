@@ -1,6 +1,6 @@
 {
-  "_doc": "Content calendar for The Way Agency blog. Single source of truth for all blog content — planned, in-progress, and published.",
-  "version": "1.0",
+  "_doc": "Content calendar for The Way Agency blog. Single source of truth for all blog content \u2014 planned, in-progress, and published.\n\nUpdated 2026-05-02: Re-paced future entries from 1\u00d7/week (Wed) to 2\u00d7/week (Wed + Sat). Fixed entries (week 1-5) untouched. New schedule runs through ~2026-10-14; plan year-2 content by mid-September.",
+  "version": "1.1",
   "program_start": "2026-04-01",
   "default_author": "The Way Agency",
   "default_author_title": "Independent Insurance Agency",
@@ -402,7 +402,7 @@
     {
       "slug": "how-independent-agents-use-data-better-rates",
       "title": "How Independent Agents Use Data to Find You Better Insurance Rates",
-      "description": "Independent agents don't just shop carriers — they use data analytics to match you with the right one.",
+      "description": "Independent agents don't just shop carriers \u2014 they use data analytics to match you with the right one.",
       "publish_date": "2026-03-28",
       "status": "published",
       "category": "general",
@@ -451,7 +451,7 @@
     },
     {
       "slug": "cheap-motorcycle-insurance-kentucky",
-      "title": "Cheap Motorcycle Insurance Kentucky — What You Need to Know",
+      "title": "Cheap Motorcycle Insurance Kentucky \u2014 What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"cheap motorcycle insurance kentucky\" (23 impressions, position 48.9)",
       "publish_date": "2026-04-15",
       "pillar": "education",
@@ -478,7 +478,7 @@
     },
     {
       "slug": "commercial-auto-insurance-kentucky",
-      "title": "Commercial Auto Insurance Kentucky — What You Need to Know",
+      "title": "Commercial Auto Insurance Kentucky \u2014 What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"commercial auto insurance kentucky\" (23 impressions, position 61.7)",
       "publish_date": "2026-04-22",
       "pillar": "education",
@@ -505,7 +505,7 @@
     },
     {
       "slug": "cheap-car-insurance-in-mount-washington-ky",
-      "title": "Cheap Car Insurance In Mount Washington Ky — What You Need to Know",
+      "title": "Cheap Car Insurance In Mount Washington Ky \u2014 What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"cheap car insurance in mount washington ky\" (19 impressions, position 13.1)",
       "publish_date": "2026-04-29",
       "pillar": "education",
@@ -532,7 +532,7 @@
     },
     {
       "slug": "advance-quote-discount",
-      "title": "Advance Quote Discount — What You Need to Know",
+      "title": "Advance Quote Discount \u2014 What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"advance quote discount\" (18 impressions, position 1.7)",
       "publish_date": "2026-05-06",
       "pillar": "education",
@@ -559,7 +559,7 @@
     },
     {
       "slug": "business-insurance-owensboro-ky",
-      "title": "Business Insurance Owensboro, Ky — What You Need to Know",
+      "title": "Business Insurance Owensboro, Ky \u2014 What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"business insurance owensboro, ky\" (15 impressions, position 56.8)",
       "publish_date": "2026-05-13",
       "pillar": "education",
@@ -586,7 +586,7 @@
     },
     {
       "slug": "auto-insurance-owensboro-ky",
-      "title": "Auto Insurance Owensboro, Ky — What You Need to Know",
+      "title": "Auto Insurance Owensboro, Ky \u2014 What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"auto insurance owensboro, ky\" (18 impressions, position 49.6)",
       "publish_date": "2026-05-20",
       "pillar": "education",
@@ -613,7 +613,7 @@
     },
     {
       "slug": "business-insurance-in-memphis-tn",
-      "title": "Business Insurance In Memphis, Tn — What You Need to Know",
+      "title": "Business Insurance In Memphis, Tn \u2014 What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"business insurance in memphis, tn\" (14 impressions, position 40.7)",
       "publish_date": "2026-05-27",
       "pillar": "education",
@@ -640,7 +640,7 @@
     },
     {
       "slug": "3-way-insurance",
-      "title": "3 Way Insurance — What You Need to Know",
+      "title": "3 Way Insurance \u2014 What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"3 way insurance\" (13 impressions, position 69.2)",
       "publish_date": "2026-06-03",
       "pillar": "education",
@@ -667,7 +667,7 @@
     },
     {
       "slug": "auto-insurance",
-      "title": "Auto Insurance — What You Need to Know",
+      "title": "Auto Insurance \u2014 What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"auto insurance\" (15 impressions, position 15.2)",
       "publish_date": "2026-06-10",
       "pillar": "education",
@@ -694,7 +694,7 @@
     },
     {
       "slug": "auto-insurance-mt-washington-ky",
-      "title": "Auto Insurance Mt Washington Ky — What You Need to Know",
+      "title": "Auto Insurance Mt Washington Ky \u2014 What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"auto insurance mt washington ky\" (14 impressions, position 10.3)",
       "publish_date": "2026-06-17",
       "pillar": "education",
@@ -721,7 +721,7 @@
     },
     {
       "slug": "bowling-green-ky-car-insurance-quotes",
-      "title": "Bowling Green Ky Car Insurance Quotes — What You Need to Know",
+      "title": "Bowling Green Ky Car Insurance Quotes \u2014 What You Need to Know",
       "description": "Auto-generated from SEO content gap: \"bowling green ky car insurance quotes\" (14 impressions, position 70.5)",
       "publish_date": "2026-06-24",
       "pillar": "education",
@@ -878,7 +878,7 @@
       "receives_future_links": true,
       "status": "in-draft",
       "source": "markdown",
-      "notes": "High link target — many future posts can reference this."
+      "notes": "High link target \u2014 many future posts can reference this."
     },
     {
       "week": 4,
@@ -1001,8 +1001,8 @@
       "notes": "Supports Louisville geo page. Do NOT compete with the geo page's primary keyword."
     },
     {
-      "week": 7,
-      "publish_date": "2026-05-13",
+      "week": 6,
+      "publish_date": "2026-05-09",
       "title": "What Is Liability Insurance and Why Do You Need It?",
       "slug": "what-is-liability-insurance",
       "description": "Liability insurance protects you when you're responsible for someone else's injuries or property damage. Here's how it works for individuals and businesses.",
@@ -1040,8 +1040,8 @@
       "notes": "Foundational educational post. Many future posts will link to this."
     },
     {
-      "week": 8,
-      "publish_date": "2026-05-20",
+      "week": 7,
+      "publish_date": "2026-05-13",
       "title": "Boating Safety and Insurance on the Ohio River",
       "slug": "boating-safety-insurance-ohio-river",
       "description": "Summer boating season on the Ohio River and Kentucky Lake means it's time to review your watercraft coverage. What boat insurance covers and Kentucky requirements.",
@@ -1078,8 +1078,8 @@
       "notes": "Timed for start of boating season."
     },
     {
-      "week": 9,
-      "publish_date": "2026-05-27",
+      "week": 7,
+      "publish_date": "2026-05-16",
       "title": "Umbrella Insurance: When $1 Million in Coverage Costs Less Than Your Phone Bill",
       "slug": "umbrella-insurance-worth-it",
       "description": "Umbrella insurance adds $1M+ in liability protection for $200-500 per year. Learn who needs it, what it covers, and why it's one of the best values in insurance.",
@@ -1115,8 +1115,8 @@
       "notes": "Umbrella product page has no supporting blog content yet."
     },
     {
-      "week": 10,
-      "publish_date": "2026-06-03",
+      "week": 8,
+      "publish_date": "2026-05-20",
       "title": "Ohio River Flood Risk: What Henderson and Owensboro Homeowners Should Know",
       "slug": "ohio-river-flood-risk-henderson-owensboro",
       "description": "Henderson and Owensboro sit along the Ohio River, making flood insurance essential. Learn about flood zones, NFIP policies, and what homeowners insurance won't cover.",
@@ -1154,8 +1154,8 @@
       "notes": "Supports both flood product page AND two geo pages. Careful not to compete with flood product page primary keyword."
     },
     {
-      "week": 11,
-      "publish_date": "2026-06-10",
+      "week": 8,
+      "publish_date": "2026-05-23",
       "title": "How Independent Insurance Agents Save You Money",
       "slug": "how-independent-agents-save-money",
       "description": "Independent agents compare rates from top-rated carriers, not just one. Learn how the independent agency model works and why it usually means better coverage at lower cost.",
@@ -1192,8 +1192,8 @@
       "notes": "Trust-building + educational. Links to about pages."
     },
     {
-      "week": 12,
-      "publish_date": "2026-06-17",
+      "week": 9,
+      "publish_date": "2026-05-27",
       "title": "Insurance Checklist for HVAC Contractors in Kentucky",
       "slug": "insurance-checklist-hvac-contractors",
       "description": "HVAC contractors in Kentucky face unique risks from equipment damage to worker injuries on rooftops. Here's the coverage you need and what general contractors require.",
@@ -1231,8 +1231,8 @@
       "notes": "Supports HVAC industry page. Trade-specific content."
     },
     {
-      "week": 13,
-      "publish_date": "2026-06-24",
+      "week": 9,
+      "publish_date": "2026-05-30",
       "title": "Why Your Homeowners Policy Won't Cover Flooding",
       "slug": "homeowners-wont-cover-flooding",
       "description": "Standard homeowners insurance excludes flood damage in every state. Learn why, what flood insurance costs, and whether you need it even outside a flood zone.",
@@ -1267,8 +1267,8 @@
       "notes": "Supports flood product page with informational angle. Targets question-based keywords, not the commercial keyword."
     },
     {
-      "week": 14,
-      "publish_date": "2026-07-01",
+      "week": 10,
+      "publish_date": "2026-06-03",
       "title": "Lessons from the Bowling Green Tornado: Are You Covered?",
       "slug": "bowling-green-tornado-lessons-coverage",
       "description": "The 2021 Bowling Green tornado showed Kentucky families the gaps in their insurance. Here's what we learned about coverage, claims, and being prepared.",
@@ -1306,8 +1306,8 @@
       "notes": "Strong trust/authority piece. Real-world example."
     },
     {
-      "week": 15,
-      "publish_date": "2026-07-08",
+      "week": 10,
+      "publish_date": "2026-06-06",
       "title": "What Happens When You File an Insurance Claim",
       "slug": "what-happens-when-you-file-insurance-claim",
       "description": "From first phone call to final payment, here's exactly what happens during the insurance claims process and how to make it go smoothly.",
@@ -1343,8 +1343,8 @@
       "notes": "Foundational educational post. High internal link target."
     },
     {
-      "week": 16,
-      "publish_date": "2026-07-15",
+      "week": 11,
+      "publish_date": "2026-06-10",
       "title": "Summer Weather Risks for Kentucky Businesses",
       "slug": "summer-weather-risks-kentucky-businesses",
       "description": "Severe thunderstorms, hail, and flash flooding can shut down a business fast. Here's how commercial property and business income coverage protect you.",
@@ -1379,8 +1379,8 @@
       "notes": ""
     },
     {
-      "week": 17,
-      "publish_date": "2026-07-22",
+      "week": 11,
+      "publish_date": "2026-06-13",
       "title": "When Your Personal Auto Policy Won't Cover Work Driving",
       "slug": "personal-auto-wont-cover-work-driving",
       "description": "If you drive for work, deliver goods, or use your car for business, your personal auto policy probably won't cover an accident. Here's when you need commercial auto.",
@@ -1415,8 +1415,8 @@
       "notes": ""
     },
     {
-      "week": 18,
-      "publish_date": "2026-07-29",
+      "week": 12,
+      "publish_date": "2026-06-17",
       "title": "Small Business Insurance Guide for Evansville, IN",
       "slug": "small-business-insurance-evansville-in",
       "description": "Evansville is just across the river from our Owensboro office. Here's what Vanderburgh County small business owners need to know about commercial insurance in Indiana.",
@@ -1452,8 +1452,8 @@
       "notes": "Supports Evansville geo page. Indiana-specific content."
     },
     {
-      "week": 19,
-      "publish_date": "2026-08-05",
+      "week": 12,
+      "publish_date": "2026-06-20",
       "title": "Term Life vs. Whole Life: Which Is Right for Your Family?",
       "slug": "term-life-vs-whole-life",
       "description": "Term life is affordable but temporary. Whole life lasts forever but costs more. Here's how to decide which type of life insurance fits your situation.",
@@ -1490,8 +1490,8 @@
       "notes": "First life insurance blog content. Supports both term and whole life pages."
     },
     {
-      "week": 20,
-      "publish_date": "2026-08-12",
+      "week": 13,
+      "publish_date": "2026-06-24",
       "title": "Insurance Guide for Roofing Contractors in Kentucky",
       "slug": "insurance-guide-roofing-contractors",
       "description": "Roofing is one of the highest-risk trades for insurance. Here's what Kentucky roofing contractors need, what it costs, and how to get competitive rates.",
@@ -1527,8 +1527,8 @@
       "notes": "Supports roofing industry page."
     },
     {
-      "week": 21,
-      "publish_date": "2026-08-19",
+      "week": 13,
+      "publish_date": "2026-06-27",
       "title": "General Liability Insurance: The Foundation of Business Coverage",
       "slug": "general-liability-foundation-business-coverage",
       "description": "General liability is the most common and most required type of business insurance. Learn what it covers, what it costs, and why almost every business in Kentucky needs it.",
@@ -1564,8 +1564,8 @@
       "notes": "Targets informational intent. Product page owns commercial/transactional intent."
     },
     {
-      "week": 22,
-      "publish_date": "2026-08-26",
+      "week": 14,
+      "publish_date": "2026-07-01",
       "title": "Back-to-School Insurance Checklist for Kentucky Families",
       "slug": "back-to-school-insurance-checklist",
       "description": "New drivers, college move-ins, and after-school activities all affect your insurance. Here's what Kentucky parents should review before school starts.",
@@ -1603,8 +1603,8 @@
       "notes": ""
     },
     {
-      "week": 23,
-      "publish_date": "2026-09-02",
+      "week": 14,
+      "publish_date": "2026-07-04",
       "title": "How Much Life Insurance Do You Actually Need?",
       "slug": "how-much-life-insurance-do-you-need",
       "description": "Most families are underinsured. Learn the simple formulas, common rules of thumb, and factors that determine how much life insurance coverage is enough.",
@@ -1640,11 +1640,11 @@
       "notes": ""
     },
     {
-      "week": 24,
-      "publish_date": "2026-09-09",
+      "week": 15,
+      "publish_date": "2026-07-08",
       "title": "Fall Home Maintenance That Protects Your Insurance Coverage",
       "slug": "fall-home-maintenance-insurance",
-      "description": "Preparing your home for winter isn't just smart maintenance — it's required by most insurance policies. Here's your fall checklist for Kentucky homeowners.",
+      "description": "Preparing your home for winter isn't just smart maintenance \u2014 it's required by most insurance policies. Here's your fall checklist for Kentucky homeowners.",
       "pillar": "seasonal",
       "topic_type": "checklist",
       "search_intent": "informational",
@@ -1678,8 +1678,8 @@
       "notes": ""
     },
     {
-      "week": 25,
-      "publish_date": "2026-09-16",
+      "week": 15,
+      "publish_date": "2026-07-11",
       "title": "Disability Insurance: Protecting Your Most Valuable Asset",
       "slug": "disability-insurance-protecting-income",
       "description": "Your ability to earn income is worth more than your house or car. Disability insurance replaces your paycheck if injury or illness keeps you from working.",
@@ -1714,8 +1714,8 @@
       "notes": ""
     },
     {
-      "week": 26,
-      "publish_date": "2026-09-23",
+      "week": 16,
+      "publish_date": "2026-07-15",
       "title": "Insurance for Lexington Horse Farms and Rural Properties",
       "slug": "insurance-lexington-horse-farms-rural-properties",
       "description": "Lexington's horse farms and rural properties need specialized coverage that standard homeowners policies don't provide. Here's what Fayette County property owners should know.",
@@ -1752,8 +1752,8 @@
       "notes": "Supports Lexington geo page. Unique niche content."
     },
     {
-      "week": 27,
-      "publish_date": "2026-09-30",
+      "week": 16,
+      "publish_date": "2026-07-18",
       "title": "Insurance for First-Time Homebuyers in Kentucky",
       "slug": "insurance-first-time-homebuyers-kentucky",
       "description": "Buying your first home in Kentucky? Here's what you need to know about homeowners insurance before closing, how to shop for it, and what your lender requires.",
@@ -1789,8 +1789,8 @@
       "notes": "High conversion potential. Strong internal linking opportunity."
     },
     {
-      "week": 28,
-      "publish_date": "2026-10-07",
+      "week": 17,
+      "publish_date": "2026-07-22",
       "title": "Medicare Open Enrollment 2027: What's Changing in Kentucky",
       "slug": "medicare-open-enrollment-2027",
       "description": "Medicare open enrollment runs October 15 through December 7. Here's what's new for 2027 and how Kentucky Medicare beneficiaries should prepare.",
@@ -1825,8 +1825,8 @@
       "notes": "Timely annual piece. Refresh every September. Links to evergreen Medicare guide."
     },
     {
-      "week": 29,
-      "publish_date": "2026-10-14",
+      "week": 17,
+      "publish_date": "2026-07-25",
       "title": "Commercial Property Insurance: Protecting Your Business Assets",
       "slug": "commercial-property-insurance-guide",
       "description": "Your building, equipment, inventory, and income are all at risk. Learn what commercial property insurance covers, what it costs, and what most policies miss.",
@@ -1861,8 +1861,8 @@
       "notes": ""
     },
     {
-      "week": 30,
-      "publish_date": "2026-10-21",
+      "week": 18,
+      "publish_date": "2026-07-29",
       "title": "Insurance for Nashville's Growing Small Business Scene",
       "slug": "insurance-nashville-small-business",
       "description": "Nashville is booming, and new businesses need the right insurance from day one. Here's what Davidson County entrepreneurs should know about commercial coverage in Tennessee.",
@@ -1898,11 +1898,11 @@
       "notes": "Supports Nashville geo page. Tennessee-specific."
     },
     {
-      "week": 31,
-      "publish_date": "2026-10-28",
+      "week": 18,
+      "publish_date": "2026-08-01",
       "title": "Understanding Your Auto Insurance Coverage Options",
       "slug": "understanding-auto-insurance-coverage-options",
-      "description": "Liability, collision, comprehensive, PIP, uninsured motorist — auto insurance has a lot of parts. Here's what each one does and how to choose the right combination.",
+      "description": "Liability, collision, comprehensive, PIP, uninsured motorist \u2014 auto insurance has a lot of parts. Here's what each one does and how to choose the right combination.",
       "pillar": "education",
       "topic_type": "explainer",
       "search_intent": "informational",
@@ -1935,8 +1935,8 @@
       "notes": "Complements the KY auto guide with a coverage-type breakdown."
     },
     {
-      "week": 32,
-      "publish_date": "2026-11-04",
+      "week": 19,
+      "publish_date": "2026-08-05",
       "title": "Insurance for Restaurants and Food Service Businesses in Kentucky",
       "slug": "insurance-restaurants-food-service-kentucky",
       "description": "Restaurants face slip-and-fall claims, foodborne illness lawsuits, grease fires, and liquor liability. Here's the coverage Kentucky restaurant owners need.",
@@ -1972,8 +1972,8 @@
       "notes": "Supports restaurant industry page."
     },
     {
-      "week": 33,
-      "publish_date": "2026-11-11",
+      "week": 19,
+      "publish_date": "2026-08-08",
       "title": "Final Expense Insurance: A Practical Guide for Kentucky Families",
       "slug": "final-expense-insurance-guide",
       "description": "Final expense insurance covers funeral costs so your family isn't burdened with a $7,000-$12,000 bill. Here's how it works, what it costs, and who should consider it.",
@@ -2008,8 +2008,8 @@
       "notes": ""
     },
     {
-      "week": 34,
-      "publish_date": "2026-11-18",
+      "week": 20,
+      "publish_date": "2026-08-12",
       "title": "Holiday Season: Protecting Your Home and Packages",
       "slug": "holiday-season-home-packages-insurance",
       "description": "Package theft, holiday decorations, and houseguests all create insurance risks during the holidays. Here's what your policy covers and what it doesn't.",
@@ -2044,8 +2044,8 @@
       "notes": ""
     },
     {
-      "week": 35,
-      "publish_date": "2026-11-25",
+      "week": 20,
+      "publish_date": "2026-08-15",
       "title": "How to Compare Insurance Quotes: Price Isn't Everything",
       "slug": "how-to-compare-insurance-quotes",
       "description": "The cheapest quote isn't always the best deal. Learn what to compare beyond price: coverage limits, deductibles, exclusions, carrier ratings, and claims service.",
@@ -2081,8 +2081,8 @@
       "notes": "Strong conversion piece. Links to agents page and intake."
     },
     {
-      "week": 36,
-      "publish_date": "2026-12-02",
+      "week": 21,
+      "publish_date": "2026-08-19",
       "title": "Winter Driving Safety and Auto Insurance Tips for Kentucky",
       "slug": "winter-driving-auto-insurance-kentucky",
       "description": "Black ice, salt damage, and deer collisions spike in Kentucky winters. Here's how your auto insurance handles winter driving risks and what you can do to stay protected.",
@@ -2119,8 +2119,8 @@
       "notes": ""
     },
     {
-      "week": 37,
-      "publish_date": "2026-12-09",
+      "week": 21,
+      "publish_date": "2026-08-22",
       "title": "Professional Liability Insurance: Who Needs E&O Coverage?",
       "slug": "professional-liability-who-needs-eo",
       "description": "If your work involves advice, design, or professional judgment, a mistake could lead to a lawsuit. Professional liability (E&O) insurance covers the gap that general liability doesn't.",
@@ -2156,8 +2156,8 @@
       "notes": ""
     },
     {
-      "week": 38,
-      "publish_date": "2026-12-16",
+      "week": 22,
+      "publish_date": "2026-08-26",
       "title": "Year-End Insurance Review Checklist for Kentucky Families",
       "slug": "year-end-insurance-review-checklist",
       "description": "Before the new year, review your insurance coverage. Life changes, home improvements, and new vehicles all affect your policies. Here's what to check.",
@@ -2193,8 +2193,8 @@
       "notes": ""
     },
     {
-      "week": 39,
-      "publish_date": "2026-12-23",
+      "week": 22,
+      "publish_date": "2026-08-29",
       "title": "Giving Back: The Way Agency's Community Involvement in 2026",
       "slug": "community-involvement-2026",
       "description": "A look back at how The Way Agency served our Owensboro community in 2026 through partnerships, events, and charitable giving.",
@@ -2232,8 +2232,8 @@
       "notes": "Annual trust piece. Write a new one each year, don't refresh this one."
     },
     {
-      "week": 40,
-      "publish_date": "2026-12-30",
+      "week": 23,
+      "publish_date": "2026-09-02",
       "title": "New Year Insurance Resolutions: A Coverage Checkup for 2027",
       "slug": "new-year-insurance-resolutions-2027",
       "description": "Start the new year with the right coverage. Five insurance resolutions every Kentucky family and business should make for 2027.",
@@ -2269,11 +2269,11 @@
       "notes": "Light seasonal piece for a holiday week."
     },
     {
-      "week": 41,
-      "publish_date": "2027-01-06",
+      "week": 23,
+      "publish_date": "2026-09-05",
       "title": "Surety Bonds Explained: What They Are and When You Need One",
       "slug": "surety-bonds-explained",
-      "description": "Surety bonds aren't insurance — they're a guarantee. Learn how bonds work, the difference between bid, performance, and payment bonds, and when Kentucky businesses need them.",
+      "description": "Surety bonds aren't insurance \u2014 they're a guarantee. Learn how bonds work, the difference between bid, performance, and payment bonds, and when Kentucky businesses need them.",
       "pillar": "product",
       "topic_type": "deep-dive",
       "search_intent": "informational",
@@ -2306,8 +2306,8 @@
       "notes": ""
     },
     {
-      "week": 42,
-      "publish_date": "2027-01-13",
+      "week": 24,
+      "publish_date": "2026-09-09",
       "title": "Insurance Options for Frankfort State Employees",
       "slug": "insurance-options-frankfort-state-employees",
       "description": "Kentucky state employees in Frankfort have group benefits, but they may still need personal policies to fill gaps. Here's what to consider beyond your state plan.",
@@ -2345,8 +2345,8 @@
       "notes": "Supports Frankfort geo page."
     },
     {
-      "week": 43,
-      "publish_date": "2027-01-20",
+      "week": 24,
+      "publish_date": "2026-09-12",
       "title": "Replacement Cost vs. Actual Cash Value: Why It Matters at Claim Time",
       "slug": "replacement-cost-vs-actual-cash-value",
       "description": "The difference between replacement cost and actual cash value can mean thousands of dollars when you file a claim. Here's how each works and which one you want.",
@@ -2382,8 +2382,8 @@
       "notes": "Foundational concept. High link target."
     },
     {
-      "week": 44,
-      "publish_date": "2027-01-27",
+      "week": 25,
+      "publish_date": "2026-09-16",
       "title": "Tax Season Insurance Deductions for Small Businesses",
       "slug": "tax-season-insurance-deductions-small-business",
       "description": "Most business insurance premiums are tax-deductible. Here's what Kentucky small business owners can deduct, how to document it, and common mistakes to avoid.",
@@ -2418,8 +2418,8 @@
       "notes": "Timed for January tax prep."
     },
     {
-      "week": 45,
-      "publish_date": "2027-02-03",
+      "week": 25,
+      "publish_date": "2026-09-19",
       "title": "Group Health Insurance for Small Businesses in Kentucky",
       "slug": "group-health-insurance-small-business-kentucky",
       "description": "Offering group health insurance helps attract and retain employees. Here's how small group plans work in Kentucky, what they cost, and how to set one up.",
@@ -2454,8 +2454,8 @@
       "notes": ""
     },
     {
-      "week": 46,
-      "publish_date": "2027-02-10",
+      "week": 26,
+      "publish_date": "2026-09-23",
       "title": "Insurance Tips for Indianapolis Homeowners",
       "slug": "insurance-tips-indianapolis-homeowners",
       "description": "Indianapolis homeowners face tornado risk, hail damage, and rising rebuild costs. Here's what Marion County residents should know about home insurance in Indiana.",
@@ -2491,8 +2491,8 @@
       "notes": "Supports Indianapolis geo page."
     },
     {
-      "week": 47,
-      "publish_date": "2027-02-17",
+      "week": 26,
+      "publish_date": "2026-09-26",
       "title": "Understanding Certificates of Insurance for Business Owners",
       "slug": "understanding-certificates-of-insurance",
       "description": "A certificate of insurance (COI) proves you have coverage. Learn what's on a COI, how to request one, what additional insured means, and why clients and landlords ask for it.",
@@ -2527,8 +2527,8 @@
       "notes": "Very practical for business owners. High search volume."
     },
     {
-      "week": 48,
-      "publish_date": "2027-02-24",
+      "week": 27,
+      "publish_date": "2026-09-30",
       "title": "Insurance Guide for Electrical Contractors in Kentucky",
       "slug": "insurance-guide-electrical-contractors",
       "description": "Electrical work carries inherent fire and injury risk. Here's the insurance Kentucky electrical contractors need, what it costs, and how to meet GC requirements.",
@@ -2564,8 +2564,8 @@
       "notes": "Supports electrical contractor industry page."
     },
     {
-      "week": 49,
-      "publish_date": "2027-03-03",
+      "week": 27,
+      "publish_date": "2026-10-03",
       "title": "Motorcycle Insurance in Kentucky: Getting Ready for Riding Season",
       "slug": "motorcycle-insurance-kentucky-riding-season",
       "description": "Spring means riding season in Kentucky. Here's what motorcycle insurance covers, what Kentucky requires, and how to save on your premium.",
@@ -2600,8 +2600,8 @@
       "notes": "Timed for spring riding season start."
     },
     {
-      "week": 50,
-      "publish_date": "2027-03-10",
+      "week": 28,
+      "publish_date": "2026-10-07",
       "title": "Community Spotlight: Local Businesses We're Proud to Insure",
       "slug": "community-spotlight-local-businesses",
       "description": "We're honored to insure the businesses that make our communities great. Here's a look at some of the local businesses we serve across Kentucky, Indiana, and Tennessee.",
@@ -2638,8 +2638,8 @@
       "notes": "Trust-building content. Feature real local businesses (with their permission)."
     },
     {
-      "week": 51,
-      "publish_date": "2027-03-17",
+      "week": 28,
+      "publish_date": "2026-10-10",
       "title": "Understanding Insurance Endorsements and Riders",
       "slug": "understanding-insurance-endorsements",
       "description": "Endorsements modify your policy to add, remove, or change coverage. Learn what endorsements are, which ones are worth adding, and how they affect your premium.",
@@ -2675,8 +2675,8 @@
       "notes": ""
     },
     {
-      "week": 52,
-      "publish_date": "2027-03-24",
+      "week": 29,
+      "publish_date": "2026-10-14",
       "title": "Storm Season 2027: Is Your Kentucky Coverage Ready?",
       "slug": "storm-season-2027-coverage-ready",
       "description": "Tornado season is here again. A quick pre-season insurance checklist for Kentucky homeowners, plus what's changed since last year.",
