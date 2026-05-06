@@ -1,6 +1,7 @@
 {
-  "ok": false,
-  "fetchedAt": "2026-05-02T15:12:59.777Z",
-  "error": "HTTP 401 Unauthorized",
-  "endpoint": "https://sage.thewayagency.com/api/public/nonexistent"
+  "ok": true,
+  "fetchedAt": "2026-05-06T11:45:10.562Z",
+  "rating": "5.0",
+  "count": "27",
+  "testimonialsAdded": false
 }

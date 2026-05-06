@@ -996,7 +996,7 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "planned",
+      "status": "published",
       "source": "markdown",
       "notes": "Supports Louisville geo page. Do NOT compete with the geo page's primary keyword."
     },
@@ -1153,9 +1153,13 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "in-review",
       "source": "markdown",
-      "notes": "Supports both flood product page AND two geo pages. Careful not to compete with flood product page primary keyword."
+      "notes": "Supports both flood product page AND two geo pages. Careful not to compete with flood product page primary keyword.",
+      "reviewer": "Jill Boone",
+      "reviewer_email": "jill@thewayagency.com",
+      "reviewer_slug": "jill-boone",
+      "review_sent_date": "2026-05-06"
     },
     {
       "week": 8,
