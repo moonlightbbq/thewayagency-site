@@ -1035,7 +1035,7 @@
       "canonical_priority": "secondary",
       "is_link_target": true,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "published",
       "source": "markdown",
       "notes": "Foundational educational post. Many future posts will link to this."
     },
@@ -1116,7 +1116,8 @@
       "reviewer": "Kelly McCallister",
       "reviewer_email": "kelly@thewayagency.com",
       "reviewer_slug": "kelly-mccallister",
-      "review_sent_date": "2026-05-02"
+      "review_sent_date": "2026-05-02",
+      "reminder_sent": true
     },
     {
       "week": 8,
@@ -1195,9 +1196,13 @@
       "canonical_priority": "secondary",
       "is_link_target": true,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "in-review",
       "source": "markdown",
-      "notes": "Trust-building + educational. Links to about pages."
+      "notes": "Trust-building + educational. Links to about pages.",
+      "reviewer": "Sheilia Royal",
+      "reviewer_email": "sheilia@thewayagency.com",
+      "reviewer_slug": "sheilia-royal",
+      "review_sent_date": "2026-05-09"
     },
     {
       "week": 9,
