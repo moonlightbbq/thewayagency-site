@@ -1073,7 +1073,7 @@
       "canonical_priority": "secondary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "planned",
+      "status": "published",
       "source": "markdown",
       "notes": "Timed for start of boating season."
     },
@@ -1160,7 +1160,8 @@
       "reviewer": "Jill Boone",
       "reviewer_email": "jill@thewayagency.com",
       "reviewer_slug": "jill-boone",
-      "review_sent_date": "2026-05-06"
+      "review_sent_date": "2026-05-06",
+      "reminder_sent": true
     },
     {
       "week": 8,
@@ -1239,9 +1240,13 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "planned",
+      "status": "in-review",
       "source": "markdown",
-      "notes": "Supports HVAC industry page. Trade-specific content."
+      "notes": "Supports HVAC industry page. Trade-specific content.",
+      "reviewer": "Audrey Lillpop",
+      "reviewer_email": "audrey@thewayagency.com",
+      "reviewer_slug": "audrey-lillpop",
+      "review_sent_date": "2026-05-13"
     },
     {
       "week": 9,
