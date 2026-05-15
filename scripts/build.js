@@ -219,6 +219,9 @@ assets.copyRootFiles(ROOT, BUILD);
 // 8. Copy portal pages
 const portalPages = assets.copyPortalPages(SRC, BUILD, injectVersion);
 
+// 8b. Generate llms.txt and llms-full.txt for LLM grounding
+require('./builders/llms').generate(BUILD, { agency: locations.agency, office, landingData });
+
 // 9. Generate sitemap
 const sitemapUrls = generateSitemap(BUILD, { products, landingData, seoData, portalPages, SRC, carriers });
 

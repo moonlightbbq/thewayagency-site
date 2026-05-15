@@ -47,6 +47,9 @@ function createSchemaInjector({ agency, office, reviews }) {
       case 'city':
         schemas.push(_buildLocalBusiness(agency, office, reviews, context.city));
         schemas.push(_buildInsuranceAgency(agency, office, context.city));
+        for (const svc of _buildServicesForCity(agency, context.city)) {
+          schemas.push(svc);
+        }
         break;
 
       case 'blog':
@@ -166,6 +169,33 @@ function _buildInsuranceAgency(agency, office, city = null) {
       name: 'Kentucky',
     },
   };
+}
+
+// Emit one Service per line of business with the city as areaServed.
+// Lets AI engines and Google connect "personal insurance in {city}" intent
+// to the city hub. Sources copy from the line-of-business hub descriptions.
+function _buildServicesForCity(agency, city) {
+  if (!city) return [];
+  const cityName = `${city.city}, ${city.state}`;
+  const lines = [
+    { name: 'Personal Insurance', slug: 'personal', desc: 'Home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet insurance from top-rated carriers.' },
+    { name: 'Commercial Insurance', slug: 'commercial', desc: 'General liability, commercial property, commercial auto, workers compensation, cyber, bonds, builders risk, special event, and professional liability insurance.' },
+    { name: 'Life and Health Insurance', slug: 'life-health', desc: 'Medicare Advantage and Supplement, individual and group health, term and whole life, disability, and final expense insurance.' },
+  ];
+  return lines.map(line => ({
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: `${line.name} in ${cityName}`,
+    description: line.desc,
+    url: `${SITE_URL}/${line.slug}/`,
+    provider: {
+      '@type': 'InsuranceAgency',
+      name: agency.dba || 'The Way Agency',
+      url: SITE_URL,
+    },
+    serviceType: 'Insurance',
+    areaServed: { '@type': 'City', name: cityName },
+  }));
 }
 
 function _buildService(context, agency, city = null) {
