@@ -85,4 +85,4 @@ Working with an independent agent means someone reviews your operations, identif
 
 If you are starting a business in Mt. Washington, need to update your coverage, or want a second opinion on what you are paying, we can help.
 
-[Get a business insurance quote for Mt. Washington](/insurance/commercial-insurance-mt-washington-ky.html) or [learn more about commercial insurance in Kentucky](/commercial/general-liability.html). You can also [see all insurance services available in Mt. Washington](/insurance/mt-washington-ky.html).
+[Get a business insurance quote for Mt. Washington](/insurance/mt-washington-ky.html#commercial) or [learn more about commercial insurance in Kentucky](/commercial/general-liability.html). You can also [see all insurance services available in Mt. Washington](/insurance/mt-washington-ky.html).

@@ -200,21 +200,40 @@ function _buildService(context, agency, city = null) {
 }
 
 function _buildArticle(context, agency) {
+  // YMYL E-E-A-T: prefer Person author when author metadata is present.
+  // Generate-blog.js is the production emitter for blog Article schema; this
+  // function is the symmetric helper for any future caller via injectSchema('blog', ...).
+  const authorName = context.author || agency.dba || 'The Way Agency';
+  const authorIsPerson = Boolean(context.author && context.author_slug);
+  const author = authorIsPerson
+    ? {
+        '@type': 'Person',
+        name: authorName,
+        jobTitle: context.author_title || 'Licensed Agent',
+        url: `${SITE_URL}/about/team.html#${context.author_slug}`,
+        worksFor: {
+          '@type': 'InsuranceAgency',
+          name: agency.dba || 'The Way Agency',
+          url: SITE_URL,
+        },
+      }
+    : {
+        '@type': 'Organization',
+        name: agency.dba || 'The Way Agency',
+        url: SITE_URL,
+      };
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: context.title || '',
     description: context.description || '',
     url: context.slug ? `${SITE_URL}/blog/${context.slug}.html` : undefined,
-    datePublished: context.publish_date || undefined,
-    dateModified: context.modified_date || context.publish_date || undefined,
-    author: {
-      '@type': 'Organization',
-      name: agency.dba || 'The Way Agency',
-      url: SITE_URL,
-    },
+    datePublished: context.publish_date || context.date || undefined,
+    dateModified: context.modified_date || context.modified || context.publish_date || context.date || undefined,
+    author,
     publisher: {
-      '@type': 'Organization',
+      '@type': 'InsuranceAgency',
       name: agency.dba || 'The Way Agency',
       url: SITE_URL,
       logo: {
@@ -283,14 +302,19 @@ function _buildBreadcrumbs(pageType, context) {
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function _buildAddress(office, city = null) {
-  return {
+  // Service-area business posture: omit streetAddress for PO Box / mailing-only addresses
+  // per Google's SAB guidance. The PO Box stays visible in human-readable <address> HTML.
+  const address = {
     '@type': 'PostalAddress',
-    streetAddress: office.street,
     addressLocality: city?.city || office.city,
     addressRegion: city?.state || office.state,
     postalCode: office.zip,
     addressCountry: 'US',
   };
+  if (office.street && !/^P\.?\s*O\.?\s*Box\b/i.test(office.street)) {
+    address.streetAddress = office.street;
+  }
+  return address;
 }
 
 function _buildHours(hours) {
@@ -304,7 +328,7 @@ function _buildHours(hours) {
     if (!dayMap[day]) continue;
     if (value === 'Closed') continue;
 
-    // Parse "8:30 AM – 5:00 PM"
+    // Parse "9:00 AM – 5:00 PM"
     const match = value.match(/(\d{1,2}:\d{2})\s*(AM|PM)\s*[–-]\s*(\d{1,2}:\d{2})\s*(AM|PM)/i);
     if (match) {
       const opens = _to24h(match[1], match[2]);

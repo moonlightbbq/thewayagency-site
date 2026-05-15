@@ -711,7 +711,7 @@ function generateCityPage(city, ctx) {
     "name": "The Way Agency",
     "url": "https://www.thewayagency.com",
     "telephone": "${office.phone}",
-    "address": {"@type": "PostalAddress", "streetAddress": "${office.street}", "addressLocality": "${office.city}", "addressRegion": "${office.state}", "postalCode": "${office.zip}"},
+    "address": {"@type": "PostalAddress", "addressLocality": "${office.city}", "addressRegion": "${office.state}", "postalCode": "${office.zip}", "addressCountry": "US"},
     "areaServed": {"@type": "City", "name": "${escJson(city.city)}", "containedIn": {"@type": "State", "name": "${city.state === 'KY' ? 'Kentucky' : city.state === 'IN' ? 'Indiana' : 'Tennessee'}"}}
   }
   </script>`;
@@ -742,6 +742,7 @@ ${renderHero({
     buttons: [
       { href: `/intake/?city=${encodeURIComponent(city.city)}&state=${encodeURIComponent(city.state)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
       { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
+      { href: 'sms:+15024135335', text: 'Or Text', className: 'btn btn--outline-white btn--lg' },
     ],
     minHeight: '38vh',
     variant: 'compact',
@@ -760,7 +761,10 @@ ${renderHero({
       <div class="container container--narrow">
         <h2>Why ${city.city} families and businesses choose The Way Agency</h2>
 ${city.context.split(/\n\n+/).map(p => `        <p>${p.trim()}</p>`).join('\n')}
-${(city.context_sections || []).map(s => `        <h3>${s.heading}</h3>\n        <p>${s.body}</p>`).join('\n')}
+${(city.context_sections || []).map(s => {
+          const sectionId = (s.slug || s.heading.split(/\s+/)[0]).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+          return `        <h3 id="${sectionId}">${s.heading}</h3>\n        <p>${s.body}</p>`;
+        }).join('\n')}
 ${city.context_closing ? `        <p>${city.context_closing}</p>` : ''}
 ${city.context_closing ? '' : `        <p>As an independent agency, we are not tied to one insurance company. We represent top-rated carriers &mdash; including Travelers, Progressive, Safeco, Chubb, The Hartford, and more &mdash; and we match you with the right ones for your specific situation in ${city.county}.</p>`}
 
@@ -780,7 +784,7 @@ ${cityFormHtml}
         <p><strong>1. Tell us what you need.</strong> Request a quote online or call ${office.phone}. We just need basic info to get started.</p>
         <p><strong>2. We find the right carriers.</strong> We compare options across top-rated carriers to find the best coverage and price for your situation in ${city.city}.</p>
         <p><strong>3. You choose with confidence.</strong> We present clear recommendations and help you understand exactly what you're buying. No pressure, no jargon.</p>
-        <p style="color:var(--slate);font-size:var(--text-sm);">We aim to respond same-day during business hours (Mon\u2013Fri, 8:30 AM \u2013 5:00 PM).</p>
+        <p style="color:var(--slate);font-size:var(--text-sm);">We aim to respond same-day during business hours (Mon\u2013Fri, 9:00 AM \u2013 5:00 PM).</p>
       </div>
     </section>
 
@@ -836,6 +840,7 @@ ${renderHero({
     buttons: [
       { href: `/intake/?line=commercial&industry=${ind.slug}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
       { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
+      { href: 'sms:+15024135335', text: 'Or Text', className: 'btn btn--outline-white btn--lg' },
     ],
     minHeight: '38vh',
     bgStyle: 'background:linear-gradient(135deg, #0F2240 0%, #173358 40%, #2680B5 100%);',

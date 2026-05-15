@@ -32,7 +32,7 @@
     },
     "/about/team.html": {
       "title": "Our Insurance Team | Licensed Agents | The Way Agency",
-      "description": "Meet the licensed insurance professionals at The Way Agency. Our team holds CISR designations and is licensed in Kentucky, Indiana, and Tennessee.",
+      "description": "Meet the licensed insurance professionals at The Way Agency. Our team is licensed across Kentucky, Indiana, and Tennessee and serves Owensboro, Mt Washington, and the surrounding region.",
       "schema_types": ["InsuranceAgency", "Person"],
       "last_reviewed": "2026-03"
     },
