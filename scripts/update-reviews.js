@@ -120,6 +120,43 @@ async function writeJsonAtomic(p, obj) {
   await fsp.rename(tmp, p);
 }
 
+// Propagate the Google review count from locations.json to hardcoded references in
+// hand-crafted source files. The handcrafted pages (src/pages/**.html, src/intake.html,
+// src/portal.html, src/partner.html, src/admin.html, src/js/app.js) carry the count
+// inline as visible text "(N reviews)" and inline JSON-LD "reviewCount": "N". Generated
+// pages already pull from locations.json via the build context, but these handcrafted
+// files do not, and the count was drifting against the live Google rating.
+async function propagateReviewCountToSource(prevCount, newCount) {
+  if (!prevCount || !newCount || prevCount === newCount) return { updated: 0, files: [] };
+  const SRC = path.join(ROOT, 'src');
+  const targets = [];
+  function walk(dir) {
+    for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, ent.name);
+      if (ent.isDirectory()) {
+        if (ent.name === 'assets' || ent.name === 'css' || ent.name === 'blog') continue;
+        walk(full);
+      } else if (/\.(html|js)$/.test(ent.name)) {
+        targets.push(full);
+      }
+    }
+  }
+  walk(SRC);
+  const visibleNeedle = `(${prevCount} reviews)`;
+  const visibleReplace = `(${newCount} reviews)`;
+  const schemaNeedle = `"reviewCount": "${prevCount}"`;
+  const schemaReplace = `"reviewCount": "${newCount}"`;
+  const updated = [];
+  for (const file of targets) {
+    const content = fs.readFileSync(file, 'utf8');
+    if (!content.includes(visibleNeedle) && !content.includes(schemaNeedle)) continue;
+    const next = content.split(visibleNeedle).join(visibleReplace).split(schemaNeedle).join(schemaReplace);
+    fs.writeFileSync(file, next);
+    updated.push(path.relative(ROOT, file));
+  }
+  return { updated: updated.length, files: updated };
+}
+
 function hoursSince(iso) {
   if (!iso) return Infinity;
   const t = new Date(iso).getTime();
@@ -189,7 +226,11 @@ async function main() {
     locations.agency.google_rating = String(opts.rating);
     locations.agency.google_review_count = String(opts.count);
     if (prevR !== String(opts.rating) || prevC !== String(opts.count)) {
-      if (!opts.dryRun) await writeJsonAtomic(LOCATIONS_PATH, locations);
+      if (!opts.dryRun) {
+        await writeJsonAtomic(LOCATIONS_PATH, locations);
+        const prop = await propagateReviewCountToSource(prevC, String(opts.count));
+        if (prop.updated > 0) console.log(`  Propagated count to ${prop.updated} source files.`);
+      }
       console.log(`  Manual override: ${prevR}/${prevC} → ${opts.rating}/${opts.count}${opts.dryRun ? ' (dry run)' : ''}`);
       process.exit(0);
     }
@@ -257,6 +298,11 @@ async function main() {
   await writeJsonAtomic(LOCATIONS_PATH, locations);
   if (testimonialsChanged) await writeJsonAtomic(TESTIMONIALS_PATH, testimonials);
   await writeStatus(true, { rating: newRating, count: newCount, testimonialsAdded: testimonialsChanged });
+
+  if (aggregateChanged) {
+    const prop = await propagateReviewCountToSource(prevC, newCount);
+    if (prop.updated > 0) console.log(`  Propagated count to ${prop.updated} source files: ${prop.files.join(', ')}`);
+  }
 
   if (aggregateChanged || testimonialsChanged) {
     if (aggregateChanged) console.log(`  Updated aggregate: ${prevR}/${prevC} → ${newRating}/${newCount}`);
