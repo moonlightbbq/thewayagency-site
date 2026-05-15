@@ -128,6 +128,33 @@
         }
       },
     },
+    'intake-call-or-text': {
+      variants: {
+        control: {},
+        'with-text': {},
+      },
+      // Variant adds a tap-to-text option alongside the Call Me button on the agent takeover step.
+      // Click-to-call must always pair with a text option per agency policy; this test measures whether
+      // surfacing text as a peer CTA lifts response engagement.
+      apply: function(variant) {
+        if (variant !== 'with-text') return;
+        const buttons = document.getElementById('takeover-buttons');
+        if (!buttons) return;
+        const callBtn = buttons.querySelector('button[data-choice="call_me"]');
+        if (!callBtn || buttons.querySelector('[data-choice="text_me"]')) return;
+        const textBtn = document.createElement('a');
+        textBtn.href = 'sms:+15024135335';
+        textBtn.setAttribute('data-choice', 'text_me');
+        textBtn.setAttribute('rel', 'noopener');
+        textBtn.style.cssText = 'width:100%;padding:14px 24px;border-radius:12px;border:none;background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(8,145,178,.4);transition:transform .15s;text-decoration:none;text-align:center;display:block;box-sizing:border-box;';
+        textBtn.innerHTML = '\u{1F4F1} Text Me';
+        textBtn.addEventListener('click', function() {
+          window.dataLayer = window.dataLayer || [];
+          dataLayer.push({ event: 'intake_text_me_clicked', test_name: 'intake-call-or-text', variant: 'with-text' });
+        });
+        callBtn.insertAdjacentElement('afterend', textBtn);
+      },
+    },
   };
 
   function getVisitorId() {
@@ -1008,7 +1035,7 @@
           </svg>
           <h2 style="margin-bottom:var(--space-md);">Quote request received</h2>
           <p style="color:var(--slate);font-size:var(--text-lg);font-weight:300;max-width:480px;margin:0 auto var(--space-lg);">
-            A licensed agent will follow up within one business day (Mon–Fri, 8:30 AM – 5:00 PM).
+            A licensed agent will follow up within one business day (Mon–Fri, 9:00 AM – 5:00 PM).
           </p>
           <p style="color:var(--slate);font-size:var(--text-sm);">
             Prefer to talk now? <a href="tel:${CONFIG.phoneRaw}" style="font-weight:600;">Call ${CONFIG.phone}</a> or <a href="sms:${CONFIG.phoneRaw}" style="font-weight:600;">text us</a>.
@@ -1716,7 +1743,7 @@
       var hour = now.getHours();
       var min = now.getMinutes();
       if (day === 0 || day === 6) return true; // weekend
-      if (hour < 8 || (hour === 8 && min < 30)) return true; // before 8:30 AM
+      if (hour < 8 || (hour === 8 && min < 30)) return true; // before 9:00 AM
       if (hour >= 17) return true; // after 5 PM
       return false;
     }

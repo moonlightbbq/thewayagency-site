@@ -26,6 +26,12 @@ You're producing a flammable product. You're storing it in wooden structures for
 
 The craft spirits boom has brought dozens of new distilleries to Kentucky in the last decade, many along the Bourbon Trail between Louisville and Lexington. A lot of these operations started small — maybe a farm distillery in Nelson County or a tasting room in downtown Frankfort — and grew faster than their insurance kept up with. That's where problems start.
 
+## Western Kentucky's bourbon and distilling heritage
+
+Western Kentucky has its own distilling tradition that often gets overlooked next to the Bourbon Trail. [Owensboro](/insurance/owensboro-ky.html) and Daviess County have been part of Kentucky's bourbon and spirits story for more than a century. The historic Glenmore Distillery operated in Owensboro for decades, and Green River Distilling Co continues to produce on a long-running Owensboro site today. Daviess County also has a long moonshine and craft-spirits heritage that predates and continues alongside the larger bourbon industry.
+
+For Western Kentucky operations, the insurance considerations are the same as anywhere else in the state — rickhouse fire risk, barrel inventory value, tasting room exposure, product liability, environmental liability — and many of these distilleries face them at smaller staffing levels and tighter budgets than the bigger Bourbon Trail names. That makes the coverage decisions more consequential, not less.
+
 ## Property coverage for aging warehouses and barrel storage
 
 Rickhouses are the backbone of bourbon production, and they're also a massive fire risk. Thousands of barrels of high-proof spirits stacked in a wooden structure — insurers take that seriously. The 2018 Jim Beam warehouse fire that destroyed 45,000 barrels is the kind of event that keeps underwriters up at night. Your operation may be smaller, but the physics are the same.
@@ -78,6 +84,6 @@ Don't overlook the risk from barrel storage, either. A rickhouse collapse or fir
 
 ## Get the right coverage for your distillery
 
-If you're running a distillery in Kentucky — whether it's a small craft operation in Lawrenceburg or a growing brand on the Bourbon Trail — you need an agent who understands the industry. A general commercial policy full of gaps won't protect what you've spent years building.
+If you're running a distillery in Kentucky — whether it's a small craft operation in [Owensboro](/insurance/owensboro-ky.html) or Daviess County, a Bourbon Trail brand between Louisville and Lexington, or a farm distillery in Nelson County — you need an agent who understands the industry. A general commercial policy full of gaps won't protect what you've spent years building.
 
 We work with multiple carriers who write distillery coverage, and as an independent agency, we can shop your policy across those markets to find the right fit. Whether you need to review your current coverage or you're starting a new operation and need to build a program from scratch, [reach out to us for a quote](/intake/?line=commercial). We'll walk through your specific operation and make sure nothing gets missed.

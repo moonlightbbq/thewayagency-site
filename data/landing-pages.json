@@ -25,7 +25,41 @@
           "body": "Owensboro residents have strong access to local care through Owensboro Health Regional Hospital and its network of affiliated clinics, with tertiary care available in Louisville and Evansville. When we compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred providers in-network while balancing monthly premium and out-of-pocket exposure. Life insurance planning ranges from young families to business owners needing buy-sell and key-person coverage."
         }
       ],
-      "context_closing": "Owensboro is home. Clients here get direct access to licensed agents who have walked these neighborhoods, worked with these carriers, and handled claims in Daviess County for more than twenty-five years."
+      "context_closing": "Owensboro is home. Clients here get direct access to licensed agents who have walked these neighborhoods, worked with these carriers, and handled claims in Daviess County for more than twenty-five years.",
+      "faqs": [
+        {
+          "question": "Do I need flood insurance in Owensboro, KY?",
+          "answer": "Flood insurance is required by federally regulated mortgage lenders if your property is in FEMA Zone A or AE. In Owensboro, that includes properties along the Ohio River and parts of Panther Creek. Flood is not covered by a standard homeowners policy, so any homeowner near low-lying areas should consider a separate NFIP or private flood policy."
+        },
+        {
+          "question": "What is Kentucky's minimum auto insurance requirement?",
+          "answer": "Kentucky requires every driver to carry $25,000 per person and $50,000 per accident in bodily injury liability, $25,000 in property damage liability, and $10,000 in Personal Injury Protection. These are legal minimums and are often not enough for a serious accident, especially on parkways and bridges in Daviess County."
+        },
+        {
+          "question": "Is The Way Agency a captive or independent insurance agency?",
+          "answer": "The Way Agency is an independent insurance agency. We are not tied to a single insurance company. We compare coverage and pricing across top-rated carriers and recommend the option that best fits your situation, rather than selling one company's products."
+        },
+        {
+          "question": "Do you handle commercial insurance for Owensboro distilleries and craft beverage producers?",
+          "answer": "Yes. We can quote commercial coverage for distilled spirits and craft beverage operations, including product liability, commercial property, general liability, and commercial auto. Daviess County's bourbon and distillery heritage means these accounts benefit from carriers that understand barrel storage, aging stock, and on-site tasting risk."
+        },
+        {
+          "question": "Do you write farm insurance in Daviess County?",
+          "answer": "Yes, we write farm insurance for Daviess County operations through our farm and ranch carriers. We do not write standalone multi-peril crop insurance (MPCI) policies. For dedicated crop coverage we refer clients to specialist crop insurance agencies and coordinate with their farm package on our side."
+        },
+        {
+          "question": "What is the difference between Medicare Advantage and Medicare Supplement?",
+          "answer": "Medicare Advantage (Part C) is an all-in-one plan that replaces Original Medicare and usually includes drug coverage with a defined network. Medicare Supplement (Medigap) works alongside Original Medicare and pays the gaps Medicare does not, with broader provider access. The right choice depends on your doctors, prescriptions, and budget."
+        },
+        {
+          "question": "How quickly will I hear back after requesting a quote in Owensboro?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We prefer to start with a quick phone call, but we will text or email if that is what you prefer. Quote turnaround varies by line of business and carrier underwriting requirements."
+        },
+        {
+          "question": "Does The Way Agency have an Owensboro storefront?",
+          "answer": "Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public storefront. We meet clients by phone, video, email, text, or in person at the client's location across Daviess County and the surrounding region."
+        }
+      ]
     },
     {
       "city": "Henderson",
@@ -191,7 +225,49 @@
           "body": "For Medicare and life insurance, Mt. Washington residents benefit from proximity to Baptist Health, UofL Health, and Louisville's specialist network. We help seniors and families navigate plan options with a focus on keeping preferred providers in-network while managing costs."
         }
       ],
-      "context_closing": "We serve Mt. Washington with the same personal, independent approach we have brought to Owensboro since 1998. Every client gets access to top-rated carriers, a licensed agent who knows the local market, and ongoing service that does not end when the policy is signed."
+      "context_closing": "We serve Mt. Washington with the same personal, independent approach we have brought to Owensboro since 1998. Every client gets access to top-rated carriers, a licensed agent who knows the local market, and ongoing service that does not end when the policy is signed.",
+      "faqs": [
+        {
+          "question": "Is Kentucky Farm Bureau or an independent agent better for Mt Washington?",
+          "answer": "Kentucky Farm Bureau is a captive carrier, meaning their agents sell KFB policies only. An independent agent represents many carriers and compares coverage and price across them. KFB can be a strong fit for some risks, but independent agencies give you side-by-side options and the ability to move carriers without changing agents."
+        },
+        {
+          "question": "Do I need flood insurance in Mt Washington, KY?",
+          "answer": "Flood insurance is required by federally regulated mortgage lenders if your property is in FEMA Zone A or AE. In Bullitt County, properties near Floyds Fork and low-lying lots along KY-44 and KY-480 should review their flood zone. Standard homeowners policies do not cover flood damage, regardless of zone."
+        },
+        {
+          "question": "What auto insurance limits should I-65 commuters in Mt Washington carry?",
+          "answer": "Kentucky's minimum is 25/50/25 in liability plus $10,000 in PIP. For daily I-65 commuters into Louisville or Elizabethtown, we typically recommend 100/300/100 or higher with matching uninsured and underinsured motorist limits. A serious highway accident can easily exceed minimum limits and leave you personally responsible for the difference."
+        },
+        {
+          "question": "Does The Way Agency have a Mt Washington office?",
+          "answer": "Our mailing address is in Owensboro, KY. We do not operate a public Mt Washington storefront. We serve Mt Washington and Bullitt County clients by phone, video, email, text, or in person at the client's location."
+        },
+        {
+          "question": "Do you write commercial insurance for Bullitt County contractors?",
+          "answer": "Yes. We quote commercial coverage for residential and commercial contractors across Bullitt County, including general liability, commercial auto, workers compensation, builders risk, surety bonds, and inland marine (tools and equipment). We handle certificates of insurance and additional insured endorsements as part of standard service."
+        },
+        {
+          "question": "Do you write builders risk insurance for new construction in Mt Washington?",
+          "answer": "Yes, builders risk is one of our commercial lines. We quote builders risk for new residential construction along KY-44, KY-480, and other Bullitt County growth corridors, as well as for commercial projects. Coverage typically runs from the start of construction through final completion and certificate of occupancy."
+        },
+        {
+          "question": "Can you bundle home and auto insurance for Mt Washington families?",
+          "answer": "Yes, most carriers we represent offer a multi-policy discount when you bundle home and auto. Discounts typically range from 5 to 25 percent depending on the carrier and your specific situation. We can quote both lines side by side and show you the bundled and unbundled cost."
+        },
+        {
+          "question": "Do you handle Medicare in Bullitt County?",
+          "answer": "Yes. We help Mt Washington and Bullitt County clients compare Medicare Advantage and Medicare Supplement options each year during Annual Enrollment, with attention to keeping preferred providers in network and managing premium and out-of-pocket cost."
+        },
+        {
+          "question": "How quickly will I hear back after requesting a quote in Mt Washington?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We prefer to start with a quick phone call, but we will text or email if that is what you prefer. Personal-lines quotes are usually faster than commercial because commercial carriers underwrite more thoroughly."
+        },
+        {
+          "question": "What is the difference between a captive State Farm or Allstate agent and an independent agent in Mt Washington?",
+          "answer": "A captive agent works for one insurance company and sells only that company's policies. An independent agent represents multiple carriers and can compare options side by side. Captive can be a strong fit if their pricing wins on your risk profile; independent gives you flexibility to switch carriers without changing agents."
+        }
+      ]
     },
     {
       "city": "Frankfort",

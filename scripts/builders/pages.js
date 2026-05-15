@@ -716,6 +716,37 @@ function generateCityPage(city, ctx) {
   }
   </script>`;
 
+  const faqs = Array.isArray(city.faqs) ? city.faqs : [];
+  const faqAccordion = faqs.length > 0 ? `
+        <section class="faq-section" style="margin-top:var(--space-2xl);">
+          <h2>Frequently asked questions about insurance in ${city.city}</h2>
+${faqs.map(f => `          <div class="faq-item">
+            <button class="faq-item__question" aria-expanded="false">
+              <h3 style="margin:0;font-size:var(--text-lg);pointer-events:none;">${f.question}</h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;transition:transform 0.2s;pointer-events:none;"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-item__answer">
+              <div class="faq-item__answer-inner">
+                <p>${f.answer}</p>
+              </div>
+            </div>
+          </div>`).join('\n')}
+        </section>` : '';
+
+  const faqSchema = faqs.length > 0 ? `<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+${faqs.map(f => `      {
+        "@type": "Question",
+        "name": ${JSON.stringify(f.question)},
+        "acceptedAnswer": { "@type": "Answer", "text": ${JSON.stringify(f.answer)} }
+      }`).join(',\n')}
+    ]
+  }
+  </script>` : '';
+
   const cityFormHtml = renderInlineForm(city.slug, { city: city.city, state: city.state })
     .replace('%%FORM_HEADING%%', `Get an insurance quote in ${city.city}`)
     .replace('%%FORM_SUBTEXT%%', 'Tell us your name and email and a licensed agent will follow up with options.');
@@ -729,7 +760,7 @@ ${renderHead({
     ogTitle: `Insurance in ${city.city}, ${city.state} | The Way Agency`,
     ogDescription: `Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from top-rated carriers.`,
     ogUrl: `https://www.thewayagency.com/insurance/${city.slug}.html`,
-    schema: citySchema,
+    schema: citySchema + (faqSchema ? '\n  ' + faqSchema : ''),
   })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -779,6 +810,7 @@ ${city.context_closing ? '' : `        <p>As an independent agency, we are not t
         })()}
 
 ${cityFormHtml}
+${faqAccordion}
 
         <h2>How it works</h2>
         <p><strong>1. Tell us what you need.</strong> Request a quote online or call ${office.phone}. We just need basic info to get started.</p>
