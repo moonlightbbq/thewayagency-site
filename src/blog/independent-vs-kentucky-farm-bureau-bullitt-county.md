@@ -28,7 +28,7 @@ The structural fact is that a captive agent's job, by definition, is to fit your
 
 [The Way Agency](/about/) is an independent insurance agency, founded 1998, licensed in Kentucky, Indiana, and Tennessee. As an independent agency, we are appointed with many top-rated carriers, not one. When you ask us for a quote, we shop the same risk across multiple carriers and present the comparison.
 
-The structural fact on our side is that we do not get paid more if you pick one carrier over another. Our role is to find the best fit, present the options, and explain what each one covers and what it costs. If your situation changes, we can move you to a different carrier without you changing agents.
+Our role is to find the best fit, present the options, and explain what each one covers and what it costs. If your situation changes, we can move you to a different carrier without you changing agents.
 
 ## The carrier-shopping difference
 
