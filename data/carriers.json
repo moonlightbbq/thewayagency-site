@@ -1,5 +1,6 @@
 {
   "personal": [
+    { "name": "Adaptive", "slug": "adaptive", "status": "appointed", "am_best_rating": null },
     { "name": "Aegis Insurance", "slug": "aegis", "status": "appointed", "am_best_rating": null },
     { "name": "Allstate", "slug": "allstate", "status": "appointed", "am_best_rating": "A+", "description": "One of the nation's largest personal lines carriers, offering competitive home and auto packages with strong bundling discounts.", "lines": ["home", "auto", "renters", "umbrella"], "strengths": ["Multi-policy discounts", "New home discounts", "Claims satisfaction", "Local agents"] },
     { "name": "American Modern", "slug": "american-modern", "status": "appointed", "am_best_rating": "A+", "description": "A specialty carrier focused on manufactured homes, boats, classic cars, and other non-standard property. Part of Munich Re.", "lines": ["boat", "classic-car", "motorcycle", "home"], "strengths": ["Specialty property expertise", "Manufactured home coverage", "Watercraft specialists", "Agreed value options"] },
@@ -11,12 +12,14 @@
     { "name": "Geico", "slug": "geico", "status": "appointed", "am_best_rating": "A++", "description": "Known for competitive auto rates backed by Berkshire Hathaway's financial strength. Fast quoting and strong digital tools.", "lines": ["auto", "motorcycle", "renters"], "strengths": ["Competitive auto rates", "Fast quoting", "Multi-vehicle discounts", "Financial strength"] },
     { "name": "Grange Insurance", "slug": "grange", "status": "appointed", "am_best_rating": "A" },
     { "name": "Hagerty", "slug": "hagerty", "status": "appointed", "am_best_rating": null },
+    { "name": "Liberty Mutual", "slug": "liberty-mutual", "status": "appointed", "am_best_rating": "A", "description": "Top-tier national personal-lines carrier offering home, auto, umbrella, and renters coverage through independent agents.", "lines": ["home", "auto", "umbrella", "renters"], "strengths": ["National scale", "Independent agent focused", "Broad coverage options", "Bundling discounts"] },
     { "name": "National General", "slug": "national-general", "status": "appointed", "am_best_rating": "A-" },
+    { "name": "Obie", "slug": "obie", "status": "appointed", "am_best_rating": null },
     { "name": "Openly", "slug": "openly", "status": "appointed", "am_best_rating": null },
     { "name": "Palomar", "slug": "palomar", "status": "appointed", "am_best_rating": "A-" },
     { "name": "Progressive", "slug": "progressive", "status": "appointed", "am_best_rating": "A+", "description": "One of the largest auto insurers in the U.S. with competitive rates for a wide range of drivers, including high-risk and young drivers.", "lines": ["auto", "motorcycle", "boat", "renters"], "strengths": ["Competitive auto rates", "Name Your Price tool", "Snapshot usage-based discount", "Broad acceptance"] },
-    { "name": "Safeco", "slug": "safeco", "status": "appointed", "am_best_rating": "A", "description": "A Liberty Mutual company offering solid home and auto packages through independent agents. Known for flexible coverage options and loyalty discounts.", "lines": ["home", "auto", "renters", "umbrella"], "strengths": ["Independent agent focused", "RightTrack safe driving discount", "Flexible deductible options", "Strong bundling discounts"] },
     { "name": "State Auto", "slug": "state-auto", "status": "appointed", "am_best_rating": "A" },
+    { "name": "Steadily", "slug": "steadily", "status": "appointed", "am_best_rating": null },
     { "name": "Travelers", "slug": "travelers", "status": "appointed", "am_best_rating": "A++", "description": "A Fortune 500 company and one of the oldest insurers in the U.S. Broad personal and commercial offerings with strong claims handling.", "lines": ["home", "auto", "umbrella", "flood"], "strengths": ["Financial stability (A++)", "Broad coverage options", "IntelliDrive telematics discount", "Excellent claims service"] },
     { "name": "United Marine", "slug": "united-marine", "status": "appointed", "am_best_rating": null }
   ],

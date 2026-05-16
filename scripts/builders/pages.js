@@ -800,7 +800,7 @@ ${(city.context_sections || []).map(s => {
           return `        <h3 id="${sectionId}">${s.heading}</h3>\n        <p>${s.body}</p>`;
         }).join('\n')}
 ${city.context_closing ? `        <p>${city.context_closing}</p>` : ''}
-${city.context_closing ? '' : `        <p>As an independent agency, we are not tied to one insurance company. We represent top-rated carriers &mdash; including Travelers, Progressive, Safeco, Chubb, The Hartford, and more &mdash; and we match you with the right ones for your specific situation in ${city.county}.</p>`}
+${city.context_closing ? '' : `        <p>As an independent agency, we are not tied to one insurance company. We represent top-rated carriers &mdash; including Travelers, Progressive, Liberty Mutual, Chubb, The Hartford, and more &mdash; and we match you with the right ones for your specific situation in ${city.county}.</p>`}
 
         <h2>Insurance options in ${city.city}</h2>
         ${(() => {
@@ -1201,7 +1201,7 @@ function generateCarriersIndex(carriers, ctx) {
 <html lang="en">
 ${renderHead({
     title: 'Our Insurance Carriers | Top-Rated Companies | The Way Agency',
-    description: 'The Way Agency represents top-rated insurance carriers including Travelers, Progressive, Chubb, Safeco, The Hartford, and more. We shop the market for you.',
+    description: 'The Way Agency represents top-rated insurance carriers including Travelers, Progressive, Chubb, Liberty Mutual, The Hartford, and more. We shop the market for you.',
     canonical: 'https://www.thewayagency.com/carriers/',
     ogTitle: 'Our Insurance Carriers | The Way Agency',
     ogDescription: 'We represent top-rated insurance carriers to find you the best coverage and price.',
