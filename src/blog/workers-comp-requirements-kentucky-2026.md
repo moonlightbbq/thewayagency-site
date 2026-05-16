@@ -102,4 +102,4 @@ Under Kentucky law, the statute of limitations for filing a workers comp claim i
 
 If you are a Kentucky employer without workers comp — or if you have a policy but have not reviewed it recently — now is the time to get it sorted out. The penalties for non-compliance are too severe to gamble with, and the right policy from the right carrier can save you money while keeping you protected.
 
-[Request a workers comp quote](/intake/?line=commercial) and we will review your situation, shop the market, and find you the best fit. No pressure, no jargon — just straight answers from a licensed agent who knows Kentucky's requirements inside and out.
+[Request a workers comp quote](/intake/?product=workers-compensation) and we will review your situation, shop the market, and find you the best fit. No pressure, no jargon — just straight answers from a licensed agent who knows Kentucky's requirements inside and out.

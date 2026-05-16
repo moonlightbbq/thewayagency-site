@@ -122,4 +122,4 @@ It is strongly recommended. Since motorcycles are exempt from Kentucky's PIP req
 
 ---
 
-**Need help reviewing your coverage before the season starts?** [Get a free quote](/intake/) or call us at (502) 413-5335. We'll make sure you're covered for what's ahead.
+**Need help reviewing your coverage before the season starts?** [Get a free quote](/intake/?product=motorcycle) or call us at (502) 413-5335. We'll make sure you're covered for what's ahead.

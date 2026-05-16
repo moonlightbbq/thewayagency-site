@@ -117,4 +117,4 @@ If your roof is near the end of its useful life, replacing it before storm seaso
 
 ---
 
-**Need help reviewing your coverage before the season starts?** [Get a free quote](/intake/) or call us at (502) 413-5335. We'll make sure you're covered for what's ahead.
+**Need help reviewing your coverage before the season starts?** [Get a free quote](/intake/?product=home) or call us at (502) 413-5335. We'll make sure you're covered for what's ahead.

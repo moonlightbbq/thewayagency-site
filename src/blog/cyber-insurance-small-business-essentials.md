@@ -102,4 +102,4 @@ The combination of increasing attack frequency, Kentucky's breach notification r
 
 ## Get a cyber insurance quote
 
-If you are not sure whether your current coverage includes cyber protection, or if you want to see what a standalone policy would cost, we can help you evaluate your exposure and find the right fit. [Request a quote](/intake/?line=commercial) and one of our agents will walk you through your options.
+If you are not sure whether your current coverage includes cyber protection, or if you want to see what a standalone policy would cost, we can help you evaluate your exposure and find the right fit. [Request a quote](/intake/?product=cyber) and one of our agents will walk you through your options.

@@ -193,15 +193,31 @@ function generateTOC(html) {
   return { tocHtml, anchoredBody };
 }
 
+// Extract the marketing product slug from a related_page path so the intake
+// pre-select fires on click. /personal/home.html → "home" → intake aliases
+// to "homeowners". Returns null when related_page is absent/general so the
+// CTA stays bare (no misleading pre-selection on multi-product posts).
+function productSlugFromRelatedPage(relatedPage) {
+  if (!relatedPage || relatedPage === 'null') return null;
+  const m = /\/(?:personal|commercial|life-health)\/([a-z0-9-]+)\.html$/i.exec(relatedPage);
+  return m ? m[1] : null;
+}
+
+function intakeHref(relatedPage) {
+  const slug = productSlugFromRelatedPage(relatedPage);
+  return slug ? `/intake/?product=${slug}` : '/intake/';
+}
+
 // ─── Mid-Post CTA Injection ─────────────────
-function injectMidPostCTA(html, category) {
+function injectMidPostCTA(html, category, relatedPage) {
   const categoryLabels = { personal: 'personal insurance', commercial: 'business insurance', life_health: 'life and health insurance' };
   const label = categoryLabels[category] || 'insurance';
+  const href = intakeHref(relatedPage);
   const ctaHtml = `
       <div style="background:linear-gradient(135deg,var(--navy-dark),var(--navy));border-radius:var(--border-radius-lg);padding:var(--space-2xl);margin:var(--space-2xl) 0;text-align:center;">
         <p style="color:var(--white);font-size:var(--text-xl);font-weight:600;margin-bottom:var(--space-sm);">Need help with ${label}?</p>
         <p style="color:rgba(255,255,255,0.75);font-size:var(--text-sm);font-weight:300;margin-bottom:var(--space-lg);">Get a free quote from an independent agent. We shop top-rated carriers for you.</p>
-        <a href="/intake/" style="display:inline-block;padding:10px 24px;background:var(--cyan);color:var(--navy-dark);border-radius:var(--border-radius);font-size:var(--text-sm);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;text-decoration:none;">Get a Free Quote</a>
+        <a href="${href}" style="display:inline-block;padding:10px 24px;background:var(--cyan);color:var(--navy-dark);border-radius:var(--border-radius);font-size:var(--text-sm);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;text-decoration:none;">Get a Free Quote</a>
       </div>`;
 
   // Insert after the 3rd H2 if possible
@@ -259,7 +275,7 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   const { tocHtml, anchoredBody } = generateTOC(bodyHtml);
 
   // Mid-post CTA
-  const enhancedBody = injectMidPostCTA(anchoredBody, meta.category || '');
+  const enhancedBody = injectMidPostCTA(anchoredBody, meta.category || '', meta.related_page);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -387,7 +403,7 @@ ${meta.related_page ? `
         <h2 class="cta-banner__title">${meta.cta_title || 'Have questions about your coverage?'}</h2>
         <p class="cta-banner__text">${meta.cta_text || "We're here to help. Get a quote or request a coverage review."}</p>
         <div class="cta-banner__actions">
-          <a href="/intake/" class="btn btn--primary btn--lg">Get a Quote</a>
+          <a href="${intakeHref(meta.related_page)}" class="btn btn--primary btn--lg">Get a Quote</a>
           <a href="/contact.html" class="btn btn--outline-white btn--lg">Contact Us</a>
         </div>
       </div>

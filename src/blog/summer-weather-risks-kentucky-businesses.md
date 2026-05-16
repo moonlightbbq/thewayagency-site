@@ -122,4 +122,4 @@ Straightforward claims with clear documentation typically settle within 30 to 60
 
 ---
 
-**Need help reviewing your coverage before the season starts?** [Get a free quote](/intake/) or call us at (502) 413-5335. We'll make sure you're covered for what's ahead.
+**Need help reviewing your coverage before the season starts?** [Get a free quote](/intake/?product=commercial-property) or call us at (502) 413-5335. We'll make sure you're covered for what's ahead.

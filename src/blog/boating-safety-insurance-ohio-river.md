@@ -148,4 +148,4 @@ Ensure everyone's safety first, then render aid to anyone in distress. Contact t
 
 ---
 
-**Need help reviewing your coverage before the season starts?** [Get a free quote](/intake/) or call us at (502) 413-5335. We'll make sure you're covered for what's ahead.
+**Need help reviewing your coverage before the season starts?** [Get a free quote](/intake/?product=boat) or call us at (502) 413-5335. We'll make sure you're covered for what's ahead.
