@@ -840,6 +840,152 @@ ${renderScripts()}
 </html>`;
 }
 
+// ─── County Landing Page ────────────────────────
+// Sibling of generateCityPage. Same structure but framed at the county level:
+// areaServed becomes AdministrativeArea, framing references county_name instead
+// of city.city, internal links target the parent_city_slug sub-anchors.
+
+function generateCountyPage(county, ctx) {
+  const { office, renderNav, renderFooter, renderScripts } = ctx;
+  const countyName = county.county_name;
+  const stateAbbr = county.state;
+  const stateFull = county.state_full || (stateAbbr === 'KY' ? 'Kentucky' : stateAbbr === 'IN' ? 'Indiana' : 'Tennessee');
+
+  const countySchema = `<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "InsuranceAgency",
+    "name": "The Way Agency",
+    "url": "https://www.thewayagency.com",
+    "telephone": "${office.phone}",
+    "address": {"@type": "PostalAddress", "addressLocality": "${office.city}", "addressRegion": "${office.state}", "postalCode": "${office.zip}", "addressCountry": "US"},
+    "areaServed": {"@type": "AdministrativeArea", "name": "${escJson(countyName)}, ${stateAbbr}", "containedIn": {"@type": "State", "name": "${stateFull}"}}
+  }
+  </script>`;
+
+  const faqs = Array.isArray(county.faqs) ? county.faqs : [];
+  const faqAccordion = faqs.length > 0 ? `
+        <section class="faq-section" style="margin-top:var(--space-2xl);">
+          <h2>Frequently asked questions about insurance in ${countyName}</h2>
+${faqs.map(f => `          <div class="faq-item">
+            <button class="faq-item__question" aria-expanded="false">
+              <h3 style="margin:0;font-size:var(--text-lg);pointer-events:none;">${f.question}</h3>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;transition:transform 0.2s;pointer-events:none;"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="faq-item__answer">
+              <div class="faq-item__answer-inner">
+                <p>${f.answer}</p>
+              </div>
+            </div>
+          </div>`).join('\n')}
+        </section>` : '';
+
+  const faqSchema = faqs.length > 0 ? `<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+${faqs.map(f => `      {
+        "@type": "Question",
+        "name": ${JSON.stringify(f.question)},
+        "acceptedAnswer": { "@type": "Answer", "text": ${JSON.stringify(f.answer)} }
+      }`).join(',\n')}
+    ]
+  }
+  </script>` : '';
+
+  const defaultTitle = `Insurance in ${countyName}, ${stateAbbr} | The Way Agency`;
+  const defaultDescription = `Insurance agency serving ${countyName}, ${stateAbbr}. Home, auto, commercial, farm, and life insurance from top-rated carriers.`;
+
+  const countyFormHtml = renderInlineForm(county.slug, { county: countyName, state: stateAbbr })
+    .replace('%%FORM_HEADING%%', `Get an insurance quote in ${countyName}`)
+    .replace('%%FORM_SUBTEXT%%', 'Tell us your name and email and a licensed agent will follow up with options.');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+${renderHead({
+    title: county.title || defaultTitle,
+    description: county.meta_description || defaultDescription,
+    canonical: `https://www.thewayagency.com/insurance/${county.slug}.html`,
+    ogTitle: county.title || defaultTitle,
+    ogDescription: county.meta_description || defaultDescription,
+    ogUrl: `https://www.thewayagency.com/insurance/${county.slug}.html`,
+    schema: countySchema + (faqSchema ? '\n  ' + faqSchema : ''),
+  })}
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+${renderNav()}
+
+${renderHero({
+    eyebrow: `Independent agency · Serving ${countyName} since 1998`,
+    title: `Insurance in <span class="hero__title-accent">${countyName}</span>, ${stateAbbr}`,
+    subtitle: `Top-rated carriers, right-sized coverage, local service. Personal, commercial, farm, and life insurance for ${countyName} families and businesses.`,
+    buttons: [
+      { href: `/intake/?county=${encodeURIComponent(countyName)}&state=${encodeURIComponent(stateAbbr)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
+      { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
+      { href: 'sms:+15024135335', text: 'Or Text', className: 'btn btn--outline-white btn--lg' },
+    ],
+    minHeight: '38vh',
+    variant: 'compact',
+  })}
+
+  <main id="main">
+    <div class="trust-bar"><div class="trust-bar__inner">
+      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Since 1998</div>
+      <div class="trust-bar__divider"></div>
+      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Top-Rated Carriers</div>
+      <div class="trust-bar__divider"></div>
+      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Licensed in ${stateAbbr}</div>
+    </div></div>
+
+    <section class="section">
+      <div class="container container--narrow">
+        <h2>Why ${countyName} families and businesses choose The Way Agency</h2>
+${county.context.split(/\n\n+/).map(p => `        <p>${p.trim()}</p>`).join('\n')}
+${(county.context_sections || []).map(s => {
+          const sectionId = (s.slug || s.heading.split(/\s+/)[0]).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+          return `        <h3 id="${sectionId}">${s.heading}</h3>\n        <p>${s.body}</p>`;
+        }).join('\n')}
+${county.context_closing ? `        <p>${county.context_closing}</p>` : ''}
+
+        <h2>Insurance options in ${countyName}</h2>
+        ${(() => {
+          const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+          return `<div class="grid grid--3" style="margin:var(--space-xl) 0;">
+          <a href="/personal/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Personal Insurance</h3><p class="card__text">Home, auto, umbrella, renters, flood, and specialty coverage.</p><span class="card__link">View options ${arrowSvg}</span></a>
+          <a href="/commercial/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Commercial Insurance</h3><p class="card__text">Liability, property, auto, workers comp, cyber, bonds.</p><span class="card__link">View options ${arrowSvg}</span></a>
+          <a href="/life-health/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Life &amp; Health</h3><p class="card__text">Medicare, health, life, disability, and employee benefits.</p><span class="card__link">View options ${arrowSvg}</span></a>
+        </div>`;
+        })()}
+
+${countyFormHtml}
+${faqAccordion}
+
+        <h2>How it works</h2>
+        <p><strong>1. Tell us what you need.</strong> Request a quote online or call ${office.phone}. We just need basic info to get started.</p>
+        <p><strong>2. We find the right carriers.</strong> We compare options across top-rated carriers to find the best coverage and price for your situation in ${countyName}.</p>
+        <p><strong>3. You choose with confidence.</strong> We present clear recommendations and help you understand exactly what you're buying. No pressure, no jargon.</p>
+        <p style="color:var(--slate);font-size:var(--text-sm);">We aim to respond same-day during business hours (Mon–Fri, 9:00 AM – 5:00 PM).</p>
+      </div>
+    </section>
+
+${renderCTA({
+      title: `Ready to get started in ${countyName}?`,
+      text: "Request a quote or call us directly. We're here to help.",
+      buttons: [
+        { href: `/intake/?county=${encodeURIComponent(countyName)}&state=${encodeURIComponent(stateAbbr)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
+        { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
+      ],
+      contactMethods: true,
+    }, office)}
+  </main>
+
+${renderFooter()}
+${renderScripts()}
+</body>
+</html>`;
+}
+
 // ─── Industry Landing Page ──────────────────────
 
 function generateIndustryPage(ind, ctx) {
@@ -1133,6 +1279,7 @@ module.exports = {
   generateHubPage,
   generateProductPage,
   generateCityPage,
+  generateCountyPage,
   generateIndustryPage,
   generateCarrierPage,
   generateCarriersIndex,

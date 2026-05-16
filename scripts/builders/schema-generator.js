@@ -57,6 +57,11 @@ function createSchemaInjector({ agency, office, reviews, testimonials, blocklist
         }
         break;
 
+      case 'county':
+        schemas.push(_buildLocalBusinessForCounty(agency, office, reviews, context.county));
+        schemas.push(_buildInsuranceAgencyForCounty(agency, office, context.county));
+        break;
+
       case 'blog':
         schemas.push(_buildArticle(context, agency));
         break;
@@ -173,6 +178,59 @@ function _buildInsuranceAgency(agency, office, city = null) {
       '@type': 'State',
       name: 'Kentucky',
     },
+  };
+}
+
+// Build LocalBusiness for a county hub. areaServed is AdministrativeArea
+// (the county), not City. Address still uses the agency's SAB locality (Owensboro).
+function _buildLocalBusinessForCounty(agency, office, reviews, county) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': ['LocalBusiness', 'InsuranceAgency'],
+    name: county ? `The Way Agency — ${county.county_name}, ${county.state}` : (agency.dba || 'The Way Agency'),
+    url: county ? `${SITE_URL}/insurance/${county.slug}.html` : SITE_URL,
+    telephone: office.phone,
+    email: office.email,
+    address: _buildAddress(office),
+    priceRange: '$$',
+  };
+  if (office.latitude && office.longitude) {
+    schema.geo = { '@type': 'GeoCoordinates', latitude: office.latitude, longitude: office.longitude };
+  }
+  if (office.hours) {
+    schema.openingHoursSpecification = _buildHours(office.hours);
+  }
+  if (reviews?.rating && reviews?.count) {
+    schema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: reviews.rating,
+      reviewCount: String(reviews.count).replace(/\+$/, ''),
+      bestRating: '5',
+      worstRating: '1',
+    };
+  }
+  if (county) {
+    schema.areaServed = {
+      '@type': 'AdministrativeArea',
+      name: `${county.county_name}, ${county.state}`,
+    };
+  }
+  return schema;
+}
+
+// Build InsuranceAgency for a county hub. areaServed is AdministrativeArea.
+function _buildInsuranceAgencyForCounty(agency, office, county) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'InsuranceAgency',
+    name: agency.dba || 'The Way Agency',
+    url: SITE_URL,
+    telephone: office.phone,
+    address: _buildAddress(office),
+    areaServed: county ? {
+      '@type': 'AdministrativeArea',
+      name: `${county.county_name}, ${county.state}`,
+    } : { '@type': 'State', name: 'Kentucky' },
   };
 }
 
@@ -333,6 +391,12 @@ function _buildBreadcrumbs(pageType, context) {
       items.push({ name: 'Insurance', url: `${SITE_URL}/insurance/` });
       if (context.city?.city) {
         items.push({ name: `${context.city.city}, ${context.city.state}`, url: `${SITE_URL}/insurance/${context.city.slug}.html` });
+      }
+      break;
+    case 'county':
+      items.push({ name: 'Insurance', url: `${SITE_URL}/insurance/` });
+      if (context.county?.county_name) {
+        items.push({ name: `${context.county.county_name}, ${context.county.state}`, url: `${SITE_URL}/insurance/${context.county.slug}.html` });
       }
       break;
     case 'blog':

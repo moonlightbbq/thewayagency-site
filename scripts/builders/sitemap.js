@@ -58,6 +58,11 @@ function generateSitemap(BUILD, ctx) {
     sitemapUrls.push({ url: `/insurance/${city.slug}.html`, priority: '0.8', freq: 'monthly' });
   }
 
+  // Add county hub pages
+  for (const county of (landingData.counties || [])) {
+    sitemapUrls.push({ url: `/insurance/${county.slug}.html`, priority: '0.8', freq: 'monthly' });
+  }
+
   // City+product bridge pages are intentionally omitted from the sitemap.
   // They render with <meta name="robots" content="noindex, follow"> and serve
   // as ad/landing destinations only — keeps Google's crawl budget on hub pages.

@@ -29,7 +29,7 @@ function loadJson(filepath) {
 const { createVersionInfo, createInjectVersion } = require('./builders/seo');
 const assets = require('./builders/assets');
 const { copyBlogPages, runBlogGenerator } = require('./builders/blog-helpers');
-const { hubConfig, generateHubPage, generateProductPage, generateCityPage, generateIndustryPage, generateCarrierPage, generateCarriersIndex, setCriticalCss } = require('./builders/pages');
+const { hubConfig, generateHubPage, generateProductPage, generateCityPage, generateCountyPage, generateIndustryPage, generateCarrierPage, generateCarriersIndex, setCriticalCss } = require('./builders/pages');
 const { generateSitemap } = require('./builders/sitemap');
 const { createSchemaInjector } = require('./builders/schema-generator');
 
@@ -175,6 +175,16 @@ for (const city of landingData.cities) {
   geoCount++;
 }
 console.log(`  ✓ Generated ${geoCount} geo-targeted city pages`);
+
+// 6b-bis. Generate county-level hub pages
+let countyCount = 0;
+for (const county of (landingData.counties || [])) {
+  let countyHtml = generateCountyPage(county, ctx);
+  countyHtml = injectSchema(injectVersion(countyHtml), 'county', { county });
+  fs.writeFileSync(path.join(BUILD, 'insurance', `${county.slug}.html`), countyHtml);
+  countyCount++;
+}
+if (countyCount > 0) console.log(`  ✓ Generated ${countyCount} county hub pages`);
 
 // 6c. Generate industry landing pages
 assets.ensureDir(path.join(BUILD, 'industries'));
