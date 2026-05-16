@@ -1,5 +1,12 @@
 # The Way Agency — robots.txt
+
+# Content Signals (https://contentsignal.org) declare per-use-case permissions:
+#   search:   indexing for traditional search results (Google, Bing, etc.) — yes
+#   ai-input: real-time grounding by AI engines (ChatGPT, Claude, Perplexity, Gemini,
+#             Google AI Overviews) for answering user questions — yes
+#   ai-train: incorporating our content into AI model training datasets — no
 User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=no
 Allow: /
 
 # Sitemap
