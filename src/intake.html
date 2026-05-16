@@ -1179,6 +1179,9 @@ const PRODUCTS = [
   { id: 'boat',            icon: '\u26F5\uFE0F', label: 'Boat',              line: 'personal' },
   { id: 'rv',              icon: '\u{1F68C}', label: 'RV',                   line: 'personal' },
   { id: 'earthquake',      icon: '\u{1F30D}', label: 'Earthquake',           line: 'personal' },
+  { id: 'health',          icon: '\u{1FA7A}', label: 'Health',               line: 'personal' },
+  { id: 'pet',             icon: '\u{1F43E}', label: 'Pet',                  line: 'personal' },
+  { id: 'disability',      icon: '♿',    label: 'Disability',           line: 'personal' },
   // Commercial (top 8 shown in main grid when ?line=commercial)
   { id: 'bop',             icon: '\u{1F3EA}', label: 'Business Owners Policy', line: 'commercial' },
   { id: 'cgl',             icon: '\u{1F4BC}', label: 'General Liability',    line: 'commercial' },
@@ -1191,11 +1194,46 @@ const PRODUCTS = [
   // Less common commercial (shown in "other" dropdown)
   { id: 'farm_ranch',      icon: '\u{1F33E}', label: 'Farm / Ranch',         line: 'commercial' },
   { id: 'dwelling_fire',   icon: '\u{1F525}', label: 'Dwelling Fire',        line: 'commercial' },
+  { id: 'commercial_property', icon: '\u{1F3EC}', label: 'Commercial Property', line: 'commercial' },
+  { id: 'special_event',   icon: '\u{1F389}', label: 'Special Event',        line: 'commercial' },
   // Catch-all
   { id: 'other',           icon: '\u{1F4DD}', label: 'Other',                line: 'other' },
 ];
 
 const MAIN_GRID_SIZE = 8;
+
+// Marketing-page product slugs (data/products.json) don't all align with the
+// intake tile IDs above — e.g. /personal/home.html links to ?product=home but
+// the intake tile is 'homeowners', and the life-health pages use granular
+// slugs (term-life, medicare, dental-vision) that map to broader intake
+// categories. PRODUCT_ALIASES translates incoming slugs to canonical intake
+// IDs so every product-specific CTA across the site pre-selects a real tile.
+const PRODUCT_ALIASES = {
+  // Personal
+  'home': 'homeowners',
+  'classic-car': 'auto',
+  // Commercial (hyphen → underscore + naming alignment)
+  'builders-risk': 'builders_risk',
+  'commercial-auto': 'commercial_auto',
+  'commercial-property': 'commercial_property',
+  'workers-compensation': 'workers_comp',
+  'general-liability': 'cgl',
+  'professional-liability': 'eo',
+  'special-event': 'special_event',
+  // Life (intake bundles all life sub-types under a single tile)
+  'term-life': 'life',
+  'whole-life': 'life',
+  'final-expense': 'life',
+  'annuities': 'life',
+  // Health (intake bundles all health sub-types under a single tile)
+  'medicare': 'health',
+  'medicaid': 'health',
+  'supplemental-health': 'health',
+  'group-health': 'health',
+  'individual-health': 'health',
+  'family-health': 'health',
+  'dental-vision': 'health',
+};
 
 function getProductLine(pid) {
   const p = PRODUCTS.find(x => x.id === pid);
@@ -1428,8 +1466,11 @@ function syncBundlePills() {
 // ── Pre-select product from URL parameter (e.g. /intake/?product=homeowners) ─
 (function preSelectProduct() {
   const params = new URLSearchParams(window.location.search);
-  const pid = params.get('product');
+  let pid = params.get('product');
   if (!pid) return;
+  // Translate marketing-page slugs (home, term-life, medicare, ...) to the
+  // canonical intake tile IDs. Unmapped slugs pass through unchanged.
+  pid = PRODUCT_ALIASES[pid] || pid;
 
   // Reorder grid so the selected product's line appears first
   const line = getProductLine(pid);
