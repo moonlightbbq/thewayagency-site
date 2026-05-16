@@ -13,7 +13,7 @@ tags: flood insurance, homeowners insurance, coverage gaps, NFIP, kentucky
 
 One of the most common and costly misunderstandings in insurance is the belief that homeowners insurance covers flooding. It does not. Not in Kentucky, not in any state, and not from any carrier.
 
-Standard [homeowners insurance](/personal/home.html) explicitly excludes flood damage. This exclusion has been in place for decades, and it applies to every homeowners policy on the market. If your home floods, whether from a river, a storm drain, or three inches of rain that pools in your yard and seeps through the foundation, your homeowners insurance will not pay the claim.
+Standard [homeowners insurance](/personal/home.html) explicitly excludes flood damage. This exclusion has been in place for decades, and it applies to every standard homeowners policy on the market. If your home floods, whether from a river, a storm drain, or three inches of rain that pools in your yard and seeps through the foundation, your homeowners insurance will not pay the claim.
 
 Understanding why this exclusion exists and what to do about it can save you from one of the most financially devastating surprises a homeowner can face.
 
@@ -52,7 +52,7 @@ Flood insurance is available through the NFIP and from a growing number of priva
 
 ## Do you need flood insurance if you are not in a flood zone?
 
-This is where the statistics matter. According to FEMA, more than 20% of all flood insurance claims come from properties outside of high-risk flood zones. One in four flood claims comes from a moderate- or low-risk area.
+This is where the statistics matter. According to [FEMA](https://www.fema.gov/blog/floods-can-happen-anywhere-be-prepared-flood-insurance), nearly one in three NFIP flood insurance claims over the 2014–2024 period — about 29% — came from properties located outside high-risk flood zones.
 
 Floods do not respect map boundaries. Here is why properties outside flood zones still flood:
 

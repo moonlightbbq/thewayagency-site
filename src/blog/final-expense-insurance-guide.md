@@ -11,7 +11,7 @@ related_page: /life-health/final-expense.html
 tags: final expense, burial insurance, funeral insurance, life insurance, kentucky
 ---
 
-Nobody likes talking about end-of-life costs. But ignoring them does not make them go away. The average funeral in Kentucky costs between $7,000 and $12,000, and that does not include a burial plot, headstone, or outstanding medical bills. When those costs hit a family all at once, the financial strain can be significant — especially if the person who passed was the primary income earner or on a fixed income.
+Nobody likes talking about end-of-life costs. But ignoring them does not make them go away. Per the National Funeral Directors Association's 2024 General Price List Study, the U.S. median cost of a funeral with viewing and burial is about $7,848 and a funeral with cremation about $6,971 — and once you add a burial plot, headstone, or outstanding medical bills, Kentucky families can easily land in the $7,000 to $12,000 range. When those costs hit a family all at once, the financial strain can be significant — especially if the person who passed was the primary income earner or on a fixed income.
 
 Final expense insurance exists to handle exactly this situation. It is a straightforward product with a specific purpose: paying for funeral and burial costs so your family does not have to.
 
@@ -112,7 +112,7 @@ Yes. Simplified issue policies require health questions but no medical exam, and
 
 ### FAQ: How much final expense insurance do I need?
 
-The average funeral in Kentucky costs $7,000 to $12,000. Add burial plot, headstone, and any outstanding bills, and $10,000 to $15,000 is a reasonable target for most families. Some people choose higher amounts to leave a small amount to their family above funeral costs.
+Per the NFDA 2024 General Price List Study, the U.S. median for a funeral with viewing and burial is around $7,848. Once you add a burial plot, headstone, and any outstanding bills, Kentucky totals typically land in the $7,000 to $12,000 range, and $10,000 to $15,000 is a reasonable target for most families. Some people choose higher amounts to leave a small amount to their family above funeral costs.
 
 ### FAQ: Are final expense insurance premiums tax-deductible?
 

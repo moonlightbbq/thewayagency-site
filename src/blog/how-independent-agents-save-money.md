@@ -75,7 +75,7 @@ Because independent agents work with many carriers and many types of coverage, w
 
 ## Common myths about independent agents
 
-**"Independent agents cost more because they charge fees."** Most independent agents, including The Way Agency, are compensated by the insurance carrier through commissions, not by charging you fees. You pay the same premium whether you buy directly from a carrier or through an independent agent.
+**"Independent agents cost more because they charge fees."** Most independent agents, including The Way Agency, are compensated by the insurance carrier through commissions, not by charging you fees. For the carriers we represent, the premium is the same whether you buy directly from the carrier or through us — rates are filed with the state and don't vary by distribution channel.
 
 **"Big companies have better claims service."** Claims service varies by carrier, not by distribution channel. Some of the carriers we represent have excellent claims operations that rival or exceed the big-name companies. And when something goes wrong with a claim, you have an advocate in your corner.
 
@@ -103,7 +103,7 @@ We represent top-rated carriers, which means we can find the right fit whether y
 
 ### FAQ: Do independent agents charge fees?
 
-Most independent agents, including The Way Agency, do not charge fees to their clients. We are compensated by the insurance carriers through commissions. You pay the same premium whether you buy through us or directly from the carrier. Our service, advice, and claims advocacy come at no additional cost.
+Most independent agents, including The Way Agency, do not charge fees to their clients. We are compensated by the insurance carriers through commissions. For the carriers we represent, the premium is the same whether you buy through us or directly from the carrier — rates are filed with the state. Our service, advice, and claims advocacy come at no additional cost.
 
 ### FAQ: How many insurance companies do independent agents represent?
 

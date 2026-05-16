@@ -201,11 +201,11 @@
       "Mold or moisture damage that could have been prevented by the homeowner",
       "Basement improvements under NFIP  -  finished walls, flooring, and contents in basements have very limited coverage"
     ],
-    "cost_narrative": "Flood insurance typically costs $500–$2,500 per year depending on your flood zone, elevation, building type, and coverage amount. Properties in high-risk Zone A or AE pay more than those in moderate-risk Zone X. The NFIP recently implemented Risk Rating 2.0, which bases premiums on a property's individual flood risk rather than just its zone designation  -  some homes saw increases while others saw decreases. Private flood carriers now offer competitive alternatives to the NFIP with broader coverage, higher limits, and sometimes lower premiums. We compare NFIP and private flood options for every client to find the best combination of coverage and price. Important note: NFIP policies have a 30-day waiting period before coverage takes effect, so do not wait until a storm is forecast.",
+    "cost_narrative": "Flood insurance typically costs $500–$2,500 per year depending on your flood zone, elevation, building type, and coverage amount. Properties in high-risk Zone A or AE pay more than those in moderate-risk Zone X. The NFIP implemented Risk Rating 2.0 in October 2021, which bases premiums on a property's individual flood risk rather than just its zone designation  -  some homes saw increases while others saw decreases. Private flood carriers now offer competitive alternatives to the NFIP with broader coverage, higher limits, and sometimes lower premiums. We compare NFIP and private flood options for every client to find the best combination of coverage and price. Important note: NFIP policies have a 30-day waiting period before coverage takes effect, so do not wait until a storm is forecast.",
     "faqs": [
       {
         "question": "My home is not in a flood zone  -  do I still need flood insurance?",
-        "answer": "FEMA flood maps show risk zones, but they are not guarantees. About 25% of all flood claims are filed by properties in low-to-moderate risk zones. If your home is near any waterway, in a low-lying area, or downstream from development that has changed drainage patterns, you are at risk. Rapid development and changes to stormwater management can increase flood risk for homes that were previously considered safe. Preferred Risk Policies for low-risk zones can cost as little as $300–$500 per year through the NFIP."
+        "answer": "FEMA flood maps show risk zones, but they are not guarantees. Per FEMA, nearly one in three NFIP flood claims over 2014–2024 (about 29%) came from properties outside high-risk flood zones. If your home is near any waterway, in a low-lying area, or downstream from development that has changed drainage patterns, you are at risk. Rapid development and changes to stormwater management can increase flood risk for homes that were previously considered safe. Preferred Risk Policies for low-risk zones can cost as little as $300–$500 per year through the NFIP."
       },
       {
         "question": "What is the difference between NFIP and private flood insurance?",
@@ -221,7 +221,7 @@
       },
       {
         "question": "How does NFIP Risk Rating 2.0 affect my premium?",
-        "answer": "Risk Rating 2.0, implemented in recent years, prices individual properties based on specific flood risk factors  -  distance to a water source, flood frequency, building characteristics, and replacement cost  -  rather than relying solely on FEMA flood zone maps. Some homeowners saw modest premium increases while others saw decreases. Existing policyholders are subject to annual premium increases capped at 18% per year until they reach their full-risk rate. We can pull your property's specific Risk Rating 2.0 premium to see where you stand."
+        "answer": "Risk Rating 2.0, implemented by FEMA in October 2021, prices individual properties based on specific flood risk factors  -  distance to a water source, flood frequency, building characteristics, and replacement cost  -  rather than relying solely on FEMA flood zone maps. Some homeowners saw modest premium increases while others saw decreases. Existing policyholders are subject to annual premium increases capped at 18% per year until they reach their full-risk rate. We can pull your property's specific Risk Rating 2.0 premium to see where you stand."
       }
     ]
   },

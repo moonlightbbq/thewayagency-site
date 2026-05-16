@@ -1,7 +1,7 @@
 ---
 title: "Bundling Home and Auto Insurance: How Much Can You Really Save?"
 slug: bundling-home-auto-insurance-savings
-description: "Bundling home and auto insurance typically saves 15-25% on premiums. Learn how multi-policy discounts work, when bundling makes sense, and when it doesn't."
+description: "Carriers typically advertise bundling discounts of 15-25% on home and auto premiums, though Insurance Information Institute data suggests actual savings often land closer to 14-18%. Learn how multi-policy discounts work, when bundling makes sense, and when it doesn't."
 author: Audrey Lillpop
 author_slug: audrey-lillpop
 author_title: Licensed Agent
@@ -20,7 +20,7 @@ But bundling is not always the right move. Sometimes it saves you hundreds of do
 
 When an insurance carrier talks about a "bundle," they are really talking about a multi-policy discount. You agree to carry more than one type of coverage with the same company, and in return, they reduce your premium on one or both policies. It is that straightforward.
 
-The typical savings range is 15 to 25 percent, though the exact number depends on the carrier, the policies involved, and where you live. Some companies apply the discount to both your home and auto premiums. Others apply it to just one. A few offer a flat dollar amount off rather than a percentage. Either way, for most households, we are talking about $300 to $700 in annual savings — sometimes more if you are insuring multiple vehicles.
+Carriers typically advertise multi-policy discounts of 15 to 25 percent. Insurance Information Institute data suggests actual savings tend to land a bit lower — around 14 percent when you switch both policies to a new carrier and around 18 percent when you add a second policy to an existing carrier — because some of the loyalty and claims-free discounts on your stand-alone policies may not all carry over. The exact number depends on the carrier, the policies involved, and where you live. Some companies apply the discount to both your home and auto premiums. Others apply it to just one. A few offer a flat dollar amount off rather than a percentage. Either way, for most households, we are talking about $300 to $700 in annual savings — sometimes more if you are insuring multiple vehicles.
 
 Why do carriers offer this discount at all? Because they want your business across multiple lines. A customer with two policies is less likely to shop around than a customer with one. It costs the company less to retain you, so they pass part of that savings along. It is a win for both sides, as long as the underlying coverage and pricing are competitive.
 

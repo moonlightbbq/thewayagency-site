@@ -65,7 +65,7 @@ There are two main ways commercial property policies pay out:
 
 ## How much does commercial property insurance cost?
 
-Costs vary widely based on your business type, location, building age and construction, property value, and claims history. In Kentucky, small businesses typically pay between $500 and $3,000 per year for commercial property coverage, though businesses with high-value assets or higher-risk operations can pay significantly more.
+Costs vary widely based on your business type, location, building age and construction, property value, and claims history. As a rough ballpark for Kentucky, small businesses with modest property values often land somewhere between $500 and $3,000 per year for commercial property coverage — but businesses with high-value assets, frame construction, higher-risk operations, or prior claims can pay significantly more. The only way to get an accurate number is to quote your specific property.
 
 Factors that affect your premium:
 

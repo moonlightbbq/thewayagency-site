@@ -20,7 +20,7 @@ This is a 2026 comparison written for Bullitt County families weighing the choic
 
 ## What captive actually means
 
-Kentucky Farm Bureau is a captive insurance company. That means KFB agents sell KFB policies, and only KFB policies. Kentucky Farm Bureau has served the Bluegrass since 1943 and insures more than 474,000 Kentucky families and businesses. It is rated A- by A.M. Best. The Mt Washington office on the [Bullitt County Chamber listing](https://members.bullittchamber.org/list/member/kentucky-farm-bureau-insurance-mt-washington-616) has multiple named agents and a physical office in town. None of that is in dispute.
+Kentucky Farm Bureau is a captive insurance company. That means KFB agents sell KFB policies, and only KFB policies. Kentucky Farm Bureau has served the Bluegrass since 1943 and insures more than 474,000 Kentucky families and businesses. Per AM Best's June 12, 2025 rating action, KFB Mutual carries an A- (Excellent) Financial Strength Rating with a stable outlook. The Mt Washington office on the [Bullitt County Chamber listing](https://members.bullittchamber.org/list/member/kentucky-farm-bureau-insurance-mt-washington-616) has multiple named agents and a physical office in town. None of that is in dispute.
 
 The structural fact is that a captive agent's job, by definition, is to fit your risk to their one carrier's appetite. If KFB has a strong rate on a 2020 home in Mt Washington with no claims, the captive model works very well for that family. If KFB's underwriting box does not match your situation, a captive agent has no other carrier to move you to.
 

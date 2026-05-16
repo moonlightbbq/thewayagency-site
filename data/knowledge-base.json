@@ -1137,7 +1137,7 @@
     {
       "id": "independent-agent-cost",
       "question": "Does it cost more to use an independent insurance agent?",
-      "answer": "No. Insurance rates are set by the carriers, not the agent. You pay the same premium whether you buy direct from a carrier or through an independent agent like The Way Agency. The difference is that we shop multiple carriers and help you understand your coverage at no extra cost to you.",
+      "answer": "No. Insurance rates are set by the carriers and filed with the state. For the carriers we represent, you pay the same premium whether you buy direct from the carrier or through The Way Agency. The difference is that we shop multiple carriers and help you understand your coverage at no extra cost to you.",
       "category": "general",
       "product": null,
       "tags": ["independent-agent", "cost", "comparison"],
@@ -1167,7 +1167,7 @@
     {
       "id": "response-time",
       "question": "How quickly will I hear back after requesting a quote?",
-      "answer": "Our goal is same-day response during business hours (Monday through Friday, 8:30 AM to 5:00 PM). Most quote requests receive a response within a few hours. We prefer to reach out by phone first, but will text or email if that is what you prefer.",
+      "answer": "Our goal is same-day response during business hours (Monday through Friday, 9:00 AM to 5:00 PM). Most quote requests receive a response within a few hours. We prefer to reach out by phone first, but will text or email if that is what you prefer.",
       "category": "general",
       "product": null,
       "tags": ["response-time", "quote", "contact"],
@@ -1347,7 +1347,7 @@
     {
       "id": "general-agent-cost",
       "question": "Does it cost more to use an independent insurance agent?",
-      "answer": "No. Independent agents are paid by the insurance carriers through commissions, not by you. You pay the same premium whether you buy directly from a carrier or through an independent agent. The difference is that we do the shopping, comparison, and advocacy for you at no additional cost.",
+      "answer": "No. Independent agents are paid by the insurance carriers through commissions, not by you. For the carriers an agent represents, the premium is the same whether you buy directly from the carrier or through an agent — rates are filed with the state. The difference is that we do the shopping, comparison, and advocacy for you at no additional cost.",
       "category": "general",
       "product": null,
       "tags": ["independent-agent", "cost", "commissions"],

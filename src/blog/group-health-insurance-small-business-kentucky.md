@@ -73,7 +73,7 @@ Decide how much you can afford to contribute per employee per month. Most small 
 
 An independent agent shops [group health plans](/life-health/group-health.html) across multiple carriers on your behalf. We gather basic information about your employees (ages, tobacco use, zip codes) and request quotes from every available carrier. You see options across different plan tiers and carriers in one comparison.
 
-There is no extra cost for using an agent. Agent commissions are built into the premium, so the rate is the same whether you go direct to the carrier or work through us.
+There is no extra cost for using an agent. For the group-health carriers we represent, agent commissions are built into the premium and the rate is the same whether you go direct to the carrier or work through us.
 
 ### Step 3: Choose a plan and enroll
 

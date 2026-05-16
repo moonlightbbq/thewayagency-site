@@ -60,7 +60,7 @@ Even if your business is small, if you keep customer names alongside any sensiti
 
 ## What cyber insurance costs for small businesses
 
-This is where most business owners are surprised. For a small business with under $1 million in revenue and basic security measures in place, cyber insurance typically costs between $500 and $2,000 per year. That is for $1 million in coverage, which is a common starting point.
+This is where most business owners are surprised. As a rough ballpark, a small business with under $1 million in revenue and basic security measures in place can expect cyber insurance to run somewhere between $500 and $2,000 per year for $1 million in coverage — but actual premiums vary heavily by industry, the volume and type of data you handle, prior breach history, and the security controls you have in place. Healthcare, financial services, and businesses storing large customer databases tend to be at the high end of that range or above.
 
 Several factors influence your premium:
 

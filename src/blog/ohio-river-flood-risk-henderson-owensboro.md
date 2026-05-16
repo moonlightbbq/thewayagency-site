@@ -72,7 +72,7 @@ If your home's replacement cost exceeds $250,000, the NFIP maximum may not be en
 
 Flood insurance costs vary significantly based on your flood zone, your home's elevation relative to the base flood elevation, the age of your home, and the coverage amount.
 
-Under NFIP's Risk Rating 2.0 system (implemented in recent years), rates are more individualized. A home in a high-risk zone near the Ohio River in Henderson might pay $1,500 to $3,000 or more per year. A home in a moderate-risk zone in Owensboro might pay $400 to $900 per year.
+Under NFIP's Risk Rating 2.0 system (implemented in October 2021), rates are more individualized. A home in a high-risk zone near the Ohio River in Henderson might pay $1,500 to $3,000 or more per year. A home in a moderate-risk zone in Owensboro might pay $400 to $900 per year.
 
 Private flood insurance can sometimes offer lower rates than the NFIP, especially for newer homes with higher elevation or homes outside the highest-risk zones. As an independent agency, we can compare NFIP and private flood options to find the best fit for your property.
 

@@ -48,7 +48,7 @@ When an agency truly embraces a long-term view of client relationships, it chang
 
 **Claims advocacy.** When you file a claim, a long-term-minded agent does not disappear. They follow up with the carrier on your behalf, explain the process, and push back if something does not seem right. They do this because they plan to be your agent for the next twenty years, and they know that how they show up during a claim is what you will remember most.
 
-**Honest conversations about cost.** Sometimes the best thing an agent can do is tell you that another carrier has a better rate right now. An agent thinking about lifetime value is not afraid to reshop your policy, even if it means a smaller commission this year. They know that saving you money today builds the kind of loyalty that lasts.
+**Honest conversations about cost.** Sometimes the best thing an agent can do is tell you that another carrier has a better rate right now. That is the way we try to work — reshopping when a renewal increase is material, even when the new carrier pays a smaller commission — because we would rather earn a long client relationship than a single inflated renewal. This is how we operate; we cannot speak for every agent in the industry.
 
 ## The difference you will notice
 

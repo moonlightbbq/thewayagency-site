@@ -59,7 +59,7 @@ Medical payments coverage pays for injuries to you and your passengers regardles
 
 ### Uninsured boater coverage
 
-Just like uninsured motorist coverage on your car, this protects you when another boater causes an accident and does not have insurance. Since Kentucky does not require boat insurance, a significant number of boaters on the water have no coverage at all.
+Just like uninsured motorist coverage on your car, this protects you when another boater causes an accident and does not have insurance. Since Kentucky does not require boat insurance, a number of boaters on the water have no coverage at all.
 
 ### Towing and assistance
 

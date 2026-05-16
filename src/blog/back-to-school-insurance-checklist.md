@@ -104,7 +104,7 @@ None of these items take long to address, and most are a quick phone call to you
 
 ### FAQ: Will adding a teen driver raise my auto insurance premium?
 
-Yes. Adding a teen driver typically increases your auto premium by 50 to 100 percent or more, depending on the carrier, the vehicle, and available discounts. Good student discounts, driver training discounts, and assigning the teen to your least expensive vehicle can help reduce the impact. Shopping your policy across multiple carriers when adding a teen is also a smart move, as rate increases vary significantly between companies.
+Yes. Per the Insurance Information Institute, adding a teen driver typically increases family auto premiums by 50 to 100 percent due to teens' higher risk profile. The actual increase varies by carrier, the vehicle, and available discounts — good student discounts, driver training discounts, and assigning the teen to your least expensive vehicle can help reduce the impact. Shopping your policy across multiple carriers when adding a teen is also a smart move, as rate increases vary significantly between companies.
 
 ### FAQ: Does my homeowners insurance cover my child's belongings at college?
 
