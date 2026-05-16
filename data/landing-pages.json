@@ -509,7 +509,37 @@
           "body": "Evansville residents have strong access to care through Deaconess Health System, Ascension St. Vincent Evansville, and affiliated specialist practices that serve the broader Tri-State region. When we compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred providers in-network across Indiana and Kentucky while managing premium and out-of-pocket costs. Life insurance conversations range from young families to business owners layering key-person and buy-sell coverage."
         }
       ],
-      "context_closing": "We serve Evansville and all of Vanderburgh County with licensed Indiana agents who know the Tri-State dynamic and the carriers that handle cross-river situations well. Clients here get the same direct agent access we have brought to Owensboro since 1998."
+      "context_closing": "We serve Evansville and all of Vanderburgh County with licensed Indiana agents who know the Tri-State dynamic and the carriers that handle cross-river situations well. Clients here get the same direct agent access we have brought to Owensboro since 1998.",
+      "faqs": [
+        {
+          "question": "What flood considerations apply to Evansville homes near the Ohio River?",
+          "answer": "Properties in or adjacent to FEMA Zone A or AE along the Ohio River require flood insurance if you carry a federally regulated mortgage. Standard homeowners policies do not cover flood damage regardless of zone. Downtown, Riverside, and the low-lying areas south of the Lloyd Expressway are worth a specific flood-zone lookup at msc.fema.gov."
+        },
+        {
+          "question": "How does Tri-State work between Evansville and Kentucky affect commercial insurance?",
+          "answer": "Businesses operating in both Indiana and Kentucky need commercial auto, workers compensation, and general liability that respond in both states. Workers comp thresholds differ: Indiana generally requires it for any employer with one or more employees; Kentucky does the same. We write cross-border commercial policies that recognize Tri-State operations."
+        },
+        {
+          "question": "Do you write coverage for Evansville commuters using the US-41 Twin Bridges?",
+          "answer": "Yes. Commuters crossing the Ohio River on the US-41 Twin Bridges into Henderson, Kentucky benefit from auto policies that handle cross-state daily driving cleanly. We recommend higher liability limits than the state minimum for daily bridge commuters, plus uninsured and underinsured motorist coverage given Kentucky's elevated uninsured-driver rate."
+        },
+        {
+          "question": "What is Indiana's minimum auto insurance requirement?",
+          "answer": "Indiana requires every driver to carry $25,000 per person and $50,000 per accident in bodily injury liability, and $25,000 in property damage liability. Indiana does not require Personal Injury Protection (PIP). These minimums are often inadequate on I-69, the Lloyd Expressway, or the Twin Bridges; we typically recommend higher limits."
+        },
+        {
+          "question": "What does it mean that you're an independent agency for Indiana clients?",
+          "answer": "An independent agency represents many insurance carriers rather than selling one company's policies. We compare coverage and pricing across carriers and recommend the best fit. At renewal, we can move you between carriers without you changing agents. The Way Agency has operated as independent since 1998."
+        },
+        {
+          "question": "Does The Way Agency have an office in Evansville?",
+          "answer": "No. Our mailing address is PO Box 187, Owensboro, KY 42302, just across the river. We do not operate a public Evansville storefront. We serve Vanderburgh County clients by phone, video, email, text, or in person at the client's location, with the same direct agent access we provide across the Tri-State."
+        },
+        {
+          "question": "How fast will you get back to me on an Evansville quote?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Quote turnaround varies by line of business and the carrier's underwriting requirements."
+        }
+      ]
     },
     {
       "city": "Indianapolis",
@@ -725,7 +755,41 @@
           "body": "Nashville residents have access to one of the strongest healthcare networks in the Southeast, anchored by Vanderbilt University Medical Center, Ascension Saint Thomas, HCA TriStar, and affiliated specialist practices. When we compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred doctors and specialists in-network while managing premium and out-of-pocket costs. Life insurance planning spans young professionals, music and hospitality workers, and executives needing key-person coverage."
         }
       ],
-      "context_closing": "We serve Nashville and all of Davidson County with licensed Tennessee agents who understand the metro's range of neighborhoods, commercial sectors, and healthcare networks. Clients get direct access to an agent who knows their specific situation."
+      "context_closing": "We serve Nashville and all of Davidson County with licensed Tennessee agents who understand the metro's range of neighborhoods, commercial sectors, and healthcare networks. Clients get direct access to an agent who knows their specific situation.",
+      "faqs": [
+        {
+          "question": "What insurance considerations apply to Nashville short-term rentals and bachelorette-party housing?",
+          "answer": "Homeowners renting rooms or whole houses to Nashville tourists typically need a short-term rental endorsement or a dedicated landlord policy. Standard homeowners policies usually exclude or limit rental activity, and bachelorette and event-style rentals add liability exposure. Plan this in advance because endorsements have effective-date requirements."
+        },
+        {
+          "question": "How do you handle commercial insurance for Nashville music industry or hospitality businesses?",
+          "answer": "Music venues, recording studios, hospitality businesses, and tour-related operations typically need general liability, commercial property, liquor liability where alcohol is served, professional liability, and commercial auto. We represent carriers that write entertainment and hospitality risk and understand Tennessee licensing requirements."
+        },
+        {
+          "question": "Which Nashville hospital networks should I match Medicare Advantage providers against?",
+          "answer": "Nashville's care networks include Vanderbilt University Medical Center, Ascension Saint Thomas, HCA TriStar, and the affiliated specialist practices serving Middle Tennessee. Medicare Advantage plans use defined provider networks; confirm your primary care doctor and specialists are in-network before enrolling. Supplement plans have broader access."
+        },
+        {
+          "question": "What auto insurance limits make sense for Nashville interstate driving?",
+          "answer": "Tennessee's minimum is 25/50/15 in liability, with no PIP requirement. For daily drivers on I-24, I-40, I-65, I-440, or Briley Parkway, we typically recommend 100/300/100 or higher with matching uninsured and underinsured motorist limits. A serious accident on Nashville interstates can easily exceed the state minimums."
+        },
+        {
+          "question": "What does Tennessee require for auto insurance limits?",
+          "answer": "Tennessee law requires $25,000 per person and $50,000 per accident in bodily injury liability, plus $15,000 in property damage liability. The property damage limit is lower than Kentucky or Indiana. Tennessee is an at-fault state with no Personal Injury Protection requirement. Minimums are often inadequate; we typically recommend higher limits."
+        },
+        {
+          "question": "Why work with an independent agency instead of a captive carrier in Nashville?",
+          "answer": "An independent agency represents many carriers and shops the same risk across them, while a captive sells one company's policies only. With an independent, you can move between carriers at renewal without changing agents. Both models work; the independent model gives more flexibility long-term."
+        },
+        {
+          "question": "Where is The Way Agency located in Nashville?",
+          "answer": "Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Nashville storefront. We serve Davidson County clients by phone, video, email, text, or in person at the client's location. A licensed Tennessee agent handles every Nashville account."
+        },
+        {
+          "question": "What is your turnaround on a Nashville quote request?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Music industry and hospitality commercial quotes can take longer because specialty carriers underwrite the risk more thoroughly."
+        }
+      ]
     },
     {
       "city": "Memphis",
@@ -756,7 +820,37 @@
           "body": "Shelby County sits in the New Madrid Seismic Zone, the most significant earthquake risk east of the Rocky Mountains. A standard homeowners policy does not cover earthquake damage, which means most Memphis properties need a separate earthquake policy or endorsement to be protected. Deductibles are typically a percentage of the dwelling limit rather than a flat dollar amount, which changes the math on smaller and larger events alike. We regularly help Memphis clients think through replacement cost, deductible structure, and whether commercial property also needs a parallel earthquake policy."
         }
       ],
-      "context_closing": "We serve Memphis and all of Shelby County with licensed Tennessee agents who understand New Madrid earthquake exposure, river-logistics commercial risk, and the carriers that handle both well. Clients get direct access to an agent who knows the Mid-South."
+      "context_closing": "We serve Memphis and all of Shelby County with licensed Tennessee agents who understand New Madrid earthquake exposure, river-logistics commercial risk, and the carriers that handle both well. Clients get direct access to an agent who knows the Mid-South.",
+      "faqs": [
+        {
+          "question": "Does standard homeowners insurance cover earthquake damage in Memphis?",
+          "answer": "No. A standard homeowners policy does not cover earthquake damage. Shelby County sits in the New Madrid Seismic Zone, the most significant earthquake risk east of the Rocky Mountains. Earthquake coverage is written as a separate endorsement or standalone policy. Most Memphis properties need this coverage to be actually protected."
+        },
+        {
+          "question": "How much earthquake coverage should Memphis homeowners consider given the New Madrid zone?",
+          "answer": "Earthquake deductibles are typically a percentage of the dwelling limit (often 5 to 25 percent), not a flat dollar amount. On a $300,000 home, a 10 percent deductible is $30,000 out of pocket before coverage applies. We help Memphis clients think through replacement cost, deductible structure, and whether a higher limit with a lower deductible makes financial sense."
+        },
+        {
+          "question": "Do you write commercial insurance for Memphis logistics and trucking businesses?",
+          "answer": "Yes. Memphis's economy runs on logistics, FedEx hub operations, river commerce, and warehousing. Commercial trucking, cargo, motor truck cargo, commercial auto, general liability, and workers compensation are core lines for these businesses. We represent carriers that write transportation risk and understand Tennessee licensing requirements."
+        },
+        {
+          "question": "What is the legal minimum for car insurance in Tennessee?",
+          "answer": "Tennessee requires $25,000 per person and $50,000 per accident in bodily injury liability, plus $15,000 in property damage liability. Tennessee is an at-fault state with no Personal Injury Protection requirement. These minimums are often inadequate on I-40, I-55, I-240, or I-269, where heavy commercial truck traffic raises the stakes."
+        },
+        {
+          "question": "Captive versus independent insurance: what is the structural difference?",
+          "answer": "A captive agent sells one carrier's policies only. An independent agency represents many carriers and shops across them, then moves you between carriers at renewal if a better fit appears. Both models work; the independent model gives more long-term flexibility without you changing agents."
+        },
+        {
+          "question": "Do you have a Memphis storefront?",
+          "answer": "No. Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Memphis storefront. We serve Shelby County clients by phone, video, email, text, or in person at the client's location across the Mid-South. A licensed Tennessee agent handles every Memphis account."
+        },
+        {
+          "question": "When will I hear back after requesting a quote in Memphis?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Commercial trucking and earthquake-line quotes take longer because carriers underwrite specialty risk thoroughly."
+        }
+      ]
     },
     {
       "city": "Knoxville",
@@ -787,7 +881,37 @@
           "body": "The 2016 Gatlinburg wildfires made clear that wildfire exposure in East Tennessee is real and growing. Homes in the foothills, in wooded subdivisions, and on the urban-wildland interface around Knox County can face carrier scrutiny on roof materials, defensible space, tree clearance, and water-supply distance. Some carriers restrict new business in higher-exposure areas outright. We help homeowners understand where their property sits on each carrier's wildfire appetite and identify the options that will actually write the risk at a fair price."
         }
       ],
-      "context_closing": "We serve Knoxville and all of Knox County with licensed Tennessee agents who understand East Tennessee geography, university-town dynamics, and the carriers that handle mountain-adjacent and waterfront exposures well."
+      "context_closing": "We serve Knoxville and all of Knox County with licensed Tennessee agents who understand East Tennessee geography, university-town dynamics, and the carriers that handle mountain-adjacent and waterfront exposures well.",
+      "faqs": [
+        {
+          "question": "What wildfire considerations apply to Knoxville-area homes after the 2016 Gatlinburg fires?",
+          "answer": "Homes in the East Tennessee foothills, in wooded subdivisions, and on the urban-wildland interface around Knox County face carrier scrutiny on roof materials, defensible space, tree clearance, and water-supply distance. Some carriers restrict new business in higher-exposure areas. We help homeowners identify which carriers will write the risk at a fair price."
+        },
+        {
+          "question": "Do you write commercial insurance for Oak Ridge contractor-network businesses?",
+          "answer": "Yes. Oak Ridge National Laboratory contractor-network businesses, research-adjacent firms, and Department of Energy subcontractors typically need general liability, professional liability, cyber liability, commercial auto, workers compensation, and sometimes specialty bonding. We represent carriers that understand research-contractor exposure and Tennessee licensing."
+        },
+        {
+          "question": "Are there flood considerations for Knoxville homes along the Tennessee River?",
+          "answer": "Yes. Properties in or adjacent to FEMA Zone A or AE along the Tennessee River require flood insurance if federally mortgaged. Standard homeowners policies do not cover flood damage regardless of zone. Properties near the river through downtown, Sequoyah Hills, and along the West Knox shoreline are worth a flood-zone lookup at msc.fema.gov."
+        },
+        {
+          "question": "How much auto liability does Tennessee require?",
+          "answer": "Tennessee requires $25,000 per person and $50,000 per accident in bodily injury liability, plus $15,000 in property damage. Tennessee is an at-fault state with no Personal Injury Protection requirement. These minimums are often inadequate on I-40, I-75, I-275, or Alcoa Highway, especially during UT game days and Smokies tourist traffic."
+        },
+        {
+          "question": "Is The Way Agency captive or independent?",
+          "answer": "The Way Agency is an independent insurance agency. We represent many top-rated carriers rather than selling one company's products only. We compare coverage and pricing across carriers and can move you between carriers at renewal without you changing agents. We have operated this way since 1998."
+        },
+        {
+          "question": "Where can I meet a Way Agency agent in Knoxville?",
+          "answer": "Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Knoxville storefront. We serve Knox County clients by phone, video, email, text, or in person at the client's location, including mountain-adjacent and waterfront properties across East Tennessee."
+        },
+        {
+          "question": "How quickly can I expect a follow-up from a Knoxville quote?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Wildfire-zone and Oak Ridge contractor quotes can take longer because carriers underwrite specialty risk more thoroughly."
+        }
+      ]
     },
     {
       "city": "Chattanooga",
@@ -814,7 +938,37 @@
           "body": "Chattanooga residents have access to care through Erlanger Health System, CHI Memorial, and Parkridge Health System, with affiliated specialist networks serving southeast Tennessee and north Georgia. When we help seniors compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred doctors and specialists in-network while managing premium and out-of-pocket costs. Life insurance planning spans young families, manufacturing professionals, and small-business owners."
         }
       ],
-      "context_closing": "We serve Chattanooga and all of Hamilton County with licensed Tennessee agents who understand the tri-state dynamic at the TN, GA, and AL corner, manufacturing-sector commercial risk, and the carriers that handle each well."
+      "context_closing": "We serve Chattanooga and all of Hamilton County with licensed Tennessee agents who understand the tri-state dynamic at the TN, GA, and AL corner, manufacturing-sector commercial risk, and the carriers that handle each well.",
+      "faqs": [
+        {
+          "question": "Do you write commercial insurance for Chattanooga manufacturing and supplier-network businesses?",
+          "answer": "Yes. Hamilton County's manufacturing base, anchored by Volkswagen Chattanooga and its Tier 1 and Tier 2 supplier network, typically needs general liability, commercial property, commercial auto, workers compensation, product liability, and cyber liability. We represent specialty commercial carriers that understand manufacturing supply-chain exposure and Tennessee licensing requirements."
+        },
+        {
+          "question": "How does the TN, GA, AL tri-state corner affect commercial coverage in Chattanooga?",
+          "answer": "Hamilton County businesses operating across Tennessee, Georgia, and Alabama need commercial auto, workers comp, and general liability that respond in all three states. State workers comp thresholds differ: Tennessee requires it at 5 or more employees for non-construction (1 for construction); Georgia and Alabama have different thresholds. We write cross-border policies that recognize tri-state operations."
+        },
+        {
+          "question": "What landslide and ridge-topology considerations apply to homes on Lookout Mountain or Missionary Ridge?",
+          "answer": "Homes in Chattanooga's ridge-and-valley terrain can face carrier scrutiny on grading, drainage, and slope stability. Landslide damage is typically excluded from standard homeowners policies; coverage may require a difference-in-conditions policy or specific endorsements. We help homeowners on Lookout Mountain, Missionary Ridge, and adjacent areas identify carriers willing to write the risk."
+        },
+        {
+          "question": "What is Tennessee's auto insurance minimum?",
+          "answer": "Tennessee requires $25,000 per person and $50,000 per accident in bodily injury liability, plus $15,000 in property damage liability. Tennessee is an at-fault state with no Personal Injury Protection requirement. These minimums are often inadequate on I-24, I-75, or I-59 through Hamilton County, where heavy interstate truck traffic is constant."
+        },
+        {
+          "question": "What kind of insurance agency is The Way Agency?",
+          "answer": "The Way Agency is an independent insurance agency, founded 1998, headquartered in Owensboro, Kentucky, and licensed in Kentucky, Indiana, and Tennessee. Independent means we represent many top-rated carriers rather than selling one company's policies. We shop across carriers at renewal."
+        },
+        {
+          "question": "Is there a Way Agency office in Chattanooga?",
+          "answer": "No. Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Chattanooga storefront. We serve Hamilton County clients by phone, video, email, text, or in person at the client's location across southeast Tennessee and the tri-state corner."
+        },
+        {
+          "question": "How long until someone responds to a Chattanooga quote request?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Volkswagen supplier and manufacturing commercial quotes can take longer because carriers underwrite specialty risk thoroughly."
+        }
+      ]
     },
     {
       "city": "Clarksville",
