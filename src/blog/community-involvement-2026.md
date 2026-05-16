@@ -11,7 +11,7 @@ related_page: /about/community.html
 tags: community, owensboro, giving back, local, kentucky
 ---
 
-Our agency is named after John 14:6 — "I am the way, the truth, and the life." That verse is not just our name. It is the foundation for how we run our business and how we show up in the communities we serve.
+Our agency is named after John 14:6 — "I am the way and the truth and the life. No one comes to the Father except through me." That verse is not just our name. It is the foundation for how we run our business and how we show up in the communities we serve.
 
 Insurance is a relationship business. We live in the same neighborhoods as our clients. We shop at the same stores, eat at the same restaurants, and send our kids to the same schools. When our community is strong, we all benefit. That is why giving back is not something we do on the side — it is part of who we are.
 
