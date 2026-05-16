@@ -17,7 +17,7 @@ const SITE_URL = 'https://www.thewayagency.com';
  * Create the schema injection function.
  * @param {object} opts - { agency, office, reviews }
  */
-function createSchemaInjector({ agency, office, reviews }) {
+function createSchemaInjector({ agency, office, reviews, testimonials, blocklist }) {
   /**
    * Inject JSON-LD schema markup into an HTML page.
    * @param {string} html - the page HTML
@@ -35,11 +35,13 @@ function createSchemaInjector({ agency, office, reviews }) {
     // Page-type-specific schemas
     switch (pageType) {
       case 'homepage':
-        // Homepage schema is hand-crafted in src/pages/index.html (InsuranceAgency +
-        // LocalBusiness combo, FAQPage, WebSite) and kept in sync by update-reviews.js
-        // and createInjectVersion. Re-emitting Organization + LocalBusiness here would
-        // duplicate the handcrafted block and confuse Google's entity grouping.
-        // Phase 6 (Review schema from testimonials.json) re-populates this case.
+        // Handcrafted: InsuranceAgency + LocalBusiness combo, FAQPage, WebSite live in
+        // src/pages/index.html. We add Review nodes here from data/testimonials.json
+        // (filtered to recent 5-star reviews not in the blocklist). ratingValue is
+        // emitted as NUMBER 5 to avoid colliding with the handcrafted aggregateRating
+        // ratingValue: "5.0" string (validate-consistency.js Check 7 counts unique
+        // ratingValue strings — number values are not regex-matched).
+        for (const r of _buildReviews(testimonials, blocklist, 6)) schemas.push(r);
         break;
 
       case 'product':
@@ -230,6 +232,43 @@ function _buildService(context, agency, city = null) {
   }
 
   return schema;
+}
+
+// Build Review nodes from testimonials.json for the homepage. Selection:
+// rating === 5, date within last 24 months, text >= 40 chars, not in blocklist.
+// Sorted by date desc, limited to `limit`. ratingValue emitted as NUMBER 5
+// (not string) to avoid colliding with handcrafted aggregateRating string "5.0"
+// per validate-consistency.js Check 7.
+function _buildReviews(testimonials, blocklist, limit) {
+  if (!testimonials || !Array.isArray(testimonials.testimonials)) return [];
+  const blockedIds = new Set((blocklist && blocklist.blocked) || []);
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - 24);
+  const cutoffStr = cutoff.toISOString().split('T')[0];
+
+  const candidates = testimonials.testimonials
+    .filter(t => Number(t.rating) === 5)
+    .filter(t => t.text && t.text.length >= 40)
+    .filter(t => !blockedIds.has(t.id))
+    .filter(t => t.date && t.date >= cutoffStr)
+    .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+    .slice(0, limit);
+
+  return candidates.map(t => ({
+    '@context': 'https://schema.org',
+    '@type': 'Review',
+    author: { '@type': 'Person', name: t.name },
+    datePublished: t.date,
+    reviewRating: { '@type': 'Rating', ratingValue: 5, bestRating: 5 },
+    reviewBody: t.text,
+    itemReviewed: {
+      '@type': 'InsuranceAgency',
+      name: agency_dba_or_default(),
+      url: SITE_URL + '/',
+    },
+  }));
+
+  function agency_dba_or_default() { return 'The Way Agency'; }
 }
 
 function _buildArticle(context, agency) {

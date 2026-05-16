@@ -79,7 +79,11 @@ if (fs.existsSync(criticalCssPath)) {
 const injectVersion = createInjectVersion({ buildVersion, gitInfo, buildDate, reviews: _reviews, renderHead_GTM, renderBody_GTM, criticalCss: criticalCssMinified });
 
 // ─── Schema Markup ──────────────────────────────
-const injectSchema = createSchemaInjector({ agency, office, reviews: _reviews });
+const testimonialsForSchema = loadJson(path.join(DATA, 'testimonials.json'));
+const testimonialsBlocklist = fs.existsSync(path.join(DATA, 'testimonials-blocklist.json'))
+  ? loadJson(path.join(DATA, 'testimonials-blocklist.json'))
+  : { blocked: [] };
+const injectSchema = createSchemaInjector({ agency, office, reviews: _reviews, testimonials: testimonialsForSchema, blocklist: testimonialsBlocklist });
 
 // ─── Shared Context ─────────────────────────────
 const ctx = { products, office, team, knowledgeBase, carriers, testimonials, reviews: _reviews, richContent, landingData, seoData, renderNav, renderFooter, renderScripts };
