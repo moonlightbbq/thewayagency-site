@@ -35,8 +35,11 @@ function createSchemaInjector({ agency, office, reviews }) {
     // Page-type-specific schemas
     switch (pageType) {
       case 'homepage':
-        schemas.push(_buildOrganization(agency, office, reviews));
-        schemas.push(_buildLocalBusiness(agency, office, reviews));
+        // Homepage schema is hand-crafted in src/pages/index.html (InsuranceAgency +
+        // LocalBusiness combo, FAQPage, WebSite) and kept in sync by update-reviews.js
+        // and createInjectVersion. Re-emitting Organization + LocalBusiness here would
+        // duplicate the handcrafted block and confuse Google's entity grouping.
+        // Phase 6 (Review schema from testimonials.json) re-populates this case.
         break;
 
       case 'product':

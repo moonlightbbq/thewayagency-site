@@ -202,14 +202,16 @@ const carriersIndexHtml = generateCarriersIndex(carriers, ctx);
 fs.writeFileSync(path.join(BUILD, 'carriers', 'index.html'), injectVersion(carriersIndexHtml));
 console.log(`  ✓ Generated ${carrierCount} carrier pages + index`);
 
-// 6e. Inject homepage schema
+// 6e. Inject homepage schema (no-op for case 'homepage' currently; reserved for Phase 6
+// Review nodes from testimonials.json. Homepage schema is hand-crafted in
+// src/pages/index.html: InsuranceAgency + LocalBusiness combo, FAQPage, WebSite.)
 {
   const homePath = path.join(BUILD, 'index.html');
   if (fs.existsSync(homePath)) {
     let homeHtml = fs.readFileSync(homePath, 'utf8');
     homeHtml = injectSchema(homeHtml, 'homepage');
     fs.writeFileSync(homePath, homeHtml);
-    console.log('  ✓ Injected schema markup into homepage');
+    console.log('  ✓ Homepage schema (handcrafted in src/pages/index.html)');
   }
 }
 
