@@ -751,14 +751,17 @@ ${faqs.map(f => `      {
     .replace('%%FORM_HEADING%%', `Get an insurance quote in ${city.city}`)
     .replace('%%FORM_SUBTEXT%%', 'Tell us your name and email and a licensed agent will follow up with options.');
 
+  const defaultTitle = `Insurance in ${city.city}, ${city.state} | The Way Agency`;
+  const defaultDescription = `Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from top-rated carriers. Get a quote today.`;
+  const defaultOgDescription = `Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from top-rated carriers.`;
   return `<!DOCTYPE html>
 <html lang="en">
 ${renderHead({
-    title: `Insurance in ${city.city}, ${city.state} | The Way Agency`,
-    description: `Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from top-rated carriers. Get a quote today.`,
+    title: city.title || defaultTitle,
+    description: city.meta_description || defaultDescription,
     canonical: `https://www.thewayagency.com/insurance/${city.slug}.html`,
-    ogTitle: `Insurance in ${city.city}, ${city.state} | The Way Agency`,
-    ogDescription: `Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from top-rated carriers.`,
+    ogTitle: city.title || defaultTitle,
+    ogDescription: city.meta_description || defaultOgDescription,
     ogUrl: `https://www.thewayagency.com/insurance/${city.slug}.html`,
     schema: citySchema + (faqSchema ? '\n  ' + faqSchema : ''),
   })}
