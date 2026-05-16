@@ -37,14 +37,23 @@ jobs:
             echo "reviews_sent=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # Step 1b: Update Google reviews from sage public endpoint
+      # Step 1b: Update Google reviews from sage public endpoint.
+      # update-reviews.js exits 0 on data change, 1 on healthy no-change,
+      # >1 on real failure. Treat both 0 and 1 as "commit the refreshed
+      # status file" so cron-health is visible in git even when the API
+      # reports no new reviews.
       - name: Update Google reviews
         id: google_reviews
         run: |
-          if node scripts/update-reviews.js; then
+          set +e
+          node scripts/update-reviews.js
+          code=$?
+          set -e
+          if [ "$code" -le 1 ]; then
             echo "reviews_updated=true" >> "$GITHUB_OUTPUT"
           else
             echo "reviews_updated=false" >> "$GITHUB_OUTPUT"
+            exit "$code"
           fi
 
       # Step 2: Publish posts that are due today
