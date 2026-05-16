@@ -566,7 +566,37 @@
           "body": "Indianapolis residents have access to one of the strongest healthcare networks in the Midwest, anchored by IU Health, Community Health Network, Ascension St. Vincent, and Franciscan Health. When we compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred doctors and specialists in-network while managing premium and out-of-pocket costs. Life insurance planning in Marion County ranges from young professionals to executive teams layering key-person coverage."
         }
       ],
-      "context_closing": "We serve Indianapolis and all of Marion County with licensed Indiana agents who understand the metro's range of neighborhoods, commercial sectors, and healthcare networks. Clients get direct access to an agent who knows their specific situation."
+      "context_closing": "We serve Indianapolis and all of Marion County with licensed Indiana agents who understand the metro's range of neighborhoods, commercial sectors, and healthcare networks. Clients get direct access to an agent who knows their specific situation.",
+      "faqs": [
+        {
+          "question": "What insurance considerations apply to Indy 500 or IndyCar short-term rentals in Indianapolis?",
+          "answer": "Homeowners renting rooms or whole houses during the Indy 500, Brickyard 400, or other major Indianapolis Motor Speedway events typically need a short-term rental endorsement or a dedicated landlord policy. Standard homeowners policies usually exclude or limit rental activity. Plan this in advance because endorsements have effective-date requirements."
+        },
+        {
+          "question": "How do you handle commercial insurance for Indianapolis life-sciences or Eli Lilly supplier-network businesses?",
+          "answer": "Life-sciences and pharmaceutical-adjacent businesses, including Eli Lilly suppliers and contract research organizations, typically need general liability, product liability, professional liability, cyber liability, commercial property, and workers compensation. We represent specialty commercial carriers that understand life-sciences exposure and Indiana licensing requirements."
+        },
+        {
+          "question": "Which Indianapolis hospital networks should I match Medicare Advantage providers against?",
+          "answer": "Indianapolis care networks include IU Health, Community Health Network, Ascension St. Vincent, and Franciscan Health. Medicare Advantage plans use defined provider networks; confirm your primary care doctor and any specialists are in-network before enrolling. Medicare Supplement plans work alongside Original Medicare and offer broader provider access."
+        },
+        {
+          "question": "What does Indiana require for auto insurance coverage?",
+          "answer": "Indiana requires every driver to carry $25,000 per person and $50,000 per accident in bodily injury liability, plus $25,000 in property damage liability. Indiana does not require Personal Injury Protection (PIP). These minimums are often inadequate on I-465, I-65, I-70, or I-74 during multi-vehicle accidents."
+        },
+        {
+          "question": "How does an independent agency benefit Indianapolis clients differently from a captive carrier?",
+          "answer": "An independent agency represents many carriers and shops across them, while a captive sells one company's policies only. For Marion County clients, this means we can compare options across carriers at quote and at renewal, and move you between carriers without you changing agents over time."
+        },
+        {
+          "question": "Do you have a physical office in Indianapolis?",
+          "answer": "No. Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Indianapolis storefront. We serve Marion County clients by phone, video, email, text, or in person at the client's location. A licensed Indiana agent handles every Indianapolis account."
+        },
+        {
+          "question": "How quickly will I hear back on an Indianapolis quote?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Life-sciences and complex commercial quotes can take longer because carriers underwrite specialty risk thoroughly."
+        }
+      ]
     },
     {
       "city": "Fort Wayne",
@@ -593,7 +623,37 @@
           "body": "Fort Wayne residents have access to care through Parkview Health, Lutheran Health Network, and affiliated specialist practices that serve much of northeast Indiana and parts of Ohio and Michigan. When we compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred providers in-network while managing premium and out-of-pocket costs. Life insurance conversations span young families, manufacturing professionals, and small-business succession."
         }
       ],
-      "context_closing": "We serve Fort Wayne and all of Allen County with licensed Indiana agents who understand the regional employers, the river and weather exposures, and the carriers that write them well. Clients get direct access to an agent who knows their situation."
+      "context_closing": "We serve Fort Wayne and all of Allen County with licensed Indiana agents who understand the regional employers, the river and weather exposures, and the carriers that write them well. Clients get direct access to an agent who knows their situation.",
+      "faqs": [
+        {
+          "question": "What flood considerations apply at the Three Rivers confluence in Fort Wayne?",
+          "answer": "Properties in or adjacent to FEMA Zone A or AE near the confluence of the St. Marys, St. Joseph, and Maumee rivers require flood insurance if you carry a federally regulated mortgage. Standard homeowners policies do not cover flood damage regardless of zone. Downtown and adjacent low-lying neighborhoods are worth a flood-zone lookup at msc.fema.gov."
+        },
+        {
+          "question": "Do you write coverage for Fort Wayne defense-contracting businesses?",
+          "answer": "Yes. Defense-contracting and DoD-adjacent businesses in Fort Wayne typically need general liability, professional liability, commercial auto, workers compensation, cyber liability, and sometimes contractor bonding. We represent carriers that understand government-contractor exposure and Indiana licensing requirements. Specific requirements vary by contract type and DoD security classification."
+        },
+        {
+          "question": "Which Fort Wayne hospital networks should I match Medicare Advantage providers against?",
+          "answer": "Fort Wayne care is anchored by Parkview Health and Lutheran Health Network, plus affiliated specialist practices serving northeast Indiana and parts of Ohio and Michigan. Medicare Advantage plans use defined provider networks; confirm your primary care doctor and specialists are in-network before enrolling. Supplement plans offer broader access."
+        },
+        {
+          "question": "What is Indiana's minimum car insurance requirement?",
+          "answer": "Indiana requires $25,000 per person and $50,000 per accident in bodily injury liability, plus $25,000 in property damage. Indiana does not require Personal Injury Protection. These minimums are often inadequate on I-69, US-30, US-24, or I-469, particularly with winter weather and heavy commercial truck traffic."
+        },
+        {
+          "question": "Is The Way Agency a captive or independent insurance agency for Fort Wayne clients?",
+          "answer": "The Way Agency is an independent insurance agency. We represent many top-rated carriers rather than selling one company's products only. For Fort Wayne clients, this means we compare coverage and pricing across carriers and can move you between them at renewal without you changing agents."
+        },
+        {
+          "question": "Where is The Way Agency located relative to Fort Wayne clients?",
+          "answer": "Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Fort Wayne storefront. We serve Allen County clients by phone, video, email, text, or in person at the client's location across northeast Indiana. A licensed Indiana agent handles every Fort Wayne account."
+        },
+        {
+          "question": "What is your turnaround on a Fort Wayne quote request?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Defense-contracting and manufacturing commercial quotes can take longer because carriers underwrite specialty risk thoroughly."
+        }
+      ]
     },
     {
       "city": "Carmel",
@@ -620,7 +680,37 @@
           "body": "Carmel residents have access to strong care through Ascension St. Vincent Carmel, IU Health North Hospital, and the broader Indianapolis metro healthcare networks. When we help seniors compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred doctors and specialists in-network while balancing premium and out-of-pocket costs. Life insurance conversations in Hamilton County often involve high-net-worth planning, key-person coverage, and estate liquidity."
         }
       ],
-      "context_closing": "We serve Carmel and all of Hamilton County with licensed Indiana agents who understand high-value home underwriting, executive and professional liability exposures, and the umbrella and asset-protection strategies that make sense here."
+      "context_closing": "We serve Carmel and all of Hamilton County with licensed Indiana agents who understand high-value home underwriting, executive and professional liability exposures, and the umbrella and asset-protection strategies that make sense here.",
+      "faqs": [
+        {
+          "question": "How do you handle high-value home coverage for Carmel properties?",
+          "answer": "High-value homes (typically over $750,000 dwelling value) call for carriers with specific high-value home programs that include guaranteed or extended replacement cost, agreed-value treatment for character features, high-limit personal property and jewelry scheduling, and broader liability. We represent carriers with dedicated high-value books and can compare programs across multiple options for Carmel homeowners."
+        },
+        {
+          "question": "What umbrella liability limits make sense for Hamilton County asset profiles?",
+          "answer": "Personal umbrella limits start at $1 million but for Hamilton County households we often discuss $2 to $5 million given home values, multi-vehicle households, teen drivers, and assets-at-risk. The umbrella sits on top of underlying home and auto liability limits, so those underlying limits must be high enough to meet the umbrella's attachment requirement."
+        },
+        {
+          "question": "Do you write professional liability and directors-and-officers coverage for Carmel corporate-headquarters businesses?",
+          "answer": "Yes. Corporate-headquarters businesses along Meridian Street and Carmel City Center typically need professional liability, directors and officers (D&O), employment practices liability (EPLI), cyber liability, commercial property, and umbrella. We represent specialty carriers that write these executive-coverage lines and understand Indiana licensing requirements."
+        },
+        {
+          "question": "How much auto liability does Indiana require?",
+          "answer": "Indiana requires $25,000 per person and $50,000 per accident in bodily injury liability, plus $25,000 in property damage. Indiana does not require Personal Injury Protection. For Carmel households we typically recommend substantially higher limits, paired with a personal umbrella that matches the overall asset profile."
+        },
+        {
+          "question": "What is the practical advantage of an independent agency for Carmel households?",
+          "answer": "An independent agency represents many carriers, including specialty high-value home and umbrella carriers that a captive agent cannot offer. For Carmel households, this means access to programs designed for higher-value assets, ability to compare across carriers at renewal, and the option to move between carriers without changing agents."
+        },
+        {
+          "question": "Is there a Way Agency office in Carmel or Hamilton County?",
+          "answer": "No. Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Carmel or Hamilton County storefront. We serve Carmel clients by phone, video, email, text, or in person at the client's location, including at executive offices and high-value home appointments."
+        },
+        {
+          "question": "How fast do you respond to a Carmel quote request?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. High-value home and complex commercial quotes can take longer because specialty carriers underwrite thoroughly."
+        }
+      ]
     },
     {
       "city": "Fishers",
@@ -647,7 +737,37 @@
           "body": "Fishers residents have access to care through IU Health Saxony Hospital, Community Hospital North, and the broader Indianapolis metro healthcare networks. When we help seniors compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred doctors and specialists in-network while managing premium and out-of-pocket costs. Life insurance planning often involves young families locking in term rates and business owners addressing key-person or buy-sell coverage."
         }
       ],
-      "context_closing": "We serve Fishers and all of Hamilton County with licensed Indiana agents who understand fast-growth markets, new-construction underwriting, and the coverage patterns that match young-family and new-business life stages."
+      "context_closing": "We serve Fishers and all of Hamilton County with licensed Indiana agents who understand fast-growth markets, new-construction underwriting, and the coverage patterns that match young-family and new-business life stages.",
+      "faqs": [
+        {
+          "question": "Do you handle insurance for new-construction homes in Fishers?",
+          "answer": "Yes. Newer construction typically qualifies for favorable rates and modern building-code credits, but accurate scheduling of upgraded finishes, additions, and outbuildings matters at quote time. We help Fishers homeowners ensure dwelling limits reflect current replacement cost, not just purchase price, and that pool, trampoline, and outbuilding liability exposures are properly covered."
+        },
+        {
+          "question": "Do you write cyber liability and tech-startup coverage for Launch Fishers companies?",
+          "answer": "Yes. Tech startups and small technology firms in the Launch Fishers ecosystem typically need cyber liability, professional liability (E&O), general liability, commercial property, workers compensation, and sometimes directors and officers coverage. We represent carriers that write technology and cyber risk and understand Indiana licensing requirements."
+        },
+        {
+          "question": "How should young families in Fishers think about term life insurance amounts?",
+          "answer": "Term life is generally the most cost-effective way for young families to lock in coverage during peak need years (kids at home, mortgage in place). A rough starting point is 10 to 12 times annual income, plus mortgage balance and college funding goals. We help Fishers families compare term lengths, riders, and conversion options across multiple carriers."
+        },
+        {
+          "question": "Indiana auto insurance minimums: what is the legal floor?",
+          "answer": "Indiana requires $25,000 per person and $50,000 per accident in bodily injury liability, plus $25,000 in property damage. Indiana does not require Personal Injury Protection. For Hamilton County households with multiple drivers or teen drivers, we typically recommend significantly higher limits with uninsured and underinsured motorist coverage."
+        },
+        {
+          "question": "Why does The Way Agency describe itself as independent rather than captive?",
+          "answer": "We represent many top-rated carriers rather than selling one company's policies. For Fishers clients, this means we can quote across carriers at the start, compare programs side by side, and move you between carriers at renewal without you changing agents. The agency has operated as independent since 1998."
+        },
+        {
+          "question": "Do you have a Fishers storefront?",
+          "answer": "No. Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Fishers storefront. We serve Hamilton County clients by phone, video, email, text, or in person at the client's location, including at home or at a Launch Fishers office for tech-startup commercial quotes."
+        },
+        {
+          "question": "When will someone follow up on a Fishers quote?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Tech-startup and life insurance quotes can take longer because specialty carriers underwrite thoroughly."
+        }
+      ]
     },
     {
       "city": "South Bend",
@@ -674,7 +794,37 @@
           "body": "South Bend residents have access to care through Memorial Hospital of South Bend (part of Beacon Health System) and Saint Joseph Health System, plus specialist practices serving the broader Michiana region. When we compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred doctors and specialists in-network while managing premium and out-of-pocket costs. Life insurance planning spans university families, manufacturing professionals, and small-business owners."
         }
       ],
-      "context_closing": "We serve South Bend and all of St. Joseph County with licensed Indiana agents who know the Michiana region, the university-adjacent exposures, and the carriers that handle northern-Indiana winter realities well."
+      "context_closing": "We serve South Bend and all of St. Joseph County with licensed Indiana agents who know the Michiana region, the university-adjacent exposures, and the carriers that handle northern-Indiana winter realities well.",
+      "faqs": [
+        {
+          "question": "What insurance considerations apply to Notre Dame game-day short-term rentals in South Bend?",
+          "answer": "Homeowners renting rooms or whole houses on Notre Dame football weekends typically need a short-term rental endorsement or a dedicated landlord policy. Standard homeowners policies usually exclude or limit rental activity. Game-day rentals also add tailgating and event-liability exposure worth discussing. Plan ahead because endorsements have effective-date requirements."
+        },
+        {
+          "question": "Does standard homeowners insurance cover ice-dam and freeze-related water damage in South Bend?",
+          "answer": "Ice-dam and pipe-burst damage are typically covered by standard homeowners policies, but coverage details and deductibles vary by carrier. Northern Indiana lake-effect winter exposure makes attic insulation, ventilation, and emergency-heat planning real risk-management items. We help St. Joseph County clients understand exactly how their policy responds to freeze events before they happen."
+        },
+        {
+          "question": "Do you handle commercial insurance for South Bend medical-device or Notre Dame contractor businesses?",
+          "answer": "Yes. Medical-device manufacturers, university contractors, and supplier-network businesses serving Notre Dame, Saint Mary's, and Bethel typically need general liability, product liability, professional liability, commercial property and auto, workers compensation, and sometimes contractor bonding. We represent specialty carriers that write these lines and understand Indiana licensing requirements."
+        },
+        {
+          "question": "What is the Indiana state minimum for car insurance?",
+          "answer": "Indiana requires $25,000 per person and $50,000 per accident in bodily injury liability, plus $25,000 in property damage. Indiana does not require Personal Injury Protection. These minimums are often inadequate on the Indiana Toll Road (I-80/90), US-31, or US-20, especially with winter weather and Notre Dame game-day traffic."
+        },
+        {
+          "question": "How does The Way Agency compare to captive carriers in South Bend?",
+          "answer": "We represent many carriers and shop across them; captive agents sell one company's products only. For South Bend clients, this means we can compare programs at quote, move you between carriers at renewal, and have access to specialty markets a captive agent cannot offer. The structural flexibility matters for long-term Michiana clients."
+        },
+        {
+          "question": "Where can South Bend clients meet a Way Agency agent?",
+          "answer": "Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public South Bend storefront. We serve St. Joseph County clients by phone, video, email, text, or in person at the client's location across the Michiana region. A licensed Indiana agent handles every South Bend account."
+        },
+        {
+          "question": "How long until I hear back from a South Bend quote request?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Medical-device and Notre Dame contractor commercial quotes can take longer because specialty carriers underwrite thoroughly."
+        }
+      ]
     },
     {
       "city": "Bloomington",
@@ -701,7 +851,37 @@
           "body": "Bloomington residents have access to care through IU Health Bloomington Hospital and affiliated specialist practices, with tertiary care readily available in Indianapolis. When we compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred doctors and specialists in-network while managing premium and out-of-pocket costs. Life insurance planning spans university families, small-business owners, and retirees enjoying Monroe County's lakes and outdoor lifestyle."
         }
       ],
-      "context_closing": "We serve Bloomington and all of Monroe County with licensed Indiana agents who understand university-town dynamics, rural and lakefront property underwriting, and the carriers that fit each situation well."
+      "context_closing": "We serve Bloomington and all of Monroe County with licensed Indiana agents who understand university-town dynamics, rural and lakefront property underwriting, and the carriers that fit each situation well.",
+      "faqs": [
+        {
+          "question": "How does Lake Monroe lakefront and seasonal-use property coverage work?",
+          "answer": "Lake Monroe and Lake Lemon properties often have specific underwriting considerations around secondary structures (docks, boathouses), seasonal-use exposures, and appropriate dwelling coverage for outbuildings. Some carriers prefer year-round primary residence; others write seasonal-use as a separate program. We help Monroe County clients identify which carriers will write the specific property type at fair terms."
+        },
+        {
+          "question": "Do you write commercial insurance for Cook Group supplier-network or Bloomington life-sciences businesses?",
+          "answer": "Yes. Life-sciences and medical-device businesses tied to the Cook Group ecosystem typically need general liability, product liability, professional liability, cyber liability, commercial property, and workers compensation. We represent carriers that write life-sciences risk and understand Indiana licensing requirements. Some carriers specialize specifically in medical-device and pharmaceutical supplier coverage."
+        },
+        {
+          "question": "What insurance considerations apply to student rental properties near Indiana University?",
+          "answer": "Student rentals require a landlord policy (dwelling fire) rather than a homeowners policy, with appropriate liability limits, loss-of-rental-income coverage, and consideration of student behavior risks like parties or unauthorized occupants. Tenants need their own renters insurance for personal property and personal liability. We help Bloomington landlords structure properly and recommend renters policies for tenants."
+        },
+        {
+          "question": "What does Indiana law require for auto insurance?",
+          "answer": "Indiana requires $25,000 per person and $50,000 per accident in bodily injury liability, plus $25,000 in property damage. Indiana does not require Personal Injury Protection. For households with student drivers or daily SR-37 and SR-46 driving, we typically recommend higher limits with uninsured and underinsured motorist coverage."
+        },
+        {
+          "question": "What makes an independent insurance agency different from a captive one?",
+          "answer": "An independent agency represents many carriers and compares options across them. A captive agency sells one carrier's policies only. For Bloomington clients, the independent model means access to specialty markets (life sciences, lakefront, student rentals) that captive carriers may not offer, plus the ability to move between carriers at renewal without changing agents."
+        },
+        {
+          "question": "Do you operate an office in Bloomington?",
+          "answer": "No. Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Bloomington storefront. We serve Monroe County clients by phone, video, email, text, or in person at the client's location across south-central Indiana, including at Lake Monroe properties and Cook Group commercial appointments."
+        },
+        {
+          "question": "What is your typical response time for Bloomington quotes?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Life-sciences commercial and lakefront homeowners quotes can take longer because specialty carriers underwrite thoroughly."
+        }
+      ]
     },
     {
       "city": "Lafayette",
@@ -728,7 +908,37 @@
           "body": "Lafayette residents have strong access to care through Franciscan Health Lafayette East, IU Health Arnett, and the broader IU Health network stretching toward Indianapolis. When we compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred primary care doctors and specialists in-network while managing premium and out-of-pocket trade-offs. Life insurance conversations range from young Purdue-area families locking in term rates to business owners layering key-person or buy-sell coverage."
         }
       ],
-      "context_closing": "We serve Lafayette, West Lafayette, and all of Tippecanoe County with licensed Indiana agents who understand the university calendar, the local employers, and how those factors shape the right coverage. Clients get direct access to an agent who knows their situation."
+      "context_closing": "We serve Lafayette, West Lafayette, and all of Tippecanoe County with licensed Indiana agents who understand the university calendar, the local employers, and how those factors shape the right coverage. Clients get direct access to an agent who knows their situation.",
+      "faqs": [
+        {
+          "question": "Do you write commercial insurance for Subaru of Indiana Automotive supplier-network businesses?",
+          "answer": "Yes. Subaru of Indiana Automotive Tier 1 and Tier 2 supplier businesses typically need general liability, commercial property, commercial auto, workers compensation, product liability, and cyber liability. We represent specialty carriers that write automotive manufacturing risk and understand Indiana licensing requirements. Specific coverage requirements often vary by supplier-contract type."
+        },
+        {
+          "question": "What insurance considerations apply to student rental properties near Purdue University?",
+          "answer": "Student rentals require a landlord policy (dwelling fire) rather than a homeowners policy, with appropriate liability limits, loss-of-rental-income coverage, and consideration of student behavior risks. Tenants need their own renters insurance for personal property and personal liability. We help Lafayette landlords structure properly and recommend renters policies for student tenants on State Street and elsewhere."
+        },
+        {
+          "question": "Are there flood considerations for Lafayette homes along the Wabash River?",
+          "answer": "Properties in or adjacent to FEMA Zone A or AE along the Wabash River require flood insurance if you carry a federally regulated mortgage. Standard homeowners policies do not cover flood damage regardless of zone. Downtown Lafayette and near-river neighborhoods are worth a flood-zone lookup at msc.fema.gov before assuming you do not need coverage."
+        },
+        {
+          "question": "Indiana minimum auto coverage requirements?",
+          "answer": "Indiana requires $25,000 per person and $50,000 per accident in bodily injury liability, plus $25,000 in property damage. Indiana does not require Personal Injury Protection. These minimums are often inadequate on I-65 between Lafayette and Indianapolis, especially with heavy commercial truck traffic and Purdue game-day surges."
+        },
+        {
+          "question": "Does The Way Agency sell policies from multiple carriers or just one?",
+          "answer": "Multiple carriers. The Way Agency is an independent insurance agency representing many top-rated carriers. For Lafayette and West Lafayette clients, this means we compare options across carriers at quote, can shop renewals across our carrier portfolio, and can move you between carriers without you changing agents. The agency has operated this way since 1998."
+        },
+        {
+          "question": "Does The Way Agency have a Lafayette location?",
+          "answer": "No. Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Lafayette or West Lafayette storefront. We serve Tippecanoe County clients by phone, video, email, text, or in person at the client's location, including at Purdue Research Park offices for commercial quotes."
+        },
+        {
+          "question": "How quickly do you reply to Lafayette quote requests?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Manufacturing and student-rental commercial quotes can take longer because carriers underwrite specialty risk thoroughly."
+        }
+      ]
     },
     {
       "city": "Nashville",
@@ -999,7 +1209,37 @@
           "body": "Fort Campbell families often already carry Servicemembers' Group Life Insurance (SGLI) or Veterans' Group Life Insurance (VGLI) and may use TRICARE for health coverage, but those programs leave important gaps. SGLI tops out below what most families with kids and a mortgage actually need, VGLI rates climb significantly with age, and TRICARE Select or For Life may still benefit from a Medicare Supplement for retirees. We help active-duty, veteran, and retiree households in Clarksville compare supplemental term life, permanent life, and Medicare options that fit the specific realities of a military career."
         }
       ],
-      "context_closing": "We serve Clarksville and all of Montgomery County with licensed Tennessee agents who understand the realities of military families, frequent moves, and the carriers that handle them well. Clients get direct access to an agent who knows the local landscape."
+      "context_closing": "We serve Clarksville and all of Montgomery County with licensed Tennessee agents who understand the realities of military families, frequent moves, and the carriers that handle them well. Clients get direct access to an agent who knows the local landscape.",
+      "faqs": [
+        {
+          "question": "Do you handle military families at Fort Campbell with frequent PCS moves?",
+          "answer": "Yes. Active-duty and military families typically benefit from carriers that handle frequent address changes and inter-state moves cleanly, with policies that move with the family rather than requiring full rewrites. We coordinate cancellation, transfer, and new-state binding when PCS orders come through and handle vehicle storage during deployments."
+        },
+        {
+          "question": "How does SGLI or VGLI compare to private term life coverage for Fort Campbell families?",
+          "answer": "Servicemembers' Group Life Insurance (SGLI) caps at $500,000 and ends at separation; Veterans' Group Life Insurance (VGLI) premiums climb significantly with age. Many military families with children and a mortgage need more coverage than SGLI provides. Private term life policies lock in rates at younger ages and continue past separation without VGLI's rate escalation."
+        },
+        {
+          "question": "Do you write commercial insurance for defense-adjacent contractors in Clarksville?",
+          "answer": "Yes. Defense-adjacent contractors and DoD-supporting businesses in Montgomery County typically need general liability, professional liability, commercial auto, workers compensation, cyber liability, and sometimes contractor bonding. We represent carriers that understand government-contractor exposure and Tennessee licensing requirements. Requirements often vary by contract type and security classification."
+        },
+        {
+          "question": "What is the Tennessee minimum auto insurance requirement?",
+          "answer": "Tennessee requires $25,000 per person and $50,000 per accident in bodily injury liability, plus $15,000 in property damage liability. The property damage limit is lower than Kentucky or Indiana. Tennessee is an at-fault state with no Personal Injury Protection requirement. Minimums are often inadequate on I-24 between Clarksville and Nashville."
+        },
+        {
+          "question": "How does an independent agency benefit Clarksville military families?",
+          "answer": "An independent agency represents many carriers and shops across them, including carriers that specialize in military families. For Fort Campbell households, this means access to programs designed for frequent PCS moves, comparing rates across carriers at renewal, and moving between carriers when a better fit appears without changing agents."
+        },
+        {
+          "question": "Is there a Way Agency office in Clarksville or near Fort Campbell?",
+          "answer": "No. Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Clarksville or Fort Campbell storefront. We serve Montgomery County clients by phone, video, email, text, or in person at the client's location, including during PCS transitions and deployment-related coverage changes."
+        },
+        {
+          "question": "When can I expect a follow-up on a Clarksville quote?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Military-life and defense-contracting quotes can take longer because specialty carriers underwrite thoroughly."
+        }
+      ]
     },
     {
       "city": "Murfreesboro",
@@ -1026,7 +1266,37 @@
           "body": "Murfreesboro residents have access to care through Ascension Saint Thomas Rutherford, TriStar StoneCrest, and the broader Nashville-metro healthcare networks. When we help seniors compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred doctors and specialists in-network while managing premium and out-of-pocket costs. Life insurance planning spans young families, university staff, and small-business owners."
         }
       ],
-      "context_closing": "We serve Murfreesboro and all of Rutherford County with licensed Tennessee agents who understand fast-growth markets, new-construction underwriting, and the commuter patterns that shape the right coverage for families moving between Nashville and Middle Tennessee."
+      "context_closing": "We serve Murfreesboro and all of Rutherford County with licensed Tennessee agents who understand fast-growth markets, new-construction underwriting, and the commuter patterns that shape the right coverage for families moving between Nashville and Middle Tennessee.",
+      "faqs": [
+        {
+          "question": "Do you handle commercial insurance for Nissan Smyrna supplier-network businesses?",
+          "answer": "Yes. Businesses tied to the Nissan Smyrna Assembly Plant Tier 1 and Tier 2 supplier network typically need general liability, commercial property, commercial auto, workers compensation, product liability, and cyber liability. We represent specialty commercial carriers that write automotive manufacturing risk and understand Tennessee licensing requirements."
+        },
+        {
+          "question": "What auto insurance limits make sense for I-24 commuters between Murfreesboro and Nashville?",
+          "answer": "Tennessee's minimum is 25/50/15 in liability, with no PIP requirement. For daily I-24 commuters into Nashville, we typically recommend 100/300/100 or higher with matching uninsured and underinsured motorist limits. Heavy commercial truck traffic and the volume of student and young-adult drivers around MTSU raise the risk of a serious accident exceeding minimums."
+        },
+        {
+          "question": "Do you handle student rental properties near MTSU?",
+          "answer": "Yes. Student rentals require a landlord policy (dwelling fire) rather than a homeowners policy, with appropriate liability limits, loss-of-rental-income coverage, and consideration of student behavior risks. Tenants need their own renters insurance for personal property and personal liability. We help Murfreesboro landlords structure properly and recommend renters policies for MTSU students."
+        },
+        {
+          "question": "Tennessee state minimum auto coverage?",
+          "answer": "Tennessee requires $25,000 per person and $50,000 per accident in bodily injury liability, plus $15,000 in property damage liability. The property damage limit is lower than Kentucky or Indiana. Tennessee is an at-fault state with no PIP requirement. Higher limits than minimum are commonly recommended for I-24 commuter households."
+        },
+        {
+          "question": "What does it mean that The Way Agency is independent rather than captive?",
+          "answer": "We represent many carriers and shop across them; a captive agent sells one company's policies only. For Murfreesboro clients, this means we compare programs at quote, move you between carriers at renewal when a better fit appears, and have access to specialty markets a captive carrier cannot offer."
+        },
+        {
+          "question": "Where is The Way Agency located for Murfreesboro clients?",
+          "answer": "Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Murfreesboro storefront. We serve Rutherford County clients by phone, video, email, text, or in person at the client's location. A licensed Tennessee agent handles every Murfreesboro account."
+        },
+        {
+          "question": "What is your turnaround on a Murfreesboro quote request?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Nissan supplier and student-rental commercial quotes can take longer because carriers underwrite specialty risk thoroughly."
+        }
+      ]
     },
     {
       "city": "Franklin",
@@ -1053,7 +1323,37 @@
           "body": "Franklin residents have access to care through Williamson Medical Center, Vanderbilt Health Williamson County, and the broader Nashville-metro healthcare networks. When we help seniors compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred doctors and specialists in-network while managing premium and out-of-pocket costs. Life insurance conversations often involve high-net-worth planning, executive benefits, and estate-liquidity strategies."
         }
       ],
-      "context_closing": "We serve Franklin and all of Williamson County with licensed Tennessee agents who understand high-value home underwriting, executive and professional liability exposures, and the umbrella and asset-protection strategies that make sense for the community."
+      "context_closing": "We serve Franklin and all of Williamson County with licensed Tennessee agents who understand high-value home underwriting, executive and professional liability exposures, and the umbrella and asset-protection strategies that make sense for the community.",
+      "faqs": [
+        {
+          "question": "How do you handle high-value home coverage for Franklin properties in Westhaven, Fieldstone Farms, or historic downtown?",
+          "answer": "High-value homes (typically over $750,000 dwelling value) call for carriers with specific high-value home programs that include guaranteed or extended replacement cost, agreed-value for character features, high-limit jewelry and collections scheduling, and broader liability. We represent carriers with dedicated high-value books and compare programs across multiple options for Williamson County homeowners."
+        },
+        {
+          "question": "What umbrella liability limits make sense for Williamson County asset profiles?",
+          "answer": "Personal umbrella limits start at $1 million but for Williamson County households we often discuss $2 to $5 million given home values, multi-vehicle households, teen drivers, and assets at risk. The umbrella sits on top of underlying home and auto liability limits, so those underlying limits must be high enough to meet the umbrella's attachment requirement."
+        },
+        {
+          "question": "Do you write professional liability and D&O for Cool Springs corporate-headquarters businesses?",
+          "answer": "Yes. Corporate-HQ businesses along Cool Springs Boulevard (Nissan North America, Mars Petcare, and others) typically need professional liability, directors and officers (D&O), employment practices liability (EPLI), cyber liability, commercial property, and umbrella. We represent specialty carriers that write executive-coverage lines and understand Tennessee licensing requirements."
+        },
+        {
+          "question": "What does Tennessee require for car insurance?",
+          "answer": "Tennessee requires $25,000 per person and $50,000 per accident in bodily injury liability, plus $15,000 in property damage liability. Tennessee is an at-fault state with no PIP requirement. For Williamson County households we typically recommend substantially higher limits paired with a personal umbrella to match the overall asset profile."
+        },
+        {
+          "question": "Why work with an independent agency for high-net-worth households in Franklin?",
+          "answer": "Independent agencies represent multiple carriers, including specialty high-value home and umbrella carriers that captive agents cannot offer. For Williamson County households, this means access to programs designed for higher-value assets, ability to compare across carriers at renewal, and option to move between carriers without changing agents over time."
+        },
+        {
+          "question": "Do you have an office in Franklin or Williamson County?",
+          "answer": "No. Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Franklin or Williamson County storefront. We serve Franklin clients by phone, video, email, text, or in person at the client's location, including at executive offices in Cool Springs and high-value home appointments."
+        },
+        {
+          "question": "How fast will you get back to me on a Franklin quote?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. High-value home and executive-coverage quotes can take longer because specialty carriers underwrite thoroughly."
+        }
+      ]
     },
     {
       "city": "Johnson City",
@@ -1080,7 +1380,37 @@
           "body": "Johnson City residents have access to care through Ballad Health, anchored locally by Johnson City Medical Center and affiliated specialist practices serving much of East Tennessee and Southwest Virginia. When we help seniors compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred doctors and specialists in-network while managing premium and out-of-pocket costs. Life insurance planning spans young families, university and healthcare professionals, and retirees drawn to the region's mountain lifestyle."
         }
       ],
-      "context_closing": "We serve Johnson City and all of Washington County with licensed Tennessee agents who understand Tri-Cities geography, mountain-adjacent property underwriting, and the carriers that fit East Tennessee well."
+      "context_closing": "We serve Johnson City and all of Washington County with licensed Tennessee agents who understand Tri-Cities geography, mountain-adjacent property underwriting, and the carriers that fit East Tennessee well.",
+      "faqs": [
+        {
+          "question": "What mountain and wildfire considerations apply to Johnson City foothill homes?",
+          "answer": "Homes in the East Tennessee foothills and on the urban-wildland interface around Washington County can face carrier scrutiny on roof materials, defensible space, tree clearance, and water-supply distance. The 2016 Gatlinburg wildfires made wildfire underwriting a real consideration across East Tennessee. Some carriers restrict new business in higher-exposure areas; we identify carriers willing to write the risk at fair price."
+        },
+        {
+          "question": "Do you write commercial insurance for Tri-Cities medical and healthcare businesses?",
+          "answer": "Yes. Healthcare, medical-practice, and Ballad Health-adjacent businesses in Washington County typically need general liability, professional liability (medical malpractice for clinicians), cyber liability (HIPAA exposure), commercial property and auto, and workers compensation. We represent specialty carriers that write healthcare risk and understand Tennessee licensing requirements."
+        },
+        {
+          "question": "Does standard homeowners insurance cover tree-fall damage from mountain storms in Washington County?",
+          "answer": "Wind-driven tree-fall damage to your home or other structures is typically covered by standard homeowners policies; however, removal of a fallen tree that did not damage structures may have a low sub-limit. Coverage details and deductibles vary by carrier. We help Johnson City clients understand how their policy responds before a storm event happens."
+        },
+        {
+          "question": "Tennessee minimum auto liability requirements?",
+          "answer": "Tennessee requires $25,000 per person and $50,000 per accident in bodily injury liability, plus $15,000 in property damage. Tennessee is an at-fault state with no Personal Injury Protection requirement. These minimums are often inadequate on I-26 and I-81, particularly with winter-weather exposure across East Tennessee mountains."
+        },
+        {
+          "question": "What is the difference between a captive carrier and an independent agency?",
+          "answer": "A captive agent sells one carrier's policies only. An independent agency represents many carriers and shops across them. For Johnson City clients, this means we compare programs across carriers at quote, can move you between carriers at renewal, and have access to specialty markets (wildfire-zone, mountain-adjacent) a captive carrier may not offer."
+        },
+        {
+          "question": "Where can Johnson City clients meet a Way Agency agent?",
+          "answer": "Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Johnson City storefront. We serve Washington County clients by phone, video, email, text, or in person at the client's location, including mountain-adjacent and Tri-Cities properties across East Tennessee and into Southwest Virginia."
+        },
+        {
+          "question": "When will The Way Agency respond to a Johnson City quote?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Wildfire-zone and healthcare commercial quotes can take longer because specialty carriers underwrite thoroughly."
+        }
+      ]
     }
   ],
   "industries": [
