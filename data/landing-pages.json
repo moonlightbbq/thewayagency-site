@@ -90,7 +90,33 @@
           "body": "Henderson residents have access to local care through Deaconess Henderson Hospital and the broader Deaconess and Owensboro Health networks, with tertiary care available in Evansville and Louisville. We compare Medicare Advantage and Medicare Supplement plans with a focus on keeping preferred providers in-network across both sides of the river while managing premium and out-of-pocket costs. Life insurance needs span young families, farm-succession planning, and small-business buy-sell arrangements."
         }
       ],
-      "context_closing": "Henderson sits next door to our home base in Owensboro, which means clients here get the same direct access to a licensed agent, the same carrier options, and the same claims support we have brought to Daviess County since 1998."
+      "context_closing": "Henderson sits next door to our home base in Owensboro, which means clients here get the same direct access to a licensed agent, the same carrier options, and the same claims support we have brought to Daviess County since 1998.",
+      "faqs": [
+        {
+          "question": "What flood considerations apply to Henderson homes along the Ohio River?",
+          "answer": "Properties in or adjacent to FEMA Zone A or AE along the Ohio River require flood insurance if you carry a federally regulated mortgage. Standard homeowners policies do not cover flood damage regardless of zone. Henderson sits directly on the river, so a flood-zone lookup is worth running on any property south of US-60 and through the downtown grid."
+        },
+        {
+          "question": "How does cross-river work between Henderson and Evansville affect commercial insurance?",
+          "answer": "Businesses operating in both Kentucky and Indiana need commercial auto, workers compensation, and general liability that responds in both states. We write commercial policies that recognize cross-border operations and adjust for differing state workers comp thresholds. Kentucky requires workers comp for any employer with one or more employees; Indiana generally requires it at the same threshold."
+        },
+        {
+          "question": "What is Kentucky's minimum auto insurance requirement for Henderson drivers?",
+          "answer": "Kentucky requires every driver to carry $25,000 per person and $50,000 per accident in bodily injury liability, $25,000 in property damage liability, and $10,000 in Personal Injury Protection. For commuters using the US-41 Twin Bridges or the Audubon Parkway, we generally recommend higher liability limits because a serious accident can easily exceed the minimums."
+        },
+        {
+          "question": "What does it mean that The Way Agency is an independent agency?",
+          "answer": "An independent agency represents multiple insurance carriers and compares options across them, rather than selling one company's policies only. When your renewal comes up or your needs change, an independent agency can move you to a different carrier without you switching agents. The Way Agency has carried this posture since 1998."
+        },
+        {
+          "question": "Does The Way Agency have a Henderson office?",
+          "answer": "Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Henderson storefront. We meet Henderson clients by phone, video, email, text, or in person at the client's location across Henderson County and the surrounding region."
+        },
+        {
+          "question": "How quickly will someone respond after I request a quote from Henderson?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a quick phone call, but we will text or email if that is what you prefer. Quote turnaround varies by line of business and by the carrier's underwriting requirements."
+        }
+      ]
     },
     {
       "city": "Louisville",
@@ -121,7 +147,41 @@
           "body": "Derby week brings more than 150,000 people to Churchill Downs and turns much of Louisville into a short-term hospitality market. Homeowners renting rooms or whole houses during Derby, Thunder Over Louisville, or the PGA-level events at Valhalla need short-term rental endorsements or a dedicated landlord policy, since a standard homeowners policy typically excludes or limits rental activity. Businesses hosting Derby events have their own special-event liability and liquor-liability considerations to work through well in advance."
         }
       ],
-      "context_closing": "We serve Louisville and all of Jefferson County with licensed agents who know the neighborhoods, the carriers, and the coverage choices that actually matter here. Every client gets the same responsive service whether they call, email, or stop by."
+      "context_closing": "We serve Louisville and all of Jefferson County with licensed agents who know the neighborhoods, the carriers, and the coverage choices that actually matter here. Every client gets the same responsive service whether they call, email, or stop by.",
+      "faqs": [
+        {
+          "question": "What auto insurance limits do you recommend for Louisville's Watterson Expressway and interstate driving?",
+          "answer": "Kentucky's minimum is 25/50/25 in liability plus $10,000 in PIP. For daily Watterson Expressway, I-64, I-65, or I-71 commuting, we typically recommend 100/300/100 or higher with matching uninsured and underinsured motorist limits. A multi-vehicle accident at highway speeds can easily exceed minimum limits and leave you personally responsible for the difference."
+        },
+        {
+          "question": "What insurance considerations apply to Kentucky Derby short-term rentals in Louisville?",
+          "answer": "Homeowners renting rooms or whole houses during Derby week, Thunder Over Louisville, or PGA events at Valhalla typically need a short-term rental endorsement or a dedicated landlord policy. A standard homeowners policy usually excludes or limits rental activity. Plan this well in advance because endorsements often have effective-date requirements."
+        },
+        {
+          "question": "How do you handle commercial insurance for UPS Worldport or supplier-network businesses in Louisville?",
+          "answer": "Businesses tied to UPS Worldport, the Ford Louisville Assembly supplier network, or GE Appliance Park typically need a layered program of general liability, commercial auto, workers compensation, and property coverage. We represent specialty commercial carriers that write trucking, manufacturing, and logistics risk across Kentucky's licensing and bonding requirements."
+        },
+        {
+          "question": "Which Louisville hospital networks should I check Medicare Advantage plan compatibility against?",
+          "answer": "Louisville's care networks include Norton Healthcare, UofL Health, Baptist Health Louisville, and Jewish Hospital. Medicare Advantage plans use defined provider networks, so check that your preferred primary care doctor and specialists are in-network before enrolling. Medicare Supplement plans work alongside Original Medicare and have broader provider access."
+        },
+        {
+          "question": "How much auto insurance is required by law in Kentucky?",
+          "answer": "Kentucky law requires every driver to carry $25,000 per person and $50,000 per accident in bodily injury liability, $25,000 in property damage liability, and $10,000 in Personal Injury Protection. These are legal minimums; they are often not enough on Louisville's high-traffic interstates and bridges."
+        },
+        {
+          "question": "Is The Way Agency captive or independent?",
+          "answer": "The Way Agency is an independent insurance agency. We represent many top-rated carriers rather than selling one company's products. We compare options across carriers and recommend the best fit for your situation, and we can move you between carriers at renewal without you changing agents."
+        },
+        {
+          "question": "Where is The Way Agency located in Louisville?",
+          "answer": "Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Louisville storefront. We serve Louisville and Jefferson County clients by phone, video, email, text, or in person at the client's location. A licensed Kentucky agent handles every Louisville account."
+        },
+        {
+          "question": "How quickly will I hear back after requesting a quote in Louisville?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a quick phone call, but we will text or email if that is what you prefer. Commercial quotes can take longer than personal lines because commercial carriers underwrite more thoroughly."
+        }
+      ]
     },
     {
       "city": "Lexington",
@@ -148,7 +208,37 @@
           "body": "Lexington residents have strong access to care through UK HealthCare, Baptist Health Lexington, CHI Saint Joseph Health, and the surrounding network of specialist practices that serve much of central and eastern Kentucky. When we help seniors compare Medicare Advantage and Medicare Supplement options, we focus on keeping preferred doctors and specialists in-network while managing premium and out-of-pocket trade-offs. Life insurance planning ranges from young families to horse-farm and small-business succession."
         }
       ],
-      "context_closing": "We serve Lexington and all of Fayette County with licensed Kentucky agents who know the neighborhoods, the rural horse-farm exposures, and the carriers that write them well. Clients get direct access to an agent who understands their specific situation."
+      "context_closing": "We serve Lexington and all of Fayette County with licensed Kentucky agents who know the neighborhoods, the rural horse-farm exposures, and the carriers that write them well. Clients get direct access to an agent who understands their specific situation.",
+      "faqs": [
+        {
+          "question": "Do you write equine liability and horse farm insurance for Fayette County?",
+          "answer": "Yes. Equine and farm coverage is one of our commercial lines for the Bluegrass Region. We work with carriers that write farm package policies covering the main dwelling, outbuildings, barns, equipment, equine liability, and care-custody-and-control exposures. Horse farms in Fayette County have specific coverage needs that a generic homeowners policy will not address."
+        },
+        {
+          "question": "How do you handle commercial insurance for Toyota supplier-network businesses around Lexington?",
+          "answer": "Businesses tied to the Toyota Motor Manufacturing Kentucky plant in Georgetown or its supplier network typically need general liability, commercial auto, workers compensation, and product liability. We represent specialty commercial carriers that understand manufacturing supply-chain exposure and Kentucky workers comp underwriting."
+        },
+        {
+          "question": "Which Lexington hospital networks should I match Medicare Advantage providers against?",
+          "answer": "Lexington care networks include UK HealthCare, Baptist Health Lexington, and CHI Saint Joseph Health, plus the specialist practices that serve central and eastern Kentucky. Medicare Advantage plans use defined provider networks. Confirm your primary care doctor and any specialists are in-network before enrolling. Supplement plans have broader access."
+        },
+        {
+          "question": "What is the minimum auto liability Kentucky requires?",
+          "answer": "Kentucky requires $25,000 per person and $50,000 per accident in bodily injury liability, $25,000 in property damage liability, and $10,000 in Personal Injury Protection. These are legal minimums. We typically recommend higher limits for Lexington drivers using I-64, I-75, and New Circle Road, given Kentucky's elevated uninsured-driver rate."
+        },
+        {
+          "question": "What is the difference between an independent and a captive insurance agent?",
+          "answer": "A captive agent sells one company's policies only. An independent agent represents many carriers and compares coverage and pricing across them. With an independent agency, you can move between carriers at renewal without changing agents. The Way Agency has operated as independent since 1998."
+        },
+        {
+          "question": "Do you have a Lexington office or storefront?",
+          "answer": "No. Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Lexington storefront. We serve Lexington and Fayette County clients by phone, video, email, text, or in person at the client's location, including at horse farms and rural properties across the county."
+        },
+        {
+          "question": "What is your response time for a Lexington quote request?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a quick phone call, but we will text or email if that is what you prefer. Equine and commercial quotes can take longer because carriers underwrite specialty risk more thoroughly."
+        }
+      ]
     },
     {
       "city": "Bowling Green",
@@ -175,7 +265,37 @@
           "body": "Bowling Green residents have access to care through Med Center Health and its Medical Center at Bowling Green, plus the surrounding network of specialists serving south-central Kentucky, with tertiary options in Nashville and Louisville. When we compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred primary care doctors and specialists in-network while managing premium and out-of-pocket costs. Life insurance conversations span young families, WKU staff, and small-business owners."
         }
       ],
-      "context_closing": "We serve Bowling Green and all of Warren County with licensed Kentucky agents who understand the severe-weather exposure, the karst-terrain quirks, and the carriers that handle both well. Clients get a direct line to an agent who has seen how these policies respond after a real event."
+      "context_closing": "We serve Bowling Green and all of Warren County with licensed Kentucky agents who understand the severe-weather exposure, the karst-terrain quirks, and the carriers that handle both well. Clients get a direct line to an agent who has seen how these policies respond after a real event.",
+      "faqs": [
+        {
+          "question": "How should Bowling Green homeowners think about tornado and severe-storm coverage after the December 2021 outbreak?",
+          "answer": "Roof age, wind and hail deductibles, and replacement-cost versus actual-cash-value treatment are the most consequential policy details for severe-storm exposure. Many policies cap roof claims at depreciated value once a roof passes 15 to 20 years; ask specifically how your roof is rated. We review these details on every Warren County homeowners quote."
+        },
+        {
+          "question": "Does standard homeowners insurance cover sinkholes in Warren County's karst terrain?",
+          "answer": "Sinkhole coverage is typically not included in a standard homeowners policy and must be added as a separate endorsement or rider. Warren County sits on karst limestone, which makes sinkhole risk a real underwriting consideration. We can quote sinkhole endorsements through carriers that write them and explain what the endorsement does and does not cover."
+        },
+        {
+          "question": "Do you handle commercial insurance for GM Corvette supplier-network businesses in Bowling Green?",
+          "answer": "Yes. Manufacturing and supplier-network businesses typically need a layered program of general liability, commercial property, commercial auto, workers compensation, product liability, and sometimes contractor bonding aligned with Kentucky licensing requirements. We represent carriers that write manufacturing risk and understand Tier 1 and Tier 2 supplier exposure."
+        },
+        {
+          "question": "Do Kentucky drivers in Bowling Green need to carry minimum auto liability?",
+          "answer": "Yes. Kentucky law requires $25,000 per person and $50,000 per accident in bodily injury liability, $25,000 in property damage liability, and $10,000 in Personal Injury Protection. These minimums are often inadequate on I-65 and US-231, where through-traffic and truck volumes raise the stakes of a serious accident."
+        },
+        {
+          "question": "Why work with an independent agency instead of a single-carrier captive agent?",
+          "answer": "An independent agency represents many carriers and shops the same risk across them, then moves you between carriers at renewal if a better fit appears. A captive agent sells one company's policies only. Both models work; the independent model gives you more flexibility without you needing to change agents."
+        },
+        {
+          "question": "Where can I meet a Way Agency agent in Bowling Green?",
+          "answer": "Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Bowling Green storefront. We meet Bowling Green and Warren County clients by phone, video, email, text, or in person at the client's location. A licensed Kentucky agent handles every account."
+        },
+        {
+          "question": "When will The Way Agency get back to me after I submit a quote request?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We usually open with a brief phone call, but we will text or email if that is what you prefer. Commercial and manufacturing quotes can take longer because carriers underwrite more thoroughly."
+        }
+      ]
     },
     {
       "city": "Elizabethtown",
@@ -202,7 +322,37 @@
           "body": "Elizabethtown residents have access to care through Baptist Health Hardin and its affiliated specialist network, with tertiary options available in Louisville and Lexington. We compare Medicare Advantage and Medicare Supplement plans with attention to keeping preferred providers in-network while balancing premium and out-of-pocket costs. Life insurance planning in Hardin County often involves active-duty and veteran families layering supplemental coverage on top of existing SGLI or VGLI."
         }
       ],
-      "context_closing": "We serve Elizabethtown and all of Hardin County with licensed Kentucky agents who understand the realities of military families, frequent moves, and the specific carriers that handle them well. Clients get direct access to an agent who knows the local landscape."
+      "context_closing": "We serve Elizabethtown and all of Hardin County with licensed Kentucky agents who understand the realities of military families, frequent moves, and the specific carriers that handle them well. Clients get direct access to an agent who knows the local landscape.",
+      "faqs": [
+        {
+          "question": "Do you handle military families with frequent PCS moves around Fort Knox?",
+          "answer": "Yes. Military families typically benefit from carriers that handle frequent address changes and inter-state moves cleanly, with policies that move with the family rather than requiring full rewrites. We work with carriers experienced in military relocation and can coordinate cancellation, transfer, and new-state binding when orders come through."
+        },
+        {
+          "question": "What auto insurance limits should I-65 commuters from Elizabethtown to Louisville carry?",
+          "answer": "Kentucky requires 25/50/25 plus $10,000 PIP at minimum. For daily I-65 commuters, we typically recommend 100/300/100 or higher with matching uninsured and underinsured motorist limits. A serious highway accident can quickly exceed minimum limits and leave you personally responsible for the difference."
+        },
+        {
+          "question": "Which Elizabethtown hospital networks should I match Medicare Advantage providers against?",
+          "answer": "Elizabethtown residents have access to care through Baptist Health Hardin and its affiliated specialist network, with tertiary options in Louisville and Lexington. Medicare Advantage plans use defined provider networks; confirm your primary care doctor and specialists are in-network before enrolling. Supplement plans have broader access across Kentucky."
+        },
+        {
+          "question": "Do you write coverage for DoD-adjacent or defense-contractor work in Hardin County?",
+          "answer": "Yes. Defense-contractor and DoD-adjacent businesses typically need general liability, professional liability, commercial auto, workers compensation, and sometimes contractor bonding. We represent carriers that understand government-contractor exposure and Kentucky licensing requirements. Specific requirements vary by contract type."
+        },
+        {
+          "question": "What does Kentucky require for auto insurance limits?",
+          "answer": "Kentucky requires every driver to carry $25,000 per person and $50,000 per accident in bodily injury liability, $25,000 in property damage liability, and $10,000 in Personal Injury Protection. These are legal minimums and are often not adequate for a serious accident on I-65 or the Bluegrass and Western Kentucky parkways."
+        },
+        {
+          "question": "Independent versus captive insurance agencies: what is the structural difference?",
+          "answer": "A captive agency sells one carrier's policies only. An independent agency represents many carriers and shops across them, then moves you between carriers at renewal if a better fit appears. Both models work; the independent model gives you more flexibility without you needing to change agents over time."
+        },
+        {
+          "question": "Is there a Way Agency office in Elizabethtown or near Fort Knox?",
+          "answer": "No. Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Elizabethtown or Fort Knox storefront. We serve Hardin County clients by phone, video, email, text, or in person at the client's location, including for active-duty families during PCS transitions."
+        }
+      ]
     },
     {
       "city": "Mt. Washington",
@@ -302,7 +452,37 @@
           "body": "Frankfort residents have access to local care through Frankfort Regional Medical Center, with tertiary care readily available in Lexington and Louisville. When we help seniors compare Medicare Advantage and Medicare Supplement plans, we focus on keeping preferred providers in-network across the region while managing premium and out-of-pocket costs. Life insurance conversations span state-employee families, small-business owners, and retirees planning for final expense and legacy needs."
         }
       ],
-      "context_closing": "We serve Frankfort and all of Franklin County with licensed Kentucky agents who understand historic-property underwriting, state-employee benefit coordination, and the bourbon-industry commercial landscape. Clients get direct access to an agent who knows the capital."
+      "context_closing": "We serve Frankfort and all of Franklin County with licensed Kentucky agents who understand historic-property underwriting, state-employee benefit coordination, and the bourbon-industry commercial landscape. Clients get direct access to an agent who knows the capital.",
+      "faqs": [
+        {
+          "question": "Do you write commercial coverage for bourbon distilleries and Bourbon Trail businesses around Frankfort?",
+          "answer": "Yes. Franklin County hosts Buffalo Trace and a surrounding supplier network. Bourbon-industry coverage typically layers distilled-spirits product liability, commercial property, general liability, commercial auto, workers compensation, and sometimes specialty inland marine on aging stock. We represent carriers that write distilled-spirits risk and understand Kentucky bourbon-trail exposure."
+        },
+        {
+          "question": "How does state-employee benefits coverage interact with private insurance you write?",
+          "answer": "State of Kentucky employees typically carry KEHP health coverage and may layer supplemental life, disability, or specialty health through private carriers. We can quote supplemental life, disability income, and individual health policies that complement existing state benefits. We do not displace or replace KEHP coverage."
+        },
+        {
+          "question": "What flood considerations apply to Frankfort homes along the Kentucky River?",
+          "answer": "Properties in or adjacent to FEMA Zone A or AE along the Kentucky River and its tributaries require flood insurance if you carry a federally regulated mortgage. Standard homeowners policies do not cover flood damage regardless of zone. Downtown and South Frankfort properties near the river are worth a flood-zone lookup at msc.fema.gov."
+        },
+        {
+          "question": "What is the Kentucky state minimum for car insurance?",
+          "answer": "Kentucky requires every driver to carry $25,000 per person and $50,000 per accident in bodily injury liability, $25,000 in property damage liability, and $10,000 in Personal Injury Protection. These minimums are often inadequate for Frankfort commuters using I-64 between Lexington and Louisville."
+        },
+        {
+          "question": "What kind of agency is The Way Agency?",
+          "answer": "The Way Agency is an independent insurance agency, founded 1998, headquartered in Owensboro, Kentucky, and licensed in Kentucky, Indiana, and Tennessee. Independent means we represent many top-rated carriers rather than selling one company's policies, and we shop across them at renewal."
+        },
+        {
+          "question": "Does The Way Agency operate an office in Frankfort?",
+          "answer": "No. Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Frankfort storefront. We serve Frankfort and Franklin County clients by phone, video, email, text, or in person at the client's location, including at distilleries and state-government offices when needed."
+        },
+        {
+          "question": "What is the typical turnaround on a Frankfort quote request?",
+          "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Bourbon-industry commercial quotes can take longer because specialty carriers underwrite distilled-spirits risk thoroughly."
+        }
+      ]
     },
     {
       "city": "Evansville",
