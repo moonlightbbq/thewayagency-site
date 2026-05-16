@@ -54,7 +54,10 @@ function getFAQsForProduct(knowledgeBase, productId) {
 }
 
 function getCarriersForLine(carriers, lineKey) {
-  const key = lineKey === 'life_health' ? 'personal' : lineKey;
+  // life/health carriers fall back to personal carriers since the marquee
+  // is a generic logo strip; specific L/H carrier lists can be added to
+  // data/carriers.json later if we want differentiation.
+  const key = (lineKey === 'life' || lineKey === 'health') ? 'personal' : lineKey;
   return carriers[key] || carriers.personal || [];
 }
 
@@ -77,9 +80,15 @@ function generateCarrierMarquee(carriers, lineKey) {
 }
 
 function getTestimonialsForLine(testimonials, lineKey) {
-  const lineMap = { personal: 'personal', commercial: 'commercial', life_health: 'life_health' };
+  const lineMap = { personal: 'personal', commercial: 'commercial', life: 'life', health: 'health' };
   const lineName = lineMap[lineKey] || 'personal';
-  let filtered = testimonials.testimonials.filter(t => t.product_lines.includes(lineName));
+  // Accept testimonials tagged with either the new line keys or the legacy
+  // 'life_health' bucket so existing testimonial data still surfaces.
+  let filtered = testimonials.testimonials.filter(t => {
+    if (t.product_lines.includes(lineName)) return true;
+    if ((lineName === 'life' || lineName === 'health') && t.product_lines.includes('life_health')) return true;
+    return false;
+  });
   if (filtered.length < 2) {
     const others = testimonials.testimonials.filter(t => !filtered.includes(t));
     filtered = [...filtered, ...others].slice(0, 3);
@@ -122,9 +131,14 @@ function generateTestimonials(testimonials, reviews, lineKey) {
 }
 
 function findReviewerForProduct(team, product, lineKey) {
+  const lineSpecialty = lineKey === 'personal' ? 'personal_lines'
+    : lineKey === 'commercial' ? 'commercial_lines'
+    : lineKey === 'life' ? 'life'
+    : lineKey === 'health' ? 'health'
+    : 'personal_lines';
   const match = team.team.find(member =>
     member.specialties.includes(product.id) ||
-    member.specialties.includes(lineKey === 'personal' ? 'personal_lines' : lineKey === 'commercial' ? 'commercial_lines' : 'life_health')
+    member.specialties.includes(lineSpecialty)
   );
   return match || team.team[0];
 }
@@ -267,7 +281,8 @@ const hubConfig = {
     ctaText: 'Tell us what you need and we\'ll shop top-rated carriers for the best options.',
     crossSell: [
       { href: '/commercial/', title: 'Commercial Insurance', text: 'Liability, property, auto, workers comp, and more for your business.', label: 'Explore Commercial' },
-      { href: '/life-health/', title: 'Life & Health', text: 'Medicare, health, life, disability, and final expense coverage.', label: 'Explore Life & Health' },
+      { href: '/life/', title: 'Life Insurance', text: 'Term life, whole life, annuities, disability, and final expense coverage.', label: 'Explore Life' },
+      { href: '/health/', title: 'Health Insurance', text: 'Medicare, individual and group health, dental, vision, and supplemental coverage.', label: 'Explore Health' },
     ],
     schema: { serviceName: 'Personal Insurance', serviceType: 'Personal Lines Insurance', serviceDesc: 'Home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet insurance for families and individuals.' },
   },
@@ -283,25 +298,41 @@ const hubConfig = {
     ctaText: 'Tell us about your business and we\'ll build a coverage program from top-rated carriers.',
     crossSell: [
       { href: '/personal/', title: 'Personal Insurance', text: 'Home, auto, umbrella, and specialty coverage for you and your family.', label: 'Explore Personal' },
-      { href: '/life-health/', title: 'Life & Health', text: 'Medicare, group health, life insurance, and employee benefits.', label: 'Explore Life & Health' },
+      { href: '/life/', title: 'Life Insurance', text: 'Term life, whole life, annuities, disability, and final expense coverage.', label: 'Explore Life' },
+      { href: '/health/', title: 'Health Insurance', text: 'Medicare, group and individual health, dental, and supplemental coverage.', label: 'Explore Health' },
     ],
     schema: { serviceName: 'Commercial Insurance', serviceType: 'Commercial Lines Insurance', serviceDesc: 'General liability, property, auto, workers comp, cyber, bonds, builders risk, special events, and professional liability for businesses.' },
   },
-  life_health: {
-    title: 'Life & Health Insurance | The Way Agency',
-    description: 'Life and health insurance: Medicare, Medicaid, individual health, group health, term life, whole life, annuities, disability, and final expense from top-rated carriers.',
-    canonical: '/life-health/',
-    hero: { eyebrow: 'Life & Health Insurance', title: 'Plan for what<br>matters most', subtitle: 'Medicare, health coverage, life insurance, disability, and employee benefits. We help you navigate the options and choose with confidence.' },
-    ctaTitle: 'Get a life & health insurance quote',
+  life: {
+    title: 'Life Insurance | Term, Whole, Annuities & More | The Way Agency',
+    description: 'Life insurance and lifetime protection: term life, whole life, annuities, disability, and final expense from top-rated carriers.',
+    canonical: '/life/',
+    hero: { eyebrow: 'Life Insurance', title: 'Plan for what<br>matters most', subtitle: 'Term life, whole life, annuities, disability, and final expense. We help you navigate the options and choose with confidence.' },
+    ctaTitle: 'Get a life insurance quote',
     ctaText: 'Tell us what you need and we\'ll walk you through your options in plain language.',
     crossSell: [
+      { href: '/health/', title: 'Health Insurance', text: 'Medicare, individual and group health, dental, vision, and supplemental coverage.', label: 'Explore Health' },
       { href: '/personal/', title: 'Personal Insurance', text: 'Home, auto, umbrella, and specialty coverage for you and your family.', label: 'Explore Personal' },
-      { href: '/commercial/', title: 'Commercial Insurance', text: 'Liability, property, auto, workers comp, and more for your business.', label: 'Explore Commercial' },
     ],
-    schema: { serviceName: 'Life & Health Insurance', serviceType: 'Life and Health Insurance', serviceDesc: 'Medicare, health, life, disability, annuities, and final expense insurance for individuals and families.' },
+    schema: { serviceName: 'Life Insurance', serviceType: 'Life Insurance', serviceDesc: 'Term life, whole life, annuities, disability, and final expense insurance for individuals and families.' },
+    groups: [
+      { eyebrow: 'Life & Income Protection', title: 'Life and income protection', ids: ['term-life', 'whole-life', 'annuities', 'disability', 'final-expense'] },
+    ],
+  },
+  health: {
+    title: 'Health Insurance | Medicare, Individual, Group & More | The Way Agency',
+    description: 'Health insurance and supplemental coverage: Medicare, Medicaid, individual and group health, family health, dental, vision, and supplemental from top-rated carriers.',
+    canonical: '/health/',
+    hero: { eyebrow: 'Health Insurance', title: 'Coverage built<br>around your care', subtitle: 'Medicare, Medicaid, individual and group health, dental, vision, and supplemental coverage. We help you navigate the options and choose with confidence.' },
+    ctaTitle: 'Get a health insurance quote',
+    ctaText: 'Tell us what you need and we\'ll walk you through your options in plain language.',
+    crossSell: [
+      { href: '/life/', title: 'Life Insurance', text: 'Term life, whole life, annuities, disability, and final expense coverage.', label: 'Explore Life' },
+      { href: '/personal/', title: 'Personal Insurance', text: 'Home, auto, umbrella, and specialty coverage for you and your family.', label: 'Explore Personal' },
+    ],
+    schema: { serviceName: 'Health Insurance', serviceType: 'Health Insurance', serviceDesc: 'Medicare, Medicaid, individual and group health, family health, dental, vision, and supplemental health coverage for individuals, families, and small businesses.' },
     groups: [
       { eyebrow: 'Health Coverage', title: 'Health insurance options', ids: ['medicare', 'medicaid', 'supplemental-health', 'group-health', 'individual-health', 'family-health', 'dental-vision'] },
-      { eyebrow: 'Life & Income Protection', title: 'Life and income protection', ids: ['term-life', 'whole-life', 'annuities', 'disability', 'final-expense'] },
     ],
   },
 };
@@ -311,7 +342,8 @@ const hubConfig = {
 function generateHubPage(lineKey, ctx) {
   const { products, office, seoData, renderNav, renderFooter, renderScripts } = ctx;
   const config = hubConfig[lineKey];
-  const lineSlug = lineKey === 'life_health' ? 'life-health' : lineKey;
+  // line key === slug now that life/health are separate top-level keys
+  const lineSlug = lineKey;
   const lineProducts = products[lineKey] || [];
 
   const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
@@ -539,7 +571,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
   }
   </script>` : '';
 
-  const allProducts = [...(products.personal || []), ...(products.commercial || []), ...(products.life_health || [])];
+  const allProducts = [...(products.personal || []), ...(products.commercial || []), ...(products.life || []), ...(products.health || [])];
   const relatedLinks = (product.related_products || []).map(rId => {
     const rp = allProducts.find(p => p.id === rId);
     if (!rp) return '';
@@ -547,9 +579,10 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
   }).filter(Boolean).join('\n        ');
 
   const allLines = {
-    personal: { name: 'Personal Insurance', text: 'Home, auto, umbrella, and specialty coverage for you and your family.', link: '/personal/', label: 'Explore Personal' },
+    personal:   { name: 'Personal Insurance',   text: 'Home, auto, umbrella, and specialty coverage for you and your family.', link: '/personal/', label: 'Explore Personal' },
     commercial: { name: 'Commercial Insurance', text: 'General liability, commercial property, workers\' comp, and more for your business.', link: '/commercial/', label: 'Explore Commercial' },
-    life_health: { name: 'Life & Health', text: 'Medicare, individual and group health, life insurance, and employee benefits.', link: '/life-health/', label: 'Explore Life & Health' },
+    life:       { name: 'Life Insurance',       text: 'Term life, whole life, annuities, disability, and final expense coverage.', link: '/life/', label: 'Explore Life' },
+    health:     { name: 'Health Insurance',     text: 'Medicare, individual and group health, dental, vision, and supplemental coverage.', link: '/health/', label: 'Explore Health' },
   };
   const otherLines = Object.entries(allLines).filter(([key]) => key !== lineKey).map(([, info]) => info);
 
@@ -805,10 +838,11 @@ ${city.context_closing ? '' : `        <p>As an independent agency, we are not t
         <h2>Insurance options in ${city.city}</h2>
         ${(() => {
           const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-          return `<div class="grid grid--3" style="margin:var(--space-xl) 0;">
+          return `<div class="grid grid--4" style="margin:var(--space-xl) 0;">
           <a href="/personal/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Personal Insurance</h3><p class="card__text">Home, auto, umbrella, renters, flood, and specialty coverage.</p><span class="card__link">View options ${arrowSvg}</span></a>
           <a href="/commercial/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Commercial Insurance</h3><p class="card__text">Liability, property, auto, workers comp, cyber, bonds.</p><span class="card__link">View options ${arrowSvg}</span></a>
-          <a href="/life-health/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Life &amp; Health</h3><p class="card__text">Medicare, health, life, disability, and employee benefits.</p><span class="card__link">View options ${arrowSvg}</span></a>
+          <a href="/life/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Life Insurance</h3><p class="card__text">Term life, whole life, annuities, disability, final expense.</p><span class="card__link">View options ${arrowSvg}</span></a>
+          <a href="/health/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Health Insurance</h3><p class="card__text">Medicare, individual and group health, dental, vision, supplemental.</p><span class="card__link">View options ${arrowSvg}</span></a>
         </div>`;
         })()}
 
@@ -951,10 +985,11 @@ ${county.context_closing ? `        <p>${county.context_closing}</p>` : ''}
         <h2>Insurance options in ${countyName}</h2>
         ${(() => {
           const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-          return `<div class="grid grid--3" style="margin:var(--space-xl) 0;">
+          return `<div class="grid grid--4" style="margin:var(--space-xl) 0;">
           <a href="/personal/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Personal Insurance</h3><p class="card__text">Home, auto, umbrella, renters, flood, and specialty coverage.</p><span class="card__link">View options ${arrowSvg}</span></a>
           <a href="/commercial/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Commercial Insurance</h3><p class="card__text">Liability, property, auto, workers comp, cyber, bonds.</p><span class="card__link">View options ${arrowSvg}</span></a>
-          <a href="/life-health/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Life &amp; Health</h3><p class="card__text">Medicare, health, life, disability, and employee benefits.</p><span class="card__link">View options ${arrowSvg}</span></a>
+          <a href="/life/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Life Insurance</h3><p class="card__text">Term life, whole life, annuities, disability, final expense.</p><span class="card__link">View options ${arrowSvg}</span></a>
+          <a href="/health/" class="card" style="text-decoration:none;"><h3 class="card__title" style="font-size:var(--text-xl);">Health Insurance</h3><p class="card__text">Medicare, individual and group health, dental, vision, supplemental.</p><span class="card__link">View options ${arrowSvg}</span></a>
         </div>`;
         })()}
 
@@ -1076,7 +1111,7 @@ function generateCarrierPage(carrier, line, ctx) {
   const lineSlug = line;
 
   // Find product pages for linked lines
-  const allProducts = [...(products.personal || []), ...(products.commercial || []), ...(products.life_health || [])];
+  const allProducts = [...(products.personal || []), ...(products.commercial || []), ...(products.life || []), ...(products.health || [])];
   const linkedProducts = (carrier.lines || []).map(id => allProducts.find(p => p.id === id || p.slug === id)).filter(Boolean);
 
   const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';

@@ -7,7 +7,7 @@ author_slug: jill-boone
 author_title: Licensed Agent
 date: 2026-03-27
 modified: 2026-03-27
-category: life_health
+category: health
 tags: [medicare, louisville, kentucky, seniors, health-insurance, enrollment]
 status: published
 ---
@@ -28,7 +28,7 @@ Medicare is divided into parts, each covering a different piece of your healthca
 
 **Part D (Prescription Drug Coverage)** covers your medications. If you stick with Original Medicare, you will need a standalone Part D plan. If you go with Medicare Advantage, Part D is usually built in.
 
-For a more detailed breakdown, visit our [Medicare page](/life-health/medicare.html).
+For a more detailed breakdown, visit our [Medicare page](/health/medicare.html).
 
 ## When to enroll
 
@@ -48,7 +48,7 @@ The bottom line: do not wait until the last minute. If you are approaching 65, s
 
 This is the biggest decision most people face, and there is no one-size-fits-all answer.
 
-**Original Medicare + Medigap (Medicare Supplement)** gives you the most flexibility. You can see any doctor or hospital in the country that accepts Medicare — no network, no referrals. A Medigap plan fills in the gaps that Original Medicare leaves behind, like deductibles and coinsurance. You will also need a separate Part D plan for prescriptions. Medigap premiums tend to be higher, but your out-of-pocket costs at the point of care are predictable. Learn more on our [supplemental health page](/life-health/supplemental-health.html).
+**Original Medicare + Medigap (Medicare Supplement)** gives you the most flexibility. You can see any doctor or hospital in the country that accepts Medicare — no network, no referrals. A Medigap plan fills in the gaps that Original Medicare leaves behind, like deductibles and coinsurance. You will also need a separate Part D plan for prescriptions. Medigap premiums tend to be higher, but your out-of-pocket costs at the point of care are predictable. Learn more on our [supplemental health page](/health/supplemental-health.html).
 
 **Medicare Advantage** bundles everything into one plan, often with lower premiums and added benefits like dental and vision. But you are working within a network. In the Louisville metro area, most major health systems — Norton Healthcare, Baptist Health, UofL Health — participate in Advantage plan networks, but not all plans include all systems. If you have specific doctors you want to keep, check the plan directory carefully.
 

@@ -7,7 +7,7 @@ author_title: Independent Insurance Agency
 date: 2027-02-03
 modified: 2027-02-03
 reading_time: 7 min read
-related_page: /life-health/group-health.html
+related_page: /health/group-health.html
 tags: group health insurance small business kentucky, small group health insurance KY, employer health insurance cost, how to set up group health plan
 ---
 
@@ -23,7 +23,7 @@ In Kentucky, a small group is defined as a business with 2 to 50 eligible employ
 
 Most carriers require a minimum participation rate, typically 75 percent of eligible employees. If you have 10 eligible employees, at least 7 or 8 need to enroll. Employees who have coverage through a spouse's plan are usually waived from the participation requirement.
 
-Sole proprietors without employees generally cannot purchase group coverage. They would look at [individual health insurance](/life-health/individual-health.html) options instead.
+Sole proprietors without employees generally cannot purchase group coverage. They would look at [individual health insurance](/health/individual-health.html) options instead.
 
 ## What small group plans look like in Kentucky
 
@@ -71,7 +71,7 @@ Decide how much you can afford to contribute per employee per month. Most small 
 
 ### Step 2: Work with an agent to get quotes
 
-An independent agent shops [group health plans](/life-health/group-health.html) across multiple carriers on your behalf. We gather basic information about your employees (ages, tobacco use, zip codes) and request quotes from every available carrier. You see options across different plan tiers and carriers in one comparison.
+An independent agent shops [group health plans](/health/group-health.html) across multiple carriers on your behalf. We gather basic information about your employees (ages, tobacco use, zip codes) and request quotes from every available carrier. You see options across different plan tiers and carriers in one comparison.
 
 There is no extra cost for using an agent. For the group-health carriers we represent, agent commissions are built into the premium and the rate is the same whether you go direct to the carrier or work through us.
 
@@ -109,7 +109,7 @@ Workers comp is required by law for most Kentucky employers with one or more emp
 
 If you are considering group health insurance for your small business, the best first step is getting a quote. We need basic demographic information about your employees, your budget range, and your goals for the benefit. From there, we present options and help you make an informed decision.
 
-Reach out to us for a [group health consultation](/life-health/group-health.html). We will walk you through the numbers and show you what is available in Kentucky's small group market.
+Reach out to us for a [group health consultation](/health/group-health.html). We will walk you through the numbers and show you what is available in Kentucky's small group market.
 
 ### FAQ: How many employees do you need for group health insurance in Kentucky?
 

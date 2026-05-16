@@ -350,7 +350,8 @@
     if (path.startsWith('/intake')) return 'quote_form';
     if (path.startsWith('/personal/')) return 'product_personal';
     if (path.startsWith('/commercial/')) return 'product_commercial';
-    if (path.startsWith('/life-health/')) return 'product_life_health';
+    if (path.startsWith('/life/'))   return 'product_life';
+    if (path.startsWith('/health/')) return 'product_health';
     if (path.startsWith('/blog/')) return path === '/blog/' ? 'blog_index' : 'blog_post';
     if (path.startsWith('/insurance/')) return 'geo_landing';
     if (path.startsWith('/industries/')) return 'industry_landing';
@@ -780,22 +781,28 @@
   // ═══════════════════════════════════════════════
   function getIntakeUrl() {
     const path = window.location.pathname;
-    const productMatch = path.match(/\/(personal|commercial|life-health)\/([^/]+)\.html$/);
+    const productMatch = path.match(/\/(personal|commercial|life|health)\/([^/]+)\.html$/);
     if (productMatch && productMatch[2] !== 'index') {
       const slug = productMatch[2];
       const slugMap = { 'home': 'homeowners', 'general-liability': 'cgl', 'commercial-auto': 'commercial_auto',
         'commercial-property': 'bop', 'workers-compensation': 'workers_comp', 'professional-liability': 'eo',
         'builders-risk': 'builders_risk', 'special-event': 'bop', 'classic-car': 'auto',
-        'farm-ranch': 'farm_ranch', 'dwelling-fire': 'dwelling_fire', 'term-life': 'life',
-        'whole-life': 'life', 'final-expense': 'life', 'family-health': 'life',
-        'individual-health': 'life', 'group-health': 'life', 'supplemental-health': 'life',
-        'dental-vision': 'life', 'disability': 'life', 'medicare': 'life', 'medicaid': 'life', 'annuities': 'life' };
+        'farm-ranch': 'farm_ranch', 'dwelling-fire': 'dwelling_fire',
+        // Life
+        'term-life': 'term_life', 'whole-life': 'whole_life', 'final-expense': 'final_expense',
+        'annuities': 'annuity', 'disability': 'disability',
+        // Health
+        'medicare': 'medicare', 'medicaid': 'health',
+        'individual-health': 'individual_health', 'group-health': 'group_health',
+        'family-health': 'individual_health', 'supplemental-health': 'health',
+        'dental-vision': 'health' };
       const pid = slugMap[slug] || slug;
       return '/intake/?product=' + encodeURIComponent(pid);
     }
-    if (path.match(/\/personal\/?$/)) return '/intake/?line=personal';
+    if (path.match(/\/personal\/?$/))   return '/intake/?line=personal';
     if (path.match(/\/commercial\/?$/)) return '/intake/?line=commercial';
-    if (path.match(/\/life-health\/?$/)) return '/intake/?line=life-health';
+    if (path.match(/\/life\/?$/))       return '/intake/?line=life';
+    if (path.match(/\/health\/?$/))     return '/intake/?line=health';
     const geoMatch = path.match(/\/insurance\/([^/]+)\.html$/);
     if (geoMatch) {
       const parts = geoMatch[1].split('-');

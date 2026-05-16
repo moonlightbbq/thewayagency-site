@@ -7,7 +7,7 @@ author_title: Independent Insurance Agency
 date: 2026-10-07
 modified: 2026-10-07
 reading_time: 6 min read
-related_page: /life-health/medicare.html
+related_page: /health/medicare.html
 tags: medicare, open enrollment, kentucky, medicare advantage, 2027
 ---
 
@@ -87,11 +87,11 @@ Medicare is complicated. There are dozens of plans available in most Kentucky co
 
 We also help with:
 
-- [Individual health insurance](/life-health/individual-health.html) for those under 65 or between coverage
+- [Individual health insurance](/health/individual-health.html) for those under 65 or between coverage
 - Understanding how Medicare coordinates with employer coverage or retiree benefits
 - Enrollment assistance so you do not miss deadlines or make costly mistakes
 
-If you want help reviewing your Medicare options for 2027, [contact us for a consultation](/life-health/medicare.html). There is no pressure and no cost to sit down and compare your options.
+If you want help reviewing your Medicare options for 2027, [contact us for a consultation](/health/medicare.html). There is no pressure and no cost to sit down and compare your options.
 
 ### FAQ: When is Medicare open enrollment for 2027?
 

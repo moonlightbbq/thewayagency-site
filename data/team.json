@@ -7,13 +7,37 @@
       "photo": "/src/assets/images/team/sheilia-royal.webp",
       "years_experience": 20,
       "ky_producer_license_year": 1997,
-      "license_states": ["KY", "IN", "TN"],
-      "license_numbers": { "KY": "343239" },
+      "license_states": [
+        "KY",
+        "IN",
+        "TN"
+      ],
+      "license_numbers": {
+        "KY": "343239"
+      },
       "npn": "7188485",
-      "ky_lines_of_authority": ["Property", "Casualty", "Health", "Life"],
+      "ky_lines_of_authority": [
+        "Property",
+        "Casualty",
+        "Health",
+        "Life"
+      ],
       "designations": [],
-      "specialties": ["commercial_lines", "personal_lines", "life_health", "general-liability", "commercial-property", "workers-compensation"],
-      "service_areas": ["Owensboro", "Mt. Washington", "Henderson", "Louisville"],
+      "specialties": [
+        "commercial_lines",
+        "personal_lines",
+        "life",
+        "health",
+        "general-liability",
+        "commercial-property",
+        "workers-compensation"
+      ],
+      "service_areas": [
+        "Owensboro",
+        "Mt. Washington",
+        "Henderson",
+        "Louisville"
+      ],
       "bio": "Bio coming soon.",
       "fun_fact": "",
       "email": "sheilia@thewayagency.com",
@@ -27,13 +51,34 @@
       "years_experience": null,
       "ky_producer_license_year": 2025,
       "_experience_note": "Prior years_experience: 8 was a self-reported industry figure (includes 2017-2019 Limited Line Credit license per KY DOI). KY P/C and Life producer licensure dates to April-December 2025. Use ky_producer_license_year for any public-facing tenure claim.",
-      "license_states": ["KY", "IN", "TN"],
-      "license_numbers": { "KY": "943777" },
+      "license_states": [
+        "KY",
+        "IN",
+        "TN"
+      ],
+      "license_numbers": {
+        "KY": "943777"
+      },
       "npn": "18304957",
-      "ky_lines_of_authority": ["Property", "Casualty", "Life"],
+      "ky_lines_of_authority": [
+        "Property",
+        "Casualty",
+        "Life"
+      ],
       "designations": [],
-      "specialties": ["personal_lines", "home", "auto", "umbrella", "flood", "renters"],
-      "service_areas": ["Owensboro", "Henderson", "Daviess County"],
+      "specialties": [
+        "personal_lines",
+        "home",
+        "auto",
+        "umbrella",
+        "flood",
+        "renters"
+      ],
+      "service_areas": [
+        "Owensboro",
+        "Henderson",
+        "Daviess County"
+      ],
       "bio": "Bio coming soon.",
       "fun_fact": "",
       "email": "audrey@thewayagency.com",
@@ -47,14 +92,37 @@
       "years_experience": null,
       "ky_producer_license_year": 2025,
       "_experience_note": "Prior years_experience: 10 was self-reported total industry. KY non-resident producer licensure dates to 1/16/2025. TN resident license is older but not yet captured here; use ky_producer_license_year for any public-facing KY tenure claim.",
-      "license_states": ["KY", "IN", "TN"],
-      "license_numbers": { "KY": "1380699" },
+      "license_states": [
+        "KY",
+        "IN",
+        "TN"
+      ],
+      "license_numbers": {
+        "KY": "1380699"
+      },
       "npn": "18433400",
-      "ky_lines_of_authority": ["Property", "Casualty", "Life", "Health"],
+      "ky_lines_of_authority": [
+        "Property",
+        "Casualty",
+        "Life",
+        "Health"
+      ],
       "ky_residency": "Non-Resident",
       "designations": [],
-      "specialties": ["commercial_lines", "general-liability", "commercial-auto", "bonds", "builders-risk", "workers-compensation", "cyber"],
-      "service_areas": ["Owensboro", "Henderson", "Evansville"],
+      "specialties": [
+        "commercial_lines",
+        "general-liability",
+        "commercial-auto",
+        "bonds",
+        "builders-risk",
+        "workers-compensation",
+        "cyber"
+      ],
+      "service_areas": [
+        "Owensboro",
+        "Henderson",
+        "Evansville"
+      ],
       "bio": "Bio coming soon.",
       "fun_fact": "",
       "email": "kelly@thewayagency.com",
@@ -67,13 +135,39 @@
       "photo": "/src/assets/images/team/jill-boone.webp",
       "years_experience": 6,
       "ky_producer_license_year": 2021,
-      "license_states": ["KY", "IN", "TN"],
-      "license_numbers": { "KY": "1116311" },
+      "license_states": [
+        "KY",
+        "IN",
+        "TN"
+      ],
+      "license_numbers": {
+        "KY": "1116311"
+      },
       "npn": "19764082",
-      "ky_lines_of_authority": ["Property", "Casualty", "Life", "Health"],
+      "ky_lines_of_authority": [
+        "Property",
+        "Casualty",
+        "Life",
+        "Health"
+      ],
       "designations": [],
-      "specialties": ["life_health", "medicare", "medicaid", "individual-health", "group-health", "term-life", "whole-life", "disability", "final-expense"],
-      "service_areas": ["Mt. Washington", "Louisville", "Bullitt County"],
+      "specialties": [
+        "life",
+        "health",
+        "medicare",
+        "medicaid",
+        "individual-health",
+        "group-health",
+        "term-life",
+        "whole-life",
+        "disability",
+        "final-expense"
+      ],
+      "service_areas": [
+        "Mt. Washington",
+        "Louisville",
+        "Bullitt County"
+      ],
       "bio": "Bio coming soon.",
       "fun_fact": "",
       "email": "jill@thewayagency.com",

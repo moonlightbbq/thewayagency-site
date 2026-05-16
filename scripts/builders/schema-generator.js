@@ -241,9 +241,10 @@ function _buildServicesForCity(agency, city) {
   if (!city) return [];
   const cityName = `${city.city}, ${city.state}`;
   const lines = [
-    { name: 'Personal Insurance', slug: 'personal', desc: 'Home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet insurance from top-rated carriers.' },
+    { name: 'Personal Insurance',   slug: 'personal',   desc: 'Home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet insurance from top-rated carriers.' },
     { name: 'Commercial Insurance', slug: 'commercial', desc: 'General liability, commercial property, commercial auto, workers compensation, cyber, bonds, builders risk, special event, and professional liability insurance.' },
-    { name: 'Life and Health Insurance', slug: 'life-health', desc: 'Medicare Advantage and Supplement, individual and group health, term and whole life, disability, and final expense insurance.' },
+    { name: 'Life Insurance',       slug: 'life',       desc: 'Term life, whole life, annuities, disability, and final expense insurance from top-rated carriers.' },
+    { name: 'Health Insurance',     slug: 'health',     desc: 'Medicare Advantage and Supplement, Medicaid, individual and group health, family health, dental, vision, and supplemental health insurance.' },
   ];
   return lines.map(line => ({
     '@context': 'https://schema.org',

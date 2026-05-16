@@ -33,7 +33,7 @@ The IRS considers insurance premiums a deductible business expense when the cove
 
 **Business interruption insurance** is deductible. This coverage, which pays lost income when your business is shut down by a covered event, is considered ordinary and necessary.
 
-**[Group health insurance](/life-health/group-health.html) premiums** you pay on behalf of your employees are deductible. This is often one of the largest insurance expenses for small businesses that offer group coverage, and the full employer-paid portion is deductible.
+**[Group health insurance](/health/group-health.html) premiums** you pay on behalf of your employees are deductible. This is often one of the largest insurance expenses for small businesses that offer group coverage, and the full employer-paid portion is deductible.
 
 ## What about self-employed health insurance?
 

@@ -71,19 +71,19 @@
     },
     "commercial-workforce": {
       "name": "Workforce Insurance",
-      "authority_pages": ["/commercial/workers-compensation.html", "/life-health/group-health.html"],
+      "authority_pages": ["/commercial/workers-compensation.html", "/health/group-health.html"],
       "description": "Workers comp, group health, employee benefits.",
       "target_keywords": ["workers comp kentucky", "group health insurance KY", "employee benefits owensboro"]
     },
     "life-planning": {
       "name": "Life & Estate Planning",
-      "authority_pages": ["/life-health/term-life.html", "/life-health/whole-life.html", "/life-health/disability.html", "/life-health/final-expense.html", "/life-health/annuities.html"],
+      "authority_pages": ["/life/term-life.html", "/life/whole-life.html", "/life/disability.html", "/life/final-expense.html", "/life/annuities.html"],
       "description": "Life insurance, disability, final expense, annuities, estate planning.",
       "target_keywords": ["life insurance kentucky", "term life vs whole life", "disability insurance KY"]
     },
     "health-coverage": {
       "name": "Health Insurance",
-      "authority_pages": ["/life-health/medicare.html", "/life-health/individual-health.html", "/life-health/group-health.html"],
+      "authority_pages": ["/health/medicare.html", "/health/individual-health.html", "/health/group-health.html"],
       "description": "Medicare, individual health, family health, dental/vision, enrollment.",
       "target_keywords": ["medicare kentucky", "health insurance KY", "kynect enrollment"]
     },
@@ -110,7 +110,7 @@
   "page_roles": {
     "authority": "The main product/service/geo page. The 'money page' that should rank for primary commercial keywords. Blog posts SUPPORT these pages, never compete with them.",
     "supporting": "Blog content that links to and reinforces authority pages. Targets long-tail keywords and informational intent.",
-    "hub": "Category index pages (personal/, commercial/, life-health/, blog/). Organize and link to authority and supporting pages.",
+    "hub": "Category index pages (personal/, commercial/, life/, health/, blog/). Organize and link to authority and supporting pages.",
     "local": "Geo-targeted landing pages. Blog posts with local content link to these.",
     "seasonal": "Time-sensitive content that gets refreshed annually. Should link to evergreen authority pages.",
     "trust": "Community, team, values content. Builds brand credibility. Links to about pages."

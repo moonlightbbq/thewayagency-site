@@ -18,11 +18,17 @@
       "schema_types": ["InsuranceAgency", "FAQPage"],
       "last_reviewed": "2026-03"
     },
-    "/life-health/": {
-      "title": "Life & Health Insurance | Medicare, Life & More | The Way Agency",
-      "description": "Life and health insurance: Medicare, Medicaid, individual and group health, term and whole life, annuities, disability, and supplemental coverage from top-rated carriers.",
+    "/life/": {
+      "title": "Life Insurance | Term, Whole, Annuities & More | The Way Agency",
+      "description": "Life insurance and lifetime financial protection: term life, whole life, annuities, disability, and final expense coverage from top-rated carriers.",
       "schema_types": ["InsuranceAgency", "FAQPage"],
-      "last_reviewed": "2026-03"
+      "last_reviewed": "2026-05"
+    },
+    "/health/": {
+      "title": "Health Insurance | Medicare, Individual, Group & More | The Way Agency",
+      "description": "Health insurance and supplemental coverage: Medicare, Medicaid, individual and group health, family health, dental, vision, and supplemental health plans from top-rated carriers.",
+      "schema_types": ["InsuranceAgency", "FAQPage"],
+      "last_reviewed": "2026-05"
     },
     "/about/": {
       "title": "About The Way Agency | Independent Insurance in Kentucky",

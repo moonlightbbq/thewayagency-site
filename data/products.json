@@ -609,135 +609,12 @@
       "last_reviewed": "2026-03"
     }
   ],
-  "life_health": [
-    {
-      "id": "medicare",
-      "name": "Medicare",
-      "slug": "medicare",
-      "url": "/life-health/medicare.html",
-      "icon": "heart-pulse",
-      "title_tag": "Medicare Insurance | The Way Agency",
-      "meta_description": "Understanding Medicare: Original Medicare, Medicare Advantage, Medigap supplements, and Part D drug plans explained.",
-      "h1": "How does Medicare work?",
-      "summary": "Federal health insurance for people 65+ or with qualifying disabilities. Original Medicare (Parts A & B) covers hospital and medical services. Gaps can be filled with Medicare Supplement (Medigap) or Medicare Advantage (Part C) plans.",
-      "related_products": [
-        "supplemental-health",
-        "individual-health",
-        "dental-vision"
-      ],
-      "last_reviewed": "2026-03"
-    },
-    {
-      "id": "medicaid",
-      "name": "Medicaid",
-      "slug": "medicaid",
-      "url": "/life-health/medicaid.html",
-      "icon": "heart-handshake",
-      "title_tag": "Medicaid | The Way Agency",
-      "meta_description": "Understanding Medicaid eligibility and coverage. Information about expanded Medicaid programs and how to qualify.",
-      "h1": "Who qualifies for Medicaid?",
-      "summary": "State and federal health coverage for low-income individuals and families. Many states have expanded Medicaid under the ACA, covering adults up to 138% of the federal poverty level.",
-      "related_products": [
-        "individual-health",
-        "family-health",
-        "dental-vision"
-      ],
-      "last_reviewed": "2026-03"
-    },
-    {
-      "id": "supplemental-health",
-      "name": "Supplemental Health",
-      "slug": "supplemental-health",
-      "url": "/life-health/supplemental-health.html",
-      "icon": "plus-circle",
-      "title_tag": "Supplemental Health Insurance | The Way Agency",
-      "meta_description": "Supplemental health insurance pays cash benefits for accidents, critical illness, and hospital stays to cover gaps in your primary health plan.",
-      "h1": "What does supplemental health insurance cover?",
-      "summary": "Pays cash benefits directly to you when a covered health event occurs  -  accident, critical illness, or hospital stay. Helps cover deductibles, copays, lost income, and other expenses your primary health plan doesn't pay.",
-      "related_products": [
-        "medicare",
-        "individual-health",
-        "group-health"
-      ],
-      "last_reviewed": "2026-03"
-    },
-    {
-      "id": "group-health",
-      "name": "Group Health",
-      "slug": "group-health",
-      "url": "/life-health/group-health.html",
-      "icon": "users",
-      "title_tag": "Group Health Insurance | The Way Agency",
-      "meta_description": "Group health insurance for businesses. Compare plans, control costs, and offer competitive benefits to attract talent.",
-      "h1": "How does group health insurance work for small businesses?",
-      "summary": "Health coverage sponsored by an employer for employees and often their dependents. Small businesses (2–50 employees) can access group plans through the small group market with community-rated premiums.",
-      "related_products": [
-        "supplemental-health",
-        "term-life",
-        "disability",
-        "dental-vision"
-      ],
-      "last_reviewed": "2026-03"
-    },
-    {
-      "id": "individual-health",
-      "name": "Individual Health",
-      "slug": "individual-health",
-      "url": "/life-health/individual-health.html",
-      "icon": "user",
-      "title_tag": "Individual Health Insurance | The Way Agency",
-      "meta_description": "Individual and family health insurance options, including marketplace plans with subsidies and off-exchange alternatives.",
-      "h1": "How do you get health insurance without an employer plan?",
-      "summary": "Individual health plans purchased through your state's health insurance marketplace or directly from carriers. Subsidies are available based on income. Open enrollment is typically November through January.",
-      "related_products": [
-        "family-health",
-        "supplemental-health",
-        "dental-vision",
-        "disability"
-      ],
-      "last_reviewed": "2026-03"
-    },
-    {
-      "id": "family-health",
-      "name": "Family Health",
-      "slug": "family-health",
-      "url": "/life-health/family-health.html",
-      "icon": "users-round",
-      "title_tag": "Family Health Insurance | The Way Agency",
-      "meta_description": "Family health insurance plans. Compare marketplace plans, employer options, and CHIP for children.",
-      "h1": "What are your family health insurance options?",
-      "summary": "Covers you, your spouse, and dependent children under one policy. Available through employer plans, your state's marketplace, or individual carriers. CHIP provides low-cost coverage for children in families that earn too much for Medicaid.",
-      "related_products": [
-        "individual-health",
-        "dental-vision",
-        "supplemental-health",
-        "term-life"
-      ],
-      "last_reviewed": "2026-03"
-    },
-    {
-      "id": "dental-vision",
-      "name": "Dental, Vision & Hearing",
-      "slug": "dental-vision",
-      "url": "/life-health/dental-vision.html",
-      "icon": "eye",
-      "title_tag": "Dental & Vision Insurance | The Way Agency",
-      "meta_description": "Standalone dental, vision, and hearing insurance plans. Coverage for routine care and major services.",
-      "h1": "Do you need separate dental and vision insurance?",
-      "summary": "Most health insurance plans do not include dental, vision, or hearing coverage for adults. Standalone plans cover preventive care, exams, and major services at a fraction of out-of-pocket cost.",
-      "related_products": [
-        "individual-health",
-        "supplemental-health",
-        "medicare",
-        "group-health"
-      ],
-      "last_reviewed": "2026-03"
-    },
+  "life": [
     {
       "id": "term-life",
       "name": "Term Life",
       "slug": "term-life",
-      "url": "/life-health/term-life.html",
+      "url": "/life/term-life.html",
       "icon": "clock",
       "title_tag": "Term Life Insurance | The Way Agency",
       "meta_description": "Term life insurance provides affordable death benefit protection for a fixed period. Compare 10, 20, and 30-year term options.",
@@ -769,7 +646,7 @@
       "id": "whole-life",
       "name": "Whole Life",
       "slug": "whole-life",
-      "url": "/life-health/whole-life.html",
+      "url": "/life/whole-life.html",
       "icon": "infinity",
       "title_tag": "Whole Life Insurance | The Way Agency",
       "meta_description": "Whole life insurance provides permanent coverage with guaranteed cash value growth. Compare to term life and universal life options.",
@@ -799,7 +676,7 @@
       "id": "annuities",
       "name": "Annuities",
       "slug": "annuities",
-      "url": "/life-health/annuities.html",
+      "url": "/life/annuities.html",
       "icon": "trending-up",
       "title_tag": "Annuities | The Way Agency",
       "meta_description": "Annuities provide guaranteed income in retirement. Learn about fixed, indexed, and variable annuity options.",
@@ -816,7 +693,7 @@
       "id": "disability",
       "name": "Disability Insurance",
       "slug": "disability",
-      "url": "/life-health/disability.html",
+      "url": "/life/disability.html",
       "icon": "shield-alert",
       "title_tag": "Disability Insurance | The Way Agency",
       "meta_description": "Disability insurance replaces a portion of your income if you're unable to work due to illness or injury. Individual and group options available.",
@@ -848,7 +725,7 @@
       "id": "final-expense",
       "name": "Final Expense",
       "slug": "final-expense",
-      "url": "/life-health/final-expense.html",
+      "url": "/life/final-expense.html",
       "icon": "flower",
       "title_tag": "Final Expense Insurance | The Way Agency",
       "meta_description": "Final expense insurance covers funeral costs, medical bills, and outstanding debts so your family is not burdened. Simplified underwriting available.",
@@ -869,6 +746,131 @@
         "whole-life",
         "term-life",
         "medicare"
+      ],
+      "last_reviewed": "2026-03"
+    }
+  ],
+  "health": [
+    {
+      "id": "medicare",
+      "name": "Medicare",
+      "slug": "medicare",
+      "url": "/health/medicare.html",
+      "icon": "heart-pulse",
+      "title_tag": "Medicare Insurance | The Way Agency",
+      "meta_description": "Understanding Medicare: Original Medicare, Medicare Advantage, Medigap supplements, and Part D drug plans explained.",
+      "h1": "How does Medicare work?",
+      "summary": "Federal health insurance for people 65+ or with qualifying disabilities. Original Medicare (Parts A & B) covers hospital and medical services. Gaps can be filled with Medicare Supplement (Medigap) or Medicare Advantage (Part C) plans.",
+      "related_products": [
+        "supplemental-health",
+        "individual-health",
+        "dental-vision"
+      ],
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "medicaid",
+      "name": "Medicaid",
+      "slug": "medicaid",
+      "url": "/health/medicaid.html",
+      "icon": "heart-handshake",
+      "title_tag": "Medicaid | The Way Agency",
+      "meta_description": "Understanding Medicaid eligibility and coverage. Information about expanded Medicaid programs and how to qualify.",
+      "h1": "Who qualifies for Medicaid?",
+      "summary": "State and federal health coverage for low-income individuals and families. Many states have expanded Medicaid under the ACA, covering adults up to 138% of the federal poverty level.",
+      "related_products": [
+        "individual-health",
+        "family-health",
+        "dental-vision"
+      ],
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "supplemental-health",
+      "name": "Supplemental Health",
+      "slug": "supplemental-health",
+      "url": "/health/supplemental-health.html",
+      "icon": "plus-circle",
+      "title_tag": "Supplemental Health Insurance | The Way Agency",
+      "meta_description": "Supplemental health insurance pays cash benefits for accidents, critical illness, and hospital stays to cover gaps in your primary health plan.",
+      "h1": "What does supplemental health insurance cover?",
+      "summary": "Pays cash benefits directly to you when a covered health event occurs  -  accident, critical illness, or hospital stay. Helps cover deductibles, copays, lost income, and other expenses your primary health plan doesn't pay.",
+      "related_products": [
+        "medicare",
+        "individual-health",
+        "group-health"
+      ],
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "group-health",
+      "name": "Group Health",
+      "slug": "group-health",
+      "url": "/health/group-health.html",
+      "icon": "users",
+      "title_tag": "Group Health Insurance | The Way Agency",
+      "meta_description": "Group health insurance for businesses. Compare plans, control costs, and offer competitive benefits to attract talent.",
+      "h1": "How does group health insurance work for small businesses?",
+      "summary": "Health coverage sponsored by an employer for employees and often their dependents. Small businesses (2–50 employees) can access group plans through the small group market with community-rated premiums.",
+      "related_products": [
+        "supplemental-health",
+        "term-life",
+        "disability",
+        "dental-vision"
+      ],
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "individual-health",
+      "name": "Individual Health",
+      "slug": "individual-health",
+      "url": "/health/individual-health.html",
+      "icon": "user",
+      "title_tag": "Individual Health Insurance | The Way Agency",
+      "meta_description": "Individual and family health insurance options, including marketplace plans with subsidies and off-exchange alternatives.",
+      "h1": "How do you get health insurance without an employer plan?",
+      "summary": "Individual health plans purchased through your state's health insurance marketplace or directly from carriers. Subsidies are available based on income. Open enrollment is typically November through January.",
+      "related_products": [
+        "family-health",
+        "supplemental-health",
+        "dental-vision",
+        "disability"
+      ],
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "family-health",
+      "name": "Family Health",
+      "slug": "family-health",
+      "url": "/health/family-health.html",
+      "icon": "users-round",
+      "title_tag": "Family Health Insurance | The Way Agency",
+      "meta_description": "Family health insurance plans. Compare marketplace plans, employer options, and CHIP for children.",
+      "h1": "What are your family health insurance options?",
+      "summary": "Covers you, your spouse, and dependent children under one policy. Available through employer plans, your state's marketplace, or individual carriers. CHIP provides low-cost coverage for children in families that earn too much for Medicaid.",
+      "related_products": [
+        "individual-health",
+        "dental-vision",
+        "supplemental-health",
+        "term-life"
+      ],
+      "last_reviewed": "2026-03"
+    },
+    {
+      "id": "dental-vision",
+      "name": "Dental, Vision & Hearing",
+      "slug": "dental-vision",
+      "url": "/health/dental-vision.html",
+      "icon": "eye",
+      "title_tag": "Dental & Vision Insurance | The Way Agency",
+      "meta_description": "Standalone dental, vision, and hearing insurance plans. Coverage for routine care and major services.",
+      "h1": "Do you need separate dental and vision insurance?",
+      "summary": "Most health insurance plans do not include dental, vision, or hearing coverage for adults. Standalone plans cover preventive care, exams, and major services at a fraction of out-of-pocket cost.",
+      "related_products": [
+        "individual-health",
+        "supplemental-health",
+        "medicare",
+        "group-health"
       ],
       "last_reviewed": "2026-03"
     }

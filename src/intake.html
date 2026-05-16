@@ -985,9 +985,17 @@ function showIntakeBanner(color, msg) {
   } else if (line === 'commercial') {
     headline.textContent = 'Commercial Insurance Quote';
     if (subtitle) subtitle.textContent = 'Protect your business with coverage from top-rated carriers.';
+  } else if (line === 'life') {
+    headline.textContent = 'Life Insurance Quote';
+    if (subtitle) subtitle.textContent = 'Get personalized life and income-protection coverage options.';
+  } else if (line === 'health') {
+    headline.textContent = 'Health Insurance Quote';
+    if (subtitle) subtitle.textContent = 'Get personalized Medicare, individual, group, and supplemental health coverage options.';
   } else if (line === 'life-health') {
-    headline.textContent = 'Life & Health Insurance Quote';
-    if (subtitle) subtitle.textContent = 'Get personalized life and health coverage options.';
+    // Legacy ?line=life-health from old links → default to Life headline; the
+    // 301 redirects on /life-health/* URLs send most traffic to /life/ anyway.
+    headline.textContent = 'Life Insurance Quote';
+    if (subtitle) subtitle.textContent = 'Get personalized life and income-protection coverage options.';
   }
 
   // Track entry source

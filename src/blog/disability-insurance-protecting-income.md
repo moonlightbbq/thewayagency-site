@@ -7,7 +7,7 @@ author_title: Independent Insurance Agency
 date: 2026-09-16
 modified: 2026-09-16
 reading_time: 6 min read
-related_page: /life-health/disability.html
+related_page: /life/disability.html
 tags: disability insurance, income protection, short term disability, long term disability, kentucky
 ---
 
@@ -19,7 +19,7 @@ Most people do not. And the numbers say they should.
 
 Not all of those disabilities are permanent, but even a temporary inability to work can devastate a family's finances.
 
-[Disability insurance](/life-health/disability.html) replaces a portion of your income if you cannot work due to injury or illness. It is not glamorous, and it is not something most people think about until they need it. But it is one of the most important types of coverage you can carry.
+[Disability insurance](/life/disability.html) replaces a portion of your income if you cannot work due to injury or illness. It is not glamorous, and it is not something most people think about until they need it. But it is one of the most important types of coverage you can carry.
 
 ## What disability insurance does
 
@@ -121,7 +121,7 @@ For context, consider what you would pay to replace your income for even three m
 
 ## How disability insurance works with life insurance
 
-Disability insurance and [life insurance](/life-health/term-life.html) work together to protect your family from the two biggest financial risks you face: dying too soon and living with a disability.
+Disability insurance and [life insurance](/life/term-life.html) work together to protect your family from the two biggest financial risks you face: dying too soon and living with a disability.
 
 Life insurance pays your family when you die. Disability insurance pays you when you cannot work. If you have calculated [how much life insurance you need](/blog/how-much-life-insurance-do-you-need.html), apply the same thinking to your disability coverage. What would your family need if your income stopped for two years? Five years? Until retirement?
 

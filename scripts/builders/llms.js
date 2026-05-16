@@ -61,7 +61,8 @@ Service-area business. No public storefront. We meet clients by phone, video, em
 - ${SITE}/insurance/mt-washington-ky.html
 - ${SITE}/personal/
 - ${SITE}/commercial/
-- ${SITE}/life-health/
+- ${SITE}/life/
+- ${SITE}/health/
 - ${SITE}/about/
 - ${SITE}/about/team.html
 - ${SITE}/blog/

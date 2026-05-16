@@ -199,7 +199,7 @@ function generateTOC(html) {
 // CTA stays bare (no misleading pre-selection on multi-product posts).
 function productSlugFromRelatedPage(relatedPage) {
   if (!relatedPage || relatedPage === 'null') return null;
-  const m = /\/(?:personal|commercial|life-health)\/([a-z0-9-]+)\.html$/i.exec(relatedPage);
+  const m = /\/(?:personal|commercial|life|health)\/([a-z0-9-]+)\.html$/i.exec(relatedPage);
   return m ? m[1] : null;
 }
 
@@ -210,7 +210,7 @@ function intakeHref(relatedPage) {
 
 // ─── Mid-Post CTA Injection ─────────────────
 function injectMidPostCTA(html, category, relatedPage) {
-  const categoryLabels = { personal: 'personal insurance', commercial: 'business insurance', life_health: 'life and health insurance' };
+  const categoryLabels = { personal: 'personal insurance', commercial: 'business insurance', life: 'life insurance', health: 'health insurance', life_health: 'life and health insurance' };
   const label = categoryLabels[category] || 'insurance';
   const href = intakeHref(relatedPage);
   const ctaHtml = `
@@ -390,7 +390,7 @@ ${meta.related_page ? `
       <h2 style="margin-top:var(--space-2xl);">Related Coverage</h2>
       <div class="related-posts">
         <a href="${meta.related_page}" class="card" style="text-decoration:none;">
-          <h3 class="card__title" style="font-size:var(--text-xl);">${meta.related_page.replace(/^\/(personal|commercial|life-health)\//, '').replace(/\.html$/, '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</h3>
+          <h3 class="card__title" style="font-size:var(--text-xl);">${meta.related_page.replace(/^\/(personal|commercial|life|health)\//, '').replace(/\.html$/, '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</h3>
           <p class="card__text">Learn more about this coverage and how it protects you.</p>
           <span class="card__link">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
         </a>
@@ -434,7 +434,7 @@ function generateBlogIndex(allPosts, postsMeta) {
   }));
 
   const categories = [...new Set(postsData.map(p => p.category).filter(Boolean))].sort();
-  const categoryLabels = { personal: 'Personal', commercial: 'Commercial', life_health: 'Life & Health', general: 'General' };
+  const categoryLabels = { personal: 'Personal', commercial: 'Commercial', life: 'Life', health: 'Health', life_health: 'Life & Health', general: 'General' };
 
   const cards = allPosts.map(p => {
     const date = new Date(p.publish_date + 'T12:00:00');

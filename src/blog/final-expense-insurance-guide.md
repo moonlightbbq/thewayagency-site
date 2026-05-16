@@ -7,7 +7,7 @@ author_title: Independent Insurance Agency
 date: 2026-11-11
 modified: 2026-11-11
 reading_time: 6 min read
-related_page: /life-health/final-expense.html
+related_page: /life/final-expense.html
 tags: final expense, burial insurance, funeral insurance, life insurance, kentucky
 ---
 
@@ -34,7 +34,7 @@ Final expense insurance is a category of whole life insurance, but it differs fr
 
 **Final expense vs. term life.** [Term life insurance](/blog/term-life-vs-whole-life.html) provides coverage for a set period — usually 10, 20, or 30 years. If you outlive the term, the coverage ends. Term life is designed to replace income during your working years. Final expense is permanent coverage that stays in force for your entire life, as long as you pay the premiums.
 
-**Final expense vs. traditional whole life.** [Whole life insurance](/life-health/whole-life.html) can provide much larger death benefits — $100,000, $250,000, or more. It builds cash value over time and is used for estate planning, wealth transfer, and long-term financial strategy. Final expense has smaller death benefits, lower premiums, and simpler underwriting. It is not a wealth-building tool — it is a practical solution for a specific cost.
+**Final expense vs. traditional whole life.** [Whole life insurance](/life/whole-life.html) can provide much larger death benefits — $100,000, $250,000, or more. It builds cash value over time and is used for estate planning, wealth transfer, and long-term financial strategy. Final expense has smaller death benefits, lower premiums, and simpler underwriting. It is not a wealth-building tool — it is a practical solution for a specific cost.
 
 ## Who should consider final expense insurance
 
@@ -100,11 +100,11 @@ Not all final expense insurance is created equal. A few things to be careful abo
 
 Final expense insurance is widely available in Kentucky from top-rated carriers. As an independent agency, we compare options across multiple companies to find the right coverage and price for your situation. There is no medical exam, and most applications can be completed in a single phone call or meeting.
 
-If you want to make sure your family is not burdened with funeral costs, [reach out for a final expense consultation](/life-health/final-expense.html). We will walk you through your options and help you find a policy that fits your budget.
+If you want to make sure your family is not burdened with funeral costs, [reach out for a final expense consultation](/life/final-expense.html). We will walk you through your options and help you find a policy that fits your budget.
 
 ### FAQ: What is the difference between final expense insurance and whole life insurance?
 
-Final expense insurance is a type of whole life insurance with a smaller death benefit (typically $5,000 to $25,000) designed specifically to cover funeral and burial costs. Traditional [whole life insurance](/life-health/whole-life.html) offers larger death benefits, builds more cash value, and is used for broader financial planning. Final expense is simpler, easier to qualify for, and less expensive.
+Final expense insurance is a type of whole life insurance with a smaller death benefit (typically $5,000 to $25,000) designed specifically to cover funeral and burial costs. Traditional [whole life insurance](/life/whole-life.html) offers larger death benefits, builds more cash value, and is used for broader financial planning. Final expense is simpler, easier to qualify for, and less expensive.
 
 ### FAQ: Can I get final expense insurance if I have health problems?
 

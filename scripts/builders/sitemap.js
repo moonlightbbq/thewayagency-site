@@ -28,16 +28,18 @@ function generateSitemap(BUILD, ctx) {
   }
 
   const lineMap = {
-    personal: { name: 'Personal Insurance', slug: 'personal' },
+    personal:   { name: 'Personal Insurance',   slug: 'personal' },
     commercial: { name: 'Commercial Insurance', slug: 'commercial' },
-    life_health: { name: 'Life & Health Insurance', slug: 'life-health' },
+    life:       { name: 'Life Insurance',       slug: 'life' },
+    health:     { name: 'Health Insurance',     slug: 'health' },
   };
 
   const sitemapUrls = [
     { url: '/', priority: '1.0', freq: 'weekly', lastmod: seoLastmod('/') },
-    { url: '/personal/', priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/personal/') },
+    { url: '/personal/',   priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/personal/') },
     { url: '/commercial/', priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/commercial/') },
-    { url: '/life-health/', priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/life-health/') },
+    { url: '/life/',       priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/life/') },
+    { url: '/health/',     priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/health/') },
     { url: '/about/', priority: '0.7', freq: 'monthly', lastmod: seoLastmod('/about/') },
     { url: '/about/team.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/about/team.html') },
     { url: '/about/locations.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/about/locations.html') },

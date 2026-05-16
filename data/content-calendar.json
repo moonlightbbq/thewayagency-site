@@ -185,10 +185,10 @@
         "kynect medicare",
         "medicare parts explained"
       ],
-      "target_product_page": "/life-health/medicare.html",
+      "target_product_page": "/health/medicare.html",
       "target_location_pages": [],
       "secondary_internal_links": [
-        "/life-health/individual-health.html"
+        "/health/individual-health.html"
       ],
       "related_cluster": "health-coverage",
       "conversion_goal": "consultation",
@@ -1593,11 +1593,11 @@
         "which life insurance is better",
         "life insurance comparison"
       ],
-      "target_product_page": "/life-health/term-life.html",
+      "target_product_page": "/life/term-life.html",
       "target_location_pages": [],
       "secondary_internal_links": [
-        "/life-health/whole-life.html",
-        "/life-health/final-expense.html"
+        "/life/whole-life.html",
+        "/life/final-expense.html"
       ],
       "related_cluster": "life-planning",
       "related_future_posts": [
@@ -1744,12 +1744,12 @@
         "life insurance coverage amount",
         "how to calculate life insurance needs"
       ],
-      "target_product_page": "/life-health/term-life.html",
+      "target_product_page": "/life/term-life.html",
       "target_location_pages": [],
       "secondary_internal_links": [
         "/blog/term-life-vs-whole-life.html",
-        "/life-health/whole-life.html",
-        "/life-health/disability.html"
+        "/life/whole-life.html",
+        "/life/disability.html"
       ],
       "related_cluster": "life-planning",
       "related_future_posts": [],
@@ -1819,10 +1819,10 @@
         "short term vs long term disability",
         "disability insurance kentucky"
       ],
-      "target_product_page": "/life-health/disability.html",
+      "target_product_page": "/life/disability.html",
       "target_location_pages": [],
       "secondary_internal_links": [
-        "/life-health/term-life.html",
+        "/life/term-life.html",
         "/blog/how-much-life-insurance-do-you-need.html"
       ],
       "related_cluster": "life-planning",
@@ -1930,11 +1930,11 @@
         "medicare enrollment dates",
         "medicare advantage vs medigap 2027"
       ],
-      "target_product_page": "/life-health/medicare.html",
+      "target_product_page": "/health/medicare.html",
       "target_location_pages": [],
       "secondary_internal_links": [
         "/blog/medicare-enrollment-guide.html",
-        "/life-health/individual-health.html"
+        "/health/individual-health.html"
       ],
       "related_cluster": "health-coverage",
       "related_future_posts": [],
@@ -2113,10 +2113,10 @@
         "funeral insurance cost",
         "final expense vs whole life"
       ],
-      "target_product_page": "/life-health/final-expense.html",
+      "target_product_page": "/life/final-expense.html",
       "target_location_pages": [],
       "secondary_internal_links": [
-        "/life-health/whole-life.html",
+        "/life/whole-life.html",
         "/blog/term-life-vs-whole-life.html"
       ],
       "related_cluster": "life-planning",
@@ -2452,8 +2452,8 @@
         "/insurance/frankfort-ky.html"
       ],
       "secondary_internal_links": [
-        "/life-health/individual-health.html",
-        "/life-health/term-life.html",
+        "/health/individual-health.html",
+        "/life/term-life.html",
         "/personal/auto.html"
       ],
       "related_cluster": "kentucky-local",
@@ -2527,7 +2527,7 @@
       "target_location_pages": [],
       "secondary_internal_links": [
         "/commercial/commercial-property.html",
-        "/life-health/group-health.html"
+        "/health/group-health.html"
       ],
       "related_cluster": "commercial-core",
       "related_future_posts": [],
@@ -2559,11 +2559,11 @@
         "employer health insurance cost",
         "how to set up group health plan"
       ],
-      "target_product_page": "/life-health/group-health.html",
+      "target_product_page": "/health/group-health.html",
       "target_location_pages": [],
       "secondary_internal_links": [
         "/commercial/workers-compensation.html",
-        "/life-health/individual-health.html"
+        "/health/individual-health.html"
       ],
       "related_cluster": "commercial-workforce",
       "related_future_posts": [],

@@ -29,10 +29,33 @@ https://thewayagency.com/* https://www.thewayagency.com/:splat 301!
 # Commercial Lines (old Webflow slugs only)
 /commercial-insurance /commercial/ 301
 
-# Life & Health (old Webflow slugs only)
-/life-health-insurance /life-health/ 301
-/life-health/supplemental-health-insurance /life-health/supplemental-health.html 301
-/life-health/final-expense-insurance /life-health/final-expense.html 301
+# Life & Health (old Webflow slugs)
+/life-health-insurance /life/ 301
+/life-insurance /life/ 301
+/health-insurance /health/ 301
+
+# Life & Health split (migration: /life-health/* → /life/* and /health/*)
+# Hub
+/life-health /life/ 301
+/life-health/ /life/ 301
+# Life products (life-licensed)
+/life-health/term-life.html /life/term-life.html 301
+/life-health/whole-life.html /life/whole-life.html 301
+/life-health/annuities.html /life/annuities.html 301
+/life-health/disability.html /life/disability.html 301
+/life-health/final-expense.html /life/final-expense.html 301
+/life-health/final-expense-insurance /life/final-expense.html 301
+# Health products (health-licensed)
+/life-health/medicare.html /health/medicare.html 301
+/life-health/medicaid.html /health/medicaid.html 301
+/life-health/individual-health.html /health/individual-health.html 301
+/life-health/family-health.html /health/family-health.html 301
+/life-health/group-health.html /health/group-health.html 301
+/life-health/supplemental-health.html /health/supplemental-health.html 301
+/life-health/supplemental-health-insurance /health/supplemental-health.html 301
+/life-health/dental-vision.html /health/dental-vision.html 301
+# Anything else under /life-health/ falls back to the Life hub
+/life-health/* /life/ 301
 
 # About (old Webflow slugs → new paths)
 /about-us/about-us /about/ 301

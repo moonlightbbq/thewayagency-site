@@ -7,7 +7,7 @@ author_title: Independent Insurance Agency
 date: 2026-09-02
 modified: 2026-09-02
 reading_time: 6 min read
-related_page: /life-health/term-life.html
+related_page: /life/term-life.html
 tags: life insurance, coverage amount, financial planning, family protection, kentucky
 ---
 
@@ -77,7 +77,7 @@ Now subtract what you already have:
 
 **Coverage gap: approximately $890,000**
 
-In this case, a $1,000,000 [term life policy](/life-health/term-life.html) would cover the gap with a reasonable margin.
+In this case, a $1,000,000 [term life policy](/life/term-life.html) would cover the gap with a reasonable margin.
 
 ## Factors that affect your number
 
@@ -122,7 +122,7 @@ A dollar today is worth more than a dollar in 20 years. Some families add 10 to 
 
 **Waiting too long.** Every year you wait, premiums go up. A healthy 30-year-old pays roughly half what a healthy 40-year-old pays for the same coverage. The best time to buy life insurance is when you are young and healthy.
 
-**Forgetting about [disability insurance](/life-health/disability.html).** Life insurance pays when you die. But what if you are injured or sick and cannot work? Disability insurance protects your income while you are alive. Both types of coverage work together.
+**Forgetting about [disability insurance](/life/disability.html).** Life insurance pays when you die. But what if you are injured or sick and cannot work? Disability insurance protects your income while you are alive. Both types of coverage work together.
 
 ## Getting a personalized recommendation
 

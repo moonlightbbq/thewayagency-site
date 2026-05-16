@@ -37,13 +37,13 @@ Basic group life through the state is typically capped at one times your annual 
 
 Most financial advisors recommend life insurance coverage of 10 to 12 times your income. The gap between one times your salary and what your family actually needs is significant.
 
-You can buy supplemental life through the state plan, but the rates are not always competitive, especially if you are young and healthy. A private [term life policy](/life-health/term-life.html) often provides more coverage for less money, and it stays with you if you leave state employment. That portability matters more than most people realize.
+You can buy supplemental life through the state plan, but the rates are not always competitive, especially if you are young and healthy. A private [term life policy](/life/term-life.html) often provides more coverage for less money, and it stays with you if you leave state employment. That portability matters more than most people realize.
 
 ### Health insurance gaps
 
 State health plans, like all group plans, have networks, deductibles, copays, and out-of-pocket maximums. Depending on your plan tier and family size, your annual out-of-pocket exposure could be several thousand dollars.
 
-If you or a family member has a chronic condition or needs specialty care, those costs add up. [Individual supplemental health policies](/life-health/individual-health.html) like hospital indemnity plans or critical illness policies pay a lump sum when you are hospitalized or diagnosed with a covered condition. That money helps cover deductibles, lost wages, or expenses that health insurance does not touch.
+If you or a family member has a chronic condition or needs specialty care, those costs add up. [Individual supplemental health policies](/health/individual-health.html) like hospital indemnity plans or critical illness policies pay a lump sum when you are hospitalized or diagnosed with a covered condition. That money helps cover deductibles, lost wages, or expenses that health insurance does not touch.
 
 ### No umbrella liability coverage
 

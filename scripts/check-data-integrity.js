@@ -142,7 +142,7 @@ if (seoData && products) {
     for (const p of prods) { if (p.url) productSlugs.add(p.url); }
   }
   for (const urlPath of Object.keys(seoData.pages || {})) {
-    if (urlPath.match(/^\/(personal|commercial|life-health)\/[^/]+\.html$/)) {
+    if (urlPath.match(/^\/(personal|commercial|life|health)\/[^/]+\.html$/)) {
       if (!productSlugs.has(urlPath)) {
         warn(`seo.json references ${urlPath} but no matching product found`);
         xrefErrors++;

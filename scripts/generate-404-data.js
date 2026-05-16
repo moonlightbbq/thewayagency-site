@@ -69,7 +69,8 @@ if (fs.existsSync(blogDir)) {
 // Hub pages
 suggestions.push({ url: '/personal/', title: 'Personal Insurance', keywords: ['personal', 'home', 'auto', 'renters'] });
 suggestions.push({ url: '/commercial/', title: 'Commercial Insurance', keywords: ['commercial', 'business', 'liability'] });
-suggestions.push({ url: '/life-health/', title: 'Life & Health Insurance', keywords: ['life', 'health', 'medicare', 'disability'] });
+suggestions.push({ url: '/life/', title: 'Life Insurance', keywords: ['life', 'term life', 'whole life', 'annuity', 'disability', 'final expense'] });
+suggestions.push({ url: '/health/', title: 'Health Insurance', keywords: ['health', 'medicare', 'medicaid', 'individual health', 'group health', 'dental', 'vision'] });
 suggestions.push({ url: '/carriers/', title: 'Our Carriers', keywords: ['carriers', 'companies', 'providers'] });
 suggestions.push({ url: '/about/', title: 'About Us', keywords: ['about', 'team', 'agency'] });
 suggestions.push({ url: '/blog/', title: 'Insurance Blog', keywords: ['blog', 'articles', 'tips'] });

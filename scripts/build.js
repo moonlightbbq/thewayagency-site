@@ -51,7 +51,7 @@ const office = locations.offices[0];
 
 // Load rich content files (optional  -  graceful fallback if not yet created)
 let richContent = {};
-for (const file of ['content-personal.json', 'content-commercial.json', 'content-life-health.json']) {
+for (const file of ['content-personal.json', 'content-commercial.json', 'content-life.json', 'content-health.json']) {
   const fp = path.join(DATA, file);
   if (fs.existsSync(fp)) {
     Object.assign(richContent, JSON.parse(fs.readFileSync(fp, 'utf8')));
@@ -111,7 +111,8 @@ const subPages = assets.copySubPages(SRC, BUILD, injectVersion);
 
 // 4. Generate hub pages
 for (const [lineKey, config] of Object.entries(hubConfig)) {
-  const lineSlug = lineKey === 'life_health' ? 'life-health' : lineKey;
+  // line key === slug now that life/health are separate top-level keys
+  const lineSlug = lineKey;
   assets.ensureDir(path.join(BUILD, lineSlug));
   const hubHtml = generateHubPage(lineKey, ctx);
   fs.writeFileSync(path.join(BUILD, lineSlug, 'index.html'), injectVersion(hubHtml));
@@ -145,9 +146,10 @@ runBlogGenerator(ROOT);
 
 // 6. Generate product pages
 const lineMap = {
-  personal: { name: 'Personal Insurance', slug: 'personal' },
+  personal:   { name: 'Personal Insurance',   slug: 'personal' },
   commercial: { name: 'Commercial Insurance', slug: 'commercial' },
-  life_health: { name: 'Life & Health Insurance', slug: 'life-health' },
+  life:       { name: 'Life Insurance',       slug: 'life' },
+  health:     { name: 'Health Insurance',     slug: 'health' },
 };
 
 let generatedCount = 0;

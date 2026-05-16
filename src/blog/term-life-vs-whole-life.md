@@ -7,7 +7,7 @@ author_title: Independent Insurance Agency
 date: 2026-08-05
 modified: 2026-08-05
 reading_time: 6 min read
-related_page: /life-health/term-life.html
+related_page: /life/term-life.html
 tags: life insurance, term life, whole life, family planning, financial protection
 ---
 
@@ -19,7 +19,7 @@ Here is a straightforward comparison so you can make an informed decision.
 
 ## What term life insurance does
 
-[Term life insurance](/life-health/term-life.html) provides a death benefit for a specific period, typically 10, 15, 20, or 30 years. If you die during the term, your beneficiaries receive the full death benefit. If you outlive the term, the policy expires with no payout and no cash value.
+[Term life insurance](/life/term-life.html) provides a death benefit for a specific period, typically 10, 15, 20, or 30 years. If you die during the term, your beneficiaries receive the full death benefit. If you outlive the term, the policy expires with no payout and no cash value.
 
 **What makes term life attractive:**
 
@@ -35,7 +35,7 @@ Here is a straightforward comparison so you can make an informed decision.
 
 ## What whole life insurance does
 
-[Whole life insurance](/life-health/whole-life.html) provides a death benefit that lasts your entire life, as long as you pay the premiums. It also builds cash value over time, which grows at a guaranteed rate set by the insurance company.
+[Whole life insurance](/life/whole-life.html) provides a death benefit that lasts your entire life, as long as you pay the premiums. It also builds cash value over time, which grows at a guaranteed rate set by the insurance company.
 
 **What makes whole life attractive:**
 
@@ -67,7 +67,7 @@ Term life is a strong choice when:
 
 Whole life is a strong choice when:
 
-**You want guaranteed lifetime coverage.** If you want to ensure a death benefit no matter when you die, whole life delivers that certainty. This is especially valuable for estate planning, leaving an inheritance, or covering [final expenses](/life-health/final-expense.html).
+**You want guaranteed lifetime coverage.** If you want to ensure a death benefit no matter when you die, whole life delivers that certainty. This is especially valuable for estate planning, leaving an inheritance, or covering [final expenses](/life/final-expense.html).
 
 **You want forced savings with guarantees.** The cash value component of whole life grows at a guaranteed rate. If you are the type of person who would not invest the premium difference on your own, whole life provides a built-in savings mechanism.
 
