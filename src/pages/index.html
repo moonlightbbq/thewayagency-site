@@ -47,6 +47,7 @@
   {
     "@context": "https://schema.org",
     "@type": ["InsuranceAgency", "LocalBusiness"],
+    "@id": "https://www.thewayagency.com/#organization",
     "name": "The Way Agency",
     "legalName": "Way Associates, Inc",
     "url": "https://www.thewayagency.com",
@@ -101,6 +102,8 @@
   {
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    "@id": "https://www.thewayagency.com/#faq",
+    "about": { "@id": "https://www.thewayagency.com/#organization" },
     "mainEntity": [
       {
         "@type": "Question",
@@ -143,15 +146,13 @@
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": "https://www.thewayagency.com/#website",
     "name": "The Way Agency",
     "alternateName": "Way Associates, Inc",
     "url": "https://www.thewayagency.com/",
     "inLanguage": "en-US",
-    "publisher": {
-      "@type": "Organization",
-      "name": "The Way Agency",
-      "url": "https://www.thewayagency.com/"
-    }
+    "publisher": { "@id": "https://www.thewayagency.com/#organization" },
+    "about": { "@id": "https://www.thewayagency.com/#organization" }
   }
   </script>
 </head>
