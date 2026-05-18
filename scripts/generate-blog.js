@@ -288,11 +288,11 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
   <link rel="icon" href="/src/assets/images/favicon.png">
   <link rel="apple-touch-icon" href="/src/assets/images/apple-touch-icon.png">
-  <link rel="canonical" href="https://www.thewayagency.com/blog/${meta.slug}.html">
+  <link rel="canonical" href="https://www.thewayagency.com/blog/${meta.slug}">
   <meta property="og:title" content="${meta.title} | The Way Agency">
   <meta property="og:description" content="${meta.description || ''}">
   <meta property="og:type" content="article">
-  <meta property="og:url" content="https://www.thewayagency.com/blog/${meta.slug}.html">
+  <meta property="og:url" content="https://www.thewayagency.com/blog/${meta.slug}">
   <meta property="og:site_name" content="The Way Agency">
   <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
   <meta property="og:image:width" content="631">

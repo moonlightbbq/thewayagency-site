@@ -91,7 +91,9 @@ if (fs.existsSync(sitemapPath)) {
   while ((sitemapMatch = urlRegex.exec(sitemap)) !== null) {
     sitemapTotal++;
     const urlPath = sitemapMatch[1];
-    if (!allPaths.has(urlPath) && !allPaths.has(urlPath + 'index.html') && !allPaths.has(urlPath.replace(/\/$/, '/index.html'))) {
+    // Cloudflare Pages serves /foo from /foo.html (pretty URLs). Sitemap declares
+    // the served URL (extensionless), so accept both /foo and /foo.html on disk.
+    if (!allPaths.has(urlPath) && !allPaths.has(urlPath + '.html') && !allPaths.has(urlPath + 'index.html') && !allPaths.has(urlPath.replace(/\/$/, '/index.html'))) {
       error(`Sitemap URL not found: ${urlPath}`);
       sitemapBroken++;
     }
@@ -183,7 +185,8 @@ for (const file of htmlFiles) {
         const urlPath = url.replace('https://www.thewayagency.com', '');
         // Skip anchors, image/asset paths, and root
         if (!urlPath || urlPath === '/' || urlPath.includes('#') || urlPath.startsWith('/src/')) continue;
-        if (!allPaths.has(urlPath) && !allPaths.has(urlPath + 'index.html') && !allPaths.has(urlPath.replace(/\/$/, '/index.html'))) {
+        // Cloudflare pretty URLs serve /foo from /foo.html — accept both.
+        if (!allPaths.has(urlPath) && !allPaths.has(urlPath + '.html') && !allPaths.has(urlPath + 'index.html') && !allPaths.has(urlPath.replace(/\/$/, '/index.html'))) {
           if (!allPaths.has(urlPath + '/')) {
             warn(`JSON-LD URL in ${rel} may not resolve: ${urlPath}`);
             jsonLdUrlIssues++;

@@ -105,10 +105,16 @@ function generateSitemap(BUILD, ctx) {
     }
   }
 
+  // Cloudflare Pages serves /foo from /foo.html (pretty URLs) and 308-redirects
+  // requests with the .html extension to the extensionless form. Sitemap entries
+  // must declare the served URL (extensionless) so Google does not crawl through
+  // the redirect chain. fileLastmod still resolves the .html file on disk.
+  const stripHtml = (u) => u.replace(/\.html$/, '');
+
   const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${sitemapUrls.map(u => `  <url>
-    <loc>${baseUrl}${u.url}</loc>
+    <loc>${baseUrl}${stripHtml(u.url)}</loc>
     <lastmod>${u.lastmod || fileLastmod(u.url) || today}</lastmod>
     <changefreq>${u.freq}</changefreq>
     <priority>${u.priority}</priority>

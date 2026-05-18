@@ -655,10 +655,10 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
 ${renderHead({
     title: product.title_tag,
     description: product.meta_description || product.summary,
-    canonical: `https://www.thewayagency.com${product.url}`,
+    canonical: `https://www.thewayagency.com${product.url.replace(/\.html$/, '')}`,
     ogTitle: product.title_tag,
     ogDescription: product.summary,
-    ogUrl: `https://www.thewayagency.com${product.url}`,
+    ogUrl: `https://www.thewayagency.com${product.url.replace(/\.html$/, '')}`,
     schema: serviceSchema + `
   <script type="application/ld+json">
   ${breadcrumbs.schema}
@@ -792,10 +792,10 @@ ${faqs.map(f => `      {
 ${renderHead({
     title: city.title || defaultTitle,
     description: city.meta_description || defaultDescription,
-    canonical: `https://www.thewayagency.com/insurance/${city.slug}.html`,
+    canonical: `https://www.thewayagency.com/insurance/${city.slug}`,
     ogTitle: city.title || defaultTitle,
     ogDescription: city.meta_description || defaultOgDescription,
-    ogUrl: `https://www.thewayagency.com/insurance/${city.slug}.html`,
+    ogUrl: `https://www.thewayagency.com/insurance/${city.slug}`,
     schema: citySchema + (faqSchema ? '\n  ' + faqSchema : ''),
   })}
 <body>
@@ -940,10 +940,10 @@ ${faqs.map(f => `      {
 ${renderHead({
     title: county.title || defaultTitle,
     description: county.meta_description || defaultDescription,
-    canonical: `https://www.thewayagency.com/insurance/${county.slug}.html`,
+    canonical: `https://www.thewayagency.com/insurance/${county.slug}`,
     ogTitle: county.title || defaultTitle,
     ogDescription: county.meta_description || defaultDescription,
-    ogUrl: `https://www.thewayagency.com/insurance/${county.slug}.html`,
+    ogUrl: `https://www.thewayagency.com/insurance/${county.slug}`,
     schema: countySchema + (faqSchema ? '\n  ' + faqSchema : ''),
   })}
 <body>
@@ -1037,10 +1037,10 @@ function generateIndustryPage(ind, ctx) {
 ${renderHead({
     title: `Insurance for ${ind.name} in Kentucky | The Way Agency`,
     description: `Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. ${ind.description.split('.')[0]}. Get a quote from top-rated carriers.`,
-    canonical: `https://www.thewayagency.com/industries/${ind.slug}.html`,
+    canonical: `https://www.thewayagency.com/industries/${ind.slug}`,
     ogTitle: `Insurance for ${ind.name} in Kentucky | The Way Agency`,
     ogDescription: `Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. Get a quote from top-rated carriers.`,
-    ogUrl: `https://www.thewayagency.com/industries/${ind.slug}.html`,
+    ogUrl: `https://www.thewayagency.com/industries/${ind.slug}`,
     schema: `<script type="application/ld+json">
   ${JSON.stringify({"@context":"https://schema.org","@type":"InsuranceAgency","name":"The Way Agency","knowsAbout":ind.name})}
   </script>`,
@@ -1144,10 +1144,10 @@ ${linkedProducts.map(p => `          <a href="${p.url}" class="card" style="text
 ${renderHead({
     title: `${carrier.name} Insurance | The Way Agency`,
     description: `${carrier.name} insurance through The Way Agency. ${carrier.description || `We represent ${carrier.name} for ${lineName.toLowerCase()} in Kentucky, Indiana, and Tennessee.`}`,
-    canonical: `https://www.thewayagency.com/carriers/${carrier.slug}.html`,
+    canonical: `https://www.thewayagency.com/carriers/${carrier.slug}`,
     ogTitle: `${carrier.name} Insurance | The Way Agency`,
     ogDescription: carrier.description || `We represent ${carrier.name} for insurance in KY, IN & TN.`,
-    ogUrl: `https://www.thewayagency.com/carriers/${carrier.slug}.html`,
+    ogUrl: `https://www.thewayagency.com/carriers/${carrier.slug}`,
     schema: `<script type="application/ld+json">
   ${JSON.stringify({"@context":"https://schema.org","@type":"Organization","name":carrier.name,"description":carrier.description||`${carrier.name} insurance carrier represented by The Way Agency in Kentucky, Indiana, and Tennessee.`})}
   </script>`,

@@ -124,7 +124,7 @@ function _buildLocalBusiness(agency, office, reviews, city = null) {
     '@context': 'https://schema.org',
     '@type': ['LocalBusiness', 'InsuranceAgency'],
     name: city ? `The Way Agency — ${city.city}, ${city.state}` : (agency.dba || 'The Way Agency'),
-    url: city ? `${SITE_URL}/insurance/${city.slug}.html` : SITE_URL,
+    url: city ? `${SITE_URL}/insurance/${city.slug}` : SITE_URL,
     telephone: office.phone,
     email: office.email,
     address: _buildAddress(office, city),
@@ -188,7 +188,7 @@ function _buildLocalBusinessForCounty(agency, office, reviews, county) {
     '@context': 'https://schema.org',
     '@type': ['LocalBusiness', 'InsuranceAgency'],
     name: county ? `The Way Agency — ${county.county_name}, ${county.state}` : (agency.dba || 'The Way Agency'),
-    url: county ? `${SITE_URL}/insurance/${county.slug}.html` : SITE_URL,
+    url: county ? `${SITE_URL}/insurance/${county.slug}` : SITE_URL,
     telephone: office.phone,
     email: office.email,
     address: _buildAddress(office),
@@ -359,7 +359,7 @@ function _buildArticle(context, agency) {
     '@type': 'Article',
     headline: context.title || '',
     description: context.description || '',
-    url: context.slug ? `${SITE_URL}/blog/${context.slug}.html` : undefined,
+    url: context.slug ? `${SITE_URL}/blog/${context.slug}` : undefined,
     datePublished: context.publish_date || context.date || undefined,
     dateModified: context.modified_date || context.modified || context.publish_date || context.date || undefined,
     author,
@@ -391,13 +391,13 @@ function _buildBreadcrumbs(pageType, context) {
     case 'city':
       items.push({ name: 'Insurance', url: `${SITE_URL}/insurance/` });
       if (context.city?.city) {
-        items.push({ name: `${context.city.city}, ${context.city.state}`, url: `${SITE_URL}/insurance/${context.city.slug}.html` });
+        items.push({ name: `${context.city.city}, ${context.city.state}`, url: `${SITE_URL}/insurance/${context.city.slug}` });
       }
       break;
     case 'county':
       items.push({ name: 'Insurance', url: `${SITE_URL}/insurance/` });
       if (context.county?.county_name) {
-        items.push({ name: `${context.county.county_name}, ${context.county.state}`, url: `${SITE_URL}/insurance/${context.county.slug}.html` });
+        items.push({ name: `${context.county.county_name}, ${context.county.state}`, url: `${SITE_URL}/insurance/${context.county.slug}` });
       }
       break;
     case 'blog':
