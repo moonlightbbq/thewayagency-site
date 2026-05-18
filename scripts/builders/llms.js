@@ -69,6 +69,18 @@ Service-area business. No public storefront. We meet clients by phone, video, em
 `;
 }
 
+function renderCountyBlock(county) {
+  const sections = (county.context_sections || []).map(s => `### ${s.heading}\n\n${s.body}\n`).join('\n');
+  const faqs = Array.isArray(county.faqs) && county.faqs.length > 0
+    ? `\n### Frequently asked questions\n\n${county.faqs.map(f => `**Q. ${f.question}**\n\n${f.answer}\n`).join('\n')}`
+    : '';
+  return `## Insurance in ${county.county_name}, ${county.state}
+
+${county.context}
+
+${sections}${county.context_closing ? '\n' + county.context_closing + '\n' : ''}${faqs}`;
+}
+
 function renderCityBlock(city) {
   const sections = (city.context_sections || []).map(s => `### ${s.heading}\n\n${s.body}\n`).join('\n');
   const faqs = Array.isArray(city.faqs) && city.faqs.length > 0
@@ -88,10 +100,17 @@ function generate(BUILD, ctx) {
   // /llms.txt - terse manifest only
   fs.writeFileSync(path.join(BUILD, 'llms.txt'), manifest, 'utf8');
 
-  // /llms-full.txt - manifest plus the two priority hubs (Owensboro + Mt Washington) verbatim
+  // /llms-full.txt - manifest plus the priority hubs verbatim:
+  // Owensboro + Mt Washington cities, plus Daviess County (Owensboro umbrella).
+  // Adding 22 secondary cities would dilute the AI-grounding signal for the
+  // priority markets, so the filter stays narrow.
   const priorityCities = (landingData.cities || []).filter(c => c.slug === 'owensboro-ky' || c.slug === 'mt-washington-ky');
-  const cityBlocks = priorityCities.map(renderCityBlock).join('\n\n---\n\n');
-  const full = manifest + '\n\n---\n\n' + cityBlocks + '\n';
+  const priorityCounties = (landingData.counties || []).filter(c => c.slug === 'daviess-county-ky');
+  const blocks = [
+    ...priorityCities.map(renderCityBlock),
+    ...priorityCounties.map(renderCountyBlock),
+  ].join('\n\n---\n\n');
+  const full = manifest + '\n\n---\n\n' + blocks + '\n';
   fs.writeFileSync(path.join(BUILD, 'llms-full.txt'), full, 'utf8');
 
   console.log(`  ✓ llms.txt (${manifest.length} bytes), llms-full.txt (${full.length} bytes)`);

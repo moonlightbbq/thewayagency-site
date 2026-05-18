@@ -66,4 +66,4 @@ If you have a teenage driver on your policy, your premium is going to increase. 
 
 If you are paying too much for auto insurance, or if you are not sure your coverage is adequate for your daily commute, we can help. We compare rates from top-rated carriers and show you exactly what each option covers.
 
-[Get an auto insurance quote for Mt. Washington](/insurance/auto-insurance-mt-washington-ky.html) or [see all insurance options in Mt. Washington](/insurance/mt-washington-ky.html). You can also [learn more about auto insurance requirements in Kentucky](/personal/auto.html).
+[Get an auto insurance quote for Mt. Washington](/insurance/mt-washington-ky#auto) or [see all insurance options in Mt. Washington](/insurance/mt-washington-ky). You can also [learn more about auto insurance requirements in Kentucky](/personal/auto).

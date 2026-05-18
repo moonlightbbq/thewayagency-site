@@ -50,16 +50,18 @@ function createSchemaInjector({ agency, office, reviews, testimonials, blocklist
         break;
 
       case 'city':
+        // _buildLocalBusiness emits @type: ['LocalBusiness', 'InsuranceAgency']
+        // already — no separate InsuranceAgency node needed.
         schemas.push(_buildLocalBusiness(agency, office, reviews, context.city));
-        schemas.push(_buildInsuranceAgency(agency, office, context.city));
         for (const svc of _buildServicesForCity(agency, context.city)) {
           schemas.push(svc);
         }
         break;
 
       case 'county':
+        // Same consolidation as 'city' — the LocalBusiness combo declares
+        // both types in one node.
         schemas.push(_buildLocalBusinessForCounty(agency, office, reviews, context.county));
-        schemas.push(_buildInsuranceAgencyForCounty(agency, office, context.county));
         break;
 
       case 'blog':

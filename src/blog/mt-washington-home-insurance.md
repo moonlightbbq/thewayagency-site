@@ -66,4 +66,4 @@ If your mortgage lender requires flood insurance, we can quote it alongside your
 
 If you are buying a home in Mt. Washington, renewing your current policy, or just want to make sure you are not overpaying, we can help. We compare rates from top-rated carriers and explain what each policy covers in plain language.
 
-[Get a home insurance quote for Mt. Washington](/insurance/home-insurance-mt-washington-ky.html) or [learn more about our Mt. Washington coverage options](/insurance/mt-washington-ky.html). You can also [read more about what home insurance covers in Kentucky](/personal/home.html).
+[Get a home insurance quote for Mt. Washington](/insurance/mt-washington-ky#homeowners) or [learn more about our Mt. Washington coverage options](/insurance/mt-washington-ky). You can also [read more about what home insurance covers in Kentucky](/personal/home).

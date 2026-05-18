@@ -68,9 +68,10 @@ for (const file of htmlFiles) {
     const href = match[1];
     // Skip external, anchor, and special links
     if (href.startsWith('//') || href.startsWith('/src/')) continue;
-    // Check if path exists (as file or directory with index.html)
-    if (!allPaths.has(href) && !allPaths.has(href.replace(/\/$/, '/index.html'))) {
-      // Check if Cloudflare pretty URLs would resolve it (e.g., /about → /about/index.html)
+    // Check if path exists (as file or directory with index.html). Cloudflare
+    // Pages serves /foo from /foo.html (pretty URLs), so accept .html on disk
+    // for an extensionless href.
+    if (!allPaths.has(href) && !allPaths.has(href + '.html') && !allPaths.has(href.replace(/\/$/, '/index.html'))) {
       if (!allPaths.has(href + '/') && !allPaths.has(href + '/index.html')) {
         error(`Broken link in ${rel}: ${href}`);
         brokenLinks++;

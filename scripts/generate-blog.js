@@ -708,9 +708,15 @@ if (fs.existsSync(calendarPath)) {
     }
   }
 
-  // Filter out future-dated posts and sort by date, newest first
+  // Filter out future-dated posts and posts whose .html artifact does not
+  // exist on disk (covers the case where the calendar status says
+  // "published" but the .md frontmatter has a future `date:` field that
+  // caused the per-post generator above to skip it).
   const now = new Date();
-  const readyToPublish = allPublished.filter(p => new Date(p.publish_date + 'T00:00:00') <= now);
+  const readyToPublish = allPublished.filter(p => {
+    if (new Date(p.publish_date + 'T00:00:00') > now) return false;
+    return fs.existsSync(path.join(BLOG_BUILD, `${p.slug}.html`));
+  });
   readyToPublish.sort((a, b) => new Date(b.publish_date) - new Date(a.publish_date));
   const allPublishedFiltered = readyToPublish;
 
