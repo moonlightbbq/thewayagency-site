@@ -294,15 +294,20 @@ function _buildService(context, agency, city = null) {
 }
 
 // Build Review nodes from testimonials.json for the homepage. Selection:
-// rating === 5, date within last 24 months, text >= 40 chars, not in blocklist.
+// rating === 5, date within last 36 months, text >= 40 chars, not in blocklist.
 // Sorted by date desc, limited to `limit`. ratingValue emitted as NUMBER 5
 // (not string) to avoid colliding with handcrafted aggregateRating string "5.0"
 // per validate-consistency.js Check 7.
+//
+// 36-month window: testimonials.json is hand-curated and grows slowly; a tighter
+// window (24mo) drops historically valid 5-star reviews that still represent
+// the current service. Google's freshness signal cares about datePublished
+// per-node, not the corpus, so older dated reviews don't dilute newer ones.
 function _buildReviews(testimonials, blocklist, limit) {
   if (!testimonials || !Array.isArray(testimonials.testimonials)) return [];
   const blockedIds = new Set((blocklist && blocklist.blocked) || []);
   const cutoff = new Date();
-  cutoff.setMonth(cutoff.getMonth() - 24);
+  cutoff.setMonth(cutoff.getMonth() - 36);
   const cutoffStr = cutoff.toISOString().split('T')[0];
 
   const candidates = testimonials.testimonials
