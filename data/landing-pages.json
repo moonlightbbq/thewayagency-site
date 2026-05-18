@@ -119,6 +119,14 @@
         {
           "question": "How quickly will someone respond after I request a quote from Henderson?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a quick phone call, but we will text or email if that is what you prefer. Quote turnaround varies by line of business and by the carrier's underwriting requirements."
+        },
+        {
+          "question": "Does standard homeowners insurance in Henderson cover earthquake damage from the Wabash Valley seismic zone?",
+          "answer": "No, standard homeowners policies in Kentucky exclude earthquake damage. Henderson sits within the Wabash Valley seismic zone, which the USGS identifies as having elevated seismic risk relative to most of Kentucky. Earthquake coverage requires a separate endorsement or a standalone earthquake policy, which we can quote alongside your home policy."
+        },
+        {
+          "question": "Do you write farm package insurance for Henderson County tobacco, corn, and soybean operations?",
+          "answer": "Yes, farm package policies covering dwelling, outbuildings, equipment, farm liability, and farm auto for Henderson County agricultural operations. Coverage can include hobby-farm or full commercial-farm tiers depending on acreage and income. Standalone multi-peril crop insurance (MPCI) for row crops is referred to specialist crop agencies that focus exclusively on that product."
         }
       ]
     },
@@ -186,6 +194,10 @@
         {
           "question": "How quickly will I hear back after requesting a quote in Louisville?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a quick phone call, but we will text or email if that is what you prefer. Commercial quotes can take longer than personal lines because commercial carriers underwrite more thoroughly."
+        },
+        {
+          "question": "Do you write landlord insurance for Old Louisville and Highlands rental properties?",
+          "answer": "Yes, we write DP-3 landlord policies for single-family and small multi-unit rentals across Old Louisville, the Highlands, Germantown, NuLu, and the Bardstown Road corridor. Standard coverage includes building, loss of rents, and landlord liability. Older brick stock in Old Louisville often warrants a separate appraisal for replacement-cost limits, and student-heavy rentals near Bellarmine or U of L typically benefit from higher liability tiers."
         }
       ]
     },
@@ -245,6 +257,10 @@
         {
           "question": "What is your response time for a Lexington quote request?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a quick phone call, but we will text or email if that is what you prefer. Equine and commercial quotes can take longer because carriers underwrite specialty risk more thoroughly."
+        },
+        {
+          "question": "What landlord insurance applies to UK off-campus student rentals in Lexington?",
+          "answer": "We write DP-3 landlord policies for off-campus rentals around University of Kentucky — South Limestone, Maxwell Street, State Street, Aylesford, and the Woodland Park corridor. Standard coverage includes building, loss of rents through student turnover, and landlord liability. Student-density rentals often warrant higher liability limits than typical residential landlord policies, especially in older multi-tenant houses."
         }
       ]
     },
@@ -304,6 +320,10 @@
         {
           "question": "When will The Way Agency get back to me after I submit a quote request?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We usually open with a brief phone call, but we will text or email if that is what you prefer. Commercial and manufacturing quotes can take longer because carriers underwrite more thoroughly."
+        },
+        {
+          "question": "Do you write landlord insurance for WKU student rentals around Bowling Green?",
+          "answer": "Yes, DP-3 landlord policies for student rentals near Western Kentucky University — State Street, Center Street, College Street, and the wider Hill / WKU corridor. Coverage includes building, loss of rents through student turnover, and landlord liability. Bowling Green's tornado and hail exposure usually warrants a higher wind/hail deductible review and clear named-storm language on the policy."
         }
       ]
     },
@@ -363,6 +383,10 @@
         {
           "question": "Is there a Way Agency office in Elizabethtown or near Fort Knox?",
           "answer": "No. Our mailing address is PO Box 187, Owensboro, KY 42302. We do not operate a public Elizabethtown or Fort Knox storefront. We serve Hardin County clients by phone, video, email, text, or in person at the client's location, including for active-duty families during PCS transitions."
+        },
+        {
+          "question": "Do you write commercial coverage for businesses serving the Ford BlueOval SK battery plant in Hardin County?",
+          "answer": "Yes, we write commercial general liability, commercial property, commercial auto, and workers compensation for contractors, vendors, and service businesses tied to the Ford BlueOval SK Glendale battery plant build-out. Larger contractor classes often require surety bonds (license, performance, payment), which we can place through partner carriers. Cyber liability is increasingly required by supply-chain procurement contracts and can be bundled at quote."
         }
       ]
     },
@@ -564,6 +588,10 @@
         {
           "question": "What is the typical turnaround on a Frankfort quote request?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Bourbon-industry commercial quotes can take longer because specialty carriers underwrite distilled-spirits risk thoroughly."
+        },
+        {
+          "question": "Do you write umbrella coverage for higher-value Frankfort neighborhoods like Bellepointe, Stonewall, or Indian Hills?",
+          "answer": "Yes, personal umbrella policies are common for higher-value households in Bellepointe, Stonewall, Indian Hills, and similar Frankfort neighborhoods. Umbrella stacks above the liability limits on your auto and home policies. Typical tiers range $1M to $5M with carrier-specific underlying-limit requirements (usually 250/500/100 on auto and $500K on home before umbrella attaches)."
         }
       ]
     },
@@ -623,6 +651,10 @@
         {
           "question": "How fast will you get back to me on an Evansville quote?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Quote turnaround varies by line of business and the carrier's underwriting requirements."
+        },
+        {
+          "question": "Do you write boat insurance for Ohio River pleasure craft launched from Evansville marinas?",
+          "answer": "Yes, boat policies cover hull, liability, personal property, and uninsured boater coverage. Ohio River craft based out of Evansville-area marinas typically benefit from layered hull and protection coverage given commercial river traffic from barges and tow boats. Coverage extends across navigable waters with Indiana home-port designation; if the boat is trailered into KY or IL waters frequently, that should be disclosed at quote so the policy navigation territory matches actual use."
         }
       ]
     },
@@ -682,6 +714,10 @@
         {
           "question": "How quickly will I hear back on an Indianapolis quote?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Life-sciences and complex commercial quotes can take longer because carriers underwrite specialty risk thoroughly."
+        },
+        {
+          "question": "Do you write commercial general liability for breweries, distilleries, and restaurants in the Bottleworks, Fountain Square, or Mass Ave districts?",
+          "answer": "Yes, commercial general liability, commercial property, liquor liability, and workers compensation for breweries, distilleries, taprooms, and full-service restaurants across the Bottleworks, Fountain Square, Mass Ave, and Broad Ripple corridors. Liquor liability is a separate coverage line that most CGL policies exclude or sublimit; we quote it explicitly. Event-venue or pop-up coverage can be added per-event for catering and one-off uses."
         }
       ]
     },
@@ -741,6 +777,10 @@
         {
           "question": "What is your turnaround on a Fort Wayne quote request?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Defense-contracting and manufacturing commercial quotes can take longer because carriers underwrite specialty risk thoroughly."
+        },
+        {
+          "question": "Do you write commercial coverage for businesses serving the GM Fort Wayne Assembly supplier network?",
+          "answer": "Yes, commercial general liability, commercial property, commercial auto, workers compensation, and surety bonds for contractors, vendors, and tier-1/tier-2 suppliers tied to the GM Fort Wayne Assembly truck plant in Roanoke. Cyber liability and product liability requirements are common in tier-1 procurement contracts; both can be placed through specialty carriers and bundled into the commercial program at quote."
         }
       ]
     },
@@ -800,6 +840,10 @@
         {
           "question": "How fast do you respond to a Carmel quote request?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. High-value home and complex commercial quotes can take longer because specialty carriers underwrite thoroughly."
+        },
+        {
+          "question": "Do you write commercial coverage for Carmel Arts & Design District galleries, salons, and Monon Trail-corridor businesses?",
+          "answer": "Yes, commercial general liability, commercial property, and workers compensation for galleries, salons, design studios, cafes, and retail along the Carmel Arts & Design District and the Monon Trail corridor. Service businesses with client-property exposure (artwork in custody, salon chemicals, equipment) often benefit from inland marine endorsements. Foot-traffic premises liability sometimes warrants higher per-occurrence limits than the standard small-business package."
         }
       ]
     },
@@ -859,6 +903,10 @@
         {
           "question": "When will someone follow up on a Fishers quote?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Tech-startup and life insurance quotes can take longer because specialty carriers underwrite thoroughly."
+        },
+        {
+          "question": "Do you write boat insurance for Geist Reservoir pleasure craft based in Fishers and Hamilton County?",
+          "answer": "Yes, boat policies covering hull, personal property, liability, and uninsured boater coverage for craft kept at Geist Reservoir slips, lifts, or private docks in Fishers, Lawrence, and McCordsville. Wake-sport and pontoon use typically warrants higher liability limits than fishing craft. Coverage navigation territory should match actual use — Geist is private, but if the boat is trailered to Lake Monroe or Morse, that should be disclosed at quote."
         }
       ]
     },
@@ -918,6 +966,10 @@
         {
           "question": "How long until I hear back from a South Bend quote request?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Medical-device and Notre Dame contractor commercial quotes can take longer because specialty carriers underwrite thoroughly."
+        },
+        {
+          "question": "Are there flood considerations for South Bend homes along the St. Joseph River or its tributaries?",
+          "answer": "Yes, the St. Joseph River runs through downtown South Bend and parts of Mishawaka with FEMA-designated A and AE zones in the immediate river corridor. Standard homeowners policies in Indiana exclude flood damage; coverage requires a separate NFIP policy or a private flood policy. Zone X (shaded) properties are eligible for lower-premium NFIP policies and roughly 20 percent of NFIP claims occur outside the high-risk A/AE zones."
         }
       ]
     },
@@ -977,6 +1029,10 @@
         {
           "question": "What is your typical response time for Bloomington quotes?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Life-sciences commercial and lakefront homeowners quotes can take longer because specialty carriers underwrite thoroughly."
+        },
+        {
+          "question": "Do you write commercial coverage for craft breweries, tasting rooms, and restaurants in downtown Bloomington and the College Mall corridor?",
+          "answer": "Yes, commercial general liability, commercial property, liquor liability, and workers compensation for breweries, taprooms, tasting rooms, and full-service restaurants around downtown Bloomington, the Kirkwood Avenue corridor, and the College Mall area. Liquor liability is a separate coverage line that most CGL policies exclude or sublimit; we quote it explicitly. Student-density premises usually warrant higher per-occurrence limits."
         }
       ]
     },
@@ -1036,6 +1092,10 @@
         {
           "question": "How quickly do you reply to Lafayette quote requests?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Manufacturing and student-rental commercial quotes can take longer because carriers underwrite specialty risk thoroughly."
+        },
+        {
+          "question": "Do you write commercial coverage for downtown Lafayette and West Lafayette restaurants, breweries, and event venues catering to Purdue alumni weekends?",
+          "answer": "Yes, commercial general liability, commercial property, liquor liability, and special-event coverage for restaurants, breweries, taprooms, and event venues across downtown Lafayette and West Lafayette. Purdue football, homecoming, and graduation weekends usually warrant per-event policies layered over the underlying CGL for crowd-density exposure. Liquor liability is quoted separately from CGL."
         }
       ]
     },
@@ -1162,6 +1222,10 @@
         {
           "question": "When will I hear back after requesting a quote in Memphis?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Commercial trucking and earthquake-line quotes take longer because carriers underwrite specialty risk thoroughly."
+        },
+        {
+          "question": "Do you write commercial coverage for FedEx ground contractors and last-mile delivery operations in the Memphis area?",
+          "answer": "Yes, commercial general liability, commercial auto (with specific delivery-vehicle classes), workers compensation, and surety bonds for FedEx ground contractors, Amazon DSPs, and other last-mile operations based out of Memphis. Delivery-vehicle policies often require specific endorsements for transit cargo, hired/non-owned auto, and per-driver underwriting. Memphis-area route density usually warrants higher liability limits than rural last-mile operations."
         }
       ]
     },
@@ -1225,6 +1289,10 @@
         {
           "question": "How quickly can I expect a follow-up from a Knoxville quote?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Wildfire-zone and Oak Ridge contractor quotes can take longer because carriers underwrite specialty risk more thoroughly."
+        },
+        {
+          "question": "Do you write landlord insurance for University of Tennessee off-campus student rentals in Knoxville?",
+          "answer": "Yes, DP-3 landlord policies for student rentals near the University of Tennessee — the Fort Sanders, Cumberland Avenue (Strip), and Marble City corridors. Coverage includes building, loss of rents from student turnover, and landlord liability. Older Fort Sanders housing stock often warrants a separate appraisal for replacement-cost limits, and student density usually warrants higher liability tiers than typical residential landlord policies."
         }
       ]
     },
@@ -1284,6 +1352,10 @@
         {
           "question": "How long until someone responds to a Chattanooga quote request?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Volkswagen supplier and manufacturing commercial quotes can take longer because carriers underwrite specialty risk thoroughly."
+        },
+        {
+          "question": "Do you write commercial coverage for businesses serving the Volkswagen Chattanooga plant supplier network?",
+          "answer": "Yes, we write commercial general liability, commercial property, commercial auto, workers compensation, and surety bonds for contractors, vendors, and supplier businesses tied to the Volkswagen Chattanooga assembly plant. Tier-1 and tier-2 suppliers often have procurement-mandated cyber liability and product liability requirements; both can be placed through specialty carriers and bundled with the rest of the commercial program at quote."
         }
       ]
     },
@@ -1347,6 +1419,10 @@
         {
           "question": "When can I expect a follow-up on a Clarksville quote?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Military-life and defense-contracting quotes can take longer because specialty carriers underwrite thoroughly."
+        },
+        {
+          "question": "Do you write landlord insurance for Austin Peay State University off-campus student rentals in Clarksville?",
+          "answer": "Yes, DP-3 landlord policies for student rentals near Austin Peay State University — College Street, Marion Street, and the wider downtown Clarksville corridor adjacent to the campus. Coverage includes building, loss of rents from student turnover, and landlord liability. Student-density rentals usually warrant higher liability tiers than typical residential landlord policies, and ordinance-or-law coverage is worth reviewing on pre-1970 stock."
         }
       ]
     },
@@ -1406,6 +1482,10 @@
         {
           "question": "What is your turnaround on a Murfreesboro quote request?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Nissan supplier and student-rental commercial quotes can take longer because carriers underwrite specialty risk thoroughly."
+        },
+        {
+          "question": "What flood considerations apply to Murfreesboro homes near the Stones River corridor or West Fork Stones River tributaries?",
+          "answer": "Standard Tennessee homeowners policies exclude flood damage; coverage requires a separate NFIP policy or a private flood policy. The Stones River and West Fork Stones River corridors include FEMA-designated A and AE zones, and federally-backed mortgages in those zones typically require flood insurance. Zone X (shaded) properties qualify for lower-premium NFIP policies and account for a meaningful share of flood claims."
         }
       ]
     },
@@ -1465,6 +1545,10 @@
         {
           "question": "How fast will you get back to me on a Franklin quote?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. High-value home and executive-coverage quotes can take longer because specialty carriers underwrite thoroughly."
+        },
+        {
+          "question": "What insurance considerations apply to Franklin historic homes downtown or near Carnton given older construction and replacement-cost factors?",
+          "answer": "Pre-1900 stock in downtown Franklin, Hincheyville, and around Carnton typically needs a replacement-cost appraisal rather than reliance on automated valuation, since rebuild costs for plaster walls, period millwork, and brick exteriors can run materially above tax-assessed values. Ordinance-or-law coverage matters more on older stock because rebuilds often trigger current-code upgrades. Historic-district status sometimes adds insurable building features that warrant scheduled coverage."
         }
       ]
     },
@@ -1524,6 +1608,10 @@
         {
           "question": "When will The Way Agency respond to a Johnson City quote?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Wildfire-zone and healthcare commercial quotes can take longer because specialty carriers underwrite thoroughly."
+        },
+        {
+          "question": "Do you write landlord insurance for ETSU off-campus student rentals in Johnson City?",
+          "answer": "Yes, DP-3 landlord policies for student rentals near East Tennessee State University — the Tree Streets neighborhood, Buffalo Street, and the wider downtown corridor adjacent to ETSU. Coverage includes building, loss of rents from student turnover, and landlord liability. Older Tree Streets housing stock often warrants a separate appraisal for replacement-cost limits and ordinance-or-law coverage given likely code-upgrade triggers on rebuild."
         }
       ]
     }
@@ -1590,6 +1678,10 @@
         {
           "question": "How quickly will I hear back after requesting a quote anywhere in Daviess County?",
           "answer": "We aim to respond the same business day, Monday through Friday, 9:00 AM to 5:00 PM. We typically start with a brief phone call, but we will text or email if that is what you prefer. Farm and distillery commercial quotes can take longer because specialty carriers underwrite the risk more thoroughly."
+        },
+        {
+          "question": "Do you write agritourism liability for u-pick orchards, pumpkin patches, corn mazes, or wedding-barn venues in rural Daviess County?",
+          "answer": "Yes, agritourism liability sits outside standard farm liability and outside standard commercial general liability — it's its own coverage line. Daviess County operations that host the public for u-pick, hay rides, corn mazes, weddings, or seasonal events typically need a dedicated agritourism endorsement or a separate commercial policy. Kentucky's agritourism liability statute provides some inherent-risk protection, but only when posted signage and waivers meet statutory requirements; we review both at quote."
         }
       ]
     }
