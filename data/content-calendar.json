@@ -1262,7 +1262,7 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "in-review",
+      "status": "published",
       "source": "markdown",
       "notes": "Supports both flood product page AND two geo pages. Careful not to compete with flood product page primary keyword.",
       "reviewer": "Jill Boone",

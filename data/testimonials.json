@@ -49,6 +49,71 @@
         "commercial"
       ],
       "products": []
+    },
+    {
+      "id": "jim-ivy--ithasbeenapl",
+      "name": "Jim Ivy",
+      "rating": 5,
+      "text": "It has been a pleasure to work with Audrey.  Rates are less than I had been paying and some extra perks.",
+      "source": "google",
+      "source_url": "",
+      "date": "",
+      "agent": "",
+      "product_lines": [],
+      "products": [],
+      "google_review_id": "jim-ivy--ithasbeenapl"
+    },
+    {
+      "id": "misty-wells--greatexperience",
+      "name": "Misty Wells",
+      "rating": 5,
+      "text": "Great experience. Transition made easy! Thanks Audrey!",
+      "source": "google",
+      "source_url": "",
+      "date": "",
+      "agent": "",
+      "product_lines": [],
+      "products": [],
+      "google_review_id": "misty-wells--greatexperience"
+    },
+    {
+      "id": "shelena-cox--metaudreymyag",
+      "name": "Shelena Cox",
+      "rating": 5,
+      "text": "Met Audrey my agent today and she was so kind and helpful, looking forward to many years of business together .",
+      "source": "google",
+      "source_url": "",
+      "date": "",
+      "agent": "",
+      "product_lines": [],
+      "products": [],
+      "google_review_id": "shelena-cox--metaudreymyag"
+    },
+    {
+      "id": "bradley-back--absolutelylove",
+      "name": "Bradley Back",
+      "rating": 5,
+      "text": "Absolutely love The Way Agency. Kelly is amazing she has always taken care of my family I wouldn’t have insurance anywhere else.",
+      "source": "google",
+      "source_url": "",
+      "date": "",
+      "agent": "",
+      "product_lines": [],
+      "products": [],
+      "google_review_id": "bradley-back--absolutelylove"
+    },
+    {
+      "id": "mitchell-capt-mitch-davis--kellyisjustth",
+      "name": "Mitchell “Capt.Mitch” Davis",
+      "rating": 5,
+      "text": "Kelly is just the best so helpful.",
+      "source": "google",
+      "source_url": "",
+      "date": "",
+      "agent": "",
+      "product_lines": [],
+      "products": [],
+      "google_review_id": "mitchell-capt-mitch-davis--kellyisjustth"
     }
   ]
 }

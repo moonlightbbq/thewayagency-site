@@ -2,8 +2,9 @@
 title: "Ohio River Flood Risk: What Henderson and Owensboro Homeowners Should Know"
 slug: ohio-river-flood-risk-henderson-owensboro
 description: Henderson and Owensboro sit along the Ohio River, making flood insurance essential. Learn about flood zones, NFIP policies, and what homeowners insurance won't cover.
-author: The Way Agency
-author_title: Independent Insurance Agency
+author: Jill Boone
+author_title: Licensed Agent
+author_slug: jill-boone
 date: 2026-06-03
 modified: 2026-06-03
 reading_time: 7 min read
