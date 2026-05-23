@@ -96,7 +96,7 @@ function copyAssets(SRC, BUILD) {
 }
 
 function copyRootPages(SRC, BUILD, injectVersion) {
-  const rootPages = ['index.html', 'contact.html', 'privacy.html', 'terms.html', 'login.html', '404.html'];
+  const rootPages = ['index.html', 'contact.html', 'privacy.html', 'terms.html', 'login.html', '404.html', 'disclosures.html', 'privacy-notice.html', 'ai-disclosure.html', 'information-security.html'];
   for (const file of rootPages) {
     const src = path.join(SRC, 'pages', file);
     if (fs.existsSync(src)) {

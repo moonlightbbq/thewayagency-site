@@ -162,6 +162,7 @@ function renderFooter(office, reviews) {
     <div class="footer__bottom">
       <p>&copy; ${new Date().getFullYear()} The Way Agency. All rights reserved.</p>
       <div class="footer__legal-links">
+        <a href="/disclosures.html">Disclosures</a>
         <a href="/privacy.html">Privacy</a>
         <a href="/terms.html">Terms</a>
       </div>

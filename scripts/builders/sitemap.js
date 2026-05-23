@@ -46,6 +46,10 @@ function generateSitemap(BUILD, ctx) {
     { url: '/about/claims.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/about/claims.html') },
     { url: '/blog/', priority: '0.7', freq: 'weekly', lastmod: seoLastmod('/blog/') },
     { url: '/contact.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/contact.html') },
+    { url: '/disclosures.html', priority: '0.5', freq: 'monthly', lastmod: seoLastmod('/disclosures.html') },
+    { url: '/privacy-notice.html', priority: '0.5', freq: 'monthly', lastmod: seoLastmod('/privacy-notice.html') },
+    { url: '/ai-disclosure.html', priority: '0.5', freq: 'monthly', lastmod: seoLastmod('/ai-disclosure.html') },
+    { url: '/information-security.html', priority: '0.5', freq: 'monthly', lastmod: seoLastmod('/information-security.html') },
   ];
 
   // Add all product pages
