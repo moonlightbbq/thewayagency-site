@@ -71,7 +71,16 @@ function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, render
       }
     }
     // Cache-bust JS and CSS with build version
-    html = html.replace(/src="\/src\/js\/app\.js"/g, `src="/src/js/app.js?v=${buildVersion}"`);
+    // Cache-bust any standalone chat-widget.js tag (e.g. intake.html, which has
+    // no app.js tag). Pages that load app.js get chat-widget injected below.
+    html = html.replace(/src="\/src\/js\/chat-widget\.js"/g, `src="/src/js/chat-widget.js?v=${buildVersion}"`);
+    // app.js delegates to window.TWAChat (chat-widget.js), so the module must load
+    // first on EVERY page that loads app.js — handcrafted pages hardcode the tag and
+    // don't use renderScripts(). Inject chat-widget.js before app.js + cache-bust both.
+    html = html.replace(
+      /<script src="\/src\/js\/app\.js"( defer)?><\/script>/g,
+      (m, defer) => `<script src="/src/js/chat-widget.js?v=${buildVersion}"${defer || ''}></script>\n  <script src="/src/js/app.js?v=${buildVersion}"${defer || ''}></script>`
+    );
     html = html.replace(/href="\/src\/css\/(\w+)\.css"/g, `href="/src/css/$1.css?v=${buildVersion}"`);
 
     // Inject GTM head snippet (before </head>) and body snippet (after <body>)

@@ -22,6 +22,7 @@
 <link rel="stylesheet" href="/src/css/components.css">
 <link rel="stylesheet" href="/src/css/leadgen.css">
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+<script src="/src/js/chat-widget.js" defer></script>
 <style>
   :root {
     --mint: #6ec6a0;
@@ -415,7 +416,7 @@
   /* Sticky help float */
   .intake-help-float {
     position: fixed;
-    bottom: 20px;
+    bottom: calc(20px + env(safe-area-inset-bottom, 0px));
     right: 20px;
     z-index: 900;
     display: inline-flex;
@@ -432,9 +433,7 @@
     transition: background .2s;
   }
   .intake-help-float:hover { background: var(--blue); color: #fff; }
-  @media (max-width: 768px) {
-    .intake-help-float { display: none; }
-  }
+  /* Visible on mobile too — it opens the AI chat (was display:none) */
 
   /* ─── Draft auto-save ─── */
   /* ─── Intake trust bar ─── */
@@ -808,11 +807,36 @@
 </div>
 </main>
 
-<!-- Sticky help element -->
-<a id="intake-help-float" href="tel:+15024135335" class="intake-help-float" aria-label="Call for help">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-  Need help? Call us
+<!-- Sticky help element — opens the AI chat; tel: is the fallback if chat is unavailable -->
+<a id="intake-help-float" href="tel:+15024135335" class="intake-help-float" aria-label="Chat with us">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  Need help? Chat with us
 </a>
+<script>
+// Chatbot-first help pill: open the shared AI chat widget (chat-widget.js).
+// The pill keeps its tel: href as a graceful fallback when chat is disabled
+// server-side (/api/status chatEnabled:false) or fails to load.
+document.addEventListener('DOMContentLoaded', function () {
+  var pill = document.getElementById('intake-help-float');
+  if (!pill) return;
+  // Render the chat panel without its own floating bubble (the pill is the launcher),
+  // and without after-hours auto-open/toast (it shouldn't pop over the form).
+  if (window.TWAChat && window.TWAChat.init) {
+    window.TWAChat.init({ autoBubble: false, autoEngage: false });
+  }
+  pill.addEventListener('click', function (e) {
+    if (!window.TWAChat) return; // module didn't load -> native tel: fallback
+    if (window.TWAChat.isReady()) { e.preventDefault(); window.TWAChat.open(); return; }
+    // Status not resolved yet: open optimistically (queues until ready);
+    // if it never becomes ready (chat disabled), fall back to dialing.
+    e.preventDefault();
+    window.TWAChat.open();
+    setTimeout(function () {
+      if (!window.TWAChat.isReady()) { window.location.href = pill.getAttribute('href'); }
+    }, 2500);
+  });
+});
+</script>
 
 <div style="text-align:center;padding:24px 16px;font-size:11px;color:var(--slate);">
   <span id="intake-version" style="display:none"></span>
@@ -910,10 +934,9 @@ function showIntakeBanner(color, msg) {
         const digits = agent.phone.replace(/\D/g, '');
         const telHref = 'tel:+1' + digits;
         const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
-        if (helpFloat) {
-          helpFloat.href = telHref;
-          helpFloat.innerHTML = phoneSvg + ' Call ' + agent.name.split(' ')[0];
-        }
+        // Pill stays a chat affordance ("Need help? Chat with us"); only point its
+        // tel: FALLBACK at the assigned agent's line (used if chat is unavailable).
+        if (helpFloat) helpFloat.href = telHref;
         // Update header nav phone to show agent's number
         const navPhone = document.getElementById('nav-phone');
         if (navPhone) {
