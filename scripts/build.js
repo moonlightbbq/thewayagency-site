@@ -250,5 +250,15 @@ try {
   console.log('  ! 404 suggestions: ' + e.message);
 }
 
+// 11. Guard: disclosure pages must stay free of em dashes & broken anchors
+const { checkLegalPages } = require('./check-legal-pages');
+const legalProblems = checkLegalPages(BUILD);
+if (legalProblems.length) {
+  console.error('\n✗ Legal page guard failed:');
+  legalProblems.forEach((p) => console.error('  - ' + p));
+  throw new Error(`Legal page guard failed (${legalProblems.length} issue(s)).`);
+}
+console.log('  ✓ Legal pages clean (em dashes / anchors)');
+
 console.log(`\n✅ Build complete! ${generatedCount + rootPages.length + subPages.length + portalPages.length} pages in build/`);
 console.log(`   Total files: ${sitemapUrls.length} indexable URLs`);
