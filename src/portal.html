@@ -579,6 +579,8 @@ function buildForm() {
   } else if (CONFIG.mode === 'document_upload') {
     document.getElementById('root').innerHTML = buildDocUploadPage(name);
     return;
+  } else if (CONFIG.mode === 'risk_profile') {
+    FIELDS = buildRiskProfileFields(CONFIG.requested);
   }
 
   // Check if we need verification (phone or email fields present)
@@ -873,6 +875,34 @@ function buildFullAppFields(products) {
     }
   }
 
+  return fields;
+}
+
+// Risk Profile gap-fill mode: the API returns CONFIG.requested = [{lob, key,
+// label, type, choices?, current}] for ONLY the fields the CSR chose to request.
+// Render each as a field keyed "<lob>.<key>" so the backend's risk_profile POST
+// branch can route them straight into coverage-prefs (scope-bounded server-side).
+function buildRiskProfileFields(requested) {
+  const list = Array.isArray(requested) ? requested : [];
+  const fields = list.map((r) => {
+    const k = (r.lob || '') + '.' + (r.key || '');
+    const f = { key: k, label: r.label || r.key, target: 'form_data' };
+    if (r.type === 'bool') { f.type = 'select'; f.options = ['Yes', 'No']; }
+    else if (r.type === 'currency') { f.type = 'text'; f.placeholder = 'e.g. $250,000'; }
+    else if (r.type === 'int') { f.type = 'text'; f.placeholder = 'e.g. 2'; }
+    else if (r.type === 'date') { f.type = 'date'; }
+    else if (r.type === 'select' && Array.isArray(r.choices)) {
+      f.type = 'select'; f.options = r.choices.map((c) => String(c.label != null ? c.label : c.value));
+    } else { f.type = 'text'; }
+    return f;
+  });
+  // Pre-fill from current values so the customer confirms instead of fills blank.
+  list.forEach((r) => {
+    const k = (r.lob || '') + '.' + (r.key || '');
+    if (r.current == null || r.current === '') return;
+    if (r.type === 'bool') FORM_DATA[k] = (r.current === 1 || r.current === '1' || r.current === true) ? 'Yes' : 'No';
+    else FORM_DATA[k] = String(r.current);
+  });
   return fields;
 }
 
