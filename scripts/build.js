@@ -260,5 +260,8 @@ if (legalProblems.length) {
 }
 console.log('  ✓ Legal pages clean (em dashes / anchors)');
 
+// 12. Snapshot compliance pages by version into legal-archive/
+require('./snapshot-legal-pages').snapshotLegalPages({ buildDir: BUILD });
+
 console.log(`\n✅ Build complete! ${generatedCount + rootPages.length + subPages.length + portalPages.length} pages in build/`);
 console.log(`   Total files: ${sitemapUrls.length} indexable URLs`);
