@@ -2,8 +2,9 @@
 title: Insurance Checklist for HVAC Contractors in Kentucky
 slug: insurance-checklist-hvac-contractors
 description: HVAC contractors in Kentucky face unique risks from equipment damage to worker injuries on rooftops. Here's the coverage you need and what general contractors require.
-author: The Way Agency
-author_title: Independent Insurance Agency
+author: Audrey Lillpop
+author_title: Licensed Agent
+author_slug: audrey-lillpop
 date: 2026-06-17
 modified: 2026-06-17
 reading_time: 7 min read
