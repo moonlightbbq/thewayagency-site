@@ -5,14 +5,15 @@
   "description": "The Way Agency marketing website — static site on Cloudflare Pages",
   "scripts": {
     "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
-    "prebuild": "node scripts/build-rollback.js snapshot",
+    "sync:intake-fields": "node scripts/builders/sync-intake-fields.js",
+    "prebuild": "node scripts/build-rollback.js snapshot && node scripts/builders/sync-intake-fields.js",
     "build": "node scripts/build.js",
     "postbuild": "node scripts/build-rollback.js archive",
     "check-data": "node scripts/check-data-integrity.js",
     "check-assets": "node scripts/check-assets.js",
     "check:legal": "node scripts/check-legal-pages.js",
     "snapshot:legal": "node scripts/snapshot-legal-pages.js",
-    "safe-build": "node scripts/pre-build-check.js && node scripts/build.js && node scripts/validate-build.js",
+    "safe-build": "node scripts/builders/sync-intake-fields.js && node scripts/pre-build-check.js && node scripts/build.js && node scripts/validate-build.js",
     "deploy": "node scripts/deploy.js",
     "admin": "node scripts/admin.js"
   },

@@ -1,0 +1,404 @@
+{
+  "lobs": {
+    "home": [
+      {
+        "intakeKey": "ho_value",
+        "target": "dwelling",
+        "label": "A — Dwelling",
+        "type": "currency",
+        "group": "Coverage A–F limits"
+      }
+    ],
+    "umbrella": [
+      {
+        "intakeKey": "i_umb_limit",
+        "target": "limit",
+        "label": "Umbrella limit",
+        "type": "currency",
+        "group": "Coverage"
+      },
+      {
+        "intakeKey": "i_umb_drivers",
+        "target": "num_drivers",
+        "label": "# Drivers",
+        "type": "int",
+        "group": "Exposure"
+      }
+    ],
+    "life": [
+      {
+        "intakeKey": "li_faceamt",
+        "target": "face_amount",
+        "label": "Face amount",
+        "type": "currency",
+        "group": "Policy"
+      },
+      {
+        "intakeKey": "li_type",
+        "target": "product_type",
+        "label": "Product",
+        "type": "lifeType",
+        "group": "Policy",
+        "choices": [
+          {
+            "value": "term",
+            "label": "Term"
+          },
+          {
+            "value": "whole",
+            "label": "Whole life"
+          },
+          {
+            "value": "universal",
+            "label": "Universal"
+          },
+          {
+            "value": "final_expense",
+            "label": "Final expense"
+          }
+        ]
+      },
+      {
+        "intakeKey": "li_tobacco",
+        "target": "tobacco",
+        "label": "Tobacco use",
+        "type": "tobaccoBool",
+        "group": "Insured"
+      },
+      {
+        "intakeKey": "app_dob",
+        "target": "insured_dob",
+        "label": "Insured DOB",
+        "type": "date",
+        "group": "Insured"
+      }
+    ],
+    "renters": [
+      {
+        "intakeKey": "i_rent_coverage",
+        "target": "personal_property",
+        "label": "Personal property — Cov C",
+        "type": "currency",
+        "group": "Coverage"
+      },
+      {
+        "intakeKey": "i_rent_type",
+        "target": "dwelling_type",
+        "label": "Dwelling type",
+        "type": "text",
+        "group": "Rental location"
+      }
+    ],
+    "flood": [
+      {
+        "intakeKey": "i_fl_foundation",
+        "target": "foundation_type",
+        "label": "Foundation type",
+        "type": "text",
+        "group": "Property / elevation"
+      }
+    ],
+    "dwellingfire": [
+      {
+        "intakeKey": "i_df_use",
+        "target": "occupancy",
+        "label": "Occupancy",
+        "type": "text",
+        "group": "Property details"
+      },
+      {
+        "intakeKey": "i_df_value",
+        "target": "dwelling",
+        "label": "Dwelling — Cov A",
+        "type": "currency",
+        "group": "Coverage"
+      },
+      {
+        "intakeKey": "i_df_address",
+        "target": "address",
+        "label": "Risk address",
+        "type": "text",
+        "group": "Rental property location"
+      }
+    ],
+    "motorcycle": [
+      {
+        "intakeKey": "i_mc_year",
+        "target": "year",
+        "label": "Year",
+        "type": "int",
+        "group": "Motorcycle"
+      },
+      {
+        "intakeKey": "i_mc_make",
+        "target": "make",
+        "label": "Make",
+        "type": "text",
+        "group": "Motorcycle"
+      },
+      {
+        "intakeKey": "i_mc_model",
+        "target": "model",
+        "label": "Model",
+        "type": "text",
+        "group": "Motorcycle"
+      }
+    ],
+    "boat": [
+      {
+        "intakeKey": "i_boat_year",
+        "target": "year",
+        "label": "Year",
+        "type": "int",
+        "group": "Watercraft"
+      },
+      {
+        "intakeKey": "i_boat_make",
+        "target": "make",
+        "label": "Make",
+        "type": "text",
+        "group": "Watercraft"
+      },
+      {
+        "intakeKey": "i_boat_length",
+        "target": "length_ft",
+        "label": "Length (ft)",
+        "type": "int",
+        "group": "Watercraft"
+      },
+      {
+        "intakeKey": "i_boat_type",
+        "target": "craft_type",
+        "label": "Craft type",
+        "type": "text",
+        "group": "Watercraft"
+      }
+    ],
+    "rv": [
+      {
+        "intakeKey": "i_rv_year",
+        "target": "year",
+        "label": "Year",
+        "type": "int",
+        "group": "RV"
+      },
+      {
+        "intakeKey": "i_rv_make",
+        "target": "make",
+        "label": "Make",
+        "type": "text",
+        "group": "RV"
+      },
+      {
+        "intakeKey": "i_rv_model",
+        "target": "model",
+        "label": "Model",
+        "type": "text",
+        "group": "RV"
+      },
+      {
+        "intakeKey": "i_rv_type",
+        "target": "rv_class",
+        "label": "RV class / type",
+        "type": "text",
+        "group": "RV"
+      }
+    ],
+    "bop": [
+      {
+        "intakeKey": "i_bop_ownlease",
+        "target": "ownership",
+        "label": "Ownership",
+        "type": "text",
+        "group": "Location"
+      }
+    ],
+    "cgl": [
+      {
+        "intakeKey": "i_cgl_limit",
+        "target": "each_occurrence",
+        "label": "Each occurrence limit",
+        "type": "currency",
+        "group": "Coverage"
+      }
+    ],
+    "cauto": [
+      {
+        "intakeKey": "i_ca_numveh",
+        "target": "num_vehicles",
+        "label": "Total # vehicles",
+        "type": "int",
+        "group": "Vehicles"
+      },
+      {
+        "intakeKey": "i_ca_vehtype",
+        "target": "vehicle_schedule",
+        "label": "Vehicle schedule",
+        "type": "text",
+        "group": "Vehicles"
+      }
+    ],
+    "wc": [
+      {
+        "intakeKey": "i_wc_payroll",
+        "target": "total_payroll",
+        "label": "Total annual payroll",
+        "type": "currency",
+        "group": "Payroll & classifications"
+      }
+    ],
+    "eando": [
+      {
+        "intakeKey": "i_eo_profession",
+        "target": "profession",
+        "label": "Profession / industry",
+        "type": "text",
+        "group": "Business"
+      }
+    ],
+    "brisk": [
+      {
+        "intakeKey": "i_br_projtype",
+        "target": "project_type",
+        "label": "Project type",
+        "type": "text",
+        "group": "Project"
+      },
+      {
+        "intakeKey": "i_br_value",
+        "target": "total_completed_value",
+        "label": "Total completed value",
+        "type": "currency",
+        "group": "Coverage"
+      }
+    ]
+  },
+  "shared": [
+    {
+      "intakeKey": "current_carrier",
+      "targets": [
+        "prior_carrier"
+      ]
+    }
+  ],
+  "business": [
+    {
+      "intakeKey": "i_biz_name",
+      "targets": [
+        "business_name"
+      ],
+      "coerce": null
+    },
+    {
+      "intakeKey": "i_biz_type",
+      "targets": [
+        "business_description",
+        "services_description",
+        "industry"
+      ],
+      "coerce": null
+    },
+    {
+      "intakeKey": "i_biz_revenue",
+      "targets": [
+        "annual_revenue"
+      ],
+      "coerce": null
+    },
+    {
+      "intakeKey": "i_biz_employees",
+      "targets": [
+        "num_employees"
+      ],
+      "coerce": null
+    },
+    {
+      "intakeKey": "i_biz_years",
+      "targets": [
+        "years_in_business",
+        "years_in_practice"
+      ],
+      "coerce": "yearsInBusiness"
+    }
+  ],
+  "commercialLobs": [
+    "bop",
+    "cgl",
+    "cauto",
+    "wc",
+    "cyber",
+    "eando",
+    "brisk"
+  ],
+  "property": [
+    {
+      "intakeKey": "ho_address",
+      "col": "address",
+      "type": "text"
+    },
+    {
+      "intakeKey": "ho_city",
+      "col": "city",
+      "type": "text"
+    },
+    {
+      "intakeKey": "ho_state",
+      "col": "state",
+      "type": "text"
+    },
+    {
+      "intakeKey": "ho_zip",
+      "col": "zip",
+      "type": "text"
+    },
+    {
+      "intakeKey": "ho_yearbuilt",
+      "col": "year_built",
+      "type": "int"
+    },
+    {
+      "intakeKey": "ho_value",
+      "col": "dwelling_coverage",
+      "type": "currency"
+    }
+  ],
+  "vehicles": {
+    "maxVehicles": 10,
+    "cols": [
+      "year",
+      "make",
+      "model",
+      "vin"
+    ]
+  },
+  "noteOnly": [
+    {
+      "intakeKey": "policy_expiry",
+      "label": "Policy expiration (shopping timeline)"
+    },
+    {
+      "intakeKey": "other_desc",
+      "label": "Other coverage requested"
+    },
+    {
+      "intakeKey": "i_fl_claims",
+      "label": "Flood — prior claims"
+    },
+    {
+      "intakeKey": "i_fr_type",
+      "label": "Farm / ranch — operation type"
+    },
+    {
+      "intakeKey": "i_fr_acres",
+      "label": "Farm / ranch — acreage"
+    },
+    {
+      "intakeKey": "i_bond_type",
+      "label": "Bond — type"
+    },
+    {
+      "intakeKey": "i_bond_amount",
+      "label": "Bond — amount"
+    }
+  ]
+}

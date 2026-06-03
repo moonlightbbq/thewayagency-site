@@ -1592,7 +1592,47 @@ function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').
 
 // ── Auto-save / abandoned form tracking ─────────────────────────────────────
 // As soon as we have name + contact info, save partial data to server
-async function trackPartial(notify) {
+// Gather the risk/coverage answers for live streaming to SAGE's Risk Profile.
+// No turnstile/attribution here (those belong to the final submit). Keys align
+// 1:1 with SAGE's intakeFields catalog (src/schemas/intakeFields.js).
+function collectRiskFields() {
+  const fd = {};
+  const el = id => { const e = document.getElementById(id); return e ? (e.value || '').trim() : ''; };
+  if (el('i_current_carrier')) fd.current_carrier = el('i_current_carrier');
+  if (el('i_policy_expiry')) fd.policy_expiry = el('i_policy_expiry');
+  if (el('i_dob')) fd.app_dob = el('i_dob');
+  if (el('i_li_amount')) fd.li_faceamt = el('i_li_amount');
+  if (el('i_li_type')) fd.li_type = el('i_li_type');
+  if (el('i_li_tobacco')) fd.li_tobacco = el('i_li_tobacco');
+  if (el('i_other_desc')) fd.other_desc = el('i_other_desc');
+  if (el('i_ho_value')) fd.ho_value = el('i_ho_value');
+  if (el('i_ho_yearbuilt')) fd.ho_yearbuilt = el('i_ho_yearbuilt');
+  if (typeof hoSameAddr !== 'undefined' && !hoSameAddr) {
+    const street = el('i_ho_address_street') || el('i_ho_address');
+    if (street) fd.ho_address = street;
+    if (el('i_ho_city')) fd.ho_city = el('i_ho_city');
+    if (el('i_ho_state')) fd.ho_state = el('i_ho_state');
+    if (el('i_ho_zip')) fd.ho_zip = el('i_ho_zip');
+  }
+  try {
+    (getVehicles() || []).forEach((vh, i) => {
+      const n = i + 1;
+      if (vh.year) fd[`vh_${n}_year`] = vh.year;
+      if (vh.make) fd[`vh_${n}_make`] = vh.make;
+      if (vh.model) fd[`vh_${n}_model`] = vh.model;
+    });
+  } catch (e) { /* getVehicles not ready */ }
+  ['i_biz_name','i_biz_type','i_biz_revenue','i_biz_employees','i_biz_years',
+   'i_umb_limit','i_umb_drivers','i_fl_foundation','i_fl_claims','i_rent_coverage','i_rent_type',
+   'i_mc_year','i_mc_make','i_mc_model','i_boat_year','i_boat_make','i_boat_length','i_boat_type',
+   'i_rv_year','i_rv_make','i_rv_model','i_rv_type','i_bop_ownlease','i_df_use','i_df_value','i_df_address',
+   'i_cgl_limit','i_ca_numveh','i_ca_vehtype','i_wc_payroll','i_eo_profession',
+   'i_fr_type','i_fr_acres','i_bond_type','i_bond_amount','i_br_projtype','i_br_value'
+  ].forEach(id => { const val = el(id); if (val) fd[id] = val; });
+  return fd;
+}
+
+async function trackPartial(notify, stepComplete) {
   const firstName = v('i_fname'), lastName = v('i_lname');
   const email = v('i_email'), phone = v('i_phone');
   if (!firstName || !lastName) return;
@@ -1610,6 +1650,11 @@ async function trackPartial(notify) {
         address: v('i_address_street') || v('i_address'), city: v('i_city'), state: v('i_state'), zip: v('i_zip'),
         products: selectedProducts,
         step: currentStep,
+        // Live Risk Profile fill: stream coverage answers as they're entered;
+        // stepComplete (set when the details step is finished) tells SAGE to
+        // materialize vehicle/property entities, not just coverage prefs.
+        formData: collectRiskFields(),
+        stepComplete: !!stepComplete,
         agent: _agentParam,
         notify: !!notify,
         _hp_company: document.getElementById('_hp_company')?.value || '',
@@ -1644,6 +1689,17 @@ function scheduleTrack() {
     el.addEventListener('blur', scheduleTrack);
     el.addEventListener('input', scheduleTrack);
   }
+});
+
+// Live Risk Profile fill: stream coverage answers as the prospect fills the
+// details step. Delegated (document-level) so it also covers the product-specific
+// fields rendered dynamically by renderProductQuestions. scheduleTrack debounces
+// and trackPartial no-ops until name+contact are present, so this is cheap.
+['input', 'change'].forEach(evt => {
+  document.addEventListener(evt, (e) => {
+    const t = e.target;
+    if (t && t.id && /^i_/.test(t.id)) scheduleTrack();
+  });
 });
 
 // ── Check if an agent has claimed this session ──────────────────────────────
@@ -1908,6 +1964,9 @@ async function nextStep(from) {
     if (!v('i_address')) problems.push('Please enter your mailing address.');
     if (problems.length) { err.textContent = problems[0]; err.classList.remove('hidden'); return; }
     err.classList.add('hidden');
+    // Details step completed: stream the full risk answers AND signal SAGE to
+    // materialize entities (vehicles/properties), not just coverage prefs.
+    try { trackPartial(false, true); } catch (e) { /* live-fill best effort */ }
   }
   showStep(from + 1);
 }
