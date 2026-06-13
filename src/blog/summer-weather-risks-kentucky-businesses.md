@@ -4,8 +4,8 @@ slug: summer-weather-risks-kentucky-businesses
 description: Severe thunderstorms, hail, and flash flooding can shut down a business fast. Here's how commercial property and business income coverage protect you.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-07-15
-modified: 2026-07-15
+date: 2026-06-10
+modified: 2026-06-10
 reading_time: 6 min read
 related_page: /commercial/commercial-property.html
 tags: commercial insurance, business insurance, kentucky weather, storm damage, business interruption

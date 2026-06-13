@@ -4,8 +4,8 @@ slug: bowling-green-tornado-lessons-coverage
 description: The 2021 Bowling Green tornado showed Kentucky families the gaps in their insurance. Here's what we learned about coverage, claims, and being prepared.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-07-01
-modified: 2026-07-01
+date: 2026-06-03
+modified: 2026-06-03
 reading_time: 7 min read
 related_page: /personal/home.html
 tags: tornado insurance, kentucky, bowling green, home insurance, storm damage

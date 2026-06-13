@@ -4,8 +4,8 @@ slug: what-happens-when-you-file-insurance-claim
 description: From first phone call to final payment, here's exactly what happens during the insurance claims process and how to make it go smoothly.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-07-08
-modified: 2026-07-08
+date: 2026-06-06
+modified: 2026-06-06
 reading_time: 6 min read
 related_page: /personal/home.html
 tags: insurance claims, claims process, home insurance, auto insurance, how-to

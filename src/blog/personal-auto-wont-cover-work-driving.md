@@ -4,8 +4,8 @@ slug: personal-auto-wont-cover-work-driving
 description: If you drive for work, deliver goods, or use your car for business, your personal auto policy probably won't cover an accident. Here's when you need commercial auto.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-07-22
-modified: 2026-07-22
+date: 2026-06-13
+modified: 2026-06-13
 reading_time: 6 min read
 related_page: /commercial/commercial-auto.html
 tags: commercial auto, business insurance, personal auto, work driving, kentucky

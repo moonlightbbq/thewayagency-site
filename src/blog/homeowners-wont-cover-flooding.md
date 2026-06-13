@@ -4,8 +4,8 @@ slug: homeowners-wont-cover-flooding
 description: Standard homeowners insurance excludes flood damage in every state. Learn why, what flood insurance costs, and whether you need it even outside a flood zone.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-06-24
-modified: 2026-06-24
+date: 2026-05-30
+modified: 2026-05-30
 reading_time: 6 min read
 related_page: /personal/flood.html
 tags: flood insurance, homeowners insurance, coverage gaps, NFIP, kentucky

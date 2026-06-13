@@ -984,7 +984,7 @@
       "canonical_priority": "secondary",
       "is_link_target": true,
       "receives_future_links": true,
-      "status": "in-draft",
+      "status": "published",
       "source": "markdown",
       "notes": "High link target — many future posts can reference this."
     },

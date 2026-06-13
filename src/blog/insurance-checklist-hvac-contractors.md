@@ -5,8 +5,8 @@ description: HVAC contractors in Kentucky face unique risks from equipment damag
 author: Audrey Lillpop
 author_title: Licensed Agent
 author_slug: audrey-lillpop
-date: 2026-06-17
-modified: 2026-06-17
+date: 2026-05-27
+modified: 2026-05-27
 reading_time: 7 min read
 related_page: /commercial/general-liability.html
 tags: HVAC insurance, contractor insurance, commercial insurance, kentucky, workers comp

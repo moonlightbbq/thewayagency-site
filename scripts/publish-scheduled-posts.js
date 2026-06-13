@@ -3,8 +3,9 @@
  * The Way Agency  -  Scheduled Blog Publisher
  *
  * Checks content-calendar.json for posts with a publish_date <= today
- * and status "planned", verifies the markdown file exists, and updates
- * the status to "published".
+ * and status "planned" / "in-review" / "in-draft", verifies the markdown
+ * file exists, reconciles its frontmatter date:/modified: to the calendar
+ * publish_date, and updates the status to "published".
  *
  * Used by the GitHub Actions workflow to auto-publish blog posts on schedule.
  *
@@ -34,8 +35,9 @@ const errors = [];
 let calendarChanged = false;
 
 for (const post of calendar.year1) {
-  // Publish posts that are "planned" or "in-review" when their date arrives
-  if (post.status !== 'planned' && post.status !== 'in-review') continue;
+  // Publish posts that are "planned", "in-review", or "in-draft" when their
+  // date arrives.
+  if (post.status !== 'planned' && post.status !== 'in-review' && post.status !== 'in-draft') continue;
   if (post.publish_date > today) continue;
 
   // Readiness check: markdown file must exist. If a post is on the
@@ -100,6 +102,31 @@ for (const post of calendar.year1) {
       md = md.replace(/^author_slug: .+$/m, `author_slug: ${post.reviewer_slug}`);
     }
     fs.writeFileSync(mdFile, md);
+  }
+
+  // Reconcile frontmatter dates: if the .md `date:`/`modified:` differ from
+  // the calendar publish_date, rewrite them. A future-dated `date:` would
+  // otherwise make generate-blog.js skip the post even though it just got
+  // marked published.
+  {
+    let md = fs.readFileSync(mdFile, 'utf8');
+    const fm = (md.match(/^---\n([\s\S]*?)\n---/) || [])[1] || '';
+    const norm = (v) => (v || '').trim().replace(/^["']|["']$/g, '');
+    const curDate = (fm.match(/^date:\s*(.+)$/m) || [])[1];
+    const curModified = (fm.match(/^modified:\s*(.+)$/m) || [])[1];
+    let dateChanged = false;
+    if (curDate !== undefined && norm(curDate) !== post.publish_date) {
+      md = md.replace(/^date:\s*.*$/m, `date: ${post.publish_date}`);
+      dateChanged = true;
+    }
+    if (curModified !== undefined && norm(curModified) !== post.publish_date) {
+      md = md.replace(/^modified:\s*.*$/m, `modified: ${post.publish_date}`);
+      dateChanged = true;
+    }
+    if (dateChanged) {
+      fs.writeFileSync(mdFile, md);
+      console.log(`    ↳ frontmatter date/modified set to ${post.publish_date}`);
+    }
   }
 
   post.status = 'published';
