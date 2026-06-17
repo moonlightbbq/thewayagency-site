@@ -4,8 +4,8 @@ slug: small-business-insurance-evansville-in
 description: Evansville is just across the river from our Owensboro office. Here's what Vanderburgh County small business owners need to know about commercial insurance in Indiana.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-07-29
-modified: 2026-07-29
+date: 2026-06-17
+modified: 2026-06-17
 reading_time: 6 min read
 related_page: /commercial/general-liability.html
 tags: business insurance, evansville, indiana, commercial insurance, small business
