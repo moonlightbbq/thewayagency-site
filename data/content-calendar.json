@@ -1611,7 +1611,7 @@
       "canonical_priority": "secondary",
       "is_link_target": true,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "published",
       "source": "markdown",
       "notes": "First life insurance blog content. Supports both term and whole life pages."
     },

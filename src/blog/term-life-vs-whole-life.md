@@ -4,8 +4,8 @@ slug: term-life-vs-whole-life
 description: Term life is affordable but temporary. Whole life lasts forever but costs more. Here's how to decide which type of life insurance fits your situation.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-08-05
-modified: 2026-08-05
+date: 2026-06-20
+modified: 2026-06-20
 reading_time: 6 min read
 related_page: /life/term-life.html
 tags: life insurance, term life, whole life, family planning, financial protection
