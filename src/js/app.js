@@ -173,10 +173,15 @@
   function getVisitorId() {
     let id;
     try { id = localStorage.getItem('twa_vid'); } catch(e) {}
+    // Fall back to a first-party cookie if localStorage was cleared/blocked, so the
+    // visitor id survives storage clears (durability for cross-session stitching — O3).
+    if (!id) { try { const m = document.cookie.match(/(?:^|; )twa_vid=([^;]+)/); if (m) id = decodeURIComponent(m[1]); } catch(e) {} }
     if (!id) {
       id = Math.random().toString(36).slice(2) + Date.now().toString(36);
       try { localStorage.setItem('twa_vid', id); } catch(e) {}
     }
+    // Mirror to a first-party cookie (1yr) so it persists even if localStorage is wiped.
+    try { document.cookie = 'twa_vid=' + encodeURIComponent(id) + ';path=/;max-age=31536000;SameSite=Lax'; } catch(e) {}
     return id;
   }
 
@@ -1641,7 +1646,8 @@
             sessionId: chatSessionId,
             message: text,
             page: location.pathname,
-            product: detectProduct()
+            product: detectProduct(),
+            twa_vid: getVisitorId()
           })
         });
 
