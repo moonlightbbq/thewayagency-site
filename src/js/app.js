@@ -197,6 +197,9 @@
         return fbclid ? 'fb.1.' + Date.now() + '.' + fbclid : '';
       })(),
       ga_client_id: (getCookieVal('_ga') || '').replace(/^GA\d+\.\d+\./, ''),
+      // O2: the gclid re-joins an offline conversion to the original ad click; the
+      // real GA client_id (_ga cookie, above) is the GA stitch key. Both persisted at intake.
+      gclid: getAttribution().gclid || '',
     };
   }
 
