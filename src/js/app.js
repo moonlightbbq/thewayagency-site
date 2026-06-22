@@ -157,6 +157,14 @@
     },
   };
 
+  // True on non-production origins (Cloudflare Pages previews, any `staging`
+  // host, and local dev). Submissions from these flag `test_mode` so sage
+  // persists a side-effect-free row instead of a real prod lead.
+  function isTestModeOrigin() {
+    const h = ((window.location && window.location.hostname) || '').toLowerCase();
+    return h.endsWith('.pages.dev') || h.indexOf('staging') !== -1 || h === 'localhost' || h === '127.0.0.1';
+  }
+
   function getVisitorId() {
     let id;
     try { id = localStorage.getItem('twa_vid'); } catch(e) {}
@@ -461,6 +469,9 @@
     data.referrer = document.referrer || 'direct';
     data.twa_vid = getVisitorId();
     data._tracking = getTrackingIds();
+    // Staging/preview/local origins: tell sage to record a flagged, side-effect-free
+    // submission (no real prod lead). Production (thewayagency.com) never sets this.
+    if (isTestModeOrigin()) data.test_mode = true;
 
     // Attach full attribution data
     const attr = getAttribution();
