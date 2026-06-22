@@ -56,6 +56,23 @@ jobs:
             exit "$code"
           fi
 
+      # Step 1c: Sync the sage-canonical producer roster (title/phone only) into
+      # team.json from the public /api/public/team endpoint. Same exit convention as
+      # update-reviews: 0 = changed, 1 = healthy no-change, >1 = real failure.
+      - name: Sync producer roster
+        id: roster_sync
+        run: |
+          set +e
+          node scripts/sync-catalogs.js
+          code=$?
+          set -e
+          if [ "$code" -le 1 ]; then
+            echo "roster_synced=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "roster_synced=false" >> "$GITHUB_OUTPUT"
+            exit "$code"
+          fi
+
       # Step 2: Publish posts that are due today
       - name: Publish scheduled posts
         id: publish
@@ -69,11 +86,11 @@ jobs:
 
       # Step 3: Commit any changes (review status updates + published posts)
       - name: Commit and push
-        if: steps.review.outputs.reviews_sent == 'true' || steps.publish.outputs.published == 'true' || steps.google_reviews.outputs.reviews_updated == 'true'
+        if: steps.review.outputs.reviews_sent == 'true' || steps.publish.outputs.published == 'true' || steps.google_reviews.outputs.reviews_updated == 'true' || steps.roster_sync.outputs.roster_synced == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/content-calendar.json data/locations.json data/testimonials.json data/google-reviews-status.json src/blog/
+          git add data/content-calendar.json data/locations.json data/testimonials.json data/google-reviews-status.json data/team.json data/team-sync-status.json src/blog/
           git diff --cached --quiet && exit 0
           git commit -m "weekly: blog publish + Google review sync for $(date +%Y-%m-%d)"
           git push
