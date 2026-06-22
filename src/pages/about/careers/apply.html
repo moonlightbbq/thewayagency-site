@@ -332,8 +332,9 @@
   <script src="/src/js/app.js"></script>
   <script>
   (function() {
-    var API_URL = 'https://sage.thewayagency.com/api/careers/apply';
-    var VALIDATE_URL = 'https://sage.thewayagency.com/api/intake/validate';
+    var SAGE_API = (window.__SAGE_API__) || 'https://sage.thewayagency.com';
+    var API_URL = SAGE_API + '/api/careers/apply';
+    var VALIDATE_URL = SAGE_API + '/api/intake/validate';
     var TURNSTILE_KEY = '0x4AAAAAACuOvP2DfWPQJz9W';
     var MAX_FILE_SIZE = 5 * 1024 * 1024;
 

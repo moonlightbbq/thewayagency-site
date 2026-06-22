@@ -61,7 +61,8 @@ const TESTIMONIALS_PATH = path.join(ROOT, 'data', 'testimonials.json');
 const BLOCKLIST_PATH = path.join(ROOT, 'data', 'testimonials-blocklist.json');
 const STATUS_PATH = path.join(ROOT, 'data', 'google-reviews-status.json');
 
-const DEFAULT_ENDPOINT = 'https://sage.thewayagency.com/api/public/google-reviews';
+const SAGE_API_BASE = process.env.SAGE_API_BASE || 'https://sage.thewayagency.com';
+const DEFAULT_ENDPOINT = `${SAGE_API_BASE}/api/public/google-reviews`;
 const MIN_FETCH_INTERVAL_HOURS = 24;
 
 function parseArgs() {

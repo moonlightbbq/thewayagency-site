@@ -340,7 +340,7 @@
         payload.message = (cbTime ? 'Preferred callback time: ' + cbTime + '. ' : '') + (msg || '');
       }
 
-      fetch('https://sage.thewayagency.com/api/intake/lead', {
+      fetch(((window.__SAGE_API__) || 'https://sage.thewayagency.com') + '/api/intake/lead', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       }).then(function(r) {

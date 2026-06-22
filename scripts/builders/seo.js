@@ -22,10 +22,13 @@ function createVersionInfo(ROOT) {
   return { gitInfo, buildDate, buildVersion };
 }
 
-function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, renderHead_GTM, renderBody_GTM, criticalCss }) {
+function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, renderHead_GTM, renderBody_GTM, criticalCss, sageApiBase }) {
   const versionMeta = `<meta name="build-version" content="${buildVersion}">`;
   const versionComment = `<!-- build: ${buildVersion} | ${gitInfo.branch} | ${buildDate} -->`;
   const versionFooter = `<!-- build: ${buildVersion} -->`;
+  // One source of truth for the sage backend base URL: every page (and app.js
+  // running in it) reads window.__SAGE_API__. The SAGE_API_BASE build env overrides it.
+  const sageApiScript = sageApiBase ? `<script>window.__SAGE_API__=${JSON.stringify(sageApiBase)};</script>` : '';
 
   return function injectVersion(html, outputPath) {
     // Add meta tag after charset
@@ -73,6 +76,14 @@ function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, render
     // Cache-bust JS and CSS with build version
     html = html.replace(/src="\/src\/js\/app\.js"/g, `src="/src/js/app.js?v=${buildVersion}"`);
     html = html.replace(/href="\/src\/css\/(\w+)\.css"/g, `href="/src/css/$1.css?v=${buildVersion}"`);
+
+    // Inject the sage API base on every page so app.js + inline scripts resolve the
+    // backend from one injected value (env-overridable) instead of a hardcoded host.
+    // Guard on the assignment specifically (not any `__SAGE_API__` mention) so a
+    // page that *reads* window.__SAGE_API__ still gets the setter injected.
+    if (sageApiScript && !html.includes('window.__SAGE_API__=')) {
+      html = html.replace('</head>', `  ${sageApiScript}\n</head>`);
+    }
 
     // Inject GTM head snippet (before </head>) and body snippet (after <body>)
     if (!html.includes('gtm.js')) {

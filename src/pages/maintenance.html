@@ -63,7 +63,7 @@
     msg.style.display = 'block'; msg.textContent = '';
     var ctrl = new AbortController();
     setTimeout(function() { ctrl.abort(); }, 5000);
-    fetch('https://sage.thewayagency.com/api/status', { signal: ctrl.signal })
+    fetch(((window.__SAGE_API__) || 'https://sage.thewayagency.com') + '/api/status', { signal: ctrl.signal })
       .then(function(r) { return r.json(); })
       .then(function(d) {
         if (d.maintenance) { msg.style.color = 'var(--amber,#d97706)'; msg.textContent = 'Maintenance is still in progress. Please check back soon.'; }

@@ -820,7 +820,7 @@
 </div>
 
 <script>
-const SAGE_API = 'https://sage.thewayagency.com';
+const SAGE_API = (window.__SAGE_API__) || 'https://sage.thewayagency.com';
 
 // ── Offline Queue Processing ────────────────────────────────────────────────
 (function processQueue() {

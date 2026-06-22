@@ -76,7 +76,10 @@ if (fs.existsSync(criticalCssPath)) {
 }
 
 // ─── Version Injection ──────────────────────────
-const injectVersion = createInjectVersion({ buildVersion, gitInfo, buildDate, reviews: _reviews, renderHead_GTM, renderBody_GTM, criticalCss: criticalCssMinified });
+// Single source of truth for the sage backend base URL (default prod). A future
+// staging sage = set SAGE_API_BASE on that Cloudflare Pages env — no code change.
+const SAGE_API_BASE = process.env.SAGE_API_BASE || 'https://sage.thewayagency.com';
+const injectVersion = createInjectVersion({ buildVersion, gitInfo, buildDate, reviews: _reviews, renderHead_GTM, renderBody_GTM, criticalCss: criticalCssMinified, sageApiBase: SAGE_API_BASE });
 
 // ─── Schema Markup ──────────────────────────────
 const testimonialsForSchema = loadJson(path.join(DATA, 'testimonials.json'));

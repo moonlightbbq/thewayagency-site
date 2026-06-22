@@ -17,12 +17,17 @@
     intersectionObserver: typeof IntersectionObserver === 'function',
   };
 
+  // Single source of truth for the sage backend. The static build injects
+  // window.__SAGE_API__ (from the SAGE_API_BASE build env, default prod) into every
+  // page <head>; fall back to the prod literal if that injection is ever absent.
+  var SAGE_API_BASE = (typeof window !== 'undefined' && window.__SAGE_API__) || 'https://sage.thewayagency.com';
+
   window.onerror = function(msg, src, line, col, err) {
     if (_errorCount >= 5) return;
     _errorCount++;
     try {
       if (FEATURES.fetch) {
-        fetch('https://sage.thewayagency.com/api/errors/client', {
+        fetch(SAGE_API_BASE + '/api/errors/client', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: String(msg).slice(0, 500), source: src, line: line, col: col, stack: err && err.stack ? err.stack.slice(0, 1000) : '', url: location.href, ua: navigator.userAgent }),
         }).catch(function() {});
@@ -36,7 +41,7 @@
     var reason = e.reason ? String(e.reason.message || e.reason).slice(0, 500) : 'Unknown';
     try {
       if (FEATURES.fetch) {
-        fetch('https://sage.thewayagency.com/api/errors/client', {
+        fetch(SAGE_API_BASE + '/api/errors/client', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: 'Unhandled rejection: ' + reason, url: location.href, ua: navigator.userAgent }),
         }).catch(function() {});
@@ -58,7 +63,7 @@
 
   // ─── Configuration ───────────────────────────
   const CONFIG = {
-    webhookUrl: 'https://sage.thewayagency.com/api/intake/lead',
+    webhookUrl: SAGE_API_BASE + '/api/intake/lead',
     turnstileSiteKey: '0x4AAAAAACuOvP2DfWPQJz9W',
     phone: '(502) 413-5335',
     phoneRaw: '+15024135335',
@@ -1398,7 +1403,7 @@
     const path = window.location.pathname;
     if (path.startsWith('/intake') || path.startsWith('/portal') || path.startsWith('/partner') || path.startsWith('/admin')) return;
 
-    var SAGE_API = 'https://sage.thewayagency.com';
+    var SAGE_API = SAGE_API_BASE;
 
     // Check kill switch status before rendering — hide bubble if chat is disabled
     var statusController = typeof AbortController !== 'undefined' ? new AbortController() : null;
