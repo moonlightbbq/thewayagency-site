@@ -4,8 +4,8 @@ slug: insurance-guide-roofing-contractors
 description: Roofing is one of the highest-risk trades for insurance. Here's what Kentucky roofing contractors need, what it costs, and how to get competitive rates.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-08-12
-modified: 2026-08-12
+date: 2026-06-24
+modified: 2026-06-24
 reading_time: 7 min read
 related_page: /commercial/general-liability.html
 tags: roofing insurance, contractor insurance, workers comp, general liability, kentucky
