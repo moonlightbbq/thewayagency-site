@@ -657,6 +657,11 @@
         <input type="tel" id="i_phone" placeholder="(555) 123-4567" required autocomplete="tel">
       </div>
     </div>
+    <!-- Business name — revealed by initGrid() only for commercial-line arrivals -->
+    <div class="form-group" id="biz-name-step1-group" style="display:none">
+      <label for="i_biz_name_1">Business Name <span style="color:#ef4444">*</span></label>
+      <input type="text" id="i_biz_name_1" placeholder="Your business name" autocomplete="organization">
+    </div>
     <div style="background:#f0fdf8;border:1px solid #bbf7d0;border-radius:10px;padding:10px 14px;margin:16px 0 0;font-size:11px;color:#166534;line-height:1.5;text-align:center;">
       Your information is safe — we never sell your data. By continuing, you agree to our <a href="/privacy.html" style="color:#166534;text-decoration:underline">Privacy Policy</a> and consent to be contacted about your request.
     </div>
@@ -976,7 +981,7 @@ function showIntakeBanner(color, msg) {
   const subtitle = document.getElementById('intake-subtitle');
   if (!headline) return;
 
-  const PROD_NAMES = { homeowners:'Homeowners', auto:'Auto', umbrella:'Umbrella', flood:'Flood', life:'Life', renters:'Renters', bop:'Business', cgl:'Liability', commercial_auto:'Commercial Auto', workers_comp:'Workers Comp', cyber:'Cyber', bonds:'Bonds', motorcycle:'Motorcycle', boat:'Boat', rv:'RV', medicare:'Medicare' };
+  const PROD_NAMES = { homeowners:'Homeowners', auto:'Auto', umbrella:'Umbrella', flood:'Flood', life:'Life', renters:'Renters', bop:'Business', cgl:'Liability', commercial_auto:'Commercial Auto', workers_comp:'Workers Comp', cyber:'Cyber', bonds:'Bonds', motorcycle:'Motorcycle', boat:'Boat', rv:'RV', medicare:'Medicare', medicaid:'Medicaid', individual_health:'Individual Health', family_health:'Family Health', group_health:'Group Health', supplemental_health:'Supplemental Health', dental_vision:'Dental & Vision', term_life:'Term Life', whole_life:'Whole Life', final_expense:'Final Expense', annuities:'Annuities', disability:'Disability' };
 
   if (product && PROD_NAMES[product]) {
     headline.textContent = PROD_NAMES[product] + ' Insurance Quote';
@@ -1183,15 +1188,27 @@ const PRODUCTS = [
   { id: 'auto',            icon: '\u{1F697}', label: 'Auto',                 line: 'personal' },
   { id: 'umbrella',        icon: '\u2614\uFE0F', label: 'Umbrella',          line: 'personal' },
   { id: 'renters',         icon: '\u{1F3E2}', label: 'Renters',              line: 'personal' },
-  { id: 'life',            icon: '\u2764\uFE0F', label: 'Life',              line: 'personal' },
+  // Life (shown first when ?line=life; granular products mirror data/products.json)
+  { id: 'term_life',       icon: '\u2764\uFE0F', label: 'Term Life',          line: 'life' },
+  { id: 'whole_life',      icon: '\u{1F496}', label: 'Whole Life',            line: 'life' },
+  { id: 'final_expense',   icon: '\u{1F54A}\uFE0F', label: 'Final Expense',   line: 'life' },
+  { id: 'annuities',       icon: '\u{1F4B0}', label: 'Annuities',             line: 'life' },
   { id: 'flood',           icon: '\u{1F30A}', label: 'Flood',                line: 'personal' },
   { id: 'motorcycle',      icon: '\u{1F3CD}\uFE0F', label: 'Motorcycle',     line: 'personal' },
   { id: 'boat',            icon: '\u26F5\uFE0F', label: 'Boat',              line: 'personal' },
   { id: 'rv',              icon: '\u{1F68C}', label: 'RV',                   line: 'personal' },
   { id: 'earthquake',      icon: '\u{1F30D}', label: 'Earthquake',           line: 'personal' },
-  { id: 'health',          icon: '\u{1FA7A}', label: 'Health',               line: 'personal' },
   { id: 'pet',             icon: '\u{1F43E}', label: 'Pet',                  line: 'personal' },
-  { id: 'disability',      icon: '♿',    label: 'Disability',           line: 'personal' },
+  // Health (shown first when ?line=health; granular products mirror data/products.json)
+  { id: 'medicare',            icon: '\u{1F3E5}', label: 'Medicare',              line: 'health' },
+  { id: 'medicaid',            icon: '⚕️', label: 'Medicaid',          line: 'health' },
+  { id: 'individual_health',   icon: '\u{1FA7A}', label: 'Individual Health',     line: 'health' },
+  { id: 'family_health',       icon: '\u{1F46A}', label: 'Family Health',         line: 'health' },
+  { id: 'group_health',        icon: '\u{1F465}', label: 'Group Health',          line: 'health' },
+  { id: 'supplemental_health', icon: '\u{1F6E1}️', label: 'Supplemental Health', line: 'health' },
+  { id: 'dental_vision',       icon: '\u{1F9B7}', label: 'Dental & Vision',       line: 'health' },
+  // Disability is life-licensed (matches data/products.json + server LIFE_PRODUCTS)
+  { id: 'disability',      icon: '♿',    label: 'Disability',           line: 'life' },
   // Commercial (top 8 shown in main grid when ?line=commercial)
   { id: 'bop',             icon: '\u{1F3EA}', label: 'Business Owners Policy', line: 'commercial' },
   { id: 'cgl',             icon: '\u{1F4BC}', label: 'General Liability',    line: 'commercial' },
@@ -1230,19 +1247,18 @@ const PRODUCT_ALIASES = {
   'general-liability': 'cgl',
   'professional-liability': 'eo',
   'special-event': 'special_event',
-  // Life (intake bundles all life sub-types under a single tile)
-  'term-life': 'life',
-  'whole-life': 'life',
-  'final-expense': 'life',
-  'annuities': 'life',
-  // Health (intake bundles all health sub-types under a single tile)
-  'medicare': 'health',
-  'medicaid': 'health',
-  'supplemental-health': 'health',
-  'group-health': 'health',
-  'individual-health': 'health',
-  'family-health': 'health',
-  'dental-vision': 'health',
+  // Life (granular tiles — hyphen → underscore so each slug maps to its own tile)
+  'term-life': 'term_life',
+  'whole-life': 'whole_life',
+  'final-expense': 'final_expense',
+  // 'annuities' and 'disability' already match their tile ids
+  // Health (granular tiles — hyphen → underscore)
+  'supplemental-health': 'supplemental_health',
+  'group-health': 'group_health',
+  'individual-health': 'individual_health',
+  'family-health': 'family_health',
+  'dental-vision': 'dental_vision',
+  // 'medicare' and 'medicaid' already match their tile ids
 };
 
 function getProductLine(pid) {
@@ -1250,15 +1266,17 @@ function getProductLine(pid) {
   return p ? p.line : null;
 }
 
+// Fallback tier for non-priority lines: personal is the broad default, then
+// commercial, then life/health, then the 'other' catch-all. With a priorityLine
+// set (personal|commercial|life|health), that line's products always sort first.
+const LINE_TIER = { personal: 1, commercial: 2, life: 3, health: 3, other: 4 };
+
 function renderProductGrid(priorityLine) {
-  // Sort: priority line first, then the other line, then 'other'
+  // Sort: priority line first, then a stable fallback tier by line.
   const sorted = [...PRODUCTS].sort((a, b) => {
     const order = (p) => {
       if (priorityLine && p.line === priorityLine) return 0;
-      if (p.line === 'personal' && !priorityLine) return 0; // default: personal first
-      if (p.line === 'personal') return 1;
-      if (p.line === 'commercial') return priorityLine === 'commercial' ? 0 : 1;
-      return 2; // 'other'
+      return LINE_TIER[p.line] != null ? LINE_TIER[p.line] : 4;
     };
     return order(a) - order(b);
   });
@@ -1276,14 +1294,26 @@ function renderProductGrid(priorityLine) {
   if (typeof applyEnhancers === 'function') applyEnhancers();
 }
 
-// Render grid — check for ?line= param first, otherwise default (personal first)
-(function initGrid() {
+// Resolve the line a visitor arrived from: explicit ?line=, else the line of a
+// ?product= preselect (e.g. /health/medicare.html → ?product=medicare). Used for
+// the grid priority and the Step 1 business-name reveal.
+function getEntryLine() {
   const params = new URLSearchParams(window.location.search);
   const line = params.get('line');
-  if (line === 'personal' || line === 'commercial') {
-    renderProductGrid(line);
-  } else {
-    renderProductGrid(null);
+  if (['personal', 'commercial', 'life', 'health'].includes(line)) return line;
+  let pid = params.get('product');
+  if (pid) { pid = PRODUCT_ALIASES[pid] || pid; return getProductLine(pid); }
+  return null;
+}
+
+// Render grid leading with the entry line's products; default (no line) = personal first.
+(function initGrid() {
+  renderProductGrid(getEntryLine());
+
+  // Show the Step 1 business-name field up front for commercial arrivals.
+  if (getEntryLine() === 'commercial') {
+    const grp = document.getElementById('biz-name-step1-group');
+    if (grp) grp.style.display = '';
   }
 })();
 
@@ -1855,6 +1885,11 @@ async function nextStep(from) {
     if (!v('i_phone')) { err.textContent = 'Phone number is required.'; err.classList.remove('hidden'); trackValidationError(1, 'missing_phone'); return; }
     if (!isValidEmail(v('i_email'))) { err.textContent = 'Please enter a valid email address.'; err.classList.remove('hidden'); trackValidationError(1, 'invalid_email'); return; }
     if (!isValidPhone(v('i_phone'))) { err.textContent = 'Please enter a valid 10-digit phone number.'; err.classList.remove('hidden'); trackValidationError(1, 'invalid_phone'); return; }
+    // Business name is required up front for commercial-line arrivals (field is visible only then).
+    const bizGrp = document.getElementById('biz-name-step1-group');
+    if (bizGrp && bizGrp.style.display !== 'none' && !v('i_biz_name_1')) {
+      err.textContent = 'Please enter your business name.'; err.classList.remove('hidden'); trackValidationError(1, 'missing_business_name'); return;
+    }
     err.classList.add('hidden');
 
     // Auto-capitalize first letter of each word in first/last name
@@ -1888,7 +1923,7 @@ async function nextStep(from) {
     }
     // Validate DOB: required for life always; required for all personal lines under A/B 'dob-required' variant
     {
-      const lifeSelected = selectedProducts.includes('life');
+      const lifeSelected = selectedProducts.some(p => LIFE_COVERAGE.includes(p));
       const abDobRequired = document.body.classList.contains('twa-ab-dob-required');
       const dobGroup = document.getElementById('dob-group');
       const dobVisible = dobGroup && dobGroup.style.display !== 'none';
@@ -1965,6 +2000,9 @@ document.getElementById('i_dob').addEventListener('input', function() {
 // ── Product-specific questions (Step 3) ─────────────────────────────────────
 const COMMERCIAL_PRODUCTS = ['bop','cgl','commercial_auto','workers_comp','cyber','eo','bonds','builders_risk'];
 const PROPERTY_PRODUCTS = ['flood','earthquake','dwelling_fire'];
+// Life-coverage tiles that share the same coverage-amount / type / tobacco questions.
+// ('life' kept for backward safety; annuities/disability don't use these fields.)
+const LIFE_COVERAGE = ['life','term_life','whole_life','final_expense'];
 
 function renderProductQuestions() {
   const container = document.getElementById('product-questions');
@@ -2013,7 +2051,7 @@ function renderProductQuestions() {
     </div>`;
   }
 
-  if (selectedProducts.includes('life')) {
+  if (selectedProducts.some(p => LIFE_COVERAGE.includes(p))) {
     html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
       <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Life Insurance</div>
       <div class="form-row">
@@ -2306,6 +2344,14 @@ function renderProductQuestions() {
     if (el) el.value = savedValues[id];
   });
 
+  // Carry the up-front (Step 1) business name into the canonical Step 3 field
+  // so commercial arrivals don't re-type it; stays editable here.
+  const bizName3 = document.getElementById('i_biz_name');
+  const bizName1 = document.getElementById('i_biz_name_1');
+  if (bizName3 && bizName1 && !bizName3.value.trim() && bizName1.value.trim()) {
+    bizName3.value = bizName1.value.trim();
+  }
+
   // Restore homeowners same-address toggle
   if (selectedProducts.includes('homeowners') && !savedHoSame) {
     setHomeSameAddr(false);
@@ -2373,7 +2419,16 @@ const PROD_LABELS = {
   life: 'Life', renters: 'Renters', bop: 'Business Owners Policy', motorcycle: 'Motorcycle',
   dwelling_fire: 'Dwelling Fire', cgl: 'General Liability', commercial_auto: 'Commercial Auto',
   workers_comp: 'Workers Comp', cyber: 'Cyber', eo: 'Professional Liability', boat: 'Boat', rv: 'RV',
-  earthquake: 'Earthquake', farm_ranch: 'Farm / Ranch', bonds: 'Bonds', builders_risk: 'Builders Risk', other: 'Other'
+  earthquake: 'Earthquake', farm_ranch: 'Farm / Ranch', bonds: 'Bonds', builders_risk: 'Builders Risk',
+  pet: 'Pet', commercial_property: 'Commercial Property', special_event: 'Special Event',
+  // Health
+  health: 'Health', medicare: 'Medicare', medicaid: 'Medicaid', individual_health: 'Individual Health',
+  family_health: 'Family Health', group_health: 'Group Health', supplemental_health: 'Supplemental Health',
+  dental_vision: 'Dental & Vision',
+  // Life
+  term_life: 'Term Life', whole_life: 'Whole Life', final_expense: 'Final Expense',
+  annuities: 'Annuities', disability: 'Disability',
+  other: 'Other'
 };
 
 // ── Review ──────────────────────────────────────────────────────────────────
@@ -2418,7 +2473,7 @@ function renderReview() {
   // Shared: Business info
   const hasCommercialReview = selectedProducts.some(p => COMMERCIAL_PRODUCTS.includes(p));
   if (hasCommercialReview) {
-    if (rv('i_biz_name')) html += `<div class="summary-row"><span class="label">Business Name</span><span class="value">${esc(rv('i_biz_name'))}</span></div>`;
+    if (rv('i_biz_name') || rv('i_biz_name_1')) html += `<div class="summary-row"><span class="label">Business Name</span><span class="value">${esc(rv('i_biz_name') || rv('i_biz_name_1'))}</span></div>`;
     if (rv('i_biz_type')) html += `<div class="summary-row"><span class="label">Business Type</span><span class="value">${esc(rv('i_biz_type'))}</span></div>`;
     if (rv('i_biz_employees')) html += `<div class="summary-row"><span class="label">Employees</span><span class="value">${esc(rv('i_biz_employees'))}</span></div>`;
     if (rv('i_biz_years')) html += `<div class="summary-row"><span class="label">Years in Business</span><span class="value">${esc(rv('i_biz_years'))}</span></div>`;
@@ -2430,7 +2485,6 @@ function renderReview() {
     umbrella: [['Limit', 'i_umb_limit'], ['Drivers', 'i_umb_drivers']],
     flood: [['Foundation', 'i_fl_foundation'], ['Prior Claims', 'i_fl_claims']],
     renters: [['Personal Property', 'i_rent_coverage'], ['Unit Type', 'i_rent_type']],
-    life: [['Coverage Amount', 'i_li_amount'], ['Type', 'i_li_type'], ['Tobacco', 'i_li_tobacco']],
     motorcycle: [['Motorcycle', () => [rv('i_mc_year'), rv('i_mc_make'), rv('i_mc_model')].filter(Boolean).join(' ')]],
     boat: [['Boat', () => [rv('i_boat_year'), rv('i_boat_make'), rv('i_boat_length') ? rv('i_boat_length')+'ft' : ''].filter(Boolean).join(' ')], ['Type', 'i_boat_type']],
     rv: [['RV', () => [rv('i_rv_year'), rv('i_rv_make'), rv('i_rv_model')].filter(Boolean).join(' ')], ['Type', 'i_rv_type']],
@@ -2459,6 +2513,14 @@ function renderReview() {
       });
     }
   });
+
+  // Life coverage fields are shared across all life-coverage tiles — render once.
+  if (selectedProducts.some(p => LIFE_COVERAGE.includes(p))) {
+    [['Coverage Amount', 'i_li_amount'], ['Type', 'i_li_type'], ['Tobacco', 'i_li_tobacco']].forEach(([label, src]) => {
+      const val = rv(src);
+      if (val) html += `<div class="summary-row"><span class="label">Life Insurance — ${esc(label)}</span><span class="value">${esc(val)}</span></div>`;
+    });
+  }
 
   if (v('i_notes')) html += `<div class="summary-row"><span class="label">Notes</span><span class="value">${esc(v('i_notes'))}</span></div>`;
   if (v('i_other_desc')) html += `<div class="summary-row"><span class="label">Other Coverage</span><span class="value">${esc(v('i_other_desc'))}</span></div>`;
@@ -2585,11 +2647,12 @@ async function submitIntake() {
   const btn = document.getElementById('submit-btn');
   const err = document.getElementById('step4-error');
 
-  // Require Business Name when a commercial product is selected.
+  // Require Business Name when a commercial product is selected (captured on
+  // Step 1 for commercial-line arrivals, else in the Step 3 Business Info section).
   const hasCommercialSubmit = selectedProducts.some(p => COMMERCIAL_PRODUCTS.includes(p));
-  const bizNameVal = (() => { const e = document.getElementById('i_biz_name'); return e ? e.value.trim() : ''; })();
+  const bizNameVal = v('i_biz_name') || v('i_biz_name_1');
   if (hasCommercialSubmit && !bizNameVal) {
-    err.textContent = 'Business name is required for commercial quotes. Go back to Step 3 to enter it.';
+    err.textContent = 'Business name is required for commercial quotes. Please enter it on Step 1 or Step 3.';
     err.classList.remove('hidden');
     return;
   }
@@ -2771,7 +2834,7 @@ async function submitIntake() {
         city: v('i_city'),
         state: v('i_state'),
         zip: v('i_zip'),
-        businessName: v('i_biz_name') || undefined,
+        businessName: v('i_biz_name') || v('i_biz_name_1') || undefined,
         products: selectedProducts,
         formData,
         notes: v('i_notes'),
