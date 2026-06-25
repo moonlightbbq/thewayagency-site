@@ -1601,6 +1601,29 @@ async function trackPartial(notify) {
   if (phone && !isValidPhone(phone)) return;
 
   try {
+    // Landing-page / referrer / UTM attribution so the portal live-intake pop-up
+    // can show the actual entry point even before final submit (mirrors the final
+    // submission's formData capture).
+    const _trkParams = new URLSearchParams(window.location.search);
+    const _attr = {
+      lead_page: window.location.pathname + window.location.search,
+      lead_referrer: document.referrer || 'direct',
+      lead_source: _trkParams.get('src') || undefined,
+    };
+    for (const _k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']) {
+      const _val = _trkParams.get(_k);
+      if (_val) _attr[_k] = _val;
+    }
+    const _utmCookie = document.cookie.match(/twa_utm=([^;]+)/);
+    if (_utmCookie) {
+      try {
+        const _saved = JSON.parse(decodeURIComponent(_utmCookie[1]));
+        for (const _k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']) {
+          if (_saved[_k] && !_attr[_k]) _attr[_k] = _saved[_k];
+        }
+      } catch (e) {}
+    }
+
     const res = await fetch(SAGE_API + '/api/intake/track', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1616,6 +1639,7 @@ async function trackPartial(notify) {
         cfToken: turnstileToken || '',
         twa_vid: sessionId || getVisitorId(),
         _tracking: getTrackingIds(),
+        ..._attr,
       })
     });
     const data = await res.json();
