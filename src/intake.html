@@ -733,26 +733,37 @@
       <input type="hidden" id="i_city">
       <input type="hidden" id="i_state">
       <input type="hidden" id="i_zip">
-      <div class="form-row">
-        <div class="form-group" id="dob-group">
-          <label for="i_dob">Date of Birth</label>
-          <input type="text" id="i_dob" placeholder="MM/DD/YYYY" maxlength="10" inputmode="numeric" autocomplete="bday">
-        </div>
-        <div class="form-group">
-          <label for="i_current_carrier">Current Insurance Company</label>
-          <input type="text" id="i_current_carrier" placeholder="e.g. State Farm, Geico, or None">
-        </div>
-      </div>
-      <div class="form-group" style="max-width:280px;">
-        <label for="i_policy_expiry">When does your policy expire?</label>
-        <select id="i_policy_expiry">
-          <option value="">Select</option><option value="within30">Within 30 days</option><option value="1-3months">1–3 months</option><option value="3-6months">3–6 months</option><option value="over6months">6+ months</option><option value="none">No current policy</option><option value="unsure">Not sure</option>
-        </select>
+      <div class="form-group" id="dob-group" style="max-width:280px;">
+        <label for="i_dob">Date of Birth <span id="dob-req-star" style="color:#ef4444;display:none">*</span></label>
+        <input type="text" id="i_dob" placeholder="MM/DD/YYYY" maxlength="10" inputmode="numeric" autocomplete="bday">
       </div>
     </div>
 
     <!-- Section 2: Product-specific details (injected by JS) -->
     <div id="product-questions"></div>
+
+    <!-- Current-policy details — collapsed by default; opt-in for clients who already have coverage -->
+    <div class="qcard" data-qcard="current-policy">
+      <div class="qcard-head" data-action="toggle-qcard" role="button" tabindex="0" aria-expanded="false">
+        <span class="qcard-icon" aria-hidden="true">📄</span>
+        <span class="qcard-title">If you have a current policy, tell us more about it</span>
+        <span class="qcard-chev" aria-hidden="true">&#8250;</span>
+      </div>
+      <div class="qcard-body">
+        <div class="qcard-body-inner">
+          <div class="form-group">
+            <label for="i_current_carrier">Current Insurance Company</label>
+            <input type="text" id="i_current_carrier" placeholder="e.g. State Farm or Geico">
+          </div>
+          <div class="form-group" style="max-width:280px;">
+            <label for="i_policy_expiry">When does your policy expire?</label>
+            <select id="i_policy_expiry">
+              <option value="">Select</option><option value="within30">Within 30 days</option><option value="1-3months">1–3 months</option><option value="3-6months">3–6 months</option><option value="over6months">6+ months</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Section 3: Notes (always shown) -->
     <div class="form-group">
@@ -2098,6 +2109,23 @@ function toggleQCard(el) {
   const open = card.classList.toggle('open');
   const head = card.querySelector('.qcard-head');
   if (head) head.setAttribute('aria-expanded', open ? 'true' : 'false');
+  // Measure engagement with the opt-in current-policy section (capture-rate signal).
+  if (open && card.dataset.qcard === 'current-policy' && typeof trackIntake === 'function') {
+    trackIntake('intake_section_expand', { section: 'current_policy', step_number: currentStep });
+  }
+}
+// Auto-open the current-policy card when a resumed draft already has carrier/expiry,
+// so restored values aren't hidden behind the collapsed header.
+function revealCurrentPolicyIfFilled() {
+  const card = document.querySelector('[data-qcard="current-policy"]');
+  if (!card) return;
+  const cc = document.getElementById('i_current_carrier');
+  const pe = document.getElementById('i_policy_expiry');
+  if ((cc && cc.value.trim()) || (pe && pe.value.trim())) {
+    card.classList.add('open');
+    const head = card.querySelector('.qcard-head');
+    if (head) head.setAttribute('aria-expanded', 'true');
+  }
 }
 function renderField(f) {
   let inner;
@@ -2356,6 +2384,17 @@ function renderProductQuestions() {
   // Show/hide DOB based on whether personal lines are selected
   const dobGroup = document.getElementById('dob-group');
   if (dobGroup) dobGroup.style.display = hasPersonal ? '' : 'none';
+  // DOB required-state mirror of the Step-3 validator (the lifeSelected/abDobRequired
+  // check in nextStep). dobAbRequired is currently inert here — the A/B harness in
+  // app.js isn't loaded on intake.html — but is kept so the asterisk stays a true
+  // mirror if it ever is. Surface requiredness both visually (*) and to AT (aria-required).
+  const dobLifeSelected = selectedProducts.some(p => LIFE_COVERAGE.includes(p));
+  const dobAbRequired = document.body.classList.contains('twa-ab-dob-required');
+  const dobRequired = dobLifeSelected || (dobAbRequired && hasPersonal);
+  const dobStar = document.getElementById('dob-req-star');
+  if (dobStar) dobStar.style.display = dobRequired ? '' : 'none';
+  const dobInput = document.getElementById('i_dob');
+  if (dobInput) dobInput.setAttribute('aria-required', dobRequired ? 'true' : 'false');
 
   // ═══ Per-product collapsible cards (icon header + schema/dedicated body) ═══
   const iconOf = pid => (PRODUCTS.find(p => p.id === pid) || {}).icon || '';
@@ -3095,6 +3134,16 @@ document.addEventListener('click', (e) => {
   }
 });
 
+// Keyboard activation for qcard headers (role=button): the delegated click handler
+// above is click-only, so add Enter/Space. Covers product cards + the current-policy card.
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' && e.key !== ' ' && e.key !== 'Spacebar') return;
+  const head = e.target.closest('[data-action="toggle-qcard"]');
+  if (!head) return;
+  e.preventDefault();
+  toggleQCard(head);
+});
+
 // ── Form Auto-Save (localStorage) ────────────────────────────────────────────
 const DRAFT_KEY = 'twa_intake_draft';
 const DRAFT_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -3185,6 +3234,9 @@ function restoreDraft(draft) {
     const el = document.getElementById(id);
     if (el) { el.value = val; el.classList.add('filled'); }
   }
+  // The current-policy card is static (always in the DOM), so its carrier/expiry are
+  // restored above — open the card if either has a value so it isn't hidden.
+  revealCurrentPolicyIfFilled();
   // Restore selected products
   if (draft.products?.length) {
     selectedProducts = [...draft.products];
