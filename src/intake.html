@@ -313,6 +313,18 @@
   }
   .toggle-btn.active { background: var(--blue); color: var(--white); border-color: var(--blue) }
 
+  /* ─── Step 3 product-detail cards (collapsible) ─── */
+  .qcard { border: 1.5px solid var(--border); border-radius: 12px; background: var(--white); margin-bottom: 12px; overflow: hidden }
+  .qcard-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; cursor: pointer; user-select: none; min-height: 44px }
+  .qcard-head:hover { background: #f8fafc }
+  .qcard-icon { font-size: 20px; line-height: 1 }
+  .qcard-title { flex: 1; font-weight: 600; color: var(--navy); font-size: 15px }
+  .qcard-chev { color: var(--slate); font-size: 22px; line-height: 1; transition: transform .2s }
+  .qcard.open .qcard-chev { transform: rotate(90deg) }
+  .qcard-body { display: none }
+  .qcard.open .qcard-body { display: block }
+  .qcard-body-inner { padding: 2px 16px 16px }
+
   /* ─── Agent takeover banner ─── */
   .takeover-banner {
     position: fixed; top: 0; left: 0; right: 0; z-index: 999;
@@ -1999,7 +2011,11 @@ async function nextStep(from) {
     }
     // Validate address
     if (!v('i_address')) problems.push('Please enter your mailing address.');
-    if (problems.length) { err.textContent = problems[0]; err.classList.remove('hidden'); return; }
+    if (problems.length) {
+      // Expand all cards so the offending field (which may be collapsed) is visible.
+      document.querySelectorAll('#product-questions .qcard').forEach(c => c.classList.add('open'));
+      err.textContent = problems[0]; err.classList.remove('hidden'); return;
+    }
     err.classList.add('hidden');
   }
   showStep(from + 1);
@@ -2062,24 +2078,59 @@ const PROPERTY_PRODUCTS = ['flood','earthquake','dwelling_fire'];
 // ('life' kept for backward safety; annuities/disability don't use these fields.)
 const LIFE_COVERAGE = ['life','term_life','whole_life','final_expense'];
 
-function renderProductQuestions() {
-  const container = document.getElementById('product-questions');
-  let html = '';
-  const hasCommercial = selectedProducts.some(p => COMMERCIAL_PRODUCTS.includes(p));
-  const hasPersonal = selectedProducts.some(p => !COMMERCIAL_PRODUCTS.includes(p));
-  const hasProperty = selectedProducts.filter(p => PROPERTY_PRODUCTS.includes(p));
+// ── Step 3 collapsible card shell + schema-driven field rendering ─────────────
+// Collapse is a CSS class toggle only (never re-renders), so typed values, the
+// auto vehicle repeater, and the homeowners toggle are preserved. Injected via
+// raw innerHTML (keeps inline oninput); toggle uses the data-action delegation.
+function qcard(key, label, icon, bodyHtml, expanded) {
+  return `<div class="qcard${expanded ? ' open' : ''}" data-qcard="${key}">
+    <div class="qcard-head" data-action="toggle-qcard" role="button" tabindex="0" aria-expanded="${expanded ? 'true' : 'false'}">
+      <span class="qcard-icon" aria-hidden="true">${icon || ''}</span>
+      <span class="qcard-title">${esc(label)}</span>
+      <span class="qcard-chev" aria-hidden="true">&#8250;</span>
+    </div>
+    <div class="qcard-body"><div class="qcard-body-inner">${bodyHtml}</div></div>
+  </div>`;
+}
+function toggleQCard(el) {
+  const card = el.closest('.qcard');
+  if (!card) return;
+  const open = card.classList.toggle('open');
+  const head = card.querySelector('.qcard-head');
+  if (head) head.setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+function renderField(f) {
+  let inner;
+  if (f.type === 'select') {
+    inner = `<select id="${f.id}">` + f.options.map(o => `<option value="${o[0]}">${o[1]}</option>`).join('') + `</select>`;
+  } else if (f.type === 'textarea') {
+    inner = `<textarea id="${f.id}" rows="${f.rows || 3}" placeholder="${f.placeholder || ''}"></textarea>`;
+  } else {
+    inner = `<input type="${f.type === 'number' ? 'number' : 'text'}" id="${f.id}"`
+      + (f.maxlength != null ? ` maxlength="${f.maxlength}"` : '')
+      + (f.min != null ? ` min="${f.min}"` : '')
+      + (f.max != null ? ` max="${f.max}"` : '')
+      + ` placeholder="${f.placeholder || ''}">`;
+  }
+  return `<div class="form-group"><label>${f.label}</label>${inner}</div>`;
+}
+// A schema entry is a field object (one row) or an array of field objects (a
+// grid row: 2 fields → .form-row, 3 fields → .form-row-3).
+function renderFields(schema) {
+  return (schema || []).map(entry => {
+    if (Array.isArray(entry)) {
+      const cls = entry.length === 3 ? 'form-row-3' : 'form-row';
+      return `<div class="${cls}">${entry.map(renderField).join('')}</div>`;
+    }
+    return renderField(entry);
+  }).join('');
+}
 
-  // Show/hide DOB based on whether personal lines are selected
-  const dobGroup = document.getElementById('dob-group');
-  if (dobGroup) dobGroup.style.display = hasPersonal ? '' : 'none';
-
-  // ═══ Per-product sections (lighter headers, no icons) ═══
-
-  if (selectedProducts.includes('homeowners')) {
-    const addr = v('i_address');
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Homeowners</div>
-      <div class="toggle-row">
+// Dedicated body renderers for the 4 complex products (extracted verbatim so
+// their bespoke submit/validation/restore wiring is unchanged).
+function renderHomeownersBody() {
+  const addr = v('i_address');
+  return `<div class="toggle-row">
         <span class="toggle-label">Property is at the same address as mailing?</span>
         <button type="button" class="toggle-btn active" id="ho-same-y" data-action="set-ho-addr" data-same="true">Yes</button>
         <button type="button" class="toggle-btn" id="ho-same-n" data-action="set-ho-addr" data-same="false">No</button>
@@ -2097,22 +2148,10 @@ function renderProductQuestions() {
           <option value="">Select</option><option value="under150k">Under $150K</option><option value="150k-250k">$150K - $250K</option><option value="250k-400k">$250K - $400K</option><option value="400k-600k">$400K - $600K</option><option value="600k-1m">$600K - $1M</option><option value="over1m">$1M+</option>
         </select></div>
         <div class="form-group"><label>Year Built</label><input type="text" id="i_ho_yearbuilt" maxlength="4" placeholder="e.g. 1990"></div>
-      </div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('auto')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Auto Details</div>
-      <div id="vehicles-container"></div>
-      <button type="button" class="add-vehicle-btn" data-action="add-vehicle"><span>+</span> Add Another Vehicle</button>
-    </div>`;
-  }
-
-  if (selectedProducts.some(p => LIFE_COVERAGE.includes(p))) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Life Insurance</div>
-      <div class="form-row">
+      </div>`;
+}
+function renderLifeBody() {
+  return `<div class="form-row">
         <div class="form-group"><label>Coverage Amount</label><select id="i_li_amount">
           <option value="">Select amount</option>
           <option value="25000">$25,000</option><option value="50000">$50,000</option><option value="100000">$100,000</option>
@@ -2125,220 +2164,28 @@ function renderProductQuestions() {
       </div>
       <div class="form-group"><label>Tobacco Use</label><select id="i_li_tobacco">
         <option value="">Select</option><option value="never">Never</option><option value="former">Former (quit 12+ months ago)</option><option value="current">Current user</option>
-      </select></div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('umbrella')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Umbrella</div>
-      <div class="form-row">
-        <div class="form-group"><label>Desired Coverage Limit</label><select id="i_umb_limit">
-          <option value="">Select limit</option>
-          <option value="1000000">$1,000,000</option><option value="2000000">$2,000,000</option><option value="3000000">$3,000,000</option><option value="5000000">$5,000,000</option>
-        </select></div>
-        <div class="form-group"><label>Number of Drivers in Household</label><input type="number" id="i_umb_drivers" min="1" max="20" placeholder="e.g. 2"></div>
-      </div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('flood')) {
-    const showPropFields = hasProperty.length <= 1;
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Flood</div>
-      ${showPropFields ? `<div class="form-row">
+      </select></div>`;
+}
+function renderFloodBody(showPropFields) {
+  const claims = `<div class="form-group"><label>Previous flood claims?</label><select id="i_fl_claims">
+        <option value="">Select</option><option value="none">No prior claims</option><option value="1">1 claim</option><option value="2plus">2 or more claims</option>
+      </select></div>`;
+  const zone = `<div class="form-group"><label>Property in a known flood zone?</label><select id="i_fl_zone">
+        <option value="">Select</option><option value="no">No</option><option value="yes">Yes</option><option value="unsure">Not sure</option>
+      </select></div>`;
+  if (showPropFields) {
+    return `<div class="form-row">
         <div class="form-group"><label>Foundation Type</label><select id="i_fl_foundation">
           <option value="">Select</option><option value="slab">Slab</option><option value="crawl">Crawlspace</option><option value="basement">Basement</option><option value="elevated">Elevated / Stilts</option>
         </select></div>
-        <div class="form-group"><label>Previous flood claims?</label><select id="i_fl_claims">
-          <option value="">Select</option><option value="none">No prior claims</option><option value="1">1 claim</option><option value="2plus">2 or more claims</option>
-        </select></div>
-      </div>` : `<div class="form-group"><label>Previous flood claims?</label><select id="i_fl_claims">
-        <option value="">Select</option><option value="none">No prior claims</option><option value="1">1 claim</option><option value="2plus">2 or more claims</option>
-      </select></div>`}
-    </div>`;
-  }
-
-  if (selectedProducts.includes('renters')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Renters</div>
-      <div class="form-row">
-        <div class="form-group"><label>Personal Property Coverage</label><select id="i_rent_coverage">
-          <option value="">Select</option><option value="15000">$15,000</option><option value="20000">$20,000</option><option value="25000">$25,000</option><option value="30000">$30,000</option><option value="40000">$40,000</option><option value="50000">$50,000</option>
-        </select></div>
-        <div class="form-group"><label>Unit Type</label><select id="i_rent_type">
-          <option value="">Select</option><option value="apartment">Apartment</option><option value="house">House</option><option value="condo">Condo</option><option value="townhome">Townhome</option><option value="duplex">Duplex</option>
-        </select></div>
+        ${claims}
       </div>
-    </div>`;
+      ${zone}`;
   }
-
-  if (selectedProducts.includes('motorcycle')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Motorcycle</div>
-      <div class="form-row-3">
-        <div class="form-group"><label>Year</label><input type="text" id="i_mc_year" maxlength="4" placeholder="e.g. 2021"></div>
-        <div class="form-group"><label>Make</label><input type="text" id="i_mc_make" placeholder="e.g. Harley-Davidson"></div>
-        <div class="form-group"><label>Model</label><input type="text" id="i_mc_model" placeholder="e.g. Sportster"></div>
-      </div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('boat')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Boat</div>
-      <div class="form-row-3">
-        <div class="form-group"><label>Year</label><input type="text" id="i_boat_year" maxlength="4" placeholder="e.g. 2019"></div>
-        <div class="form-group"><label>Make</label><input type="text" id="i_boat_make" placeholder="e.g. Tracker"></div>
-        <div class="form-group"><label>Length (ft)</label><input type="text" id="i_boat_length" placeholder="e.g. 22"></div>
-      </div>
-      <div class="form-group"><label>Boat Type</label><select id="i_boat_type">
-        <option value="">Select</option><option value="pontoon">Pontoon</option><option value="bass">Bass boat</option><option value="bowrider">Bowrider</option><option value="cabin_cruiser">Cabin cruiser</option><option value="sailboat">Sailboat</option><option value="jet_ski">Jet ski / PWC</option><option value="other">Other</option>
-      </select></div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('rv')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">RV</div>
-      <div class="form-row-3">
-        <div class="form-group"><label>Year</label><input type="text" id="i_rv_year" maxlength="4" placeholder="e.g. 2020"></div>
-        <div class="form-group"><label>Make</label><input type="text" id="i_rv_make" placeholder="e.g. Jayco"></div>
-        <div class="form-group"><label>Model</label><input type="text" id="i_rv_model" placeholder="e.g. Jay Flight"></div>
-      </div>
-      <div class="form-group"><label>RV Type</label><select id="i_rv_type">
-        <option value="">Select</option><option value="class_a">Class A Motorhome</option><option value="class_b">Class B (Camper Van)</option><option value="class_c">Class C Motorhome</option><option value="travel_trailer">Travel Trailer</option><option value="fifth_wheel">Fifth Wheel</option><option value="popup">Pop-up Camper</option>
-      </select></div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('bop')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Business Owners Policy</div>
-      <div class="form-group"><label>Do you own or lease the building?</label><select id="i_bop_ownlease">
-        <option value="">Select</option><option value="own">Own</option><option value="lease">Lease</option><option value="home">Home-based</option>
-      </select></div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('dwelling_fire')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Dwelling Fire</div>
-      <div class="form-row">
-        <div class="form-group"><label>Property Use</label><select id="i_df_use">
-          <option value="">Select</option><option value="rental">Rental property</option><option value="vacant">Vacant</option><option value="renovation">Under renovation</option><option value="seasonal">Seasonal / Secondary home</option>
-        </select></div>
-        <div class="form-group"><label>Estimated Dwelling Value</label><select id="i_df_value">
-          <option value="">Select</option><option value="under100k">Under $100K</option><option value="100k-200k">$100K - $200K</option><option value="200k-300k">$200K - $300K</option><option value="300k-500k">$300K - $500K</option><option value="over500k">$500K+</option>
-        </select></div>
-      </div>
-      <div class="form-group"><label>Property Address (if different from mailing)</label><input type="text" id="i_df_address" placeholder="Leave blank if same as mailing address"></div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('cgl')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">General Liability</div>
-      <div class="form-group"><label>Desired Liability Limit</label><select id="i_cgl_limit">
-        <option value="">Select</option><option value="300k/600k">$300K / $600K</option><option value="500k/1m">$500K / $1M</option><option value="1m/2m">$1M / $2M</option><option value="2m/4m">$2M / $4M</option>
-      </select></div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('commercial_auto')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Commercial Auto</div>
-      <div class="form-row">
-        <div class="form-group"><label>Number of Vehicles</label><input type="number" id="i_ca_numveh" min="1" max="100" placeholder="e.g. 3"></div>
-        <div class="form-group"><label>Vehicle Types</label><select id="i_ca_vehtype">
-          <option value="">Select primary type</option><option value="cars">Cars / Sedans</option><option value="pickups">Pickups / SUVs</option><option value="vans">Vans / Cargo vans</option><option value="box_trucks">Box trucks</option><option value="semis">Semi-trucks / Tractor trailers</option><option value="mixed">Mixed fleet</option>
-        </select></div>
-      </div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('workers_comp')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Workers Comp</div>
-      <div class="form-group"><label>Annual Payroll</label><select id="i_wc_payroll">
-        <option value="">Select</option><option value="under100k">Under $100K</option><option value="100k-250k">$100K - $250K</option><option value="250k-500k">$250K - $500K</option><option value="500k-1m">$500K - $1M</option><option value="over1m">$1M+</option>
-      </select></div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('cyber')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Cyber Liability</div>
-      <p style="font-size:12px;color:var(--slate);margin:-8px 0 12px">Our agent will discuss coverage details on your call.</p>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('eo')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Professional Liability (E&O)</div>
-      <div class="form-group"><label>Profession / Specialty</label><input type="text" id="i_eo_profession" placeholder="e.g. CPA, Architect, IT Consultant"></div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('earthquake')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Earthquake</div>
-      <p style="font-size:12px;color:var(--slate);margin:-8px 0 12px">We'll assess your property's risk zone and coverage needs on our call.</p>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('farm_ranch')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Farm / Ranch</div>
-      <div class="form-row">
-        <div class="form-group"><label>Operation Type</label><select id="i_fr_type">
-          <option value="">Select</option><option value="crop">Crop farming</option><option value="livestock">Livestock</option><option value="mixed">Mixed operation</option><option value="hobby">Hobby farm</option><option value="equine">Horse / Equine</option>
-        </select></div>
-        <div class="form-group"><label>Total Acreage</label><input type="text" id="i_fr_acres" placeholder="e.g. 150"></div>
-      </div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('bonds')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Bonds</div>
-      <div class="form-row">
-        <div class="form-group"><label>Bond Type Needed</label><select id="i_bond_type">
-          <option value="">Select</option><option value="contractor">Contractor / Construction</option><option value="auto_dealer">Auto Dealer</option><option value="notary">Notary</option><option value="court">Court / Judicial</option><option value="license_permit">License / Permit</option><option value="fidelity">Fidelity / Employee</option><option value="other">Other</option>
-        </select></div>
-        <div class="form-group"><label>Bond Amount Required</label><input type="text" id="i_bond_amount" placeholder="e.g. $25,000"></div>
-      </div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('builders_risk')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Builders Risk</div>
-      <div class="form-row">
-        <div class="form-group"><label>Project Type</label><select id="i_br_projtype">
-          <option value="">Select</option><option value="new_construction">New Construction</option><option value="renovation">Renovation / Remodel</option><option value="addition">Addition</option><option value="commercial_build">Commercial Build-Out</option>
-        </select></div>
-        <div class="form-group"><label>Total Project Value</label><select id="i_br_value">
-          <option value="">Select</option><option value="under250k">Under $250K</option><option value="250k-500k">$250K - $500K</option><option value="500k-1m">$500K - $1M</option><option value="1m-5m">$1M - $5M</option><option value="over5m">$5M+</option>
-        </select></div>
-      </div>
-    </div>`;
-  }
-
-  if (selectedProducts.includes('other')) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Other Coverage</div>
-      <div class="form-group"><label>Please describe what coverage you need</label>
-        <textarea id="i_other_desc" rows="3" placeholder="Describe the coverage you're looking for..."></textarea>
-      </div>
-    </div>`;
-  }
-
-  // ── Business Information (after all product sections, only if commercial selected) ──
-  if (hasCommercial) {
-    html += `<div style="margin-bottom:20px;padding-top:20px;border-top:1px solid #e5e7eb;">
-      <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Business Information</div>
-      <div class="form-row">
+  return claims + zone;
+}
+function renderBusinessInfoBody() {
+  return `<div class="form-row">
         <div class="form-group"><label>Business Name</label><input type="text" id="i_biz_name" placeholder="Your business name"></div>
         <div class="form-group"><label>Type of Business / Operations</label><input type="text" id="i_biz_type" placeholder="e.g. Plumbing, Restaurant, Consulting"></div>
       </div>
@@ -2350,9 +2197,202 @@ function renderProductQuestions() {
       </div>
       <div class="form-group"><label>Annual Revenue</label><select id="i_biz_revenue">
         <option value="">Select</option><option value="under100k">Under $100K</option><option value="100k-250k">$100K - $250K</option><option value="250k-500k">$250K - $500K</option><option value="500k-1m">$500K - $1M</option><option value="over1m">$1M+</option>
-      </select></div>
-    </div>`;
+      </select></div>`;
+}
+
+// Declarative questions for the simple products (migrated existing ids verbatim
+// + new gap products). The 4 complex products above are NOT here.
+const PRODUCT_QUESTION_SCHEMA = {
+  // Migrated existing simple products (ids + option values unchanged) + refinements
+  umbrella: [
+    [ { id:'i_umb_limit', label:'Desired Coverage Limit', review:'Limit', type:'select', options:[['','Select limit'],['1000000','$1,000,000'],['2000000','$2,000,000'],['3000000','$3,000,000'],['5000000','$5,000,000']] },
+      { id:'i_umb_drivers', label:'Number of Drivers in Household', review:'Drivers', type:'number', min:1, max:20, placeholder:'e.g. 2' } ],
+    { id:'i_umb_assets', label:'Total assets to protect', review:'Assets', type:'select', options:[['','Select'],['under500k','Under $500K'],['500k-1m','$500K - $1M'],['1m-2m','$1M - $2M'],['over2m','$2M+'],['unsure','Not sure']] },
+  ],
+  renters: [
+    [ { id:'i_rent_coverage', label:'Personal Property Coverage', type:'select', options:[['','Select'],['15000','$15,000'],['20000','$20,000'],['25000','$25,000'],['30000','$30,000'],['40000','$40,000'],['50000','$50,000']] },
+      { id:'i_rent_type', label:'Unit Type', type:'select', options:[['','Select'],['apartment','Apartment'],['house','House'],['condo','Condo'],['townhome','Townhome'],['duplex','Duplex']] } ],
+    { id:'i_rent_highvalue', label:'High-value items to schedule (jewelry, electronics, instruments)?', review:'High-value items', type:'select', options:[['','Select'],['no','No'],['yes','Yes']] },
+  ],
+  motorcycle: [
+    [ { id:'i_mc_year', label:'Year', type:'text', maxlength:4, placeholder:'e.g. 2021' },
+      { id:'i_mc_make', label:'Make', type:'text', placeholder:'e.g. Harley-Davidson' },
+      { id:'i_mc_model', label:'Model', type:'text', placeholder:'e.g. Sportster' } ],
+  ],
+  boat: [
+    [ { id:'i_boat_year', label:'Year', type:'text', maxlength:4, placeholder:'e.g. 2019' },
+      { id:'i_boat_make', label:'Make', type:'text', placeholder:'e.g. Tracker' },
+      { id:'i_boat_length', label:'Length (ft)', type:'text', placeholder:'e.g. 22' } ],
+    { id:'i_boat_type', label:'Boat Type', type:'select', options:[['','Select'],['pontoon','Pontoon'],['bass','Bass boat'],['bowrider','Bowrider'],['cabin_cruiser','Cabin cruiser'],['sailboat','Sailboat'],['jet_ski','Jet ski / PWC'],['other','Other']] },
+  ],
+  rv: [
+    [ { id:'i_rv_year', label:'Year', type:'text', maxlength:4, placeholder:'e.g. 2020' },
+      { id:'i_rv_make', label:'Make', type:'text', placeholder:'e.g. Jayco' },
+      { id:'i_rv_model', label:'Model', type:'text', placeholder:'e.g. Jay Flight' } ],
+    { id:'i_rv_type', label:'RV Type', type:'select', options:[['','Select'],['class_a','Class A Motorhome'],['class_b','Class B (Camper Van)'],['class_c','Class C Motorhome'],['travel_trailer','Travel Trailer'],['fifth_wheel','Fifth Wheel'],['popup','Pop-up Camper']] },
+  ],
+  bop: [
+    { id:'i_bop_ownlease', label:'Do you own or lease the building?', review:'Own/Lease', type:'select', options:[['','Select'],['own','Own'],['lease','Lease'],['home','Home-based']] },
+  ],
+  dwelling_fire: [
+    [ { id:'i_df_use', label:'Property Use', type:'select', options:[['','Select'],['rental','Rental property'],['vacant','Vacant'],['renovation','Under renovation'],['seasonal','Seasonal / Secondary home']] },
+      { id:'i_df_value', label:'Estimated Dwelling Value', type:'select', options:[['','Select'],['under100k','Under $100K'],['100k-200k','$100K - $200K'],['200k-300k','$200K - $300K'],['300k-500k','$300K - $500K'],['over500k','$500K+']] } ],
+    { id:'i_df_address', label:'Property Address (if different from mailing)', type:'text', placeholder:'Leave blank if same as mailing address' },
+  ],
+  cgl: [
+    { id:'i_cgl_limit', label:'Desired Liability Limit', review:'Liability Limit', type:'select', options:[['','Select'],['300k/600k','$300K / $600K'],['500k/1m','$500K / $1M'],['1m/2m','$1M / $2M'],['2m/4m','$2M / $4M']] },
+  ],
+  commercial_auto: [
+    [ { id:'i_ca_numveh', label:'Number of Vehicles', review:'# Vehicles', type:'number', min:1, max:100, placeholder:'e.g. 3' },
+      { id:'i_ca_vehtype', label:'Vehicle Types', review:'Vehicle Types', type:'select', options:[['','Select primary type'],['cars','Cars / Sedans'],['pickups','Pickups / SUVs'],['vans','Vans / Cargo vans'],['box_trucks','Box trucks'],['semis','Semi-trucks / Tractor trailers'],['mixed','Mixed fleet']] } ],
+  ],
+  workers_comp: [
+    { id:'i_wc_payroll', label:'Annual Payroll', review:'Payroll', type:'select', options:[['','Select'],['under100k','Under $100K'],['100k-250k','$100K - $250K'],['250k-500k','$250K - $500K'],['500k-1m','$500K - $1M'],['over1m','$1M+']] },
+  ],
+  eo: [
+    { id:'i_eo_profession', label:'Profession / Specialty', review:'Profession', type:'text', placeholder:'e.g. CPA, Architect, IT Consultant' },
+  ],
+  farm_ranch: [
+    [ { id:'i_fr_type', label:'Operation Type', review:'Operation', type:'select', options:[['','Select'],['crop','Crop farming'],['livestock','Livestock'],['mixed','Mixed operation'],['hobby','Hobby farm'],['equine','Horse / Equine']] },
+      { id:'i_fr_acres', label:'Total Acreage', review:'Acreage', type:'text', placeholder:'e.g. 150' } ],
+  ],
+  bonds: [
+    [ { id:'i_bond_type', label:'Bond Type Needed', review:'Bond Type', type:'select', options:[['','Select'],['contractor','Contractor / Construction'],['auto_dealer','Auto Dealer'],['notary','Notary'],['court','Court / Judicial'],['license_permit','License / Permit'],['fidelity','Fidelity / Employee'],['other','Other']] },
+      { id:'i_bond_amount', label:'Bond Amount Required', review:'Amount', type:'text', placeholder:'e.g. $25,000' } ],
+  ],
+  builders_risk: [
+    [ { id:'i_br_projtype', label:'Project Type', review:'Project Type', type:'select', options:[['','Select'],['new_construction','New Construction'],['renovation','Renovation / Remodel'],['addition','Addition'],['commercial_build','Commercial Build-Out']] },
+      { id:'i_br_value', label:'Total Project Value', review:'Project Value', type:'select', options:[['','Select'],['under250k','Under $250K'],['250k-500k','$250K - $500K'],['500k-1m','$500K - $1M'],['1m-5m','$1M - $5M'],['over5m','$5M+']] } ],
+  ],
+  // Placeholder products → real light questions
+  cyber: [
+    [ { id:'i_cyber_revenue', label:'Annual revenue', review:'Revenue', type:'select', options:[['','Select'],['under500k','Under $500K'],['500k-2m','$500K - $2M'],['2m-10m','$2M - $10M'],['over10m','$10M+']] },
+      { id:'i_cyber_records', label:'Customer records stored', review:'Records', type:'select', options:[['','Select'],['under1k','Under 1,000'],['1k-10k','1K - 10K'],['10k-100k','10K - 100K'],['over100k','100K+']] } ],
+    { id:'i_cyber_priorbreach', label:'Any prior cyber incident or breach?', review:'Prior incident', type:'select', options:[['','Select'],['no','No'],['yes','Yes'],['unsure','Not sure']] },
+  ],
+  earthquake: [
+    [ { id:'i_eq_proptype', label:'Property Type', review:'Property Type', type:'select', options:[['','Select'],['single_family','Single-family'],['condo','Condo'],['townhome','Townhome'],['commercial','Commercial']] },
+      { id:'i_eq_construction', label:'Construction', review:'Construction', type:'select', options:[['','Select'],['wood_frame','Wood frame'],['masonry','Masonry'],['brick','Brick'],['unsure','Not sure']] } ],
+    { id:'i_eq_yearbuilt', label:'Year Built', review:'Year Built', type:'text', maxlength:4, placeholder:'e.g. 1990' },
+  ],
+  // New gap products — health (no medical underwriting)
+  medicare: [
+    [ { id:'i_med_status', label:'Medicare Part A & B status', review:'Part A/B', type:'select', options:[['','Select'],['both','Enrolled in both'],['parta','Part A only'],['no','Not yet enrolled'],['unsure','Not sure']] },
+      { id:'i_med_interest', label:'What are you looking for?', review:'Interest', type:'select', options:[['','Select'],['advantage','Medicare Advantage'],['medigap','Medigap / Supplement'],['partd','Part D (drug plan)'],['unsure','Need guidance']] } ],
+    { id:'i_med_effective', label:'When do you need coverage?', review:'When', type:'select', options:[['','Select'],['asap','As soon as possible'],['1-3months','1 - 3 months'],['turning65','Turning 65 soon'],['exploring','Just exploring']] },
+  ],
+  medicaid: [
+    [ { id:'i_mcd_who', label:'Who needs coverage?', review:'Who', type:'select', options:[['','Select'],['myself','Myself'],['child','Child(ren)'],['family','Whole family'],['parent','Parent']] },
+      { id:'i_mcd_household', label:'Household size', review:'Household', type:'number', min:1, max:20, placeholder:'e.g. 3' } ],
+    { id:'i_mcd_current', label:'Currently have any coverage?', review:'Current coverage', type:'select', options:[['','Select'],['no','No'],['yes','Yes']] },
+  ],
+  individual_health: [
+    [ { id:'i_ih_who', label:'Who is covered?', review:'Who', type:'select', options:[['','Select'],['me','Just me'],['me_spouse','Me + spouse'],['me_children','Me + children'],['family','Whole family']] },
+      { id:'i_ih_insured', label:'Currently insured?', review:'Insured', type:'select', options:[['','Select'],['yes','Yes'],['no','No'],['losing','Losing coverage soon']] } ],
+    { id:'i_ih_tobacco', label:'Tobacco use?', review:'Tobacco', type:'select', options:[['','Select'],['no','No'],['yes','Yes']] },
+  ],
+  family_health: [
+    [ { id:'i_fh_members', label:'Family members to cover', review:'Members', type:'number', min:1, max:20, placeholder:'e.g. 4' },
+      { id:'i_fh_insured', label:'Currently insured?', review:'Insured', type:'select', options:[['','Select'],['yes','Yes'],['no','No'],['losing','Losing coverage soon']] } ],
+    { id:'i_fh_tobacco', label:'Anyone use tobacco?', review:'Tobacco', type:'select', options:[['','Select'],['no','No'],['yes','Yes']] },
+  ],
+  group_health: [
+    [ { id:'i_gh_employees', label:'Employees to cover', review:'Employees', type:'number', min:1, max:9999, placeholder:'e.g. 8' },
+      { id:'i_gh_current', label:'Currently offer group coverage?', review:'Current plan', type:'select', options:[['','Select'],['no','No'],['yes','Yes']] } ],
+    { id:'i_gh_start', label:'Desired start', review:'Start', type:'select', options:[['','Select'],['asap','As soon as possible'],['1-3months','1 - 3 months'],['exploring','Just exploring']] },
+  ],
+  supplemental_health: [
+    [ { id:'i_sh_type', label:'Type of supplement', review:'Type', type:'select', options:[['','Select'],['accident','Accident'],['critical','Critical illness'],['hospital','Hospital indemnity'],['cancer','Cancer'],['unsure','Not sure']] },
+      { id:'i_sh_primary', label:'Have primary health insurance?', review:'Primary insurance', type:'select', options:[['','Select'],['yes','Yes'],['no','No']] } ],
+  ],
+  dental_vision: [
+    [ { id:'i_dv_coverage', label:'Coverage', review:'Coverage', type:'select', options:[['','Select'],['dental','Dental only'],['vision','Vision only'],['both','Both']] },
+      { id:'i_dv_who', label:'Who needs it?', review:'Who', type:'select', options:[['','Select'],['me','Just me'],['family','Family']] } ],
+  ],
+  // New gap products — life-line
+  annuities: [
+    [ { id:'i_ann_goal', label:'Goal', review:'Goal', type:'select', options:[['','Select'],['income','Guaranteed retirement income'],['growth','Tax-deferred growth'],['principal','Protect principal'],['unsure','Not sure']] },
+      { id:'i_ann_amount', label:'Amount to invest', review:'Amount', type:'select', options:[['','Select'],['under50k','Under $50K'],['50k-100k','$50K - $100K'],['100k-250k','$100K - $250K'],['over250k','$250K+'],['unsure','Not sure']] } ],
+    { id:'i_ann_timeframe', label:'When to start income', review:'Timeframe', type:'select', options:[['','Select'],['now','Immediately'],['1-5yr','1 - 5 years'],['5plus','5+ years']] },
+  ],
+  disability: [
+    [ { id:'i_dis_type', label:'Coverage type', review:'Type', type:'select', options:[['','Select'],['short','Short-term'],['long','Long-term'],['unsure','Not sure']] },
+      { id:'i_dis_employment', label:'Employment', review:'Employment', type:'select', options:[['','Select'],['employed','Employed'],['self','Self-employed'],['owner','Business owner']] } ],
+    { id:'i_dis_income', label:'Annual income', review:'Income', type:'select', options:[['','Select'],['under50k','Under $50K'],['50k-100k','$50K - $100K'],['100k-250k','$100K - $250K'],['over250k','$250K+']] },
+  ],
+  // New gap products — personal
+  pet: [
+    [ { id:'i_pet_type', label:'Pet type', review:'Type', type:'select', options:[['','Select'],['dog','Dog'],['cat','Cat'],['other','Other']] },
+      { id:'i_pet_count', label:'How many pets?', review:'Count', type:'number', min:1, max:20, placeholder:'e.g. 1' } ],
+    { id:'i_pet_age', label:'Pet age', review:'Age', type:'select', options:[['','Select'],['under1','Under 1 year'],['1-7','1 - 7 years'],['8plus','8+ years'],['mixed','Mixed ages']] },
+  ],
+  // New gap products — commercial
+  commercial_property: [
+    [ { id:'i_cp_ownlease', label:'Own or lease?', review:'Own/Lease', type:'select', options:[['','Select'],['own','Own'],['lease','Lease']] },
+      { id:'i_cp_type', label:'Property type', review:'Property Type', type:'select', options:[['','Select'],['office','Office'],['retail','Retail'],['warehouse','Warehouse'],['restaurant','Restaurant'],['mixed','Mixed-use'],['other','Other']] } ],
+    { id:'i_cp_value', label:'Estimated property value', review:'Value', type:'select', options:[['','Select'],['under250k','Under $250K'],['250k-500k','$250K - $500K'],['500k-1m','$500K - $1M'],['1m-5m','$1M - $5M'],['over5m','$5M+']] },
+  ],
+  special_event: [
+    [ { id:'i_se_type', label:'Event type', review:'Event', type:'select', options:[['','Select'],['wedding','Wedding'],['festival','Festival'],['concert','Concert'],['sporting','Sporting'],['corporate','Corporate'],['other','Other']] },
+      { id:'i_se_date', label:'Event date', review:'Date', type:'text', maxlength:10, placeholder:'MM/DD/YYYY' } ],
+    [ { id:'i_se_attendance', label:'Expected attendance', review:'Attendance', type:'select', options:[['','Select'],['under50','Under 50'],['50-200','50 - 200'],['200-500','200 - 500'],['over500','500+']] },
+      { id:'i_se_alcohol', label:'Serving alcohol?', review:'Alcohol', type:'select', options:[['','Select'],['no','No'],['yes','Yes']] } ],
+  ],
+};
+
+// Flattened schema field ids (drives draft persistence + submit; flood is NOT
+// in the schema so its ids are handled explicitly alongside SCHEMA_FIELD_IDS).
+const SCHEMA_FIELD_IDS = Object.values(PRODUCT_QUESTION_SCHEMA)
+  .flatMap(s => (s || []).flatMap(e => Array.isArray(e) ? e : [e]))
+  .filter(f => f && f.id).map(f => f.id);
+
+function renderProductQuestions() {
+  const container = document.getElementById('product-questions');
+  let html = '';
+  const hasCommercial = selectedProducts.some(p => COMMERCIAL_PRODUCTS.includes(p));
+  const hasPersonal = selectedProducts.some(p => !COMMERCIAL_PRODUCTS.includes(p));
+  const hasProperty = selectedProducts.filter(p => PROPERTY_PRODUCTS.includes(p));
+
+  // Show/hide DOB based on whether personal lines are selected
+  const dobGroup = document.getElementById('dob-group');
+  if (dobGroup) dobGroup.style.display = hasPersonal ? '' : 'none';
+
+  // ═══ Per-product collapsible cards (icon header + schema/dedicated body) ═══
+  const iconOf = pid => (PRODUCTS.find(p => p.id === pid) || {}).icon || '';
+  let cardIdx = 0, lifeDone = false;
+  selectedProducts.forEach(pid => {
+    let body = null, label = PROD_LABELS[pid] || pid, icon = iconOf(pid);
+    if (LIFE_COVERAGE.includes(pid)) {
+      if (lifeDone) return;            // life-coverage tiles share one card
+      lifeDone = true; label = 'Life Insurance'; icon = '❤️';
+      body = renderLifeBody();
+    } else if (pid === 'homeowners') {
+      body = renderHomeownersBody();
+    } else if (pid === 'auto') {
+      label = 'Auto Details';
+      body = `<div id="vehicles-container"></div>
+      <button type="button" class="add-vehicle-btn" data-action="add-vehicle"><span>+</span> Add Another Vehicle</button>`;
+    } else if (pid === 'flood') {
+      body = renderFloodBody(hasProperty.length <= 1);
+    } else if (pid === 'other') {
+      label = 'Other Coverage';
+      body = `<div class="form-group"><label>Please describe what coverage you need</label>
+        <textarea id="i_other_desc" rows="3" placeholder="Describe the coverage you're looking for..."></textarea></div>`;
+    } else if (PRODUCT_QUESTION_SCHEMA[pid]) {
+      body = renderFields(PRODUCT_QUESTION_SCHEMA[pid]);
+    } else {
+      return;                          // unknown product → no card
+    }
+    html += qcard(pid, label, icon, body, cardIdx === 0);
+    cardIdx++;
+  });
+
+  // Business Information card (only if commercial selected)
+  if (hasCommercial) {
+    html += qcard('business', 'Business Information', '\u{1F3E2}', renderBusinessInfoBody(), cardIdx === 0);
+    cardIdx++;
   }
+
 
   if (!html) html = '<p style="color:var(--slate);font-size:13px;padding:8px 0">No additional details needed for your selection. Click Review to continue.</p>';
 
@@ -2540,9 +2580,9 @@ function renderReview() {
 
   // Per-product unique fields only (streamlined)
   const reviewFields = {
-    umbrella: [['Limit', 'i_umb_limit'], ['Drivers', 'i_umb_drivers']],
-    flood: [['Foundation', 'i_fl_foundation'], ['Prior Claims', 'i_fl_claims']],
-    renters: [['Personal Property', 'i_rent_coverage'], ['Unit Type', 'i_rent_type']],
+    umbrella: [['Limit', 'i_umb_limit'], ['Drivers', 'i_umb_drivers'], ['Assets', 'i_umb_assets']],
+    flood: [['Foundation', 'i_fl_foundation'], ['Prior Claims', 'i_fl_claims'], ['Flood Zone', 'i_fl_zone']],
+    renters: [['Personal Property', 'i_rent_coverage'], ['Unit Type', 'i_rent_type'], ['High-value items', 'i_rent_highvalue']],
     motorcycle: [['Motorcycle', () => [rv('i_mc_year'), rv('i_mc_make'), rv('i_mc_model')].filter(Boolean).join(' ')]],
     boat: [['Boat', () => [rv('i_boat_year'), rv('i_boat_make'), rv('i_boat_length') ? rv('i_boat_length')+'ft' : ''].filter(Boolean).join(' ')], ['Type', 'i_boat_type']],
     rv: [['RV', () => [rv('i_rv_year'), rv('i_rv_make'), rv('i_rv_model')].filter(Boolean).join(' ')], ['Type', 'i_rv_type']],
@@ -2570,6 +2610,17 @@ function renderReview() {
         html += `<div class="summary-row"><span class="label">${esc(prodLabel)} — ${esc(label)}</span><span class="value">${esc(val)}</span></div>`;
       });
     }
+  });
+
+  // New gap products: schema-driven but not in reviewFields above — render generically.
+  selectedProducts.forEach(pid => {
+    const sch = PRODUCT_QUESTION_SCHEMA[pid];
+    if (!sch || reviewFields[pid]) return;
+    const prodLabel = PROD_LABELS[pid] || pid;
+    sch.flatMap(e => Array.isArray(e) ? e : [e]).forEach(f => {
+      const val = rv(f.id);
+      if (val) html += `<div class="summary-row"><span class="label">${esc(prodLabel)} — ${esc(f.review || f.label)}</span><span class="value">${esc(val)}</span></div>`;
+    });
   });
 
   // Life coverage fields are shared across all life-coverage tiles — render once.
@@ -2776,39 +2827,10 @@ async function submitIntake() {
     const val = el(id); if (val) formData[id] = val;
   });
 
-  // Collect all product-specific fields (streamlined set)
-  const fields = [
-    // Umbrella
-    'i_umb_limit','i_umb_drivers',
-    // Flood
-    'i_fl_foundation','i_fl_claims',
-    // Renters
-    'i_rent_coverage','i_rent_type',
-    // Motorcycle
-    'i_mc_year','i_mc_make','i_mc_model',
-    // Boat
-    'i_boat_year','i_boat_make','i_boat_length','i_boat_type',
-    // RV
-    'i_rv_year','i_rv_make','i_rv_model','i_rv_type',
-    // BOP
-    'i_bop_ownlease',
-    // Dwelling Fire
-    'i_df_use','i_df_value','i_df_address',
-    // General Liability
-    'i_cgl_limit',
-    // Commercial Auto
-    'i_ca_numveh','i_ca_vehtype',
-    // Workers Comp
-    'i_wc_payroll',
-    // E&O
-    'i_eo_profession',
-    // Farm/Ranch
-    'i_fr_type','i_fr_acres',
-    // Bonds
-    'i_bond_type','i_bond_amount',
-    // Builders Risk
-    'i_br_projtype','i_br_value',
-  ];
+  // Collect all product-specific fields. Schema-driven products come from
+  // SCHEMA_FIELD_IDS; flood is a dedicated renderer (not in the schema) so its
+  // ids are appended explicitly — omitting them would silently drop flood data.
+  const fields = [...SCHEMA_FIELD_IDS, 'i_fl_foundation', 'i_fl_claims', 'i_fl_zone'];
   fields.forEach(id => { const val = el(id); if (val) formData[id] = val; });
 
   // Add industry context if passed from an industry page
@@ -3069,6 +3091,7 @@ document.addEventListener('click', (e) => {
     case 'toggle-bundle-pill': toggleBundlePill(el.dataset.pid); break;
     case 'return-to-form': returnToForm(); break;
     case 'set-ho-addr': setHomeSameAddr(el.dataset.same === 'true'); break;
+    case 'toggle-qcard': toggleQCard(el); break;
   }
 });
 
@@ -3095,6 +3118,8 @@ const DRAFT_FIELD_IDS = [
   'i_bond_type', 'i_bond_amount', 'i_br_projtype', 'i_br_value',
   'i_biz_name', 'i_biz_type', 'i_biz_employees', 'i_biz_years', 'i_biz_revenue',
   'i_other_desc',
+  // Step 3 schema-driven product fields + the dedicated flood-zone refinement
+  ...SCHEMA_FIELD_IDS, 'i_fl_zone',
 ];
 
 function collectDraft() {
@@ -3175,6 +3200,9 @@ function restoreDraft(draft) {
   }
   // Restore homeowners address toggle
   if (typeof draft.hoSameAddr === 'boolean') hoSameAddr = draft.hoSameAddr;
+  // Stash step-3 field values to re-apply when Step 3 renders (those fields
+  // don't exist in the DOM yet — restore is capped at step 2).
+  window._draftFields = draft.fields;
   // Store vehicles to restore when step 4 renders
   if (draft.vehicles?.length) window._draftVehicles = draft.vehicles;
   // Navigate to the step the user was on (but cap at step 2 — step 3/4 have dynamic content)
@@ -3230,6 +3258,16 @@ document.addEventListener('change', scheduleDraftSave);
 const _origRenderProductQuestions = renderProductQuestions;
 renderProductQuestions = function() {
   _origRenderProductQuestions();
+  // Re-apply saved Step 3 field values from a resumed draft (fields are created
+  // fresh on each render, so restoreDraft can't set them directly). Fill only
+  // empty fields so a value the user just typed is never clobbered.
+  if (window._draftFields) {
+    for (const [id, val] of Object.entries(window._draftFields)) {
+      const elx = document.getElementById(id);
+      if (elx && !String(elx.value || '').trim() && val) { elx.value = val; elx.classList.add('filled'); }
+    }
+    delete window._draftFields;
+  }
   // After product questions are rendered, restore saved vehicles from draft
   if (window._draftVehicles && window._draftVehicles.length && selectedProducts.includes('auto')) {
     const existingBlocks = document.querySelectorAll('#vehicles-container .vehicle-block');
