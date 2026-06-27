@@ -4,8 +4,8 @@ slug: general-liability-foundation-business-coverage
 description: General liability is the most common and most required type of business insurance. Learn what it covers, what it costs, and why almost every business in Kentucky needs it.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-08-19
-modified: 2026-08-19
+date: 2026-06-27
+modified: 2026-06-27
 reading_time: 6 min read
 related_page: /commercial/general-liability.html
 tags: general liability, business insurance, commercial insurance, small business, kentucky
