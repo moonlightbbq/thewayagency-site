@@ -4,8 +4,8 @@ slug: back-to-school-insurance-checklist
 description: New drivers, college move-ins, and after-school activities all affect your insurance. Here's what Kentucky parents should review before school starts.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-08-26
-modified: 2026-08-26
+date: 2026-07-01
+modified: 2026-07-01
 reading_time: 5 min read
 related_page: /personal/auto.html
 tags: back to school, teen driver, college insurance, auto insurance, home insurance, kentucky
