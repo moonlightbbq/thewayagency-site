@@ -4,8 +4,8 @@ slug: how-much-life-insurance-do-you-need
 description: Most families are underinsured. Learn the simple formulas, common rules of thumb, and factors that determine how much life insurance coverage is enough.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-09-02
-modified: 2026-09-02
+date: 2026-07-04
+modified: 2026-07-04
 reading_time: 6 min read
 related_page: /life/term-life.html
 tags: life insurance, coverage amount, financial planning, family protection, kentucky
