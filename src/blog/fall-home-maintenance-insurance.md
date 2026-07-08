@@ -4,8 +4,8 @@ slug: fall-home-maintenance-insurance
 description: Preparing your home for winter isn't just smart maintenance — it's required by most insurance policies. Here's your fall checklist for Kentucky homeowners.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-09-09
-modified: 2026-09-09
+date: 2026-07-08
+modified: 2026-07-08
 reading_time: 5 min read
 related_page: /personal/home.html
 tags: home insurance, fall maintenance, winter preparation, kentucky homeowners, home checklist
