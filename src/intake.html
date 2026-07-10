@@ -1842,6 +1842,9 @@ function toggleProd(el) {
   }
   selectedProducts = [...document.querySelectorAll('.product-opt.selected')].map(e => e.dataset.pid);
   trackProductToggle(el.dataset.pid, wasSelected);
+  // Reflect DOB-required (life) on the asterisk immediately on selection, not
+  // only when the product-questions step later renders. Ticket 4adb868f.
+  updateDobRequiredStar();
   // If source product was deselected, hide bundle banner
   if (bundleSourceProduct && !selectedProducts.includes(bundleSourceProduct)) {
     const banner = document.getElementById('bundle-banner');
@@ -2374,6 +2377,21 @@ const SCHEMA_FIELD_IDS = Object.values(PRODUCT_QUESTION_SCHEMA)
   .flatMap(s => (s || []).flatMap(e => Array.isArray(e) ? e : [e]))
   .filter(f => f && f.id).map(f => f.id);
 
+// Show the DOB required asterisk (and aria-required) whenever DOB is required —
+// i.e. any life coverage is selected (or the inert A/B personal-lines variant).
+// Called on product selection AND on the questions render so the asterisk never
+// lags behind the field's actual requiredness. Ticket 4adb868f.
+function updateDobRequiredStar() {
+  const sel = [...document.querySelectorAll('.product-opt.selected')].map(e => e.dataset.pid);
+  const hasPersonalSel = sel.some(p => !COMMERCIAL_PRODUCTS.includes(p));
+  const required = sel.some(p => LIFE_COVERAGE.includes(p))
+    || (document.body.classList.contains('twa-ab-dob-required') && hasPersonalSel);
+  const star = document.getElementById('dob-req-star');
+  if (star) star.style.display = required ? '' : 'none';
+  const input = document.getElementById('i_dob');
+  if (input) input.setAttribute('aria-required', required ? 'true' : 'false');
+}
+
 function renderProductQuestions() {
   const container = document.getElementById('product-questions');
   let html = '';
@@ -2388,13 +2406,21 @@ function renderProductQuestions() {
   // check in nextStep). dobAbRequired is currently inert here — the A/B harness in
   // app.js isn't loaded on intake.html — but is kept so the asterisk stays a true
   // mirror if it ever is. Surface requiredness both visually (*) and to AT (aria-required).
-  const dobLifeSelected = selectedProducts.some(p => LIFE_COVERAGE.includes(p));
-  const dobAbRequired = document.body.classList.contains('twa-ab-dob-required');
-  const dobRequired = dobLifeSelected || (dobAbRequired && hasPersonal);
-  const dobStar = document.getElementById('dob-req-star');
-  if (dobStar) dobStar.style.display = dobRequired ? '' : 'none';
-  const dobInput = document.getElementById('i_dob');
-  if (dobInput) dobInput.setAttribute('aria-required', dobRequired ? 'true' : 'false');
+  updateDobRequiredStar();
+
+  // Ticket 4adb868f: the "When does your policy expire?" question presumes an
+  // existing auto/home policy to replace, which is irrelevant to a life-only
+  // quote. Hide (and clear) the whole current-policy card when ONLY life
+  // coverages are selected; keep it for auto/home/commercial flows.
+  const onlyLife = selectedProducts.length > 0 && selectedProducts.every(p => LIFE_COVERAGE.includes(p));
+  const currentPolicyCard = document.querySelector('[data-qcard="current-policy"]');
+  if (currentPolicyCard) {
+    currentPolicyCard.style.display = onlyLife ? 'none' : '';
+    if (onlyLife) {
+      const ce = document.getElementById('i_current_carrier'); if (ce) ce.value = '';
+      const pe = document.getElementById('i_policy_expiry'); if (pe) pe.value = '';
+    }
+  }
 
   // ═══ Per-product collapsible cards (icon header + schema/dedicated body) ═══
   const iconOf = pid => (PRODUCTS.find(p => p.id === pid) || {}).icon || '';
