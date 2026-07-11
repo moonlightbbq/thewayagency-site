@@ -4,8 +4,8 @@ slug: disability-insurance-protecting-income
 description: Your ability to earn income is worth more than your house or car. Disability insurance replaces your paycheck if injury or illness keeps you from working.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-09-16
-modified: 2026-09-16
+date: 2026-07-11
+modified: 2026-07-11
 reading_time: 6 min read
 related_page: /life/disability.html
 tags: disability insurance, income protection, short term disability, long term disability, kentucky
