@@ -277,6 +277,18 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   // Mid-post CTA
   const enhancedBody = injectMidPostCTA(anchoredBody, meta.category || '', meta.related_page);
 
+  // Featured image (optional front matter: image + image_alt). Site-relative
+  // path in front matter; og/twitter need the absolute URL. Falls back to the
+  // social logo when a post has no image.
+  const featuredImage = meta.image ? String(meta.image).trim() : null;
+  const featuredAlt = (meta.image_alt || meta.title || '').trim();
+  const ogImage = featuredImage ? `https://www.thewayagency.com${featuredImage}` : 'https://www.thewayagency.com/src/assets/images/logo-social.jpg';
+  const ogImageW = featuredImage ? '1536' : '631';
+  const ogImageH = featuredImage ? '1024' : '631';
+  const featuredFigure = featuredImage
+    ? `<figure class="blog-featured-image" style="margin:0 0 1.5rem;"><img src="${featuredImage}" alt="${featuredAlt}" width="1536" height="1024" loading="eager" fetchpriority="high" style="width:100%;height:auto;border-radius:12px;display:block;"></figure>\n      `
+    : '';
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -294,9 +306,9 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.thewayagency.com/blog/${meta.slug}">
   <meta property="og:site_name" content="The Way Agency">
-  <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
-  <meta property="og:image:width" content="631">
-  <meta property="og:image:height" content="631">
+  <meta property="og:image" content="${ogImage}">
+  <meta property="og:image:width" content="${ogImageW}">
+  <meta property="og:image:height" content="${ogImageH}">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="article:published_time" content="${meta.date}">
   <meta property="article:modified_time" content="${meta.modified || meta.date}">
@@ -306,7 +318,7 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${meta.title}">
   <meta name="twitter:description" content="${meta.description || ''}">
-  <meta name="twitter:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
+  <meta name="twitter:image" content="${ogImage}">
   <link rel="alternate" type="application/rss+xml" title="The Way Agency Blog" href="/blog/feed.xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -358,7 +370,7 @@ ${renderNav()}
 
   <main id="main">
     <article class="product-content blog-content">
-      <div class="blog-meta">
+      ${featuredFigure}<div class="blog-meta">
         <span>Reviewed by ${authorLink}, ${meta.author_title || 'Licensed Agent'}, The Way Agency</span>
         <span>|</span>
         <span>Published ${dateFormatted}</span>

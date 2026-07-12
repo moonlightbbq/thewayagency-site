@@ -24,8 +24,15 @@ modified: 2026-03-20
 reading_time: 5 min read
 related_page: /personal/home.html
 tags: home insurance, kentucky, weather
+image: /src/assets/images/blog/your-post-slug-here.jpg
+image_alt: Short description of the featured image
 ---
 ```
+
+`image`/`image_alt` are optional. When present, the post renders a featured
+image above the byline and uses it for og:image/twitter:image (1536x1024
+expected); without them the social logo is used. The hive pipeline generates
+these automatically for AI-drafted posts.
 
 ## Available Authors
 
