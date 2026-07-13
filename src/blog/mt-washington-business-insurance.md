@@ -5,7 +5,7 @@ date: 2026-03-26
 modified: 2026-03-26
 author: Sheilia Royal
 author_slug: sheilia-royal
-author_title: Agency Principal
+author_title: Agency Principal / Licensed Agent
 description: "Business insurance guide for Mt. Washington and Bullitt County companies. General liability, workers comp, commercial auto, and bonds for contractors and local businesses."
 category: commercial
 tags: [commercial-insurance, mt-washington, bullitt-county, kentucky, contractors]

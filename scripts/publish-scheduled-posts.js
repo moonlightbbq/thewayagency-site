@@ -30,6 +30,20 @@ const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
 const calendar = JSON.parse(fs.readFileSync(CALENDAR_PATH, 'utf8'));
 
+// team.json is the single source of truth for who holds which title.
+const TEAM_PATH = path.join(__dirname, '..', 'data', 'team.json');
+const TEAM = (() => {
+  try {
+    const t = JSON.parse(fs.readFileSync(TEAM_PATH, 'utf8'));
+    return Array.isArray(t) ? t : (t.team || []); // file is { team: [...] }
+  } catch { return []; }
+})();
+
+function reviewerTitle(slug, name) {
+  const m = TEAM.find(t => t && (t.slug === slug || t.name === name));
+  return (m && m.title) || 'The Way Agency';
+}
+
 let published = 0;
 const errors = [];
 let calendarChanged = false;
@@ -90,16 +104,30 @@ for (const post of calendar.year1) {
     continue;
   }
 
-  // If a reviewer was assigned, update the markdown front matter with their byline
+  // If a reviewer was assigned, update the markdown front matter with their byline.
   if (post.reviewer && post.reviewer_slug) {
     let md = fs.readFileSync(mdFile, 'utf8');
+    // The reviewer's REAL title, from team.json — never a hardcoded one. This
+    // used to stamp "Licensed Agent" on everyone, which published six posts
+    // crediting a Client Care Specialist as a Licensed Agent, in the visible
+    // byline AND in the JSON-LD `jobTitle` schema.
+    const title = reviewerTitle(post.reviewer_slug, post.reviewer);
     md = md.replace(/^author: .+$/m, `author: ${post.reviewer}`);
-    md = md.replace(/^author_title: .+$/m, `author_title: Licensed Agent`);
-    // Add author_slug if not present
+    md = md.replace(/^author_title: .+$/m, `author_title: ${title}`);
     if (!md.includes('author_slug:')) {
-      md = md.replace(/^author_title: .+$/m, `author_title: Licensed Agent\nauthor_slug: ${post.reviewer_slug}`);
+      md = md.replace(/^author_title: .+$/m, `author_title: ${title}\nauthor_slug: ${post.reviewer_slug}`);
     } else {
       md = md.replace(/^author_slug: .+$/m, `author_slug: ${post.reviewer_slug}`);
+    }
+    // The date the article actually went out for review — rendered next to the
+    // reviewer's name, so "Reviewed by X" carries a when, not just a who.
+    if (post.review_sent_date) {
+      const reviewed = String(post.review_sent_date).slice(0, 10);
+      if (md.includes('reviewed_date:')) {
+        md = md.replace(/^reviewed_date: .+$/m, `reviewed_date: ${reviewed}`);
+      } else {
+        md = md.replace(/^author_slug: .+$/m, `author_slug: ${post.reviewer_slug}\nreviewed_date: ${reviewed}`);
+      }
     }
     fs.writeFileSync(mdFile, md);
   }

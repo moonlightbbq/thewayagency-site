@@ -27,6 +27,7 @@ const BLOG_SRC = path.join(ROOT, 'src', 'blog');
 
 const SAGE_API_URL = process.env.SAGE_API_URL;
 const SAGE_API_TOKEN = process.env.SAGE_API_TOKEN;
+const SAGE_CLIENT_ID = process.env.SAGE_CLIENT_ID;
 const REVIEW_CC = process.env.REVIEW_CC || 'partner@thewayagency.com';
 
 if (!SAGE_API_URL || !SAGE_API_TOKEN) {
@@ -242,6 +243,12 @@ async function sendEmail(to, subject, htmlBody) {
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': SAGE_API_TOKEN,
+      // SAGE enforces CSRF on every api-key call (SAGE_FF_BEARER_CSRF_ENFORCE).
+      // Without this header the request dies at 403 CLIENT_ID_REQUIRED *before*
+      // it ever reaches auth — which is exactly what silently killed every
+      // review email from 2026-05-16 onward. The value is the mcp_api_keys row
+      // id of the key in SAGE_API_TOKEN.
+      'X-SAGE-Client-Id': SAGE_CLIENT_ID,
     },
     body: JSON.stringify({
       to,
@@ -284,13 +291,28 @@ async function sendEmail(to, subject, htmlBody) {
 async function main() {
   let reviewsSent = 0;
   let remindersSent = 0;
+  let sendFailures = 0;
+
+  // Fail loudly on a misconfigured secret rather than 403-ing into the void.
+  const missing = ['SAGE_API_URL', 'SAGE_API_TOKEN', 'SAGE_CLIENT_ID'].filter(k => !process.env[k]);
+  if (missing.length) {
+    console.error(`  ! Missing required secret(s): ${missing.join(', ')}`);
+    process.exit(2);
+  }
   let calendarChanged = false;
 
   for (const post of calendar.year1) {
     const days = daysUntil(post.publish_date);
 
-    // ── Send initial review email (14 days before publish) ──
-    if (post.status === 'planned' && days >= 12 && days <= 16) {
+    // ── Send initial review email ──
+    // Window is 10-18 days out, not 12-16. The post's markdown is produced by
+    // SAGE's machine gate (SEO score + fact-check), which auto-promotes after a
+    // 5-day hold — so for a draft spawned at T-18 the file only appears at T-13.
+    // Against the old 12-16 window that left a 2-day slot, and this cron runs
+    // just twice a week (Wed/Sat): the post would sail past the window with no
+    // reviewer ever emailed, and publish with a byline nobody earned. A 10-18
+    // window always gives the file at least one cron hit after it lands.
+    if (post.status === 'planned' && days >= 10 && days <= 18) {
       const content = readPostContent(post.slug);
       if (!content) {
         console.log(`  ! Skipping "${post.title}" — markdown file not found`);
@@ -316,12 +338,14 @@ async function main() {
         console.log(`  ✓ Review sent to ${reviewer.name} (${reviewer.email}): "${post.title}"`);
       } catch (err) {
         console.log(`  ! Failed to send review to ${reviewer.email}: ${err.message}`);
-        // Revert status so it gets picked up next run
+        // Revert status so it gets picked up next run — but KEEP the reviewer
+        // fields and record why. Deleting them erased the only evidence the
+        // send had ever been attempted: combined with a 4xx (never retried) and
+        // a workflow step that swallowed the exit code, the review email failed
+        // silently for two months while every run reported green.
         post.status = 'planned';
-        delete post.reviewer;
-        delete post.reviewer_email;
-        delete post.reviewer_slug;
-        delete post.review_sent_date;
+        post.review_send_error = `${new Date().toISOString().split('T')[0]}: ${err.message}`.slice(0, 300);
+        sendFailures++;
       }
     }
 
@@ -375,13 +399,28 @@ async function main() {
 
   if (calendarChanged) {
     fs.writeFileSync(CALENDAR_PATH, JSON.stringify(calendar, null, 2) + '\n');
+    // Tell the workflow to commit — including a recorded review_send_error, which
+    // is exactly the evidence the old self-erasing catch block destroyed.
+    if (process.env.GITHUB_OUTPUT) {
+      fs.appendFileSync(process.env.GITHUB_OUTPUT, 'reviews_sent=true\n');
+    }
   }
 
-  console.log(`\n  ${reviewsSent} review(s) sent, ${remindersSent} reminder(s) sent.`);
-  process.exit(reviewsSent > 0 || remindersSent > 0 ? 0 : 1);
+  console.log(`\n  ${reviewsSent} review(s) sent, ${remindersSent} reminder(s) sent, ${sendFailures} failed.`);
+
+  // Exit codes are load-bearing. This used to exit 1 for BOTH "nothing was due"
+  // and "the send failed", so the workflow had to ignore the code entirely —
+  // which is how a two-month outage reported green every single run.
+  //   0 = sent, or nothing was due (both normal)
+  //   2 = a send actually failed (the workflow must go red)
+  if (sendFailures > 0) {
+    console.error(`  ! ${sendFailures} review email(s) failed to send.`);
+    process.exit(2);
+  }
+  process.exit(0);
 }
 
 main().catch(err => {
   console.error('  ! Review script error:', err.message);
-  process.exit(1);
+  process.exit(2);
 });

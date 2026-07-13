@@ -4,7 +4,7 @@ slug: commercial-insurance-checklist-new-business
 description: "Starting a business in Kentucky? This step-by-step insurance checklist covers everything from general liability to workers comp, with KY-specific requirements and costs."
 author: Kelly McCallister
 author_slug: kelly-mccallister
-author_title: Licensed Agent
+author_title: Client Care Specialist
 date: 2026-03-27
 modified: 2026-03-27
 category: commercial

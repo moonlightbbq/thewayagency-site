@@ -4,7 +4,7 @@ slug: liability-limits-how-much-enough
 description: "Kentucky minimums aren't enough to protect your assets. Learn how to choose the right liability limits for home, auto, and umbrella insurance based on your real exposure."
 author: Sheilia Royal
 author_slug: sheilia-royal
-author_title: Agency Principal
+author_title: Agency Principal / Licensed Agent
 date: 2026-03-27
 modified: 2026-03-27
 category: personal

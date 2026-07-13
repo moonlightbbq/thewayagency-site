@@ -3,7 +3,7 @@ title: "Umbrella Insurance: When $1 Million in Coverage Costs Less Than Your Pho
 slug: umbrella-insurance-worth-it
 description: Umbrella insurance adds $1M+ in liability protection for $200-500 per year. Learn who needs it, what it covers, and why it's one of the best values in insurance.
 author: Kelly McCallister
-author_title: Licensed Agent
+author_title: Client Care Specialist
 author_slug: kelly-mccallister
 date: 2026-05-27
 modified: 2026-05-27

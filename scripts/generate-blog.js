@@ -262,7 +262,8 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   }
   </script>` : '';
 
-  const dateFormatted = new Date(meta.date + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const fmtDate = (d) => new Date(String(d).slice(0, 10) + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  const dateFormatted = fmtDate(meta.date);
   const authorLink = meta.author_slug
     ? `<a href="/about/team.html#${meta.author_slug}" style="color:var(--cyan);text-decoration:none;">${meta.author}</a>`
     : meta.author;
@@ -338,7 +339,7 @@ function generateBlogPost(meta, bodyHtml, faqs) {
     "author": {
       "@type": "Person",
       "name": ${JSON.stringify(meta.author)},
-      "jobTitle": ${JSON.stringify(meta.author_title || 'Licensed Agent')},
+      "jobTitle": ${JSON.stringify(meta.author_title || 'The Way Agency')},
       "url": "https://www.thewayagency.com/about/team.html${meta.author_slug ? '#' + meta.author_slug : ''}"
     },
     "publisher": {
@@ -371,8 +372,10 @@ ${renderNav()}
   <main id="main">
     <article class="product-content blog-content">
       ${featuredFigure}<div class="blog-meta">
-        <span>Reviewed by ${authorLink}, ${meta.author_title || 'Licensed Agent'}, The Way Agency</span>
-        <span>|</span>
+        <span>Reviewed by ${authorLink}, ${meta.author_title || 'The Way Agency'}, The Way Agency</span>
+        <span>|</span>${meta.reviewed_date ? `
+        <span>Reviewed ${fmtDate(meta.reviewed_date)}</span>
+        <span>|</span>` : ''}
         <span>Published ${dateFormatted}</span>
         <span>|</span>
         <span>${readingTime}</span>

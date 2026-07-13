@@ -4,7 +4,7 @@ slug: how-independent-agents-use-data-better-rates
 description: "Independent agents don't just shop carriers — they use data analytics to match you with the right one. Learn how data-driven insurance shopping saves money and improves coverage."
 author: Sheilia Royal
 author_slug: sheilia-royal
-author_title: Agency Principal
+author_title: Agency Principal / Licensed Agent
 date: 2026-03-28
 modified: 2026-03-28
 category: general

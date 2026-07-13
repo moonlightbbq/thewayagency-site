@@ -4,7 +4,7 @@ slug: cyber-insurance-small-business-essentials
 description: "Kentucky's data breach notification law means every business with customer data needs a plan. Learn what cyber insurance covers, what it costs, and why small businesses are the biggest targets."
 author: Kelly McCallister
 author_slug: kelly-mccallister
-author_title: Licensed Agent
+author_title: Client Care Specialist
 date: 2026-03-27
 modified: 2026-03-27
 category: commercial

@@ -4,7 +4,7 @@ slug: workers-comp-requirements-kentucky-2026
 description: "Kentucky requires workers compensation for most employers with one or more employees. Learn the requirements, exemptions, costs, and penalties for non-compliance."
 author: Kelly McCallister
 author_slug: kelly-mccallister
-author_title: Licensed Agent
+author_title: Client Care Specialist
 date: 2026-03-27
 modified: 2026-03-27
 category: commercial
