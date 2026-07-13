@@ -50,6 +50,36 @@ if (products) {
       if (!p.slug) { error(`products.json: missing slug for ${p.id || 'unknown'}`); productErrors++; }
       if (p.id && allIds.has(p.id)) { error(`products.json: duplicate id "${p.id}"`); productErrors++; }
       if (p.id) allIds.add(p.id);
+
+      // ── SEO guardrails ──
+      // The seo-optimizer bot rewrites these fields autonomously. Its last batch
+      // (site PR #5, closed) tried to replace question-form h1s with marketing
+      // slogans and to blow past the SERP limits. These are the invariants it is
+      // not allowed to break, enforced in CI so a bot PR cannot land a regression.
+
+      // Every product h1 is a QUESTION. All 31 follow this; it is a deliberate
+      // answer-engine pattern (the question IS the query being answered), and a
+      // half-converted set is worse than either convention applied consistently.
+      if (p.h1 && !p.h1.trim().endsWith('?')) {
+        error(`products.json: ${p.slug} h1 must be question-form (answer-engine convention): "${p.h1}"`);
+        productErrors++;
+      }
+      // SERP truncation limits.
+      if (p.meta_description && p.meta_description.length > 160) {
+        error(`products.json: ${p.slug} meta_description is ${p.meta_description.length} chars (max 160 — truncates in search results)`);
+        productErrors++;
+      }
+      if (p.title_tag && p.title_tag.length > 60) {
+        error(`products.json: ${p.slug} title_tag is ${p.title_tag.length} chars (max 60 — truncates in search results)`);
+        productErrors++;
+      }
+      // Thin titles are the real unmet need the seo-optimizer should be fixing
+      // ("Home Insurance | The Way Agency" is 31 chars and ranks for nothing).
+      // A warning, not an error: 19 of 31 are thin today, and failing the build
+      // on the current state would just get the check disabled.
+      if (p.title_tag && p.title_tag.length < 40) {
+        warn(`products.json: ${p.slug} title_tag is thin (${p.title_tag.length} chars) — "${p.title_tag}"`);
+      }
     }
   }
   if (productErrors === 0) pass(`products.json: ${allIds.size} products, all valid`);
