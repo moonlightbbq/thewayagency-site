@@ -4,7 +4,7 @@ slug: insurance-customer-lifetime-value-explained
 description: "Insurance agencies that focus on customer lifetime value invest in long-term relationships, not quick sales. Here's what that means for you as a policyholder."
 author: Sheilia Royal
 author_slug: sheilia-royal
-author_title: Agency Principal
+author_title: Agency Principal / Licensed Agent
 date: 2026-03-28
 modified: 2026-03-28
 category: general

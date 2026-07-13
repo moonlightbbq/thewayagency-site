@@ -4,7 +4,7 @@ slug: what-is-ivans-insurance-data
 description: "IVANS connects insurance agencies and carriers with real-time policy data. Learn how this technology means faster quotes, fewer errors, and better service for policyholders."
 author: Kelly McCallister
 author_slug: kelly-mccallister
-author_title: Licensed Agent
+author_title: Client Care Specialist
 date: 2026-03-28
 modified: 2026-03-28
 category: general

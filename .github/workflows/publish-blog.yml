@@ -24,18 +24,17 @@ jobs:
         with:
           node-version: '18'
 
-      # Step 1: Send review emails for posts due in ~2 weeks
+      # Step 1: Send review emails for posts due in ~2 weeks.
+      # Exit 0 = sent, or nothing was due. Exit 2 = a send FAILED, and this step
+      # must go red: the previous `if ... else ...` swallowed every exit code, so
+      # a two-month 403 outage reported green on every single run.
       - name: Send review emails
         id: review
         env:
           SAGE_API_URL: ${{ secrets.SAGE_API_URL }}
           SAGE_API_TOKEN: ${{ secrets.SAGE_API_TOKEN }}
-        run: |
-          if node scripts/send-review-emails.js; then
-            echo "reviews_sent=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "reviews_sent=false" >> "$GITHUB_OUTPUT"
-          fi
+          SAGE_CLIENT_ID: ${{ secrets.SAGE_CLIENT_ID }}
+        run: node scripts/send-review-emails.js
 
       # Step 1b: Update Google reviews from sage public endpoint.
       # update-reviews.js exits 0 on data change, 1 on healthy no-change,

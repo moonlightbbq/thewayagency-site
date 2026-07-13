@@ -4,7 +4,7 @@ slug: owensboro-flood-risk-neighborhood-fema-zones-2026
 description: "How FEMA flood zones map across Owensboro and Daviess County in 2026, what NFIP covers, and what every Owensboro homeowner should know about flood insurance."
 author: Sheilia Royal
 author_slug: sheilia-royal
-author_title: Agency Principal
+author_title: Agency Principal / Licensed Agent
 date: 2026-05-15
 modified: 2026-05-15
 category: personal

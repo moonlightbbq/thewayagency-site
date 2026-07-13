@@ -3,7 +3,7 @@ title: Spring Home Maintenance That Can Lower Your Insurance Costs
 slug: spring-home-maintenance-insurance
 description: Simple spring maintenance tasks that reduce your insurance risk and can qualify you for lower premiums on your Kentucky homeowners policy.
 author: Sheilia Royal
-author_title: Licensed Agent
+author_title: Agency Principal / Licensed Agent
 author_slug: sheilia-royal
 date: 2026-04-08
 modified: 2026-04-08
