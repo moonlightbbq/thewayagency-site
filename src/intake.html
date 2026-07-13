@@ -731,8 +731,19 @@
       </div>
       <input type="hidden" id="i_address_street">
       <input type="hidden" id="i_city">
-      <input type="hidden" id="i_state">
       <input type="hidden" id="i_zip">
+      <!-- State was a HIDDEN field, populated only when Google Places autocomplete
+           fired. Anyone who typed their address straight through (and every bot)
+           submitted with no state at all — 29 of the last 42 real submissions had
+           none. It is now an explicit, required choice, limited to the states we
+           are licensed in for personal lines. Commercial is written nationwide and
+           gets the full list. Ticket b18ef40b. -->
+      <div class="form-group" id="state-group" style="max-width:280px;">
+        <label for="i_state">State <span style="color:#ef4444">*</span></label>
+        <select id="i_state" required onchange="onStateChange()"></select>
+        <div id="state-hint" style="font-size:12px;color:#6b7280;margin-top:4px;"></div>
+        <div id="state-oos" style="display:none;font-size:13px;color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:8px 10px;margin-top:6px;"></div>
+      </div>
       <div class="form-group" id="dob-group" style="max-width:280px;">
         <label for="i_dob">Date of Birth <span id="dob-req-star" style="color:#ef4444;display:none">*</span></label>
         <input type="text" id="i_dob" placeholder="MM/DD/YYYY" maxlength="10" inputmode="numeric" autocomplete="bday">
@@ -1357,6 +1368,69 @@ function getEntryLine() {
 }
 
 // Render grid leading with the entry line's products; default (no line) = personal first.
+// ── Licensed-state gate (ticket b18ef40b) ───────────────────────────────────
+// The agency is licensed to write personal / life / health only in KY, IN and TN.
+// Commercial is written nationwide. This is the friendly half of the rule; the
+// authoritative half is server-side (SAGE rejects an out-of-area submission
+// outright), because a dropdown stops honest humans, not the bots that generate
+// most of the out-of-state volume.
+const SERVICE_STATES = ['KY', 'IN', 'TN'];
+const SERVICE_STATE_NAMES = { KY: 'Kentucky', IN: 'Indiana', TN: 'Tennessee' };
+const ALL_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+
+// Commercial-ONLY submissions are exempt. A mixed commercial+personal cart still
+// needs a service state — the personal half requires the licence.
+function isCommercialOnly() {
+  if (!selectedProducts.length) return false;
+  return selectedProducts.every(id => (PRODUCTS.find(p => p.id === id) || {}).line === 'commercial');
+}
+
+function renderStateOptions() {
+  const sel = document.getElementById('i_state');
+  if (!sel) return;
+  const prev = sel.value;
+  const open = isCommercialOnly();
+  const list = open ? ALL_STATES : SERVICE_STATES;
+  sel.innerHTML = '<option value="">Select…</option>' +
+    list.map(s => '<option value="' + s + '">' + s + '</option>').join('');
+  // Keep a still-valid choice across a product change; drop one that is no longer
+  // allowed (e.g. they picked CA for a commercial quote, then added auto).
+  if (prev && list.includes(prev)) sel.value = prev;
+  const hint = document.getElementById('state-hint');
+  if (hint) hint.textContent = open ? '' : 'We write personal lines in Kentucky, Indiana and Tennessee.';
+  if (prev && !list.includes(prev)) showOutOfArea(prev); else hideOutOfArea();
+}
+
+function showOutOfArea(state) {
+  const box = document.getElementById('state-oos');
+  if (!box) return;
+  box.textContent = "We're not licensed to write personal lines in " + (state || 'that state') +
+    ' — we currently cover Kentucky, Indiana and Tennessee. If you need commercial coverage, please call us and we can help.';
+  box.style.display = '';
+}
+function hideOutOfArea() {
+  const box = document.getElementById('state-oos');
+  if (box) box.style.display = 'none';
+}
+function onStateChange() {
+  const sel = document.getElementById('i_state');
+  if (sel && sel.value) hideOutOfArea();
+  scheduleTrack();
+}
+
+// Google Places fills the state by assigning el.value. On a <select> that has no
+// matching <option> (an out-of-area address on a personal-lines quote) the value
+// silently becomes '' — so tell the applicant why instead of leaving them staring
+// at an empty required field.
+function syncStateFromAutocomplete(state) {
+  const sel = document.getElementById('i_state');
+  if (!sel) return;
+  const st = String(state || '').toUpperCase();
+  if (!st) return;
+  sel.value = st;
+  if (sel.value !== st) showOutOfArea(st); else hideOutOfArea();
+}
+
 (function initGrid() {
   renderProductGrid(getEntryLine());
 
@@ -1365,6 +1439,13 @@ function getEntryLine() {
     const grp = document.getElementById('biz-name-step1-group');
     if (grp) grp.style.display = '';
   }
+
+  // Seed the state dropdown. Options depend on the products chosen, so this is
+  // re-run on every product toggle (ticket b18ef40b).
+  renderStateOptions();
+  // A ?state= geo param (city/industry landing pages) pre-selects it.
+  const geoState = sanitizeAlpha(new URLSearchParams(location.search).get('state') || '', 2).toUpperCase();
+  if (geoState) syncStateFromAutocomplete(geoState);
 })();
 
 // ── Bundle suggestion map ────────────────────────────────────────────────────
@@ -1842,6 +1923,9 @@ function toggleProd(el) {
   }
   selectedProducts = [...document.querySelectorAll('.product-opt.selected')].map(e => e.dataset.pid);
   trackProductToggle(el.dataset.pid, wasSelected);
+  // The allowed state list depends on the line of business — commercial is
+  // nationwide, everything else is KY/IN/TN (ticket b18ef40b).
+  renderStateOptions();
   // Reflect DOB-required (life) on the asterisk immediately on selection, not
   // only when the product-questions step later renders. Ticket 4adb868f.
   updateDobRequiredStar();
@@ -3076,7 +3160,11 @@ document.querySelectorAll('.form-group input').forEach(inp => {
 function _onAddrInput(el) {
   var s = document.getElementById('i_address_street');
   if (s) s.value = el.value;
-  ['i_city','i_state','i_zip'].forEach(function(id) { var e = document.getElementById(id); if (e) e.value = ''; });
+  // i_state is NOT cleared here any more. It used to be an autocomplete-derived
+  // hidden field; it is now the applicant's own explicit choice, and wiping it on
+  // every keystroke of the address box would silently discard it. A later
+  // autocomplete pick still overwrites it via syncStateFromAutocomplete.
+  ['i_city','i_zip'].forEach(function(id) { var e = document.getElementById(id); if (e) e.value = ''; });
 }
 function _onHoAddrInput(el) {
   var s = document.getElementById('i_ho_address_street');
@@ -3114,6 +3202,9 @@ function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
       fill(cityId, p.city);
       fill(stateId, p.state);
       fill(zipId, p.zip);
+      // i_state is a <select> limited to the licensed states — an out-of-area
+      // address leaves it empty, so say why rather than silently blanking it.
+      if (stateId === 'i_state') syncStateFromAutocomplete(p.state);
       scheduleTrack();
     });
   } catch (err) { console.error('[Maps] Autocomplete init error:', err); }
