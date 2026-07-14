@@ -10,6 +10,25 @@ permissions:
   contents: read
 
 jobs:
+  # The test suite. It was in NO workflow — `npm test` was runnable only by hand, so
+  # tests/intake-gate.test.js (which drives the real intake form through jsdom and is
+  # the only thing standing between us and silently paging a producer about a lead we
+  # are not licensed to write) would have rotted without anyone noticing.
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # jsdom 29 requires ^20.19 || ^22.13 || >=24 — the '18' the other jobs
+          # pin would not even load the test harness.
+          node-version: '22'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
+
   data-integrity:
     runs-on: ubuntu-latest
     steps:
