@@ -671,6 +671,21 @@
         <input type="tel" id="i_phone" placeholder="(555) 123-4567" required autocomplete="tel">
       </div>
     </div>
+    <!-- State lives on STEP 1, and that placement is the whole point.
+         It used to sit on step 3, next to the address. But step 1 is where
+         "Continue" fires trackPartial(true) — the call that persists the lead AND
+         emails + pushes a producer. So at the only moment the notification is
+         decided, the state was always empty and the server had nothing to judge:
+         it paged a producer about every out-of-area applicant before the form had
+         even asked where they lived. Asking here is what lets the gate work at all.
+         Full 50-state list on purpose: see the comment on renderStateOptions().
+         Tickets b18ef40b, c2cc96ea. -->
+    <div class="form-group" id="state-group" style="max-width:280px;">
+      <label for="i_state">What state are you in? <span style="color:#ef4444">*</span></label>
+      <select id="i_state" required onchange="onStateChange()"></select>
+      <div id="state-hint" style="font-size:12px;color:#6b7280;margin-top:4px;"></div>
+      <div id="state-oos" style="display:none;font-size:13px;color:#7c2d12;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;margin-top:8px;line-height:1.5;"></div>
+    </div>
     <!-- Business name — revealed by initGrid() only for commercial-line arrivals -->
     <div class="form-group" id="biz-name-step1-group" style="display:none">
       <label for="i_biz_name_1">Business Name <span style="color:#ef4444">*</span></label>
@@ -732,18 +747,10 @@
       <input type="hidden" id="i_address_street">
       <input type="hidden" id="i_city">
       <input type="hidden" id="i_zip">
-      <!-- State was a HIDDEN field, populated only when Google Places autocomplete
-           fired. Anyone who typed their address straight through (and every bot)
-           submitted with no state at all — 29 of the last 42 real submissions had
-           none. It is now an explicit, required choice, limited to the states we
-           are licensed in for personal lines. Commercial is written nationwide and
-           gets the full list. Ticket b18ef40b. -->
-      <div class="form-group" id="state-group" style="max-width:280px;">
-        <label for="i_state">State <span style="color:#ef4444">*</span></label>
-        <select id="i_state" required onchange="onStateChange()"></select>
-        <div id="state-hint" style="font-size:12px;color:#6b7280;margin-top:4px;"></div>
-        <div id="state-oos" style="display:none;font-size:13px;color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;padding:8px 10px;margin-top:6px;"></div>
-      </div>
+      <!-- The State <select> moved to STEP 1 (see the comment there). Places
+           autocomplete on the address above still writes to it via
+           syncStateFromAutocomplete(), so an address that disagrees with the
+           step-1 answer still surfaces the decline — checked again in nextStep(3). -->
       <div class="form-group" id="dob-group" style="max-width:280px;">
         <label for="i_dob">Date of Birth <span id="dob-req-star" style="color:#ef4444;display:none">*</span></label>
         <input type="text" id="i_dob" placeholder="MM/DD/YYYY" maxlength="10" inputmode="numeric" autocomplete="bday">
@@ -1368,67 +1375,158 @@ function getEntryLine() {
 }
 
 // Render grid leading with the entry line's products; default (no line) = personal first.
-// ── Licensed-state gate (ticket b18ef40b) ───────────────────────────────────
+// ── Licensed-state gate (tickets b18ef40b, c2cc96ea) ────────────────────────
 // The agency is licensed to write personal / life / health only in KY, IN and TN.
-// Commercial is written nationwide. This is the friendly half of the rule; the
-// authoritative half is server-side (SAGE rejects an out-of-area submission
-// outright), because a dropdown stops honest humans, not the bots that generate
-// most of the out-of-state volume.
+// Commercial is written nationwide and must pass through untouched.
+//
+// SERVICE_STATES is the one place the list lives on this side. SAGE has the
+// matching list in src/lib/product-lines.js (a static site cannot import from
+// the server repo). Licensing a fourth state = add it to both, nothing else.
 const SERVICE_STATES = ['KY', 'IN', 'TN'];
-const SERVICE_STATE_NAMES = { KY: 'Kentucky', IN: 'Indiana', TN: 'Tennessee' };
-const ALL_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+// Every state, so a decline can say "California" rather than barking "CA" back at
+// the person we are turning away. Mirrors STATE_NAMES in SAGE's product-lines.js.
+const STATE_NAMES = {
+  AL:'Alabama', AK:'Alaska', AZ:'Arizona', AR:'Arkansas', CA:'California',
+  CO:'Colorado', CT:'Connecticut', DE:'Delaware', DC:'Washington, D.C.',
+  FL:'Florida', GA:'Georgia', HI:'Hawaii', ID:'Idaho', IL:'Illinois',
+  IN:'Indiana', IA:'Iowa', KS:'Kansas', KY:'Kentucky', LA:'Louisiana',
+  ME:'Maine', MD:'Maryland', MA:'Massachusetts', MI:'Michigan', MN:'Minnesota',
+  MS:'Mississippi', MO:'Missouri', MT:'Montana', NE:'Nebraska', NV:'Nevada',
+  NH:'New Hampshire', NJ:'New Jersey', NM:'New Mexico', NY:'New York',
+  NC:'North Carolina', ND:'North Dakota', OH:'Ohio', OK:'Oklahoma', OR:'Oregon',
+  PA:'Pennsylvania', RI:'Rhode Island', SC:'South Carolina', SD:'South Dakota',
+  TN:'Tennessee', TX:'Texas', UT:'Utah', VT:'Vermont', VA:'Virginia',
+  WA:'Washington', WV:'West Virginia', WI:'Wisconsin', WY:'Wyoming',
+};
+const ALL_STATES = Object.keys(STATE_NAMES);
 
-// Commercial-ONLY submissions are exempt. A mixed commercial+personal cart still
-// needs a service state — the personal half requires the licence.
-function isCommercialOnly() {
-  if (!selectedProducts.length) return false;
-  return selectedProducts.every(id => (PRODUCTS.find(p => p.id === id) || {}).line === 'commercial');
+function stateName(code) {
+  return STATE_NAMES[String(code || '').toUpperCase()] || String(code || '');
 }
 
+// "Kentucky, Indiana and Tennessee", derived so a 4th state flows through.
+function serviceStateNames() {
+  const names = SERVICE_STATES.map(stateName);
+  if (names.length <= 1) return names[0] || '';
+  return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+}
+
+// THE decline. One copy, used by every surface that can turn someone away.
+//
+// It must NOT mention commercial lines. We do write commercial nationwide, but
+// that is for us to know — the owner was explicit that a declined personal-lines
+// applicant should not be pitched on it. The previous version of this string
+// ended "If you need commercial coverage, please call us and we can help." Do
+// not put that back.
+//
+// This is a person who wanted to buy from us and we are turning them away, so it
+// apologises plainly and sounds like a human, not a failed field validation.
+function outOfAreaCopy(state) {
+  return "We're really sorry, but we aren't licensed to write personal insurance in "
+    + (stateName(state) || 'your state') + '. We can only take care of folks in ' + serviceStateNames()
+    + " right now, so we can't help with this one. We hate to turn you away, and we hope you find great coverage.";
+}
+
+// Which rule applies to what is in the cart? Mirrors stateRule() in SAGE's
+// src/lib/product-lines.js — 'required' | 'exempt' | 'unknown' — and the three
+// cases must stay in agreement with it.
+function lineRuleFor(ids) {
+  const lines = (ids || []).map(getProductLine);
+  if (lines.some(l => l === 'personal' || l === 'life' || l === 'health')) return 'required';
+  if (lines.some(l => l === 'commercial')) return 'exempt';
+  return 'unknown';  // empty cart, or only the 'other' catch-all
+}
+
+// Products are not chosen until step 2, so on step 1 the cart is usually empty.
+// A product landing page (?product=auto) still tells us the line via the entry
+// line, which is how we can decline an out-of-area personal-lines visitor before
+// they fill in three more steps. A bare /intake/ arrival tells us nothing, and
+// 'unknown' is the honest answer: we must not decline someone who has not yet had
+// the chance to say they want commercial.
+function currentStateRule() {
+  if (selectedProducts.length) return lineRuleFor(selectedProducts);
+  const entry = getEntryLine();
+  if (entry === 'commercial') return 'exempt';
+  if (entry === 'personal' || entry === 'life' || entry === 'health') return 'required';
+  return 'unknown';
+}
+
+function currentState() {
+  const sel = document.getElementById('i_state');
+  return sel ? String(sel.value || '').toUpperCase() : '';
+}
+function isOutOfArea(st) {
+  const s = st || currentState();
+  return !!s && SERVICE_STATES.indexOf(s) === -1;
+}
+// The one question every surface asks: do we have to turn this person away?
+function mustDecline() {
+  return isOutOfArea() && currentStateRule() === 'required';
+}
+
+// The full 50-state list, always — and that is deliberate. The first version of
+// this offered only KY/IN/TN for a personal-lines cart, which meant an applicant
+// in California had no option to select and the field silently stayed EMPTY.
+// The server treats an empty state as "not asked yet" (it has to — most people
+// have not reached the address step), so the one applicant we most needed to
+// recognise was the one we made invisible. Letting them tell us where they are is
+// what makes both the decline and the server-side gate possible.
 function renderStateOptions() {
   const sel = document.getElementById('i_state');
-  if (!sel) return;
-  const prev = sel.value;
-  const open = isCommercialOnly();
-  const list = open ? ALL_STATES : SERVICE_STATES;
-  sel.innerHTML = '<option value="">Select…</option>' +
-    list.map(s => '<option value="' + s + '">' + s + '</option>').join('');
-  // Keep a still-valid choice across a product change; drop one that is no longer
-  // allowed (e.g. they picked CA for a commercial quote, then added auto).
-  if (prev && list.includes(prev)) sel.value = prev;
-  const hint = document.getElementById('state-hint');
-  if (hint) hint.textContent = open ? '' : 'We write personal lines in Kentucky, Indiana and Tennessee.';
-  if (prev && !list.includes(prev)) showOutOfArea(prev); else hideOutOfArea();
+  if (!sel || sel.options.length) return;   // populate once; value must survive re-render
+  sel.innerHTML = '<option value="">Select your state…</option>' +
+    ALL_STATES.map(s => '<option value="' + s + '">' + s + '</option>').join('');
 }
 
-function showOutOfArea(state) {
+// `text` lets the SERVER's own decline be rendered verbatim when it is the one
+// that said no (POST /api/intake/track -> 400 OUT_OF_AREA). Same words either way;
+// this just keeps the server authoritative rather than us guessing what it decided.
+function showOutOfArea(state, text) {
+  text = text || outOfAreaCopy(state || currentState());
   const box = document.getElementById('state-oos');
-  if (!box) return;
-  box.textContent = "We're not licensed to write personal lines in " + (state || 'that state') +
-    ' — we currently cover Kentucky, Indiana and Tennessee. If you need commercial coverage, please call us and we can help.';
-  box.style.display = '';
+  if (box) { box.textContent = text; box.style.display = ''; }
+  // That box lives on step 1. A decline can also be reached from step 2 (they pick
+  // a personal product after choosing an out-of-area state) or step 3 (the address
+  // autocompletes to a state that contradicts their step-1 answer) — and from
+  // there the step-1 box is off-screen. Say it where the applicant actually is.
+  const stepErr = typeof currentStep !== 'undefined' && currentStep !== 1
+    ? document.getElementById('step' + currentStep + '-error') : null;
+  if (stepErr) { stepErr.textContent = text; stepErr.classList.remove('hidden'); }
 }
 function hideOutOfArea() {
   const box = document.getElementById('state-oos');
   if (box) box.style.display = 'none';
 }
-function onStateChange() {
-  const sel = document.getElementById('i_state');
-  if (sel && sel.value) hideOutOfArea();
-  scheduleTrack();
+
+// Re-run whenever the state OR the cart changes — the same state is fine for a
+// commercial cart and a decline for a personal one, so this cannot be decided
+// once and cached.
+function evaluateStateEligibility() {
+  const rule = currentStateRule();
+  const hint = document.getElementById('state-hint');
+  // Only mention where we ARE licensed once we know this is a personal-lines
+  // quote. Saying it to a commercial visitor would be both irrelevant and wrong.
+  if (hint) hint.textContent = rule === 'required' ? 'We write personal insurance in ' + serviceStateNames() + '.' : '';
+  if (mustDecline()) showOutOfArea(); else hideOutOfArea();
 }
 
-// Google Places fills the state by assigning el.value. On a <select> that has no
-// matching <option> (an out-of-area address on a personal-lines quote) the value
-// silently becomes '' — so tell the applicant why instead of leaving them staring
-// at an empty required field.
+function onStateChange() {
+  evaluateStateEligibility();
+  // Never auto-save a lead we are declining: that is the row a producer would be
+  // paged about. (SAGE refuses it too — this just avoids the pointless round trip.)
+  if (!mustDecline()) scheduleTrack();
+}
+
+// Google Places fills the state by assigning el.value. Now that the <select>
+// carries every state, an out-of-area address lands a real value instead of
+// silently blanking the field, and we can say why.
 function syncStateFromAutocomplete(state) {
   const sel = document.getElementById('i_state');
   if (!sel) return;
   const st = String(state || '').toUpperCase();
-  if (!st) return;
+  if (!st || ALL_STATES.indexOf(st) === -1) return;
   sel.value = st;
-  if (sel.value !== st) showOutOfArea(st); else hideOutOfArea();
+  evaluateStateEligibility();
 }
 
 (function initGrid() {
@@ -1440,12 +1538,11 @@ function syncStateFromAutocomplete(state) {
     if (grp) grp.style.display = '';
   }
 
-  // Seed the state dropdown. Options depend on the products chosen, so this is
-  // re-run on every product toggle (ticket b18ef40b).
   renderStateOptions();
   // A ?state= geo param (city/industry landing pages) pre-selects it.
   const geoState = sanitizeAlpha(new URLSearchParams(location.search).get('state') || '', 2).toUpperCase();
   if (geoState) syncStateFromAutocomplete(geoState);
+  evaluateStateEligibility();
 })();
 
 // ── Bundle suggestion map ────────────────────────────────────────────────────
@@ -1708,6 +1805,8 @@ function sanitizePhone(val) {
   // Geo context (from city/industry pages)
   fill('city', 'i_city', sanitizeAlpha);
   fill('state', 'i_state', (v) => sanitizeAlpha(v, 2).toUpperCase());
+  // A ?state= geo param can seed an out-of-area state, so re-run the decision.
+  evaluateStateEligibility();
 
   // Industry tag — store for submission (slug format only)
   const industry = sanitizeSlug(params.get('industry'));
@@ -1754,6 +1853,11 @@ async function trackPartial(notify) {
   if (!email && !phone) return;
   if (email && !isValidEmail(email)) return;
   if (phone && !isValidPhone(phone)) return;
+  // Never auto-save a lead we are declining. This partial save is the row a
+  // producer gets paged about, so the person we have just told "we can't help"
+  // must not become a notification anyway. SAGE refuses it as well; this simply
+  // avoids the pointless round trip.
+  if (mustDecline()) return;
 
   try {
     // Landing-page / referrer / UTM attribution so the portal live-intake pop-up
@@ -1797,7 +1901,20 @@ async function trackPartial(notify) {
         ..._attr,
       })
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({}));
+
+    // The server is the authority on who we can write, and it says so with
+    // 400 { code: 'OUT_OF_AREA' }. That answer used to be thrown on the floor:
+    // this function only ever looked for a sessionId, found none on a 400, and
+    // fell through in silence. So SAGE composed a decline, returned it, and the
+    // applicant never saw a word of it — they carried on filling in a form that
+    // could not be submitted, and only hit a wall at the very end. A decline the
+    // customer cannot see is not a decline.
+    if (!res.ok) {
+      if (data.code === 'OUT_OF_AREA') showOutOfArea(null, data.error);
+      return;
+    }
+
     if (data.sessionId) {
       sessionId = data.sessionId;
       contactTracked = true;
@@ -1806,7 +1923,7 @@ async function trackPartial(notify) {
         pollTimer = setInterval(checkTakeover, _pollInterval);
       }
     }
-  } catch (e) { /* silent */ }
+  } catch (e) { /* network failure — the next keystroke retries */ }
 }
 
 // Debounce auto-save
@@ -1923,9 +2040,10 @@ function toggleProd(el) {
   }
   selectedProducts = [...document.querySelectorAll('.product-opt.selected')].map(e => e.dataset.pid);
   trackProductToggle(el.dataset.pid, wasSelected);
-  // The allowed state list depends on the line of business — commercial is
-  // nationwide, everything else is KY/IN/TN (ticket b18ef40b).
-  renderStateOptions();
+  // Whether we can write this person depends on the line of business — commercial
+  // is nationwide, everything else is KY/IN/TN — so the same state flips from fine
+  // to a decline (and back) as the cart changes (tickets b18ef40b, c2cc96ea).
+  evaluateStateEligibility();
   // Reflect DOB-required (life) on the asterisk immediately on selection, not
   // only when the product-questions step later renders. Ticket 4adb868f.
   updateDobRequiredStar();
@@ -2053,6 +2171,18 @@ async function nextStep(from) {
     if (!v('i_phone')) { err.textContent = 'Phone number is required.'; err.classList.remove('hidden'); trackValidationError(1, 'missing_phone'); return; }
     if (!isValidEmail(v('i_email'))) { err.textContent = 'Please enter a valid email address.'; err.classList.remove('hidden'); trackValidationError(1, 'invalid_email'); return; }
     if (!isValidPhone(v('i_phone'))) { err.textContent = 'Please enter a valid 10-digit phone number.'; err.classList.remove('hidden'); trackValidationError(1, 'invalid_phone'); return; }
+    if (!v('i_state')) { err.textContent = 'Please choose your state.'; err.classList.remove('hidden'); trackValidationError(1, 'missing_state'); return; }
+    // The decline. This return is what stops trackPartial(true) below from firing —
+    // and trackPartial(true) is the call that persists the lead and pages a
+    // producer. Turning someone away has to happen HERE, before that, or we have
+    // simply told them no while still putting them on a producer's phone.
+    if (mustDecline()) {
+      err.classList.add('hidden');
+      showOutOfArea();
+      trackValidationError(1, 'out_of_area');
+      document.getElementById('state-group').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
     // Business name is required up front for commercial-line arrivals (field is visible only then).
     const bizGrp = document.getElementById('biz-name-step1-group');
     if (bizGrp && bizGrp.style.display !== 'none' && !v('i_biz_name_1')) {
@@ -2078,10 +2208,16 @@ async function nextStep(from) {
   if (from === 2) {
     const err = document.getElementById('step2-error');
     if (!selectedProducts.length) { err.textContent = 'Please select at least one type of coverage.'; err.classList.remove('hidden'); trackValidationError(2, 'no_products'); return; }
+    // A bare /intake/ visitor had no line at step 1, so an out-of-area state could
+    // not be judged then and they were let through. Now that the cart says what
+    // they want, this is the first moment we CAN tell — so it is where we tell them.
+    if (mustDecline()) { showOutOfArea(); trackValidationError(2, 'out_of_area'); return; }
     err.classList.add('hidden');
   }
   if (from === 3) {
     const err = document.getElementById('step3-error');
+    // The address may have autocompleted to a state that contradicts step 1.
+    if (mustDecline()) { showOutOfArea(); trackValidationError(3, 'out_of_area'); return; }
     const problems = [];
     // Validate auto: at least one vehicle with year+make+model
     if (selectedProducts.includes('auto')) {
@@ -3202,8 +3338,9 @@ function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
       fill(cityId, p.city);
       fill(stateId, p.state);
       fill(zipId, p.zip);
-      // i_state is a <select> limited to the licensed states — an out-of-area
-      // address leaves it empty, so say why rather than silently blanking it.
+      // i_state is a <select>. fill() above assigns el.value, which is a no-op for
+      // a state with no matching <option> — so route it through the sync helper,
+      // which knows the full list and re-runs the eligibility check.
       if (stateId === 'i_state') syncStateFromAutocomplete(p.state);
       scheduleTrack();
     });
@@ -3377,6 +3514,10 @@ function restoreDraft(draft) {
   // Navigate to the step the user was on (but cap at step 2 — step 3/4 have dynamic content)
   const targetStep = Math.min(draft.step || 1, 2);
   if (targetStep > 1) showStep(targetStep);
+  // A resumed draft carries both a state and a cart, so re-run the decision: this
+  // is another door into trackPartial(true) below (the producer page), and it must
+  // not be the one that slips an out-of-area lead through.
+  evaluateStateEligibility();
   // If resuming with contact info already filled, fire notify so agent gets assigned
   if (draft.fields.i_email && draft.fields.i_phone && draft.fields.i_fname && draft.fields.i_lname) {
     contactValidated = true; // skip re-validation on resume

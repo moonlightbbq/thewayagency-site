@@ -260,6 +260,17 @@ if (legalProblems.length) {
 }
 console.log('  ✓ Legal pages clean (em dashes / anchors)');
 
+// 11b. Guard: the out-of-area decline must stay warm, silent about commercial,
+//      and gated on a state we actually collect before paging a producer.
+const { checkIntakeGate } = require('./check-intake-gate');
+const gateProblems = checkIntakeGate();
+if (gateProblems.length) {
+  console.error('\n✗ Intake out-of-area gate guard failed:');
+  gateProblems.forEach((p) => console.error('  - ' + p));
+  throw new Error(`Intake gate guard failed (${gateProblems.length} issue(s)).`);
+}
+console.log('  ✓ Intake out-of-area decline intact');
+
 // 12. Snapshot compliance pages by version into legal-archive/
 require('./snapshot-legal-pages').snapshotLegalPages({ buildDir: BUILD });
 
