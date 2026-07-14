@@ -1304,6 +1304,14 @@ const PRODUCT_ALIASES = {
   // 'medicare' and 'medicaid' already match their tile ids
 };
 
+// DISPLAY line only — which part of the product grid a tile belongs in.
+//
+// This is NOT the licensing line and must never be used to decide whether we can
+// write someone: 'dwelling_fire' and 'special_event' live under Commercial here
+// because that is where the people who want them go looking, while the licence
+// they need is a different question with a different answer. Asking this function
+// that question is exactly the bug ticket c2cc96ea was raised for. The licensing
+// answer comes from the server — see lineRuleFor() / RULES.
 function getProductLine(pid) {
   const p = PRODUCTS.find(x => x.id === pid);
   return p ? p.line : null;
@@ -1379,73 +1387,92 @@ function getEntryLine() {
 // The agency is licensed to write personal / life / health only in KY, IN and TN.
 // Commercial is written nationwide and must pass through untouched.
 //
-// SERVICE_STATES is the one place the list lives on this side. SAGE has the
-// matching list in src/lib/product-lines.js (a static site cannot import from
-// the server repo). Licensing a fourth state = add it to both, nothing else.
-const SERVICE_STATES = ['KY', 'IN', 'TN'];
-// Every state, so a decline can say "California" rather than barking "CA" back at
-// the person we are turning away. Mirrors STATE_NAMES in SAGE's product-lines.js.
-const STATE_NAMES = {
-  AL:'Alabama', AK:'Alaska', AZ:'Arizona', AR:'Arkansas', CA:'California',
-  CO:'Colorado', CT:'Connecticut', DE:'Delaware', DC:'Washington, D.C.',
-  FL:'Florida', GA:'Georgia', HI:'Hawaii', ID:'Idaho', IL:'Illinois',
-  IN:'Indiana', IA:'Iowa', KS:'Kansas', KY:'Kentucky', LA:'Louisiana',
-  ME:'Maine', MD:'Maryland', MA:'Massachusetts', MI:'Michigan', MN:'Minnesota',
-  MS:'Mississippi', MO:'Missouri', MT:'Montana', NE:'Nebraska', NV:'Nevada',
-  NH:'New Hampshire', NJ:'New Jersey', NM:'New Mexico', NY:'New York',
-  NC:'North Carolina', ND:'North Dakota', OH:'Ohio', OK:'Oklahoma', OR:'Oregon',
-  PA:'Pennsylvania', RI:'Rhode Island', SC:'South Carolina', SD:'South Dakota',
-  TN:'Tennessee', TX:'Texas', UT:'Utah', VT:'Vermont', VA:'Virginia',
-  WA:'Washington', WV:'West Virginia', WI:'Wisconsin', WY:'Wyoming',
-};
-const ALL_STATES = Object.keys(STATE_NAMES);
+// THIS FILE NO LONGER DECIDES WHAT IS PERSONAL AND WHAT IS COMMERCIAL.
+//
+// It used to, from the `line` field on PRODUCTS below — and that list disagreed
+// with SAGE's. 'dwelling_fire' and 'special_event' are commercial HERE (it is
+// where a landlord or an event organiser goes looking for them) and personal, or
+// simply unrecognised, THERE. So a Texas visitor who followed /intake/?line=
+// commercial and picked "Special Event" was waved through by this form and then
+// declined by the server; a Texas landlord picking "Dwelling Fire" got the
+// opposite treatment. Two lists that disagree is not a pair of typos to correct,
+// it is the bug: correcting them by hand only restarts the clock until the next
+// product is added to one side.
+//
+// So PRODUCTS[].line is now a DISPLAY fact — which tile sits in which part of the
+// grid — and the LICENSING fact comes from the server, over the wire, from the one
+// list that actually adjudicates it (SAGE's src/lib/product-lines.js, served at
+// GET /api/intake/rules). The licensed states and the words of the decline come
+// from the same place, so the applicant reads identical copy whether it was this
+// page or the server that turned them away.
+let RULES = null;   // { serviceStates, productLines, stateNames, declineTemplate, stateToken }
+
+(async function loadIntakeRules() {
+  try {
+    const r = await fetch(SAGE_API + '/api/intake/rules');
+    if (!r.ok) return;
+    const data = await r.json();
+    if (!data || !data.productLines || !Array.isArray(data.serviceStates)) return;
+    RULES = data;
+  } catch (e) { /* offline — see mustDecline(): we simply never decline anyone */ }
+  // The visitor may already have chosen a state and a product while this was in
+  // flight, so the decision has to be re-run, not merely armed.
+  evaluateStateEligibility();
+})();
+
+// The postal codes for the dropdown. Not a classification list and not a licence
+// list — just the 50 states — so there is nothing here to drift out of step with
+// the server.
+const ALL_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','DC','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 
 function stateName(code) {
-  return STATE_NAMES[String(code || '').toUpperCase()] || String(code || '');
+  const c = String(code || '').toUpperCase();
+  return (RULES && RULES.stateNames && RULES.stateNames[c]) || c;
 }
 
-// "Kentucky, Indiana and Tennessee", derived so a 4th state flows through.
-function serviceStateNames() {
-  const names = SERVICE_STATES.map(stateName);
-  if (names.length <= 1) return names[0] || '';
-  return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
-}
-
-// THE decline. One copy, used by every surface that can turn someone away.
-//
-// It must NOT mention commercial lines. We do write commercial nationwide, but
-// that is for us to know — the owner was explicit that a declined personal-lines
-// applicant should not be pitched on it. The previous version of this string
-// ended "If you need commercial coverage, please call us and we can help." Do
-// not put that back.
-//
-// This is a person who wanted to buy from us and we are turning them away, so it
-// apologises plainly and sounds like a human, not a failed field validation.
+// THE decline, rendered from the server's template so there is exactly one copy of
+// these words in existence. It must NOT mention commercial lines: we write CL
+// nationwide, but the owner was explicit that this is for us to know and not
+// something to say to a personal-lines applicant we are turning away. The previous
+// version ended "If you need commercial coverage, please call us and we can help."
+// Do not put that back — and do not reintroduce a local fallback string either,
+// because a fallback is just the duplicate list again, wearing a hat.
 function outOfAreaCopy(state) {
-  return "We're really sorry, but we aren't licensed to write personal insurance in "
-    + (stateName(state) || 'your state') + '. We can only take care of folks in ' + serviceStateNames()
-    + " right now, so we can't help with this one. We hate to turn you away, and we hope you find great coverage.";
+  if (!RULES || !RULES.declineTemplate) return '';
+  return RULES.declineTemplate.split(RULES.stateToken || '{{STATE}}').join(stateName(state));
 }
 
-// Which rule applies to what is in the cart? Mirrors stateRule() in SAGE's
-// src/lib/product-lines.js — 'required' | 'exempt' | 'unknown' — and the three
-// cases must stay in agreement with it.
+// Which rule applies to what is in the cart? The lines come from the SERVER's map,
+// so this cannot disagree with the decision the server is about to make.
+//   'required' — personal / life / health: the licence is what we lack.
+//   'exempt'   — commercial, 'other', or an id the server does not classify. We
+//                can take it from anywhere, or a human triages it.
+//   'unknown'  — nothing in the cart, or no rules loaded: we must not decline.
 function lineRuleFor(ids) {
-  const lines = (ids || []).map(getProductLine);
+  if (!RULES || !ids || !ids.length) return 'unknown';
+  const lines = ids.map(id => RULES.productLines[id] || null);
   if (lines.some(l => l === 'personal' || l === 'life' || l === 'health')) return 'required';
-  if (lines.some(l => l === 'commercial')) return 'exempt';
-  return 'unknown';  // empty cart, or only the 'other' catch-all
+  return 'exempt';
 }
 
 // Products are not chosen until step 2, so on step 1 the cart is usually empty.
-// A product landing page (?product=auto) still tells us the line via the entry
-// line, which is how we can decline an out-of-area personal-lines visitor before
-// they fill in three more steps. A bare /intake/ arrival tells us nothing, and
-// 'unknown' is the honest answer: we must not decline someone who has not yet had
-// the chance to say they want commercial.
+// A product landing page (?product=auto) still tells us the line, which is how we
+// can decline an out-of-area personal-lines visitor before they fill in three more
+// steps. A bare /intake/ arrival tells us nothing, and 'unknown' is the honest
+// answer: we must not decline someone who has not yet had the chance to say they
+// want commercial.
 function currentStateRule() {
   if (selectedProducts.length) return lineRuleFor(selectedProducts);
-  const entry = getEntryLine();
+  // A ?product= preselect names a real product — ask the server's map about it.
+  const params = new URLSearchParams(window.location.search);
+  let pid = params.get('product');
+  if (pid) {
+    pid = PRODUCT_ALIASES[pid] || pid;
+    const rule = lineRuleFor([pid]);
+    if (rule !== 'unknown') return rule;
+  }
+  // ?line= is a URL parameter, not a product id, so it is read directly.
+  const entry = params.get('line');
   if (entry === 'commercial') return 'exempt';
   if (entry === 'personal' || entry === 'life' || entry === 'health') return 'required';
   return 'unknown';
@@ -1457,9 +1484,17 @@ function currentState() {
 }
 function isOutOfArea(st) {
   const s = st || currentState();
-  return !!s && SERVICE_STATES.indexOf(s) === -1;
+  if (!s || !RULES) return false;   // no rules loaded → we know nothing → decline nobody
+  return RULES.serviceStates.indexOf(s) === -1;
 }
 // The one question every surface asks: do we have to turn this person away?
+//
+// False whenever the rules have not loaded. That is not a hole: the server makes
+// the same decision on POST /api/intake/track and again on the final submit, and
+// both now hand back the decline in words we render verbatim. The worst an
+// offline visitor gets is that the bad news arrives from the server instead of
+// instantly — never that we write a policy we are not licensed for, and never
+// that we decline someone we could have helped.
 function mustDecline() {
   return isOutOfArea() && currentStateRule() === 'required';
 }
@@ -1478,24 +1513,55 @@ function renderStateOptions() {
     ALL_STATES.map(s => '<option value="' + s + '">' + s + '</option>').join('');
 }
 
+// Every element we have written a decline into, so that hideOutOfArea() can take
+// it back. See hideOutOfArea() for why that matters more than it sounds.
+let _oosBoxes = [];
+
 // `text` lets the SERVER's own decline be rendered verbatim when it is the one
-// that said no (POST /api/intake/track -> 400 OUT_OF_AREA). Same words either way;
-// this just keeps the server authoritative rather than us guessing what it decided.
+// that said no (400 OUT_OF_AREA from /track or from the final submit). Same words
+// either way — they are composed from the same template.
 function showOutOfArea(state, text) {
   text = text || outOfAreaCopy(state || currentState());
+  if (!text) return;   // rules never loaded and the server has not spoken: say nothing
+  _oosBoxes = [];
   const box = document.getElementById('state-oos');
-  if (box) { box.textContent = text; box.style.display = ''; }
+  if (box) { box.textContent = text; box.style.display = ''; _oosBoxes.push(box); }
   // That box lives on step 1. A decline can also be reached from step 2 (they pick
   // a personal product after choosing an out-of-area state) or step 3 (the address
   // autocompletes to a state that contradicts their step-1 answer) — and from
   // there the step-1 box is off-screen. Say it where the applicant actually is.
   const stepErr = typeof currentStep !== 'undefined' && currentStep !== 1
     ? document.getElementById('step' + currentStep + '-error') : null;
-  if (stepErr) { stepErr.textContent = text; stepErr.classList.remove('hidden'); }
+  if (stepErr) {
+    stepErr.textContent = text;
+    stepErr.dataset.oosText = text;   // so hideOutOfArea() knows these words are ours
+    stepErr.classList.remove('hidden');
+    _oosBoxes.push(stepErr);
+  }
 }
+
+// Take the decline back — ALL of it.
+//
+// This used to hide #state-oos and stop, which left the copy of the decline that
+// showOutOfArea() had written into the step-2 / step-3 error box sitting on the
+// screen. So: a Californian picks Auto, we decline them, they click Back and
+// change their state to Kentucky — and we went on telling a Kentucky customer, in
+// a red box, that we are not licensed to write them. The decline has to be as
+// retractable as it is easy to show.
 function hideOutOfArea() {
+  for (const el of _oosBoxes) {
+    if (!el) continue;
+    if (el.id === 'state-oos') { el.style.display = 'none'; el.textContent = ''; continue; }
+    // A step-error box is shared with ordinary field validation, so only clear it
+    // if it still holds OUR words — otherwise we would silently swallow a genuine
+    // "Please select at least one type of coverage" the applicant needs to read.
+    if (el.textContent === (el.dataset.oosText || '')) { el.textContent = ''; el.classList.add('hidden'); }
+  }
+  _oosBoxes = [];
+  // Belt and braces for the step-1 box, which is ours alone and may have been
+  // written on a previous page-load path that never populated _oosBoxes.
   const box = document.getElementById('state-oos');
-  if (box) box.style.display = 'none';
+  if (box) { box.style.display = 'none'; box.textContent = ''; }
 }
 
 // Re-run whenever the state OR the cart changes — the same state is fine for a
@@ -1506,8 +1572,20 @@ function evaluateStateEligibility() {
   const hint = document.getElementById('state-hint');
   // Only mention where we ARE licensed once we know this is a personal-lines
   // quote. Saying it to a commercial visitor would be both irrelevant and wrong.
-  if (hint) hint.textContent = rule === 'required' ? 'We write personal insurance in ' + serviceStateNames() + '.' : '';
+  if (hint) {
+    hint.textContent = (rule === 'required' && RULES)
+      ? 'We write personal insurance in ' + serviceStateNames() + '.' : '';
+  }
   if (mustDecline()) showOutOfArea(); else hideOutOfArea();
+}
+
+// "Kentucky, Indiana and Tennessee", derived from the server's list so a fourth
+// licensed state flows through here the day it is added there.
+function serviceStateNames() {
+  if (!RULES) return '';
+  const names = RULES.serviceStates.map(stateName);
+  if (names.length <= 1) return names[0] || '';
+  return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
 }
 
 function onStateChange() {
@@ -1911,7 +1989,15 @@ async function trackPartial(notify) {
     // could not be submitted, and only hit a wall at the very end. A decline the
     // customer cannot see is not a decline.
     if (!res.ok) {
-      if (data.code === 'OUT_OF_AREA') showOutOfArea(null, data.error);
+      if (data.code === 'OUT_OF_AREA') {
+        showOutOfArea(null, data.error);
+        // Tell the caller. nextStep(1) awaits this, and a step that has just been
+        // declined must not then advance the applicant deeper into a form we
+        // cannot act on — which is what happens whenever the browser's own gate
+        // stayed quiet (rules offline, or a stale cached page) and the SERVER is
+        // the one that said no.
+        return 'declined';
+      }
       return;
     }
 
@@ -2203,7 +2289,19 @@ async function nextStep(from) {
     }
 
     // Fire tracking immediately on step 1 completion with notify flag (awaited so sessionId is set before step 2)
-    await trackPartial(true);
+    //
+    // This is THE call that persists the lead and pages a producer, so the server
+    // gets the last word on it. If it declines, we stop here: the applicant has
+    // already been shown the reason by trackPartial(), and walking them on to step
+    // 2 would only invite them to fill in a form whose submit we are going to
+    // refuse. (Normally mustDecline() above has caught this already — this is the
+    // path where the browser could not know: rules offline, or a stale page cached
+    // from before we changed the states we write.)
+    if (await trackPartial(true) === 'declined') {
+      trackValidationError(1, 'out_of_area_server');
+      document.getElementById('state-group').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
   }
   if (from === 2) {
     const err = document.getElementById('step2-error');
@@ -2984,6 +3082,10 @@ async function submitQuickLead() {
         lastName: v('i_lname'),
         email: v('i_email'),
         phone: v('i_phone'),
+        // The quick lead fires from step 2, and the State field now sits on step 1
+        // — so by here we always have it. It was never sent, which left the server
+        // gating a personal-lines quick lead with no state to judge.
+        state: v('i_state'),
         products: selectedProducts,
         formData,
         notes: '',
@@ -2995,9 +3097,13 @@ async function submitQuickLead() {
       })
     });
     if (!res.ok) {
-      let msg = 'Submission failed (HTTP ' + res.status + ')';
-      try { const d = await res.json(); msg = d.error || msg; } catch(pe) {}
-      throw new Error(msg);
+      // Do NOT throw: the catch below reports a network error, and a decline is not
+      // a network error. Render the server's own words.
+      const d = await res.json().catch(() => ({}));
+      renderSubmitError(err, res.status, d);
+      link.textContent = origText;
+      link.style.pointerEvents = '';
+      return;
     }
     const data = await res.json();
     if (data.ok) {
@@ -3024,8 +3130,7 @@ async function submitQuickLead() {
       }
       if (window.fbq) fbq('track', 'Lead', { content_name: selectedProducts.join(','), content_category: 'quick_lead', currency: 'USD' }, { eventID: data.reference });
     } else {
-      err.textContent = data.error || 'Submission failed. Please try again.';
-      err.classList.remove('hidden');
+      renderSubmitError(err, res.status, data);
     }
   } catch (e) {
     err.textContent = 'Network error. Please check your connection and try again.';
@@ -3034,6 +3139,27 @@ async function submitQuickLead() {
 
   link.textContent = origText;
   link.style.pointerEvents = '';
+}
+
+// The server's answer to an out-of-area applicant is not an error to retry. It is
+// a decline, in words written for them to read, and it arrives as
+// 400 { code:'OUT_OF_AREA', error:<the words> }.
+//
+// Both submit paths used to swallow it, twice over. The !res.ok branch threw an
+// Error, and the catch that caught the throw rendered "Network error. Please check
+// your connection and try again." So the one message this whole ticket exists to
+// deliver reached the applicant either as "Submission failed" or as a lie about
+// their wifi. Render what the server actually said, where the decline already
+// lives, and never dress it up as a broken connection.
+function renderSubmitError(errEl, status, data) {
+  if (data && data.code === 'OUT_OF_AREA' && data.error) {
+    if (errEl) errEl.classList.add('hidden');   // the decline speaks for itself
+    showOutOfArea(null, data.error);
+    return;
+  }
+  if (!errEl) return;
+  errEl.textContent = (data && data.error) || ('Submission failed (HTTP ' + status + '). Please try again.');
+  errEl.classList.remove('hidden');
 }
 
 // ── Submit ───────────────────────────────────────────────────────────────────
@@ -3211,10 +3337,11 @@ async function submitIntake() {
       })
     });
     if (!res.ok) {
-      let msg = 'Submission failed (HTTP ' + res.status + ')';
-      try { const d = await res.json(); msg = d.error || msg; } catch(pe) {}
-      err.textContent = msg;
-      err.classList.remove('hidden');
+      // 400 OUT_OF_AREA is the decline, and the applicant has to read the words —
+      // not "Submission failed (HTTP 400)", which is what validate() flattening
+      // the message into a VALIDATION_ERROR envelope used to leave them with.
+      const d = await res.json().catch(() => ({}));
+      renderSubmitError(err, res.status, d);
       btn.textContent = 'Submit Quote Request';
       btn.disabled = false;
       if (window.turnstile && turnstileWidgetId != null) { turnstile.reset(turnstileWidgetId); turnstileToken = null; }
@@ -3249,8 +3376,7 @@ async function submitIntake() {
         });
       }
     } else {
-      err.textContent = data.error || 'Submission failed. Please try again.';
-      err.classList.remove('hidden');
+      renderSubmitError(err, res.status, data);
       trackValidationError(4, 'submit_failed_server');
     }
   } catch (e) {
