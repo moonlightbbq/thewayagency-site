@@ -4,8 +4,8 @@ slug: insurance-lexington-horse-farms-rural-properties
 description: Lexington's horse farms and rural properties need specialized coverage that standard homeowners policies don't provide. Here's what Fayette County property owners should know.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-09-23
-modified: 2026-09-23
+date: 2026-07-15
+modified: 2026-07-15
 reading_time: 7 min read
 related_page: /personal/home.html
 tags: horse farm insurance, rural property, lexington, fayette county, equine insurance, kentucky

@@ -1468,7 +1468,7 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "planned",
+      "status": "published",
       "source": "markdown",
       "notes": "Supports Lexington geo page. Unique niche content."
     },
@@ -1577,9 +1577,13 @@
       "canonical_priority": "secondary",
       "is_link_target": true,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "in-review",
       "source": "markdown",
-      "notes": ""
+      "notes": "",
+      "reviewer": "Kelly McCallister",
+      "reviewer_email": "kelly@thewayagency.com",
+      "reviewer_slug": "kelly-mccallister",
+      "review_sent_date": "2026-07-15"
     },
     {
       "week": 18,
@@ -1614,9 +1618,13 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "planned",
+      "status": "in-review",
       "source": "markdown",
-      "notes": "Supports Nashville geo page. Tennessee-specific."
+      "notes": "Supports Nashville geo page. Tennessee-specific.",
+      "reviewer": "Jill Boone",
+      "reviewer_email": "jill@thewayagency.com",
+      "reviewer_slug": "jill-boone",
+      "review_sent_date": "2026-07-15"
     },
     {
       "week": 18,
@@ -1651,9 +1659,13 @@
       "canonical_priority": "secondary",
       "is_link_target": true,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "in-review",
       "source": "markdown",
-      "notes": "Complements the KY auto guide with a coverage-type breakdown."
+      "notes": "Complements the KY auto guide with a coverage-type breakdown.",
+      "reviewer": "Sheilia Royal",
+      "reviewer_email": "sheilia@thewayagency.com",
+      "reviewer_slug": "sheilia-royal",
+      "review_sent_date": "2026-07-15"
     },
     {
       "week": 19,
