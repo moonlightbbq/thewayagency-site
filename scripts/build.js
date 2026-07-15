@@ -260,8 +260,39 @@ if (legalProblems.length) {
 }
 console.log('  ✓ Legal pages clean (em dashes / anchors)');
 
-// 12. Snapshot compliance pages by version into legal-archive/
-require('./snapshot-legal-pages').snapshotLegalPages({ buildDir: BUILD });
+// 11b. Guard: the out-of-area decline must stay warm, silent about commercial,
+//      and gated on a state we actually collect before paging a producer.
+//
+// BOTH halves of the guard run here, and that is the point. checkIntakeGate() is
+// the static half — it reads this repo's own markup. checkDeclineCopy() is the
+// CROSS-REPO half: it fetches GET /api/intake/rules from SAGE and fails the build
+// if the words we decline people with have started pitching commercial, or if this
+// form offers a product tile SAGE cannot classify (the exact dwelling_fire /
+// special_event drift that ticket c2cc96ea was filed for).
+//
+// The second half used to run only when check-intake-gate.js was executed as main
+// — which no build, no workflow and no npm script ever did. So the guarantee that
+// the two repos agree was enforced by precisely nothing. It is enforced here now.
+//
+// Network-optional by design: checkDeclineCopy() warns and returns no problems when
+// SAGE is unreachable, so a deploy is never blocked by a blip. The server enforces
+// the rules regardless; this is the tripwire that tells us the two sides drifted.
+(async () => {
+  const { checkIntakeGate, checkDeclineCopy } = require('./check-intake-gate');
+  const gateProblems = checkIntakeGate().concat(await checkDeclineCopy());
+  if (gateProblems.length) {
+    console.error('\n✗ Intake out-of-area gate guard failed:');
+    gateProblems.forEach((p) => console.error('  - ' + p));
+    throw new Error(`Intake gate guard failed (${gateProblems.length} issue(s)).`);
+  }
+  console.log('  ✓ Intake out-of-area decline intact (markup + live SAGE rules)');
 
-console.log(`\n✅ Build complete! ${generatedCount + rootPages.length + subPages.length + portalPages.length} pages in build/`);
-console.log(`   Total files: ${sitemapUrls.length} indexable URLs`);
+  // 12. Snapshot compliance pages by version into legal-archive/
+  require('./snapshot-legal-pages').snapshotLegalPages({ buildDir: BUILD });
+
+  console.log(`\n✅ Build complete! ${generatedCount + rootPages.length + subPages.length + portalPages.length} pages in build/`);
+  console.log(`   Total files: ${sitemapUrls.length} indexable URLs`);
+})().catch((err) => {
+  console.error('\n✗ Build failed: ' + err.message);
+  process.exit(1);
+});

@@ -11,15 +11,18 @@
     "check-data": "node scripts/check-data-integrity.js",
     "check-assets": "node scripts/check-assets.js",
     "check:legal": "node scripts/check-legal-pages.js",
+    "check:intake": "node scripts/check-intake-gate.js",
     "snapshot:legal": "node scripts/snapshot-legal-pages.js",
     "safe-build": "node scripts/pre-build-check.js && node scripts/build.js && node scripts/validate-build.js",
     "deploy": "node scripts/deploy.js",
-    "admin": "node scripts/admin.js"
+    "admin": "node scripts/admin.js",
+    "test": "node --test tests/*.test.js"
   },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
+    "jsdom": "^29.1.1",
     "terser": "^5.46.2"
   }
 }
