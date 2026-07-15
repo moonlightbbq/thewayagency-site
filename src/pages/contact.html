@@ -305,8 +305,11 @@
         });
       } catch(e) { console.error('[Turnstile]', e); }
     }
+    // Turnstile's api.js (end of <body>) uses ?onload=_contactTurnstileReady and calls
+    // this once ready, regardless of script order. A load-listener here is unreliable:
+    // this inline script runs before the deferred api.js tag exists in the DOM.
+    window._contactTurnstileReady = initTurnstile;
     if (window.turnstile) { initTurnstile(); }
-    else { var tsScript = document.querySelector('script[src*="turnstile"]'); if (tsScript) tsScript.addEventListener('load', initTurnstile); }
 
     form.addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -336,21 +339,20 @@
         return;
       }
 
-      // Rate limit
+      // Rate limit (3 SUCCESSFUL sends / hour). Only a completed send consumes a slot;
+      // failed attempts must not lock a real sender out. The stamp is recorded on success.
       try {
         var stamps = JSON.parse(localStorage.getItem('twa_contact_ts') || '[]');
         var hourAgo = Date.now() - 3600000;
         stamps = stamps.filter(function(t) { return t > hourAgo; });
         if (stamps.length >= 3) { showErr('You\'ve sent multiple messages recently. Please wait a bit or call us at (502) 413-5335.'); return; }
-        stamps.push(Date.now());
-        localStorage.setItem('twa_contact_ts', JSON.stringify(stamps));
       } catch(e) {}
 
-      // Ensure a Turnstile token (render/reset if it isn't ready yet).
+      // Ensure a Turnstile token (render/reset if it isn't ready yet), polling up to ~5s.
       if (!turnstileToken) {
         if (window.turnstile && turnstileWidgetId != null) turnstile.reset(turnstileWidgetId);
         else initTurnstile();
-        await new Promise(function(r) { setTimeout(r, 2000); });
+        for (var _i = 0; _i < 25 && !turnstileToken; _i++) { await new Promise(function(r) { setTimeout(r, 200); }); }
         if (!turnstileToken) { showErr('Security check is still loading. Please wait a moment and try again.'); return; }
       }
 
@@ -377,6 +379,12 @@
       }).then(function(d) {
         clearTimeout(reenableTimer);
         if (d.ok) {
+          // Record the slot only now that the send actually succeeded.
+          try {
+            var okStamps = JSON.parse(localStorage.getItem('twa_contact_ts') || '[]');
+            okStamps.push(Date.now());
+            localStorage.setItem('twa_contact_ts', JSON.stringify(okStamps));
+          } catch(e) {}
           form.style.display = 'none';
           successEl.style.display = 'block';
           var successMsg = subject === 'callback'
@@ -484,7 +492,7 @@
     <p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p>
   </footer>
   <div id="ai-chat-root"></div>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&amp;onload=_contactTurnstileReady" defer></script>
   <script src="/src/js/app.js"></script>
 </body>
 </html>

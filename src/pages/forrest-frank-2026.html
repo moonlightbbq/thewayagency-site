@@ -336,11 +336,12 @@
         });
       } catch(e) { console.error('[Turnstile]', e); }
     }
+    // Turnstile's api.js is loaded at the end of <body> with ?onload=_ffTurnstileReady,
+    // so it invokes this callback once the library is ready regardless of script order.
+    // (A plain load-listener here is unreliable: this inline script runs before the
+    // deferred api.js tag exists in the DOM, so the listener would never bind.)
+    window._ffTurnstileReady = initTurnstile;
     if (window.turnstile) { initTurnstile(); }
-    else {
-      var tsScript = document.querySelector('script[src*="turnstile"]');
-      if (tsScript) tsScript.addEventListener('load', initTurnstile);
-    }
 
     function radioVal(name) {
       var el = document.querySelector('input[name="' + name + '"]:checked');
@@ -374,21 +375,23 @@
       if (hasQuestions === 'yes' && !questionText) { showErr('Please type your insurance question, or select No.'); return; }
       if (questionText.length > 2000) { showErr('Your question is too long. Please shorten it.'); return; }
 
-      // Client rate limit (3 entries / hour) — belt to the server limiter.
+      // Client rate limit (3 SUCCESSFUL entries / hour) — belt to the server limiter.
+      // Only a completed entry consumes a slot; failed attempts (no Turnstile token,
+      // network error, server 4xx) must not lock a real entrant out. The timestamp is
+      // recorded in the success branch below, not here.
       try {
         var stamps = JSON.parse(localStorage.getItem('twa_giveaway_ts') || '[]');
         var hourAgo = Date.now() - 3600000;
         stamps = stamps.filter(function(t) { return t > hourAgo; });
         if (stamps.length >= 3) { showErr('You\'ve entered a few times already. Please wait a bit or call us at (502) 413-5335.'); return; }
-        stamps.push(Date.now());
-        localStorage.setItem('twa_giveaway_ts', JSON.stringify(stamps));
       } catch(e) {}
 
-      // Ensure a Turnstile token (render/reset if it isn't ready yet).
+      // Ensure a Turnstile token (render/reset if it isn't ready yet), polling up to ~5s
+      // for a challenge that needs interaction or a slow library load.
       if (!turnstileToken) {
         if (window.turnstile && turnstileWidgetId != null) turnstile.reset(turnstileWidgetId);
         else initTurnstile();
-        await new Promise(function(r) { setTimeout(r, 2000); });
+        for (var _i = 0; _i < 25 && !turnstileToken; _i++) { await new Promise(function(r) { setTimeout(r, 200); }); }
         if (!turnstileToken) { showErr('Security check is still loading. Please wait a moment and try again.'); return; }
       }
 
@@ -411,6 +414,12 @@
         var data = {};
         try { data = await resp.json(); } catch(pe) {}
         if (resp.ok && data.ok) {
+          // Record the slot only now that the entry actually succeeded.
+          try {
+            var okStamps = JSON.parse(localStorage.getItem('twa_giveaway_ts') || '[]');
+            okStamps.push(Date.now());
+            localStorage.setItem('twa_giveaway_ts', JSON.stringify(okStamps));
+          } catch(e) {}
           form.style.display = 'none';
           successEl.style.display = 'block';
           document.getElementById('giveaway-success-msg').textContent =
@@ -507,7 +516,7 @@
     <p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p>
   </footer>
   <div id="ai-chat-root"></div>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&amp;onload=_ffTurnstileReady" defer></script>
   <script src="/src/js/app.js"></script>
 </body>
 </html>
