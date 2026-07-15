@@ -245,6 +245,7 @@
                 <label for="message">Message <span id="msg-counter" style="font-weight:400;color:var(--slate);float:right"></span></label>
                 <textarea id="message" name="message" placeholder="Tell us how we can help..." maxlength="5000"></textarea>
               </div>
+              <div id="turnstile-container" style="margin:var(--space-md) 0;display:flex;justify-content:center;"></div>
               <div id="contact-error" style="display:none;color:#ef4444;font-size:12px;margin-bottom:12px" role="alert" aria-live="polite"></div>
               <div id="contact-success" style="display:none;text-align:center;padding:var(--space-lg);background:#f0fdf4;border-radius:var(--border-radius);margin-bottom:12px">
                 <div style="font-size:28px;margin-bottom:8px">&#10003;</div>
@@ -289,7 +290,25 @@
       msgInput.addEventListener('input', function() { counter.textContent = this.value.length + '/5000'; });
     }
 
-    form.addEventListener('submit', function(e) {
+    // ── Cloudflare Turnstile (the intake API requires a token) ──
+    var TURNSTILE_KEY = '0x4AAAAAACuOvP2DfWPQJz9W';
+    var turnstileToken = null;
+    var turnstileWidgetId = null;
+    function initTurnstile() {
+      if (turnstileWidgetId != null || !window.turnstile) return;
+      try {
+        turnstileWidgetId = turnstile.render('#turnstile-container', {
+          sitekey: TURNSTILE_KEY,
+          callback: function(token) { turnstileToken = token; },
+          'expired-callback': function() { turnstileToken = null; },
+          'error-callback': function() { turnstileToken = null; }
+        });
+      } catch(e) { console.error('[Turnstile]', e); }
+    }
+    if (window.turnstile) { initTurnstile(); }
+    else { var tsScript = document.querySelector('script[src*="turnstile"]'); if (tsScript) tsScript.addEventListener('load', initTurnstile); }
+
+    form.addEventListener('submit', async function(e) {
       e.preventDefault();
       errEl.style.display = 'none';
 
@@ -327,6 +346,14 @@
         localStorage.setItem('twa_contact_ts', JSON.stringify(stamps));
       } catch(e) {}
 
+      // Ensure a Turnstile token (render/reset if it isn't ready yet).
+      if (!turnstileToken) {
+        if (window.turnstile && turnstileWidgetId != null) turnstile.reset(turnstileWidgetId);
+        else initTurnstile();
+        await new Promise(function(r) { setTimeout(r, 2000); });
+        if (!turnstileToken) { showErr('Security check is still loading. Please wait a moment and try again.'); return; }
+      }
+
       btn.disabled = true; btn.textContent = 'Sending...';
       var reenableTimer = setTimeout(function() { btn.disabled = false; btn.textContent = 'Send Message'; }, 5000);
 
@@ -334,6 +361,7 @@
         firstName: fname, lastName: lname, email: email, phone: phone,
         subject: subject, message: msg,
         source: subject === 'callback' ? 'callback_request' : 'contact_form',
+        cfToken: turnstileToken || '',
         _hp_company: hp, page: '/contact.html'
       };
       if (subject === 'callback' && cbTime) {
@@ -355,11 +383,18 @@
             ? 'Thanks, ' + fname + '! We\'ll call you back soon.'
             : 'Thanks, ' + fname + '! We\'ll get back to you within one business day.';
           document.getElementById('contact-success-msg').textContent = successMsg + (d.reference ? ' Ref: #' + d.reference : '');
-        } else { showErr(d.error || 'Submission failed. Please try again.'); btn.disabled = false; btn.textContent = 'Send Message'; }
+        } else {
+          showErr(d.error || 'Submission failed. Please try again.');
+          btn.disabled = false; btn.textContent = 'Send Message';
+          if (window.turnstile && turnstileWidgetId != null) turnstile.reset(turnstileWidgetId);
+          turnstileToken = null;
+        }
       }).catch(function() {
         clearTimeout(reenableTimer);
         showErr('Connection error. Please try emailing us at hello@thewayagency.com or call (502) 413-5335.');
         btn.disabled = false; btn.textContent = 'Send Message';
+        if (window.turnstile && turnstileWidgetId != null) turnstile.reset(turnstileWidgetId);
+        turnstileToken = null;
       });
     });
 
