@@ -1505,7 +1505,7 @@
       "canonical_priority": "secondary",
       "is_link_target": true,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "published",
       "source": "markdown",
       "notes": "High conversion potential. Strong internal linking opportunity."
     },
@@ -1583,7 +1583,8 @@
       "reviewer": "Kelly McCallister",
       "reviewer_email": "kelly@thewayagency.com",
       "reviewer_slug": "kelly-mccallister",
-      "review_sent_date": "2026-07-15"
+      "review_sent_date": "2026-07-15",
+      "reminder_sent": true
     },
     {
       "week": 18,
@@ -1700,9 +1701,13 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "planned",
+      "status": "in-review",
       "source": "markdown",
-      "notes": "Supports restaurant industry page."
+      "notes": "Supports restaurant industry page.",
+      "reviewer": "Audrey Lillpop",
+      "reviewer_email": "audrey@thewayagency.com",
+      "reviewer_slug": "audrey-lillpop",
+      "review_sent_date": "2026-07-18"
     },
     {
       "week": 19,

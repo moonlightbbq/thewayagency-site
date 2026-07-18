@@ -4,8 +4,8 @@ slug: insurance-first-time-homebuyers-kentucky
 description: Buying your first home in Kentucky? Here's what you need to know about homeowners insurance before closing, how to shop for it, and what your lender requires.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-09-30
-modified: 2026-09-30
+date: 2026-07-18
+modified: 2026-07-18
 reading_time: 7 min read
 related_page: /personal/home.html
 tags: home insurance, kentucky, first-time homebuyer, homeowners insurance, closing
