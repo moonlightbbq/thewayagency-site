@@ -1541,7 +1541,7 @@
       "canonical_priority": "secondary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "planned",
+      "status": "published",
       "source": "markdown",
       "notes": "Timely annual piece. Refresh every September. Links to evergreen Medicare guide."
     },
@@ -1625,7 +1625,8 @@
       "reviewer": "Jill Boone",
       "reviewer_email": "jill@thewayagency.com",
       "reviewer_slug": "jill-boone",
-      "review_sent_date": "2026-07-15"
+      "review_sent_date": "2026-07-15",
+      "reminder_sent": true
     },
     {
       "week": 18,
@@ -1741,9 +1742,13 @@
       "canonical_priority": "secondary",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "in-review",
       "source": "markdown",
-      "notes": ""
+      "notes": "",
+      "reviewer": "Kelly McCallister",
+      "reviewer_email": "kelly@thewayagency.com",
+      "reviewer_slug": "kelly-mccallister",
+      "review_sent_date": "2026-07-22"
     },
     {
       "week": 20,

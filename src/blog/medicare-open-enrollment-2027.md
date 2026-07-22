@@ -4,8 +4,8 @@ slug: medicare-open-enrollment-2027
 description: Medicare open enrollment runs October 15 through December 7. Here's what's new for 2027 and how Kentucky Medicare beneficiaries should prepare.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-10-07
-modified: 2026-10-07
+date: 2026-07-22
+modified: 2026-07-22
 reading_time: 6 min read
 related_page: /health/medicare.html
 tags: medicare, open enrollment, kentucky, medicare advantage, 2027
