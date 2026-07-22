@@ -122,7 +122,7 @@ async function writeJsonAtomic(p, obj) {
 
 // Propagate the Google review count from locations.json to hardcoded references in
 // hand-crafted source files. The handcrafted pages (src/pages/**.html, src/intake.html,
-// src/portal.html, src/partner.html, src/admin.html, src/js/app.js) carry the count
+// src/portal.html, src/partner.html, src/js/app.js) carry the count
 // inline as visible text "(N reviews)" and inline JSON-LD "reviewCount": "N". Generated
 // pages already pull from locations.json via the build context, but these handcrafted
 // files do not, and the count was drifting against the live Google rating.

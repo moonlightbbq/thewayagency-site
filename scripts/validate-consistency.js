@@ -37,7 +37,7 @@ collectHtml(BUILD);
 function classify(file) {
   const rel = path.relative(BUILD, file);
   // Utility pages: most checks skipped
-  if (['404.html', '503.html', 'maintenance.html'].includes(rel)) return 'utility';
+  if (rel === '404.html') return 'utility';
   // Portal pages: simplified nav/footer rules, Turnstile required
   if (rel === 'intake/index.html' || rel === 'portal/index.html' || rel === 'partner/index.html') return 'portal';
   return 'public';
