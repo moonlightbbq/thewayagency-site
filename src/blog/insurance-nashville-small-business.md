@@ -2,10 +2,12 @@
 title: "Insurance for Nashville's Growing Small Business Scene"
 slug: insurance-nashville-small-business
 description: Nashville is booming, and new businesses need the right insurance from day one. Here's what Davidson County entrepreneurs should know about commercial coverage in Tennessee.
-author: The Way Agency
-author_title: Independent Insurance Agency
-date: 2026-10-21
-modified: 2026-10-21
+author: Jill Boone
+author_title: Licensed Agent
+author_slug: jill-boone
+reviewed_date: 2026-07-15
+date: 2026-07-29
+modified: 2026-07-29
 reading_time: 6 min read
 related_page: /commercial/general-liability.html
 tags: small business insurance, nashville, tennessee, commercial insurance, davidson county

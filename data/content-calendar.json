@@ -1619,7 +1619,7 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "in-review",
+      "status": "published",
       "source": "markdown",
       "notes": "Supports Nashville geo page. Tennessee-specific.",
       "reviewer": "Jill Boone",
@@ -1709,7 +1709,8 @@
       "reviewer": "Audrey Lillpop",
       "reviewer_email": "audrey@thewayagency.com",
       "reviewer_slug": "audrey-lillpop",
-      "review_sent_date": "2026-07-18"
+      "review_sent_date": "2026-07-18",
+      "reminder_sent": true
     },
     {
       "week": 19,
@@ -1851,9 +1852,13 @@
       "canonical_priority": "secondary",
       "is_link_target": true,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "in-review",
       "source": "markdown",
-      "notes": "Strong conversion piece. Links to agents page and intake."
+      "notes": "Strong conversion piece. Links to agents page and intake.",
+      "reviewer": "Sheilia Royal",
+      "reviewer_email": "sheilia@thewayagency.com",
+      "reviewer_slug": "sheilia-royal",
+      "review_sent_date": "2026-07-29"
     },
     {
       "week": 21,
