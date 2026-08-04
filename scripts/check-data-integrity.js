@@ -157,6 +157,63 @@ if (calendar) {
     if (!p.status) { warn(`content-calendar.json: "${p.slug || 'unknown'}" missing status`); }
   }
   if (calErrors === 0) pass(`content-calendar.json: ${allCalPosts.length} entries, all valid`);
+
+  // Seasonality: a post tagged with a seasonality_window must publish inside
+  // that window. Added 2026-08-04 after the 2026-05-02 re-pace (commit
+  // f1f4ba4) silently re-dated the whole calendar by list position, pushing
+  // every future post 91-161 days early — a winter-driving guide was
+  // scheduled for August and only caught by a reviewer replying to ask why.
+  //
+  // content-taxonomy.json holds the canonical windows as human strings
+  // ("October-November", "September (before Oct 15 open enrollment)").
+  // Tolerance is +/-1 month on each side: wide enough that a deliberate
+  // shoulder-month placement doesn't fail the build, tight enough to catch
+  // the multi-month drift this check exists for.
+  const taxonomy = loadJson('content-taxonomy.json');
+  const windowDefs = taxonomy?.lifecycle?.seasonal?.seasonality_windows;
+  if (windowDefs) {
+    const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june',
+      'july', 'august', 'september', 'october', 'november', 'december'];
+    // "February-March (publish before storm season)" -> [1, 2]
+    function parseWindow(desc) {
+      const lead = String(desc).split('(')[0];
+      const found = lead.match(/[A-Za-z]+/g) || [];
+      const idx = found.map(w => MONTHS.indexOf(w.toLowerCase())).filter(i => i >= 0);
+      if (!idx.length) return null;
+      const lo = idx[0];
+      const hi = idx[idx.length - 1];
+      // Walk lo->hi forward, wrapping across the year end (e.g. Nov-Feb).
+      const months = [];
+      for (let m = lo; ; m = (m + 1) % 12) { months.push(m); if (m === hi) break; }
+      return months;
+    }
+
+    let seasonErrors = 0;
+    let seasonChecked = 0;
+    for (const p of allCalPosts) {
+      if (!p.seasonality_window || !p.publish_date) continue;
+      const months = parseWindow(windowDefs[p.seasonality_window]);
+      if (!months) {
+        warn(`content-calendar.json: "${p.slug}" has unknown seasonality_window "${p.seasonality_window}"`);
+        continue;
+      }
+      seasonChecked++;
+      // Widen by one month on each end.
+      const allowed = new Set();
+      for (const m of months) { allowed.add(m); allowed.add((m + 11) % 12); allowed.add((m + 1) % 12); }
+      const actual = new Date(`${p.publish_date}T12:00:00Z`).getUTCMonth();
+      if (allowed.has(actual)) continue;
+
+      const msg = `content-calendar.json: "${p.slug}" is ${p.seasonality_window} `
+        + `(${windowDefs[p.seasonality_window]}) but publishes ${p.publish_date} `
+        + `(${MONTHS[actual].replace(/^./, c => c.toUpperCase())})`;
+      // Already-published posts are history — surface them, but don't fail a
+      // build over a date that can no longer be changed.
+      if (p.status === 'published') { warn(`${msg} [already published]`); }
+      else { error(msg); seasonErrors++; }
+    }
+    if (seasonErrors === 0) pass(`content-calendar.json: ${seasonChecked} seasonal posts in-window`);
+  }
 }
 
 // ─── Cross-References ───────────────────────────
