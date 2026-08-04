@@ -1,0 +1,52 @@
+{
+  "_doc": "Undated candidate topics for the blog queue. Nothing here is scheduled. The queue scheduler locks a candidate into a Wed/Sat slot ~14 days before publish, filtered by eligibility window and cannibalization distance, and only if approved. Replaces the practice of dating a year of content up front — see plans/ blog content queue redesign (2026-08-04).",
+  "version": 1,
+  "status_values": [
+    "proposed",
+    "approved",
+    "on-hold",
+    "rejected"
+  ],
+  "candidates": [
+    {
+      "slug": "flood-insurance-kentucky",
+      "title": "Do You Need Flood Insurance in Kentucky?",
+      "primary_keyword": "flood insurance kentucky",
+      "secondary_keywords": [],
+      "related_cluster": "personal-home",
+      "pillar": "seasonal",
+      "funnel_stage": "top",
+      "search_intent": "informational",
+      "seasonality_window": "summer-weather",
+      "target_product_page": null,
+      "target_location_pages": [],
+      "secondary_internal_links": [],
+      "source": "seasonal-auto",
+      "proposed_at": "2026-08-04",
+      "approved_at": null,
+      "approved_by": null,
+      "status": "on-hold",
+      "notes": "Cannibalizes two live posts: flood-insurance-ohio-river-valley-2026 and owensboro-flood-risk-neighborhood-fema-zones-2026. Needs a distinct angle (commercial flood, or post-claim process) before it earns a slot."
+    },
+    {
+      "slug": "summer-driving-safety-auto-insurance",
+      "title": "Summer Road Trip? Check Your Auto Insurance First",
+      "primary_keyword": "summer driving safety auto insurance",
+      "secondary_keywords": [],
+      "related_cluster": "personal-auto",
+      "pillar": "seasonal",
+      "funnel_stage": "top",
+      "search_intent": "informational",
+      "seasonality_window": "summer-weather",
+      "target_product_page": null,
+      "target_location_pages": [],
+      "secondary_internal_links": [],
+      "source": "seasonal-auto",
+      "proposed_at": "2026-08-04",
+      "approved_at": null,
+      "approved_by": null,
+      "status": "proposed",
+      "notes": "Auto-proposed for 2027-05-19, ~9 months out. Held as an undated candidate; becomes eligible in its May-June window."
+    }
+  ]
+}
