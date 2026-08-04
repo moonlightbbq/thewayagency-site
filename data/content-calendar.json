@@ -1671,85 +1671,6 @@
       "reminder_sent": true
     },
     {
-      "week": 32,
-      "publish_date": "2026-11-04",
-      "title": "Insurance for Restaurants and Food Service Businesses in Kentucky",
-      "slug": "insurance-restaurants-food-service-kentucky",
-      "description": "Restaurants face slip-and-fall claims, foodborne illness lawsuits, grease fires, and liquor liability. Here's the coverage Kentucky restaurant owners need.",
-      "pillar": "seasonal",
-      "topic_type": "guide",
-      "search_intent": "informational",
-      "funnel_stage": "middle",
-      "primary_keyword": "restaurant insurance kentucky",
-      "secondary_keywords": [
-        "food service business insurance",
-        "liquor liability insurance KY",
-        "restaurant liability coverage"
-      ],
-      "target_product_page": "/commercial/general-liability.html",
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/industries/restaurants.html",
-        "/commercial/commercial-property.html",
-        "/commercial/workers-compensation.html"
-      ],
-      "related_cluster": "industry-trades",
-      "related_future_posts": [],
-      "conversion_goal": "quote-request",
-      "evergreen_or_seasonal": "evergreen",
-      "seasonality_window": null,
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "canonical_priority": "tertiary",
-      "is_link_target": false,
-      "receives_future_links": false,
-      "status": "planned",
-      "source": "markdown",
-      "notes": "Supports restaurant industry page.",
-      "reviewer": "Audrey Lillpop",
-      "reviewer_email": "audrey@thewayagency.com",
-      "reviewer_slug": "audrey-lillpop"
-    },
-    {
-      "week": 33,
-      "publish_date": "2026-11-11",
-      "title": "Final Expense Insurance: A Practical Guide for Kentucky Families",
-      "slug": "final-expense-insurance-guide",
-      "description": "Final expense insurance covers funeral costs so your family isn't burdened with a $7,000-$12,000 bill. Here's how it works, what it costs, and who should consider it.",
-      "pillar": "product",
-      "topic_type": "deep-dive",
-      "search_intent": "informational",
-      "funnel_stage": "middle",
-      "primary_keyword": "final expense insurance explained",
-      "secondary_keywords": [
-        "burial insurance kentucky",
-        "funeral insurance cost",
-        "final expense vs whole life"
-      ],
-      "target_product_page": "/life/final-expense.html",
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/life/whole-life.html",
-        "/blog/term-life-vs-whole-life.html"
-      ],
-      "related_cluster": "life-planning",
-      "related_future_posts": [],
-      "conversion_goal": "consultation",
-      "evergreen_or_seasonal": "evergreen",
-      "seasonality_window": null,
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "canonical_priority": "secondary",
-      "is_link_target": false,
-      "receives_future_links": true,
-      "status": "planned",
-      "source": "markdown",
-      "notes": "",
-      "reviewer": "Kelly McCallister",
-      "reviewer_email": "kelly@thewayagency.com",
-      "reviewer_slug": "kelly-mccallister"
-    },
-    {
       "week": 34,
       "publish_date": "2026-11-18",
       "title": "Holiday Season: Protecting Your Home and Packages",
@@ -1827,46 +1748,6 @@
       "status": "planned",
       "canonical_priority": "tertiary",
       "notes": "Auto-scheduled by smart-calendar-adapter with no metadata and landed on a Thursday (UTC weekday bug). Re-dated onto the Wed/Sat cadence inside BlogPlannerAdapter's 18-25d drafting window and brought up to the metadata bar 2026-08-04."
-    },
-    {
-      "week": 35,
-      "publish_date": "2026-11-25",
-      "title": "How to Compare Insurance Quotes: Price Isn't Everything",
-      "slug": "how-to-compare-insurance-quotes",
-      "description": "The cheapest quote isn't always the best deal. Learn what to compare beyond price: coverage limits, deductibles, exclusions, carrier ratings, and claims service.",
-      "pillar": "education",
-      "topic_type": "how-to",
-      "search_intent": "informational",
-      "funnel_stage": "middle",
-      "primary_keyword": "how to compare insurance quotes",
-      "secondary_keywords": [
-        "comparing insurance coverage",
-        "cheapest insurance not always best",
-        "what to look for in insurance quote"
-      ],
-      "target_product_page": null,
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/blog/how-independent-agents-save-money.html",
-        "/blog/how-to-read-declarations-page.html",
-        "/blog/understanding-deductibles.html"
-      ],
-      "related_cluster": "insurance-basics",
-      "related_future_posts": [],
-      "conversion_goal": "quote-request",
-      "evergreen_or_seasonal": "evergreen",
-      "seasonality_window": null,
-      "refresh_cycle": "18-months",
-      "page_role": "supporting",
-      "canonical_priority": "secondary",
-      "is_link_target": true,
-      "receives_future_links": true,
-      "status": "planned",
-      "source": "markdown",
-      "notes": "Strong conversion piece. Links to agents page and intake.",
-      "reviewer": "Sheilia Royal",
-      "reviewer_email": "sheilia@thewayagency.com",
-      "reviewer_slug": "sheilia-royal"
     },
     {
       "week": 36,
@@ -1948,43 +1829,6 @@
       "notes": "Auto-scheduled by smart-calendar-adapter with no metadata and landed on a Thursday (UTC weekday bug). Re-dated onto the Wed/Sat cadence inside BlogPlannerAdapter's 18-25d drafting window and brought up to the metadata bar 2026-08-04."
     },
     {
-      "week": 37,
-      "publish_date": "2026-12-09",
-      "title": "Professional Liability Insurance: Who Needs E&O Coverage?",
-      "slug": "professional-liability-who-needs-eo",
-      "description": "If your work involves advice, design, or professional judgment, a mistake could lead to a lawsuit. Professional liability (E&O) insurance covers the gap that general liability doesn't.",
-      "pillar": "product",
-      "topic_type": "deep-dive",
-      "search_intent": "informational",
-      "funnel_stage": "middle",
-      "primary_keyword": "who needs professional liability insurance",
-      "secondary_keywords": [
-        "E&O insurance explained",
-        "professional liability vs general liability",
-        "errors and omissions coverage"
-      ],
-      "target_product_page": "/commercial/professional-liability.html",
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/commercial/general-liability.html",
-        "/commercial/cyber.html",
-        "/industries/professional-services.html"
-      ],
-      "related_cluster": "commercial-specialty",
-      "related_future_posts": [],
-      "conversion_goal": "quote-request",
-      "evergreen_or_seasonal": "evergreen",
-      "seasonality_window": null,
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "canonical_priority": "secondary",
-      "is_link_target": true,
-      "receives_future_links": true,
-      "status": "planned",
-      "source": "markdown",
-      "notes": ""
-    },
-    {
       "week": 38,
       "publish_date": "2026-12-16",
       "title": "Year-End Insurance Review Checklist for Kentucky Families",
@@ -2020,45 +1864,6 @@
       "status": "planned",
       "source": "markdown",
       "notes": ""
-    },
-    {
-      "week": 39,
-      "publish_date": "2026-12-23",
-      "title": "Giving Back: The Way Agency's Community Involvement in 2026",
-      "slug": "community-involvement-2026",
-      "description": "A look back at how The Way Agency served our Owensboro community in 2026 through partnerships, events, and charitable giving.",
-      "pillar": "local",
-      "topic_type": "community-spotlight",
-      "search_intent": "navigational",
-      "funnel_stage": "trust",
-      "primary_keyword": "the way agency community",
-      "secondary_keywords": [
-        "owensboro community involvement",
-        "insurance agency giving back"
-      ],
-      "target_product_page": null,
-      "target_location_pages": [
-        "/insurance/owensboro-ky.html"
-      ],
-      "secondary_internal_links": [
-        "/about/community.html",
-        "/about/"
-      ],
-      "related_cluster": "kentucky-local",
-      "related_future_posts": [
-        "community-involvement-2027"
-      ],
-      "conversion_goal": "trust",
-      "evergreen_or_seasonal": "timely",
-      "seasonality_window": null,
-      "refresh_cycle": "none",
-      "page_role": "trust",
-      "canonical_priority": "tertiary",
-      "is_link_target": false,
-      "receives_future_links": false,
-      "status": "planned",
-      "source": "markdown",
-      "notes": "Annual trust piece. Write a new one each year, don't refresh this one."
     },
     {
       "week": 40,
@@ -2098,119 +1903,6 @@
       "notes": "Light seasonal piece for a holiday week."
     },
     {
-      "week": 41,
-      "publish_date": "2027-01-06",
-      "title": "Surety Bonds Explained: What They Are and When You Need One",
-      "slug": "surety-bonds-explained",
-      "description": "Surety bonds aren't insurance — they're a guarantee. Learn how bonds work, the difference between bid, performance, and payment bonds, and when Kentucky businesses need them.",
-      "pillar": "product",
-      "topic_type": "deep-dive",
-      "search_intent": "informational",
-      "funnel_stage": "middle",
-      "primary_keyword": "what is a surety bond",
-      "secondary_keywords": [
-        "surety bond vs insurance",
-        "bid bond performance bond",
-        "contractor surety bond kentucky"
-      ],
-      "target_product_page": "/commercial/bonds.html",
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/commercial/general-liability.html",
-        "/commercial/builders-risk.html",
-        "/industries/general-contractors.html"
-      ],
-      "related_cluster": "commercial-specialty",
-      "related_future_posts": [],
-      "conversion_goal": "quote-request",
-      "evergreen_or_seasonal": "evergreen",
-      "seasonality_window": null,
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "canonical_priority": "secondary",
-      "is_link_target": true,
-      "receives_future_links": true,
-      "status": "planned",
-      "source": "markdown",
-      "notes": ""
-    },
-    {
-      "week": 42,
-      "publish_date": "2027-01-13",
-      "title": "Insurance Options for Frankfort State Employees",
-      "slug": "insurance-options-frankfort-state-employees",
-      "description": "Kentucky state employees in Frankfort have group benefits, but they may still need personal policies to fill gaps. Here's what to consider beyond your state plan.",
-      "pillar": "local",
-      "topic_type": "local-guide",
-      "search_intent": "informational",
-      "funnel_stage": "middle",
-      "primary_keyword": "insurance for state employees kentucky",
-      "secondary_keywords": [
-        "frankfort ky insurance",
-        "state employee insurance gaps",
-        "supplemental insurance state workers"
-      ],
-      "target_product_page": "/personal/umbrella.html",
-      "target_location_pages": [
-        "/insurance/frankfort-ky.html"
-      ],
-      "secondary_internal_links": [
-        "/health/individual-health.html",
-        "/life/term-life.html",
-        "/personal/auto.html"
-      ],
-      "related_cluster": "kentucky-local",
-      "related_future_posts": [],
-      "conversion_goal": "coverage-review",
-      "evergreen_or_seasonal": "evergreen",
-      "seasonality_window": null,
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "canonical_priority": "tertiary",
-      "is_link_target": false,
-      "receives_future_links": false,
-      "status": "planned",
-      "source": "markdown",
-      "notes": "Supports Frankfort geo page."
-    },
-    {
-      "week": 43,
-      "publish_date": "2027-01-20",
-      "title": "Replacement Cost vs. Actual Cash Value: Why It Matters at Claim Time",
-      "slug": "replacement-cost-vs-actual-cash-value",
-      "description": "The difference between replacement cost and actual cash value can mean thousands of dollars when you file a claim. Here's how each works and which one you want.",
-      "pillar": "education",
-      "topic_type": "explainer",
-      "search_intent": "informational",
-      "funnel_stage": "top",
-      "primary_keyword": "replacement cost vs actual cash value",
-      "secondary_keywords": [
-        "RCV vs ACV insurance",
-        "replacement cost insurance explained",
-        "actual cash value depreciation"
-      ],
-      "target_product_page": null,
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/blog/understanding-deductibles.html",
-        "/blog/how-to-read-declarations-page.html",
-        "/personal/home.html"
-      ],
-      "related_cluster": "insurance-basics",
-      "related_future_posts": [],
-      "conversion_goal": "education",
-      "evergreen_or_seasonal": "evergreen",
-      "seasonality_window": null,
-      "refresh_cycle": "18-months",
-      "page_role": "supporting",
-      "canonical_priority": "secondary",
-      "is_link_target": true,
-      "receives_future_links": true,
-      "status": "planned",
-      "source": "markdown",
-      "notes": "Foundational concept. High link target."
-    },
-    {
       "week": 44,
       "publish_date": "2027-01-27",
       "title": "Tax Season Insurance Deductions for Small Businesses",
@@ -2247,152 +1939,6 @@
       "notes": "Timed for January tax prep."
     },
     {
-      "week": 45,
-      "publish_date": "2027-02-03",
-      "title": "Group Health Insurance for Small Businesses in Kentucky",
-      "slug": "group-health-insurance-small-business-kentucky",
-      "description": "Offering group health insurance helps attract and retain employees. Here's how small group plans work in Kentucky, what they cost, and how to set one up.",
-      "pillar": "product",
-      "topic_type": "deep-dive",
-      "search_intent": "informational",
-      "funnel_stage": "middle",
-      "primary_keyword": "group health insurance small business kentucky",
-      "secondary_keywords": [
-        "small group health insurance KY",
-        "employer health insurance cost",
-        "how to set up group health plan"
-      ],
-      "target_product_page": "/health/group-health.html",
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/commercial/workers-compensation.html",
-        "/health/individual-health.html"
-      ],
-      "related_cluster": "commercial-workforce",
-      "related_future_posts": [],
-      "conversion_goal": "consultation",
-      "evergreen_or_seasonal": "evergreen",
-      "seasonality_window": null,
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "canonical_priority": "secondary",
-      "is_link_target": false,
-      "receives_future_links": true,
-      "status": "planned",
-      "source": "markdown",
-      "notes": ""
-    },
-    {
-      "week": 46,
-      "publish_date": "2027-02-10",
-      "title": "Insurance Tips for Indianapolis Homeowners",
-      "slug": "insurance-tips-indianapolis-homeowners",
-      "description": "Indianapolis homeowners face tornado risk, hail damage, and rising rebuild costs. Here's what Marion County residents should know about home insurance in Indiana.",
-      "pillar": "local",
-      "topic_type": "local-guide",
-      "search_intent": "informational",
-      "funnel_stage": "middle",
-      "primary_keyword": "home insurance indianapolis indiana",
-      "secondary_keywords": [
-        "indianapolis homeowners insurance",
-        "home insurance marion county IN"
-      ],
-      "target_product_page": "/personal/home.html",
-      "target_location_pages": [
-        "/insurance/indianapolis-in.html"
-      ],
-      "secondary_internal_links": [
-        "/personal/auto.html",
-        "/personal/umbrella.html"
-      ],
-      "related_cluster": "kentucky-local",
-      "related_future_posts": [],
-      "conversion_goal": "quote-request",
-      "evergreen_or_seasonal": "evergreen",
-      "seasonality_window": null,
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "canonical_priority": "tertiary",
-      "is_link_target": false,
-      "receives_future_links": false,
-      "status": "planned",
-      "source": "markdown",
-      "notes": "Supports Indianapolis geo page."
-    },
-    {
-      "week": 47,
-      "publish_date": "2027-02-17",
-      "title": "Understanding Certificates of Insurance for Business Owners",
-      "slug": "understanding-certificates-of-insurance",
-      "description": "A certificate of insurance (COI) proves you have coverage. Learn what's on a COI, how to request one, what additional insured means, and why clients and landlords ask for it.",
-      "pillar": "education",
-      "topic_type": "explainer",
-      "search_intent": "informational",
-      "funnel_stage": "middle",
-      "primary_keyword": "what is a certificate of insurance",
-      "secondary_keywords": [
-        "certificate of insurance explained",
-        "additional insured meaning",
-        "COI insurance requirements"
-      ],
-      "target_product_page": "/commercial/general-liability.html",
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/blog/general-liability-foundation-business-coverage.html",
-        "/commercial/commercial-property.html"
-      ],
-      "related_cluster": "insurance-basics",
-      "related_future_posts": [],
-      "conversion_goal": "education",
-      "evergreen_or_seasonal": "evergreen",
-      "seasonality_window": null,
-      "refresh_cycle": "18-months",
-      "page_role": "supporting",
-      "canonical_priority": "secondary",
-      "is_link_target": true,
-      "receives_future_links": true,
-      "status": "planned",
-      "source": "markdown",
-      "notes": "Very practical for business owners. High search volume."
-    },
-    {
-      "week": 48,
-      "publish_date": "2027-02-24",
-      "title": "Insurance Guide for Electrical Contractors in Kentucky",
-      "slug": "insurance-guide-electrical-contractors",
-      "description": "Electrical work carries inherent fire and injury risk. Here's the insurance Kentucky electrical contractors need, what it costs, and how to meet GC requirements.",
-      "pillar": "seasonal",
-      "topic_type": "guide",
-      "search_intent": "informational",
-      "funnel_stage": "middle",
-      "primary_keyword": "electrical contractor insurance kentucky",
-      "secondary_keywords": [
-        "electrician insurance cost",
-        "electrical contractor insurance requirements",
-        "electrician business insurance"
-      ],
-      "target_product_page": "/commercial/general-liability.html",
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/industries/electrical-contractors.html",
-        "/commercial/workers-compensation.html",
-        "/blog/insurance-checklist-hvac-contractors.html"
-      ],
-      "related_cluster": "industry-trades",
-      "related_future_posts": [],
-      "conversion_goal": "quote-request",
-      "evergreen_or_seasonal": "evergreen",
-      "seasonality_window": null,
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "canonical_priority": "tertiary",
-      "is_link_target": false,
-      "receives_future_links": false,
-      "status": "planned",
-      "source": "markdown",
-      "notes": "Supports electrical contractor industry page."
-    },
-    {
       "week": 49,
       "publish_date": "2027-03-03",
       "title": "Motorcycle Insurance in Kentucky: Getting Ready for Riding Season",
@@ -2427,81 +1973,6 @@
       "status": "planned",
       "source": "markdown",
       "notes": "Timed for spring riding season start."
-    },
-    {
-      "week": 50,
-      "publish_date": "2027-03-10",
-      "title": "Community Spotlight: Local Businesses We're Proud to Insure",
-      "slug": "community-spotlight-local-businesses",
-      "description": "We're honored to insure the businesses that make our communities great. Here's a look at some of the local businesses we serve across Kentucky, Indiana, and Tennessee.",
-      "pillar": "local",
-      "topic_type": "community-spotlight",
-      "search_intent": "navigational",
-      "funnel_stage": "trust",
-      "primary_keyword": "the way agency clients",
-      "secondary_keywords": [
-        "owensboro small businesses",
-        "local insurance agency kentucky"
-      ],
-      "target_product_page": null,
-      "target_location_pages": [
-        "/insurance/owensboro-ky.html"
-      ],
-      "secondary_internal_links": [
-        "/about/community.html",
-        "/about/",
-        "/commercial/general-liability.html"
-      ],
-      "related_cluster": "kentucky-local",
-      "related_future_posts": [],
-      "conversion_goal": "trust",
-      "evergreen_or_seasonal": "evergreen",
-      "seasonality_window": null,
-      "refresh_cycle": "annual",
-      "page_role": "trust",
-      "canonical_priority": "tertiary",
-      "is_link_target": false,
-      "receives_future_links": false,
-      "status": "planned",
-      "source": "markdown",
-      "notes": "Trust-building content. Feature real local businesses (with their permission)."
-    },
-    {
-      "week": 51,
-      "publish_date": "2027-03-17",
-      "title": "Understanding Insurance Endorsements and Riders",
-      "slug": "understanding-insurance-endorsements",
-      "description": "Endorsements modify your policy to add, remove, or change coverage. Learn what endorsements are, which ones are worth adding, and how they affect your premium.",
-      "pillar": "education",
-      "topic_type": "explainer",
-      "search_intent": "informational",
-      "funnel_stage": "top",
-      "primary_keyword": "insurance endorsement explained",
-      "secondary_keywords": [
-        "what is an insurance rider",
-        "insurance endorsement vs rider",
-        "common insurance endorsements"
-      ],
-      "target_product_page": null,
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/blog/how-to-read-declarations-page.html",
-        "/blog/understanding-deductibles.html",
-        "/blog/replacement-cost-vs-actual-cash-value.html"
-      ],
-      "related_cluster": "insurance-basics",
-      "related_future_posts": [],
-      "conversion_goal": "education",
-      "evergreen_or_seasonal": "evergreen",
-      "seasonality_window": null,
-      "refresh_cycle": "18-months",
-      "page_role": "supporting",
-      "canonical_priority": "secondary",
-      "is_link_target": true,
-      "receives_future_links": true,
-      "status": "planned",
-      "source": "markdown",
-      "notes": ""
     },
     {
       "week": 52,
@@ -2542,6 +2013,43 @@
       "status": "planned",
       "source": "markdown",
       "notes": "Closes Year 1, opens Year 2. Links back to Year 1 tornado content."
+    },
+    {
+      "publish_date": "2026-08-15",
+      "title": "Insurance Options for Frankfort State Employees",
+      "slug": "insurance-options-frankfort-state-employees",
+      "description": "Kentucky state employees in Frankfort have group benefits, but they may still need personal policies to fill gaps. Here's what to consider beyond your state plan.",
+      "pillar": "local",
+      "topic_type": "local-guide",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "primary_keyword": "insurance for state employees kentucky",
+      "secondary_keywords": [
+        "frankfort ky insurance",
+        "state employee insurance gaps",
+        "supplemental insurance state workers"
+      ],
+      "target_product_page": "/personal/umbrella.html",
+      "target_location_pages": [
+        "/insurance/frankfort-ky.html"
+      ],
+      "secondary_internal_links": [
+        "/health/individual-health.html",
+        "/life/term-life.html",
+        "/personal/auto.html"
+      ],
+      "related_cluster": "kentucky-local",
+      "conversion_goal": "coverage-review",
+      "evergreen_or_seasonal": "evergreen",
+      "seasonality_window": null,
+      "refresh_cycle": "annual",
+      "page_role": "supporting",
+      "is_link_target": false,
+      "receives_future_links": true,
+      "status": "planned",
+      "source": "queue-lock",
+      "locked_at": "2026-08-04",
+      "notes": "Written 2026-03-27 and previously dated 2027-01-13 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
     }
   ],
   "roadmap": {
@@ -2689,9 +2197,9 @@
     },
     {
       "date": "2026-08-15",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
+      "state": "locked",
+      "locked_slug": "insurance-options-frankfort-state-employees",
+      "locked_at": "2026-08-04",
       "reserved_at": "2026-08-04"
     },
     {

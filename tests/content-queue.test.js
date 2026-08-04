@@ -99,9 +99,19 @@ describe('I1/I2 - capacity and commitment', () => {
   });
 
   test('I2 fires for a reserved slot that is inside the lock window', () => {
-    const slots = [{ date: '2026-08-08', state: 'reserved', locked_slug: null }];
+    // 11d out: far enough to still get a review email, so it SHOULD be locked.
+    const slots = [{ date: '2026-08-15', state: 'reserved', locked_slug: null }];
     const r = q.evaluateInvariants(calendar({ slots }), {}, TODAY, { hasMarkdown: allMarkdown });
     assert.ok(ids(r).includes('I2'));
+  });
+
+  test('I2b flags a slot too close to fill without skipping review', () => {
+    // 4d out: send-review-emails fires at D-10..18, so committing a topic here
+    // would publish it unreviewed. That is reported, not silently filled.
+    const slots = [{ date: '2026-08-08', state: 'reserved', locked_slug: null }];
+    const r = q.evaluateInvariants(calendar({ slots }), {}, TODAY, { hasMarkdown: allMarkdown });
+    assert.ok(ids(r).includes('I2b'));
+    assert.ok(!ids(r).includes('I2'), 'it is past saving, not a scheduling failure');
   });
 
   test('I2 leaves a slot beyond the lock window alone', () => {
