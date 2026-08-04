@@ -1389,14 +1389,14 @@
       "conversion_goal": "coverage-review",
       "evergreen_or_seasonal": "seasonal",
       "seasonality_window": "winter-prep",
-      "refresh_cycle": "annual",
+      "refresh_cycle": "quarterly",
       "page_role": "seasonal",
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": true,
       "status": "published",
       "source": "markdown",
-      "notes": ""
+      "notes": "Published 2026-07-08 under the compressed calendar, ~2 months ahead of its intended 2026-09-09 slot. Left live; refresh_cycle set to quarterly so FreshnessAdapter queues a refresh 2026-10-06, in season."
     },
     {
       "week": 15,
