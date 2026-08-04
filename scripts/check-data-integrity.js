@@ -214,6 +214,66 @@ if (calendar) {
     }
     if (seasonErrors === 0) pass(`content-calendar.json: ${seasonChecked} seasonal posts in-window`);
   }
+
+  // ── Rolling queue: slots + backlog ──────────────────────────────────────
+  // The slot ledger is the rolling Wed/Sat window; the backlog holds undated
+  // candidates. Both are new in the 2026-08 queue redesign, so validate their
+  // shape here rather than discovering a malformed entry when the scheduler
+  // reads it.
+  const VALID_SLOT_STATES = ['reserved', 'locked'];
+  const VALID_BACKLOG_STATUS = ['proposed', 'approved', 'on-hold', 'rejected'];
+  const PUBLISH_WEEKDAYS = [3, 6]; // Wed + Sat, matching publish-blog.yml
+
+  let queueErrors = 0;
+  const slots = Array.isArray(calendar.slots) ? calendar.slots : [];
+  const seenSlotDates = new Set();
+  for (const s of slots) {
+    const label = s.date || '(no date)';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(s.date || '')) {
+      error(`content-calendar.json: slot ${label} has an invalid date`); queueErrors++; continue;
+    }
+    if (seenSlotDates.has(s.date)) { error(`content-calendar.json: duplicate slot for ${s.date}`); queueErrors++; }
+    seenSlotDates.add(s.date);
+    if (!PUBLISH_WEEKDAYS.includes(new Date(`${s.date}T12:00:00Z`).getUTCDay())) {
+      error(`content-calendar.json: slot ${s.date} is not a Wednesday or Saturday`); queueErrors++;
+    }
+    if (!VALID_SLOT_STATES.includes(s.state)) {
+      error(`content-calendar.json: slot ${s.date} has invalid state "${s.state}"`); queueErrors++;
+    }
+    if (s.state === 'locked' && !s.locked_slug) {
+      error(`content-calendar.json: slot ${s.date} is locked but names no slug`); queueErrors++;
+    }
+    // A slot and a dated post must never both own the same day.
+    if (s.state !== 'locked' && allCalPosts.some(p => p.publish_date === s.date && p.status !== 'published')) {
+      error(`content-calendar.json: slot ${s.date} is reserved but a post already occupies that date`); queueErrors++;
+    }
+  }
+
+  const backlog = loadJson('content-backlog.json');
+  const candidates = (backlog && Array.isArray(backlog.candidates)) ? backlog.candidates : [];
+  const seenCandidateSlugs = new Set();
+  for (const c of candidates) {
+    const label = c.slug || c.title || 'unknown';
+    if (!c.slug) { error(`content-backlog.json: candidate "${label}" missing slug`); queueErrors++; }
+    if (!c.title) { error(`content-backlog.json: "${label}" missing title`); queueErrors++; }
+    if (!c.primary_keyword) { warn(`content-backlog.json: "${label}" missing primary_keyword`); }
+    if (!VALID_BACKLOG_STATUS.includes(c.status)) {
+      error(`content-backlog.json: "${label}" has invalid status "${c.status}"`); queueErrors++;
+    }
+    if (c.slug && seenCandidateSlugs.has(c.slug)) {
+      error(`content-backlog.json: duplicate candidate "${c.slug}"`); queueErrors++;
+    }
+    if (c.slug) seenCandidateSlugs.add(c.slug);
+    if (c.seasonality_window && windowDefs && !windowDefs[c.seasonality_window]) {
+      error(`content-backlog.json: "${label}" has unknown seasonality_window "${c.seasonality_window}"`); queueErrors++;
+    }
+    // A candidate must not already be scheduled -- that is a double-booking.
+    if (c.slug && allCalPosts.some(p => p.slug === c.slug && p.status !== 'published')) {
+      error(`content-backlog.json: "${c.slug}" is in the backlog AND scheduled in year1`); queueErrors++;
+    }
+  }
+
+  if (queueErrors === 0) pass(`content queue: ${slots.length} slot(s), ${candidates.length} backlog candidate(s), all valid`);
 }
 
 // ─── Cross-References ───────────────────────────

@@ -2664,5 +2664,49 @@
       ],
       "governance": "Full content library audit. Archive dated content. Ensure all product pages have 3-5 supporting blog posts. Evaluate new product lines or markets for content expansion."
     }
-  }
+  },
+  "slots": [
+    {
+      "date": "2026-08-05",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-08-04"
+    },
+    {
+      "date": "2026-08-08",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-08-04"
+    },
+    {
+      "date": "2026-08-12",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-08-04"
+    },
+    {
+      "date": "2026-08-15",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-08-04"
+    },
+    {
+      "date": "2026-08-19",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-08-04"
+    },
+    {
+      "date": "2026-08-22",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-08-04"
+    }
+  ]
 }
