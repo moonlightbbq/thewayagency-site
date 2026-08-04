@@ -1,5 +1,5 @@
 {
-  "_doc": "Content calendar for The Way Agency blog. Single source of truth for all blog content — planned, in-progress, and published.\n\nUpdated 2026-05-02: Re-paced future entries from 1×/week (Wed) to 2×/week (Wed + Sat). Fixed entries (week 1-5) untouched. New schedule runs through ~2026-10-14; plan year-2 content by mid-September.",
+  "_doc": "Content calendar for The Way Agency blog. Single source of truth for all blog content — planned, in-progress, and published.\n\nUpdated 2026-05-02: Re-paced future entries from 1×/week (Wed) to 2×/week (Wed + Sat). Fixed entries (week 1-5) untouched. New schedule runs through ~2026-10-14; plan year-2 content by mid-September.\n\nUpdated 2026-08-04: REVERTED the 2026-05-02 re-pace for all unpublished entries. That change re-dated posts by list position rather than by target date, compressing a 52-week editorial arc into ~29 weeks and pulling every future post 91-161 days early — seasonal posts landed months out of season (a winter-driving guide was scheduled for 2026-08-19 and caught in review). Restored each unpublished entry to the date in its markdown `date:` frontmatter, which was authored against the original 1×/week Wednesday schedule. Calendar now runs through 2027-03-24 at 1×/week. Posts already published under the compressed schedule were left live. check-data-integrity.js now fails the build if a post's month falls outside its seasonality_window.",
   "version": "1.1",
   "program_start": "2026-04-01",
   "default_author": "The Way Agency",
@@ -1389,14 +1389,14 @@
       "conversion_goal": "coverage-review",
       "evergreen_or_seasonal": "seasonal",
       "seasonality_window": "winter-prep",
-      "refresh_cycle": "annual",
+      "refresh_cycle": "quarterly",
       "page_role": "seasonal",
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": true,
       "status": "published",
       "source": "markdown",
-      "notes": ""
+      "notes": "Published 2026-07-08 under the compressed calendar, ~2 months ahead of its intended 2026-09-09 slot. Left live; refresh_cycle set to quarterly so FreshnessAdapter queues a refresh 2026-10-06, in season."
     },
     {
       "week": 15,
@@ -1671,8 +1671,8 @@
       "reminder_sent": true
     },
     {
-      "week": 19,
-      "publish_date": "2026-08-05",
+      "week": 32,
+      "publish_date": "2026-11-04",
       "title": "Insurance for Restaurants and Food Service Businesses in Kentucky",
       "slug": "insurance-restaurants-food-service-kentucky",
       "description": "Restaurants face slip-and-fall claims, foodborne illness lawsuits, grease fires, and liquor liability. Here's the coverage Kentucky restaurant owners need.",
@@ -1703,18 +1703,16 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "in-review",
+      "status": "planned",
       "source": "markdown",
       "notes": "Supports restaurant industry page.",
       "reviewer": "Audrey Lillpop",
       "reviewer_email": "audrey@thewayagency.com",
-      "reviewer_slug": "audrey-lillpop",
-      "review_sent_date": "2026-07-18",
-      "reminder_sent": true
+      "reviewer_slug": "audrey-lillpop"
     },
     {
-      "week": 19,
-      "publish_date": "2026-08-08",
+      "week": 33,
+      "publish_date": "2026-11-11",
       "title": "Final Expense Insurance: A Practical Guide for Kentucky Families",
       "slug": "final-expense-insurance-guide",
       "description": "Final expense insurance covers funeral costs so your family isn't burdened with a $7,000-$12,000 bill. Here's how it works, what it costs, and who should consider it.",
@@ -1744,18 +1742,16 @@
       "canonical_priority": "secondary",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "in-review",
+      "status": "planned",
       "source": "markdown",
       "notes": "",
       "reviewer": "Kelly McCallister",
       "reviewer_email": "kelly@thewayagency.com",
-      "reviewer_slug": "kelly-mccallister",
-      "review_sent_date": "2026-07-22",
-      "reminder_sent": true
+      "reviewer_slug": "kelly-mccallister"
     },
     {
-      "week": 20,
-      "publish_date": "2026-08-12",
+      "week": 34,
+      "publish_date": "2026-11-18",
       "title": "Holiday Season: Protecting Your Home and Packages",
       "slug": "holiday-season-home-packages-insurance",
       "description": "Package theft, holiday decorations, and houseguests all create insurance risks during the holidays. Here's what your policy covers and what it doesn't.",
@@ -1785,13 +1781,12 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "in-review",
+      "status": "planned",
       "source": "markdown",
       "notes": "",
       "reviewer": "Jill Boone",
       "reviewer_email": "jill@thewayagency.com",
-      "reviewer_slug": "jill-boone",
-      "review_sent_date": "2026-07-25"
+      "reviewer_slug": "jill-boone"
     },
     {
       "slug": "college-student-auto-insurance",
@@ -1821,8 +1816,8 @@
       "status": "planned"
     },
     {
-      "week": 20,
-      "publish_date": "2026-08-15",
+      "week": 35,
+      "publish_date": "2026-11-25",
       "title": "How to Compare Insurance Quotes: Price Isn't Everything",
       "slug": "how-to-compare-insurance-quotes",
       "description": "The cheapest quote isn't always the best deal. Learn what to compare beyond price: coverage limits, deductibles, exclusions, carrier ratings, and claims service.",
@@ -1853,17 +1848,16 @@
       "canonical_priority": "secondary",
       "is_link_target": true,
       "receives_future_links": true,
-      "status": "in-review",
+      "status": "planned",
       "source": "markdown",
       "notes": "Strong conversion piece. Links to agents page and intake.",
       "reviewer": "Sheilia Royal",
       "reviewer_email": "sheilia@thewayagency.com",
-      "reviewer_slug": "sheilia-royal",
-      "review_sent_date": "2026-07-29"
+      "reviewer_slug": "sheilia-royal"
     },
     {
-      "week": 21,
-      "publish_date": "2026-08-19",
+      "week": 36,
+      "publish_date": "2026-12-02",
       "title": "Winter Driving Safety and Auto Insurance Tips for Kentucky",
       "slug": "winter-driving-auto-insurance-kentucky",
       "description": "Black ice, salt damage, and deer collisions spike in Kentucky winters. Here's how your auto insurance handles winter driving risks and what you can do to stay protected.",
@@ -1895,13 +1889,12 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "in-review",
+      "status": "planned",
       "source": "markdown",
       "notes": "",
       "reviewer": "Audrey Lillpop",
       "reviewer_email": "audrey@thewayagency.com",
-      "reviewer_slug": "audrey-lillpop",
-      "review_sent_date": "2026-08-01"
+      "reviewer_slug": "audrey-lillpop"
     },
     {
       "slug": "renters-insurance-college-students",
@@ -1931,8 +1924,8 @@
       "status": "planned"
     },
     {
-      "week": 21,
-      "publish_date": "2026-08-22",
+      "week": 37,
+      "publish_date": "2026-12-09",
       "title": "Professional Liability Insurance: Who Needs E&O Coverage?",
       "slug": "professional-liability-who-needs-eo",
       "description": "If your work involves advice, design, or professional judgment, a mistake could lead to a lawsuit. Professional liability (E&O) insurance covers the gap that general liability doesn't.",
@@ -1968,8 +1961,8 @@
       "notes": ""
     },
     {
-      "week": 22,
-      "publish_date": "2026-08-26",
+      "week": 38,
+      "publish_date": "2026-12-16",
       "title": "Year-End Insurance Review Checklist for Kentucky Families",
       "slug": "year-end-insurance-review-checklist",
       "description": "Before the new year, review your insurance coverage. Life changes, home improvements, and new vehicles all affect your policies. Here's what to check.",
@@ -2005,8 +1998,8 @@
       "notes": ""
     },
     {
-      "week": 22,
-      "publish_date": "2026-08-29",
+      "week": 39,
+      "publish_date": "2026-12-23",
       "title": "Giving Back: The Way Agency's Community Involvement in 2026",
       "slug": "community-involvement-2026",
       "description": "A look back at how The Way Agency served our Owensboro community in 2026 through partnerships, events, and charitable giving.",
@@ -2044,8 +2037,8 @@
       "notes": "Annual trust piece. Write a new one each year, don't refresh this one."
     },
     {
-      "week": 23,
-      "publish_date": "2026-09-02",
+      "week": 40,
+      "publish_date": "2026-12-30",
       "title": "New Year Insurance Resolutions: A Coverage Checkup for 2027",
       "slug": "new-year-insurance-resolutions-2027",
       "description": "Start the new year with the right coverage. Five insurance resolutions every Kentucky family and business should make for 2027.",
@@ -2081,8 +2074,8 @@
       "notes": "Light seasonal piece for a holiday week."
     },
     {
-      "week": 23,
-      "publish_date": "2026-09-05",
+      "week": 41,
+      "publish_date": "2027-01-06",
       "title": "Surety Bonds Explained: What They Are and When You Need One",
       "slug": "surety-bonds-explained",
       "description": "Surety bonds aren't insurance — they're a guarantee. Learn how bonds work, the difference between bid, performance, and payment bonds, and when Kentucky businesses need them.",
@@ -2118,8 +2111,8 @@
       "notes": ""
     },
     {
-      "week": 24,
-      "publish_date": "2026-09-09",
+      "week": 42,
+      "publish_date": "2027-01-13",
       "title": "Insurance Options for Frankfort State Employees",
       "slug": "insurance-options-frankfort-state-employees",
       "description": "Kentucky state employees in Frankfort have group benefits, but they may still need personal policies to fill gaps. Here's what to consider beyond your state plan.",
@@ -2157,8 +2150,8 @@
       "notes": "Supports Frankfort geo page."
     },
     {
-      "week": 24,
-      "publish_date": "2026-09-12",
+      "week": 43,
+      "publish_date": "2027-01-20",
       "title": "Replacement Cost vs. Actual Cash Value: Why It Matters at Claim Time",
       "slug": "replacement-cost-vs-actual-cash-value",
       "description": "The difference between replacement cost and actual cash value can mean thousands of dollars when you file a claim. Here's how each works and which one you want.",
@@ -2194,8 +2187,8 @@
       "notes": "Foundational concept. High link target."
     },
     {
-      "week": 25,
-      "publish_date": "2026-09-16",
+      "week": 44,
+      "publish_date": "2027-01-27",
       "title": "Tax Season Insurance Deductions for Small Businesses",
       "slug": "tax-season-insurance-deductions-small-business",
       "description": "Most business insurance premiums are tax-deductible. Here's what Kentucky small business owners can deduct, how to document it, and common mistakes to avoid.",
@@ -2230,8 +2223,8 @@
       "notes": "Timed for January tax prep."
     },
     {
-      "week": 25,
-      "publish_date": "2026-09-19",
+      "week": 45,
+      "publish_date": "2027-02-03",
       "title": "Group Health Insurance for Small Businesses in Kentucky",
       "slug": "group-health-insurance-small-business-kentucky",
       "description": "Offering group health insurance helps attract and retain employees. Here's how small group plans work in Kentucky, what they cost, and how to set one up.",
@@ -2266,8 +2259,8 @@
       "notes": ""
     },
     {
-      "week": 26,
-      "publish_date": "2026-09-23",
+      "week": 46,
+      "publish_date": "2027-02-10",
       "title": "Insurance Tips for Indianapolis Homeowners",
       "slug": "insurance-tips-indianapolis-homeowners",
       "description": "Indianapolis homeowners face tornado risk, hail damage, and rising rebuild costs. Here's what Marion County residents should know about home insurance in Indiana.",
@@ -2303,8 +2296,8 @@
       "notes": "Supports Indianapolis geo page."
     },
     {
-      "week": 26,
-      "publish_date": "2026-09-26",
+      "week": 47,
+      "publish_date": "2027-02-17",
       "title": "Understanding Certificates of Insurance for Business Owners",
       "slug": "understanding-certificates-of-insurance",
       "description": "A certificate of insurance (COI) proves you have coverage. Learn what's on a COI, how to request one, what additional insured means, and why clients and landlords ask for it.",
@@ -2339,8 +2332,8 @@
       "notes": "Very practical for business owners. High search volume."
     },
     {
-      "week": 27,
-      "publish_date": "2026-09-30",
+      "week": 48,
+      "publish_date": "2027-02-24",
       "title": "Insurance Guide for Electrical Contractors in Kentucky",
       "slug": "insurance-guide-electrical-contractors",
       "description": "Electrical work carries inherent fire and injury risk. Here's the insurance Kentucky electrical contractors need, what it costs, and how to meet GC requirements.",
@@ -2376,8 +2369,8 @@
       "notes": "Supports electrical contractor industry page."
     },
     {
-      "week": 27,
-      "publish_date": "2026-10-03",
+      "week": 49,
+      "publish_date": "2027-03-03",
       "title": "Motorcycle Insurance in Kentucky: Getting Ready for Riding Season",
       "slug": "motorcycle-insurance-kentucky-riding-season",
       "description": "Spring means riding season in Kentucky. Here's what motorcycle insurance covers, what Kentucky requires, and how to save on your premium.",
@@ -2412,8 +2405,8 @@
       "notes": "Timed for spring riding season start."
     },
     {
-      "week": 28,
-      "publish_date": "2026-10-07",
+      "week": 50,
+      "publish_date": "2027-03-10",
       "title": "Community Spotlight: Local Businesses We're Proud to Insure",
       "slug": "community-spotlight-local-businesses",
       "description": "We're honored to insure the businesses that make our communities great. Here's a look at some of the local businesses we serve across Kentucky, Indiana, and Tennessee.",
@@ -2450,8 +2443,8 @@
       "notes": "Trust-building content. Feature real local businesses (with their permission)."
     },
     {
-      "week": 28,
-      "publish_date": "2026-10-10",
+      "week": 51,
+      "publish_date": "2027-03-17",
       "title": "Understanding Insurance Endorsements and Riders",
       "slug": "understanding-insurance-endorsements",
       "description": "Endorsements modify your policy to add, remove, or change coverage. Learn what endorsements are, which ones are worth adding, and how they affect your premium.",
@@ -2487,8 +2480,8 @@
       "notes": ""
     },
     {
-      "week": 29,
-      "publish_date": "2026-10-14",
+      "week": 52,
+      "publish_date": "2027-03-24",
       "title": "Storm Season 2027: Is Your Kentucky Coverage Ready?",
       "slug": "storm-season-2027-coverage-ready",
       "description": "Tornado season is here again. A quick pre-season insurance checklist for Kentucky homeowners, plus what's changed since last year.",
@@ -2530,7 +2523,7 @@
       "slug": "flood-insurance-kentucky",
       "title": "Do You Need Flood Insurance in Kentucky?",
       "description": "Seasonal content for summer-weather — auto-scheduled by smart calendar adapter.",
-      "publish_date": "2027-03-17",
+      "publish_date": "2027-05-12",
       "pillar": "seasonal",
       "topic_type": "deep-dive",
       "search_intent": "informational",
