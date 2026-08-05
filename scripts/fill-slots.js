@@ -8,12 +8,19 @@
  * ranks otherwise. That is the property the 2026-05-02 re-pace violated.
  *
  * Usage: node scripts/fill-slots.js [--dry-run] [--today YYYY-MM-DD]
+ *                                    [--allow-review-skip]
+ *
+ * --allow-review-skip fills slots that are already inside the D-10 review
+ * window rather than letting the date publish nothing. Only ever uses a
+ * candidate whose draft is already written, and records review_skipped on the
+ * entry so the trade-off stays visible.
  */
 const fs = require('fs');
 const q = require('./lib/content-queue');
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
+const allowReviewSkip = args.includes('--allow-review-skip');
 const todayArg = args.indexOf('--today');
 const today = todayArg !== -1 ? args[todayArg + 1] : new Date().toISOString().slice(0, 10);
 
@@ -41,7 +48,7 @@ const backlog = q.loadBacklog();
 const windows = parseWindows();
 
 const reserved = q.reserveSlots(cal, today);
-const { locked, skipped } = q.fillSlots(cal, backlog, today, windows);
+const { locked, skipped } = q.fillSlots(cal, backlog, today, windows, { allowReviewSkip });
 
 if (!dryRun) {
   q.saveCalendar(cal);

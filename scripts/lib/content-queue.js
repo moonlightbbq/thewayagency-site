@@ -337,39 +337,63 @@ function reserveSlots(cal, today) {
 function fillSlots(cal, backlog, today, windowMonths, opts = {}) {
   const locked = [];
   const skipped = [];
+  const markdownFor = opts.hasMarkdown || hasMarkdown;
   const reserved = (cal.slots || []).filter(s => s.state === 'reserved');
-  // Too close to commit without skipping review. Reported, never filled.
-  for (const s of reserved) {
-    const d = daysBetween(today, s.date);
-    if (d >= 0 && d < MIN_LOCK_LEAD_DAYS) {
-      skipped.push({ date: s.date, reason: `only ${d}d out; locking now would skip the D-${MIN_LOCK_LEAD_DAYS} review window` });
-    }
+
+  // Slots split into two kinds. Anything nearer than MIN_LOCK_LEAD_DAYS is
+  // past the D-10 review email, so filling it publishes without a reviewer.
+  // Default is to leave it empty and say so. `allowReviewSkip` is the
+  // deliberate override for "no date goes silent": it fills the date anyway,
+  // records that review was skipped on the entry, and only ever uses a
+  // candidate whose draft is ALREADY written - there is no time to write one.
+  const targets = [];
+  for (const slot of reserved) {
+    const d = daysBetween(today, slot.date);
+    if (d < 0 || d > LOCK_DAYS) continue;
+    if (d >= MIN_LOCK_LEAD_DAYS) { targets.push({ slot, reviewSkip: false, daysOut: d }); continue; }
+    if (opts.allowReviewSkip) targets.push({ slot, reviewSkip: true, daysOut: d });
+    else skipped.push({ date: slot.date, reason: `only ${d}d out; locking now would skip the D-${MIN_LOCK_LEAD_DAYS} review window` });
   }
+  // Nearest first: the most urgent date gets first pick of the backlog.
+  targets.sort((a, b) => (a.slot.date < b.slot.date ? -1 : 1));
 
-  const due = reserved
-    .filter(s => { const d = daysBetween(today, s.date); return d >= MIN_LOCK_LEAD_DAYS && d <= LOCK_DAYS; })
-    .sort((a, b) => (a.date < b.date ? -1 : 1));
-
-  for (const slot of due) {
+  for (const { slot, reviewSkip, daysOut } of targets) {
     // Rebuilt each iteration so a lock made a moment ago counts against the
     // next one -- otherwise two near-identical candidates both get placed.
     const ctx = buildSchedulingContext(cal, opts);
-    const ranked = (backlog.candidates || [])
+    let ranked = (backlog.candidates || [])
       .map(c => ({ candidate: c, ...scoreCandidate(c, slot.date, ctx, windowMonths, opts) }))
-      .filter(r => r.eligible)
-      .sort((a, b) => b.score - a.score);
+      .filter(r => r.eligible);
+    if (reviewSkip) ranked = ranked.filter(r => markdownFor(r.candidate.slug));
+    ranked.sort((a, b) => b.score - a.score);
 
     if (!ranked.length) {
-      skipped.push({ date: slot.date, reason: 'no eligible approved candidate' });
+      skipped.push({
+        date: slot.date,
+        reason: reviewSkip
+          ? `${daysOut}d out and no ready draft available to fill it in time`
+          : 'no eligible approved candidate',
+      });
       continue;
     }
     const winner = ranked[0];
-    cal.year1.push(candidateToPost(winner.candidate, slot.date, today));
+    const post = candidateToPost(winner.candidate, slot.date, today);
+    if (reviewSkip) {
+      post.review_skipped = true;
+      post.notes = `${post.notes ? `${post.notes} ` : ''}Locked ${daysOut}d before publish so the date would not go silent. `
+        + `That is inside send-review-emails' D-${MIN_LOCK_LEAD_DAYS} window, so no reviewer email goes out for this post. `
+        + 'Draft was already written and on disk.';
+    }
+    cal.year1.push(post);
     slot.state = 'locked';
     slot.locked_slug = winner.candidate.slug;
     slot.locked_at = today;
+    slot.review_skipped = reviewSkip || undefined;
     backlog.candidates = (backlog.candidates || []).filter(c => c.slug !== winner.candidate.slug);
-    locked.push({ date: slot.date, slug: winner.candidate.slug, score: winner.score, reasons: winner.reasons });
+    locked.push({
+      date: slot.date, slug: winner.candidate.slug, score: winner.score,
+      reasons: winner.reasons, reviewSkipped: reviewSkip,
+    });
   }
   return { locked, skipped };
 }
@@ -457,6 +481,8 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
       upcoming,
       approvedCount: approved.length,
       nextEmptyDate: horizonDates.find(d => !taken.has(d)) || null,
+      // Deliberate policy, not a violation - but it must never be invisible.
+      reviewSkipped: upcoming.filter(p => p.review_skipped),
     },
   };
 }
