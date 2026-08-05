@@ -76,3 +76,13 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -m "weekly: blog publish + Google review sync for $(date +%Y-%m-%d)"
           git push
+
+      # Step 4: Queue health. Runs LAST so it never blocks today's publish --
+      # its job is to alarm about slots that are about to fail, not to stop
+      # content that is ready. I4 (a post inside 10 days with no markdown on
+      # disk) is the check that would have caught college-student-auto-insurance
+      # on 2026-08-03 instead of this workflow going red on 08-15. I2b (a date
+      # that will publish nothing) is equally worth a red run.
+      # Deliberately NOT fatal: I5 (thin backlog) is a planning signal.
+      - name: Queue health
+        run: node scripts/queue-status.js --fail-on I4,I2b
