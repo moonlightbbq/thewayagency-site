@@ -12,6 +12,8 @@ const path = require('path');
 const crypto = require('crypto');
 
 const ROOT = path.resolve(__dirname, '..');
+const MONTH_NAMES = ['january', 'february', 'march', 'april', 'may', 'june',
+  'july', 'august', 'september', 'october', 'november', 'december'];
 const DATA = path.join(ROOT, 'data');
 
 let errors = 0;
@@ -171,8 +173,27 @@ if (calendar) {
   // the multi-month drift this check exists for.
   const taxonomy = loadJson('content-taxonomy.json');
   const windowDefs = taxonomy?.lifecycle?.seasonal?.seasonality_windows;
+  // Anchors are optional: absent file => month bands only, exactly as before.
+  let queueLib = null;
+  let seasonalAnchors = { anchors: {} };
+  try {
+    queueLib = require('./lib/content-queue');
+    seasonalAnchors = queueLib.loadAnchors();
+  } catch { /* month bands only */ }
+  const windowMonthsFor = (defs) => {
+    const out = {};
+    for (const [name, desc] of Object.entries(defs || {})) {
+      const found = String(desc).split('(')[0].match(/[A-Za-z]+/g) || [];
+      const idx = found.map(w => MONTH_NAMES.indexOf(w.toLowerCase())).filter(i => i >= 0);
+      if (!idx.length) continue;
+      const months = [];
+      for (let m = idx[0]; ; m = (m + 1) % 12) { months.push(m); if (m === idx[idx.length - 1]) break; }
+      out[name] = months;
+    }
+    return out;
+  };
   if (windowDefs) {
-    const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june',
+    const MONTHS = MONTH_NAMES; const _unusedMonths = ['january', 'february', 'march', 'april', 'may', 'june',
       'july', 'august', 'september', 'october', 'november', 'december'];
     // "February-March (publish before storm season)" -> [1, 2]
     function parseWindow(desc) {
@@ -198,6 +219,21 @@ if (calendar) {
         continue;
       }
       seasonChecked++;
+      // Prefer a real-world anchor over the month band when one governs this
+      // window. A month band is an approximation -- "July-August" permits
+      // publishing back-to-school content three weeks after school starts.
+      const anchored = queueLib && queueLib.eligibilityOn(
+        p, p.publish_date, windowMonthsFor(windowDefs), { anchors: seasonalAnchors });
+      if (anchored && anchored.basis === 'anchor') {
+        if (anchored.eligible) continue;
+        const msg2 = `content-calendar.json: "${p.slug}" is ${p.seasonality_window} but publishes `
+          + `${p.publish_date}, outside its anchored window (${anchored.detail})`;
+        if (p.status === 'published') { warn(`${msg2} [already published]`); continue; }
+        error(msg2); seasonErrors++; continue;
+      }
+      if (anchored && anchored.basis === 'anchor-missing' && p.status !== 'published') {
+        warn(`content-calendar.json: "${p.slug}" - ${anchored.detail}`);
+      }
       // Widen by one month on each end.
       const allowed = new Set();
       for (const m of months) { allowed.add(m); allowed.add((m + 11) % 12); allowed.add((m + 1) % 12); }

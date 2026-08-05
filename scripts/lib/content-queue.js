@@ -24,6 +24,7 @@ const ROOT = path.resolve(__dirname, '..', '..');
 const CALENDAR_PATH = path.join(ROOT, 'data', 'content-calendar.json');
 const BACKLOG_PATH = path.join(ROOT, 'data', 'content-backlog.json');
 const BLOG_SRC = path.join(ROOT, 'src', 'blog');
+const ANCHORS_PATH = path.join(ROOT, 'data', 'seasonal-anchors.json');
 
 // Reserve capacity 4 weeks out; commit a topic to it 2 weeks out.
 const HORIZON_DAYS = 28;
@@ -105,15 +106,96 @@ function approvedCandidates(backlog) {
   return (backlog.candidates || []).filter(c => c.status === 'approved');
 }
 
+
+// ── Real-world anchors ────────────────────────────────────────────────────
+//
+// A month band is a guess: "July-August" permits publishing back-to-school
+// content on August 31, three weeks after school starts. An anchored window is
+// timed against the actual date instead. Windows with no anchor keep the month
+// band, and the fallback is reported rather than silent.
+
+function loadAnchors(root = ROOT) {
+  try {
+    const p = root === ROOT ? ANCHORS_PATH : path.join(root, 'data', 'seasonal-anchors.json');
+    return JSON.parse(fs.readFileSync(p, 'utf8'));
+  } catch { return { anchors: {} }; }
+}
+
+/** The anchor governing a window, if one claims it. */
+function anchorForWindow(windowName, anchors) {
+  const all = (anchors && anchors.anchors) || {};
+  for (const [name, a] of Object.entries(all)) {
+    if ((a.applies_to_windows || []).includes(windowName)) return { name, ...a };
+  }
+  return null;
+}
+
+/**
+ * The eligible date range for an anchored window in the year containing `ymd`.
+ * Returns null when the anchor has no date for that year -- the caller then
+ * falls back to the month band and reports it.
+ */
+function anchorRange(anchor, ymd) {
+  const year = String(asDate(ymd).getUTCFullYear());
+  const dateStr = (anchor.dates || {})[year];
+  if (!dateStr) return null;
+  const anchorDate = asDate(dateStr);
+  const lead = Number.isFinite(anchor.lead_days) ? anchor.lead_days : 30;
+  const close = Number.isFinite(anchor.close_days) ? anchor.close_days : 0;
+  return {
+    anchorDate: dateStr,
+    // close_days may be NEGATIVE, which extends eligibility past the anchor
+    // (Medicare AEP stays useful right through Dec 7).
+    from: toYmd(new Date(anchorDate.getTime() - lead * DAY_MS)),
+    to: toYmd(new Date(anchorDate.getTime() - close * DAY_MS)),
+  };
+}
+
 /**
  * Whether a candidate may occupy a slot on a given date. Evergreen items are
  * always eligible; seasonal ones only inside their declared window (+/-1
  * month, matching check-data-integrity.js so the scheduler cannot place
  * something the build would then reject).
  */
-function isEligibleOn(candidate, ymd, windowMonths) {
-  if (!candidate.seasonality_window) return true;
-  const months = windowMonths[candidate.seasonality_window];
+function isEligibleOn(candidate, ymd, windowMonths, opts = {}) {
+  return eligibilityOn(candidate, ymd, windowMonths, opts).eligible;
+}
+
+/**
+ * Eligibility with its reasoning, so callers can distinguish "out of season"
+ * from "we never recorded when this actually happens".
+ * @returns {{ eligible: boolean, basis: 'evergreen'|'anchor'|'months'|'anchor-missing', detail?: string }}
+ */
+function eligibilityOn(candidate, ymd, windowMonths, opts = {}) {
+  if (!candidate.seasonality_window) return { eligible: true, basis: 'evergreen' };
+  const anchors = opts.anchors || loadAnchors(opts.root);
+  const anchor = anchorForWindow(candidate.seasonality_window, anchors);
+
+  if (anchor) {
+    const range = anchorRange(anchor, ymd);
+    if (range) {
+      const ok = ymd >= range.from && ymd <= range.to;
+      return {
+        eligible: ok,
+        basis: 'anchor',
+        detail: `${anchor.name} ${range.anchorDate}; window ${range.from}..${range.to}`,
+      };
+    }
+    // Anchor claims this window but has no date for the year in question.
+    // Fall back to the month band rather than blocking everything, and say so.
+    const monthsOk = _monthEligible(candidate, ymd, windowMonths);
+    return {
+      eligible: monthsOk,
+      basis: 'anchor-missing',
+      detail: `${anchor.name} has no date for ${asDate(ymd).getUTCFullYear()} - fell back to the month band`,
+    };
+  }
+
+  return { eligible: _monthEligible(candidate, ymd, windowMonths), basis: 'months' };
+}
+
+function _monthEligible(candidate, ymd, windowMonths) {
+  const months = (windowMonths || {})[candidate.seasonality_window];
   if (!months || !months.length) return true;
   const allowed = new Set();
   for (const m of months) { allowed.add(m); allowed.add((m + 11) % 12); allowed.add((m + 1) % 12); }
@@ -496,6 +578,7 @@ module.exports = {
   candidateToPost, reserveSlots, fillSlots,
   HORIZON_DAYS, LOCK_DAYS, MIN_LOCK_LEAD_DAYS, MARKDOWN_DUE_DAYS, MIN_APPROVED_BACKLOG, PUBLISH_WEEKDAYS,
   asDate, toYmd, daysBetween, isPublishDay, publishDatesWithin,
+  loadAnchors, anchorForWindow, anchorRange, eligibilityOn,
   loadCalendar, loadBacklog, saveCalendar,
   occupiedDates, hasMarkdown, approvedCandidates, isEligibleOn,
 };

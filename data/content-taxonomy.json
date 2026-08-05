@@ -1,6 +1,5 @@
 {
   "_doc": "Content taxonomy for The Way Agency blog. Defines pillars, clusters, page roles, and lifecycle rules.",
-
   "pillars": {
     "product": {
       "name": "Product Deep-Dives",
@@ -31,82 +30,172 @@
       "linking_rule": "Link to relevant product pages and industry pages. Link to evergreen educational posts that provide deeper context."
     }
   },
-
   "clusters": {
     "personal-auto": {
       "name": "Auto Insurance",
       "authority_page": "/personal/auto.html",
       "description": "Everything about car insurance in Kentucky: coverage types, requirements, claims, teen drivers, bundling.",
-      "target_keywords": ["auto insurance kentucky", "car insurance KY", "auto insurance owensboro"]
+      "target_keywords": [
+        "auto insurance kentucky",
+        "car insurance KY",
+        "auto insurance owensboro"
+      ]
     },
     "personal-home": {
       "name": "Home Insurance",
       "authority_page": "/personal/home.html",
       "description": "Homeowners insurance, landlord coverage, maintenance tips, claims process.",
-      "target_keywords": ["home insurance kentucky", "homeowners insurance KY", "home insurance owensboro"]
+      "target_keywords": [
+        "home insurance kentucky",
+        "homeowners insurance KY",
+        "home insurance owensboro"
+      ]
     },
     "personal-specialty": {
       "name": "Specialty Personal Lines",
-      "authority_pages": ["/personal/motorcycle.html", "/personal/boat.html", "/personal/classic-car.html", "/personal/pet.html", "/personal/earthquake.html"],
+      "authority_pages": [
+        "/personal/motorcycle.html",
+        "/personal/boat.html",
+        "/personal/classic-car.html",
+        "/personal/pet.html",
+        "/personal/earthquake.html"
+      ],
       "description": "Niche personal coverage: motorcycle, boat, classic car, pet, earthquake.",
-      "target_keywords": ["motorcycle insurance KY", "boat insurance kentucky", "earthquake insurance western KY"]
+      "target_keywords": [
+        "motorcycle insurance KY",
+        "boat insurance kentucky",
+        "earthquake insurance western KY"
+      ]
     },
     "personal-protection": {
       "name": "Protection & Risk",
-      "authority_pages": ["/personal/umbrella.html", "/personal/flood.html", "/personal/renters.html"],
+      "authority_pages": [
+        "/personal/umbrella.html",
+        "/personal/flood.html",
+        "/personal/renters.html"
+      ],
       "description": "Liability protection, flood coverage, renters insurance, risk management for individuals.",
-      "target_keywords": ["umbrella insurance KY", "flood insurance kentucky", "renters insurance owensboro"]
+      "target_keywords": [
+        "umbrella insurance KY",
+        "flood insurance kentucky",
+        "renters insurance owensboro"
+      ]
     },
     "commercial-core": {
       "name": "Core Business Insurance",
-      "authority_pages": ["/commercial/general-liability.html", "/commercial/commercial-property.html", "/commercial/commercial-auto.html"],
+      "authority_pages": [
+        "/commercial/general-liability.html",
+        "/commercial/commercial-property.html",
+        "/commercial/commercial-auto.html"
+      ],
       "description": "Foundation commercial coverage: GL, property, commercial auto.",
-      "target_keywords": ["business insurance kentucky", "general liability KY", "commercial insurance owensboro"]
+      "target_keywords": [
+        "business insurance kentucky",
+        "general liability KY",
+        "commercial insurance owensboro"
+      ]
     },
     "commercial-specialty": {
       "name": "Specialty Commercial Lines",
-      "authority_pages": ["/commercial/cyber.html", "/commercial/bonds.html", "/commercial/builders-risk.html", "/commercial/special-event.html", "/commercial/professional-liability.html"],
+      "authority_pages": [
+        "/commercial/cyber.html",
+        "/commercial/bonds.html",
+        "/commercial/builders-risk.html",
+        "/commercial/special-event.html",
+        "/commercial/professional-liability.html"
+      ],
       "description": "Specialized commercial coverage: cyber, bonds, builders risk, events, E&O.",
-      "target_keywords": ["cyber insurance KY", "surety bonds kentucky", "professional liability insurance"]
+      "target_keywords": [
+        "cyber insurance KY",
+        "surety bonds kentucky",
+        "professional liability insurance"
+      ]
     },
     "commercial-workforce": {
       "name": "Workforce Insurance",
-      "authority_pages": ["/commercial/workers-compensation.html", "/health/group-health.html"],
+      "authority_pages": [
+        "/commercial/workers-compensation.html",
+        "/health/group-health.html"
+      ],
       "description": "Workers comp, group health, employee benefits.",
-      "target_keywords": ["workers comp kentucky", "group health insurance KY", "employee benefits owensboro"]
+      "target_keywords": [
+        "workers comp kentucky",
+        "group health insurance KY",
+        "employee benefits owensboro"
+      ]
     },
     "life-planning": {
       "name": "Life & Estate Planning",
-      "authority_pages": ["/life/term-life.html", "/life/whole-life.html", "/life/disability.html", "/life/final-expense.html", "/life/annuities.html"],
+      "authority_pages": [
+        "/life/term-life.html",
+        "/life/whole-life.html",
+        "/life/disability.html",
+        "/life/final-expense.html",
+        "/life/annuities.html"
+      ],
       "description": "Life insurance, disability, final expense, annuities, estate planning.",
-      "target_keywords": ["life insurance kentucky", "term life vs whole life", "disability insurance KY"]
+      "target_keywords": [
+        "life insurance kentucky",
+        "term life vs whole life",
+        "disability insurance KY"
+      ]
     },
     "health-coverage": {
       "name": "Health Insurance",
-      "authority_pages": ["/health/medicare.html", "/health/individual-health.html", "/health/group-health.html"],
+      "authority_pages": [
+        "/health/medicare.html",
+        "/health/individual-health.html",
+        "/health/group-health.html"
+      ],
       "description": "Medicare, individual health, family health, dental/vision, enrollment.",
-      "target_keywords": ["medicare kentucky", "health insurance KY", "kynect enrollment"]
+      "target_keywords": [
+        "medicare kentucky",
+        "health insurance KY",
+        "kynect enrollment"
+      ]
     },
     "insurance-basics": {
       "name": "Insurance Fundamentals",
       "authority_page": "/blog/",
       "description": "How insurance works, claims process, comparing quotes, understanding policies. Top-of-funnel educational content.",
-      "target_keywords": ["how insurance works", "insurance deductible explained", "how to compare insurance quotes"]
+      "target_keywords": [
+        "how insurance works",
+        "insurance deductible explained",
+        "how to compare insurance quotes"
+      ]
     },
     "kentucky-local": {
       "name": "Kentucky & Regional",
-      "authority_pages": ["/insurance/owensboro-ky.html", "/insurance/louisville-ky.html", "/insurance/lexington-ky.html"],
+      "authority_pages": [
+        "/insurance/owensboro-ky.html",
+        "/insurance/louisville-ky.html",
+        "/insurance/lexington-ky.html"
+      ],
       "description": "Kentucky-specific laws, weather risks, community content, local market insights.",
-      "target_keywords": ["insurance owensboro KY", "kentucky insurance laws", "ohio river flood risk"]
+      "target_keywords": [
+        "insurance owensboro KY",
+        "kentucky insurance laws",
+        "ohio river flood risk"
+      ]
     },
     "industry-trades": {
       "name": "Industry & Trades",
-      "authority_pages": ["/industries/roofing-contractors.html", "/industries/hvac-contractors.html", "/industries/electrical-contractors.html", "/industries/general-contractors.html", "/industries/restaurants.html", "/industries/professional-services.html"],
+      "authority_pages": [
+        "/industries/roofing-contractors.html",
+        "/industries/hvac-contractors.html",
+        "/industries/electrical-contractors.html",
+        "/industries/general-contractors.html",
+        "/industries/restaurants.html",
+        "/industries/professional-services.html"
+      ],
       "description": "Industry-specific insurance guidance for contractors, restaurants, professional services, manufacturing.",
-      "target_keywords": ["contractor insurance kentucky", "restaurant insurance KY", "professional liability for consultants"]
+      "target_keywords": [
+        "contractor insurance kentucky",
+        "restaurant insurance KY",
+        "professional liability for consultants"
+      ]
     }
   },
-
   "page_roles": {
     "authority": "The main product/service/geo page. The 'money page' that should rank for primary commercial keywords. Blog posts SUPPORT these pages, never compete with them.",
     "supporting": "Blog content that links to and reinforces authority pages. Targets long-tail keywords and informational intent.",
@@ -115,7 +204,6 @@
     "seasonal": "Time-sensitive content that gets refreshed annually. Should link to evergreen authority pages.",
     "trust": "Community, team, values content. Builds brand credibility. Links to about pages."
   },
-
   "lifecycle": {
     "evergreen": {
       "description": "Core educational and product-supporting content. Stays relevant year-round.",
@@ -133,7 +221,8 @@
         "medicare-enrollment": "September (before Oct 15 open enrollment)",
         "winter-prep": "October-November",
         "tax-season": "January-February",
-        "back-to-school": "July-August"
+        "back-to-school": "July-August",
+        "college-move-in": "August (before Kentucky university move-in; anchored to the real date in seasonal-anchors.json when set)"
       },
       "examples": "Tornado prep, winter storm guide, Medicare enrollment updates"
     },
@@ -150,7 +239,6 @@
       "examples": "Community spotlight, year-in-review, partnership announcements"
     }
   },
-
   "cannibalization_rules": {
     "principle": "Blog posts target informational and long-tail keywords. Product pages target commercial and transactional keywords. They should never compete for the same primary keyword.",
     "product_page_owns": "Primary product keyword + location modifier (e.g., 'home insurance owensboro KY'). Blog posts must NOT target these directly.",
