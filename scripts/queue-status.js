@@ -8,12 +8,21 @@
  * workflow go red on 2026-08-15.
  *
  * Usage: node scripts/queue-status.js [--today YYYY-MM-DD] [--strict]
- *   --strict  exit 1 if any invariant is violated (for CI)
+ *   --strict            exit 1 if ANY invariant is violated
+ *   --fail-on I4,I2b    exit 1 only for these invariants (for CI)
+ *
+ * CI uses --fail-on rather than --strict: an empty slot inside the markdown
+ * window (I4) must break the build, but a thin backlog (I5) is a planning
+ * signal and should not turn the publish workflow red.
  */
 const q = require('./lib/content-queue');
 
 const args = process.argv.slice(2);
 const strict = args.includes('--strict');
+const failOnArg = args.indexOf('--fail-on');
+const failOn = failOnArg !== -1
+  ? new Set(String(args[failOnArg + 1] || '').split(',').map(x => x.trim()).filter(Boolean))
+  : null;
 const todayArg = args.indexOf('--today');
 const today = todayArg !== -1 ? args[todayArg + 1] : new Date().toISOString().slice(0, 10);
 
@@ -59,5 +68,10 @@ if (!violations.length) {
 }
 console.log(`${violations.length} invariant violation(s):`);
 for (const v of violations) console.log(`  x ${v.id}: ${v.message}`);
+
+const fatal = failOn ? violations.filter(v => failOn.has(v.id)) : (strict ? violations : []);
+if (fatal.length) {
+  console.log(`\n${fatal.length} of these are fatal here: ${[...new Set(fatal.map(v => v.id))].join(', ')}`);
+}
 console.log('');
-process.exit(strict ? 1 : 0);
+process.exit(fatal.length ? 1 : 0);
