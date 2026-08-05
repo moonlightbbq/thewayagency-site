@@ -4,8 +4,8 @@ slug: insurance-tips-indianapolis-homeowners
 description: Indianapolis homeowners face tornado risk, hail damage, and rising rebuild costs. Here's what Marion County residents should know about home insurance in Indiana.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2027-02-10
-modified: 2027-02-10
+date: 2026-08-05
+modified: 2026-08-05
 reading_time: 6 min read
 related_page: /personal/home.html
 tags: home insurance indianapolis indiana, indianapolis homeowners insurance, home insurance marion county IN
