@@ -53,6 +53,26 @@ for (const p of stats.upcoming.slice(0, 6)) {
 
 console.log(`\nNext publish date with no post: ${stats.nextEmptyDate || '(none inside horizon)'}`);
 
+// Seasonal anchors: what real-world dates the schedule is timed against, and
+// which windows are still guessing with a month band.
+const anchors = q.loadAnchors();
+const anchorEntries = Object.entries(anchors.anchors || {});
+if (anchorEntries.length) {
+  console.log('\nSeasonal anchors:');
+  const year = today.slice(0, 4);
+  for (const [name, a] of anchorEntries) {
+    const d = (a.dates || {})[year];
+    if (!d) {
+      console.log(`  ${name.padEnd(26)} NO DATE for ${year} - falling back to the month band`);
+      continue;
+    }
+    const away = q.daysBetween(today, d);
+    const range = q.anchorRange({ ...a, name }, d);
+    const state = away < 0 ? `${-away}d ago` : `in ${away}d`;
+    console.log(`  ${name.padEnd(26)} ${d} (${state})  publish ${range.from}..${range.to}`);
+  }
+}
+
 if (stats.reviewSkipped.length) {
   console.log(`\nPublishing WITHOUT a reviewer email (${stats.reviewSkipped.length}):`);
   for (const p of stats.reviewSkipped) {

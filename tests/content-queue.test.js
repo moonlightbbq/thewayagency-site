@@ -194,9 +194,19 @@ describe('seasonal eligibility is applied at lock time', () => {
   });
 
   test('tolerates one shoulder month on each side, matching the build check', () => {
-    const backToSchool = { slug: 'college-auto', seasonality_window: 'back-to-school' };
-    assert.equal(q.isEligibleOn(backToSchool, '2026-09-02', WINDOWS), true, 'September is a shoulder month');
-    assert.equal(q.isEligibleOn(backToSchool, '2026-12-02', WINDOWS), false, 'December is not');
+    // Shoulder tolerance applies to UNANCHORED windows. back-to-school is now
+    // anchored to the real first day of school, which overrides the band
+    // entirely -- see tests/seasonal-anchors.test.js.
+    const winter = { slug: 'winter-driving', seasonality_window: 'winter-prep' };
+    assert.equal(q.isEligibleOn(winter, '2026-12-02', WINDOWS), true, 'December is a shoulder month for Oct-Nov');
+    assert.equal(q.isEligibleOn(winter, '2026-06-02', WINDOWS), false, 'June is not');
+  });
+
+  test('an anchored window overrides the month band entirely', () => {
+    // 2026-08-26 is inside the "July-August" band and still wrong, because
+    // school started on the 6th. This is the whole point of anchors.
+    const b2s = { slug: 'college-auto', seasonality_window: 'back-to-school' };
+    assert.equal(q.isEligibleOn(b2s, '2026-08-26', WINDOWS), false);
   });
 });
 

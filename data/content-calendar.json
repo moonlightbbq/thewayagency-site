@@ -2026,7 +2026,7 @@
       "related_cluster": "personal-auto",
       "conversion_goal": "coverage-review",
       "evergreen_or_seasonal": "seasonal",
-      "seasonality_window": "back-to-school",
+      "seasonality_window": "college-move-in",
       "refresh_cycle": "annual",
       "page_role": "seasonal",
       "is_link_target": false,
@@ -2036,7 +2036,7 @@
       "author_slug": null,
       "status": "planned",
       "canonical_priority": "tertiary",
-      "notes": "Auto-scheduled by smart-calendar-adapter with no metadata and landed on a Thursday (UTC weekday bug). Re-dated onto the Wed/Sat cadence inside BlogPlannerAdapter's 18-25d drafting window and brought up to the metadata bar 2026-08-04."
+      "notes": "Auto-scheduled by smart-calendar-adapter with no metadata and landed on a Thursday (UTC weekday bug). Re-dated onto the Wed/Sat cadence inside BlogPlannerAdapter's 18-25d drafting window and brought up to the metadata bar 2026-08-04. Re-tagged 2026-08-05: back-to-school is now anchored to the K-12 first day (2026-08-06). This is college content and Kentucky universities start ~3 weeks later, so it should not be governed by the school-district bell."
     },
     {
       "week": 36,
@@ -2105,7 +2105,7 @@
       "related_cluster": "personal-home",
       "conversion_goal": "quote-request",
       "evergreen_or_seasonal": "seasonal",
-      "seasonality_window": "back-to-school",
+      "seasonality_window": "college-move-in",
       "refresh_cycle": "annual",
       "page_role": "seasonal",
       "is_link_target": false,
@@ -2115,7 +2115,7 @@
       "author_slug": null,
       "status": "planned",
       "canonical_priority": "tertiary",
-      "notes": "Auto-scheduled by smart-calendar-adapter with no metadata and landed on a Thursday (UTC weekday bug). Re-dated onto the Wed/Sat cadence inside BlogPlannerAdapter's 18-25d drafting window and brought up to the metadata bar 2026-08-04."
+      "notes": "Auto-scheduled by smart-calendar-adapter with no metadata and landed on a Thursday (UTC weekday bug). Re-dated onto the Wed/Sat cadence inside BlogPlannerAdapter's 18-25d drafting window and brought up to the metadata bar 2026-08-04. Re-tagged 2026-08-05: back-to-school is now anchored to the K-12 first day (2026-08-06). This is college content and Kentucky universities start ~3 weeks later, so it should not be governed by the school-district bell."
     },
     {
       "week": 38,

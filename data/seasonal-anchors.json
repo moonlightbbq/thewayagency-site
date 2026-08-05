@@ -1,0 +1,48 @@
+{
+  "_doc": "Real-world dates that seasonal content is timed AGAINST, rather than a month band that only approximates them.\n\nEvery seasonality_window in content-taxonomy.json is month-granular ('July-August'), which is a guess dressed up as a rule: it permits publishing back-to-school content on August 31, three weeks after school actually starts. Three of the six windows already describe the real trigger in prose ('publish before storm season', 'before Oct 15 open enrollment') -- the writing knew, the scheduler did not.\n\nAn anchored window is eligible only in [anchor - lead_days, anchor - close_days]. A window with no anchor falls back to its month band, and queue-status reports that it did, so the gap is visible rather than silent.\n\nDATES ARE NOT GUESSED. A year with no date is null, and check-data-integrity.js fails the build when an anchored window is in use for a year that has no date. A stale anchor is exactly the rot that caused the original incident, so absence is loud.",
+  "version": 1,
+  "anchors": {
+    "school-year-start": {
+      "description": "First day of K-12 classes in the agency's home districts (Daviess / Bullitt County KY).",
+      "applies_to_windows": [
+        "back-to-school"
+      ],
+      "lead_days": 45,
+      "close_days": 2,
+      "rationale": "Parents buy before the first bell, not after. Opens ~6 weeks out and closes two days before. The lead is deliberately generous and the CLOSE is what matters: publishing a checklist five weeks early is merely keen, publishing it the week school starts is useless.",
+      "dates": {
+        "2026": "2026-08-06",
+        "2027": null
+      },
+      "source": "2026 date reported by the owner on 2026-08-05. Verify each spring against the district calendars; they are published in the preceding February or March."
+    },
+    "college-move-in": {
+      "description": "Move-in / first day of classes at the Kentucky universities most local students attend (UK, U of L, WKU).",
+      "applies_to_windows": [
+        "college-move-in"
+      ],
+      "lead_days": 30,
+      "close_days": 0,
+      "rationale": "Renters and auto decisions get made while packing, so this wants a month of runway. Distinct from K-12: Kentucky colleges start roughly three weeks after the school districts do, and content aimed at students should not be governed by the K-12 bell.",
+      "dates": {
+        "2026": null,
+        "2027": null
+      },
+      "source": "NOT SET. Needs the actual 2026 start date; it was not verified rather than guessed. Until it is set, college-move-in falls back to its month band and queue-status reports the fallback."
+    },
+    "medicare-open-enrollment": {
+      "description": "Medicare Annual Enrollment Period opens.",
+      "applies_to_windows": [
+        "medicare-enrollment"
+      ],
+      "lead_days": 30,
+      "close_days": -53,
+      "rationale": "Oct 15 - Dec 7 is fixed federal statute, so this one never moves. Content is useful from a month before through the whole enrollment window, hence the negative close (53 days AFTER the anchor = Dec 7).",
+      "dates": {
+        "2026": "2026-10-15",
+        "2027": "2027-10-15"
+      },
+      "source": "42 CFR 422.62 - the AEP runs Oct 15 to Dec 7 every year. Fixed by statute, not observed."
+    }
+  }
+}
