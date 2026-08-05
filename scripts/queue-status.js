@@ -44,6 +44,14 @@ for (const p of stats.upcoming.slice(0, 6)) {
 
 console.log(`\nNext publish date with no post: ${stats.nextEmptyDate || '(none inside horizon)'}`);
 
+if (stats.reviewSkipped.length) {
+  console.log(`\nPublishing WITHOUT a reviewer email (${stats.reviewSkipped.length}):`);
+  for (const p of stats.reviewSkipped) {
+    console.log(`  ${p.publish_date}  ${p.slug}`);
+  }
+  console.log('  These were locked inside the D-10 review window to keep the date from going silent.');
+}
+
 console.log(`\n${'='.repeat(46)}`);
 if (!violations.length) {
   console.log('All queue invariants hold.\n');

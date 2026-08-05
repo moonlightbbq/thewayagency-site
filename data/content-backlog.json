@@ -49,71 +49,6 @@
       "notes": "Auto-proposed for 2027-05-19, ~9 months out. Held as an undated candidate; becomes eligible in its May-June window."
     },
     {
-      "slug": "insurance-restaurants-food-service-kentucky",
-      "title": "Insurance for Restaurants and Food Service Businesses in Kentucky",
-      "description": "Restaurants face slip-and-fall claims, foodborne illness lawsuits, grease fires, and liquor liability. Here's the coverage Kentucky restaurant owners need.",
-      "primary_keyword": "restaurant insurance kentucky",
-      "secondary_keywords": [
-        "food service business insurance",
-        "liquor liability insurance KY",
-        "restaurant liability coverage"
-      ],
-      "related_cluster": "industry-trades",
-      "pillar": "seasonal",
-      "funnel_stage": "middle",
-      "search_intent": "informational",
-      "topic_type": "guide",
-      "seasonality_window": null,
-      "target_product_page": "/commercial/general-liability.html",
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/industries/restaurants.html",
-        "/commercial/commercial-property.html",
-        "/commercial/workers-compensation.html"
-      ],
-      "conversion_goal": "quote-request",
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "source": "migrated-from-year1",
-      "proposed_at": "2026-08-04",
-      "approved_at": "2026-08-04",
-      "approved_by": "phase-2-migration",
-      "status": "approved",
-      "notes": "Written 2026-03-27 and previously dated 2026-11-04 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
-    },
-    {
-      "slug": "final-expense-insurance-guide",
-      "title": "Final Expense Insurance: A Practical Guide for Kentucky Families",
-      "description": "Final expense insurance covers funeral costs so your family isn't burdened with a $7,000-$12,000 bill. Here's how it works, what it costs, and who should consider it.",
-      "primary_keyword": "final expense insurance explained",
-      "secondary_keywords": [
-        "burial insurance kentucky",
-        "funeral insurance cost",
-        "final expense vs whole life"
-      ],
-      "related_cluster": "life-planning",
-      "pillar": "product",
-      "funnel_stage": "middle",
-      "search_intent": "informational",
-      "topic_type": "deep-dive",
-      "seasonality_window": null,
-      "target_product_page": "/life/final-expense.html",
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/life/whole-life.html",
-        "/blog/term-life-vs-whole-life.html"
-      ],
-      "conversion_goal": "consultation",
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "source": "migrated-from-year1",
-      "proposed_at": "2026-08-04",
-      "approved_at": "2026-08-04",
-      "approved_by": "phase-2-migration",
-      "status": "approved",
-      "notes": "Written 2026-03-27 and previously dated 2026-11-11 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
-    },
-    {
       "slug": "how-to-compare-insurance-quotes",
       "title": "How to Compare Insurance Quotes: Price Isn't Everything",
       "description": "The cheapest quote isn't always the best deal. Learn what to compare beyond price: coverage limits, deductibles, exclusions, carrier ratings, and claims service.",
@@ -145,39 +80,6 @@
       "approved_by": "phase-2-migration",
       "status": "approved",
       "notes": "Written 2026-03-27 and previously dated 2026-11-25 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
-    },
-    {
-      "slug": "professional-liability-who-needs-eo",
-      "title": "Professional Liability Insurance: Who Needs E&O Coverage?",
-      "description": "If your work involves advice, design, or professional judgment, a mistake could lead to a lawsuit. Professional liability (E&O) insurance covers the gap that general liability doesn't.",
-      "primary_keyword": "who needs professional liability insurance",
-      "secondary_keywords": [
-        "E&O insurance explained",
-        "professional liability vs general liability",
-        "errors and omissions coverage"
-      ],
-      "related_cluster": "commercial-specialty",
-      "pillar": "product",
-      "funnel_stage": "middle",
-      "search_intent": "informational",
-      "topic_type": "deep-dive",
-      "seasonality_window": null,
-      "target_product_page": "/commercial/professional-liability.html",
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/commercial/general-liability.html",
-        "/commercial/cyber.html",
-        "/industries/professional-services.html"
-      ],
-      "conversion_goal": "quote-request",
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "source": "migrated-from-year1",
-      "proposed_at": "2026-08-04",
-      "approved_at": "2026-08-04",
-      "approved_by": "phase-2-migration",
-      "status": "approved",
-      "notes": "Written 2026-03-27 and previously dated 2026-12-09 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
     },
     {
       "slug": "community-involvement-2026",
@@ -309,39 +211,6 @@
       "approved_by": "phase-2-migration",
       "status": "approved",
       "notes": "Written 2026-03-27 and previously dated 2027-02-03 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
-    },
-    {
-      "slug": "insurance-tips-indianapolis-homeowners",
-      "title": "Insurance Tips for Indianapolis Homeowners",
-      "description": "Indianapolis homeowners face tornado risk, hail damage, and rising rebuild costs. Here's what Marion County residents should know about home insurance in Indiana.",
-      "primary_keyword": "home insurance indianapolis indiana",
-      "secondary_keywords": [
-        "indianapolis homeowners insurance",
-        "home insurance marion county IN"
-      ],
-      "related_cluster": "kentucky-local",
-      "pillar": "local",
-      "funnel_stage": "middle",
-      "search_intent": "informational",
-      "topic_type": "local-guide",
-      "seasonality_window": null,
-      "target_product_page": "/personal/home.html",
-      "target_location_pages": [
-        "/insurance/indianapolis-in.html"
-      ],
-      "secondary_internal_links": [
-        "/personal/auto.html",
-        "/personal/umbrella.html"
-      ],
-      "conversion_goal": "quote-request",
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "source": "migrated-from-year1",
-      "proposed_at": "2026-08-04",
-      "approved_at": "2026-08-04",
-      "approved_by": "phase-2-migration",
-      "status": "approved",
-      "notes": "Written 2026-03-27 and previously dated 2027-02-10 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
     },
     {
       "slug": "understanding-certificates-of-insurance",

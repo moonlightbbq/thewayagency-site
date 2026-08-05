@@ -2050,6 +2050,148 @@
       "source": "queue-lock",
       "locked_at": "2026-08-04",
       "notes": "Written 2026-03-27 and previously dated 2027-01-13 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
+    },
+    {
+      "publish_date": "2026-08-05",
+      "title": "Insurance Tips for Indianapolis Homeowners",
+      "slug": "insurance-tips-indianapolis-homeowners",
+      "description": "Indianapolis homeowners face tornado risk, hail damage, and rising rebuild costs. Here's what Marion County residents should know about home insurance in Indiana.",
+      "pillar": "local",
+      "topic_type": "local-guide",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "primary_keyword": "home insurance indianapolis indiana",
+      "secondary_keywords": [
+        "indianapolis homeowners insurance",
+        "home insurance marion county IN"
+      ],
+      "target_product_page": "/personal/home.html",
+      "target_location_pages": [
+        "/insurance/indianapolis-in.html"
+      ],
+      "secondary_internal_links": [
+        "/personal/auto.html",
+        "/personal/umbrella.html"
+      ],
+      "related_cluster": "kentucky-local",
+      "conversion_goal": "quote-request",
+      "evergreen_or_seasonal": "evergreen",
+      "seasonality_window": null,
+      "refresh_cycle": "annual",
+      "page_role": "supporting",
+      "is_link_target": false,
+      "receives_future_links": true,
+      "status": "planned",
+      "source": "queue-lock",
+      "locked_at": "2026-08-05",
+      "notes": "Written 2026-03-27 and previously dated 2027-02-10 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk. Locked 0d before publish so the date would not go silent. That is inside send-review-emails' D-10 window, so no reviewer email goes out for this post. Draft was already written and on disk.",
+      "review_skipped": true
+    },
+    {
+      "publish_date": "2026-08-08",
+      "title": "Insurance for Restaurants and Food Service Businesses in Kentucky",
+      "slug": "insurance-restaurants-food-service-kentucky",
+      "description": "Restaurants face slip-and-fall claims, foodborne illness lawsuits, grease fires, and liquor liability. Here's the coverage Kentucky restaurant owners need.",
+      "pillar": "seasonal",
+      "topic_type": "guide",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "primary_keyword": "restaurant insurance kentucky",
+      "secondary_keywords": [
+        "food service business insurance",
+        "liquor liability insurance KY",
+        "restaurant liability coverage"
+      ],
+      "target_product_page": "/commercial/general-liability.html",
+      "target_location_pages": [],
+      "secondary_internal_links": [
+        "/industries/restaurants.html",
+        "/commercial/commercial-property.html",
+        "/commercial/workers-compensation.html"
+      ],
+      "related_cluster": "industry-trades",
+      "conversion_goal": "quote-request",
+      "evergreen_or_seasonal": "evergreen",
+      "seasonality_window": null,
+      "refresh_cycle": "annual",
+      "page_role": "supporting",
+      "is_link_target": false,
+      "receives_future_links": true,
+      "status": "planned",
+      "source": "queue-lock",
+      "locked_at": "2026-08-05",
+      "notes": "Written 2026-03-27 and previously dated 2026-11-04 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk. Locked 3d before publish so the date would not go silent. That is inside send-review-emails' D-10 window, so no reviewer email goes out for this post. Draft was already written and on disk.",
+      "review_skipped": true
+    },
+    {
+      "publish_date": "2026-08-12",
+      "title": "Final Expense Insurance: A Practical Guide for Kentucky Families",
+      "slug": "final-expense-insurance-guide",
+      "description": "Final expense insurance covers funeral costs so your family isn't burdened with a $7,000-$12,000 bill. Here's how it works, what it costs, and who should consider it.",
+      "pillar": "product",
+      "topic_type": "deep-dive",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "primary_keyword": "final expense insurance explained",
+      "secondary_keywords": [
+        "burial insurance kentucky",
+        "funeral insurance cost",
+        "final expense vs whole life"
+      ],
+      "target_product_page": "/life/final-expense.html",
+      "target_location_pages": [],
+      "secondary_internal_links": [
+        "/life/whole-life.html",
+        "/blog/term-life-vs-whole-life.html"
+      ],
+      "related_cluster": "life-planning",
+      "conversion_goal": "consultation",
+      "evergreen_or_seasonal": "evergreen",
+      "seasonality_window": null,
+      "refresh_cycle": "annual",
+      "page_role": "supporting",
+      "is_link_target": false,
+      "receives_future_links": true,
+      "status": "planned",
+      "source": "queue-lock",
+      "locked_at": "2026-08-05",
+      "notes": "Written 2026-03-27 and previously dated 2026-11-11 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk. Locked 7d before publish so the date would not go silent. That is inside send-review-emails' D-10 window, so no reviewer email goes out for this post. Draft was already written and on disk.",
+      "review_skipped": true
+    },
+    {
+      "publish_date": "2026-08-19",
+      "title": "Professional Liability Insurance: Who Needs E&O Coverage?",
+      "slug": "professional-liability-who-needs-eo",
+      "description": "If your work involves advice, design, or professional judgment, a mistake could lead to a lawsuit. Professional liability (E&O) insurance covers the gap that general liability doesn't.",
+      "pillar": "product",
+      "topic_type": "deep-dive",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "primary_keyword": "who needs professional liability insurance",
+      "secondary_keywords": [
+        "E&O insurance explained",
+        "professional liability vs general liability",
+        "errors and omissions coverage"
+      ],
+      "target_product_page": "/commercial/professional-liability.html",
+      "target_location_pages": [],
+      "secondary_internal_links": [
+        "/commercial/general-liability.html",
+        "/commercial/cyber.html",
+        "/industries/professional-services.html"
+      ],
+      "related_cluster": "commercial-specialty",
+      "conversion_goal": "quote-request",
+      "evergreen_or_seasonal": "evergreen",
+      "seasonality_window": null,
+      "refresh_cycle": "annual",
+      "page_role": "supporting",
+      "is_link_target": false,
+      "receives_future_links": true,
+      "status": "planned",
+      "source": "queue-lock",
+      "locked_at": "2026-08-05",
+      "notes": "Written 2026-03-27 and previously dated 2026-12-09 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
     }
   ],
   "roadmap": {
@@ -2176,24 +2318,27 @@
   "slots": [
     {
       "date": "2026-08-05",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
-      "reserved_at": "2026-08-04"
+      "state": "locked",
+      "locked_slug": "insurance-tips-indianapolis-homeowners",
+      "locked_at": "2026-08-05",
+      "reserved_at": "2026-08-04",
+      "review_skipped": true
     },
     {
       "date": "2026-08-08",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
-      "reserved_at": "2026-08-04"
+      "state": "locked",
+      "locked_slug": "insurance-restaurants-food-service-kentucky",
+      "locked_at": "2026-08-05",
+      "reserved_at": "2026-08-04",
+      "review_skipped": true
     },
     {
       "date": "2026-08-12",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
-      "reserved_at": "2026-08-04"
+      "state": "locked",
+      "locked_slug": "final-expense-insurance-guide",
+      "locked_at": "2026-08-05",
+      "reserved_at": "2026-08-04",
+      "review_skipped": true
     },
     {
       "date": "2026-08-15",
@@ -2204,9 +2349,9 @@
     },
     {
       "date": "2026-08-19",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
+      "state": "locked",
+      "locked_slug": "professional-liability-who-needs-eo",
+      "locked_at": "2026-08-05",
       "reserved_at": "2026-08-04"
     },
     {
@@ -2215,6 +2360,13 @@
       "locked_slug": null,
       "locked_at": null,
       "reserved_at": "2026-08-04"
+    },
+    {
+      "date": "2026-09-02",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-08-05"
     }
   ]
 }
