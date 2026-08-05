@@ -1,5 +1,5 @@
 {
-  "_doc": "Content calendar for The Way Agency blog. Single source of truth for all blog content — planned, in-progress, and published.\n\nUpdated 2026-05-02: Re-paced future entries from 1×/week (Wed) to 2×/week (Wed + Sat). Fixed entries (week 1-5) untouched. New schedule runs through ~2026-10-14; plan year-2 content by mid-September.\n\nUpdated 2026-08-04: REVERTED the 2026-05-02 re-pace for all unpublished entries. That change re-dated posts by list position rather than by target date, compressing a 52-week editorial arc into ~29 weeks and pulling every future post 91-161 days early — seasonal posts landed months out of season (a winter-driving guide was scheduled for 2026-08-19 and caught in review). Restored each unpublished entry to the date in its markdown `date:` frontmatter, which was authored against the original 1×/week Wednesday schedule. Calendar now runs through 2027-03-24 at 1×/week. Posts already published under the compressed schedule were left live. check-data-integrity.js now fails the build if a post's month falls outside its seasonality_window.",
+  "_doc": "Content calendar for The Way Agency blog. Single source of truth for all blog content — planned, in-progress, and published.\n\nUpdated 2026-05-02: Re-paced future entries from 1×/week (Wed) to 2×/week (Wed + Sat). Fixed entries (week 1-5) untouched. New schedule runs through ~2026-10-14; plan year-2 content by mid-September.\n\nUpdated 2026-08-04: REVERTED the 2026-05-02 re-pace for all unpublished entries. That change re-dated posts by list position rather than by target date, compressing a 52-week editorial arc into ~29 weeks and pulling every future post 91-161 days early — seasonal posts landed months out of season (a winter-driving guide was scheduled for 2026-08-19 and caught in review). Restored each unpublished entry to the date in its markdown `date:` frontmatter, which was authored against the original 1×/week Wednesday schedule. Calendar now runs through 2027-03-24 at 1×/week. Posts already published under the compressed schedule were left live. check-data-integrity.js now fails the build if a post's month falls outside its seasonality_window.\n\nUpdated 2026-08-05: retired roadmap.year2-year5. They planned content by theme through 2030, which is the same far-future assumption that let the 2026-05-02 re-pace silently re-time a year of seasonal posts. Standing coverage gaps were preserved as `coverage_targets`; what to publish next now comes from the backlog + slot queue, chosen ~14 days out against current signals.",
   "version": "1.1",
   "program_start": "2026-04-01",
   "default_author": "The Way Agency",
@@ -448,6 +448,294 @@
       "category": "general",
       "reviewer": "Jill Boone",
       "reviewer_slug": "jill-boone"
+    },
+    {
+      "slug": "best-auto-insurance-rates-mt-washington-ky",
+      "title": "Auto Insurance in Mt. Washington, KY: How to Get the Best Rates in Bullitt County",
+      "description": "Auto insurance rates in Mt. Washington and Bullitt County depend on your driving record, vehicle, and coverage. Here's how to get the best price without sacrificing coverage.",
+      "publish_date": "2026-03-27",
+      "status": "published",
+      "source": "markdown",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [
+        "/insurance/mt-washington-ky.html",
+        "/insurance/shepherdsville-ky.html"
+      ],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed."
+    },
+    {
+      "slug": "bundling-home-auto",
+      "title": "Should You Bundle Home and Auto Insurance in Kentucky?",
+      "description": "Bundling home and auto insurance can save 5-25% in Kentucky. Learn when bundling makes sense, when it doesn't, and how independent agents can mix carriers for the best deal.",
+      "publish_date": "2026-03-01",
+      "status": "published",
+      "source": "html",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed."
+    },
+    {
+      "slug": "commercial-insurance-checklist-new-business",
+      "title": "Commercial Insurance Checklist: What Every New Kentucky Business Needs",
+      "description": "Starting a business in Kentucky? This step-by-step insurance checklist covers everything from general liability to workers comp, with KY-specific requirements and costs.",
+      "publish_date": "2026-03-27",
+      "status": "published",
+      "source": "markdown",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed."
+    },
+    {
+      "slug": "cyber-safety",
+      "title": "Cyber Safety for Small Businesses: A Prevention Checklist",
+      "description": "Small businesses are the #1 target for cyber attacks. Use this prevention checklist to protect your business from phishing, ransomware, and data breaches  -  and learn how cyber insurance fills the gaps.",
+      "publish_date": "2024-09-15",
+      "status": "published",
+      "source": "html",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed."
+    },
+    {
+      "slug": "flood-insurance-ohio-river-valley-2026",
+      "title": "Flood Insurance in the Ohio River Valley: What Homeowners Need to Know in 2026",
+      "description": "Flood risk is real along the Ohio River from Louisville to Henderson. Learn about NFIP vs private flood insurance, flood zones, and what homeowners insurance won't cover.",
+      "publish_date": "2026-03-27",
+      "status": "published",
+      "source": "markdown",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed."
+    },
+    {
+      "slug": "independent-vs-kentucky-farm-bureau-bullitt-county",
+      "title": "Independent Insurance Agency vs Kentucky Farm Bureau in Bullitt County: An Honest 2026 Comparison",
+      "description": "Mt Washington and Bullitt County families weighing Kentucky Farm Bureau against an independent insurance agency. A structural comparison of captive and independent models for 2026.",
+      "publish_date": "2026-05-15",
+      "status": "published",
+      "source": "markdown",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [
+        "/insurance/mt-washington-ky.html",
+        "/insurance/shepherdsville-ky.html"
+      ],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed."
+    },
+    {
+      "slug": "insurance-for-kentucky-bourbon-distilleries",
+      "title": "Insurance for Kentucky Bourbon Distilleries: What Craft Spirits Producers Need",
+      "description": "Kentucky bourbon distilleries face unique insurance risks from barrel aging to tasting rooms. Learn what coverage craft spirits producers need and how an independent agent can help.",
+      "publish_date": "2026-03-27",
+      "status": "published",
+      "source": "markdown",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed."
+    },
+    {
+      "slug": "liability-limits-how-much-enough",
+      "title": "How Much Liability Insurance Do You Actually Need? A Kentucky Guide",
+      "description": "Kentucky minimums aren't enough to protect your assets. Learn how to choose the right liability limits for home, auto, and umbrella insurance based on your real exposure.",
+      "publish_date": "2026-03-27",
+      "status": "published",
+      "source": "markdown",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed."
+    },
+    {
+      "slug": "medicare-enrollment-guide",
+      "title": "Medicare Enrollment in Kentucky: Deadlines, Periods & What to Know",
+      "description": "Learn when to enroll in Medicare in Kentucky, what Parts A, B, C, and D cover, how to avoid late enrollment penalties, and how kynect can help.",
+      "publish_date": "2025-10-01",
+      "status": "published",
+      "source": "html",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed."
+    },
+    {
+      "slug": "mt-washington-auto-insurance",
+      "title": "Auto Insurance for Mt. Washington Commuters: What I-65 Drivers Should Know",
+      "description": "Auto insurance tips for Mt. Washington, KY drivers. I-65 commute risks, Kentucky minimum requirements, uninsured motorist coverage, and how to save on car insurance in Bullitt County.",
+      "publish_date": "2026-03-26",
+      "status": "published",
+      "source": "markdown",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [
+        "/insurance/mt-washington-ky.html",
+        "/insurance/shepherdsville-ky.html"
+      ],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed."
+    },
+    {
+      "slug": "mt-washington-business-insurance",
+      "title": "Business Insurance in Bullitt County: A Guide for Mt. Washington Companies",
+      "description": "Business insurance guide for Mt. Washington and Bullitt County companies. General liability, workers comp, commercial auto, and bonds for contractors and local businesses.",
+      "publish_date": "2026-03-26",
+      "status": "published",
+      "source": "markdown",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [
+        "/insurance/mt-washington-ky.html",
+        "/insurance/shepherdsville-ky.html"
+      ],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed."
+    },
+    {
+      "slug": "mt-washington-home-insurance",
+      "title": "Home Insurance for Mt. Washington Homeowners: A Bullitt County Guide",
+      "description": "What Mt. Washington homeowners need to know about home insurance in Bullitt County. Coverage basics, flood risk, new construction discounts, and how to get the right policy.",
+      "publish_date": "2026-03-26",
+      "status": "published",
+      "source": "markdown",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [
+        "/insurance/mt-washington-ky.html",
+        "/insurance/shepherdsville-ky.html"
+      ],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed."
+    },
+    {
+      "slug": "owensboro-flood-risk-neighborhood-fema-zones-2026",
+      "title": "Owensboro Flood Risk by Neighborhood: 2026 FEMA Zones and What They Mean for Your Insurance",
+      "description": "How FEMA flood zones map across Owensboro and Daviess County in 2026, what NFIP covers, and what every Owensboro homeowner should know about flood insurance.",
+      "publish_date": "2026-05-15",
+      "status": "published",
+      "source": "markdown",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [
+        "/insurance/owensboro-ky.html"
+      ],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed."
+    },
+    {
+      "slug": "understanding-your-insurance-declarations-page",
+      "title": "How to Read Your Insurance Declarations Page: A Plain-Language Guide",
+      "description": "Your declarations page is the most important document in your insurance policy. Learn how to read it, what each section means, and what to check every renewal.",
+      "publish_date": "2026-03-27",
+      "status": "published",
+      "source": "markdown",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed. DUPLICATE 2026-08-05: near-identical to its pair (\"How to Read Your Insurance Declarations Page\" -- A Complete Guide vs A Plain-Language Guide). Both are live and competing for the same query. Needs a canonical or a consolidation+redirect; not resolved automatically because redirecting a live URL is an SEO decision. Pair: how-to-read-declarations-page.",
+      "known_duplicate_of": "how-to-read-declarations-page"
+    },
+    {
+      "slug": "workers-comp-kentucky",
+      "title": "Do Contractors Need Workers Comp in Kentucky?",
+      "description": "Kentucky requires workers compensation insurance for businesses with one or more employees. Learn the requirements, penalties, subcontractor rules, and exemptions for contractors.",
+      "publish_date": "2026-01-20",
+      "status": "published",
+      "source": "html",
+      "primary_keyword": null,
+      "secondary_keywords": [],
+      "target_product_page": null,
+      "target_location_pages": [],
+      "secondary_internal_links": [],
+      "related_cluster": null,
+      "seasonality_window": null,
+      "evergreen_or_seasonal": "evergreen",
+      "refresh_cycle": "annual",
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed."
     }
   ],
   "year1": [
@@ -581,7 +869,8 @@
       "receives_future_links": true,
       "status": "published",
       "source": "markdown",
-      "notes": "High link target — many future posts can reference this."
+      "notes": "High link target — many future posts can reference this. DUPLICATE 2026-08-05: near-identical to its pair (\"How to Read Your Insurance Declarations Page\" -- A Complete Guide vs A Plain-Language Guide). Both are live and competing for the same query. Needs a canonical or a consolidation+redirect; not resolved automatically because redirecting a live URL is an SEO decision. Pair: understanding-your-insurance-declarations-page.",
+      "known_duplicate_of": "understanding-your-insurance-declarations-page"
     },
     {
       "week": 4,
@@ -2194,127 +2483,6 @@
       "notes": "Written 2026-03-27 and previously dated 2026-12-09 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
     }
   ],
-  "roadmap": {
-    "year2": {
-      "period": "2027-04 to 2028-03",
-      "theme": "Depth and Authority",
-      "strategy": "Go deeper on clusters established in Year 1. Add second-layer supporting content. Begin building authority guides by consolidating related posts into comprehensive resources.",
-      "new_clusters": [
-        "homeowner-lifecycle",
-        "business-startup-insurance",
-        "claims-and-risk-management"
-      ],
-      "product_coverage_targets": [
-        "builders-risk",
-        "special-event",
-        "classic-car",
-        "annuities",
-        "individual-health",
-        "dental-vision",
-        "supplemental-health"
-      ],
-      "local_coverage_targets": [
-        "elizabethtown-ky",
-        "mt-washington-ky",
-        "fort-wayne-in",
-        "carmel-in",
-        "fishers-in",
-        "memphis-tn",
-        "knoxville-tn",
-        "chattanooga-tn",
-        "clarksville-tn"
-      ],
-      "industry_coverage_targets": [
-        "plumbing-contractors",
-        "general-contractors",
-        "manufacturing"
-      ],
-      "content_types_to_add": [
-        "authority-guide",
-        "client-story",
-        "video-companion"
-      ],
-      "sample_topics": [
-        "The Complete Guide to Home Insurance in Kentucky (authority guide consolidating Year 1 home content)",
-        "Builders Risk Insurance: Everything You Need to Know Before Breaking Ground",
-        "Insurance for Special Events: Weddings, Festivals, and Corporate Gatherings",
-        "Classic Car Insurance: Protecting Your Collection",
-        "Individual Health Insurance Options in Kentucky",
-        "How a Bowling Green Contractor Saved $8,000 on Workers Comp (client story)",
-        "Insurance for Plumbing Contractors in Kentucky",
-        "Insurance Tips for Memphis Homeowners in the New Madrid Seismic Zone",
-        "What to Know About Insurance When Starting a Business in Kentucky",
-        "The Complete Guide to Commercial Insurance in Kentucky (authority guide)",
-        "Insurance for Carmel and Fishers IN: Fast-Growing Communities",
-        "How to Choose the Right Annuity for Retirement",
-        "Dental, Vision, and Hearing Insurance: What Standalone Plans Cover"
-      ],
-      "governance": "Quarterly review of Year 1 posts for refresh. Begin consolidating related short posts into comprehensive guides."
-    },
-    "year3": {
-      "period": "2028-04 to 2029-03",
-      "theme": "Expansion and Reach",
-      "strategy": "Expand geographic coverage to all remaining service areas. Add new content types: comparison guides, cost calculators (interactive), and downloadable resources. Begin updating Year 1 seasonal content with fresh angles rather than just date refreshes.",
-      "new_clusters": [
-        "insurance-for-life-stages",
-        "cost-and-savings",
-        "kentucky-law-and-regulation"
-      ],
-      "content_types_to_add": [
-        "comparison-guide",
-        "cost-breakdown",
-        "downloadable-checklist",
-        "law-explainer"
-      ],
-      "sample_topics": [
-        "Insurance Needs by Life Stage: 20s, 30s, 40s, 50s, 60s+",
-        "How Much Does Auto Insurance Cost in Kentucky? (cost breakdown with factors)",
-        "Kentucky Insurance Laws Every Homeowner Should Know",
-        "Insurance Comparison: Independent Agent vs Online Quotes vs Captive Agent (data-driven)",
-        "What Insurance Do You Need When You Get Married?",
-        "Insurance for New Parents: What Changes When You Have a Baby",
-        "Manufacturing Insurance in Kentucky: Covering Product Liability and Equipment",
-        "The True Cost of Being Uninsured or Underinsured"
-      ],
-      "governance": "Full Year 1 audit: archive or consolidate any posts that didn't perform. Refresh all evergreen content. Rewrite seasonal posts with fresh angles."
-    },
-    "year4": {
-      "period": "2029-04 to 2030-03",
-      "theme": "Authority and Consolidation",
-      "strategy": "Consolidate the content library into a clear topical authority structure. Build definitive guides for each major product line. Add expert commentary and data. Begin pruning low-performing content. Focus on earning backlinks through genuinely useful resources.",
-      "content_types_to_add": [
-        "definitive-guide",
-        "data-report",
-        "expert-interview"
-      ],
-      "sample_topics": [
-        "The Definitive Guide to Insurance in Kentucky (pillar page linking to all product guides)",
-        "Kentucky Insurance Market Report: Trends, Costs, and What's Changing",
-        "Expert Q&A: Kentucky Insurance Commissioner on Consumer Protection",
-        "Insurance Glossary: 100+ Terms Explained in Plain Language",
-        "Contractor Insurance Guide: The Complete Resource for Kentucky Contractors"
-      ],
-      "governance": "Biannual content audit. Merge overlapping posts. Update all guides with latest data. Redirect consolidated content."
-    },
-    "year5": {
-      "period": "2030-04 to 2031-03",
-      "theme": "Leadership and Innovation",
-      "strategy": "At this point the blog should be a genuine authority resource. Focus on maintaining quality, expanding into adjacent topics (financial planning, risk management, community resilience), and exploring new formats. The content library should be a competitive moat.",
-      "content_types_to_add": [
-        "annual-market-report",
-        "community-resource",
-        "interactive-tool"
-      ],
-      "sample_topics": [
-        "Annual Kentucky Insurance Market Report 2031",
-        "Community Resilience: How Owensboro Prepares for Natural Disasters",
-        "Interactive: Find the Right Insurance Coverage for Your Situation",
-        "Financial Planning and Insurance: Working Together for Your Family",
-        "The Way Agency: Our Story and the Communities We Serve (brand authority piece)"
-      ],
-      "governance": "Full content library audit. Archive dated content. Ensure all product pages have 3-5 supporting blog posts. Evaluate new product lines or markets for content expansion."
-    }
-  },
   "slots": [
     {
       "date": "2026-08-05",
@@ -2368,5 +2536,33 @@
       "locked_at": null,
       "reserved_at": "2026-08-05"
     }
-  ]
+  ],
+  "coverage_targets": {
+    "_doc": "Markets, products and industries still lacking coverage. Feeds the queue scheduler's location-deficit scoring. Kept from the retired roadmap.year2 -- these are standing gaps, not a dated plan.",
+    "products": [
+      "builders-risk",
+      "special-event",
+      "classic-car",
+      "annuities",
+      "individual-health",
+      "dental-vision",
+      "supplemental-health"
+    ],
+    "locations": [
+      "elizabethtown-ky",
+      "mt-washington-ky",
+      "fort-wayne-in",
+      "carmel-in",
+      "fishers-in",
+      "memphis-tn",
+      "knoxville-tn",
+      "chattanooga-tn",
+      "clarksville-tn"
+    ],
+    "industries": [
+      "plumbing-contractors",
+      "general-contractors",
+      "manufacturing"
+    ]
+  }
 }
