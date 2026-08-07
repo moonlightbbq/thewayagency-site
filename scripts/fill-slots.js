@@ -24,28 +24,13 @@ const allowReviewSkip = args.includes('--allow-review-skip');
 const todayArg = args.indexOf('--today');
 const today = todayArg !== -1 ? args[todayArg + 1] : new Date().toISOString().slice(0, 10);
 
-// Same window definitions the build check enforces, so the scheduler can never
-// place something check-data-integrity.js would then reject.
-const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june',
-  'july', 'august', 'september', 'october', 'november', 'december'];
-function parseWindows() {
-  const tax = JSON.parse(fs.readFileSync(require('path').join(__dirname, '..', 'data', 'content-taxonomy.json'), 'utf8'));
-  const defs = tax?.lifecycle?.seasonal?.seasonality_windows || {};
-  const out = {};
-  for (const [name, desc] of Object.entries(defs)) {
-    const found = String(desc).split('(')[0].match(/[A-Za-z]+/g) || [];
-    const idx = found.map(w => MONTHS.indexOf(w.toLowerCase())).filter(i => i >= 0);
-    if (!idx.length) continue;
-    const months = [];
-    for (let m = idx[0]; ; m = (m + 1) % 12) { months.push(m); if (m === idx[idx.length - 1]) break; }
-    out[name] = months;
-  }
-  return out;
-}
-
 const cal = q.loadCalendar();
 const backlog = q.loadBacklog();
-const windows = parseWindows();
+// Same window definitions the build check enforces, so the scheduler can never
+// place something check-data-integrity.js would then reject. One shared parser
+// in the lib: eligibility fails CLOSED on a window it cannot interpret, so two
+// parsers that disagree would mean one caller schedules and the other refuses.
+const windows = q.loadWindowMonths();
 
 const reserved = q.reserveSlots(cal, today);
 const { locked, skipped } = q.fillSlots(cal, backlog, today, windows, { allowReviewSkip });

@@ -121,6 +121,45 @@ function loadAnchors(root = ROOT) {
   } catch { return { anchors: {} }; }
 }
 
+const MONTH_NAMES = ['january', 'february', 'march', 'april', 'may', 'june',
+  'july', 'august', 'september', 'october', 'november', 'december'];
+
+/**
+ * seasonality_window -> the month indices it spans, parsed from the taxonomy's
+ * prose definitions ("July-August", "September (before Oct 15 open enrolment)").
+ *
+ * THE single implementation. There were three near-identical copies (here,
+ * fill-slots.js, and the sage content-queue adapter) back when an unparseable
+ * window merely meant "always eligible" and a disagreement between them was
+ * invisible. Now that eligibility fails CLOSED, a parser that returns nothing
+ * stops the queue — so three of them that can drift is a correctness problem,
+ * not a tidiness one.
+ *
+ * Throws rather than returning {} on a missing/unreadable taxonomy: an empty
+ * map is indistinguishable from "no windows defined", which under fail-closed
+ * would silently refuse to schedule anything seasonal.
+ */
+function loadWindowMonths(root = ROOT) {
+  const p = path.join(root, 'data', 'content-taxonomy.json');
+  const tax = JSON.parse(fs.readFileSync(p, 'utf8'));
+  const defs = tax?.lifecycle?.seasonal?.seasonality_windows;
+  if (!defs || !Object.keys(defs).length) {
+    throw new Error(`No seasonality_windows defined in ${p}`);
+  }
+  const out = {};
+  for (const [name, desc] of Object.entries(defs)) {
+    // Only the text before the parenthetical is the range; the note after it
+    // routinely names other months ("September (before Oct 15 ...)").
+    const found = String(desc).split('(')[0].match(/[A-Za-z]+/g) || [];
+    const idx = found.map(w => MONTH_NAMES.indexOf(w.toLowerCase())).filter(i => i >= 0);
+    if (!idx.length) continue;
+    const months = [];
+    for (let m = idx[0]; ; m = (m + 1) % 12) { months.push(m); if (m === idx[idx.length - 1]) break; }
+    out[name] = months;
+  }
+  return out;
+}
+
 /** The anchor governing a window, if one claims it. */
 function anchorForWindow(windowName, anchors) {
   const all = (anchors && anchors.anchors) || {};
@@ -191,12 +230,43 @@ function eligibilityOn(candidate, ymd, windowMonths, opts = {}) {
     };
   }
 
+  // No anchor claims this window, and the taxonomy does not define it either.
+  // FAIL CLOSED. The old behaviour returned "eligible on every date", which
+  // means the one filter standing between a winter driving guide and an August
+  // publish date could be defeated by a typo, a renamed window, or a bot
+  // emitting a value in the wrong vocabulary (the topic-researcher's output
+  // contract does exactly that: it writes `seasonal_window: "2026-09"`, which
+  // matches no taxonomy window at all).
+  //
+  // A window we cannot interpret is not a window we can honour. Refusing to
+  // schedule leaves the slot visibly empty and alarms through I2/I2b; the
+  // alternative failure is silent and publishes the wrong thing.
+  const known = _windowIsKnown(candidate.seasonality_window, windowMonths);
+  if (!known) {
+    return {
+      eligible: false,
+      basis: 'unknown-window',
+      detail: `seasonality_window "${candidate.seasonality_window}" is not defined in content-taxonomy.json `
+        + 'and no anchor claims it - refusing to schedule rather than treating it as always-eligible',
+    };
+  }
   return { eligible: _monthEligible(candidate, ymd, windowMonths), basis: 'months' };
+}
+
+/**
+ * Whether the window is one we can actually reason about. An empty/absent
+ * windowMonths map means the caller could not load the taxonomy at all, which
+ * is a different failure from "this window is not in it" - in that case every
+ * window is unknown and the queue stops, which is the correct loud outcome.
+ */
+function _windowIsKnown(windowName, windowMonths) {
+  const months = (windowMonths || {})[windowName];
+  return Array.isArray(months) && months.length > 0;
 }
 
 function _monthEligible(candidate, ymd, windowMonths) {
   const months = (windowMonths || {})[candidate.seasonality_window];
-  if (!months || !months.length) return true;
+  if (!months || !months.length) return false; // see _windowIsKnown - fail closed
   const allowed = new Set();
   for (const m of months) { allowed.add(m); allowed.add((m + 11) % 12); allowed.add((m + 1) % 12); }
   return allowed.has(asDate(ymd).getUTCMonth());
@@ -305,8 +375,14 @@ function scoreCandidate(candidate, ymd, ctx, windowMonths, opts = {}) {
   if (candidate.status !== 'approved') {
     return { eligible: false, score: 0, reasons: [`status is "${candidate.status}", not approved`] };
   }
-  if (!isEligibleOn(candidate, ymd, windowMonths)) {
-    return { eligible: false, score: 0, reasons: [`out of season for ${ymd} (${candidate.seasonality_window})`] };
+  const elig = eligibilityOn(candidate, ymd, windowMonths, opts);
+  if (!elig.eligible) {
+    // An unrecognised window is a data defect, not a scheduling outcome. Say
+    // which it is, or an operator reading the log chases the wrong thing.
+    const why = elig.basis === 'unknown-window'
+      ? elig.detail
+      : `out of season for ${ymd} (${candidate.seasonality_window})`;
+    return { eligible: false, score: 0, reasons: [why] };
   }
   const conflict = cannibalizationConflict(candidate, ctx, opts.threshold);
   if (conflict) {
@@ -578,7 +654,7 @@ module.exports = {
   candidateToPost, reserveSlots, fillSlots,
   HORIZON_DAYS, LOCK_DAYS, MIN_LOCK_LEAD_DAYS, MARKDOWN_DUE_DAYS, MIN_APPROVED_BACKLOG, PUBLISH_WEEKDAYS,
   asDate, toYmd, daysBetween, isPublishDay, publishDatesWithin,
-  loadAnchors, anchorForWindow, anchorRange, eligibilityOn,
+  loadAnchors, anchorForWindow, anchorRange, eligibilityOn, loadWindowMonths,
   loadCalendar, loadBacklog, saveCalendar,
   occupiedDates, hasMarkdown, approvedCandidates, isEligibleOn,
 };
