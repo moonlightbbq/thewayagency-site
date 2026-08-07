@@ -41,10 +41,11 @@ const APPLY = process.argv.includes('--apply');
 // --dry-run is the default; the flag is accepted for explicitness.
 const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
-// Statuses that are eligible to be flipped to "published" once their date
-// arrives. Mirrors publish-scheduled-posts.js (planned/in-review) plus
-// in-draft, which is genuinely-stuck content that is otherwise ready.
-const PUBLISHABLE_STATUSES = new Set(['planned', 'in-review', 'in-draft']);
+// Statuses eligible to be flipped to "published" once their date arrives.
+// Shared with publish-scheduled-posts.js rather than mirrored: this list and
+// that one had already drifted apart from what sage writes, which is how
+// 'approved' became a status that silently blocked publication.
+const { PUBLISHABLE_STATUSES } = require('./lib/calendar-status');
 
 const calendar = JSON.parse(fs.readFileSync(CALENDAR_PATH, 'utf8'));
 

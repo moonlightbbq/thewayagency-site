@@ -3,7 +3,8 @@
  * The Way Agency  -  Scheduled Blog Publisher
  *
  * Checks content-calendar.json for posts with a publish_date <= today
- * and status "planned" / "in-review" / "in-draft", verifies the markdown
+ * whose status is publishable (see scripts/lib/calendar-status.js -- the
+ * vocabulary is shared with sage, which writes 'approved'), verifies the markdown
  * file exists, reconciles its frontmatter date:/modified: to the calendar
  * publish_date, and updates the status to "published".
  *
@@ -21,6 +22,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { isPublishable, isKnownStatus } = require('./lib/calendar-status');
 
 const ROOT = path.resolve(__dirname, '..');
 const CALENDAR_PATH = path.join(ROOT, 'data', 'content-calendar.json');
@@ -49,10 +51,25 @@ const errors = [];
 let calendarChanged = false;
 
 for (const post of calendar.year1) {
-  // Publish posts that are "planned", "in-review", or "in-draft" when their
-  // date arrives.
-  if (post.status !== 'planned' && post.status !== 'in-review' && post.status !== 'in-draft') continue;
+  // Publishable states come from the shared vocabulary, not a local list.
+  // The local list is what broke: it omitted 'approved', so a reviewer
+  // replying "Approved" silently stopped their own post from publishing.
   if (post.publish_date > today) continue;
+  if (!isPublishable(post.status)) {
+    // An unknown status is a contract breach between this repo and sage, and
+    // skipping it quietly is exactly the failure mode this guards. Terminal
+    // states (published/error) are expected and stay silent.
+    if (!isKnownStatus(post.status)) {
+      const reason = `unrecognised status "${post.status}" — not in the shared calendar-status vocabulary`;
+      if (post.status !== 'error' || post.error_reason !== reason) {
+        post.error_reason = reason;
+        post.error_at = new Date().toISOString();
+        calendarChanged = true;
+      }
+      errors.push({ slug: post.slug, reason });
+    }
+    continue;
+  }
 
   // Readiness check: markdown file must exist. If a post is on the
   // calendar with a publish_date in the past and there's no markdown,

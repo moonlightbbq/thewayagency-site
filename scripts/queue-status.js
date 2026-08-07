@@ -73,6 +73,28 @@ if (anchorEntries.length) {
   }
 }
 
+// Windows nothing can interpret. These now fail CLOSED, so a candidate
+// carrying one will never be scheduled — which is the safe outcome but an
+// invisible one unless it is named here. The most likely cause is a bot
+// writing a value in the wrong vocabulary.
+const windows = q.loadWindowMonths();
+const unknownWindows = new Map();
+for (const c of backlog.candidates || []) {
+  if (!c.seasonality_window) continue;
+  const e = q.eligibilityOn(c, today, windows);
+  if (e.basis === 'unknown-window') {
+    if (!unknownWindows.has(c.seasonality_window)) unknownWindows.set(c.seasonality_window, []);
+    unknownWindows.get(c.seasonality_window).push(c.slug);
+  }
+}
+if (unknownWindows.size) {
+  console.log('\nUNRECOGNISED seasonality_window (these can never be scheduled):');
+  for (const [win, slugs] of unknownWindows) {
+    console.log(`  "${win}" — ${slugs.join(', ')}`);
+  }
+  console.log('  Not defined in content-taxonomy.json and claimed by no anchor.');
+}
+
 if (stats.reviewSkipped.length) {
   console.log(`\nPublishing WITHOUT a reviewer email (${stats.reviewSkipped.length}):`);
   for (const p of stats.reviewSkipped) {
