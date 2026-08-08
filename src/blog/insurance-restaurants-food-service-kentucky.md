@@ -4,8 +4,8 @@ slug: insurance-restaurants-food-service-kentucky
 description: Restaurants face slip-and-fall claims, foodborne illness lawsuits, grease fires, and liquor liability. Here's the coverage Kentucky restaurant owners need.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-11-04
-modified: 2026-11-04
+date: 2026-08-08
+modified: 2026-08-08
 reading_time: 7 min read
 related_page: /commercial/general-liability.html
 tags: restaurant insurance, food service, liquor liability, kentucky, commercial insurance
