@@ -115,39 +115,6 @@
       "notes": "Written 2026-03-27 and previously dated 2026-12-23 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
     },
     {
-      "slug": "surety-bonds-explained",
-      "title": "Surety Bonds Explained: What They Are and When You Need One",
-      "description": "Surety bonds aren't insurance — they're a guarantee. Learn how bonds work, the difference between bid, performance, and payment bonds, and when Kentucky businesses need them.",
-      "primary_keyword": "what is a surety bond",
-      "secondary_keywords": [
-        "surety bond vs insurance",
-        "bid bond performance bond",
-        "contractor surety bond kentucky"
-      ],
-      "related_cluster": "commercial-specialty",
-      "pillar": "product",
-      "funnel_stage": "middle",
-      "search_intent": "informational",
-      "topic_type": "deep-dive",
-      "seasonality_window": null,
-      "target_product_page": "/commercial/bonds.html",
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/commercial/general-liability.html",
-        "/commercial/builders-risk.html",
-        "/industries/general-contractors.html"
-      ],
-      "conversion_goal": "quote-request",
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "source": "migrated-from-year1",
-      "proposed_at": "2026-08-04",
-      "approved_at": "2026-08-04",
-      "approved_by": "phase-2-migration",
-      "status": "approved",
-      "notes": "Written 2026-03-27 and previously dated 2027-01-06 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
-    },
-    {
       "slug": "replacement-cost-vs-actual-cash-value",
       "title": "Replacement Cost vs. Actual Cash Value: Why It Matters at Claim Time",
       "description": "The difference between replacement cost and actual cash value can mean thousands of dollars when you file a claim. Here's how each works and which one you want.",
