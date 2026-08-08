@@ -301,7 +301,20 @@ if (calendar) {
     }
     if (c.slug) seenCandidateSlugs.add(c.slug);
     if (c.seasonality_window && windowDefs && !windowDefs[c.seasonality_window]) {
-      error(`content-backlog.json: "${label}" has unknown seasonality_window "${c.seasonality_window}"`); queueErrors++;
+      error(`content-backlog.json: "${label}" has unknown seasonality_window "${c.seasonality_window}" `
+        + '(eligibility fails closed, so this candidate can never be scheduled)'); queueErrors++;
+    }
+    // Metadata candidateToPost() reads. Each one is DEFAULTED there, so a
+    // hollow candidate still schedules — it just publishes with generic
+    // values. Warn rather than error: the entry is usable, but nobody should
+    // discover a boilerplate description after the post is live. This is what
+    // the four `seasonal-auto` entries were missing.
+    const SCHEDULER_FIELDS = ['description', 'topic_type', 'search_intent', 'funnel_stage',
+      'conversion_goal', 'related_cluster', 'page_role', 'refresh_cycle'];
+    const thin = SCHEDULER_FIELDS.filter(f => c[f] === undefined || c[f] === null || c[f] === '');
+    if (thin.length) {
+      warn(`content-backlog.json: "${label}" is missing ${thin.join(', ')} — `
+        + 'candidateToPost will substitute defaults, so this would publish with generic metadata');
     }
     // A candidate must not already be scheduled -- that is a double-booking.
     if (c.slug && allCalPosts.some(p => p.slug === c.slug && p.status !== 'published')) {

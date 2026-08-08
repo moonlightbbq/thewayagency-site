@@ -460,6 +460,13 @@ function candidateToPost(candidate, ymd, today) {
     source: 'queue-lock',
     locked_at: today,
     notes: candidate.notes || '',
+    // The SERP evidence, differentiation angle, direct-answer target and
+    // sources the researcher gathered. blog-planner injects it into the
+    // blog-write task and seo-auditor's draft gate checks the draft AGAINST it
+    // (direct answer delivered, questions answered, sources cited). Dropping it
+    // here would mean a topic picked BECAUSE of a specific angle reaches the
+    // writer as a bare title, and the gate then has nothing to verify against.
+    research_brief: candidate.research_brief || null,
   };
 }
 
