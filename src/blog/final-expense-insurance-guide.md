@@ -4,8 +4,8 @@ slug: final-expense-insurance-guide
 description: Final expense insurance covers funeral costs so your family isn't burdened with a $7,000-$12,000 bill. Here's how it works, what it costs, and who should consider it.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-11-11
-modified: 2026-11-11
+date: 2026-08-12
+modified: 2026-08-12
 reading_time: 6 min read
 related_page: /life/final-expense.html
 tags: final expense, burial insurance, funeral insurance, life insurance, kentucky
