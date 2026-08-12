@@ -2342,8 +2342,7 @@
       "reviewer": "Kelly McCallister",
       "reviewer_email": "kelly@thewayagency.com",
       "reviewer_slug": "kelly-mccallister",
-      "review_sent_date": "2026-08-05",
-      "reminder_sent": true
+      "review_sent_date": "2026-08-05"
     },
     {
       "publish_date": "2026-08-05",
@@ -2411,7 +2410,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "published",
+      "status": "planned",
       "source": "queue-lock",
       "locked_at": "2026-08-05",
       "notes": "Written 2026-03-27 and previously dated 2026-11-04 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk. Locked 3d before publish so the date would not go silent. That is inside send-review-emails' D-10 window, so no reviewer email goes out for this post. Draft was already written and on disk.",
@@ -2446,7 +2445,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "published",
+      "status": "planned",
       "source": "queue-lock",
       "locked_at": "2026-08-05",
       "notes": "Written 2026-03-27 and previously dated 2026-11-11 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk. Locked 7d before publish so the date would not go silent. That is inside send-review-emails' D-10 window, so no reviewer email goes out for this post. Draft was already written and on disk.",
@@ -2489,8 +2488,7 @@
       "reviewer": "Sheilia Royal",
       "reviewer_email": "sheilia@thewayagency.com",
       "reviewer_slug": "sheilia-royal",
-      "review_sent_date": "2026-08-05",
-      "reminder_sent": true
+      "review_sent_date": "2026-08-05"
     },
     {
       "publish_date": "2026-08-22",
@@ -2522,14 +2520,10 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "in-review",
+      "status": "planned",
       "source": "queue-lock",
       "locked_at": "2026-08-08",
-      "notes": "Written 2026-03-27 and previously dated 2027-01-06 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk.",
-      "reviewer": "Audrey Lillpop",
-      "reviewer_email": "audrey@thewayagency.com",
-      "reviewer_slug": "audrey-lillpop",
-      "review_sent_date": "2026-08-08"
+      "notes": "Written 2026-03-27 and previously dated 2027-01-06 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
     }
   ],
   "slots": [
@@ -2591,6 +2585,13 @@
       "locked_slug": null,
       "locked_at": null,
       "reserved_at": "2026-08-08"
+    },
+    {
+      "date": "2026-09-09",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-08-12"
     }
   ],
   "coverage_targets": {
