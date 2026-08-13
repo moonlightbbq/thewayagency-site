@@ -198,8 +198,10 @@
           <div>
             <h2 id="contact-form-heading">Send us a message</h2>
             <form id="contactForm" novalidate>
-              <!-- Honeypot -->
-              <div style="position:absolute;left:-9999px" aria-hidden="true"><label for="_hp_co">Company</label><input type="text" id="_hp_co" name="_hp_company" tabindex="-1" autocomplete="off"></div>
+              <!-- Honeypot — display:none, never off-screen: Chrome autofill skips
+                   display:none fields but fills off-screen ones, which used to trip
+                   this trap for real visitors and bin the lead. No label. -->
+              <div style="display:none" aria-hidden="true"><input type="text" id="_hp_co" name="_hp_company" tabindex="-1" autocomplete="off" data-1p-ignore data-lpignore="true" data-form-type="other"></div>
               <div class="grid grid--2">
                 <div class="form-group">
                   <label for="c_fname">First Name *</label>

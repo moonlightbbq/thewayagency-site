@@ -800,10 +800,14 @@
     <h2>Review your information</h2>
     <p class="card-desc">Please confirm everything looks correct before submitting.</p>
     <div id="review-summary"></div>
-    <!-- Honeypot — hidden from humans, bots auto-fill it -->
-    <div style="position:absolute;left:-9999px;top:-9999px" aria-hidden="true">
-      <label for="_hp_company">Company</label>
-      <input type="text" id="_hp_company" name="_hp_company" tabindex="-1" autocomplete="off">
+    <!-- Honeypot — must be display:none, never off-screen. Chrome autofill and
+         the password managers skip display:none fields but happily populate an
+         off-screen one; combined with the "Company" label this used to autofill
+         for real visitors and 403 them at sage checkHoneypot, silently binning
+         the lead. Keep the label off and the opt-out attributes on. -->
+    <div style="display:none" aria-hidden="true">
+      <input type="text" id="_hp_company" name="_hp_company" tabindex="-1" autocomplete="off"
+             data-1p-ignore data-lpignore="true" data-form-type="other">
     </div>
     <div id="turnstile-container" style="margin:12px auto;display:flex;justify-content:center"></div>
     <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin:16px 0 4px;font-size:12px;color:var(--slate);">
