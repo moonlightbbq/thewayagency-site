@@ -2489,6 +2489,41 @@
       "reviewer_email": "sheilia@thewayagency.com",
       "reviewer_slug": "sheilia-royal",
       "review_sent_date": "2026-08-05"
+    },
+    {
+      "publish_date": "2026-08-22",
+      "title": "Surety Bonds Explained: What They Are and When You Need One",
+      "slug": "surety-bonds-explained",
+      "description": "Surety bonds aren't insurance — they're a guarantee. Learn how bonds work, the difference between bid, performance, and payment bonds, and when Kentucky businesses need them.",
+      "pillar": "product",
+      "topic_type": "deep-dive",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "primary_keyword": "what is a surety bond",
+      "secondary_keywords": [
+        "surety bond vs insurance",
+        "bid bond performance bond",
+        "contractor surety bond kentucky"
+      ],
+      "target_product_page": "/commercial/bonds.html",
+      "target_location_pages": [],
+      "secondary_internal_links": [
+        "/commercial/general-liability.html",
+        "/commercial/builders-risk.html",
+        "/industries/general-contractors.html"
+      ],
+      "related_cluster": "commercial-specialty",
+      "conversion_goal": "quote-request",
+      "evergreen_or_seasonal": "evergreen",
+      "seasonality_window": null,
+      "refresh_cycle": "annual",
+      "page_role": "supporting",
+      "is_link_target": false,
+      "receives_future_links": true,
+      "status": "planned",
+      "source": "queue-lock",
+      "locked_at": "2026-08-08",
+      "notes": "Written 2026-03-27 and previously dated 2027-01-06 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
     }
   ],
   "slots": [
@@ -2532,9 +2567,9 @@
     },
     {
       "date": "2026-08-22",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
+      "state": "locked",
+      "locked_slug": "surety-bonds-explained",
+      "locked_at": "2026-08-08",
       "reserved_at": "2026-08-04"
     },
     {
@@ -2543,6 +2578,20 @@
       "locked_slug": null,
       "locked_at": null,
       "reserved_at": "2026-08-05"
+    },
+    {
+      "date": "2026-09-05",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-08-08"
+    },
+    {
+      "date": "2026-09-09",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-08-12"
     }
   ],
   "coverage_targets": {

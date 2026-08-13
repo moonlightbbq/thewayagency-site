@@ -800,10 +800,14 @@
     <h2>Review your information</h2>
     <p class="card-desc">Please confirm everything looks correct before submitting.</p>
     <div id="review-summary"></div>
-    <!-- Honeypot — hidden from humans, bots auto-fill it -->
-    <div style="position:absolute;left:-9999px;top:-9999px" aria-hidden="true">
-      <label for="_hp_company">Company</label>
-      <input type="text" id="_hp_company" name="_hp_company" tabindex="-1" autocomplete="off">
+    <!-- Honeypot — must be display:none, never off-screen. Chrome autofill and
+         the password managers skip display:none fields but happily populate an
+         off-screen one; combined with the "Company" label this used to autofill
+         for real visitors and 403 them at sage checkHoneypot, silently binning
+         the lead. Keep the label off and the opt-out attributes on. -->
+    <div style="display:none" aria-hidden="true">
+      <input type="text" id="_hp_company" name="_hp_company" tabindex="-1" autocomplete="off"
+             data-1p-ignore data-lpignore="true" data-form-type="other">
     </div>
     <div id="turnstile-container" style="margin:12px auto;display:flex;justify-content:center"></div>
     <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin:16px 0 4px;font-size:12px;color:var(--slate);">
@@ -2166,7 +2170,14 @@ function revealOtherPanelIfSelected() {
 
 // ── Validation helpers ──────────────────────────────────────────────────────
 function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e); }
-function isValidPhone(p) { return p.replace(/\D/g, '').length === 10; }
+// Mirrors normalizePhone() in sage (src/lib/phone.js): 10 digits, or 11 with a
+// leading 1. Sage's intake endpoints key on exactly this rule, so the two must
+// not drift — looser here loses leads to an unseen 400, tighter here turns away
+// someone who typed their own country code.
+function isValidPhone(p) {
+  const d = p.replace(/\D/g, '');
+  return d.length === 10 || (d.length === 11 && d.charAt(0) === '1');
+}
 
 // ── Silent contact validation (Twilio Lookup + MX check) ────────────────────
 async function validateContacts() {
