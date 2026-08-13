@@ -331,7 +331,12 @@
       if (!fname || fname.length > 100) { showErr('Please enter a valid first name.'); return; }
       if (!lname || lname.length > 100) { showErr('Please enter a valid last name.'); return; }
       if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 254) { showErr('Please enter a valid email address.'); return; }
-      if (!phone || phone.replace(/\D/g, '').length < 7) { showErr('Please enter a valid phone number.'); return; }
+      // Mirrors normalizePhone() in sage (src/lib/phone.js): 10 digits, or 11
+      // with a leading 1. Sage rejects anything else, so a looser check here
+      // would let a lead clear the form and then 400 where nobody sees it.
+      var phoneDigits = phone.replace(/\D/g, '');
+      var phoneOk = phoneDigits.length === 10 || (phoneDigits.length === 11 && phoneDigits.charAt(0) === '1');
+      if (!phone || !phoneOk) { showErr('Please enter a valid 10-digit phone number.'); return; }
       if (!subject) { showErr('Please select what we can help with.'); return; }
       if (msg && msg.length > 5000) { showErr('Message must be under 5000 characters.'); return; }
 

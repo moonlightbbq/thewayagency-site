@@ -2170,7 +2170,14 @@ function revealOtherPanelIfSelected() {
 
 // ── Validation helpers ──────────────────────────────────────────────────────
 function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e); }
-function isValidPhone(p) { return p.replace(/\D/g, '').length === 10; }
+// Mirrors normalizePhone() in sage (src/lib/phone.js): 10 digits, or 11 with a
+// leading 1. Sage's intake endpoints key on exactly this rule, so the two must
+// not drift — looser here loses leads to an unseen 400, tighter here turns away
+// someone who typed their own country code.
+function isValidPhone(p) {
+  const d = p.replace(/\D/g, '');
+  return d.length === 10 || (d.length === 11 && d.charAt(0) === '1');
+}
 
 // ── Silent contact validation (Twilio Lookup + MX check) ────────────────────
 async function validateContacts() {
