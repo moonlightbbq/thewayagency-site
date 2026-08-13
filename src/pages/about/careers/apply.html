@@ -225,10 +225,12 @@
               <input type="file" id="apply-resume" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none;">
             </div>
 
-            <!-- Honeypot -->
-            <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
-              <label for="_hp_company">Company</label>
-              <input type="text" id="_hp_company" name="_hp_company" tabindex="-1" autocomplete="off">
+            <!-- Honeypot — display:none, never off-screen: Chrome autofill skips
+                 display:none fields but fills off-screen ones, which used to trip
+                 this trap for real applicants and reject them. No label. -->
+            <div style="display:none" aria-hidden="true">
+              <input type="text" id="_hp_company" name="_hp_company" tabindex="-1" autocomplete="off"
+                     data-1p-ignore data-lpignore="true" data-form-type="other">
             </div>
 
             <div id="turnstile-container" style="margin:var(--space-md) 0;display:flex;justify-content:center;"></div>
