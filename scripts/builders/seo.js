@@ -71,7 +71,7 @@ function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, render
       }
     }
     // Cache-bust JS and CSS with build version
-    html = html.replace(/src="\/src\/js\/app\.js"/g, `src="/src/js/app.js?v=${buildVersion}"`);
+    html = html.replace(/src="\/src\/js\/([\w-]+)\.js"/g, `src="/src/js/$1.js?v=${buildVersion}"`);
     html = html.replace(/href="\/src\/css\/(\w+)\.css"/g, `href="/src/css/$1.css?v=${buildVersion}"`);
 
     // Inject GTM head snippet (before </head>) and body snippet (after <body>)

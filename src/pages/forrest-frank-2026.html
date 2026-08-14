@@ -411,6 +411,14 @@
         questionText: hasQuestions === 'yes' ? questionText : '',
         cfToken: turnstileToken || '', _hp_company: hp, page: '/forrest-frank-2026'
       };
+      // A paid promo entry with no attribution is unmeasurable — TWA is
+      // bundled in app.js, which this page loads; guarded regardless.
+      if (window.TWA) {
+        payload.twa_vid = TWA.getVisitorId();
+        payload._tracking = TWA.getTrackingIds();
+        payload.attribution = TWA.getAttribution();
+        payload.referrer = document.referrer || 'direct';
+      }
 
       try {
         var resp = await fetch('https://sage.thewayagency.com/api/intake/giveaway', {
@@ -426,6 +434,13 @@
             var okStamps = JSON.parse(localStorage.getItem('twa_giveaway_ts') || '[]');
             okStamps.push(Date.now());
             localStorage.setItem('twa_giveaway_ts', JSON.stringify(okStamps));
+          } catch(e) {}
+          // Measurable at last: this page fired no conversion signal at all.
+          // Deliberately no fbq('Lead') — a giveaway entry is not a sales lead.
+          try {
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({ event: 'giveaway_entered', category: 'conversion', free_review: freeReview });
+            window.dataLayer.push({ event: 'conversion', conversion_type: 'giveaway_entry', conversion_reference: data.reference || '', conversion_source: 'forrest-frank-2026' });
           } catch(e) {}
           form.style.display = 'none';
           successEl.style.display = 'block';

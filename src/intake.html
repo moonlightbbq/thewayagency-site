@@ -21,6 +21,12 @@
 <link rel="stylesheet" href="/src/css/base.css">
 <link rel="stylesheet" href="/src/css/components.css">
 <link rel="stylesheet" href="/src/css/leadgen.css">
+<!-- Shared attribution module (window.TWA). NO defer: this page's giant inline
+     script executes at parse time and needs TWA to already exist. app.js is
+     deliberately NOT loaded here (it would inject the mobile call FAB and a
+     dead after-hours chat binding on the money page); attribution.js is the
+     standalone copy the build ships alongside the app.js bundle. -->
+<script src="/src/js/attribution.js"></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
 <style>
   :root {
@@ -875,36 +881,12 @@
 const SAGE_API = 'https://sage.thewayagency.com';
 
 // ── Offline Queue Processing ────────────────────────────────────────────────
-(function processQueue() {
-  try {
-    const raw = localStorage.getItem('twa_intake_queue');
-    if (!raw) return;
-    const queued = JSON.parse(raw);
-    if (!queued || !queued.payload) return;
-    // Try to submit with exponential backoff (3 attempts)
-    let attempt = 0;
-    function trySubmit() {
-      attempt++;
-      fetch(SAGE_API + '/api/intake', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(queued.payload)
-      }).then(r => r.json()).then(d => {
-        if (d.ok) { localStorage.removeItem('twa_intake_queue'); }
-        else if (attempt < 3) setTimeout(trySubmit, Math.pow(2, attempt) * 2000);
-      }).catch(() => { if (attempt < 3) setTimeout(trySubmit, Math.pow(2, attempt) * 2000); });
-    }
-    trySubmit();
-  } catch(e) {}
-})();
-window.addEventListener('online', function() {
-  try {
-    if (localStorage.getItem('twa_intake_queue')) {
-      fetch(SAGE_API + '/api/intake', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(JSON.parse(localStorage.getItem('twa_intake_queue')).payload)
-      }).then(r => r.json()).then(d => { if (d.ok) localStorage.removeItem('twa_intake_queue'); }).catch(() => {});
-    }
-  } catch(e) {}
+// Replay lives in flushIntakeQueue() in the main script: the queued Turnstile
+// token expired long before replay, and the server gate is deliberately NOT
+// weakened for replays, so a fresh token must be acquired first — which needs
+// the config sitekey + the turnstile api, neither available this early.
+window.addEventListener('online', function () {
+  if (window.flushIntakeQueue) window.flushIntakeQueue();
 });
 
 // ── Connection indicator ────────────────────────────────────────────────────
@@ -1192,30 +1174,76 @@ initFieldFocusTracking();
 // Show version in footer
 fetch(SAGE_API + '/api/health').then(r=>r.json()).then(d=>{ const el=document.getElementById('intake-version'); if(el&&d.version) el.textContent='v'+d.version; }).catch(()=>{});
 
-function getVisitorId() {
-  var id;
-  try { id = localStorage.getItem('twa_vid'); } catch(e) {}
-  if (!id) {
-    id = Math.random().toString(36).slice(2) + Date.now().toString(36);
-    try { localStorage.setItem('twa_vid', id); } catch(e) {}
-  }
-  return id;
-}
+// Shared with every other page via src/js/attribution.js (window.TWA) — the
+// local copies this page carried have been deleted. Also seed the first/last
+// touch cookies NOW: a direct paid landing on /intake/?utm_… previously never
+// wrote twa_ft/twa_lt because app.js (the old seeding owner) never loads here.
+//
+// Resilience stub: if attribution.js failed to load (network hiccup, test
+// harness), the wizard must still WORK — attribution is an enhancement, never
+// a dependency the money form can die on. The stub no-ops capture/exposure,
+// keeps a bare visitor id, and pins A/B assignment to control.
+window.TWA = window.TWA || {
+  captureAttribution: function () {},
+  getAttribution: function () { return {}; },
+  getVisitorId: function () {
+    try { return localStorage.getItem('twa_vid') || ''; } catch (e) { return ''; }
+  },
+  getTrackingIds: function () { return {}; },
+  assignVariant: function (name, variants) { return variants[0]; },
+  pushExposure: function () {},
+};
+TWA.captureAttribution();
+function getVisitorId() { return TWA.getVisitorId(); }
+function getTrackingIds() { return TWA.getTrackingIds(); }
 
-function getTrackingIds() {
-  function getCookieVal(name) {
-    var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-    return m ? decodeURIComponent(m[1]) : '';
+// ── Intake-page A/B tests ───────────────────────────────────────────────────
+// Moved from app.js, which never loads on /intake/ — both tests were
+// permanently inert while still pushing ab_exposure on every OTHER page,
+// poisoning the exposure data. Assignment/exposure via TWA; ?force_variant=
+// honored. Apply bodies are verbatim from app.js.
+(function () {
+  var dobVariant = TWA.assignVariant('dob-required', ['control', 'required']);
+  if (dobVariant === 'required') {
+    document.body.classList.add('twa-ab-dob-required');
+    var dobInput = document.getElementById('i_dob');
+    if (dobInput) {
+      dobInput.type = 'date';
+      dobInput.removeAttribute('maxlength');
+      dobInput.removeAttribute('placeholder');
+      dobInput.removeAttribute('inputmode');
+      var dobLabel = document.querySelector('label[for="i_dob"]');
+      if (dobLabel && !dobLabel.parentNode.querySelector('.twa-form-microcopy')) {
+        var micro = document.createElement('p');
+        micro.className = 'twa-form-microcopy';
+        micro.textContent = 'Needed for accurate quote.';
+        micro.style.cssText = 'font-size:12px;color:var(--slate,#64748b);margin:2px 0 0;';
+        dobLabel.insertAdjacentElement('afterend', micro);
+      }
+    }
   }
-  return {
-    fbp: getCookieVal('_fbp'),
-    fbc: getCookieVal('_fbc') || (function() {
-      var fbclid = new URLSearchParams(window.location.search).get('fbclid');
-      return fbclid ? 'fb.1.' + Date.now() + '.' + fbclid : '';
-    })(),
-    ga_client_id: (getCookieVal('_ga') || '').replace(/^GA\d+\.\d+\./, ''),
-  };
-}
+  TWA.pushExposure('dob-required', dobVariant);
+
+  var textVariant = TWA.assignVariant('intake-call-or-text', ['control', 'with-text']);
+  if (textVariant === 'with-text') {
+    var takeoverButtons = document.getElementById('takeover-buttons');
+    var callBtn = takeoverButtons && takeoverButtons.querySelector('button[data-choice="call_me"]');
+    if (callBtn && !takeoverButtons.querySelector('[data-choice="text_me"]')) {
+      var textBtn = document.createElement('a');
+      textBtn.href = 'sms:+15024135335';
+      textBtn.setAttribute('data-choice', 'text_me');
+      textBtn.setAttribute('rel', 'noopener');
+      textBtn.style.cssText = 'width:100%;padding:14px 24px;border-radius:12px;border:none;background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(8,145,178,.4);transition:transform .15s;text-decoration:none;text-align:center;display:block;box-sizing:border-box;';
+      textBtn.innerHTML = '\u{1F4F1} Text Me';
+      textBtn.addEventListener('click', function () {
+        window.dataLayer = window.dataLayer || [];
+        dataLayer.push({ event: 'intake_text_me_clicked', test_name: 'intake-call-or-text', variant: 'with-text' });
+      });
+      callBtn.insertAdjacentElement('afterend', textBtn);
+    }
+  }
+  TWA.pushExposure('intake-call-or-text', textVariant);
+})();
 
 let currentStep = 1;
 let selectedProducts = [];
@@ -1895,6 +1923,13 @@ function sanitizePhone(val) {
   if (industry) {
     window._intakeIndustry = industry;
   }
+
+  // County context from the county landing pages (no form field — rides
+  // formData.geo_county on every submit path via buildRiskFormData).
+  const county = sanitizeAlpha(params.get('county') || '', 40);
+  if (county) {
+    window._intakeCounty = county;
+  }
 })();
 
 // ── Cloudflare Turnstile (bot protection) ───────────────────────────────────
@@ -1926,8 +1961,112 @@ function initTurnstileOnReview() {
 function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
 function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
+// ── Offline replay ──────────────────────────────────────────────────────────
+// The queued payload's token is long expired; acquire a fresh one via an
+// invisible widget (the visible step-4 widget can't render while its container
+// is hidden, but invisible-size widgets are built for exactly this).
+async function _freshReplayToken() {
+  if (!_turnstileSiteKey || !window.turnstile) return '';
+  return new Promise((resolve) => {
+    let done = false;
+    const container = document.createElement('div');
+    container.style.display = 'none';
+    document.body.appendChild(container);
+    const finish = (t) => { if (!done) { done = true; container.remove(); resolve(t || ''); } };
+    setTimeout(() => finish(''), 8000);
+    try {
+      turnstile.render(container, {
+        sitekey: _turnstileSiteKey,
+        size: 'invisible',
+        callback: finish,
+        'error-callback': () => finish(''),
+        'expired-callback': () => finish(''),
+      });
+    } catch (e) { finish(''); }
+  });
+}
+async function flushIntakeQueue() {
+  let queued;
+  try { queued = JSON.parse(localStorage.getItem('twa_intake_queue') || 'null'); } catch (e) { return; }
+  if (!queued || !queued.payload) return;
+  // Wait for the config fetch that carries the sitekey (usually <1s).
+  for (let i = 0; i < 20 && !_turnstileSiteKey; i++) await new Promise(r => setTimeout(r, 250));
+  const payload = queued.payload;
+  payload.cfToken = await _freshReplayToken();
+  payload.twa_vid = payload.twa_vid || getVisitorId();
+  payload._tracking = payload._tracking || getTrackingIds();
+  try {
+    const d = await fetch(SAGE_API + '/api/intake', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).then(r => r.json());
+    if (d.ok) {
+      localStorage.removeItem('twa_intake_queue');
+      try { localStorage.setItem('twa_intake_submitted', String(Date.now())); } catch (e) {}
+    }
+  } catch (e) { /* still offline — the 'online' listener retries */ }
+}
+window.flushIntakeQueue = flushIntakeQueue;
+flushIntakeQueue();
+
 // ── Auto-save / abandoned form tracking ─────────────────────────────────────
 // As soon as we have name + contact info, save partial data to server
+// Harvest every risk answer currently on the form, using the final-submit key
+// names — one shape server-side. Shared by the final submit AND the /track
+// autosave, so vehicles/home details typed on step 3 survive an abandon (they
+// used to be lost: the autosave only ever carried applicant fields).
+function buildRiskFormData() {
+  const formData = {};
+  const el = id => { const e = document.getElementById(id); return e ? e.value.trim() : ''; };
+
+  // Shared: Current insurance
+  if (el('i_current_carrier')) formData.current_carrier = el('i_current_carrier');
+  if (el('i_policy_expiry')) formData.policy_expiry = el('i_policy_expiry');
+
+  // Shared DOB field (used by life, auto, umbrella)
+  if (el('i_dob')) formData.app_dob = el('i_dob');
+  if (el('i_li_amount')) formData.li_faceamt = el('i_li_amount');
+  if (el('i_li_type')) formData.li_type = el('i_li_type');
+  if (el('i_li_tobacco')) formData.li_tobacco = el('i_li_tobacco');
+  if (el('i_other_desc')) formData.other_desc = el('i_other_desc');
+  formData.ho_same_as_mailing = hoSameAddr ? 'yes' : 'no';
+
+  // Homeowners: property address + value
+  if (el('i_ho_value')) formData.ho_value = el('i_ho_value');
+  if (el('i_ho_yearbuilt')) formData.ho_yearbuilt = el('i_ho_yearbuilt');
+  if (!hoSameAddr) {
+    if (el('i_ho_address_street') || el('i_ho_address')) formData.ho_address = el('i_ho_address_street') || el('i_ho_address');
+    if (el('i_ho_city')) formData.ho_city = el('i_ho_city');
+    if (el('i_ho_state')) formData.ho_state = el('i_ho_state');
+    if (el('i_ho_zip')) formData.ho_zip = el('i_ho_zip');
+  }
+
+  const vehicles = getVehicles();
+  vehicles.forEach((vh, i) => {
+    const n = i + 1;
+    if (vh.year) formData[`vh_${n}_year`] = vh.year;
+    if (vh.make) formData[`vh_${n}_make`] = vh.make;
+    if (vh.model) formData[`vh_${n}_model`] = vh.model;
+  });
+
+  // Shared business info fields
+  ['i_biz_name','i_biz_type','i_biz_revenue','i_biz_employees','i_biz_years'].forEach(id => {
+    const val = el(id); if (val) formData[id] = val;
+  });
+
+  // Collect all product-specific fields. Schema-driven products come from
+  // SCHEMA_FIELD_IDS; flood is a dedicated renderer (not in the schema) so its
+  // ids are appended explicitly — omitting them would silently drop flood data.
+  const fields = [...SCHEMA_FIELD_IDS, 'i_fl_foundation', 'i_fl_claims', 'i_fl_zone'];
+  fields.forEach(id => { const val = el(id); if (val) formData[id] = val; });
+
+  // Add industry context if passed from an industry page
+  if (window._intakeIndustry) formData.industry = window._intakeIndustry;
+  // County context from the county landing pages
+  if (window._intakeCounty) formData.geo_county = window._intakeCounty;
+  return formData;
+}
+
 async function trackPartial(notify) {
   const firstName = v('i_fname'), lastName = v('i_lname');
   const email = v('i_email'), phone = v('i_phone');
@@ -1946,23 +2085,18 @@ async function trackPartial(notify) {
     // can show the actual entry point even before final submit (mirrors the final
     // submission's formData capture).
     const _trkParams = new URLSearchParams(window.location.search);
+    // URL params first, then the twa_lt/twa_ft cookies via TWA.getAttribution()
+    // — the old fallback read a `twa_utm` cookie nothing ever wrote, so a
+    // visitor who navigated here from a UTM-tagged landing page autosaved with
+    // no campaign data at all. gclid/fbclid now ride the autosave too.
+    const _cookieAttr = TWA.getAttribution();
     const _attr = {
       lead_page: window.location.pathname + window.location.search,
       lead_referrer: document.referrer || 'direct',
-      lead_source: _trkParams.get('src') || undefined,
+      lead_source: _trkParams.get('src') || _cookieAttr.src || undefined,
     };
-    for (const _k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']) {
-      const _val = _trkParams.get(_k);
-      if (_val) _attr[_k] = _val;
-    }
-    const _utmCookie = document.cookie.match(/twa_utm=([^;]+)/);
-    if (_utmCookie) {
-      try {
-        const _saved = JSON.parse(decodeURIComponent(_utmCookie[1]));
-        for (const _k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']) {
-          if (_saved[_k] && !_attr[_k]) _attr[_k] = _saved[_k];
-        }
-      } catch (e) {}
+    for (const _k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'fbclid']) {
+      _attr[_k] = _trkParams.get(_k) || _cookieAttr[_k] || undefined;
     }
 
     const res = await fetch(SAGE_API + '/api/intake/track', {
@@ -1978,11 +2112,18 @@ async function trackPartial(notify) {
         notify: !!notify,
         _hp_company: document.getElementById('_hp_company')?.value || '',
         cfToken: turnstileToken || '',
-        twa_vid: sessionId || getVisitorId(),
+        // The visitor id proper — no longer conflated with the sage sessionId
+        // (sessionId already rides as its own key above).
+        twa_vid: getVisitorId(),
         _tracking: getTrackingIds(),
+        attribution: _cookieAttr,
+        // Step-3 risk answers ride the autosave so an abandoned wizard still
+        // spills them into the Risk Profile server-side.
+        formData: buildRiskFormData(),
         ..._attr,
       })
     });
+    _fieldsDirtySinceTrack = false;
     const data = await res.json().catch(() => ({}));
 
     // The server is the authority on who we can write, and it says so with
@@ -2031,6 +2172,41 @@ function scheduleTrack() {
     el.addEventListener('input', scheduleTrack);
   }
 });
+
+// ── Exit flush ──────────────────────────────────────────────────────────────
+// Any field typed since the last successful /track (step-3 risk answers
+// especially — they only autosave on step transitions) gets one last save when
+// the visitor leaves. fetch keepalive, NOT sendBeacon: a JSON Blob beacon
+// triggers a CORS preflight the dying page can't complete.
+let _fieldsDirtySinceTrack = false;
+document.addEventListener('input', () => { _fieldsDirtySinceTrack = true; }, true);
+function _flushTrackOnExit() {
+  if (!_fieldsDirtySinceTrack || !sessionId) return;
+  const firstName = v('i_fname'), lastName = v('i_lname');
+  const email = v('i_email'), phone = v('i_phone');
+  if (!firstName || !lastName || (!email && !phone) || mustDecline()) return;
+  _fieldsDirtySinceTrack = false;
+  try {
+    fetch(SAGE_API + '/api/intake/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        sessionId, firstName, lastName, email, phone,
+        address: v('i_address_street') || v('i_address'), city: v('i_city'), state: v('i_state'), zip: v('i_zip'),
+        products: selectedProducts, step: currentStep, agent: _agentParam, notify: false,
+        _hp_company: document.getElementById('_hp_company')?.value || '',
+        twa_vid: getVisitorId(), _tracking: getTrackingIds(),
+        attribution: TWA.getAttribution(),
+        formData: buildRiskFormData(),
+        lead_page: window.location.pathname + window.location.search,
+        lead_referrer: document.referrer || 'direct',
+      }),
+    }).catch(() => {});
+  } catch (e) { /* dying page — nothing to do */ }
+}
+window.addEventListener('pagehide', _flushTrackOnExit);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') _flushTrackOnExit(); });
 
 // ── Check if an agent has claimed this session ──────────────────────────────
 let _takeoverShown = false;
@@ -2361,6 +2537,10 @@ async function nextStep(from) {
     }
     err.classList.add('hidden');
   }
+  // Autosave on step transitions (fire-and-forget): step-1 Continue already
+  // tracks via the notify path above; 2→3 and 3→4 are the moments the risk
+  // answers exist and would otherwise only survive via the exit flush.
+  if (from === 2 || from === 3) trackPartial(false);
   showStep(from + 1);
 }
 
@@ -3072,16 +3252,19 @@ async function submitQuickLead() {
   ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(key => {
     const val = urlParams.get(key); if (val) formData[key] = val;
   });
-  const utmCookie = document.cookie.match(/twa_utm=([^;]+)/);
-  if (utmCookie) { try { const s = JSON.parse(decodeURIComponent(utmCookie[1])); for (const k in s) { if (!formData[k]) formData[k] = s[k]; } } catch(e) {} }
+  // Cookie fallback via TWA (twa_lt/twa_ft) — the old code read a `twa_utm`
+  // cookie nothing ever wrote, so returning visitors lost their UTMs here.
+  const _qlAttr = TWA.getAttribution();
+  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'fbclid'].forEach(key => {
+    if (!formData[key] && _qlAttr[key]) formData[key] = _qlAttr[key];
+  });
   const gclid = urlParams.get('gclid'), fbclid = urlParams.get('fbclid');
   if (gclid) formData.gclid = gclid;
   if (fbclid) formData.fbclid = fbclid;
-  const ltCookie = document.cookie.match(/twa_lt=([^;]+)/);
-  if (ltCookie) { try { const lt = JSON.parse(decodeURIComponent(ltCookie[1])); if (lt.gclid && !formData.gclid) formData.gclid = lt.gclid; if (lt.fbclid && !formData.fbclid) formData.fbclid = lt.fbclid; } catch(e) {} }
   formData.lead_referrer = document.referrer || 'direct';
   formData.lead_page = window.location.pathname + window.location.search;
   if (window._intakeIndustry) formData.industry = window._intakeIndustry;
+  if (window._intakeCounty) formData.geo_county = window._intakeCounty;
 
   try {
     const res = await fetch(SAGE_API + '/api/intake', {
@@ -3119,6 +3302,9 @@ async function submitQuickLead() {
     const data = await res.json();
     if (data.ok) {
       clearInterval(pollTimer);
+      // Suppress the exit-intent popup site-wide — app.js reads this key and
+      // it was never written anywhere, so past submitters kept seeing it.
+      try { localStorage.setItem('twa_intake_submitted', String(Date.now())); } catch (e) {}
       document.getElementById('step-2').classList.add('hidden');
       document.getElementById('step-confirm').classList.remove('hidden');
       document.getElementById('ref-number').textContent = 'Reference: #' + data.reference;
@@ -3211,52 +3397,7 @@ async function submitIntake() {
     }
   }
 
-  const formData = {};
-  const el = id => { const e = document.getElementById(id); return e ? e.value.trim() : ''; };
-
-  // Shared: Current insurance
-  if (el('i_current_carrier')) formData.current_carrier = el('i_current_carrier');
-  if (el('i_policy_expiry')) formData.policy_expiry = el('i_policy_expiry');
-
-  // Shared DOB field (used by life, auto, umbrella)
-  if (el('i_dob')) formData.app_dob = el('i_dob');
-  if (el('i_li_amount')) formData.li_faceamt = el('i_li_amount');
-  if (el('i_li_type')) formData.li_type = el('i_li_type');
-  if (el('i_li_tobacco')) formData.li_tobacco = el('i_li_tobacco');
-  if (el('i_other_desc')) formData.other_desc = el('i_other_desc');
-  formData.ho_same_as_mailing = hoSameAddr ? 'yes' : 'no';
-
-  // Homeowners: property address + value
-  if (el('i_ho_value')) formData.ho_value = el('i_ho_value');
-  if (el('i_ho_yearbuilt')) formData.ho_yearbuilt = el('i_ho_yearbuilt');
-  if (!hoSameAddr) {
-    if (el('i_ho_address_street') || el('i_ho_address')) formData.ho_address = el('i_ho_address_street') || el('i_ho_address');
-    if (el('i_ho_city')) formData.ho_city = el('i_ho_city');
-    if (el('i_ho_state')) formData.ho_state = el('i_ho_state');
-    if (el('i_ho_zip')) formData.ho_zip = el('i_ho_zip');
-  }
-
-  const vehicles = getVehicles();
-  vehicles.forEach((vh, i) => {
-    const n = i + 1;
-    if (vh.year) formData[`vh_${n}_year`] = vh.year;
-    if (vh.make) formData[`vh_${n}_make`] = vh.make;
-    if (vh.model) formData[`vh_${n}_model`] = vh.model;
-  });
-
-  // Shared business info fields
-  ['i_biz_name','i_biz_type','i_biz_revenue','i_biz_employees','i_biz_years'].forEach(id => {
-    const val = el(id); if (val) formData[id] = val;
-  });
-
-  // Collect all product-specific fields. Schema-driven products come from
-  // SCHEMA_FIELD_IDS; flood is a dedicated renderer (not in the schema) so its
-  // ids are appended explicitly — omitting them would silently drop flood data.
-  const fields = [...SCHEMA_FIELD_IDS, 'i_fl_foundation', 'i_fl_claims', 'i_fl_zone'];
-  fields.forEach(id => { const val = el(id); if (val) formData[id] = val; });
-
-  // Add industry context if passed from an industry page
-  if (window._intakeIndustry) formData.industry = window._intakeIndustry;
+  const formData = buildRiskFormData();
 
   // Add source tracking, UTM attribution, and agent assignment
   const urlParams = new URLSearchParams(window.location.search);
@@ -3264,33 +3405,13 @@ async function submitIntake() {
   if (srcParam) formData.lead_source = srcParam;
   const agentParam = urlParams.get('agent');
 
-  // Capture UTM params (from URL or cookie)
-  const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
-  for (const key of utmKeys) {
-    const val = urlParams.get(key);
-    if (val) formData[key] = val;
-  }
-  // Also check cookie for returning visitors
-  const utmCookie = document.cookie.match(/twa_utm=([^;]+)/);
-  if (utmCookie) {
-    try {
-      const saved = JSON.parse(decodeURIComponent(utmCookie[1]));
-      for (const key of utmKeys) { if (saved[key] && !formData[key]) formData[key] = saved[key]; }
-    } catch(e) {}
-  }
-  // Capture GCLID/FBCLID from URL or attribution cookies
-  const gclid = urlParams.get('gclid');
-  const fbclid = urlParams.get('fbclid');
-  if (gclid) formData.gclid = gclid;
-  if (fbclid) formData.fbclid = fbclid;
-  // Also check last-touch attribution cookie (set by app.js)
-  const ltCookie = document.cookie.match(/twa_lt=([^;]+)/);
-  if (ltCookie) {
-    try {
-      const lt = JSON.parse(decodeURIComponent(ltCookie[1]));
-      if (lt.gclid && !formData.gclid) formData.gclid = lt.gclid;
-      if (lt.fbclid && !formData.fbclid) formData.fbclid = lt.fbclid;
-    } catch(e) {}
+  // Capture campaign params: URL first, then the twa_lt/twa_ft cookies via
+  // TWA.getAttribution() for returning visitors. (The old cookie fallback read
+  // `twa_utm`, which nothing ever wrote — cross-page UTMs were silently lost.)
+  const _fsAttr = TWA.getAttribution();
+  for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'fbclid']) {
+    const val = urlParams.get(key) || _fsAttr[key];
+    if (val && !formData[key]) formData[key] = val;
   }
   formData.lead_referrer = document.referrer || 'direct';
   formData.lead_page = window.location.pathname + window.location.search;
@@ -3343,8 +3464,9 @@ async function submitIntake() {
         agent: agentParam || '',
         _hp_company: document.getElementById('_hp_company')?.value || '',
         cfToken: turnstileToken || '',
-        twa_vid: sessionId || getVisitorId(),
+        twa_vid: getVisitorId(),
         _tracking: getTrackingIds(),
+        attribution: _fsAttr,
       })
     });
     if (!res.ok) {
@@ -3361,6 +3483,8 @@ async function submitIntake() {
     const data = await res.json();
     if (data.ok) {
       clearInterval(pollTimer);
+      // Suppress the exit-intent popup site-wide (see quick-lead branch).
+      try { localStorage.setItem('twa_intake_submitted', String(Date.now())); } catch (e) {}
       document.getElementById('step-4').classList.add('hidden');
       document.getElementById('step-confirm').classList.remove('hidden');
       document.getElementById('ref-number').textContent = 'Reference: #' + data.reference;
@@ -3399,6 +3523,11 @@ async function submitIntake() {
       businessName: v('i_biz_name') || undefined,
       products: selectedProducts, formData, notes: v('i_notes'), agent: agentParam || '',
       _hp_company: document.getElementById('_hp_company')?.value || '', cfToken: '',
+      // Replay context: the queued token is stale by replay time, so
+      // flushIntakeQueue() acquires a FRESH one (the server gate is not
+      // weakened for replays); identity/attribution snapshot ride along.
+      twa_vid: getVisitorId(), _tracking: getTrackingIds(), attribution: TWA.getAttribution(),
+      offline_replay: true, queued_at: Date.now(),
     };
     try { localStorage.setItem('twa_intake_queue', JSON.stringify({ payload, ref: queueRef, ts: Date.now() })); } catch(qe) {}
     err.textContent = 'Saved! We\'ll submit when you\'re back online. Ref: ' + queueRef;

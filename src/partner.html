@@ -1123,6 +1123,9 @@ async function submitReferral() {
 
   var textOk = document.getElementById('p_text_ok')?.checked ?? true;
   var notesVal = val('p_notes');
+  // Belt-and-suspenders for ONE release: sage now stores textOk as a real
+  // consent flag (contacts.do_not_text); the magic string stays until that
+  // deploy is confirmed reading the field, then this append gets deleted.
   if (phoneVal && !textOk) {
     notesVal = (notesVal ? notesVal + '\n' : '') + '[Do NOT text this number]';
   }
@@ -1138,6 +1141,7 @@ async function submitReferral() {
     notes: notesVal || undefined,
     mortgagee: val('p_mortgagee') || undefined,
     loanNumber: val('p_loannum') || undefined,
+    textOk: !!textOk,
   };
 
   try {

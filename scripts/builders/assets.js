@@ -74,6 +74,28 @@ function copyJs(SRC, BUILD, minify) {
     const destPath = path.join(destDir, entry.name);
     if (entry.isDirectory()) {
       copyDir(srcPath, destPath);
+    } else if (entry.isFile() && entry.name === 'app.js') {
+      // Built app.js = attribution.js (window.TWA) + app.js. Prepending at
+      // build time gives every page that loads app.js the shared attribution
+      // module in guaranteed order, with zero HTML edits across the ~40
+      // hand-written pages. attribution.js is ALSO copied standalone (the
+      // loop's normal path) for /intake/, which deliberately never loads
+      // app.js. app.js references window.TWA, so order matters.
+      const attrPath = path.join(srcDir, 'attribution.js');
+      let combined = fs.readFileSync(srcPath, 'utf8');
+      if (fs.existsSync(attrPath)) {
+        combined = fs.readFileSync(attrPath, 'utf8') + '\n;\n' + combined;
+      }
+      totalBefore += combined.length;
+      if (terserBin) {
+        const tmpPath = destPath + '.concat.tmp';
+        fs.writeFileSync(tmpPath, combined);
+        execFileSync(process.execPath, [terserBin, tmpPath, '--compress', 'passes=2', '--mangle', '--output', destPath], { stdio: ['ignore', 'ignore', 'inherit'] });
+        fs.unlinkSync(tmpPath);
+      } else {
+        fs.writeFileSync(destPath, combined);
+      }
+      totalAfter += fs.statSync(destPath).size;
     } else if (entry.isFile() && entry.name.endsWith('.js') && terserBin) {
       totalBefore += fs.statSync(srcPath).size;
       execFileSync(process.execPath, [terserBin, srcPath, '--compress', 'passes=2', '--mangle', '--output', destPath], { stdio: ['ignore', 'ignore', 'inherit'] });

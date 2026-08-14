@@ -66,7 +66,7 @@
     textNumber: '(502) 413-5335',
     calendarUrl: '',
     // GA4 + Meta Pixel are loaded by GTM (GTM-MCQG9SN3). Do not initialize here.
-    // GA4 measurement ID: G-C79ZCDZVPE (configure in GTM, not in code)
+    // GA4 measurement ID: G-0LQ0W8VBR7 (configure in GTM, not in code — verified live 2026-06-23 in sage src/lib/api-config.js)
     fbPixelId: '33110648475215550', // used for fbq('setUserProperties') only
     debug: new URLSearchParams(window.location.search).has('twa_debug'),
   };
@@ -100,94 +100,22 @@
         'free-quote': { '[data-ab-test="hero-cta"]': 'Get a Free Quote' },
         'compare': { '[data-ab-test="hero-cta"]': 'Compare Rates Now' },
       },
-      weight: [50, 25, 25],
+      // Uniform 1/3 split — hashAssign has never read weights; a weighted
+      // rollout must launch as a NEW test name (re-bucketing mid-test
+      // contaminates returning-visitor assignment).
     },
-    'dob-required': {
-      variants: {
-        control: {},
-        required: {},
-      },
-      // Variant requires DOB for all personal lines (vs. life-only in control), upgrades input to type=date
-      // for native mobile picker, and adds microcopy. Validation in src/intake.html keys off the body class.
-      apply: function(variant) {
-        if (variant !== 'required') return;
-        document.body.classList.add('twa-ab-dob-required');
-        const input = document.getElementById('i_dob');
-        if (!input) return;
-        input.type = 'date';
-        input.removeAttribute('maxlength');
-        input.removeAttribute('placeholder');
-        input.removeAttribute('inputmode');
-        const label = document.querySelector('label[for="i_dob"]');
-        if (label && !label.parentNode.querySelector('.twa-form-microcopy')) {
-          const micro = document.createElement('p');
-          micro.className = 'twa-form-microcopy';
-          micro.textContent = 'Needed for accurate quote.';
-          micro.style.cssText = 'font-size:12px;color:var(--slate,#64748b);margin:2px 0 0;';
-          label.insertAdjacentElement('afterend', micro);
-        }
-      },
-    },
-    'intake-call-or-text': {
-      variants: {
-        control: {},
-        'with-text': {},
-      },
-      // Variant adds a tap-to-text option alongside the Call Me button on the agent takeover step.
-      // Click-to-call must always pair with a text option per agency policy; this test measures whether
-      // surfacing text as a peer CTA lifts response engagement.
-      apply: function(variant) {
-        if (variant !== 'with-text') return;
-        const buttons = document.getElementById('takeover-buttons');
-        if (!buttons) return;
-        const callBtn = buttons.querySelector('button[data-choice="call_me"]');
-        if (!callBtn || buttons.querySelector('[data-choice="text_me"]')) return;
-        const textBtn = document.createElement('a');
-        textBtn.href = 'sms:+15024135335';
-        textBtn.setAttribute('data-choice', 'text_me');
-        textBtn.setAttribute('rel', 'noopener');
-        textBtn.style.cssText = 'width:100%;padding:14px 24px;border-radius:12px;border:none;background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(8,145,178,.4);transition:transform .15s;text-decoration:none;text-align:center;display:block;box-sizing:border-box;';
-        textBtn.innerHTML = '\u{1F4F1} Text Me';
-        textBtn.addEventListener('click', function() {
-          window.dataLayer = window.dataLayer || [];
-          dataLayer.push({ event: 'intake_text_me_clicked', test_name: 'intake-call-or-text', variant: 'with-text' });
-        });
-        callBtn.insertAdjacentElement('afterend', textBtn);
-      },
-    },
+    // 'dob-required' and 'intake-call-or-text' moved INLINE to src/intake.html
+    // (registered via TWA.assignVariant/pushExposure): app.js never loads on
+    // /intake/, so both tests were permanently inert here while still pushing
+    // ab_exposure on every other page — poisoning the exposure data.
   };
 
-  function getVisitorId() {
-    let id;
-    try { id = localStorage.getItem('twa_vid'); } catch(e) {}
-    if (!id) {
-      id = Math.random().toString(36).slice(2) + Date.now().toString(36);
-      try { localStorage.setItem('twa_vid', id); } catch(e) {}
-    }
-    return id;
-  }
-
-  function getTrackingIds() {
-    function getCookieVal(name) {
-      const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-      return m ? decodeURIComponent(m[1]) : '';
-    }
-    return {
-      fbp: getCookieVal('_fbp'),
-      fbc: getCookieVal('_fbc') || (function() {
-        var fbclid = new URLSearchParams(window.location.search).get('fbclid');
-        return fbclid ? 'fb.1.' + Date.now() + '.' + fbclid : '';
-      })(),
-      ga_client_id: (getCookieVal('_ga') || '').replace(/^GA\d+\.\d+\./, ''),
-    };
-  }
-
-  function hashAssign(visitorId, testName, variantCount) {
-    let hash = 0;
-    const str = visitorId + ':' + testName;
-    for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash |= 0; }
-    return Math.abs(hash) % variantCount;
-  }
+  // Visitor id / tracking ids / A-B hash live in src/js/attribution.js
+  // (window.TWA). The build prepends that file to this one, so TWA always
+  // exists by the time these run; /intake/ loads it standalone.
+  function getVisitorId() { return window.TWA.getVisitorId(); }
+  function getTrackingIds() { return window.TWA.getTrackingIds(); }
+  function hashAssign(visitorId, testName, variantCount) { return window.TWA.hashAssign(visitorId, testName, variantCount); }
 
   function initABTests() {
     const params = new URLSearchParams(window.location.search);
@@ -242,101 +170,20 @@
     dataLayer.push({ event, ...params });
   }
 
-  // ─── SHA-256 hash helper (for PII) ────────────
-  async function sha256(str) {
-    if (!str || !window.crypto?.subtle) return '';
-    const data = new TextEncoder().encode(str.toLowerCase().trim());
-    const hash = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-  }
+  // ─── SHA-256 hash helper (for PII) — moved to TWA ──
+  const sha256 = (str) => window.TWA.sha256(str);
 
   // ═══════════════════════════════════════════════
   // ATTRIBUTION ENGINE
   // ═══════════════════════════════════════════════
 
-  // ─── Cookie helpers ───────────────────────────
-  function setCookie(name, value, days) {
-    document.cookie = `${name}=${encodeURIComponent(JSON.stringify(value))};path=/;max-age=${days * 86400};SameSite=Lax`;
-  }
-  function getCookie(name) {
-    const match = document.cookie.match(new RegExp(`${name}=([^;]+)`));
-    if (!match) return null;
-    try { return JSON.parse(decodeURIComponent(match[1])); } catch(e) { return null; }
-  }
-
-  // ─── Capture attribution from URL ─────────────
-  function captureAttribution() {
-    const params = new URLSearchParams(window.location.search);
-    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
-    const touchData = {};
-    let hasAttribution = false;
-
-    // UTM params
-    for (const key of utmKeys) {
-      const val = params.get(key);
-      if (val) { touchData[key] = val; hasAttribution = true; }
-    }
-
-    // Click IDs (Google Ads, Meta)
-    const gclid = params.get('gclid');
-    const fbclid = params.get('fbclid');
-    if (gclid) { touchData.gclid = gclid; hasAttribution = true; }
-    if (fbclid) { touchData.fbclid = fbclid; hasAttribution = true; }
-
-    // Custom params
-    const src = params.get('src');
-    const agent = params.get('agent');
-    if (src) touchData.src = src;
-    if (agent) touchData.agent = agent;
-
-    // Landing page
-    touchData.landing_page = window.location.pathname + window.location.search;
-    touchData.date = new Date().toISOString().split('T')[0];
-
-    // First-touch: set once, never overwrite (365-day expiry)
-    if (hasAttribution && !getCookie('twa_ft')) {
-      setCookie('twa_ft', touchData, 365);
-      _log('first_touch_set', touchData);
-    }
-
-    // Last-touch: overwrite on every visit with attribution (30-day expiry)
-    if (hasAttribution) {
-      setCookie('twa_lt', touchData, 30);
-      _log('last_touch_set', touchData);
-    }
-
-    // Session landing page (set once per session via sessionStorage)
-    try {
-      if (!sessionStorage.getItem('twa_lp')) {
-        sessionStorage.setItem('twa_lp', window.location.pathname);
-      }
-    } catch (e) { /* private browsing */ }
-
-    return touchData;
-  }
-
-  // ─── Get full attribution for form submission ─
-  function getAttribution() {
-    const ft = getCookie('twa_ft') || {};
-    const lt = getCookie('twa_lt') || {};
-    let lp = window.location.pathname;
-    try { lp = sessionStorage.getItem('twa_lp') || lp; } catch (e) { /* private browsing */ }
-    return {
-      first_touch: ft,
-      last_touch: lt,
-      landing_page: lp,
-      // Flat fields for backward compat with sage formData
-      utm_source: lt.utm_source || ft.utm_source || '',
-      utm_medium: lt.utm_medium || ft.utm_medium || '',
-      utm_campaign: lt.utm_campaign || ft.utm_campaign || '',
-      utm_content: lt.utm_content || ft.utm_content || '',
-      utm_term: lt.utm_term || ft.utm_term || '',
-      gclid: lt.gclid || ft.gclid || '',
-      fbclid: lt.fbclid || ft.fbclid || '',
-      src: lt.src || ft.src || '',
-      agent: lt.agent || ft.agent || '',
-    };
-  }
+  // ═══ ATTRIBUTION ENGINE — moved to src/js/attribution.js (window.TWA) ═══
+  // The build prepends attribution.js to this file; these wrappers keep the
+  // internal call sites unchanged.
+  const setCookie = (name, value, days) => window.TWA.setCookie(name, value, days);
+  const getCookie = (name) => window.TWA.getCookie(name);
+  const captureAttribution = () => window.TWA.captureAttribution();
+  const getAttribution = () => window.TWA.getAttribution();
 
   // Backward compat wrapper
   function getUTMParams() { return getAttribution(); }
@@ -363,47 +210,8 @@
   // ═══════════════════════════════════════════════
   // ENHANCED CONVERSIONS (hashed PII)
   // ═══════════════════════════════════════════════
-  async function pushEnhancedConversion(data) {
-    if (!data.email && !data.phone) return;
-
-    // Hash PII client-side before pushing to dataLayer
-    const [hashedEmail, hashedPhone, hashedFn, hashedLn] = await Promise.all([
-      sha256(data.email || ''),
-      sha256((data.phone || '').replace(/\D/g, '')),
-      sha256(data.firstName || ''),
-      sha256(data.lastName || ''),
-    ]);
-
-    window.dataLayer = window.dataLayer || [];
-    dataLayer.push({
-      event: 'enhanced_conversion',
-      enhanced_conversion_data: {
-        email: hashedEmail,
-        phone_number: hashedPhone,
-        first_name: hashedFn,
-        last_name: hashedLn,
-        address: {
-          postal_code: (data.zip || '').trim(),
-          region: (data.state || '').trim(),
-          country: 'US',
-        },
-      },
-    });
-
-    // Meta Advanced Matching (fbq handles its own hashing)
-    if (window.fbq) {
-      fbq('setUserProperties', CONFIG.fbPixelId, {
-        em: (data.email || '').toLowerCase().trim(),
-        ph: (data.phone || '').replace(/\D/g, ''),
-        fn: (data.firstName || '').toLowerCase().trim(),
-        ln: (data.lastName || '').toLowerCase().trim(),
-        zp: (data.zip || '').trim(),
-        country: 'us',
-        external_id: getVisitorId(),
-      });
-    }
-    _log('enhanced_conversion', { email: '***', phone: '***' });
-  }
+  // Moved to TWA (shared with /intake/); CONFIG.fbPixelId threaded here.
+  const pushEnhancedConversion = (data) => window.TWA.pushEnhancedConversion(data, CONFIG.fbPixelId);
 
   // ═══════════════════════════════════════════════
   // CONVERSION EVENTS
@@ -462,9 +270,10 @@
     data.twa_vid = getVisitorId();
     data._tracking = getTrackingIds();
 
-    // Attach full attribution data
+    // Attach full attribution data (sage's attributionSchema shape; the old
+    // `utm` key was never accepted server-side and is dropped).
     const attr = getAttribution();
-    data.utm = attr;
+    data.attribution = attr;
     // Flatten key fields for sage compat
     if (attr.utm_source) data.utm_source = attr.utm_source;
     if (attr.utm_medium) data.utm_medium = attr.utm_medium;
@@ -731,7 +540,17 @@
         if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) showErr('email', 'Please enter a valid email address');
         if (hasError) return;
 
-        track('lead_quote_submitted', { category: 'conversion', source: 'inline-product-form', products: data.product || '' });
+        // The trap value was read here for years and never checked — silently
+        // drop bot fills instead of forwarding them into the wizard.
+        if (data._hp_company) return;
+
+        // Funnel event, not a conversion: nothing has been submitted yet —
+        // this handler only forwards to /intake/. The old lead_quote_submitted
+        // push here counted a "conversion" for every visitor who clicked
+        // through and then abandoned step 1; the real conversion fires from
+        // intake on actual submission. GTM triggers keyed on the old
+        // event/source pair must be retargeted before this ships.
+        track('inline_quote_start', { category: 'funnel', source: 'inline-product-form', products: data.product || '' });
 
         const params = new URLSearchParams();
         if (data.product) params.set('product', data.product);
@@ -740,6 +559,11 @@
         if (data.email) params.set('email', data.email);
         if (data.phone) params.set('phone', data.phone);
         if (data.industry) params.set('industry', data.industry);
+        // City/county/state hidden fields (26 geo landing pages) were collected
+        // and then dropped on this hop — the wizard prefloads them.
+        if (data.city) params.set('city', data.city);
+        if (data.county) params.set('county', data.county);
+        if (data.state) params.set('state', data.state);
         const pageAgent = new URLSearchParams(window.location.search).get('agent');
         if (pageAgent) params.set('agent', pageAgent);
         params.set('src', 'inline');
@@ -753,7 +577,7 @@
   // 3b. FORM START TRACKING (first-touch per form, per session)
   // ═══════════════════════════════════════════════
   function initFormStartTracking() {
-    const selectors = ['#quoteWizard', '#quoteForm', '#contactForm', '#applyForm', '.inline-quote-form'];
+    const selectors = ['#contactForm', '#applyForm', '.inline-quote-form'];
     for (const sel of selectors) {
       document.querySelectorAll(sel).forEach(form => {
         let fired = false;
@@ -975,113 +799,8 @@
     return 'body';
   }
 
-  // ═══════════════════════════════════════════════
-  // 7. MULTI-STEP QUOTE WIZARD
-  // ═══════════════════════════════════════════════
-  function initQuoteWizard() {
-    const form = $('#quoteWizard');
-    if (!form) return;
-
-    const steps = $$('.wizard-step', form);
-    const progressDots = $$('.wizard-dot');
-    let currentStep = 0;
-
-    function showStep(n) {
-      steps.forEach((s, i) => s.style.display = i === n ? 'block' : 'none');
-      progressDots.forEach((d, i) => {
-        d.classList.toggle('wizard-dot--active', i === n);
-        d.classList.toggle('wizard-dot--done', i < n);
-      });
-      currentStep = n;
-      track('intake_step_view', { category: 'funnel', step_number: n + 1, step_name: 'wizard_step_' + (n + 1) });
-    }
-
-    $$('.wizard-next', form).forEach(btn => {
-      btn.addEventListener('click', () => {
-        const currentFields = $$('input[required], select[required]', steps[currentStep]);
-        let valid = true;
-        currentFields.forEach(f => {
-          if (!f.value.trim()) { f.style.borderColor = 'var(--error)'; valid = false; }
-          else { f.style.borderColor = 'var(--border)'; }
-        });
-        if (valid && currentStep < steps.length - 1) showStep(currentStep + 1);
-      });
-    });
-    $$('.wizard-back', form).forEach(btn => {
-      btn.addEventListener('click', () => { if (currentStep > 0) showStep(currentStep - 1); });
-    });
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      form.querySelectorAll('.field-error').forEach(el => el.remove());
-      form.querySelectorAll('input, select').forEach(el => { el.removeAttribute('aria-invalid'); el.removeAttribute('aria-describedby'); });
-      const data = Object.fromEntries(new FormData(form));
-      let hasError = false;
-      function showErr(field, msg) {
-        hasError = true;
-        const el = form.querySelector(`[name="${field}"]`);
-        if (el) { const errId = 'err-' + field + '-' + Date.now(); el.style.borderColor = 'var(--error)'; el.setAttribute('aria-invalid', 'true'); el.setAttribute('aria-describedby', errId); el.insertAdjacentHTML('afterend', `<p id="${errId}" class="field-error" role="alert" style="color:var(--error);font-size:12px;margin:4px 0 0;">${msg}</p>`); }
-      }
-      if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) showErr('email', 'Please enter a valid email address');
-      if (data.phone) { const digits = data.phone.replace(/\D/g, ''); if (digits.length > 0 && digits.length < 10) showErr('phone', 'Please enter a valid 10-digit phone number'); }
-      if (hasError) return;
-
-      const btn = form.querySelector('button[type="submit"]');
-      btn.textContent = 'Sending...'; btn.disabled = true;
-      const result = await submitLead(data, 'quote-wizard');
-      if (result && result.ok === false) {
-        btn.textContent = 'Send Quote Request'; btn.disabled = false;
-        track('form_error', { category: 'conversion', form_id: 'quoteWizard', source: 'quote-wizard', error: result.error || 'unknown', page_path: window.location.pathname });
-        form.insertAdjacentHTML('afterbegin', '<p style="color:var(--error);font-size:var(--text-sm);margin-bottom:var(--space-md);">Something went wrong. Please try again or call us at ' + CONFIG.phone + '.</p>');
-        return;
-      }
-      form.innerHTML = `
-        <div style="text-align:center;padding:var(--space-3xl) 0;">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" style="margin:0 auto var(--space-lg);">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-          </svg>
-          <h2 style="margin-bottom:var(--space-md);">Quote request received</h2>
-          <p style="color:var(--slate);font-size:var(--text-lg);font-weight:300;max-width:480px;margin:0 auto var(--space-lg);">
-            A licensed agent will follow up within one business day (Mon–Fri, 9:00 AM – 5:00 PM).
-          </p>
-          <p style="color:var(--slate);font-size:var(--text-sm);">
-            Prefer to talk now? <a href="tel:${CONFIG.phoneRaw}" style="font-weight:600;">Call ${CONFIG.phone}</a> or <a href="sms:${CONFIG.phoneRaw}" style="font-weight:600;">text us</a>.
-          </p>
-        </div>`;
-    });
-    showStep(0);
-  }
-
-  // ═══════════════════════════════════════════════
-  // 8. MAIN QUOTE PAGE FORM (backwards compat)
-  // ═══════════════════════════════════════════════
-  function initMainQuoteForm() {
-    const form = $('#quoteForm');
-    if (!form) return;
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const required = $$('[required]', form);
-      let valid = true;
-      required.forEach(input => {
-        if (!input.value.trim()) { input.style.borderColor = 'var(--error)'; valid = false; }
-        else { input.style.borderColor = 'var(--border)'; }
-      });
-      if (!valid) return;
-      const data = Object.fromEntries(new FormData(form));
-      const btn = form.querySelector('button[type="submit"]');
-      btn.textContent = 'Sending...'; btn.disabled = true;
-      const result = await submitLead(data, 'main-quote-form');
-      if (result && result.ok === false) {
-        btn.textContent = 'Send'; btn.disabled = false;
-        track('form_error', { category: 'conversion', form_id: 'quoteForm', source: 'main-quote-form', error: result.error || 'unknown', page_path: window.location.pathname });
-        form.insertAdjacentHTML('afterbegin', '<p style="color:var(--error);font-size:var(--text-sm);margin-bottom:var(--space-md);">Something went wrong. Please try again or call us at ' + CONFIG.phone + '.</p>');
-        return;
-      }
-      form.style.display = 'none';
-      const success = $('#quoteSuccess');
-      if (success) success.style.display = 'block';
-    });
-  }
+  // (Sections 7-8, initQuoteWizard/initMainQuoteForm, deleted 2026-08-14:
+  //  no page anywhere in src/ or build/ hosts #quoteWizard or #quoteForm.)
 
   // ═══════════════════════════════════════════════
   // 9. CONTACT FORM
@@ -1141,7 +860,7 @@
   // 10. ANALYTICS INIT (GTM is the single owner of GA4 + Meta Pixel loading)
   // ═══════════════════════════════════════════════
   // GTM (GTM-MCQG9SN3) loads via shared-templates.js in <head>.
-  // GTM owns: GA4 tag (G-C79ZCDZVPE), Meta Pixel (33110648475215550), pageviews.
+  // GTM owns: GA4 tag (G-0LQ0W8VBR7), Meta Pixel (33110648475215550), pageviews.
   // This file only: pushes structured events to dataLayer, calls fbq() for conversions.
   function initAnalytics() {
     window.dataLayer = window.dataLayer || [];
@@ -1631,7 +1350,15 @@
             sessionId: chatSessionId,
             message: text,
             page: location.pathname,
-            product: detectProduct()
+            product: detectProduct(),
+            // Attribution on every message (idempotent server-side — sage
+            // persists it when the bot creates the lead). A chatbot lead used
+            // to be attributionally blind despite these helpers living in
+            // this very file.
+            twa_vid: getVisitorId(),
+            _tracking: getTrackingIds(),
+            attribution: getAttribution(),
+            referrer: document.referrer || 'direct'
           })
         });
 
@@ -2086,8 +1813,6 @@
     initStickyMobileCTA();
     initExitIntent();
     initClickTracking();
-    initQuoteWizard();
-    initMainQuoteForm();
     initContactForm();
     initAnalytics();
     initFormTestimonials();
