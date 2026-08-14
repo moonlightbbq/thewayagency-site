@@ -1908,6 +1908,13 @@ function sanitizePhone(val) {
   if (industry) {
     window._intakeIndustry = industry;
   }
+
+  // County context from the county landing pages (no form field — rides
+  // formData.geo_county on every submit path via buildRiskFormData).
+  const county = sanitizeAlpha(params.get('county') || '', 40);
+  if (county) {
+    window._intakeCounty = county;
+  }
 })();
 
 // ── Cloudflare Turnstile (bot protection) ───────────────────────────────────
@@ -2040,6 +2047,8 @@ function buildRiskFormData() {
 
   // Add industry context if passed from an industry page
   if (window._intakeIndustry) formData.industry = window._intakeIndustry;
+  // County context from the county landing pages
+  if (window._intakeCounty) formData.geo_county = window._intakeCounty;
   return formData;
 }
 
@@ -3240,6 +3249,7 @@ async function submitQuickLead() {
   formData.lead_referrer = document.referrer || 'direct';
   formData.lead_page = window.location.pathname + window.location.search;
   if (window._intakeIndustry) formData.industry = window._intakeIndustry;
+  if (window._intakeCounty) formData.geo_county = window._intakeCounty;
 
   try {
     const res = await fetch(SAGE_API + '/api/intake', {
