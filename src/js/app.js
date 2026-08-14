@@ -540,7 +540,17 @@
         if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) showErr('email', 'Please enter a valid email address');
         if (hasError) return;
 
-        track('lead_quote_submitted', { category: 'conversion', source: 'inline-product-form', products: data.product || '' });
+        // The trap value was read here for years and never checked — silently
+        // drop bot fills instead of forwarding them into the wizard.
+        if (data._hp_company) return;
+
+        // Funnel event, not a conversion: nothing has been submitted yet —
+        // this handler only forwards to /intake/. The old lead_quote_submitted
+        // push here counted a "conversion" for every visitor who clicked
+        // through and then abandoned step 1; the real conversion fires from
+        // intake on actual submission. GTM triggers keyed on the old
+        // event/source pair must be retargeted before this ships.
+        track('inline_quote_start', { category: 'funnel', source: 'inline-product-form', products: data.product || '' });
 
         const params = new URLSearchParams();
         if (data.product) params.set('product', data.product);
@@ -549,6 +559,11 @@
         if (data.email) params.set('email', data.email);
         if (data.phone) params.set('phone', data.phone);
         if (data.industry) params.set('industry', data.industry);
+        // City/county/state hidden fields (26 geo landing pages) were collected
+        // and then dropped on this hop — the wizard prefloads them.
+        if (data.city) params.set('city', data.city);
+        if (data.county) params.set('county', data.county);
+        if (data.state) params.set('state', data.state);
         const pageAgent = new URLSearchParams(window.location.search).get('agent');
         if (pageAgent) params.set('agent', pageAgent);
         params.set('src', 'inline');
