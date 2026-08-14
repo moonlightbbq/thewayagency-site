@@ -1455,7 +1455,15 @@
             sessionId: chatSessionId,
             message: text,
             page: location.pathname,
-            product: detectProduct()
+            product: detectProduct(),
+            // Attribution on every message (idempotent server-side — sage
+            // persists it when the bot creates the lead). A chatbot lead used
+            // to be attributionally blind despite these helpers living in
+            // this very file.
+            twa_vid: getVisitorId(),
+            _tracking: getTrackingIds(),
+            attribution: getAttribution(),
+            referrer: document.referrer || 'direct'
           })
         });
 

@@ -584,6 +584,13 @@
           cfToken: turnstileToken || '',
           _hp_company: hp,
         };
+        // Where did applicants find the posting? (TWA is bundled in app.js.)
+        if (window.TWA) {
+          payload.twa_vid = TWA.getVisitorId();
+          payload._tracking = TWA.getTrackingIds();
+          payload.attribution = TWA.getAttribution();
+          payload.referrer = document.referrer || 'direct';
+        }
 
         if (selectedFile) {
           var base64 = await readFileBase64(selectedFile);
@@ -607,6 +614,11 @@
         var data = await resp.json();
 
         if (data.ok) {
+          // No ad-pixel Lead here — an application is not a sales lead.
+          try {
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({ event: 'conversion', conversion_type: 'career_application', conversion_source: 'careers-apply', position: position });
+          } catch(e) {}
           document.getElementById('apply-form-wrapper').style.display = 'none';
           document.getElementById('apply-success').style.display = 'block';
           window.scrollTo({ top: 0, behavior: 'smooth' });
