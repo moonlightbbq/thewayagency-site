@@ -881,36 +881,12 @@
 const SAGE_API = 'https://sage.thewayagency.com';
 
 // ── Offline Queue Processing ────────────────────────────────────────────────
-(function processQueue() {
-  try {
-    const raw = localStorage.getItem('twa_intake_queue');
-    if (!raw) return;
-    const queued = JSON.parse(raw);
-    if (!queued || !queued.payload) return;
-    // Try to submit with exponential backoff (3 attempts)
-    let attempt = 0;
-    function trySubmit() {
-      attempt++;
-      fetch(SAGE_API + '/api/intake', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(queued.payload)
-      }).then(r => r.json()).then(d => {
-        if (d.ok) { localStorage.removeItem('twa_intake_queue'); }
-        else if (attempt < 3) setTimeout(trySubmit, Math.pow(2, attempt) * 2000);
-      }).catch(() => { if (attempt < 3) setTimeout(trySubmit, Math.pow(2, attempt) * 2000); });
-    }
-    trySubmit();
-  } catch(e) {}
-})();
-window.addEventListener('online', function() {
-  try {
-    if (localStorage.getItem('twa_intake_queue')) {
-      fetch(SAGE_API + '/api/intake', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(JSON.parse(localStorage.getItem('twa_intake_queue')).payload)
-      }).then(r => r.json()).then(d => { if (d.ok) localStorage.removeItem('twa_intake_queue'); }).catch(() => {});
-    }
-  } catch(e) {}
+// Replay lives in flushIntakeQueue() in the main script: the queued Turnstile
+// token expired long before replay, and the server gate is deliberately NOT
+// weakened for replays, so a fresh token must be acquired first — which needs
+// the config sitekey + the turnstile api, neither available this early.
+window.addEventListener('online', function () {
+  if (window.flushIntakeQueue) window.flushIntakeQueue();
 });
 
 // ── Connection indicator ────────────────────────────────────────────────────
@@ -1963,8 +1939,110 @@ function initTurnstileOnReview() {
 function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
 function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
+// ── Offline replay ──────────────────────────────────────────────────────────
+// The queued payload's token is long expired; acquire a fresh one via an
+// invisible widget (the visible step-4 widget can't render while its container
+// is hidden, but invisible-size widgets are built for exactly this).
+async function _freshReplayToken() {
+  if (!_turnstileSiteKey || !window.turnstile) return '';
+  return new Promise((resolve) => {
+    let done = false;
+    const container = document.createElement('div');
+    container.style.display = 'none';
+    document.body.appendChild(container);
+    const finish = (t) => { if (!done) { done = true; container.remove(); resolve(t || ''); } };
+    setTimeout(() => finish(''), 8000);
+    try {
+      turnstile.render(container, {
+        sitekey: _turnstileSiteKey,
+        size: 'invisible',
+        callback: finish,
+        'error-callback': () => finish(''),
+        'expired-callback': () => finish(''),
+      });
+    } catch (e) { finish(''); }
+  });
+}
+async function flushIntakeQueue() {
+  let queued;
+  try { queued = JSON.parse(localStorage.getItem('twa_intake_queue') || 'null'); } catch (e) { return; }
+  if (!queued || !queued.payload) return;
+  // Wait for the config fetch that carries the sitekey (usually <1s).
+  for (let i = 0; i < 20 && !_turnstileSiteKey; i++) await new Promise(r => setTimeout(r, 250));
+  const payload = queued.payload;
+  payload.cfToken = await _freshReplayToken();
+  payload.twa_vid = payload.twa_vid || getVisitorId();
+  payload._tracking = payload._tracking || getTrackingIds();
+  try {
+    const d = await fetch(SAGE_API + '/api/intake', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).then(r => r.json());
+    if (d.ok) {
+      localStorage.removeItem('twa_intake_queue');
+      try { localStorage.setItem('twa_intake_submitted', String(Date.now())); } catch (e) {}
+    }
+  } catch (e) { /* still offline — the 'online' listener retries */ }
+}
+window.flushIntakeQueue = flushIntakeQueue;
+flushIntakeQueue();
+
 // ── Auto-save / abandoned form tracking ─────────────────────────────────────
 // As soon as we have name + contact info, save partial data to server
+// Harvest every risk answer currently on the form, using the final-submit key
+// names — one shape server-side. Shared by the final submit AND the /track
+// autosave, so vehicles/home details typed on step 3 survive an abandon (they
+// used to be lost: the autosave only ever carried applicant fields).
+function buildRiskFormData() {
+  const formData = {};
+  const el = id => { const e = document.getElementById(id); return e ? e.value.trim() : ''; };
+
+  // Shared: Current insurance
+  if (el('i_current_carrier')) formData.current_carrier = el('i_current_carrier');
+  if (el('i_policy_expiry')) formData.policy_expiry = el('i_policy_expiry');
+
+  // Shared DOB field (used by life, auto, umbrella)
+  if (el('i_dob')) formData.app_dob = el('i_dob');
+  if (el('i_li_amount')) formData.li_faceamt = el('i_li_amount');
+  if (el('i_li_type')) formData.li_type = el('i_li_type');
+  if (el('i_li_tobacco')) formData.li_tobacco = el('i_li_tobacco');
+  if (el('i_other_desc')) formData.other_desc = el('i_other_desc');
+  formData.ho_same_as_mailing = hoSameAddr ? 'yes' : 'no';
+
+  // Homeowners: property address + value
+  if (el('i_ho_value')) formData.ho_value = el('i_ho_value');
+  if (el('i_ho_yearbuilt')) formData.ho_yearbuilt = el('i_ho_yearbuilt');
+  if (!hoSameAddr) {
+    if (el('i_ho_address_street') || el('i_ho_address')) formData.ho_address = el('i_ho_address_street') || el('i_ho_address');
+    if (el('i_ho_city')) formData.ho_city = el('i_ho_city');
+    if (el('i_ho_state')) formData.ho_state = el('i_ho_state');
+    if (el('i_ho_zip')) formData.ho_zip = el('i_ho_zip');
+  }
+
+  const vehicles = getVehicles();
+  vehicles.forEach((vh, i) => {
+    const n = i + 1;
+    if (vh.year) formData[`vh_${n}_year`] = vh.year;
+    if (vh.make) formData[`vh_${n}_make`] = vh.make;
+    if (vh.model) formData[`vh_${n}_model`] = vh.model;
+  });
+
+  // Shared business info fields
+  ['i_biz_name','i_biz_type','i_biz_revenue','i_biz_employees','i_biz_years'].forEach(id => {
+    const val = el(id); if (val) formData[id] = val;
+  });
+
+  // Collect all product-specific fields. Schema-driven products come from
+  // SCHEMA_FIELD_IDS; flood is a dedicated renderer (not in the schema) so its
+  // ids are appended explicitly — omitting them would silently drop flood data.
+  const fields = [...SCHEMA_FIELD_IDS, 'i_fl_foundation', 'i_fl_claims', 'i_fl_zone'];
+  fields.forEach(id => { const val = el(id); if (val) formData[id] = val; });
+
+  // Add industry context if passed from an industry page
+  if (window._intakeIndustry) formData.industry = window._intakeIndustry;
+  return formData;
+}
+
 async function trackPartial(notify) {
   const firstName = v('i_fname'), lastName = v('i_lname');
   const email = v('i_email'), phone = v('i_phone');
@@ -2015,9 +2093,13 @@ async function trackPartial(notify) {
         twa_vid: getVisitorId(),
         _tracking: getTrackingIds(),
         attribution: _cookieAttr,
+        // Step-3 risk answers ride the autosave so an abandoned wizard still
+        // spills them into the Risk Profile server-side.
+        formData: buildRiskFormData(),
         ..._attr,
       })
     });
+    _fieldsDirtySinceTrack = false;
     const data = await res.json().catch(() => ({}));
 
     // The server is the authority on who we can write, and it says so with
@@ -2066,6 +2148,41 @@ function scheduleTrack() {
     el.addEventListener('input', scheduleTrack);
   }
 });
+
+// ── Exit flush ──────────────────────────────────────────────────────────────
+// Any field typed since the last successful /track (step-3 risk answers
+// especially — they only autosave on step transitions) gets one last save when
+// the visitor leaves. fetch keepalive, NOT sendBeacon: a JSON Blob beacon
+// triggers a CORS preflight the dying page can't complete.
+let _fieldsDirtySinceTrack = false;
+document.addEventListener('input', () => { _fieldsDirtySinceTrack = true; }, true);
+function _flushTrackOnExit() {
+  if (!_fieldsDirtySinceTrack || !sessionId) return;
+  const firstName = v('i_fname'), lastName = v('i_lname');
+  const email = v('i_email'), phone = v('i_phone');
+  if (!firstName || !lastName || (!email && !phone) || mustDecline()) return;
+  _fieldsDirtySinceTrack = false;
+  try {
+    fetch(SAGE_API + '/api/intake/track', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        sessionId, firstName, lastName, email, phone,
+        address: v('i_address_street') || v('i_address'), city: v('i_city'), state: v('i_state'), zip: v('i_zip'),
+        products: selectedProducts, step: currentStep, agent: _agentParam, notify: false,
+        _hp_company: document.getElementById('_hp_company')?.value || '',
+        twa_vid: getVisitorId(), _tracking: getTrackingIds(),
+        attribution: TWA.getAttribution(),
+        formData: buildRiskFormData(),
+        lead_page: window.location.pathname + window.location.search,
+        lead_referrer: document.referrer || 'direct',
+      }),
+    }).catch(() => {});
+  } catch (e) { /* dying page — nothing to do */ }
+}
+window.addEventListener('pagehide', _flushTrackOnExit);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') _flushTrackOnExit(); });
 
 // ── Check if an agent has claimed this session ──────────────────────────────
 let _takeoverShown = false;
@@ -2396,6 +2513,10 @@ async function nextStep(from) {
     }
     err.classList.add('hidden');
   }
+  // Autosave on step transitions (fire-and-forget): step-1 Continue already
+  // tracks via the notify path above; 2→3 and 3→4 are the moments the risk
+  // answers exist and would otherwise only survive via the exit flush.
+  if (from === 2 || from === 3) trackPartial(false);
   showStep(from + 1);
 }
 
@@ -3156,6 +3277,9 @@ async function submitQuickLead() {
     const data = await res.json();
     if (data.ok) {
       clearInterval(pollTimer);
+      // Suppress the exit-intent popup site-wide — app.js reads this key and
+      // it was never written anywhere, so past submitters kept seeing it.
+      try { localStorage.setItem('twa_intake_submitted', String(Date.now())); } catch (e) {}
       document.getElementById('step-2').classList.add('hidden');
       document.getElementById('step-confirm').classList.remove('hidden');
       document.getElementById('ref-number').textContent = 'Reference: #' + data.reference;
@@ -3248,52 +3372,7 @@ async function submitIntake() {
     }
   }
 
-  const formData = {};
-  const el = id => { const e = document.getElementById(id); return e ? e.value.trim() : ''; };
-
-  // Shared: Current insurance
-  if (el('i_current_carrier')) formData.current_carrier = el('i_current_carrier');
-  if (el('i_policy_expiry')) formData.policy_expiry = el('i_policy_expiry');
-
-  // Shared DOB field (used by life, auto, umbrella)
-  if (el('i_dob')) formData.app_dob = el('i_dob');
-  if (el('i_li_amount')) formData.li_faceamt = el('i_li_amount');
-  if (el('i_li_type')) formData.li_type = el('i_li_type');
-  if (el('i_li_tobacco')) formData.li_tobacco = el('i_li_tobacco');
-  if (el('i_other_desc')) formData.other_desc = el('i_other_desc');
-  formData.ho_same_as_mailing = hoSameAddr ? 'yes' : 'no';
-
-  // Homeowners: property address + value
-  if (el('i_ho_value')) formData.ho_value = el('i_ho_value');
-  if (el('i_ho_yearbuilt')) formData.ho_yearbuilt = el('i_ho_yearbuilt');
-  if (!hoSameAddr) {
-    if (el('i_ho_address_street') || el('i_ho_address')) formData.ho_address = el('i_ho_address_street') || el('i_ho_address');
-    if (el('i_ho_city')) formData.ho_city = el('i_ho_city');
-    if (el('i_ho_state')) formData.ho_state = el('i_ho_state');
-    if (el('i_ho_zip')) formData.ho_zip = el('i_ho_zip');
-  }
-
-  const vehicles = getVehicles();
-  vehicles.forEach((vh, i) => {
-    const n = i + 1;
-    if (vh.year) formData[`vh_${n}_year`] = vh.year;
-    if (vh.make) formData[`vh_${n}_make`] = vh.make;
-    if (vh.model) formData[`vh_${n}_model`] = vh.model;
-  });
-
-  // Shared business info fields
-  ['i_biz_name','i_biz_type','i_biz_revenue','i_biz_employees','i_biz_years'].forEach(id => {
-    const val = el(id); if (val) formData[id] = val;
-  });
-
-  // Collect all product-specific fields. Schema-driven products come from
-  // SCHEMA_FIELD_IDS; flood is a dedicated renderer (not in the schema) so its
-  // ids are appended explicitly — omitting them would silently drop flood data.
-  const fields = [...SCHEMA_FIELD_IDS, 'i_fl_foundation', 'i_fl_claims', 'i_fl_zone'];
-  fields.forEach(id => { const val = el(id); if (val) formData[id] = val; });
-
-  // Add industry context if passed from an industry page
-  if (window._intakeIndustry) formData.industry = window._intakeIndustry;
+  const formData = buildRiskFormData();
 
   // Add source tracking, UTM attribution, and agent assignment
   const urlParams = new URLSearchParams(window.location.search);
@@ -3379,6 +3458,8 @@ async function submitIntake() {
     const data = await res.json();
     if (data.ok) {
       clearInterval(pollTimer);
+      // Suppress the exit-intent popup site-wide (see quick-lead branch).
+      try { localStorage.setItem('twa_intake_submitted', String(Date.now())); } catch (e) {}
       document.getElementById('step-4').classList.add('hidden');
       document.getElementById('step-confirm').classList.remove('hidden');
       document.getElementById('ref-number').textContent = 'Reference: #' + data.reference;
@@ -3417,6 +3498,11 @@ async function submitIntake() {
       businessName: v('i_biz_name') || undefined,
       products: selectedProducts, formData, notes: v('i_notes'), agent: agentParam || '',
       _hp_company: document.getElementById('_hp_company')?.value || '', cfToken: '',
+      // Replay context: the queued token is stale by replay time, so
+      // flushIntakeQueue() acquires a FRESH one (the server gate is not
+      // weakened for replays); identity/attribution snapshot ride along.
+      twa_vid: getVisitorId(), _tracking: getTrackingIds(), attribution: TWA.getAttribution(),
+      offline_replay: true, queued_at: Date.now(),
     };
     try { localStorage.setItem('twa_intake_queue', JSON.stringify({ payload, ref: queueRef, ts: Date.now() })); } catch(qe) {}
     err.textContent = 'Saved! We\'ll submit when you\'re back online. Ref: ' + queueRef;
