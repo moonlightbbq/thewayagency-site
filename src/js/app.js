@@ -1100,6 +1100,12 @@
       });
     }
 
+    // A page that marks its form data-own-submit runs its own submit pipeline
+    // (contact.html: visible Turnstile widget, rate limit, page-specific DOM).
+    // Binding here too double-POSTs every lead — preventDefault in one listener
+    // does not stop the other.
+    if (form.hasAttribute('data-own-submit')) return;
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       form.querySelectorAll('.field-error').forEach(el => el.remove());
