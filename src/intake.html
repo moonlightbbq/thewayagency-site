@@ -1178,6 +1178,21 @@ fetch(SAGE_API + '/api/health').then(r=>r.json()).then(d=>{ const el=document.ge
 // local copies this page carried have been deleted. Also seed the first/last
 // touch cookies NOW: a direct paid landing on /intake/?utm_… previously never
 // wrote twa_ft/twa_lt because app.js (the old seeding owner) never loads here.
+//
+// Resilience stub: if attribution.js failed to load (network hiccup, test
+// harness), the wizard must still WORK — attribution is an enhancement, never
+// a dependency the money form can die on. The stub no-ops capture/exposure,
+// keeps a bare visitor id, and pins A/B assignment to control.
+window.TWA = window.TWA || {
+  captureAttribution: function () {},
+  getAttribution: function () { return {}; },
+  getVisitorId: function () {
+    try { return localStorage.getItem('twa_vid') || ''; } catch (e) { return ''; }
+  },
+  getTrackingIds: function () { return {}; },
+  assignVariant: function (name, variants) { return variants[0]; },
+  pushExposure: function () {},
+};
 TWA.captureAttribution();
 function getVisitorId() { return TWA.getVisitorId(); }
 function getTrackingIds() { return TWA.getTrackingIds(); }
