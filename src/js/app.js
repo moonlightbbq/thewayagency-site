@@ -66,7 +66,7 @@
     textNumber: '(502) 413-5335',
     calendarUrl: '',
     // GA4 + Meta Pixel are loaded by GTM (GTM-MCQG9SN3). Do not initialize here.
-    // GA4 measurement ID: G-C79ZCDZVPE (configure in GTM, not in code)
+    // GA4 measurement ID: G-0LQ0W8VBR7 (configure in GTM, not in code — verified live 2026-06-23 in sage src/lib/api-config.js)
     fbPixelId: '33110648475215550', // used for fbq('setUserProperties') only
     debug: new URLSearchParams(window.location.search).has('twa_debug'),
   };
@@ -577,7 +577,7 @@
   // 3b. FORM START TRACKING (first-touch per form, per session)
   // ═══════════════════════════════════════════════
   function initFormStartTracking() {
-    const selectors = ['#quoteWizard', '#quoteForm', '#contactForm', '#applyForm', '.inline-quote-form'];
+    const selectors = ['#contactForm', '#applyForm', '.inline-quote-form'];
     for (const sel of selectors) {
       document.querySelectorAll(sel).forEach(form => {
         let fired = false;
@@ -799,113 +799,8 @@
     return 'body';
   }
 
-  // ═══════════════════════════════════════════════
-  // 7. MULTI-STEP QUOTE WIZARD
-  // ═══════════════════════════════════════════════
-  function initQuoteWizard() {
-    const form = $('#quoteWizard');
-    if (!form) return;
-
-    const steps = $$('.wizard-step', form);
-    const progressDots = $$('.wizard-dot');
-    let currentStep = 0;
-
-    function showStep(n) {
-      steps.forEach((s, i) => s.style.display = i === n ? 'block' : 'none');
-      progressDots.forEach((d, i) => {
-        d.classList.toggle('wizard-dot--active', i === n);
-        d.classList.toggle('wizard-dot--done', i < n);
-      });
-      currentStep = n;
-      track('intake_step_view', { category: 'funnel', step_number: n + 1, step_name: 'wizard_step_' + (n + 1) });
-    }
-
-    $$('.wizard-next', form).forEach(btn => {
-      btn.addEventListener('click', () => {
-        const currentFields = $$('input[required], select[required]', steps[currentStep]);
-        let valid = true;
-        currentFields.forEach(f => {
-          if (!f.value.trim()) { f.style.borderColor = 'var(--error)'; valid = false; }
-          else { f.style.borderColor = 'var(--border)'; }
-        });
-        if (valid && currentStep < steps.length - 1) showStep(currentStep + 1);
-      });
-    });
-    $$('.wizard-back', form).forEach(btn => {
-      btn.addEventListener('click', () => { if (currentStep > 0) showStep(currentStep - 1); });
-    });
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      form.querySelectorAll('.field-error').forEach(el => el.remove());
-      form.querySelectorAll('input, select').forEach(el => { el.removeAttribute('aria-invalid'); el.removeAttribute('aria-describedby'); });
-      const data = Object.fromEntries(new FormData(form));
-      let hasError = false;
-      function showErr(field, msg) {
-        hasError = true;
-        const el = form.querySelector(`[name="${field}"]`);
-        if (el) { const errId = 'err-' + field + '-' + Date.now(); el.style.borderColor = 'var(--error)'; el.setAttribute('aria-invalid', 'true'); el.setAttribute('aria-describedby', errId); el.insertAdjacentHTML('afterend', `<p id="${errId}" class="field-error" role="alert" style="color:var(--error);font-size:12px;margin:4px 0 0;">${msg}</p>`); }
-      }
-      if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) showErr('email', 'Please enter a valid email address');
-      if (data.phone) { const digits = data.phone.replace(/\D/g, ''); if (digits.length > 0 && digits.length < 10) showErr('phone', 'Please enter a valid 10-digit phone number'); }
-      if (hasError) return;
-
-      const btn = form.querySelector('button[type="submit"]');
-      btn.textContent = 'Sending...'; btn.disabled = true;
-      const result = await submitLead(data, 'quote-wizard');
-      if (result && result.ok === false) {
-        btn.textContent = 'Send Quote Request'; btn.disabled = false;
-        track('form_error', { category: 'conversion', form_id: 'quoteWizard', source: 'quote-wizard', error: result.error || 'unknown', page_path: window.location.pathname });
-        form.insertAdjacentHTML('afterbegin', '<p style="color:var(--error);font-size:var(--text-sm);margin-bottom:var(--space-md);">Something went wrong. Please try again or call us at ' + CONFIG.phone + '.</p>');
-        return;
-      }
-      form.innerHTML = `
-        <div style="text-align:center;padding:var(--space-3xl) 0;">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" style="margin:0 auto var(--space-lg);">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
-          </svg>
-          <h2 style="margin-bottom:var(--space-md);">Quote request received</h2>
-          <p style="color:var(--slate);font-size:var(--text-lg);font-weight:300;max-width:480px;margin:0 auto var(--space-lg);">
-            A licensed agent will follow up within one business day (Mon–Fri, 9:00 AM – 5:00 PM).
-          </p>
-          <p style="color:var(--slate);font-size:var(--text-sm);">
-            Prefer to talk now? <a href="tel:${CONFIG.phoneRaw}" style="font-weight:600;">Call ${CONFIG.phone}</a> or <a href="sms:${CONFIG.phoneRaw}" style="font-weight:600;">text us</a>.
-          </p>
-        </div>`;
-    });
-    showStep(0);
-  }
-
-  // ═══════════════════════════════════════════════
-  // 8. MAIN QUOTE PAGE FORM (backwards compat)
-  // ═══════════════════════════════════════════════
-  function initMainQuoteForm() {
-    const form = $('#quoteForm');
-    if (!form) return;
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const required = $$('[required]', form);
-      let valid = true;
-      required.forEach(input => {
-        if (!input.value.trim()) { input.style.borderColor = 'var(--error)'; valid = false; }
-        else { input.style.borderColor = 'var(--border)'; }
-      });
-      if (!valid) return;
-      const data = Object.fromEntries(new FormData(form));
-      const btn = form.querySelector('button[type="submit"]');
-      btn.textContent = 'Sending...'; btn.disabled = true;
-      const result = await submitLead(data, 'main-quote-form');
-      if (result && result.ok === false) {
-        btn.textContent = 'Send'; btn.disabled = false;
-        track('form_error', { category: 'conversion', form_id: 'quoteForm', source: 'main-quote-form', error: result.error || 'unknown', page_path: window.location.pathname });
-        form.insertAdjacentHTML('afterbegin', '<p style="color:var(--error);font-size:var(--text-sm);margin-bottom:var(--space-md);">Something went wrong. Please try again or call us at ' + CONFIG.phone + '.</p>');
-        return;
-      }
-      form.style.display = 'none';
-      const success = $('#quoteSuccess');
-      if (success) success.style.display = 'block';
-    });
-  }
+  // (Sections 7-8, initQuoteWizard/initMainQuoteForm, deleted 2026-08-14:
+  //  no page anywhere in src/ or build/ hosts #quoteWizard or #quoteForm.)
 
   // ═══════════════════════════════════════════════
   // 9. CONTACT FORM
@@ -965,7 +860,7 @@
   // 10. ANALYTICS INIT (GTM is the single owner of GA4 + Meta Pixel loading)
   // ═══════════════════════════════════════════════
   // GTM (GTM-MCQG9SN3) loads via shared-templates.js in <head>.
-  // GTM owns: GA4 tag (G-C79ZCDZVPE), Meta Pixel (33110648475215550), pageviews.
+  // GTM owns: GA4 tag (G-0LQ0W8VBR7), Meta Pixel (33110648475215550), pageviews.
   // This file only: pushes structured events to dataLayer, calls fbq() for conversions.
   function initAnalytics() {
     window.dataLayer = window.dataLayer || [];
@@ -1918,8 +1813,6 @@
     initStickyMobileCTA();
     initExitIntent();
     initClickTracking();
-    initQuoteWizard();
-    initMainQuoteForm();
     initContactForm();
     initAnalytics();
     initFormTestimonials();
