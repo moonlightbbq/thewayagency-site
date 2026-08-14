@@ -368,8 +368,17 @@
         subject: subject, message: msg,
         source: subject === 'callback' ? 'callback_request' : 'contact_form',
         cfToken: turnstileToken || '',
-        _hp_company: hp, page: '/contact.html'
+        _hp_company: hp, page: '/contact.html',
+        referrer: document.referrer || 'direct'
       };
+      // Campaign attribution + visitor identity from the shared TWA module
+      // (bundled inside app.js, which this page loads). Guarded so the form
+      // still submits if app.js failed to load.
+      if (window.TWA) {
+        payload.twa_vid = TWA.getVisitorId();
+        payload._tracking = TWA.getTrackingIds();
+        payload.attribution = TWA.getAttribution();
+      }
       if (subject === 'callback' && cbTime) {
         payload.message = (cbTime ? 'Preferred callback time: ' + cbTime + '. ' : '') + (msg || '');
       }
@@ -396,6 +405,7 @@
             window.dataLayer.push({ event: 'lead_contact_submitted', category: 'conversion', source: payload.source, page_path: window.location.pathname });
             window.dataLayer.push({ event: 'conversion', conversion_type: 'contact_form', conversion_reference: d.reference || '', conversion_source: payload.source });
             if (window.fbq) fbq('track', 'Contact', { content_name: 'contact_form' });
+            if (window.TWA) TWA.pushEnhancedConversion({ email: email, phone: phone, firstName: fname, lastName: lname });
           } catch(e) {}
           form.style.display = 'none';
           successEl.style.display = 'block';

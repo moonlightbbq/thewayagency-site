@@ -100,7 +100,9 @@
         'free-quote': { '[data-ab-test="hero-cta"]': 'Get a Free Quote' },
         'compare': { '[data-ab-test="hero-cta"]': 'Compare Rates Now' },
       },
-      weight: [50, 25, 25],
+      // Uniform 1/3 split — hashAssign has never read weights; a weighted
+      // rollout must launch as a NEW test name (re-bucketing mid-test
+      // contaminates returning-visitor assignment).
     },
     'dob-required': {
       variants: {
@@ -157,37 +159,12 @@
     },
   };
 
-  function getVisitorId() {
-    let id;
-    try { id = localStorage.getItem('twa_vid'); } catch(e) {}
-    if (!id) {
-      id = Math.random().toString(36).slice(2) + Date.now().toString(36);
-      try { localStorage.setItem('twa_vid', id); } catch(e) {}
-    }
-    return id;
-  }
-
-  function getTrackingIds() {
-    function getCookieVal(name) {
-      const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-      return m ? decodeURIComponent(m[1]) : '';
-    }
-    return {
-      fbp: getCookieVal('_fbp'),
-      fbc: getCookieVal('_fbc') || (function() {
-        var fbclid = new URLSearchParams(window.location.search).get('fbclid');
-        return fbclid ? 'fb.1.' + Date.now() + '.' + fbclid : '';
-      })(),
-      ga_client_id: (getCookieVal('_ga') || '').replace(/^GA\d+\.\d+\./, ''),
-    };
-  }
-
-  function hashAssign(visitorId, testName, variantCount) {
-    let hash = 0;
-    const str = visitorId + ':' + testName;
-    for (let i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash |= 0; }
-    return Math.abs(hash) % variantCount;
-  }
+  // Visitor id / tracking ids / A-B hash live in src/js/attribution.js
+  // (window.TWA). The build prepends that file to this one, so TWA always
+  // exists by the time these run; /intake/ loads it standalone.
+  function getVisitorId() { return window.TWA.getVisitorId(); }
+  function getTrackingIds() { return window.TWA.getTrackingIds(); }
+  function hashAssign(visitorId, testName, variantCount) { return window.TWA.hashAssign(visitorId, testName, variantCount); }
 
   function initABTests() {
     const params = new URLSearchParams(window.location.search);
@@ -242,101 +219,20 @@
     dataLayer.push({ event, ...params });
   }
 
-  // ─── SHA-256 hash helper (for PII) ────────────
-  async function sha256(str) {
-    if (!str || !window.crypto?.subtle) return '';
-    const data = new TextEncoder().encode(str.toLowerCase().trim());
-    const hash = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
-  }
+  // ─── SHA-256 hash helper (for PII) — moved to TWA ──
+  const sha256 = (str) => window.TWA.sha256(str);
 
   // ═══════════════════════════════════════════════
   // ATTRIBUTION ENGINE
   // ═══════════════════════════════════════════════
 
-  // ─── Cookie helpers ───────────────────────────
-  function setCookie(name, value, days) {
-    document.cookie = `${name}=${encodeURIComponent(JSON.stringify(value))};path=/;max-age=${days * 86400};SameSite=Lax`;
-  }
-  function getCookie(name) {
-    const match = document.cookie.match(new RegExp(`${name}=([^;]+)`));
-    if (!match) return null;
-    try { return JSON.parse(decodeURIComponent(match[1])); } catch(e) { return null; }
-  }
-
-  // ─── Capture attribution from URL ─────────────
-  function captureAttribution() {
-    const params = new URLSearchParams(window.location.search);
-    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
-    const touchData = {};
-    let hasAttribution = false;
-
-    // UTM params
-    for (const key of utmKeys) {
-      const val = params.get(key);
-      if (val) { touchData[key] = val; hasAttribution = true; }
-    }
-
-    // Click IDs (Google Ads, Meta)
-    const gclid = params.get('gclid');
-    const fbclid = params.get('fbclid');
-    if (gclid) { touchData.gclid = gclid; hasAttribution = true; }
-    if (fbclid) { touchData.fbclid = fbclid; hasAttribution = true; }
-
-    // Custom params
-    const src = params.get('src');
-    const agent = params.get('agent');
-    if (src) touchData.src = src;
-    if (agent) touchData.agent = agent;
-
-    // Landing page
-    touchData.landing_page = window.location.pathname + window.location.search;
-    touchData.date = new Date().toISOString().split('T')[0];
-
-    // First-touch: set once, never overwrite (365-day expiry)
-    if (hasAttribution && !getCookie('twa_ft')) {
-      setCookie('twa_ft', touchData, 365);
-      _log('first_touch_set', touchData);
-    }
-
-    // Last-touch: overwrite on every visit with attribution (30-day expiry)
-    if (hasAttribution) {
-      setCookie('twa_lt', touchData, 30);
-      _log('last_touch_set', touchData);
-    }
-
-    // Session landing page (set once per session via sessionStorage)
-    try {
-      if (!sessionStorage.getItem('twa_lp')) {
-        sessionStorage.setItem('twa_lp', window.location.pathname);
-      }
-    } catch (e) { /* private browsing */ }
-
-    return touchData;
-  }
-
-  // ─── Get full attribution for form submission ─
-  function getAttribution() {
-    const ft = getCookie('twa_ft') || {};
-    const lt = getCookie('twa_lt') || {};
-    let lp = window.location.pathname;
-    try { lp = sessionStorage.getItem('twa_lp') || lp; } catch (e) { /* private browsing */ }
-    return {
-      first_touch: ft,
-      last_touch: lt,
-      landing_page: lp,
-      // Flat fields for backward compat with sage formData
-      utm_source: lt.utm_source || ft.utm_source || '',
-      utm_medium: lt.utm_medium || ft.utm_medium || '',
-      utm_campaign: lt.utm_campaign || ft.utm_campaign || '',
-      utm_content: lt.utm_content || ft.utm_content || '',
-      utm_term: lt.utm_term || ft.utm_term || '',
-      gclid: lt.gclid || ft.gclid || '',
-      fbclid: lt.fbclid || ft.fbclid || '',
-      src: lt.src || ft.src || '',
-      agent: lt.agent || ft.agent || '',
-    };
-  }
+  // ═══ ATTRIBUTION ENGINE — moved to src/js/attribution.js (window.TWA) ═══
+  // The build prepends attribution.js to this file; these wrappers keep the
+  // internal call sites unchanged.
+  const setCookie = (name, value, days) => window.TWA.setCookie(name, value, days);
+  const getCookie = (name) => window.TWA.getCookie(name);
+  const captureAttribution = () => window.TWA.captureAttribution();
+  const getAttribution = () => window.TWA.getAttribution();
 
   // Backward compat wrapper
   function getUTMParams() { return getAttribution(); }
@@ -363,47 +259,8 @@
   // ═══════════════════════════════════════════════
   // ENHANCED CONVERSIONS (hashed PII)
   // ═══════════════════════════════════════════════
-  async function pushEnhancedConversion(data) {
-    if (!data.email && !data.phone) return;
-
-    // Hash PII client-side before pushing to dataLayer
-    const [hashedEmail, hashedPhone, hashedFn, hashedLn] = await Promise.all([
-      sha256(data.email || ''),
-      sha256((data.phone || '').replace(/\D/g, '')),
-      sha256(data.firstName || ''),
-      sha256(data.lastName || ''),
-    ]);
-
-    window.dataLayer = window.dataLayer || [];
-    dataLayer.push({
-      event: 'enhanced_conversion',
-      enhanced_conversion_data: {
-        email: hashedEmail,
-        phone_number: hashedPhone,
-        first_name: hashedFn,
-        last_name: hashedLn,
-        address: {
-          postal_code: (data.zip || '').trim(),
-          region: (data.state || '').trim(),
-          country: 'US',
-        },
-      },
-    });
-
-    // Meta Advanced Matching (fbq handles its own hashing)
-    if (window.fbq) {
-      fbq('setUserProperties', CONFIG.fbPixelId, {
-        em: (data.email || '').toLowerCase().trim(),
-        ph: (data.phone || '').replace(/\D/g, ''),
-        fn: (data.firstName || '').toLowerCase().trim(),
-        ln: (data.lastName || '').toLowerCase().trim(),
-        zp: (data.zip || '').trim(),
-        country: 'us',
-        external_id: getVisitorId(),
-      });
-    }
-    _log('enhanced_conversion', { email: '***', phone: '***' });
-  }
+  // Moved to TWA (shared with /intake/); CONFIG.fbPixelId threaded here.
+  const pushEnhancedConversion = (data) => window.TWA.pushEnhancedConversion(data, CONFIG.fbPixelId);
 
   // ═══════════════════════════════════════════════
   // CONVERSION EVENTS
@@ -462,9 +319,10 @@
     data.twa_vid = getVisitorId();
     data._tracking = getTrackingIds();
 
-    // Attach full attribution data
+    // Attach full attribution data (sage's attributionSchema shape; the old
+    // `utm` key was never accepted server-side and is dropped).
     const attr = getAttribution();
-    data.utm = attr;
+    data.attribution = attr;
     // Flatten key fields for sage compat
     if (attr.utm_source) data.utm_source = attr.utm_source;
     if (attr.utm_medium) data.utm_medium = attr.utm_medium;
