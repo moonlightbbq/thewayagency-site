@@ -197,7 +197,10 @@
           <!-- Contact Form -->
           <div>
             <h2 id="contact-form-heading">Send us a message</h2>
-            <form id="contactForm" novalidate>
+            <!-- data-own-submit: this inline script owns the submit; app.js
+                 initContactForm must not bind a second handler (it used to,
+                 and every lead was POSTed twice with divergent payloads). -->
+            <form id="contactForm" data-own-submit novalidate>
               <!-- Honeypot — display:none, never off-screen: Chrome autofill skips
                    display:none fields but fills off-screen ones, which used to trip
                    this trap for real visitors and bin the lead. No label. -->
@@ -385,6 +388,14 @@
             var okStamps = JSON.parse(localStorage.getItem('twa_contact_ts') || '[]');
             okStamps.push(Date.now());
             localStorage.setItem('twa_contact_ts', JSON.stringify(okStamps));
+          } catch(e) {}
+          // Conversion events fire here, once, on server accept — not pre-flight,
+          // and not from app.js (its handler is disabled via data-own-submit).
+          try {
+            window.dataLayer = window.dataLayer || [];
+            window.dataLayer.push({ event: 'lead_contact_submitted', category: 'conversion', source: payload.source, page_path: window.location.pathname });
+            window.dataLayer.push({ event: 'conversion', conversion_type: 'contact_form', conversion_reference: d.reference || '', conversion_source: payload.source });
+            if (window.fbq) fbq('track', 'Contact', { content_name: 'contact_form' });
           } catch(e) {}
           form.style.display = 'none';
           successEl.style.display = 'block';
