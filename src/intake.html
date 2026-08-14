@@ -21,6 +21,12 @@
 <link rel="stylesheet" href="/src/css/base.css">
 <link rel="stylesheet" href="/src/css/components.css">
 <link rel="stylesheet" href="/src/css/leadgen.css">
+<!-- Shared attribution module (window.TWA). NO defer: this page's giant inline
+     script executes at parse time and needs TWA to already exist. app.js is
+     deliberately NOT loaded here (it would inject the mobile call FAB and a
+     dead after-hours chat binding on the money page); attribution.js is the
+     standalone copy the build ships alongside the app.js bundle. -->
+<script src="/src/js/attribution.js"></script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
 <style>
   :root {
@@ -1192,30 +1198,61 @@ initFieldFocusTracking();
 // Show version in footer
 fetch(SAGE_API + '/api/health').then(r=>r.json()).then(d=>{ const el=document.getElementById('intake-version'); if(el&&d.version) el.textContent='v'+d.version; }).catch(()=>{});
 
-function getVisitorId() {
-  var id;
-  try { id = localStorage.getItem('twa_vid'); } catch(e) {}
-  if (!id) {
-    id = Math.random().toString(36).slice(2) + Date.now().toString(36);
-    try { localStorage.setItem('twa_vid', id); } catch(e) {}
-  }
-  return id;
-}
+// Shared with every other page via src/js/attribution.js (window.TWA) — the
+// local copies this page carried have been deleted. Also seed the first/last
+// touch cookies NOW: a direct paid landing on /intake/?utm_… previously never
+// wrote twa_ft/twa_lt because app.js (the old seeding owner) never loads here.
+TWA.captureAttribution();
+function getVisitorId() { return TWA.getVisitorId(); }
+function getTrackingIds() { return TWA.getTrackingIds(); }
 
-function getTrackingIds() {
-  function getCookieVal(name) {
-    var m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
-    return m ? decodeURIComponent(m[1]) : '';
+// ── Intake-page A/B tests ───────────────────────────────────────────────────
+// Moved from app.js, which never loads on /intake/ — both tests were
+// permanently inert while still pushing ab_exposure on every OTHER page,
+// poisoning the exposure data. Assignment/exposure via TWA; ?force_variant=
+// honored. Apply bodies are verbatim from app.js.
+(function () {
+  var dobVariant = TWA.assignVariant('dob-required', ['control', 'required']);
+  if (dobVariant === 'required') {
+    document.body.classList.add('twa-ab-dob-required');
+    var dobInput = document.getElementById('i_dob');
+    if (dobInput) {
+      dobInput.type = 'date';
+      dobInput.removeAttribute('maxlength');
+      dobInput.removeAttribute('placeholder');
+      dobInput.removeAttribute('inputmode');
+      var dobLabel = document.querySelector('label[for="i_dob"]');
+      if (dobLabel && !dobLabel.parentNode.querySelector('.twa-form-microcopy')) {
+        var micro = document.createElement('p');
+        micro.className = 'twa-form-microcopy';
+        micro.textContent = 'Needed for accurate quote.';
+        micro.style.cssText = 'font-size:12px;color:var(--slate,#64748b);margin:2px 0 0;';
+        dobLabel.insertAdjacentElement('afterend', micro);
+      }
+    }
   }
-  return {
-    fbp: getCookieVal('_fbp'),
-    fbc: getCookieVal('_fbc') || (function() {
-      var fbclid = new URLSearchParams(window.location.search).get('fbclid');
-      return fbclid ? 'fb.1.' + Date.now() + '.' + fbclid : '';
-    })(),
-    ga_client_id: (getCookieVal('_ga') || '').replace(/^GA\d+\.\d+\./, ''),
-  };
-}
+  TWA.pushExposure('dob-required', dobVariant);
+
+  var textVariant = TWA.assignVariant('intake-call-or-text', ['control', 'with-text']);
+  if (textVariant === 'with-text') {
+    var takeoverButtons = document.getElementById('takeover-buttons');
+    var callBtn = takeoverButtons && takeoverButtons.querySelector('button[data-choice="call_me"]');
+    if (callBtn && !takeoverButtons.querySelector('[data-choice="text_me"]')) {
+      var textBtn = document.createElement('a');
+      textBtn.href = 'sms:+15024135335';
+      textBtn.setAttribute('data-choice', 'text_me');
+      textBtn.setAttribute('rel', 'noopener');
+      textBtn.style.cssText = 'width:100%;padding:14px 24px;border-radius:12px;border:none;background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(8,145,178,.4);transition:transform .15s;text-decoration:none;text-align:center;display:block;box-sizing:border-box;';
+      textBtn.innerHTML = '\u{1F4F1} Text Me';
+      textBtn.addEventListener('click', function () {
+        window.dataLayer = window.dataLayer || [];
+        dataLayer.push({ event: 'intake_text_me_clicked', test_name: 'intake-call-or-text', variant: 'with-text' });
+      });
+      callBtn.insertAdjacentElement('afterend', textBtn);
+    }
+  }
+  TWA.pushExposure('intake-call-or-text', textVariant);
+})();
 
 let currentStep = 1;
 let selectedProducts = [];
@@ -1946,23 +1983,18 @@ async function trackPartial(notify) {
     // can show the actual entry point even before final submit (mirrors the final
     // submission's formData capture).
     const _trkParams = new URLSearchParams(window.location.search);
+    // URL params first, then the twa_lt/twa_ft cookies via TWA.getAttribution()
+    // — the old fallback read a `twa_utm` cookie nothing ever wrote, so a
+    // visitor who navigated here from a UTM-tagged landing page autosaved with
+    // no campaign data at all. gclid/fbclid now ride the autosave too.
+    const _cookieAttr = TWA.getAttribution();
     const _attr = {
       lead_page: window.location.pathname + window.location.search,
       lead_referrer: document.referrer || 'direct',
-      lead_source: _trkParams.get('src') || undefined,
+      lead_source: _trkParams.get('src') || _cookieAttr.src || undefined,
     };
-    for (const _k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']) {
-      const _val = _trkParams.get(_k);
-      if (_val) _attr[_k] = _val;
-    }
-    const _utmCookie = document.cookie.match(/twa_utm=([^;]+)/);
-    if (_utmCookie) {
-      try {
-        const _saved = JSON.parse(decodeURIComponent(_utmCookie[1]));
-        for (const _k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term']) {
-          if (_saved[_k] && !_attr[_k]) _attr[_k] = _saved[_k];
-        }
-      } catch (e) {}
+    for (const _k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'fbclid']) {
+      _attr[_k] = _trkParams.get(_k) || _cookieAttr[_k] || undefined;
     }
 
     const res = await fetch(SAGE_API + '/api/intake/track', {
@@ -1978,8 +2010,11 @@ async function trackPartial(notify) {
         notify: !!notify,
         _hp_company: document.getElementById('_hp_company')?.value || '',
         cfToken: turnstileToken || '',
-        twa_vid: sessionId || getVisitorId(),
+        // The visitor id proper — no longer conflated with the sage sessionId
+        // (sessionId already rides as its own key above).
+        twa_vid: getVisitorId(),
         _tracking: getTrackingIds(),
+        attribution: _cookieAttr,
         ..._attr,
       })
     });
@@ -3072,13 +3107,15 @@ async function submitQuickLead() {
   ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(key => {
     const val = urlParams.get(key); if (val) formData[key] = val;
   });
-  const utmCookie = document.cookie.match(/twa_utm=([^;]+)/);
-  if (utmCookie) { try { const s = JSON.parse(decodeURIComponent(utmCookie[1])); for (const k in s) { if (!formData[k]) formData[k] = s[k]; } } catch(e) {} }
+  // Cookie fallback via TWA (twa_lt/twa_ft) — the old code read a `twa_utm`
+  // cookie nothing ever wrote, so returning visitors lost their UTMs here.
+  const _qlAttr = TWA.getAttribution();
+  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'fbclid'].forEach(key => {
+    if (!formData[key] && _qlAttr[key]) formData[key] = _qlAttr[key];
+  });
   const gclid = urlParams.get('gclid'), fbclid = urlParams.get('fbclid');
   if (gclid) formData.gclid = gclid;
   if (fbclid) formData.fbclid = fbclid;
-  const ltCookie = document.cookie.match(/twa_lt=([^;]+)/);
-  if (ltCookie) { try { const lt = JSON.parse(decodeURIComponent(ltCookie[1])); if (lt.gclid && !formData.gclid) formData.gclid = lt.gclid; if (lt.fbclid && !formData.fbclid) formData.fbclid = lt.fbclid; } catch(e) {} }
   formData.lead_referrer = document.referrer || 'direct';
   formData.lead_page = window.location.pathname + window.location.search;
   if (window._intakeIndustry) formData.industry = window._intakeIndustry;
@@ -3264,33 +3301,13 @@ async function submitIntake() {
   if (srcParam) formData.lead_source = srcParam;
   const agentParam = urlParams.get('agent');
 
-  // Capture UTM params (from URL or cookie)
-  const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'];
-  for (const key of utmKeys) {
-    const val = urlParams.get(key);
-    if (val) formData[key] = val;
-  }
-  // Also check cookie for returning visitors
-  const utmCookie = document.cookie.match(/twa_utm=([^;]+)/);
-  if (utmCookie) {
-    try {
-      const saved = JSON.parse(decodeURIComponent(utmCookie[1]));
-      for (const key of utmKeys) { if (saved[key] && !formData[key]) formData[key] = saved[key]; }
-    } catch(e) {}
-  }
-  // Capture GCLID/FBCLID from URL or attribution cookies
-  const gclid = urlParams.get('gclid');
-  const fbclid = urlParams.get('fbclid');
-  if (gclid) formData.gclid = gclid;
-  if (fbclid) formData.fbclid = fbclid;
-  // Also check last-touch attribution cookie (set by app.js)
-  const ltCookie = document.cookie.match(/twa_lt=([^;]+)/);
-  if (ltCookie) {
-    try {
-      const lt = JSON.parse(decodeURIComponent(ltCookie[1]));
-      if (lt.gclid && !formData.gclid) formData.gclid = lt.gclid;
-      if (lt.fbclid && !formData.fbclid) formData.fbclid = lt.fbclid;
-    } catch(e) {}
+  // Capture campaign params: URL first, then the twa_lt/twa_ft cookies via
+  // TWA.getAttribution() for returning visitors. (The old cookie fallback read
+  // `twa_utm`, which nothing ever wrote — cross-page UTMs were silently lost.)
+  const _fsAttr = TWA.getAttribution();
+  for (const key of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'fbclid']) {
+    const val = urlParams.get(key) || _fsAttr[key];
+    if (val && !formData[key]) formData[key] = val;
   }
   formData.lead_referrer = document.referrer || 'direct';
   formData.lead_page = window.location.pathname + window.location.search;
@@ -3343,8 +3360,9 @@ async function submitIntake() {
         agent: agentParam || '',
         _hp_company: document.getElementById('_hp_company')?.value || '',
         cfToken: turnstileToken || '',
-        twa_vid: sessionId || getVisitorId(),
+        twa_vid: getVisitorId(),
         _tracking: getTrackingIds(),
+        attribution: _fsAttr,
       })
     });
     if (!res.ok) {

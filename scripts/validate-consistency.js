@@ -200,10 +200,15 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
     'terms.html',          // Legal page with full inline styles
   ]);
 
-  // Pages that don't use app.js (self-contained SPAs with own inline JS)
+  // Pages that don't use app.js (self-contained SPAs with own inline JS).
+  // intake previously passed this check only because the string "app.js"
+  // appeared in a code COMMENT — list it explicitly; it loads attribution.js
+  // standalone by design (loading full app.js would inject the mobile call
+  // FAB + a dead after-hours chat binding on the money page).
   const noAppJsPages = new Set([
     'portal/index.html',
     'partner/index.html',
+    'intake/index.html',
   ]);
 
   for (const file of htmlFiles) {
@@ -526,8 +531,9 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
   let scriptErrors = 0;
   const nonUtility = htmlFiles.filter(f => classify(f) !== 'utility');
 
-  // SPA portals have their own inline JS and don't use app.js
-  const spaPortals = new Set(['portal/index.html', 'partner/index.html']);
+  // SPA portals have their own inline JS and don't use app.js; intake loads
+  // attribution.js standalone instead (see noAppJsPages above).
+  const spaPortals = new Set(['portal/index.html', 'partner/index.html', 'intake/index.html']);
 
   for (const file of nonUtility) {
     const html = fs.readFileSync(file, 'utf8');

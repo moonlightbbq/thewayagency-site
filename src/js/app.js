@@ -104,59 +104,10 @@
       // rollout must launch as a NEW test name (re-bucketing mid-test
       // contaminates returning-visitor assignment).
     },
-    'dob-required': {
-      variants: {
-        control: {},
-        required: {},
-      },
-      // Variant requires DOB for all personal lines (vs. life-only in control), upgrades input to type=date
-      // for native mobile picker, and adds microcopy. Validation in src/intake.html keys off the body class.
-      apply: function(variant) {
-        if (variant !== 'required') return;
-        document.body.classList.add('twa-ab-dob-required');
-        const input = document.getElementById('i_dob');
-        if (!input) return;
-        input.type = 'date';
-        input.removeAttribute('maxlength');
-        input.removeAttribute('placeholder');
-        input.removeAttribute('inputmode');
-        const label = document.querySelector('label[for="i_dob"]');
-        if (label && !label.parentNode.querySelector('.twa-form-microcopy')) {
-          const micro = document.createElement('p');
-          micro.className = 'twa-form-microcopy';
-          micro.textContent = 'Needed for accurate quote.';
-          micro.style.cssText = 'font-size:12px;color:var(--slate,#64748b);margin:2px 0 0;';
-          label.insertAdjacentElement('afterend', micro);
-        }
-      },
-    },
-    'intake-call-or-text': {
-      variants: {
-        control: {},
-        'with-text': {},
-      },
-      // Variant adds a tap-to-text option alongside the Call Me button on the agent takeover step.
-      // Click-to-call must always pair with a text option per agency policy; this test measures whether
-      // surfacing text as a peer CTA lifts response engagement.
-      apply: function(variant) {
-        if (variant !== 'with-text') return;
-        const buttons = document.getElementById('takeover-buttons');
-        if (!buttons) return;
-        const callBtn = buttons.querySelector('button[data-choice="call_me"]');
-        if (!callBtn || buttons.querySelector('[data-choice="text_me"]')) return;
-        const textBtn = document.createElement('a');
-        textBtn.href = 'sms:+15024135335';
-        textBtn.setAttribute('data-choice', 'text_me');
-        textBtn.setAttribute('rel', 'noopener');
-        textBtn.style.cssText = 'width:100%;padding:14px 24px;border-radius:12px;border:none;background:linear-gradient(135deg,#0891b2,#0e7490);color:#fff;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(8,145,178,.4);transition:transform .15s;text-decoration:none;text-align:center;display:block;box-sizing:border-box;';
-        textBtn.innerHTML = '\u{1F4F1} Text Me';
-        textBtn.addEventListener('click', function() {
-          window.dataLayer = window.dataLayer || [];
-          dataLayer.push({ event: 'intake_text_me_clicked', test_name: 'intake-call-or-text', variant: 'with-text' });
-        });
-        callBtn.insertAdjacentElement('afterend', textBtn);
-      },
-    },
+    // 'dob-required' and 'intake-call-or-text' moved INLINE to src/intake.html
+    // (registered via TWA.assignVariant/pushExposure): app.js never loads on
+    // /intake/, so both tests were permanently inert here while still pushing
+    // ab_exposure on every other page — poisoning the exposure data.
   };
 
   // Visitor id / tracking ids / A-B hash live in src/js/attribution.js
