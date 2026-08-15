@@ -2,10 +2,12 @@
 title: Insurance Options for Frankfort State Employees
 slug: insurance-options-frankfort-state-employees
 description: "Kentucky state employees in Frankfort have group benefits, but they may still need personal policies to fill gaps. Here's what to consider beyond your state plan."
-author: The Way Agency
-author_title: Independent Insurance Agency
-date: 2027-01-13
-modified: 2027-01-13
+author: Kelly McCallister
+author_title: Client Care Specialist
+author_slug: kelly-mccallister
+reviewed_date: 2026-08-05
+date: 2026-08-15
+modified: 2026-08-15
 reading_time: 6 min read
 related_page: /personal/umbrella.html
 tags: insurance for state employees kentucky, frankfort ky insurance, state employee insurance gaps, supplemental insurance state workers
