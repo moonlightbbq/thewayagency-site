@@ -259,7 +259,13 @@ ${hiddenHtml}
             <input id="${formId}-email" type="email" name="email" placeholder="Email address" required autocomplete="email">
             <label for="${formId}-phone" class="sr-only">Phone (optional)</label>
             <input id="${formId}-phone" type="tel" name="phone" placeholder="Phone (optional)" autocomplete="tel">
-            <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <!-- Honeypot - display:none, never off-screen. display:none is what
+                 actually defeats autofill (Chrome and the password managers skip
+                 it, but fill an off-screen field and 403 a real lead at sage's
+                 checkHoneypot). The data-* attrs are belt-and-braces, matching
+                 intake.html / contact.html / apply.html / forrest-frank-2026.html. -->
+            <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true"
+                   data-1p-ignore data-lpignore="true" data-form-type="other">
             <button type="submit">Get Quote</button>
           </form>
           <p style="font-size:11px;color:var(--slate,#64748b);margin-top:8px;text-align:center;">We never sell your data. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
