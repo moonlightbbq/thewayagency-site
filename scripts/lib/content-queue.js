@@ -23,6 +23,9 @@ const path = require('path');
 const ROOT = path.resolve(__dirname, '..', '..');
 const CALENDAR_PATH = path.join(ROOT, 'data', 'content-calendar.json');
 const BACKLOG_PATH = path.join(ROOT, 'data', 'content-backlog.json');
+// The backlog schema this code understands. Bump it in the same commit that
+// changes the file's shape - loadBacklog() refuses anything else.
+const BACKLOG_SCHEMA_VERSION = 2;
 const BLOG_SRC = path.join(ROOT, 'src', 'blog');
 const ANCHORS_PATH = path.join(ROOT, 'data', 'seasonal-anchors.json');
 
@@ -82,7 +85,22 @@ function loadCalendar() {
 
 function loadBacklog() {
   if (!fs.existsSync(BACKLOG_PATH)) return { candidates: [] };
-  return JSON.parse(fs.readFileSync(BACKLOG_PATH, 'utf8'));
+  const backlog = JSON.parse(fs.readFileSync(BACKLOG_PATH, 'utf8'));
+  // fill-slots.js round-trips this WHOLE object back to disk, but fillSlots only
+  // ever mutates .candidates - so every other top-level key is rewritten exactly
+  // as it was read from THIS checkout's disk. Run the queue from a tree that
+  // predates a schema bump and the write silently reverts the header on main.
+  // That is not hypothetical: 1414492 reverted _doc/version from v2 to v1 on
+  // 2026-08-15 and only CI noticed. Refuse to operate on a schema this code does
+  // not own, the same way an unrecognised seasonality_window fails closed rather
+  // than scheduling something wrong.
+  if (backlog.version !== BACKLOG_SCHEMA_VERSION) {
+    throw new Error(
+      `content-backlog.json is schema v${backlog.version}, expected v${BACKLOG_SCHEMA_VERSION}. `
+      + 'This checkout is stale - pull main before running the queue.',
+    );
+  }
+  return backlog;
 }
 
 function saveCalendar(cal) {
@@ -653,7 +671,7 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
 }
 
 module.exports = {
-  CALENDAR_PATH, BACKLOG_PATH, BLOG_SRC,
+  CALENDAR_PATH, BACKLOG_PATH, BLOG_SRC, BACKLOG_SCHEMA_VERSION,
   evaluateInvariants,
   CANNIBALIZATION_THRESHOLD,
   tokenize, jaccard, locationPages,

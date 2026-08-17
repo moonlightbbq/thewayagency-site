@@ -110,4 +110,28 @@ describe('backlog schema', () => {
         `${c.slug}: seasonality_window "${c.seasonality_window}" is not in the taxonomy`);
     }
   });
+
+  test('the file agrees with the schema version the code owns', () => {
+    // If these drift, loadBacklog() throws on a clean checkout — so a shape
+    // change must bump both in the same commit.
+    assert.equal(backlog.version, q.BACKLOG_SCHEMA_VERSION);
+  });
+
+  test('loadBacklog refuses a stale schema instead of round-tripping it', () => {
+    // fill-slots.js rewrites the whole object, so reading a pre-bump file is how
+    // v2 got reverted to v1 on main (1414492, 2026-08-15). Reading must fail
+    // loudly rather than hand back a backlog whose header the writer will then
+    // stamp over main.
+    const original = fs.readFileSync(q.BACKLOG_PATH, 'utf8');
+    try {
+      const stale = JSON.parse(original);
+      stale.version = q.BACKLOG_SCHEMA_VERSION - 1;
+      fs.writeFileSync(q.BACKLOG_PATH, `${JSON.stringify(stale, null, 2)}\n`);
+      assert.throws(() => q.loadBacklog(), /stale/i);
+    } finally {
+      fs.writeFileSync(q.BACKLOG_PATH, original);
+    }
+    // The guard must not have damaged the real file.
+    assert.equal(fs.readFileSync(q.BACKLOG_PATH, 'utf8'), original);
+  });
 });
