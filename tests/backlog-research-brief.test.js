@@ -17,6 +17,7 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const q = require('../scripts/lib/content-queue');
@@ -122,16 +123,25 @@ describe('backlog schema', () => {
     // v2 got reverted to v1 on main (1414492, 2026-08-15). Reading must fail
     // loudly rather than hand back a backlog whose header the writer will then
     // stamp over main.
-    const original = fs.readFileSync(q.BACKLOG_PATH, 'utf8');
+    //
+    // Against a FIXTURE, never the real data/content-backlog.json: node --test
+    // runs test files in parallel processes, so temporarily writing a stale
+    // header to the shared file fails whichever other suite reads it mid-flight
+    // (send-approval-digest, caught in CI on this branch).
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'backlog-schema-'));
+    const fixture = path.join(dir, 'content-backlog.json');
     try {
-      const stale = JSON.parse(original);
+      const stale = JSON.parse(fs.readFileSync(q.BACKLOG_PATH, 'utf8'));
       stale.version = q.BACKLOG_SCHEMA_VERSION - 1;
-      fs.writeFileSync(q.BACKLOG_PATH, `${JSON.stringify(stale, null, 2)}\n`);
-      assert.throws(() => q.loadBacklog(), /stale/i);
+      fs.writeFileSync(fixture, `${JSON.stringify(stale, null, 2)}\n`);
+      assert.throws(() => q.loadBacklog(fixture), /stale/i);
+
+      // ...and accepts the current schema, so the guard is not simply always-throw.
+      stale.version = q.BACKLOG_SCHEMA_VERSION;
+      fs.writeFileSync(fixture, `${JSON.stringify(stale, null, 2)}\n`);
+      assert.equal(q.loadBacklog(fixture).version, q.BACKLOG_SCHEMA_VERSION);
     } finally {
-      fs.writeFileSync(q.BACKLOG_PATH, original);
+      fs.rmSync(dir, { recursive: true, force: true });
     }
-    // The guard must not have damaged the real file.
-    assert.equal(fs.readFileSync(q.BACKLOG_PATH, 'utf8'), original);
   });
 });

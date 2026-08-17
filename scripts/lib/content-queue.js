@@ -83,9 +83,13 @@ function loadCalendar() {
   return JSON.parse(fs.readFileSync(CALENDAR_PATH, 'utf8'));
 }
 
-function loadBacklog() {
-  if (!fs.existsSync(BACKLOG_PATH)) return { candidates: [] };
-  const backlog = JSON.parse(fs.readFileSync(BACKLOG_PATH, 'utf8'));
+// `backlogPath` is injectable for the same reason evaluateInvariants takes
+// opts.hasMarkdown: the guard below must be testable against a fixture rather
+// than against whatever happens to be on disk. Mutating the real file to test it
+// races the other test files, which node --test runs in parallel processes.
+function loadBacklog(backlogPath = BACKLOG_PATH) {
+  if (!fs.existsSync(backlogPath)) return { candidates: [] };
+  const backlog = JSON.parse(fs.readFileSync(backlogPath, 'utf8'));
   // fill-slots.js round-trips this WHOLE object back to disk, but fillSlots only
   // ever mutates .candidates - so every other top-level key is rewritten exactly
   // as it was read from THIS checkout's disk. Run the queue from a tree that
@@ -96,7 +100,7 @@ function loadBacklog() {
   // than scheduling something wrong.
   if (backlog.version !== BACKLOG_SCHEMA_VERSION) {
     throw new Error(
-      `content-backlog.json is schema v${backlog.version}, expected v${BACKLOG_SCHEMA_VERSION}. `
+      `${path.basename(backlogPath)} is schema v${backlog.version}, expected v${BACKLOG_SCHEMA_VERSION}. `
       + 'This checkout is stale - pull main before running the queue.',
     );
   }
