@@ -17,6 +17,7 @@
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 
 const q = require('../scripts/lib/content-queue');
@@ -108,6 +109,39 @@ describe('backlog schema', () => {
       if (!c.seasonality_window) continue;
       assert.ok(windows[c.seasonality_window],
         `${c.slug}: seasonality_window "${c.seasonality_window}" is not in the taxonomy`);
+    }
+  });
+
+  test('the file agrees with the schema version the code owns', () => {
+    // If these drift, loadBacklog() throws on a clean checkout — so a shape
+    // change must bump both in the same commit.
+    assert.equal(backlog.version, q.BACKLOG_SCHEMA_VERSION);
+  });
+
+  test('loadBacklog refuses a stale schema instead of round-tripping it', () => {
+    // fill-slots.js rewrites the whole object, so reading a pre-bump file is how
+    // v2 got reverted to v1 on main (1414492, 2026-08-15). Reading must fail
+    // loudly rather than hand back a backlog whose header the writer will then
+    // stamp over main.
+    //
+    // Against a FIXTURE, never the real data/content-backlog.json: node --test
+    // runs test files in parallel processes, so temporarily writing a stale
+    // header to the shared file fails whichever other suite reads it mid-flight
+    // (send-approval-digest, caught in CI on this branch).
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'backlog-schema-'));
+    const fixture = path.join(dir, 'content-backlog.json');
+    try {
+      const stale = JSON.parse(fs.readFileSync(q.BACKLOG_PATH, 'utf8'));
+      stale.version = q.BACKLOG_SCHEMA_VERSION - 1;
+      fs.writeFileSync(fixture, `${JSON.stringify(stale, null, 2)}\n`);
+      assert.throws(() => q.loadBacklog(fixture), /stale/i);
+
+      // ...and accepts the current schema, so the guard is not simply always-throw.
+      stale.version = q.BACKLOG_SCHEMA_VERSION;
+      fs.writeFileSync(fixture, `${JSON.stringify(stale, null, 2)}\n`);
+      assert.equal(q.loadBacklog(fixture).version, q.BACKLOG_SCHEMA_VERSION);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
     }
   });
 });
