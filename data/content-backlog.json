@@ -148,38 +148,6 @@
       "notes": "Written 2026-03-27 and previously dated 2027-01-20 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
     },
     {
-      "slug": "group-health-insurance-small-business-kentucky",
-      "title": "Group Health Insurance for Small Businesses in Kentucky",
-      "description": "Offering group health insurance helps attract and retain employees. Here's how small group plans work in Kentucky, what they cost, and how to set one up.",
-      "primary_keyword": "group health insurance small business kentucky",
-      "secondary_keywords": [
-        "small group health insurance KY",
-        "employer health insurance cost",
-        "how to set up group health plan"
-      ],
-      "related_cluster": "commercial-workforce",
-      "pillar": "product",
-      "funnel_stage": "middle",
-      "search_intent": "informational",
-      "topic_type": "deep-dive",
-      "seasonality_window": null,
-      "target_product_page": "/health/group-health.html",
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/commercial/workers-compensation.html",
-        "/health/individual-health.html"
-      ],
-      "conversion_goal": "consultation",
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "source": "migrated-from-year1",
-      "proposed_at": "2026-08-04",
-      "approved_at": "2026-08-04",
-      "approved_by": "phase-2-migration",
-      "status": "approved",
-      "notes": "Written 2026-03-27 and previously dated 2027-02-03 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
-    },
-    {
       "slug": "understanding-certificates-of-insurance",
       "title": "Understanding Certificates of Insurance for Business Owners",
       "description": "A certificate of insurance (COI) proves you have coverage. Learn what's on a COI, how to request one, what additional insured means, and why clients and landlords ask for it.",

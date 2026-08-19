@@ -2335,7 +2335,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "published",
+      "status": "in-review",
       "source": "queue-lock",
       "locked_at": "2026-08-04",
       "notes": "Written 2026-03-27 and previously dated 2027-01-13 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk.",
@@ -2410,7 +2410,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "published",
+      "status": "planned",
       "source": "queue-lock",
       "locked_at": "2026-08-05",
       "notes": "Written 2026-03-27 and previously dated 2026-11-04 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk. Locked 3d before publish so the date would not go silent. That is inside send-review-emails' D-10 window, so no reviewer email goes out for this post. Draft was already written and on disk.",
@@ -2445,7 +2445,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "published",
+      "status": "planned",
       "source": "queue-lock",
       "locked_at": "2026-08-05",
       "notes": "Written 2026-03-27 and previously dated 2026-11-11 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk. Locked 7d before publish so the date would not go silent. That is inside send-review-emails' D-10 window, so no reviewer email goes out for this post. Draft was already written and on disk.",
@@ -2481,7 +2481,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "published",
+      "status": "in-review",
       "source": "queue-lock",
       "locked_at": "2026-08-05",
       "notes": "Written 2026-03-27 and previously dated 2026-12-09 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk.",
@@ -2524,6 +2524,41 @@
       "source": "queue-lock",
       "locked_at": "2026-08-08",
       "notes": "Written 2026-03-27 and previously dated 2027-01-06 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
+    },
+    {
+      "publish_date": "2026-09-02",
+      "title": "Group Health Insurance for Small Businesses in Kentucky",
+      "slug": "group-health-insurance-small-business-kentucky",
+      "description": "Offering group health insurance helps attract and retain employees. Here's how small group plans work in Kentucky, what they cost, and how to set one up.",
+      "pillar": "product",
+      "topic_type": "deep-dive",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "primary_keyword": "group health insurance small business kentucky",
+      "secondary_keywords": [
+        "small group health insurance KY",
+        "employer health insurance cost",
+        "how to set up group health plan"
+      ],
+      "target_product_page": "/health/group-health.html",
+      "target_location_pages": [],
+      "secondary_internal_links": [
+        "/commercial/workers-compensation.html",
+        "/health/individual-health.html"
+      ],
+      "related_cluster": "commercial-workforce",
+      "conversion_goal": "consultation",
+      "evergreen_or_seasonal": "evergreen",
+      "seasonality_window": null,
+      "refresh_cycle": "annual",
+      "page_role": "supporting",
+      "is_link_target": false,
+      "receives_future_links": true,
+      "status": "planned",
+      "source": "queue-lock",
+      "locked_at": "2026-08-19",
+      "notes": "Written 2026-03-27 and previously dated 2027-02-03 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk.",
+      "research_brief": null
     }
   ],
   "slots": [
@@ -2574,9 +2609,9 @@
     },
     {
       "date": "2026-09-02",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
+      "state": "locked",
+      "locked_slug": "group-health-insurance-small-business-kentucky",
+      "locked_at": "2026-08-19",
       "reserved_at": "2026-08-05"
     },
     {
@@ -2599,6 +2634,13 @@
       "locked_slug": null,
       "locked_at": null,
       "reserved_at": "2026-08-15"
+    },
+    {
+      "date": "2026-09-16",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-08-19"
     }
   ],
   "coverage_targets": {
