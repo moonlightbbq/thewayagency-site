@@ -2,10 +2,12 @@
 title: "Professional Liability Insurance: Who Needs E&O Coverage?"
 slug: professional-liability-who-needs-eo
 description: If your work involves advice, design, or professional judgment, a mistake could lead to a lawsuit. Professional liability (E&O) insurance covers the gap that general liability doesn't.
-author: The Way Agency
-author_title: Independent Insurance Agency
-date: 2026-12-09
-modified: 2026-12-09
+author: Sheilia Royal
+author_title: Agency Principal / Licensed Agent
+author_slug: sheilia-royal
+reviewed_date: 2026-08-05
+date: 2026-08-19
+modified: 2026-08-19
 reading_time: 7 min read
 related_page: /commercial/professional-liability.html
 tags: professional liability, E&O, errors and omissions, business insurance, commercial
