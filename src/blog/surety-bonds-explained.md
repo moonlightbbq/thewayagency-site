@@ -4,8 +4,8 @@ slug: surety-bonds-explained
 description: "Surety bonds aren't insurance -- they're a guarantee. Learn how bonds work, the difference between bid, performance, and payment bonds, and when Kentucky businesses need them."
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2027-01-06
-modified: 2027-01-06
+date: 2026-08-22
+modified: 2026-08-22
 reading_time: 7 min read
 related_page: /commercial/bonds.html
 tags: surety bonds, what is a surety bond, bid bond, performance bond, contractor surety bond kentucky
