@@ -2335,7 +2335,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "published",
+      "status": "in-review",
       "source": "queue-lock",
       "locked_at": "2026-08-04",
       "notes": "Written 2026-03-27 and previously dated 2027-01-13 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk.",
@@ -2410,7 +2410,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "published",
+      "status": "planned",
       "source": "queue-lock",
       "locked_at": "2026-08-05",
       "notes": "Written 2026-03-27 and previously dated 2026-11-04 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk. Locked 3d before publish so the date would not go silent. That is inside send-review-emails' D-10 window, so no reviewer email goes out for this post. Draft was already written and on disk.",
@@ -2445,7 +2445,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "published",
+      "status": "planned",
       "source": "queue-lock",
       "locked_at": "2026-08-05",
       "notes": "Written 2026-03-27 and previously dated 2026-11-11 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk. Locked 7d before publish so the date would not go silent. That is inside send-review-emails' D-10 window, so no reviewer email goes out for this post. Draft was already written and on disk.",
@@ -2481,7 +2481,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "published",
+      "status": "in-review",
       "source": "queue-lock",
       "locked_at": "2026-08-05",
       "notes": "Written 2026-03-27 and previously dated 2026-12-09 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk.",
@@ -2520,7 +2520,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "published",
+      "status": "planned",
       "source": "queue-lock",
       "locked_at": "2026-08-08",
       "notes": "Written 2026-03-27 and previously dated 2027-01-06 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
@@ -2554,15 +2554,47 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "in-review",
+      "status": "planned",
       "source": "queue-lock",
       "locked_at": "2026-08-19",
       "notes": "Written 2026-03-27 and previously dated 2027-02-03 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk.",
-      "research_brief": null,
-      "reviewer": "Audrey Lillpop",
-      "reviewer_email": "audrey@thewayagency.com",
-      "reviewer_slug": "audrey-lillpop",
-      "review_sent_date": "2026-08-22"
+      "research_brief": null
+    },
+    {
+      "publish_date": "2026-09-05",
+      "title": "Insurance Guide for Electrical Contractors in Kentucky",
+      "slug": "insurance-guide-electrical-contractors",
+      "description": "Electrical work carries inherent fire and injury risk. Here's the insurance Kentucky electrical contractors need, what it costs, and how to meet GC requirements.",
+      "pillar": "seasonal",
+      "topic_type": "guide",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "primary_keyword": "electrical contractor insurance kentucky",
+      "secondary_keywords": [
+        "electrician insurance cost",
+        "electrical contractor insurance requirements",
+        "electrician business insurance"
+      ],
+      "target_product_page": "/commercial/general-liability.html",
+      "target_location_pages": [],
+      "secondary_internal_links": [
+        "/industries/electrical-contractors.html",
+        "/commercial/workers-compensation.html",
+        "/blog/insurance-checklist-hvac-contractors.html"
+      ],
+      "related_cluster": "industry-trades",
+      "conversion_goal": "quote-request",
+      "evergreen_or_seasonal": "evergreen",
+      "seasonality_window": null,
+      "refresh_cycle": "annual",
+      "page_role": "supporting",
+      "is_link_target": false,
+      "receives_future_links": true,
+      "status": "planned",
+      "source": "queue-lock",
+      "locked_at": "2026-08-22",
+      "notes": "Written 2026-03-27 and previously dated 2027-02-24 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk.",
+      "research_brief": null
     }
   ],
   "slots": [
@@ -2620,9 +2652,9 @@
     },
     {
       "date": "2026-09-05",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
+      "state": "locked",
+      "locked_slug": "insurance-guide-electrical-contractors",
+      "locked_at": "2026-08-22",
       "reserved_at": "2026-08-08"
     },
     {
@@ -2645,6 +2677,13 @@
       "locked_slug": null,
       "locked_at": null,
       "reserved_at": "2026-08-19"
+    },
+    {
+      "date": "2026-09-19",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-08-22"
     }
   ],
   "coverage_targets": {

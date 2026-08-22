@@ -180,39 +180,6 @@
       "notes": "Written 2026-03-27 and previously dated 2027-02-17 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
     },
     {
-      "slug": "insurance-guide-electrical-contractors",
-      "title": "Insurance Guide for Electrical Contractors in Kentucky",
-      "description": "Electrical work carries inherent fire and injury risk. Here's the insurance Kentucky electrical contractors need, what it costs, and how to meet GC requirements.",
-      "primary_keyword": "electrical contractor insurance kentucky",
-      "secondary_keywords": [
-        "electrician insurance cost",
-        "electrical contractor insurance requirements",
-        "electrician business insurance"
-      ],
-      "related_cluster": "industry-trades",
-      "pillar": "seasonal",
-      "funnel_stage": "middle",
-      "search_intent": "informational",
-      "topic_type": "guide",
-      "seasonality_window": null,
-      "target_product_page": "/commercial/general-liability.html",
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/industries/electrical-contractors.html",
-        "/commercial/workers-compensation.html",
-        "/blog/insurance-checklist-hvac-contractors.html"
-      ],
-      "conversion_goal": "quote-request",
-      "refresh_cycle": "annual",
-      "page_role": "supporting",
-      "source": "migrated-from-year1",
-      "proposed_at": "2026-08-04",
-      "approved_at": "2026-08-04",
-      "approved_by": "phase-2-migration",
-      "status": "approved",
-      "notes": "Written 2026-03-27 and previously dated 2027-02-24 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
-    },
-    {
       "slug": "community-spotlight-local-businesses",
       "title": "Community Spotlight: Local Businesses We're Proud to Insure",
       "description": "We're honored to insure the businesses that make our communities great. Here's a look at some of the local businesses we serve across Kentucky, Indiana, and Tennessee.",
