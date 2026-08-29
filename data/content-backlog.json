@@ -147,40 +147,6 @@
       "notes": "Written 2026-03-27 and previously dated 2027-02-17 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
     },
     {
-      "slug": "community-spotlight-local-businesses",
-      "title": "Community Spotlight: Local Businesses We're Proud to Insure",
-      "description": "We're honored to insure the businesses that make our communities great. Here's a look at some of the local businesses we serve across Kentucky, Indiana, and Tennessee.",
-      "primary_keyword": "the way agency clients",
-      "secondary_keywords": [
-        "owensboro small businesses",
-        "local insurance agency kentucky"
-      ],
-      "related_cluster": "kentucky-local",
-      "pillar": "local",
-      "funnel_stage": "trust",
-      "search_intent": "navigational",
-      "topic_type": "community-spotlight",
-      "seasonality_window": null,
-      "target_product_page": null,
-      "target_location_pages": [
-        "/insurance/owensboro-ky.html"
-      ],
-      "secondary_internal_links": [
-        "/about/community.html",
-        "/about/",
-        "/commercial/general-liability.html"
-      ],
-      "conversion_goal": "trust",
-      "refresh_cycle": "annual",
-      "page_role": "trust",
-      "source": "migrated-from-year1",
-      "proposed_at": "2026-08-04",
-      "approved_at": "2026-08-04",
-      "approved_by": "phase-2-migration",
-      "status": "approved",
-      "notes": "Written 2026-03-27 and previously dated 2027-03-10 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
-    },
-    {
       "slug": "understanding-insurance-endorsements",
       "title": "Understanding Insurance Endorsements and Riders",
       "description": "Endorsements modify your policy to add, remove, or change coverage. Learn what endorsements are, which ones are worth adding, and how they affect your premium.",
