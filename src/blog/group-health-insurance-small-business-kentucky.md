@@ -4,8 +4,8 @@ slug: group-health-insurance-small-business-kentucky
 description: Offering group health insurance helps attract and retain employees. Here's how small group plans work in Kentucky, what they cost, and how to set one up.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2027-02-03
-modified: 2027-02-03
+date: 2026-09-02
+modified: 2026-09-02
 reading_time: 7 min read
 related_page: /health/group-health.html
 tags: group health insurance small business kentucky, small group health insurance KY, employer health insurance cost, how to set up group health plan
