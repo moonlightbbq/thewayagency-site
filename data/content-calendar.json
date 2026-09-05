@@ -2034,9 +2034,11 @@
       "source": "seasonal-auto-enriched",
       "author": "The Way Agency",
       "author_slug": null,
-      "status": "planned",
+      "status": "error",
       "canonical_priority": "tertiary",
-      "notes": "Auto-scheduled by smart-calendar-adapter with no metadata and landed on a Thursday (UTC weekday bug). Re-dated onto the Wed/Sat cadence inside BlogPlannerAdapter's 18-25d drafting window and brought up to the metadata bar 2026-08-04. Re-tagged 2026-08-05: back-to-school is now anchored to the K-12 first day (2026-08-06). This is college content and Kentucky universities start ~3 weeks later, so it should not be governed by the school-district bell."
+      "notes": "Auto-scheduled by smart-calendar-adapter with no metadata and landed on a Thursday (UTC weekday bug). Re-dated onto the Wed/Sat cadence inside BlogPlannerAdapter's 18-25d drafting window and brought up to the metadata bar 2026-08-04. Re-tagged 2026-08-05: back-to-school is now anchored to the K-12 first day (2026-08-06). This is college content and Kentucky universities start ~3 weeks later, so it should not be governed by the school-district bell.",
+      "error_reason": "missing_markdown",
+      "error_at": "2026-09-05T13:11:33.226Z"
     },
     {
       "week": 36,
@@ -2113,9 +2115,11 @@
       "source": "seasonal-auto-enriched",
       "author": "The Way Agency",
       "author_slug": null,
-      "status": "planned",
+      "status": "error",
       "canonical_priority": "tertiary",
-      "notes": "Auto-scheduled by smart-calendar-adapter with no metadata and landed on a Thursday (UTC weekday bug). Re-dated onto the Wed/Sat cadence inside BlogPlannerAdapter's 18-25d drafting window and brought up to the metadata bar 2026-08-04. Re-tagged 2026-08-05: back-to-school is now anchored to the K-12 first day (2026-08-06). This is college content and Kentucky universities start ~3 weeks later, so it should not be governed by the school-district bell."
+      "notes": "Auto-scheduled by smart-calendar-adapter with no metadata and landed on a Thursday (UTC weekday bug). Re-dated onto the Wed/Sat cadence inside BlogPlannerAdapter's 18-25d drafting window and brought up to the metadata bar 2026-08-04. Re-tagged 2026-08-05: back-to-school is now anchored to the K-12 first day (2026-08-06). This is college content and Kentucky universities start ~3 weeks later, so it should not be governed by the school-district bell.",
+      "error_reason": "missing_markdown",
+      "error_at": "2026-09-05T13:11:33.226Z"
     },
     {
       "week": 38,
@@ -2335,7 +2339,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "in-review",
+      "status": "published",
       "source": "queue-lock",
       "locked_at": "2026-08-04",
       "notes": "Written 2026-03-27 and previously dated 2027-01-13 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk.",
@@ -2410,7 +2414,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "published",
       "source": "queue-lock",
       "locked_at": "2026-08-05",
       "notes": "Written 2026-03-27 and previously dated 2026-11-04 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk. Locked 3d before publish so the date would not go silent. That is inside send-review-emails' D-10 window, so no reviewer email goes out for this post. Draft was already written and on disk.",
@@ -2445,7 +2449,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "published",
       "source": "queue-lock",
       "locked_at": "2026-08-05",
       "notes": "Written 2026-03-27 and previously dated 2026-11-11 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk. Locked 7d before publish so the date would not go silent. That is inside send-review-emails' D-10 window, so no reviewer email goes out for this post. Draft was already written and on disk.",
@@ -2481,7 +2485,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "in-review",
+      "status": "published",
       "source": "queue-lock",
       "locked_at": "2026-08-05",
       "notes": "Written 2026-03-27 and previously dated 2026-12-09 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk.",
@@ -2520,7 +2524,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "published",
       "source": "queue-lock",
       "locked_at": "2026-08-08",
       "notes": "Written 2026-03-27 and previously dated 2027-01-06 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
@@ -2554,7 +2558,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "published",
       "source": "queue-lock",
       "locked_at": "2026-08-19",
       "notes": "Written 2026-03-27 and previously dated 2027-02-03 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk.",
@@ -2590,7 +2594,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "published",
       "source": "queue-lock",
       "locked_at": "2026-08-22",
       "notes": "Written 2026-03-27 and previously dated 2027-02-24 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk.",
@@ -2694,7 +2698,9 @@
       "source": "seasonal-auto",
       "author": "The Way Agency",
       "author_slug": null,
-      "status": "planned"
+      "status": "error",
+      "error_reason": "missing_markdown",
+      "error_at": "2026-09-05T13:11:33.232Z"
     },
     {
       "slug": "medicare-supplement-plans-kentucky",
@@ -2753,11 +2759,15 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "in-review",
       "source": "queue-lock",
       "locked_at": "2026-09-02",
       "notes": "Written 2026-03-27 and previously dated 2026-11-25 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk.",
-      "research_brief": null
+      "research_brief": null,
+      "reviewer": "Audrey Lillpop",
+      "reviewer_email": "audrey@thewayagency.com",
+      "reviewer_slug": "audrey-lillpop",
+      "review_sent_date": "2026-09-05"
     }
   ],
   "slots": [

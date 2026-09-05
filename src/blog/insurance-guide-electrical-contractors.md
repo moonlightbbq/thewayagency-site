@@ -4,8 +4,8 @@ slug: insurance-guide-electrical-contractors
 description: "Electrical work carries inherent fire and injury risk. Here's the insurance Kentucky electrical contractors need, what it costs, and how to meet GC requirements."
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2027-02-24
-modified: 2027-02-24
+date: 2026-09-05
+modified: 2026-09-05
 reading_time: 7 min read
 related_page: /commercial/general-liability.html
 tags: electrical contractor insurance kentucky, electrician insurance cost, electrical contractor insurance requirements, electrician business insurance
