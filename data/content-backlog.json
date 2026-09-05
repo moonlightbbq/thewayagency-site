@@ -49,39 +49,6 @@
       "notes": "Auto-proposed for 2027-05-19, ~9 months out. Held as an undated candidate; becomes eligible in its May-June window."
     },
     {
-      "slug": "replacement-cost-vs-actual-cash-value",
-      "title": "Replacement Cost vs. Actual Cash Value: Why It Matters at Claim Time",
-      "description": "The difference between replacement cost and actual cash value can mean thousands of dollars when you file a claim. Here's how each works and which one you want.",
-      "primary_keyword": "replacement cost vs actual cash value",
-      "secondary_keywords": [
-        "RCV vs ACV insurance",
-        "replacement cost insurance explained",
-        "actual cash value depreciation"
-      ],
-      "related_cluster": "insurance-basics",
-      "pillar": "education",
-      "funnel_stage": "top",
-      "search_intent": "informational",
-      "topic_type": "explainer",
-      "seasonality_window": null,
-      "target_product_page": null,
-      "target_location_pages": [],
-      "secondary_internal_links": [
-        "/blog/understanding-deductibles.html",
-        "/blog/how-to-read-declarations-page.html",
-        "/personal/home.html"
-      ],
-      "conversion_goal": "education",
-      "refresh_cycle": "18-months",
-      "page_role": "supporting",
-      "source": "migrated-from-year1",
-      "proposed_at": "2026-08-04",
-      "approved_at": "2026-08-04",
-      "approved_by": "phase-2-migration",
-      "status": "approved",
-      "notes": "Written 2026-03-27 and previously dated 2027-01-20 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk."
-    },
-    {
       "slug": "understanding-certificates-of-insurance",
       "title": "Understanding Certificates of Insurance for Business Owners",
       "description": "A certificate of insurance (COI) proves you have coverage. Learn what's on a COI, how to request one, what additional insured means, and why clients and landlords ask for it.",
