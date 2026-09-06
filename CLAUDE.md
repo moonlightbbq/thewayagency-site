@@ -3,6 +3,19 @@
 The workspace `~/CLAUDE.md` covers cross-repo basics (build, deploy, after-
 task steps). This file holds rules specific to this repo.
 
+## Writing voice: humanize everything
+
+Any prose written in this repo (blog posts in `src/blog/`, page copy, FAQ
+answers, city-hub context, review or approval emails sent by `scripts/`,
+anything drafted for Luke to paste elsewhere) follows `docs/VOICE.md`. Read it
+before writing. Part 1 (humanize rules) always applies. Part 2 (Luke's voice)
+applies when the text speaks as Luke, as Partner, or as the agency in first
+person.
+
+The canonical copy lives in `sage-server/shared/voice-guide.md`, where SAGE
+appends it to every prompt that generates prose. When you change one, change
+the other in the same session.
+
 ## Compliance pages: version + archive rule
 
 When you change any of the six compliance pages:

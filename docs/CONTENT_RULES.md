@@ -30,6 +30,7 @@ Every new blog post in `src/blog/` must include all of the following before it s
 - [ ] At least one internal link to a relevant priority hub (`/insurance/owensboro-ky.html`, `/insurance/mt-washington-ky.html`) or LOB page.
 - [ ] Honest scope claims. If we do not write a coverage type, the post acknowledges that and points to a specialist. Example: multi-peril crop insurance is referred out; we write farm packages only.
 - [ ] No generic templated city paragraph that could be search-and-replaced into another city's post.
+- [ ] Reads like a person wrote it. Run the self-check in `docs/VOICE.md` (no machine-made openers or filler, no em or en dashes, contractions, one idea per paragraph, a specific next step).
 
 ## Per-city-hub gates
 
