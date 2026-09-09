@@ -4,8 +4,8 @@ slug: community-involvement-2026
 description: A look back at how The Way Agency served our Owensboro community in 2026 through partnerships, events, and charitable giving.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-12-23
-modified: 2026-12-23
+date: 2026-09-09
+modified: 2026-09-09
 reading_time: 5 min read
 related_page: /about/community.html
 tags: community, owensboro, giving back, local, kentucky
