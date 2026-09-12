@@ -4,8 +4,8 @@ slug: community-spotlight-local-businesses
 description: "We're honored to insure the businesses that make our communities great. Here's a look at some of the local businesses we serve across Kentucky, Indiana, and Tennessee."
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2027-03-10
-modified: 2027-03-10
+date: 2026-09-12
+modified: 2026-09-12
 reading_time: 5 min read
 related_page: /about/community.html
 tags: the way agency clients, owensboro small businesses, local insurance agency kentucky
