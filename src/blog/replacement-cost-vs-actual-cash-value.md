@@ -4,8 +4,8 @@ slug: replacement-cost-vs-actual-cash-value
 description: The difference between replacement cost and actual cash value can mean thousands of dollars when you file a claim. Here's how each works and which one you want.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2027-01-20
-modified: 2027-01-20
+date: 2026-09-19
+modified: 2026-09-19
 reading_time: 6 min read
 related_page: /personal/home.html
 tags: replacement cost vs actual cash value, RCV vs ACV, replacement cost insurance, actual cash value depreciation
