@@ -9,6 +9,10 @@ modified: 2026-09-02
 reading_time: 7 min read
 related_page: /health/group-health.html
 tags: group health insurance small business kentucky, small group health insurance KY, employer health insurance cost, how to set up group health plan
+reviewer: Audrey Lillpop
+reviewer_slug: audrey-lillpop
+reviewer_title: Licensed Agent
+reviewed_date: 2026-08-22
 ---
 
 If you run a small business in Kentucky and have been thinking about offering health insurance to your employees, you are not alone. It is one of the most common questions we hear from business owners, right behind "how much does it cost?" and "is it even possible for a business my size?"

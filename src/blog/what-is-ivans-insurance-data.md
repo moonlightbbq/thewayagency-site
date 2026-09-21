@@ -10,6 +10,10 @@ modified: 2026-03-28
 category: general
 tags: [IVANS, insurance-technology, data-exchange, policy-management, automation]
 status: published
+reviewer: Kelly McCallister
+reviewer_slug: kelly-mccallister
+reviewer_title: Client Care Specialist
+reviewed_date: 2026-03-28
 ---
 
 You probably do not spend a lot of time thinking about how your insurance agent and your insurance carrier talk to each other. Most people assume there is a phone call, maybe an email, and eventually somebody updates a file. For decades, that is exactly how it worked. Paper forms got faxed. Policy documents arrived by mail days or weeks after a change was made. Errors crept in because humans were retyping information from one system into another.

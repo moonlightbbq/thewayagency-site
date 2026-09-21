@@ -9,6 +9,10 @@ modified: 2026-09-09
 reading_time: 5 min read
 related_page: /about/community.html
 tags: community, owensboro, giving back, local, kentucky
+reviewer: Audrey Lillpop
+reviewer_slug: audrey-lillpop
+reviewer_title: Licensed Agent
+reviewed_date: 2026-08-29
 ---
 
 Our agency is named after John 14:6 — "I am the way and the truth and the life. No one comes to the Father except through me." That verse is not just our name. It is the foundation for how we run our business and how we show up in the communities we serve.

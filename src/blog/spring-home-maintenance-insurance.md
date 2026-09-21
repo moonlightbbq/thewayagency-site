@@ -12,6 +12,10 @@ related_page: /personal/home.html
 tags: home insurance, kentucky, spring maintenance, home maintenance, lower premiums
 category: personal
 status: published
+reviewer: Sheilia Royal
+reviewer_slug: sheilia-royal
+reviewer_title: Agency Principal / Licensed Agent
+reviewed_date: 2026-03-25
 ---
 
 Spring in Kentucky brings warm weather, severe storms, and a chance to do the kind of home maintenance that actually affects your insurance costs. Insurers look at risk when they set your premium, and a well-maintained home is a lower-risk home.

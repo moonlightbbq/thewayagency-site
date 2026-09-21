@@ -11,6 +11,9 @@ modified: 2026-08-19
 reading_time: 7 min read
 related_page: /commercial/professional-liability.html
 tags: professional liability, E&O, errors and omissions, business insurance, commercial
+reviewer: Sheilia Royal
+reviewer_slug: sheilia-royal
+reviewer_title: Agency Principal / Licensed Agent
 ---
 
 If your business involves giving advice, providing a professional service, or delivering work product that clients rely on, you face a risk that [general liability insurance](/commercial/general-liability.html) does not cover: the risk that your work causes a client financial harm.

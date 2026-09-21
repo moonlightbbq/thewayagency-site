@@ -10,6 +10,10 @@ modified: 2026-06-03
 reading_time: 7 min read
 related_page: /personal/flood.html
 tags: flood insurance, ohio river, owensboro, henderson, kentucky, NFIP
+reviewer: Jill Boone
+reviewer_slug: jill-boone
+reviewer_title: Licensed Agent
+reviewed_date: 2026-05-06
 ---
 
 If you own a home in [Owensboro](/insurance/owensboro-ky.html) or [Henderson](/insurance/henderson-ky.html), you live along one of the most flood-prone river systems in the United States. The Ohio River has a long history of major flooding, and western Kentucky has experienced the consequences firsthand.

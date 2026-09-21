@@ -10,6 +10,10 @@ modified: 2026-03-28
 category: general
 tags: [renewal, policy-management, independent-agent, insurance-process, kentucky]
 status: published
+reviewer: Jill Boone
+reviewer_slug: jill-boone
+reviewer_title: Licensed Agent
+reviewed_date: 2026-03-28
 ---
 
 Most people assume their insurance policy renews automatically and nothing really happens behind the scenes. You get a new declarations page in the mail, maybe the premium went up a little, and that is that.
