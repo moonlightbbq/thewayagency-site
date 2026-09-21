@@ -268,6 +268,20 @@ function generateBlogPost(meta, bodyHtml, faqs) {
     ? `<a href="/about/team.html#${meta.author_slug}" style="color:var(--cyan);text-decoration:none;">${meta.author}</a>`
     : meta.author;
 
+  // Byline honesty rule. "Written by" is a fact we always know. "Reviewed by"
+  // is a professional-review claim on a regulated-industry page, so it renders
+  // ONLY when a named reviewer AND the date they signed off are both on the
+  // post. It used to print `Reviewed by ${author}` unconditionally, which meant
+  // 41 posts claimed review by "The Way Agency" and 28 more put a licensed
+  // agent's name against a review that has no record of happening. A post with
+  // no recorded reviewer now simply makes no review claim.
+  const reviewerName = meta.reviewer || meta.reviewed_by || '';
+  const reviewerSlug = meta.reviewer_slug || '';
+  const reviewerLink = reviewerSlug
+    ? `<a href="/about/team.html#${reviewerSlug}" style="color:var(--cyan);text-decoration:none;">${reviewerName}</a>`
+    : reviewerName;
+  const hasReview = Boolean(reviewerName && meta.reviewed_date);
+
   // Reading time
   const readingMin = calculateReadingTime(bodyHtml);
   const readingTime = meta.reading_time || `${readingMin} min read`;
@@ -336,12 +350,21 @@ function generateBlogPost(meta, bodyHtml, faqs) {
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": ${JSON.stringify(meta.title)},
-    "author": {
+    "author": ${meta.author_slug ? `{
       "@type": "Person",
       "name": ${JSON.stringify(meta.author)},
       "jobTitle": ${JSON.stringify(meta.author_title || 'The Way Agency')},
-      "url": "https://www.thewayagency.com/about/team.html${meta.author_slug ? '#' + meta.author_slug : ''}"
-    },
+      "url": "https://www.thewayagency.com/about/team.html#${meta.author_slug}"
+    }` : `{
+      "@type": "Organization",
+      "name": ${JSON.stringify(meta.author || 'The Way Agency')},
+      "url": "https://www.thewayagency.com"
+    }`},${hasReview ? `
+    "reviewedBy": {
+      "@type": "Person",
+      "name": ${JSON.stringify(reviewerName)}${reviewerSlug ? `,
+      "url": "https://www.thewayagency.com/about/team.html#${reviewerSlug}"` : ''}
+    },` : ''}
     "publisher": {
       "@type": "InsuranceAgency",
       "name": "The Way Agency",
@@ -372,9 +395,9 @@ ${renderNav()}
   <main id="main">
     <article class="product-content blog-content">
       ${featuredFigure}<div class="blog-meta">
-        <span>Reviewed by ${authorLink}, ${meta.author_title || 'The Way Agency'}, The Way Agency</span>
-        <span>|</span>${meta.reviewed_date ? `
-        <span>Reviewed ${fmtDate(meta.reviewed_date)}</span>
+        <span>${meta.author_slug ? `Written by ${authorLink}, ${meta.author_title || 'Licensed Agent'}, The Way Agency` : 'Written by The Way Agency'}</span>
+        <span>|</span>${hasReview ? `
+        <span>Reviewed by ${reviewerLink}${meta.reviewer_title ? `, ${meta.reviewer_title}` : ''} on ${fmtDate(meta.reviewed_date)}</span>
         <span>|</span>` : ''}
         <span>Published ${dateFormatted}</span>
         <span>|</span>
