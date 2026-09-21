@@ -9,6 +9,10 @@ modified: 2026-09-05
 reading_time: 7 min read
 related_page: /commercial/general-liability.html
 tags: electrical contractor insurance kentucky, electrician insurance cost, electrical contractor insurance requirements, electrician business insurance
+reviewer: Audrey Lillpop
+reviewer_slug: audrey-lillpop
+reviewer_title: Licensed Agent
+reviewed_date: 2026-08-26
 ---
 
 Electrical work is one of the highest-risk trades in construction. Faulty wiring can cause fires years after the work is done. Arc flashes can injure workers on the job. A miswired panel in a commercial building can create liability that follows you for decades.

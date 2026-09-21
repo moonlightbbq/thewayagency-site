@@ -121,7 +121,19 @@ for (const post of calendar.year1) {
     continue;
   }
 
-  // If a reviewer was assigned, update the markdown front matter with their byline.
+  // A post that went out for review publishes crediting its reviewer.
+  //
+  // This used to overwrite `author` with the reviewer's name, which credited
+  // them with writing a post they had only checked. The two are separate
+  // things now: the drafting is the agency's, the review is the named agent's,
+  // and generate-blog.js renders "Written by" and "Reviewed by" from the two
+  // different fields.
+  //
+  // Review here is by no objection, which is what the review email states:
+  // the article publishes as written unless the reviewer replies. So an
+  // assignment that reached its publish date without a change request IS the
+  // review, and the reviewer is named for it. A post nobody was asked to
+  // review still gets no review line at all.
   if (post.reviewer && post.reviewer_slug) {
     let md = fs.readFileSync(mdFile, 'utf8');
     // The reviewer's REAL title, from team.json — never a hardcoded one. This
@@ -129,21 +141,23 @@ for (const post of calendar.year1) {
     // crediting a Client Care Specialist as a Licensed Agent, in the visible
     // byline AND in the JSON-LD `jobTitle` schema.
     const title = reviewerTitle(post.reviewer_slug, post.reviewer);
-    md = md.replace(/^author: .+$/m, `author: ${post.reviewer}`);
-    md = md.replace(/^author_title: .+$/m, `author_title: ${title}`);
-    if (!md.includes('author_slug:')) {
-      md = md.replace(/^author_title: .+$/m, `author_title: ${title}\nauthor_slug: ${post.reviewer_slug}`);
-    } else {
-      md = md.replace(/^author_slug: .+$/m, `author_slug: ${post.reviewer_slug}`);
-    }
-    // The date the article actually went out for review — rendered next to the
-    // reviewer's name, so "Reviewed by X" carries a when, not just a who.
-    if (post.review_sent_date) {
-      const reviewed = String(post.review_sent_date).slice(0, 10);
-      if (md.includes('reviewed_date:')) {
-        md = md.replace(/^reviewed_date: .+$/m, `reviewed_date: ${reviewed}`);
+    // The date it went to them for review, which is when they read it.
+    const reviewed = String(post.review_sent_date || post.publish_date).slice(0, 10);
+
+    const fields = {
+      reviewer: post.reviewer,
+      reviewer_slug: post.reviewer_slug,
+      reviewer_title: title,
+      reviewed_date: reviewed,
+    };
+    for (const [key, value] of Object.entries(fields)) {
+      const line = `${key}: ${value}`;
+      if (new RegExp(`^${key}:`, 'm').test(md)) {
+        md = md.replace(new RegExp(`^${key}: .*$`, 'm'), line);
       } else {
-        md = md.replace(/^author_slug: .+$/m, `author_slug: ${post.reviewer_slug}\nreviewed_date: ${reviewed}`);
+        // Append inside the front matter block rather than guessing a neighbour
+        // field is present — `author_slug` is absent on agency-authored posts.
+        md = md.replace(/^---\n([\s\S]*?)\n---/, (_m, fm) => `---\n${fm}\n${line}\n---`);
       }
     }
     fs.writeFileSync(mdFile, md);

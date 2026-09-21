@@ -11,6 +11,9 @@ modified: 2026-07-25
 reading_time: 7 min read
 related_page: /commercial/commercial-property.html
 tags: commercial property insurance, business insurance, BOP, equipment coverage
+reviewer: Kelly McCallister
+reviewer_slug: kelly-mccallister
+reviewer_title: Client Care Specialist
 ---
 
 If you own a business, you have property at risk. Your building, your equipment, your inventory, your signage, your computers — all of it can be damaged or destroyed by fire, severe weather, theft, or vandalism. Commercial property insurance is the policy that pays to repair or replace those assets so you can keep operating.

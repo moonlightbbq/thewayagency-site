@@ -9,6 +9,10 @@ modified: 2026-09-12
 reading_time: 5 min read
 related_page: /about/community.html
 tags: the way agency clients, owensboro small businesses, local insurance agency kentucky
+reviewer: Audrey Lillpop
+reviewer_slug: audrey-lillpop
+reviewer_title: Licensed Agent
+reviewed_date: 2026-09-02
 ---
 
 We are an independent insurance agency, which means we do not work for one insurance company. We work for our clients. And most of our clients are not large corporations. They are the small businesses, family operations, and local entrepreneurs that keep our communities running.

@@ -10,6 +10,10 @@ modified: 2026-06-10
 reading_time: 6 min read
 related_page: /about/
 tags: independent agent, insurance agent, captive agent, save money, insurance basics
+reviewer: Sheilia Royal
+reviewer_slug: sheilia-royal
+reviewer_title: Agency Principal / Licensed Agent
+reviewed_date: 2026-05-09
 ---
 
 When most people think about buying insurance, they picture one of two things: calling a big-name company they have seen on TV, or going online and filling out a form. In both cases, you are dealing with a single insurance company that can only offer you their products at their prices.

@@ -10,6 +10,10 @@ modified: 2026-05-27
 reading_time: 6 min read
 related_page: /personal/umbrella.html
 tags: umbrella insurance, liability, personal insurance, asset protection
+reviewer: Kelly McCallister
+reviewer_slug: kelly-mccallister
+reviewer_title: Client Care Specialist
+reviewed_date: 2026-05-02
 ---
 
 A personal umbrella policy adds $1 million or more in liability protection on top of your existing [auto](/personal/auto.html) and [homeowners](/personal/home.html) insurance. The typical cost is $200 to $500 per year.

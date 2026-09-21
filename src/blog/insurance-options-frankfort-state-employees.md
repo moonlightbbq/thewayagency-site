@@ -11,6 +11,9 @@ modified: 2026-08-15
 reading_time: 6 min read
 related_page: /personal/umbrella.html
 tags: insurance for state employees kentucky, frankfort ky insurance, state employee insurance gaps, supplemental insurance state workers
+reviewer: Kelly McCallister
+reviewer_slug: kelly-mccallister
+reviewer_title: Client Care Specialist
 ---
 
 If you work for the Commonwealth of Kentucky in Frankfort, you have access to a solid benefits package through the Kentucky Employees' Health Plan (KEHP). State employment comes with group health insurance, life insurance, and retirement benefits that many private-sector workers do not get.

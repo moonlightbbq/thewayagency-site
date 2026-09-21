@@ -9,6 +9,10 @@ modified: 2026-09-19
 reading_time: 6 min read
 related_page: /personal/home.html
 tags: replacement cost vs actual cash value, RCV vs ACV, replacement cost insurance, actual cash value depreciation
+reviewer: Audrey Lillpop
+reviewer_slug: audrey-lillpop
+reviewer_title: Licensed Agent
+reviewed_date: 2026-09-09
 ---
 
 Two homes on the same street. Same size, same age, same storm damage. One homeowner gets a check for $18,000 to replace their roof. The other gets $9,500. The difference is not the carrier, the agent, or the deductible. It is one line on their policy: replacement cost versus actual cash value.
