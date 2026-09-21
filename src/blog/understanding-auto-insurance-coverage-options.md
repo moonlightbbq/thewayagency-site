@@ -11,6 +11,9 @@ modified: 2026-08-01
 reading_time: 7 min read
 related_page: /personal/auto.html
 tags: auto insurance, coverage types, liability, collision, comprehensive, PIP, uninsured motorist
+reviewer: Sheilia Royal
+reviewer_slug: sheilia-royal
+reviewer_title: Agency Principal / Licensed Agent
 ---
 
 Auto insurance is not a single product. It is a collection of separate coverages, each designed to protect you from a different type of risk. The confusion starts when you see a quote with six or seven line items and abbreviations you have never seen before.

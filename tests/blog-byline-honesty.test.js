@@ -78,6 +78,26 @@ describe('blog byline states only what the post can evidence', () => {
     assert.deepEqual(missing, [], `posts with no authorship line: ${missing.join(', ')}`);
   });
 
+  test('a post whose frontmatter records a review renders that review', () => {
+    // The inverse of the rule above. Suppressing a review that genuinely
+    // happened makes recording one pointless, and the agents who reviewed
+    // these posts should be credited for it.
+    const missing = [];
+    let credited = 0;
+    for (const file of fs.readdirSync(BLOG_BUILD).filter(f => f.endsWith('.html') && f !== 'index.html')) {
+      const mdPath = path.join(BLOG_SRC, `${file.replace(/\.html$/, '')}.md`);
+      if (!fs.existsSync(mdPath)) continue;
+      const meta = frontmatter(fs.readFileSync(mdPath, 'utf8'));
+      const reviewer = meta.reviewer || meta.reviewed_by;
+      if (!reviewer || !meta.reviewed_date) continue;
+      credited++;
+      const html = fs.readFileSync(path.join(BLOG_BUILD, file), 'utf8');
+      if (!html.includes(`Reviewed by`) || !html.includes(reviewer)) missing.push(file);
+    }
+    assert.ok(credited > 0, 'no post records a reviewer — the backfill did not land');
+    assert.deepEqual(missing, [], `reviewed posts not crediting their reviewer: ${missing.join(', ')}`);
+  });
+
   test('a post carrying both reviewer and date does render the review line', () => {
     // Guards the other direction: the honesty rule must not suppress a review
     // that genuinely happened, or recording one becomes pointless.

@@ -10,6 +10,10 @@ modified: 2026-05-27
 reading_time: 7 min read
 related_page: /commercial/general-liability.html
 tags: HVAC insurance, contractor insurance, commercial insurance, kentucky, workers comp
+reviewer: Audrey Lillpop
+reviewer_slug: audrey-lillpop
+reviewer_title: Licensed Agent
+reviewed_date: 2026-05-13
 ---
 
 Running an HVAC business in Kentucky means dealing with risks that most industries never face. Your technicians work on rooftops in the summer heat and in crawlspaces during winter freezes. They handle refrigerants, electrical systems, and natural gas connections. A single mistake can cause property damage, personal injury, or worse.

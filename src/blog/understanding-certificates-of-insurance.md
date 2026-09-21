@@ -9,6 +9,10 @@ modified: 2027-02-17
 reading_time: 6 min read
 related_page: /commercial/general-liability.html
 tags: what is a certificate of insurance, certificate of insurance explained, additional insured meaning, COI insurance requirements
+reviewer: Audrey Lillpop
+reviewer_slug: audrey-lillpop
+reviewer_title: Licensed Agent
+reviewed_date: 2026-09-12
 ---
 
 If you run a business, you have probably been asked to "provide a certificate of insurance" by a client, a landlord, or a general contractor. The request often comes with a deadline, a list of requirements, and not much explanation.

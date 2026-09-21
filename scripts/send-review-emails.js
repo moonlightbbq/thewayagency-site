@@ -175,6 +175,21 @@ function formatReviewEmail(post, content, reviewer) {
     : 'General';
   const readingTime = post.reading_time || '5-7 min read';
 
+  // These two used to be styled <td> cells with no link in them. The green one
+  // read "Approve" and looked exactly like a button, so a reviewer would click
+  // it, nothing would happen, and the review went unrecorded. They are real
+  // mailto: links now.
+  //
+  // The subject has to satisfy sage's REVIEW_REPLY_PATTERN
+  // (/re:\s*(review request|expedited review)[:\s]*["""](.+?)["""]/i) or the
+  // reply is never recognised as a review reply, and the approve body has to
+  // satisfy its /approved|looks good|lgtm|no changes/i check. Replies go to the
+  // mailbox sage polls for intake, which is the same one it sends from.
+  const replyTo = process.env.REVIEW_REPLY_TO || 'sage@thewayagency.com';
+  const replySubject = encodeURIComponent(`Re: Review Request: "${post.title}"`);
+  const approveHref = `mailto:${replyTo}?subject=${replySubject}&body=${encodeURIComponent('Approved')}`;
+  const changesHref = `mailto:${replyTo}?subject=${replySubject}&body=${encodeURIComponent('Changes requested:\n\n')}`;
+
   return `
 <div style="max-width:680px;margin:0 auto;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f8fafc;">
 
@@ -198,14 +213,19 @@ function formatReviewEmail(post, content, reviewer) {
     </p>
     <table style="width:100%;border-collapse:separate;border-spacing:8px 0;"><tr>
       <td style="width:50%;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px 16px;text-align:center;vertical-align:top;">
-        <p style="margin:0 0 4px;font-weight:700;color:#166534;font-size:14px;">Approve</p>
-        <p style="margin:0;color:#4ade80;font-size:12px;">Reply "Approved" or take no action</p>
+        <a href="${approveHref}" style="display:block;font-weight:700;color:#166534;font-size:14px;text-decoration:underline;margin-bottom:4px;">Approve</a>
+        <p style="margin:0;color:#15803d;font-size:12px;">Opens a reply saying "Approved" &mdash; just hit send</p>
       </td>
       <td style="width:50%;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:14px 16px;text-align:center;vertical-align:top;">
-        <p style="margin:0 0 4px;font-weight:700;color:#9a3412;font-size:14px;">Request Changes</p>
-        <p style="margin:0;color:#fb923c;font-size:12px;">Reply with your edits or notes</p>
+        <a href="${changesHref}" style="display:block;font-weight:700;color:#9a3412;font-size:14px;text-decoration:underline;margin-bottom:4px;">Request Changes</a>
+        <p style="margin:0;color:#c2410c;font-size:12px;">Opens a reply &mdash; type your edits or notes</p>
       </td>
     </tr></table>
+    <p style="margin:14px 0 0;color:#475569;font-size:13px;line-height:1.6;">
+      Either one opens a reply in your mail app. Please send one even when the article is fine:
+      <strong style="color:#0f172a;">approving by reply is what records your name on the published post.</strong>
+      If no reply arrives the article still publishes on ${publishDate}, but it publishes with no reviewer credited.
+    </p>
   </div>
 
   <!-- Article Content -->

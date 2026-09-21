@@ -11,6 +11,9 @@ modified: 2026-07-29
 reading_time: 6 min read
 related_page: /commercial/general-liability.html
 tags: small business insurance, nashville, tennessee, commercial insurance, davidson county
+reviewer: Jill Boone
+reviewer_slug: jill-boone
+reviewer_title: Licensed Agent
 ---
 
 Nashville has been one of the fastest-growing cities in the Southeast for years. New restaurants, creative agencies, tech startups, construction companies, and service businesses are opening every month. If you are starting or running a small business in Nashville, you need insurance that matches your risks — and Tennessee has its own requirements that differ from neighboring states.
