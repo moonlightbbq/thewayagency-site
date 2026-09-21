@@ -416,8 +416,10 @@
       "publish_date": "2026-03-28",
       "status": "published",
       "category": "general",
-      "reviewer": "Kelly Bartley",
-      "reviewer_slug": "kelly-bartley"
+      "reviewer": "Kelly McCallister",
+      "reviewer_slug": "kelly-mccallister",
+      "reviewer_email": "kelly@thewayagency.com",
+      "reviewer_name_corrected": "2026-09-21: was recorded as \"Kelly Bartley\", a surname that was never an employee. Corrected to Kelly McCallister, which is who the post already credits."
     },
     {
       "slug": "insurance-customer-lifetime-value-explained",
@@ -436,8 +438,10 @@
       "publish_date": "2026-03-28",
       "status": "published",
       "category": "general",
-      "reviewer": "Audrey Phelps",
-      "reviewer_slug": "audrey-phelps"
+      "reviewer": "Audrey Lillpop",
+      "reviewer_slug": "audrey-lillpop",
+      "reviewer_email": "audrey@thewayagency.com",
+      "reviewer_name_corrected": "2026-09-21: was recorded as \"Audrey Phelps\", a surname that was never an employee. Corrected to Audrey Lillpop, which is who the post already credits."
     },
     {
       "slug": "understanding-your-policy-renewal-process",

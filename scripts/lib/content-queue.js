@@ -21,7 +21,11 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..', '..');
-const CALENDAR_PATH = path.join(ROOT, 'data', 'content-calendar.json');
+// Overridable for the same reason loadBacklog takes a path: the lost-update
+// guard in saveCalendar has to be exercised against a fixture, and mutating
+// the real calendar races the other suites node --test runs in parallel.
+const CALENDAR_PATH = process.env.CONTENT_CALENDAR_PATH
+  || path.join(ROOT, 'data', 'content-calendar.json');
 const BACKLOG_PATH = path.join(ROOT, 'data', 'content-backlog.json');
 // The backlog schema this code understands. Bump it in the same commit that
 // changes the file's shape - loadBacklog() refuses anything else.
@@ -79,8 +83,22 @@ function publishDatesWithin(fromYmd, days) {
   return out;
 }
 
+// Fields the REVIEW flow owns. send-review-emails.js writes them; the queue
+// never sets them and must never clear them.
+const REVIEW_OWNED_FIELDS = [
+  'status', 'reviewer', 'reviewer_email', 'reviewer_slug', 'reviewer_title',
+  'review_sent_date', 'review_send_error', 'reminder_sent',
+  'approved_date', 'reviewed_date',
+];
+
+// The exact bytes loadCalendar() last read, so saveCalendar() can tell whether
+// another writer got there first. See the lost-update note on saveCalendar.
+let _calendarAtLoad = null;
+
 function loadCalendar() {
-  return JSON.parse(fs.readFileSync(CALENDAR_PATH, 'utf8'));
+  const raw = fs.readFileSync(CALENDAR_PATH, 'utf8');
+  _calendarAtLoad = raw;
+  return JSON.parse(raw);
 }
 
 // `backlogPath` is injectable for the same reason evaluateInvariants takes
@@ -107,8 +125,85 @@ function loadBacklog(backlogPath = BACKLOG_PATH) {
   return backlog;
 }
 
+/**
+ * Write the calendar back, without clobbering a concurrent writer.
+ *
+ * fill-slots round-trips the WHOLE calendar object, exactly like loadBacklog
+ * warns about for the backlog — but the calendar has a second writer running
+ * on its own schedule. send-review-emails.js runs from the publish workflow
+ * (Wed/Sat ~13:00) and assigns the reviewer; the queue runs hours later and
+ * saved whatever it had read BEFORE that assignment, silently reverting it.
+ *
+ * Observed on 2026-09-05: the 13:11 run assigned Audrey Lillpop to
+ * how-to-compare-insurance-quotes and set status in-review; the 16:30 queue
+ * run removed reviewer, reviewer_email, reviewer_slug, review_sent_date and
+ * reverted the status. Every cycle did this, so no reviewer ever survived to
+ * publish and every post shipped with an unearned byline. It also froze the
+ * rotation: getNextReviewer picks the fewest-assigned reviewer, and since no
+ * assignment ever stuck, the counts never moved off their old values and the
+ * same person was picked every time.
+ *
+ * So on write we re-read the file. If it changed underneath us, the review
+ * flow's fields win — it is the owner of those — and entries it added that we
+ * never saw are carried over rather than dropped.
+ */
 function saveCalendar(cal) {
-  fs.writeFileSync(CALENDAR_PATH, `${JSON.stringify(cal, null, 2)}\n`);
+  let onDisk = null;
+  if (_calendarAtLoad !== null && fs.existsSync(CALENDAR_PATH)) {
+    const current = fs.readFileSync(CALENDAR_PATH, 'utf8');
+    if (current !== _calendarAtLoad) {
+      try { onDisk = JSON.parse(current); } catch { onDisk = null; }
+    }
+  }
+
+  if (onDisk) {
+    const buckets = ['existing_posts', 'year1', 'slots'];
+    const diskBySlug = new Map();
+    for (const bucket of buckets) {
+      for (const entry of onDisk[bucket] || []) {
+        if (entry && entry.slug) diskBySlug.set(entry.slug, { entry, bucket });
+      }
+    }
+
+    const restored = [];
+    const seen = new Set();
+    for (const bucket of buckets) {
+      for (const entry of cal[bucket] || []) {
+        if (!entry || !entry.slug) continue;
+        seen.add(entry.slug);
+        const hit = diskBySlug.get(entry.slug);
+        if (!hit) continue;
+        for (const field of REVIEW_OWNED_FIELDS) {
+          if (hit.entry[field] === undefined) continue;
+          if (entry[field] === hit.entry[field]) continue;
+          entry[field] = hit.entry[field];
+          if (field === 'reviewer') restored.push(`${entry.slug} -> ${hit.entry[field]}`);
+        }
+      }
+    }
+
+    // An entry the other writer added while we held a stale copy. Dropping it
+    // is the same lost update in a different shape.
+    const carried = [];
+    for (const [slug, { entry, bucket }] of diskBySlug) {
+      if (seen.has(slug)) continue;
+      if (!Array.isArray(cal[bucket])) cal[bucket] = [];
+      cal[bucket].push(entry);
+      carried.push(slug);
+    }
+
+    if (restored.length || carried.length) {
+      console.warn(
+        `  ! content-calendar.json changed while this job held it. Kept the review flow's writes`
+        + `${restored.length ? `; reviewers preserved: ${restored.join(', ')}` : ''}`
+        + `${carried.length ? `; entries carried over: ${carried.join(', ')}` : ''}`,
+      );
+    }
+  }
+
+  const text = `${JSON.stringify(cal, null, 2)}\n`;
+  fs.writeFileSync(CALENDAR_PATH, text);
+  _calendarAtLoad = text;
 }
 
 /** Dates already held by a real dated post, so a slot is never double-booked. */
