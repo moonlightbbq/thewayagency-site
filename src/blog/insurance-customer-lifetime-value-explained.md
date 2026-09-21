@@ -10,6 +10,10 @@ modified: 2026-03-28
 category: general
 tags: [customer-service, agency-values, insurance-industry, relationships, kentucky]
 status: published
+reviewer: Sheilia Royal
+reviewer_slug: sheilia-royal
+reviewer_title: Agency Principal / Licensed Agent
+reviewed_date: 2026-03-28
 ---
 
 There is a concept in the insurance industry called customer lifetime value. You might see it abbreviated as CLV or sometimes LTV. It gets talked about a lot in business circles, usually in the context of maximizing revenue per client over the years.
