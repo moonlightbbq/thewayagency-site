@@ -880,6 +880,20 @@
 <script>
 const SAGE_API = 'https://sage.thewayagency.com';
 
+// ── Analytics shim ──────────────────────────────────────────────────────────
+// GTM IS on this page (injected by scripts/builders/seo.js createInjectVersion)
+// and it creates window.dataLayer — but it does NOT create window.gtag. That
+// helper is defined in src/js/app.js, which this page deliberately does not load
+// (see the head comment). Without these two lines every trackIntake() call
+// returns at its `if (!window.gtag) return;` guard, so the entire intake funnel —
+// intake_start, step views, field-friction, validation errors, abandonment,
+// intake_complete — has been firing into nothing in production.
+//
+// Same shim as app.js initAnalytics(). It also recovers intake_start, which is
+// pushed at parse time: gtag replays the queued dataLayer once GA4 loads.
+window.dataLayer = window.dataLayer || [];
+if (!window.gtag) { window.gtag = function () { dataLayer.push(arguments); }; }
+
 // ── Offline Queue Processing ────────────────────────────────────────────────
 // Replay lives in flushIntakeQueue() in the main script: the queued Turnstile
 // token expired long before replay, and the server gate is deliberately NOT
