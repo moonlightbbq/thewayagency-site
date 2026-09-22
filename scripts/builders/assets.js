@@ -165,7 +165,7 @@ function copyRootFiles(ROOT, BUILD) {
   }
 }
 
-function copyPortalPages(SRC, BUILD, injectVersion) {
+function copyPortalPages(SRC, BUILD, injectVersion, intakeConfig) {
   const portalPages = [
     { src: 'intake.html', dest: 'intake/index.html', sitemap: null }, // noindexed — exclude from sitemap
     { src: 'portal.html', dest: 'portal/index.html', sitemap: null },
@@ -176,7 +176,16 @@ function copyPortalPages(SRC, BUILD, injectVersion) {
     if (fs.existsSync(srcFile)) {
       const destDir = path.join(BUILD, path.dirname(page.dest));
       ensureDir(destDir);
-      const pageContent = fs.readFileSync(srcFile, 'utf8');
+      let pageContent = fs.readFileSync(srcFile, 'utf8');
+      // Build-time flags for the quote form. The marker only exists in
+      // intake.html; every other portal page passes through untouched.
+      // Underscore-prefixed keys are documentation for whoever edits the JSON;
+      // they have no business being shipped to every visitor's browser.
+      const shippedFlags = Object.fromEntries(
+        Object.entries(intakeConfig || {}).filter(([k]) => !k.startsWith('_')),
+      );
+      pageContent = pageContent.replace('<!--TWA_INTAKE_FLAGS-->',
+        `<script>window.TWA_INTAKE_FLAGS=${JSON.stringify(shippedFlags)}</script>`);
       fs.writeFileSync(path.join(BUILD, page.dest), injectVersion(pageContent, '/' + page.dest));
       console.log(`  ✓ ${page.dest}`);
     }

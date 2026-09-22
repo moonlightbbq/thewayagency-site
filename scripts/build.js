@@ -45,6 +45,7 @@ const knowledgeBase = loadJson(path.join(DATA, 'knowledge-base.json'));
 const carriers = loadJson(path.join(DATA, 'carriers.json'));
 const testimonials = loadJson(path.join(DATA, 'testimonials.json'));
 const seoData = loadJson(path.join(DATA, 'seo.json'));
+const intakeConfig = loadJson(path.join(DATA, 'intake-config.json'));
 const landingData = loadJson(path.join(DATA, 'landing-pages.json'));
 const agency = locations.agency;
 const office = locations.offices[0];
@@ -235,7 +236,7 @@ console.log(`  ✓ Generated ${carrierCount} carrier pages + index`);
 assets.copyRootFiles(ROOT, BUILD);
 
 // 8. Copy portal pages
-const portalPages = assets.copyPortalPages(SRC, BUILD, injectVersion);
+const portalPages = assets.copyPortalPages(SRC, BUILD, injectVersion, intakeConfig);
 
 // 8b. Generate llms.txt and llms-full.txt for LLM grounding
 require('./builders/llms').generate(BUILD, { agency: locations.agency, office, landingData });
