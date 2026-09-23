@@ -4,8 +4,8 @@ slug: understanding-certificates-of-insurance
 description: "A certificate of insurance (COI) proves you have coverage. Learn what's on a COI, how to request one, what additional insured means, and why clients and landlords ask for it."
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2027-02-17
-modified: 2027-02-17
+date: 2026-09-23
+modified: 2026-09-23
 reading_time: 6 min read
 related_page: /commercial/general-liability.html
 tags: what is a certificate of insurance, certificate of insurance explained, additional insured meaning, COI insurance requirements
