@@ -1,0 +1,4 @@
+{
+  "_comment": "Build-time flags for the public quote form (src/intake.html). shortForm=true is the seven-input flow: name, email, phone, state, mailing address on step 1; coverage on step 2; submit. The detail questions — date of birth, vehicles, current carrier, property answers — are offered AFTER the lead is captured. Set shortForm to false and rebuild to restore the four-step form; steps 3 and 4 never left the markup. ?twa_form=long|short overrides per-visit for QA.",
+  "shortForm": true
+}

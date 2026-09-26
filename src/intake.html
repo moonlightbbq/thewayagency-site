@@ -27,8 +27,20 @@
      dead after-hours chat binding on the money page); attribution.js is the
      standalone copy the build ships alongside the app.js bundle. -->
 <script src="/src/js/attribution.js"></script>
+<!--TWA_INTAKE_FLAGS-->
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
 <style>
+  /* Short form (data/intake-config.json -> shortForm). Steps 3 and 4 stay in the
+     DOM — showStep()/checkTakeover() loop 1..4, the jsdom tests drive step 4, and
+     step 3 IS the post-submit details screen. Hiding rather than deleting is also
+     what makes the revert a one-line config change. */
+  #short-submit { display: none; }
+  body.twa-intake-short #short-submit { display: block; }
+  body.twa-intake-short #step-2 .btn-row [data-action="next-step"] { display: none; }
+  body.twa-intake-short .progress-label[data-step="3"],
+  body.twa-intake-short .progress-label[data-step="4"],
+  body.twa-intake-short .progress-seg[data-step="3"],
+  body.twa-intake-short .progress-seg[data-step="4"] { display: none; }
   :root {
     --mint: #6ec6a0;
     --radius: 12px;
@@ -425,7 +437,6 @@
   }
   .bundle-pill.added:hover { background: #1565a0 }
   [data-action]:active { transform: scale(0.97); }
-  #quick-lead-link:hover { opacity: 1 !important; text-decoration: underline !important; }
   .bundle-done {
     font-size: 13px;
     color: var(--mint);
@@ -692,11 +703,19 @@
       <div id="state-hint" style="font-size:12px;color:#6b7280;margin-top:4px;"></div>
       <div id="state-oos" style="display:none;font-size:13px;color:#7c2d12;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;margin-top:8px;line-height:1.5;"></div>
     </div>
-    <!-- Business name — revealed by initGrid() only for commercial-line arrivals -->
-    <div class="form-group" id="biz-name-step1-group" style="display:none">
-      <label for="i_biz_name_1">Business Name <span style="color:#ef4444">*</span></label>
-      <input type="text" id="i_biz_name_1" placeholder="Your business name" autocomplete="organization">
+    <!-- Mailing address sits WITH the state it has to agree with. Google Places
+         writes the state <select> above via syncStateFromAutocomplete(), so an
+         address that contradicts the answer given a moment ago surfaces the
+         decline immediately rather than two steps later. It also means the
+         partial autosave carries an address to the producer page, and a restored
+         draft repopulates it on the step the visitor is actually on. -->
+    <div class="form-group">
+      <label for="i_address">Mailing Address <span style="color:#ef4444">*</span></label>
+      <input type="text" id="i_address" required autocomplete="off" placeholder="123 Main St, Louisville, KY 40202" oninput="_onAddrInput(this)">
     </div>
+    <input type="hidden" id="i_address_street">
+    <input type="hidden" id="i_city">
+    <input type="hidden" id="i_zip">
     <div style="background:#f0fdf8;border:1px solid #bbf7d0;border-radius:10px;padding:10px 14px;margin:16px 0 0;font-size:11px;color:#166534;line-height:1.5;text-align:center;">
       Your information is safe — we never sell your data. By continuing, you agree to our <a href="/privacy.html" style="color:#166534;text-decoration:underline">Privacy Policy</a> and consent to be contacted about your request.
     </div>
@@ -727,15 +746,31 @@
       </div>
     </div>
     <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--slate);">Not sure what you need? <a href="tel:+15024135335" style="color:var(--blue);text-decoration:underline;">Call us at (502) 413-5335</a></p>
+    <!-- Business name lives WITH the coverage picker that decides whether it is
+         needed. needsBusinessName() reads RULES.productLines (the same one list
+         the licence question uses) rather than a local copy — a local copy is
+         how special_event / commercial_property / farm_ranch carts came to be
+         rejected by the server with no field on screen to fill in. -->
+    <div class="form-group" id="biz-name-step1-group" style="display:none;max-width:360px;margin:0 auto 4px;">
+      <label for="i_biz_name_1">Business Name <span style="color:#ef4444">*</span></label>
+      <input type="text" id="i_biz_name_1" placeholder="Your business name" autocomplete="organization">
+    </div>
     <div id="step2-error" class="error hidden" role="alert" aria-live="polite"></div>
     <div class="btn-row">
       <button class="btn btn-outline" data-action="prev-step" data-step="2">Back</button>
       <button class="btn btn-primary" data-action="next-step" data-step="2">Continue to Quote Details</button>
     </div>
-    <div style="text-align:center;margin-top:12px;">
-      <a href="#" id="quick-lead-link" data-action="quick-lead" style="font-size:13px;color:var(--blue);text-decoration:none;opacity:0.85;transition:opacity .15s;">or we reach out for next steps &rarr;</a>
+    <!-- The short form's submit. Turnstile mounts here VISIBLY: the old
+         quick-lead widget sat at left:-9999px, which works for an invisible
+         challenge and silently never returns a token if the sitekey ever serves
+         an interactive one. -->
+    <div id="short-submit">
+      <div id="turnstile-step2" style="margin:12px auto 0;display:flex;justify-content:center;"></div>
+      <div class="btn-row" style="margin-top:12px;">
+        <button class="btn btn-outline" data-action="prev-step" data-step="2">Back</button>
+        <button class="btn btn-primary" id="submit-btn-short" data-action="submit-intake">Get My Quote</button>
+      </div>
     </div>
-    <div id="turnstile-quick" style="position:absolute;left:-9999px;"></div>
   </div>
 
   <!-- Step 3: Your Details + Product-Specific Questions -->
@@ -746,13 +781,6 @@
     <!-- Section 1: Your Information (always shown) -->
     <div style="margin-bottom:24px;">
       <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Your Information</div>
-      <div class="form-group">
-        <label for="i_address">Mailing Address <span style="color:#ef4444">*</span></label>
-        <input type="text" id="i_address" required autocomplete="off" placeholder="123 Main St, Louisville, KY 40202" oninput="_onAddrInput(this)">
-      </div>
-      <input type="hidden" id="i_address_street">
-      <input type="hidden" id="i_city">
-      <input type="hidden" id="i_zip">
       <!-- The State <select> moved to STEP 1 (see the comment there). Places
            autocomplete on the address above still writes to it via
            syncStateFromAutocomplete(), so an address that disagrees with the
@@ -879,6 +907,23 @@
 
 <script>
 const SAGE_API = 'https://sage.thewayagency.com';
+
+// ── Form shape ──────────────────────────────────────────────────────────────
+// shortForm: seven inputs and one submit. The long four-step form is still in
+// this file, unreachable — flip shortForm in data/intake-config.json and rebuild
+// to bring it back. ?twa_form=long|short overrides for a single visit so the
+// other shape can be checked against the live deploy before committing to it.
+const INTAKE_FLAGS = Object.assign({ shortForm: true }, window.TWA_INTAKE_FLAGS || {});
+{
+  const _forced = new URLSearchParams(location.search).get('twa_form');
+  if (_forced === 'long') INTAKE_FLAGS.shortForm = false;
+  if (_forced === 'short') INTAKE_FLAGS.shortForm = true;
+}
+if (INTAKE_FLAGS.shortForm) document.body.classList.add('twa-intake-short');
+// Script-scoped consts are not reachable from the console or a headless harness,
+// and this object decides the shape of the page — expose it so "which form am I
+// looking at?" is answerable in one line during QA.
+window.INTAKE_FLAGS = INTAKE_FLAGS;
 
 // ── Analytics shim ──────────────────────────────────────────────────────────
 // GTM IS on this page (injected by scripts/builders/seo.js createInjectVersion)
@@ -1656,11 +1701,9 @@ function syncStateFromAutocomplete(state) {
 (function initGrid() {
   renderProductGrid(getEntryLine());
 
-  // Show the Step 1 business-name field up front for commercial arrivals.
-  if (getEntryLine() === 'commercial') {
-    const grp = document.getElementById('biz-name-step1-group');
-    if (grp) grp.style.display = '';
-  }
+  // Show the business-name field up front for commercial arrivals; toggleProd()
+  // reveals it later for anyone who picks a commercial product themselves.
+  if (getEntryLine() === 'commercial') revealBusinessName();
 
   renderStateOptions();
   // A ?state= geo param (city/industry landing pages) pre-selects it.
@@ -1958,11 +2001,24 @@ let _turnstileSiteKey = null;
   } catch (e) { /* config fetch failed — Turnstile will be skipped */ }
 })();
 
-function initTurnstileOnReview() {
-  if (!_turnstileSiteKey || turnstileWidgetId != null) return; // already rendered or no key
-  if (!window.turnstile) return; // script not loaded yet
+let _turnstileMount = '#turnstile-container';
+let _turnstileTries = 0;
+function initTurnstileOnReview(mount) {
+  if (mount) { _turnstileMount = mount; _turnstileTries = 0; }
+  if (turnstileWidgetId != null) return;                       // already rendered
+  // The sitekey and the Turnstile script both arrive asynchronously. On the long
+  // form step 4 was minutes away and they had always landed; the short form asks
+  // for this within seconds of page load, so a miss would leave the only submit
+  // button on the site stuck behind "Security verification is still loading".
+  // Retry — but BOUNDED: an unbounded chain never stops when the config genuinely
+  // fails, keeps a timer alive for the life of the tab, and hangs any headless
+  // run of this page. ~6s is far longer than either asset needs.
+  if (!_turnstileSiteKey || !window.turnstile) {
+    if (_turnstileTries++ < 15) setTimeout(() => initTurnstileOnReview(), 400);
+    return;
+  }
   try {
-    turnstileWidgetId = turnstile.render('#turnstile-container', {
+    turnstileWidgetId = turnstile.render(_turnstileMount, {
       sitekey: _turnstileSiteKey,
       callback: (token) => { turnstileToken = token; },
       'expired-callback': () => { turnstileToken = null; },
@@ -2332,6 +2388,16 @@ function toggleProd(el) {
   // Reflect DOB-required (life) on the asterisk immediately on selection, not
   // only when the product-questions step later renders. Ticket 4adb868f.
   updateDobRequiredStar();
+  // Reveal the business-name field the moment a commercial product is picked, so
+  // the requirement is visible while they are choosing rather than sprung on them
+  // at submit. Hidden again if the cart stops being commercial.
+  if (needsBusinessName(selectedProducts)) {
+    const grp = document.getElementById('biz-name-step1-group');
+    if (grp) grp.style.display = '';
+  } else {
+    const grp = document.getElementById('biz-name-step1-group');
+    if (grp && getEntryLine() !== 'commercial') grp.style.display = 'none';
+  }
   // If source product was deselected, hide bundle banner
   if (bundleSourceProduct && !selectedProducts.includes(bundleSourceProduct)) {
     const banner = document.getElementById('bundle-banner');
@@ -2447,7 +2513,10 @@ function showStep(n) {
   if (currentStep && currentStep !== n) trackStepComplete(currentStep);
   currentStep = n;
   if (n === 3) renderProductQuestions();
-  if (n === 4) { renderReview(); initTurnstileOnReview(); }
+  if (n === 4) { renderReview(); initTurnstileOnReview('#turnstile-container'); }
+  // Short form: the submit lives on step 2, so the widget mounts there — and
+  // visibly, which an interactive challenge needs.
+  if (n === 2 && INTAKE_FLAGS.shortForm) initTurnstileOnReview('#turnstile-step2');
   window.scrollTo({ top: 0, behavior: 'smooth' });
   // Track step enter (includes virtual pageview for GA4 funnel reports)
   trackStepEnter(n);
@@ -2475,10 +2544,10 @@ async function nextStep(from) {
       document.getElementById('state-group').scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
-    // Business name is required up front for commercial-line arrivals (field is visible only then).
-    const bizGrp = document.getElementById('biz-name-step1-group');
-    if (bizGrp && bizGrp.style.display !== 'none' && !v('i_biz_name_1')) {
-      err.textContent = 'Please enter your business name.'; err.classList.remove('hidden'); trackValidationError(1, 'missing_business_name'); return;
+    // Mailing address moved onto this step with the state it has to agree with.
+    if (!v('i_address')) {
+      err.textContent = 'Please enter your mailing address.'; err.classList.remove('hidden');
+      trackValidationError(1, 'missing_address'); return;
     }
     err.classList.add('hidden');
 
@@ -2516,6 +2585,11 @@ async function nextStep(from) {
     // not be judged then and they were let through. Now that the cart says what
     // they want, this is the first moment we CAN tell — so it is where we tell them.
     if (mustDecline()) { showOutOfArea(); trackValidationError(2, 'out_of_area'); return; }
+    if (needsBusinessName(selectedProducts) && !v('i_biz_name_1')) {
+      revealBusinessName();
+      err.textContent = 'Please enter your business name.'; err.classList.remove('hidden');
+      trackValidationError(2, 'missing_business_name'); return;
+    }
     err.classList.add('hidden');
   }
   if (from === 3) {
@@ -2614,7 +2688,24 @@ document.getElementById('i_dob').addEventListener('input', function() {
 });
 
 // ── Product-specific questions (Step 3) ─────────────────────────────────────
+// Display-only: which step-3 cards to render. NOT the business-name decision —
+// it is short by nine of SAGE's seventeen CL ids. Use needsBusinessName() for that.
 const COMMERCIAL_PRODUCTS = ['bop','cgl','commercial_auto','workers_comp','cyber','eo','bonds','builders_risk'];
+
+// The business-name question, decided by the SAME list the licence question uses:
+// RULES.productLines, served by GET /api/intake/rules. A local copy is exactly how
+// special_event / commercial_property / farm_ranch carts came to be accepted here
+// and refused by the server with nothing on screen to fix.
+function needsBusinessName(ids) {
+  if (!RULES || !RULES.productLines) return false;
+  return (ids || []).some(id => RULES.productLines[id] === 'commercial');
+}
+function revealBusinessName() {
+  const grp = document.getElementById('biz-name-step1-group');
+  if (grp) grp.style.display = '';
+  const input = document.getElementById('i_biz_name_1');
+  if (input) { try { input.focus(); } catch (e) {} }
+}
 const PROPERTY_PRODUCTS = ['flood','earthquake','dwelling_fire'];
 // Life-coverage tiles that share the same coverage-amount / type / tobacco questions.
 // ('life' kept for backward safety; annuities/disability don't use these fields.)
@@ -3230,132 +3321,6 @@ function renderReview() {
 }
 
 // ── Quick Lead (skip details, submit from step 2) ───────────────────────────
-async function submitQuickLead() {
-  const err = document.getElementById('step2-error');
-  if (!selectedProducts.length) {
-    err.textContent = 'Please select at least one type of coverage.';
-    err.classList.remove('hidden');
-    trackValidationError(2, 'no_products');
-    return;
-  }
-  err.classList.add('hidden');
-
-  const link = document.getElementById('quick-lead-link');
-  const origText = link.textContent;
-  link.textContent = 'Submitting...';
-  link.style.pointerEvents = 'none';
-
-  // Initialize Turnstile if not already loaded (normally deferred to step 4)
-  if (!turnstileToken && _turnstileSiteKey && window.turnstile) {
-    try {
-      turnstile.render('#turnstile-quick', {
-        sitekey: _turnstileSiteKey,
-        callback: (token) => { turnstileToken = token; },
-        'expired-callback': () => { turnstileToken = null; },
-        'error-callback': () => { turnstileToken = null; },
-        theme: 'light',
-      });
-    } catch (e) { /* Turnstile may already be rendered */ }
-    // Wait for token (up to 5 seconds)
-    for (let i = 0; i < 25 && !turnstileToken; i++) {
-      await new Promise(r => setTimeout(r, 200));
-    }
-  }
-
-  // Build minimal formData with tracking info only
-  const formData = { quick_lead: 'true' };
-  const urlParams = new URLSearchParams(window.location.search);
-  const srcParam = urlParams.get('src');
-  if (srcParam) formData.lead_source = srcParam;
-  const agentParam = urlParams.get('agent');
-  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(key => {
-    const val = urlParams.get(key); if (val) formData[key] = val;
-  });
-  // Cookie fallback via TWA (twa_lt/twa_ft) — the old code read a `twa_utm`
-  // cookie nothing ever wrote, so returning visitors lost their UTMs here.
-  const _qlAttr = TWA.getAttribution();
-  ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'fbclid'].forEach(key => {
-    if (!formData[key] && _qlAttr[key]) formData[key] = _qlAttr[key];
-  });
-  const gclid = urlParams.get('gclid'), fbclid = urlParams.get('fbclid');
-  if (gclid) formData.gclid = gclid;
-  if (fbclid) formData.fbclid = fbclid;
-  formData.lead_referrer = document.referrer || 'direct';
-  formData.lead_page = window.location.pathname + window.location.search;
-  if (window._intakeIndustry) formData.industry = window._intakeIndustry;
-  if (window._intakeCounty) formData.geo_county = window._intakeCounty;
-
-  try {
-    const res = await fetch(SAGE_API + '/api/intake', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        sessionId,
-        firstName: v('i_fname'),
-        lastName: v('i_lname'),
-        email: v('i_email'),
-        phone: v('i_phone'),
-        // The quick lead fires from step 2, and the State field now sits on step 1
-        // — so by here we always have it. It was never sent, which left the server
-        // gating a personal-lines quick lead with no state to judge.
-        state: v('i_state'),
-        products: selectedProducts,
-        formData,
-        notes: '',
-        agent: agentParam || '',
-        _hp_company: document.getElementById('_hp_company')?.value || '',
-        cfToken: turnstileToken || '',
-        twa_vid: sessionId || getVisitorId(),
-        _tracking: getTrackingIds(),
-      })
-    });
-    if (!res.ok) {
-      // Do NOT throw: the catch below reports a network error, and a decline is not
-      // a network error. Render the server's own words.
-      const d = await res.json().catch(() => ({}));
-      renderSubmitError(err, res.status, d);
-      link.textContent = origText;
-      link.style.pointerEvents = '';
-      return;
-    }
-    const data = await res.json();
-    if (data.ok) {
-      clearInterval(pollTimer);
-      // Suppress the exit-intent popup site-wide — app.js reads this key and
-      // it was never written anywhere, so past submitters kept seeing it.
-      try { localStorage.setItem('twa_intake_submitted', String(Date.now())); } catch (e) {}
-      document.getElementById('step-2').classList.add('hidden');
-      document.getElementById('step-confirm').classList.remove('hidden');
-      document.getElementById('ref-number').textContent = 'Reference: #' + data.reference;
-      document.getElementById('progress-wrap').classList.add('hidden');
-      const _timeEl = document.getElementById('time-estimate');
-      if (_timeEl) _timeEl.style.display = 'none';
-      // Quick lead confirmation message
-      const msg = document.getElementById('confirm-message');
-      if (window._assignedAgent) {
-        const a = window._assignedAgent;
-        msg.textContent = 'Thank you! ' + a.name.split(' ')[0] + ' will reach out to discuss your ' + selectedProducts.map(p => PRODUCT_NAMES[p] || p).join(', ') + ' coverage shortly.';
-      } else {
-        msg.textContent = 'Thank you! A licensed agent will reach out to discuss your coverage options shortly.';
-      }
-      clearDraft();
-      // Tracking
-      if (window.gtag) gtag('event', 'intake_quick_lead', { products: selectedProducts.join(','), product_count: selectedProducts.length });
-      if (window.dataLayer) {
-        dataLayer.push({ event: 'conversion', conversion_type: 'quick_lead', conversion_products: selectedProducts.join(','), conversion_reference: data.reference, conversion_source: srcParam || 'intake' });
-      }
-      if (window.fbq) fbq('track', 'Lead', { content_name: selectedProducts.join(','), content_category: 'quick_lead', currency: 'USD' }, { eventID: data.reference });
-    } else {
-      renderSubmitError(err, res.status, data);
-    }
-  } catch (e) {
-    err.textContent = 'Network error. Please check your connection and try again.';
-    err.classList.remove('hidden');
-  }
-
-  link.textContent = origText;
-  link.style.pointerEvents = '';
-}
 
 // The server's answer to an out-of-area applicant is not an error to retry. It is
 // a decline, in words written for them to read, and it arrives as
@@ -3379,16 +3344,27 @@ function renderSubmitError(errEl, status, data) {
 }
 
 // ── Submit ───────────────────────────────────────────────────────────────────
-async function submitIntake() {
-  const btn = document.getElementById('submit-btn');
-  const err = document.getElementById('step4-error');
+// Which step carries the submit button. The short form submits from step 2; the
+// long form from the step-4 review. Everything below reads this rather than a
+// literal 4, so the error box the visitor sees is the one on their screen — an
+// offline failure written to a hidden #step4-error is a silent dead end.
+function _submitStep() { return INTAKE_FLAGS.shortForm ? 2 : 4; }
 
-  // Require Business Name when a commercial product is selected (captured on
-  // Step 1 for commercial-line arrivals, else in the Step 3 Business Info section).
-  const hasCommercialSubmit = selectedProducts.some(p => COMMERCIAL_PRODUCTS.includes(p));
+async function submitIntake() {
+  const btn = document.getElementById(INTAKE_FLAGS.shortForm ? 'submit-btn-short' : 'submit-btn');
+  const err = document.getElementById('step' + _submitStep() + '-error');
+  const SUBMIT_LABEL = INTAKE_FLAGS.shortForm ? 'Get My Quote' : 'Submit Quote Request';
+
+  // Require Business Name when the cart is commercial. needsBusinessName() reads
+  // RULES.productLines — the server's own list — because the local one was short
+  // by nine ids, three of which this form offers (special_event,
+  // commercial_property, farm_ranch). Those carts passed the client check, were
+  // refused by the server's CL rule, and the visitor read the bare words
+  // "Validation failed" with no field on screen to fill in.
   const bizNameVal = v('i_biz_name') || v('i_biz_name_1');
-  if (hasCommercialSubmit && !bizNameVal) {
-    err.textContent = 'Business name is required for commercial quotes. Please enter it on Step 1 or Step 3.';
+  if (needsBusinessName(selectedProducts) && !bizNameVal) {
+    revealBusinessName();
+    err.textContent = 'Business name is required for commercial quotes.';
     err.classList.remove('hidden');
     return;
   }
@@ -3401,7 +3377,7 @@ async function submitIntake() {
     if (turnstileWidgetId != null) {
       turnstile.reset(turnstileWidgetId);
     } else {
-      initTurnstileOnReview();
+      initTurnstileOnReview(INTAKE_FLAGS.shortForm ? '#turnstile-step2' : '#turnstile-container');
     }
     // Poll for token (up to 5 seconds)
     for (let i = 0; i < 25 && !turnstileToken; i++) {
@@ -3410,7 +3386,7 @@ async function submitIntake() {
     if (!turnstileToken) {
       err.textContent = 'Security verification is still loading. Please wait a moment and try again.';
       err.classList.remove('hidden');
-      btn.textContent = 'Submit Quote Request';
+      btn.textContent = SUBMIT_LABEL;
       btn.disabled = false;
       return;
     }
@@ -3494,7 +3470,7 @@ async function submitIntake() {
       // the message into a VALIDATION_ERROR envelope used to leave them with.
       const d = await res.json().catch(() => ({}));
       renderSubmitError(err, res.status, d);
-      btn.textContent = 'Submit Quote Request';
+      btn.textContent = SUBMIT_LABEL;
       btn.disabled = false;
       if (window.turnstile && turnstileWidgetId != null) { turnstile.reset(turnstileWidgetId); turnstileToken = null; }
       return;
@@ -3502,9 +3478,9 @@ async function submitIntake() {
     const data = await res.json();
     if (data.ok) {
       clearInterval(pollTimer);
-      // Suppress the exit-intent popup site-wide (see quick-lead branch).
+      // Suppress the exit-intent popup site-wide for anyone who has submitted.
       try { localStorage.setItem('twa_intake_submitted', String(Date.now())); } catch (e) {}
-      document.getElementById('step-4').classList.add('hidden');
+      document.getElementById('step-' + _submitStep()).classList.add('hidden');
       document.getElementById('step-confirm').classList.remove('hidden');
       document.getElementById('ref-number').textContent = 'Reference: #' + data.reference;
       document.getElementById('progress-wrap').classList.add('hidden');
@@ -3517,7 +3493,7 @@ async function submitIntake() {
         if (msg) msg.textContent = 'Thank you for choosing The Way Agency. ' + a.name.split(' ')[0] + ' will review your information and reach out with your personalized quote within one business day.';
       }
       clearDraft();
-      trackStepComplete(4);
+      trackStepComplete(_submitStep());
       trackSubmitSuccess(data.reference, selectedProducts.length);
       // Google Ads conversion (configured in GTM)
       if (window.dataLayer) {
@@ -3554,7 +3530,7 @@ async function submitIntake() {
     err.classList.remove('hidden');
     trackValidationError(4, 'submit_queued_offline');
   } finally {
-    btn.textContent = 'Submit Quote Request';
+    btn.textContent = SUBMIT_LABEL;
     btn.disabled = false;
     // Reset Turnstile for retry
     if (window.turnstile && turnstileWidgetId != null) {
@@ -3664,7 +3640,6 @@ document.addEventListener('click', (e) => {
     case 'remove-vehicle': removeVehicle(parseInt(el.dataset.vehicle)); break;
     case 'respond-offer': respondToOffer(el.dataset.choice); break;
     case 'submit-intake': submitIntake(); break;
-    case 'quick-lead': e.preventDefault(); submitQuickLead(); break;
     case 'add-vehicle': addVehicle(); break;
     case 'toggle-bundle-pill': toggleBundlePill(el.dataset.pid); break;
     case 'return-to-form': returnToForm(); break;
