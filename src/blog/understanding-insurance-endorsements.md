@@ -4,8 +4,8 @@ slug: understanding-insurance-endorsements
 description: Endorsements modify your policy to add, remove, or change coverage. Learn what endorsements are, which ones are worth adding, and how they affect your premium.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2027-03-17
-modified: 2027-03-17
+date: 2026-09-26
+modified: 2026-09-26
 reading_time: 6 min read
 related_page: null
 tags: insurance endorsement explained, what is an insurance rider, insurance endorsement vs rider, common insurance endorsements
