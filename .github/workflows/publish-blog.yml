@@ -116,7 +116,10 @@ jobs:
           git add data/content-calendar.json data/locations.json data/testimonials.json data/google-reviews-status.json src/blog/
           git diff --cached --quiet && exit 0
           git commit -m "weekly: blog publish + Google review sync for $(date +%Y-%m-%d)"
-          git push
+          # SAGE commits to main directly (approvals, rejects, the content
+          # queue). Rebase onto what landed meanwhile and retry; a conflict is
+          # never auto-resolved, it fails this step with nothing pushed.
+          bash scripts/git-push-rebase.sh main
 
       # Step 4: Queue health. Runs LAST so it never blocks today's publish --
       # its job is to alarm about slots that are about to fail, not to stop
