@@ -20,6 +20,7 @@
 const fs = require('fs');
 const path = require('path');
 const { isHeld, isKnownStatus } = require('./calendar-status');
+const { APPROVAL_RECORD_FIELDS } = require('./review-credit');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 // Overridable for the same reason loadBacklog takes a path: the lost-update
@@ -88,14 +89,17 @@ function publishDatesWithin(fromYmd, days) {
 // (sage-server BL-07: approved_* and its signature approval_mac) and the
 // publisher (the credit record) write them; the queue never sets them and must
 // never clear them. Dropping approval_mac or the credit record would silently
-// take a reviewer's earned byline off the post.
-const REVIEW_OWNED_FIELDS = [
+// take a reviewer's earned byline off the post, and dropping one field the
+// MAC signs (approved_publish_date, since MAC v2) turns a real approval into
+// an unsigned one ('error', approval_unsigned). The approval and credit
+// record is review-credit.js APPROVAL_RECORD_FIELDS itself, so a field added
+// to the signed record is owned here the moment it exists.
+const REVIEW_OWNED_FIELDS = Object.freeze([
   'status', 'reviewer', 'reviewer_email', 'reviewer_slug', 'reviewer_title',
   'review_sent_date', 'review_send_error', 'reminder_sent',
-  'approved_by', 'approved_by_email', 'approved_date', 'approved_sha256', 'approved_edit_id', 'approval_mac',
-  'credited_sha256', 'credit_mac',
+  ...APPROVAL_RECORD_FIELDS,
   'reviewed_date',
-];
+]);
 
 // The exact bytes loadCalendar() last read, so saveCalendar() can tell whether
 // another writer got there first. See the lost-update note on saveCalendar.
@@ -810,6 +814,6 @@ module.exports = {
   HORIZON_DAYS, LOCK_DAYS, MIN_LOCK_LEAD_DAYS, MARKDOWN_DUE_DAYS, MIN_APPROVED_BACKLOG, PUBLISH_WEEKDAYS,
   asDate, toYmd, daysBetween, isPublishDay, publishDatesWithin,
   loadAnchors, anchorForWindow, anchorRange, eligibilityOn, loadWindowMonths,
-  loadCalendar, loadBacklog, saveCalendar,
+  loadCalendar, loadBacklog, saveCalendar, REVIEW_OWNED_FIELDS,
   occupiedDates, hasMarkdown, approvedCandidates, isEligibleOn,
 };

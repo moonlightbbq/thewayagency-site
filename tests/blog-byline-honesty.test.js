@@ -104,8 +104,16 @@ describe('blog byline states only what the post can evidence', () => {
 
   test('the agency is never typed as a Person in Article structured data', () => {
     const src = fs.readFileSync(GENERATOR, 'utf8');
-    assert.match(src, /const authorSlug = safeSlug\(meta\.author_slug\)/, 'the author slug is validated before use');
-    assert.match(src, /"author": authorSlug \?/, 'author schema should branch on whether a person is named');
+    // The author is a data/team.json member (bylineAuthor validates the slug
+    // and binds name and title to the member) or the agency (sage-server
+    // BL-07 fix round 4): front-matter text never names the author.
+    assert.match(src, /const byline = contentGuard\.bylineAuthor\(meta, team\)/, 'the byline author comes from team.json');
+    assert.match(src, /"author": byline \?/, 'author schema should branch on whether a person is named');
+    const { bylineAuthor } = require('../scripts/lib/blog-content-guard');
+    const team = [{ slug: 'test-author-q', name: 'Test Author Q', title: 'Licensed Test Agent' }];
+    assert.equal(bylineAuthor({ author_slug: 'x"y' }, team), null, 'an unsafe slug names no one');
+    assert.equal(bylineAuthor({ author_slug: 'test-author-q', author: 'Someone Else' }, team), null, 'a name that is not the member\'s names no one');
+    assert.deepEqual(bylineAuthor({ author_slug: 'test-author-q' }, team), { slug: 'test-author-q', name: 'Test Author Q', title: 'Licensed Test Agent' });
     assert.match(src, /"@type":\s*"Organization"/, 'agency-authored posts should use Organization');
   });
 });

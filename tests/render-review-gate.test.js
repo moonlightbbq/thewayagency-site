@@ -35,7 +35,12 @@ const sha = (s) => crypto.createHash('sha256').update(Buffer.from(s, 'utf8')).di
 const body = Array.from({ length: 240 }, (_, i) => `word${i}`).join(' ');
 const post = (slug, extra = '', date = '2026-01-07') => `---\ntitle: SYNTHETIC ${slug}\nslug: ${slug}\ndescription: SYNTHETIC description for ${slug}\nauthor: The Way Agency\ndate: ${date}\n${extra}---\n\n${body}\n`;
 const REVIEWER = { name: 'Test Reviewer C', slug: 'test-reviewer-c', email: 'test-reviewer-c@example.com', title: 'Licensed Test Agent' };
-const TEAM = [{ name: REVIEWER.name, slug: REVIEWER.slug, email: REVIEWER.email, title: REVIEWER.title, license_states: ['KY'] }];
+// An author (the byline's "Written by" prints a team.json member, never front-matter text).
+const AUTHOR = { name: 'Test Author Q', slug: 'test-author-q', email: 'test-author-q@example.com', title: 'Licensed Test Agent' };
+const TEAM = [
+  { name: REVIEWER.name, slug: REVIEWER.slug, email: REVIEWER.email, title: REVIEWER.title, license_states: ['KY'] },
+  { name: AUTHOR.name, slug: AUTHOR.slug, email: AUTHOR.email, title: AUTHOR.title },
+];
 const REVIEW_LINES = `reviewer: ${REVIEWER.name}\nreviewer_slug: ${REVIEWER.slug}\nreviewer_title: Licensed Agent\nreviewed_date: 2025-12-01\n`;
 const assigned = { reviewer: REVIEWER.name, reviewer_slug: REVIEWER.slug, reviewer_email: REVIEWER.email, review_sent_date: '2025-12-20' };
 
@@ -66,10 +71,12 @@ function makeSite({ year1 = [], existing = [], files = {} }) {
   const env = (secret) => {
     const e = { ...process.env };
     delete e.BLOG_REVIEW_TOKEN_SECRET;
+    delete e.CF_PAGES;
+    delete e.CF_PAGES_BRANCH;
     if (secret) e.BLOG_REVIEW_TOKEN_SECRET = secret;
     return e;
   };
-  const run = (script, { secret = SECRET } = {}) => spawnSync(process.execPath, [path.join(tmp, 'scripts', script)], { encoding: 'utf8', env: env(secret), cwd: tmp });
+  const run = (script, { secret = SECRET, extraEnv = {} } = {}) => spawnSync(process.execPath, [path.join(tmp, 'scripts', script)], { encoding: 'utf8', env: { ...env(secret), ...extraEnv }, cwd: tmp });
   const page = (slug) => {
     const f = path.join(tmp, 'build', 'blog', `${slug}.html`);
     return fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : null;
@@ -450,6 +457,220 @@ describe('fix round 3: slug binding, unverifiable approvals, rescheduling and wi
       site.run('generate-blog.js');
       assert.ok(site.page('test-withdrawn'));
       assert.ok(!credits(site.page('test-withdrawn')));
+    } finally {
+      site.done();
+    }
+  });
+});
+
+// ─── Fix round 4: the byline is an allowlist, and no copy bypasses the gate ──
+//
+// The round-3 guard was a /review/i denylist on three byline fields. The
+// review found four ways past it that each printed "Reviewed by <a licensed
+// agent>" inside the visible byline with no approval (a Cyrillic look-alike,
+// a soft hyphen or zero-width space, full-width letters, a synonym), every
+// other printed value (title, CTA, alt text, ...) and the article body
+// unchecked, and a hand-made src/pages/blog/<slug>.html copied into the build
+// around a hold. The byline now prints a data/team.json member or the agency,
+// every printed value and the body are checked for a credit
+// (scripts/lib/blog-content-guard.js), and build/blog/ keeps only what the
+// gate rendered and the frozen hand-made pages.
+
+describe('fix round 4: no forged credit through the byline, any printed value or the body', () => {
+  const fm = (slug, lines = '', bodyText = body) => `---\ntitle: SYNTHETIC ${slug}\nslug: ${slug}\ndescription: SYNTHETIC description\nauthor: ${AUTHOR.name}\nauthor_slug: ${AUTHOR.slug}\nauthor_title: ${AUTHOR.title}\ndate: 2026-01-07\n${lines}---\n\n${bodyText}\n`;
+  const withKey = (slug, key, value) => fm(slug).replace(new RegExp(`^${key}: .*$`, 'm'), `${key}: ${value}`);
+  const credit = `${REVIEWER.name}, Licensed Test Agent on December 1, 2025`;
+  const hostile = {
+    'test-r4-cyrillic': fm('test-r4-cyrillic', `reading_time: Rеviewed by ${credit} | 6 min read\n`),
+    'test-r4-shy': withKey('test-r4-shy', 'author_title', `Licensed Agent | Re­viewed by ${credit}`),
+    'test-r4-zwsp': withKey('test-r4-zwsp', 'author_title', `Client Care Specialist, The Way Agency | Re​viewed by ${credit}`),
+    'test-r4-fullwidth': withKey('test-r4-fullwidth', 'author_title', `Ｒｅｖｉｅｗｅｄ by ${credit}`),
+    'test-r4-approved': withKey('test-r4-approved', 'author_title', `Approved by ${credit}`),
+    'test-r4-author': withKey('test-r4-author', 'author', `${AUTHOR.name} | Reviewed by ${REVIEWER.name}`),
+    'test-r4-title': withKey('test-r4-title', 'title', `SYNTHETIC guide — Reviewed by ${REVIEWER.name}, Licensed Agent`),
+    'test-r4-cta': fm('test-r4-cta', `cta_title: Reviewed by ${REVIEWER.name}, Licensed Agent\n`),
+    'test-r4-desc': withKey('test-r4-desc', 'description', 'Vetted by our licensed agents.'),
+    'test-r4-alt': fm('test-r4-alt', `image_alt: Approved by ${REVIEWER.name}\n`),
+    'test-r4-body': fm('test-r4-body', '', `Reviewed by [${REVIEWER.name}](/about/team.html#${REVIEWER.slug}), Licensed Test Agent on December 1, 2025\n\n${body}`),
+  };
+  const planned = (slug, status) => ({ slug, title: `SYNTHETIC ${slug}`, publish_date: '2026-01-07', status, ...assigned });
+
+  for (const [label, status] of [['planned and due', 'planned'], ['in review and due', 'in-review'], ['not on the calendar', null]]) {
+    test(`none renders when ${label}, and none names the reviewer anywhere`, () => {
+      const site = makeSite({ year1: status ? Object.keys(hostile).map((slug) => planned(slug, status)) : [], files: hostile });
+      try {
+        const gen = site.run('generate-blog.js');
+        assert.equal(gen.status, 0, gen.stdout + gen.stderr);
+        for (const slug of Object.keys(hostile)) {
+          assert.equal(site.page(slug), null, `${slug} must not render (${label})`);
+          assert.match(gen.stdout, new RegExp(`Not rendered ${slug}\\.html .*(unsafe_frontmatter|review_claim_in_body)`), slug);
+        }
+      } finally {
+        site.done();
+      }
+    });
+  }
+
+  test('the publisher refuses each one (error), with the reason', () => {
+    const site = makeSite({ year1: Object.keys(hostile).map((slug) => planned(slug, 'planned')), files: hostile });
+    try {
+      const pub = site.run('publish-scheduled-posts.js');
+      assert.equal(pub.status, 3, pub.stdout + pub.stderr);
+      for (const slug of Object.keys(hostile)) {
+        const e = site.calendar().year1.find((p) => p.slug === slug);
+        assert.equal(e.status, 'error', slug);
+        assert.equal(e.error_reason, slug === 'test-r4-body' ? 'review_claim_in_body' : 'unsafe_frontmatter', slug);
+      }
+    } finally {
+      site.done();
+    }
+  });
+
+  test('contrast: the same post with a plain byline renders "Written by" the team member, with team.json\'s title', () => {
+    const site = makeSite({ year1: [planned('test-r4-plain', 'planned')], files: { 'test-r4-plain': fm('test-r4-plain', 'reading_time: 6 min read\n') } });
+    try {
+      const gen = site.run('generate-blog.js');
+      const html = site.page('test-r4-plain');
+      assert.ok(html, gen.stdout);
+      assert.match(bylineOf(html), new RegExp(`Written by <a href="/about/team.html#${AUTHOR.slug}"[^>]*>${AUTHOR.name}</a>, ${AUTHOR.title}, The Way Agency`));
+      assert.match(bylineOf(html), /<span>6 min read<\/span>/);
+      assert.doesNotMatch(bylineOf(html), /Reviewed by/);
+      const feed = fs.readFileSync(path.join(site.tmp, 'build', 'blog', 'feed.xml'), 'utf8');
+      assert.match(feed, new RegExp(`<dc:creator><!\\[CDATA\\[${AUTHOR.name}\\]\\]></dc:creator>`));
+    } finally {
+      site.done();
+    }
+  });
+});
+
+describe('fix round 4: the template prints the byline from team.json, whatever the front matter says (behind the gate)', () => {
+  const { generateBlogPost, markdownToHtml } = require('../scripts/generate-blog');
+  const base = { title: 'SYNTHETIC t', slug: 'test-template', description: 'SYNTHETIC d', author: AUTHOR.name, author_slug: AUTHOR.slug, author_title: AUTHOR.title, date: '2026-01-07' };
+  const render = (meta) => generateBlogPost(meta, markdownToHtml(body), [], { team: TEAM });
+
+  test('free text in author, author_title or reading_time never reaches the byline', () => {
+    for (const meta of [
+      { ...base, author_title: `Licensed Agent | Re​viewed by ${REVIEWER.name}` },
+      { ...base, author: `${AUTHOR.name} | Approved by ${REVIEWER.name}` },
+      { ...base, reading_time: `Rеviewed by ${REVIEWER.name} | 6 min read` },
+      { ...base, author_slug: REVIEWER.slug, author: AUTHOR.name },
+    ]) {
+      const line = bylineOf(render(meta));
+      assert.ok(!line.includes(REVIEWER.name), `${JSON.stringify(meta)}: ${line}`);
+      assert.doesNotMatch(line, /viewed by|pproved by/i, JSON.stringify(meta));
+    }
+  });
+
+  test('a mismatched author or title makes the agency the author; no "Licensed Agent" is invented', () => {
+    for (const meta of [{ ...base, author_title: 'Licensed Agent' }, { ...base, author: 'Someone Else' }, { ...base, author_slug: 'test-nobody' }]) {
+      const html = render(meta);
+      assert.match(bylineOf(html), /<span>Written by The Way Agency<\/span>/, JSON.stringify(meta));
+      assert.equal(ldBlocks(html)[0].author['@type'], 'Organization');
+    }
+    const noTitle = generateBlogPost({ ...base, author_title: undefined }, markdownToHtml(body), [], { team: [{ name: AUTHOR.name, slug: AUTHOR.slug }] });
+    assert.match(bylineOf(noTitle), new RegExp(`>${AUTHOR.name}</a>, The Way Agency</span>`));
+    assert.equal(ldBlocks(noTitle)[0].author.jobTitle, undefined);
+  });
+
+  test('with the author unset, the post is the agency\'s, whatever author says', () => {
+    const html = render({ ...base, author_slug: undefined, author_title: undefined, author: REVIEWER.name });
+    assert.match(bylineOf(html), /<span>Written by The Way Agency<\/span>/);
+    assert.ok(!html.includes(REVIEWER.name));
+  });
+});
+
+describe('fix round 4: build/blog keeps only what the gate rendered and the frozen hand-made pages', () => {
+  const { LEGACY_BLOG_PAGES } = require('../scripts/lib/legacy-blog-pages');
+  const forged = (slug) => `<!DOCTYPE html><html><body><div class="blog-meta"><span>Reviewed by <a href="/about/team.html#${REVIEWER.slug}">${REVIEWER.name}</a></span></div><script type="application/ld+json">{"reviewedBy":{"name":"${REVIEWER.name}"}}</script></body></html>`;
+
+  test('a hand-made copy of a held post, an unknown page and a stale page are removed; an unclaimed frozen page stays', () => {
+    const legacy = Object.keys(LEGACY_BLOG_PAGES).find((f) => f !== 'index.html');
+    const legacyClaimed = Object.keys(LEGACY_BLOG_PAGES).filter((f) => f !== 'index.html')[1];
+    const claimedSlug = legacyClaimed.slice(0, -'.html'.length);
+    const site = makeSite({
+      year1: [
+        { slug: 'test-r4-held', title: 'SYNTHETIC held', publish_date: '2026-01-07', status: 'changes-requested', ...assigned },
+        { slug: claimedSlug, title: 'SYNTHETIC claimed', publish_date: '2026-01-07', status: 'changes-requested', ...assigned },
+      ],
+      files: { 'test-r4-held': post('test-r4-held'), [claimedSlug]: post(claimedSlug) },
+    });
+    try {
+      // What scripts/build.js copyBlogPages (or a hand-made page) leaves there.
+      for (const name of ['test-r4-held.html', 'test-r4-new-url.html', legacy, legacyClaimed]) {
+        fs.writeFileSync(path.join(site.tmp, 'build', 'blog', name), forged(name));
+      }
+      const gen = site.run('generate-blog.js');
+      assert.equal(gen.status, 0, gen.stdout + gen.stderr);
+      assert.equal(site.page('test-r4-held'), null, 'the held post is not served from a hand-made copy');
+      assert.match(gen.stdout, /Removed blog\/test-r4-held\.html .*not rendered .*requested changes/);
+      assert.equal(site.page('test-r4-new-url'), null, 'no page at a new /blog/ URL without the gate');
+      assert.equal(site.page(claimedSlug), null, 'a frozen page whose name a held markdown post claims is not served');
+      assert.ok(site.page(legacy.slice(0, -'.html'.length)), 'an unclaimed frozen hand-made page stays');
+    } finally {
+      site.done();
+    }
+  });
+
+  test('copyBlogPages fails the build on an unknown or edited hand-made page, and does not copy one a markdown post claims', () => {
+    const { copyBlogPages } = require('../scripts/builders/blog-helpers');
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-blog-pages-'));
+    const SRC = path.join(tmp, 'src');
+    const BUILD = path.join(tmp, 'build');
+    fs.mkdirSync(path.join(SRC, 'pages', 'blog'), { recursive: true });
+    fs.mkdirSync(path.join(SRC, 'blog'), { recursive: true });
+    const real = Object.keys(LEGACY_BLOG_PAGES).filter((f) => f !== 'index.html');
+    const copy = (f) => fs.copyFileSync(path.join(REPO, 'src', 'pages', 'blog', f), path.join(SRC, 'pages', 'blog', f));
+    const id = (x) => x;
+    const log = console.log;
+    const err = console.error;
+    console.log = () => {};
+    console.error = () => {};
+    try {
+      copy(real[0]);
+      copy(real[1]);
+      fs.writeFileSync(path.join(SRC, 'blog', 'any-file.md'), `---\ntitle: x\nslug: ${real[1].slice(0, -'.html'.length)}\n---\n\nx\n`);
+      copyBlogPages(SRC, BUILD, id);
+      assert.ok(fs.existsSync(path.join(BUILD, 'blog', real[0])), 'a frozen page is copied');
+      assert.ok(!fs.existsSync(path.join(BUILD, 'blog', real[1])), 'a frozen page a markdown post claims is not');
+
+      fs.writeFileSync(path.join(SRC, 'pages', 'blog', 'test-r4-new.html'), forged('x'));
+      assert.throws(() => copyBlogPages(SRC, BUILD, id), /Hand-made blog page guard failed/);
+      fs.rmSync(path.join(SRC, 'pages', 'blog', 'test-r4-new.html'));
+
+      fs.appendFileSync(path.join(SRC, 'pages', 'blog', real[0]), '\n<p>Reviewed by Test Reviewer C</p>\n');
+      assert.throws(() => copyBlogPages(SRC, BUILD, id), /Hand-made blog page guard failed/);
+    } finally {
+      console.log = log;
+      console.error = err;
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('the frozen hash list is exactly src/pages/blog/, and none of those pages claims a review', () => {
+    const { legacyPageProblem } = require('../scripts/lib/legacy-blog-pages');
+    const dir = path.join(REPO, 'src', 'pages', 'blog');
+    const files = fs.readdirSync(dir).filter((f) => f.endsWith('.html')).sort();
+    assert.deepEqual(files, Object.keys(LEGACY_BLOG_PAGES).sort());
+    for (const f of files) {
+      const html = fs.readFileSync(path.join(dir, f), 'utf8');
+      assert.equal(legacyPageProblem(f, html), null, f);
+      assert.doesNotMatch(html, /Reviewed by|reviewedBy/i, f);
+    }
+  });
+});
+
+describe('fix round 4: a Cloudflare Pages Preview build credits no one', () => {
+  test('with the secret in a branch build, a signed approval renders uncredited and the build log says to remove it', () => {
+    const md = post('test-r4-preview');
+    const site = makeSite({ year1: [approved('test-r4-preview', md)], files: { 'test-r4-preview': md } });
+    try {
+      let gen = site.run('generate-blog.js', { extraEnv: { CF_PAGES: '1', CF_PAGES_BRANCH: 'fix/some-branch' } });
+      assert.ok(site.page('test-r4-preview'), gen.stdout);
+      assert.ok(!credits(site.page('test-r4-preview')));
+      assert.match(gen.stdout, /PREVIEW build .*remove it from the Preview environment/);
+      site.clean();
+      gen = site.run('generate-blog.js', { extraEnv: { CF_PAGES: '1', CF_PAGES_BRANCH: 'main' } });
+      assert.ok(credits(site.page('test-r4-preview')), 'the production build credits it');
     } finally {
       site.done();
     }

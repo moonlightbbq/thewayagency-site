@@ -70,6 +70,7 @@
 'use strict';
 
 const crypto = require('crypto');
+const contentGuard = require('./blog-content-guard');
 
 /** Front-matter keys that make a review claim (generate-blog.js renders them). */
 const REVIEWER_FIELDS = Object.freeze(['reviewer', 'reviewer_slug', 'reviewer_title', 'reviewed_date', 'reviewed_by']);
@@ -92,11 +93,6 @@ const APPROVAL_RECORD_FIELDS = Object.freeze([
   'approved_by', 'approved_by_email', 'approved_date', 'approved_sha256', 'approved_publish_date', 'approved_edit_id',
   'approval_mac', 'credited_sha256', 'credit_mac',
 ]);
-// Slugs become file names, URL paths and fragments on the rendered page.
-const SAFE_SLUG_RE = /^[a-z0-9-]+$/;
-const SLUG_KEYS = Object.freeze(['slug', 'author_slug', 'reviewer_slug']);
-// Non-review front matter generate-blog.js prints inside the byline as text.
-const BYLINE_TEXT_KEYS = Object.freeze(['author', 'author_title', 'reading_time']);
 
 const lower = (s) => String(s || '').trim().toLowerCase();
 
@@ -317,46 +313,40 @@ function creditCheck(post, rawBytes, { secret = null } = {}) {
   return { credit: true, reason: 'credited' };
 }
 
-const _unquote = (v) => ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'")) ? v.slice(1, -1) : v);
-
 /**
- * Why a post's front matter is unsafe to render, or null. Read exactly as
- * generate-blog.js reads it (the renderer's block, each line's text before the
- * first ':' trimmed). Defence in depth behind the renderer's output encoding,
- * which already keeps every value as text:
- *   - a value carrying '<' or '>' (markup has no place in front matter, and is
- *     how a value would try to print a byline of its own);
- *   - a slug, author_slug or reviewer_slug that is not lower-case letters,
- *     digits and hyphens (they become file names, URLs and fragments);
- *   - review wording in a field the byline prints as text (author,
- *     author_title, reading_time): encoded or not, "Licensed Agent | Reviewed
- *     by <a licensed agent>" there would read as a review credit nobody
- *     signed. The review keys themselves are stripped, never checked here.
- * '"' is allowed: titles legitimately quote, and every place a value lands is
- * encoded for it.
+ * Why a post's front matter is unsafe to publish or render, or null
+ * (scripts/lib/blog-content-guard.js, the same file sage-server's BL-06
+ * promote and BL-07 approval check): markup or an invisible, control or
+ * look-alike character in a value, an unsafe slug, an author_slug that names
+ * no data/team.json member or an author/author_title that is not that
+ * member's, a reading_time or date that is not the plain form, or a review or
+ * approval credit in any value the page prints. Defence in depth behind the
+ * renderer's output encoding (every value stays text) and its byline (printed
+ * from data/team.json and a signed approval only).
+ * @param {string} md
+ * @param {Array} team  data/team.json's team list
  */
-function frontMatterProblem(md) {
-  const m = FRONT_MATTER.exec(String(md));
-  if (!m) return null;
-  for (const line of m[1].split('\n')) {
-    const key = frontMatterKey(line);
-    if (key === null) continue;
-    const value = line.slice(line.indexOf(':') + 1).trim();
-    if (/[<>]/.test(key) || /[<>]/.test(value)) return `the front-matter line "${key.slice(0, 40)}" carries '<' or '>'`;
-    if (SLUG_KEYS.includes(key) && !SAFE_SLUG_RE.test(_unquote(value))) return `the front-matter ${key} is not lower-case letters, digits and hyphens`;
-    if (BYLINE_TEXT_KEYS.includes(key) && /review/i.test(value)) return `the front-matter ${key}, which the byline prints, carries review wording`;
-  }
-  return null;
+function frontMatterProblem(md, team) {
+  return contentGuard.frontMatterProblem(md, team);
+}
+
+/** Why a post's body is unsafe to publish or render (a review or approval credit naming the team, the agency or a licensed agent), or null. */
+function bodyProblem(md, team) {
+  return contentGuard.bodyProblem(md, team);
 }
 
 /**
  * Why a markdown file is not ready to publish (the publisher's readiness
- * checks), or null.
+ * checks), or null: 'missing_frontmatter', 'unsafe_frontmatter',
+ * 'review_claim_in_body' or 'content_too_short'.
+ * @param {string} md
+ * @param {Array} team  data/team.json's team list
  */
-function readinessError(md) {
+function readinessError(md, team) {
   const text = String(md);
   if (!text.includes('title:') || !text.includes('description:')) return 'missing_frontmatter';
-  if (frontMatterProblem(text)) return 'unsafe_frontmatter';
+  if (frontMatterProblem(text, team)) return 'unsafe_frontmatter';
+  if (bodyProblem(text, team)) return 'review_claim_in_body';
   const words = text.replace(/---[\s\S]*?---/, '').trim().split(/\s+/).length;
   if (words < MIN_WORDS) return 'content_too_short';
   return null;
@@ -403,6 +393,7 @@ function applyReviewCredit(md, post, team, { credit }) {
  * exactly what the publisher would publish:
  *
  *   unsafe front matter             -> not rendered (frontMatterProblem)
+ *   a review credit in the body     -> not rendered (bodyProblem)
  *   not on the calendar             -> renders (by its own date:), no credit
  *   held ('changes-requested')      -> not rendered
  *   'error', or an unknown status   -> not rendered
@@ -424,8 +415,10 @@ function renderDecision(entry, rawBytes, team, opts) {
   const { secret = null, today, isKnownStatus, isPublishable, isHeld } = opts;
   const text = rawBytes.toString('utf8');
   const stripped = () => stripReviewerFields(text);
-  const unsafe = frontMatterProblem(text);
+  const unsafe = frontMatterProblem(text, team);
   if (unsafe) return { render: false, credit: false, markdown: '', why: `${unsafe} (unsafe_frontmatter)` };
+  const claim = bodyProblem(text, team);
+  if (claim) return { render: false, credit: false, markdown: '', why: `${claim} (review_claim_in_body)` };
   if (!entry) return { render: true, credit: false, markdown: stripped(), why: 'not on the content calendar' };
   const status = entry.status;
   if (isHeld(status)) return { render: false, credit: false, markdown: '', why: 'its reviewer requested changes; it renders once they approve a version in SAGE or the hold is released' };
@@ -437,7 +430,7 @@ function renderDecision(entry, rawBytes, team, opts) {
   }
   if (!isPublishable(status)) return { render: false, credit: false, markdown: '', why: `status "${status}" does not publish` };
   if (!entry.publish_date || String(entry.publish_date) > today) return { render: false, credit: false, markdown: '', why: `scheduled for ${entry.publish_date || 'no date'}` };
-  const notReady = readinessError(text);
+  const notReady = readinessError(text, team);
   if (notReady) return { render: false, credit: false, markdown: '', why: `not ready to publish (${notReady})` };
   const approval = approvalCheck(entry, rawBytes, team, { secret });
   if (approval.error) return { render: false, credit: false, markdown: '', why: `approved in SAGE, but ${approval.detail} (${approval.error})` };
@@ -477,6 +470,7 @@ module.exports = {
   approvalCheck,
   creditCheck,
   frontMatterProblem,
+  bodyProblem,
   readinessError,
   reviewerTitle,
   applyReviewCredit,

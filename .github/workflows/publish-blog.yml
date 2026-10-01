@@ -76,6 +76,12 @@ jobs:
           # BL-07: verifies SAGE's signature on an approval (approval_mac) and
           # signs the credit record the renderer checks before it prints
           # "Reviewed by". Same secret as the review step above.
+          # The renderer needs it too, as a Cloudflare Pages build variable: set
+          # it for the PRODUCTION environment only. Pages runs every pushed
+          # branch's own code in Preview, and a branch build that can read the
+          # secret can print it and sign an approval or credit that verifies on
+          # main. scripts/generate-blog.js credits no one in a Preview build and
+          # warns if the secret is there (then remove it and rotate it).
           BLOG_REVIEW_TOKEN_SECRET: ${{ secrets.BLOG_REVIEW_TOKEN_SECRET }}
         run: |
           set +e

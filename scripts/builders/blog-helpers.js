@@ -7,21 +7,61 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 const { ensureDir } = require('./assets');
+const { legacyPageProblem } = require('../lib/legacy-blog-pages');
+const { frontMatterOf } = require('../lib/blog-content-guard');
 
+/** The URL slugs src/blog/*.md claims: each file's name and its front-matter slug. */
+function markdownSlugs(blogMdDir) {
+  const slugs = new Set();
+  if (!fs.existsSync(blogMdDir)) return slugs;
+  for (const file of fs.readdirSync(blogMdDir)) {
+    if (!file.endsWith('.md')) continue;
+    slugs.add(file.slice(0, -'.md'.length));
+    const fm = frontMatterOf(fs.readFileSync(path.join(blogMdDir, file), 'utf8'));
+    if (fm && typeof fm.meta.slug === 'string' && fm.meta.slug) slugs.add(fm.meta.slug);
+  }
+  return slugs;
+}
+
+/**
+ * Copy the frozen hand-made blog pages (scripts/lib/legacy-blog-pages.js) into
+ * build/blog/. A page there passes none of a markdown post's review gates
+ * (sage-server BL-07), so the build FAILS on any other file, or on a listed
+ * one whose bytes changed, instead of publishing it. A hand-made page whose
+ * name a markdown post claims is not copied: the post owns that URL, and
+ * renders there only if the review gate lets it (scripts/generate-blog.js
+ * removes what it does not render).
+ */
 function copyBlogPages(SRC, BUILD, injectVersion) {
   const blogSrcDir = path.join(SRC, 'pages', 'blog');
-  if (fs.existsSync(blogSrcDir)) {
-    ensureDir(path.join(BUILD, 'blog'));
-    let blogCount = 0;
-    for (const file of fs.readdirSync(blogSrcDir)) {
-      if (file.endsWith('.html')) {
-        const content = fs.readFileSync(path.join(blogSrcDir, file), 'utf8');
-        fs.writeFileSync(path.join(BUILD, 'blog', file), injectVersion(content));
-        blogCount++;
-      }
-    }
-    if (blogCount > 0) console.log(`  ✓ Copied ${blogCount} blog pages (including index)`);
+  if (!fs.existsSync(blogSrcDir)) return;
+  const claimed = markdownSlugs(path.join(SRC, 'blog'));
+  const problems = [];
+  const pages = [];
+  for (const file of fs.readdirSync(blogSrcDir)) {
+    if (!file.endsWith('.html')) continue;
+    const content = fs.readFileSync(path.join(blogSrcDir, file), 'utf8');
+    const problem = legacyPageProblem(file, content);
+    if (problem) problems.push(problem);
+    else pages.push({ file, content });
   }
+  if (problems.length) {
+    console.error('\n✗ Hand-made blog page guard failed:');
+    problems.forEach((p) => console.error('  - ' + p));
+    throw new Error(`Hand-made blog page guard failed (${problems.length} issue(s)).`);
+  }
+  ensureDir(path.join(BUILD, 'blog'));
+  let blogCount = 0;
+  for (const { file, content } of pages) {
+    const slug = file.slice(0, -'.html'.length);
+    if (file !== 'index.html' && claimed.has(slug)) {
+      console.log(`  ~ Not copied blog/${file}  -  src/blog/ has a markdown post for /blog/${slug}, which renders there only through the review gate`);
+      continue;
+    }
+    fs.writeFileSync(path.join(BUILD, 'blog', file), injectVersion(content));
+    blogCount++;
+  }
+  if (blogCount > 0) console.log(`  ✓ Copied ${blogCount} blog pages (including index)`);
 }
 
 function runBlogGenerator(ROOT) {
@@ -32,4 +72,4 @@ function runBlogGenerator(ROOT) {
   }
 }
 
-module.exports = { copyBlogPages, runBlogGenerator };
+module.exports = { copyBlogPages, runBlogGenerator, markdownSlugs };

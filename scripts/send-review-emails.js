@@ -189,6 +189,34 @@ function readPostBytes(slug) {
 }
 
 // ─── Markdown to email HTML ─────────────────
+/**
+ * HTML-escape a value for element text or a quoted attribute. Every calendar
+ * or article value is data where it lands in these emails, as on the site
+ * (scripts/generate-blog.js esc): a title or a paragraph cannot add markup, or
+ * a link of its own, to an email that goes to a licensed reviewer.
+ */
+function escHtml(value) {
+  return String(value === undefined || value === null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
+ * Where a markdown link in the article preview may point: a site path
+ * (prefixed with the site origin) or an absolute http(s) URL, else nowhere.
+ * Prefixing anything else made "@host/x" a link to another host
+ * (https://www.thewayagency.com@host/x).
+ */
+function emailLinkHref(url) {
+  const u = String(url).trim();
+  if (/^\/(?!\/)/.test(u)) return `https://www.thewayagency.com${u}`;
+  if (/^https?:\/\/[^\s]+$/i.test(u)) return u;
+  return null;
+}
+
 function markdownToEmailHtml(md) {
   // Strip front matter
   const bodyOnly = md.replace(/^---[\s\S]*?---\n/, '').trim();
@@ -249,11 +277,17 @@ function markdownToEmailHtml(md) {
   return htmlBlocks.join('\n');
 }
 
+// The text is escaped first; only the markdown below adds markup. A link's
+// target was escaped with it, so it cannot leave its href.
 function applyInline(text) {
-  return text
+  return escHtml(text)
     .replace(/\*\*(.+?)\*\*/g, '<strong style="color:#0f172a;">$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="https://www.thewayagency.com$2" style="color:#0891b2;text-decoration:underline;">$1</a>');
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, label, url) => {
+      const raw = url.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&');
+      const href = emailLinkHref(raw);
+      return href ? `<a href="${escHtml(href)}" style="color:#0891b2;text-decoration:underline;">${label}</a>` : label;
+    });
 }
 
 // ─── Pillar display labels ──────────────────
@@ -291,11 +325,11 @@ function formatReviewEmail(post, content, reviewer, token = null, { sageUrl } = 
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
 
-  const pillarLabel = pillarLabels[post.pillar] || post.pillar;
-  const targetPage = post.target_product_page
-    ? `<a href="https://www.thewayagency.com${post.target_product_page}" style="color:#0891b2;">${post.target_product_page}</a>`
-    : 'General';
-  const readingTime = post.reading_time || '5-7 min read';
+  // Calendar values: data, escaped where they land.
+  const title = escHtml(post.title);
+  const pillarLabel = escHtml(pillarLabels[post.pillar] || post.pillar);
+  const readingTime = escHtml(post.reading_time || '5-7 min read');
+  const firstName = escHtml(String(reviewer.name || '').split(' ')[0]);
 
   // Approving is a click in SAGE (BL-07): the green action is a link to SAGE's
   // review page, where the reviewer sees the exact text that will publish.
@@ -319,7 +353,7 @@ function formatReviewEmail(post, content, reviewer, token = null, { sageUrl } = 
     <table style="width:100%;"><tr>
       <td style="vertical-align:top;">
         <p style="margin:0 0 4px;font-size:11px;color:#38bdf8;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;">Review Request</p>
-        <h1 style="margin:0;font-size:24px;font-weight:700;line-height:1.3;color:white;">${post.title}</h1>
+        <h1 style="margin:0;font-size:24px;font-weight:700;line-height:1.3;color:white;">${title}</h1>
         <p style="margin:10px 0 0;font-size:13px;color:#94a3b8;">${pillarLabel} &middot; ${readingTime} &middot; Publishes ${publishDate}</p>
       </td>
     </tr></table>
@@ -327,7 +361,7 @@ function formatReviewEmail(post, content, reviewer, token = null, { sageUrl } = 
 
   <!-- Action Bar -->
   <div style="background:#ffffff;padding:24px 36px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
-    <p style="margin:0 0 14px;color:#1e293b;font-size:15px;">Hi ${reviewer.name.split(' ')[0]},</p>
+    <p style="margin:0 0 14px;color:#1e293b;font-size:15px;">Hi ${firstName},</p>
     <p style="margin:0 0 18px;color:#475569;font-size:14px;line-height:1.6;">
       This article is ready for your review before it goes live on <strong style="color:#0f172a;">${publishDate}</strong>.
       Please check it for accuracy and let us know if anything needs to be updated.
@@ -375,7 +409,9 @@ function formatReminderEmail(post, reviewer, { sageUrl, token = null } = {}) {
   const publishDate = new Date(post.publish_date + 'T12:00:00').toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
-  const pillarLabel = pillarLabels[post.pillar] || post.pillar;
+  const title = escHtml(post.title);
+  const pillarLabel = escHtml(pillarLabels[post.pillar] || post.pillar);
+  const firstName = escHtml(String(reviewer.name || '').split(' ')[0]);
   const replyTo = process.env.REVIEW_REPLY_TO || 'sage@thewayagency.com';
   const changes = token
     ? `<a href="mailto:${replyTo}?subject=${encodeURIComponent(buildReviewSubjects(post, token).reply)}&body=${encodeURIComponent('Changes requested:\n\n')}" style="color:#9a3412;font-weight:700;">Request Changes</a>`
@@ -384,11 +420,11 @@ function formatReminderEmail(post, reviewer, { sageUrl, token = null } = {}) {
 <div style="max-width:680px;margin:0 auto;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;">
   <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);color:white;padding:32px 36px;border-radius:12px 12px 0 0;">
     <p style="margin:0 0 4px;font-size:11px;color:#fbbf24;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;">Reminder &middot; 1 Week Until Publish</p>
-    <h1 style="margin:0;font-size:22px;font-weight:700;line-height:1.3;">${post.title}</h1>
+    <h1 style="margin:0;font-size:22px;font-weight:700;line-height:1.3;">${title}</h1>
     <p style="margin:10px 0 0;font-size:13px;color:#94a3b8;">${pillarLabel} &middot; Publishes ${publishDate}</p>
   </div>
   <div style="background:#ffffff;padding:28px 36px;border:1px solid #e2e8f0;">
-    <p style="margin:0 0 14px;color:#1e293b;font-size:15px;">Hi ${reviewer.name.split(' ')[0]},</p>
+    <p style="margin:0 0 14px;color:#1e293b;font-size:15px;">Hi ${firstName},</p>
     <p style="margin:0 0 18px;color:#475569;font-size:14px;line-height:1.6;">
       This article publishes in <strong style="color:#0f172a;">one week</strong> on <strong style="color:#0f172a;">${publishDate}</strong>.
       To approve it, review it in SAGE. If you have changes, use ${changes}. ${changeRequestSentence(token)}
@@ -614,7 +650,7 @@ async function main() {
 
 module.exports = {
   issueReviewToken, buildReviewSubjects, formatReviewEmail, formatReminderEmail, reviewTokenSecret,
-  sageReviewBase, reviewApprovalUrl, MIN_SECRET_LENGTH,
+  sageReviewBase, reviewApprovalUrl, MIN_SECRET_LENGTH, escHtml, markdownToEmailHtml,
 };
 
 if (require.main === module) {

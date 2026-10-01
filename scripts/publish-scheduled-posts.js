@@ -34,7 +34,7 @@ const fs = require('fs');
 const path = require('path');
 const { isPublishable, isKnownStatus } = require('./lib/calendar-status');
 const {
-  approvalCheck, applyReviewCredit, readinessError, reviewSecret, recordCredit, clearApprovalRecord,
+  approvalCheck, applyReviewCredit, readinessError, frontMatterProblem, bodyProblem, reviewSecret, recordCredit, clearApprovalRecord,
 } = require('./lib/review-credit');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -69,8 +69,15 @@ const pendingWrites = new Map();
 const NOT_READY_WHY = {
   missing_frontmatter: 'missing title or description in frontmatter',
   content_too_short: 'content too short (need 200+ words)',
-  unsafe_frontmatter: 'its front matter carries markup (\'<\' or \'>\' in a value) or an unsafe slug',
+  unsafe_frontmatter: 'its front matter is unsafe to publish',
+  review_claim_in_body: 'its body states a review or approval credit',
 };
+// The guard's own explanation (scripts/lib/blog-content-guard.js), for the log.
+function notReadyDetail(reason, md) {
+  if (reason === 'unsafe_frontmatter') return frontMatterProblem(md, TEAM);
+  if (reason === 'review_claim_in_body') return bodyProblem(md, TEAM);
+  return null;
+}
 
 // A withdrawn approval does not stay on the entry. SAGE writes an approval
 // record only together with status 'approved'; on an entry that is now
@@ -137,9 +144,10 @@ for (const post of calendar.year1) {
 
   // Readiness checks: title and description in the front matter, and more
   // than 200 words of body (the same rule the renderer applies).
-  const notReady = readinessError(mdContent);
+  const notReady = readinessError(mdContent, TEAM);
   if (notReady) {
-    console.log(`  ! ERROR: "${post.title}" (${post.slug}) - ${NOT_READY_WHY[notReady] || notReady}`);
+    const detail = notReadyDetail(notReady, mdContent);
+    console.log(`  ! ERROR: "${post.title}" (${post.slug}) - ${NOT_READY_WHY[notReady] || notReady}${detail ? `: ${detail}` : ''}`);
     markError(post, notReady);
     continue;
   }
@@ -226,7 +234,10 @@ if (errors.length > 0) {
   console.log('');
   console.log('  Calendar status set to "error" with error_reason and error_at.');
   console.log('  missing_*/content_too_short: investigate the sage Hive blog-writer pipeline.');
-  console.log('  unsafe_frontmatter: a front-matter value carries markup, or a slug is unsafe. Fix the markdown by hand.');
+  console.log('  unsafe_frontmatter: a front-matter value carries markup, an invisible or look-alike character or a review credit,');
+  console.log('  a slug is unsafe, or the author is not the data/team.json member author_slug names. Fix the markdown by hand.');
+  console.log('  review_claim_in_body: the article text says it was reviewed or approved by the team, the agency or a licensed agent.');
+  console.log('  Only the reviewer\'s approval in SAGE credits a review, in the byline. Remove the sentence.');
   console.log('  approval_*/approved_bytes_changed: the post changed after its reviewer approved it in SAGE, it was rescheduled,');
   console.log('  the approval is not the byline reviewer\'s, or SAGE did not sign it. It is not published under their name (sage-server BL-07).');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

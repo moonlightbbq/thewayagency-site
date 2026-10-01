@@ -13,9 +13,7 @@
  *   title: Your Post Title
  *   slug: your-post-slug
  *   description: Meta description for SEO (150-160 chars)
- *   author: Sheilia Royal
- *   author_title: Agency Principal / Licensed Agent
- *   author_slug: sheilia-royal
+ *   author_slug: sheilia-royal      (only when that team member wrote it)
  *   date: 2026-03-15
  *   modified: 2026-03-20
  *   reading_time: 5 min
@@ -37,10 +35,16 @@
  *   ### FAQ: Is this a question?
  *
  *   Answer paragraph. (H3s starting with "FAQ:" become FAQ accordion items)
+ *
+ * The byline prints the data/team.json member author_slug names (their name
+ * and title from team.json), or "The Way Agency" without one; author and
+ * author_title, if present, must match that member (src/blog/README.md).
  */
 
 const fs = require('fs');
 const path = require('path');
+
+const contentGuard = require('./lib/blog-content-guard');
 
 const ROOT = path.resolve(__dirname, '..');
 const BLOG_SRC = path.join(ROOT, 'src', 'blog');
@@ -296,12 +300,28 @@ function injectMidPostCTA(html, category, relatedPage) {
 }
 
 // ─── Blog post HTML template ────────────────
-function generateBlogPost(meta, bodyHtml, faqs) {
+/**
+ * @param {object} meta     the post's front matter (parseFrontMatter)
+ * @param {string} bodyHtml
+ * @param {Array} faqs
+ * @param {{team?: Array}} [opts]  data/team.json's team list: the byline's
+ *   author name and title come from the member author_slug names, never from
+ *   the front matter (blog-content-guard.js bylineAuthor). Without a matching
+ *   member the agency is the author.
+ */
+function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
   // Every front-matter value below is encoded where it lands (esc / ldJson);
   // see "Output encoding" above. Slugs and paths are validated, not escaped:
   // an unsafe one is dropped.
   const slug = safeSlug(meta.slug);
-  const authorSlug = safeSlug(meta.author_slug);
+  // Who wrote it: a data/team.json member (their name and title as team.json
+  // gives them), or the agency. Free text from the front matter used to be
+  // printed here, so `author_title: Licensed Agent | Reviewed by <a licensed
+  // agent> on ...` read as a review credit nobody signed, and any name was
+  // linked to the team page with the title "Licensed Agent" by default
+  // (sage-server BL-07, AIA-018).
+  const byline = contentGuard.bylineAuthor(meta, team);
+  const authorSlug = byline ? byline.slug : '';
 
   const faqSection = faqs.length > 0 ? `
       <section class="faq-section" style="margin-top:var(--space-2xl);">
@@ -335,9 +355,9 @@ function generateBlogPost(meta, bodyHtml, faqs) {
 
   const fmtDate = (d) => new Date(String(d).slice(0, 10) + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const dateFormatted = fmtDate(meta.date);
-  const authorLink = authorSlug
-    ? `<a href="/about/team.html#${authorSlug}" style="color:var(--cyan);text-decoration:none;">${esc(meta.author)}</a>`
-    : esc(meta.author);
+  const writtenBy = byline
+    ? `Written by <a href="/about/team.html#${authorSlug}" style="color:var(--cyan);text-decoration:none;">${esc(byline.name)}</a>${byline.title ? `, ${esc(byline.title)}` : ''}, ${esc(contentGuard.AGENCY_AUTHOR)}`
+    : `Written by ${esc(contentGuard.AGENCY_AUTHOR)}`;
 
   // Byline honesty rule. "Written by" is a fact we always know. "Reviewed by"
   // is a professional-review claim on a regulated-industry page, so it renders
@@ -353,9 +373,10 @@ function generateBlogPost(meta, bodyHtml, faqs) {
     : esc(reviewerName);
   const hasReview = Boolean(reviewerName && meta.reviewed_date);
 
-  // Reading time
+  // Reading time: the front matter's only in its plain form ("6 min read"),
+  // else computed. It is printed inside the byline.
   const readingMin = calculateReadingTime(bodyHtml);
-  const readingTime = meta.reading_time || `${readingMin} min read`;
+  const readingTime = contentGuard.READING_TIME_RE.test(String(meta.reading_time || '')) ? String(meta.reading_time) : `${readingMin} min read`;
 
   // Table of contents
   const { tocHtml, anchoredBody } = generateTOC(bodyHtml);
@@ -382,14 +403,14 @@ function generateBlogPost(meta, bodyHtml, faqs) {
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": String(meta.title || ''),
-    "author": authorSlug ? {
+    "author": byline ? {
       "@type": "Person",
-      "name": String(meta.author || ''),
-      "jobTitle": String(meta.author_title || 'The Way Agency'),
+      "name": byline.name,
+      ...(byline.title ? { "jobTitle": byline.title } : {}),
       "url": `https://www.thewayagency.com/about/team.html#${authorSlug}`,
     } : {
       "@type": "Organization",
-      "name": String(meta.author || 'The Way Agency'),
+      "name": contentGuard.AGENCY_AUTHOR,
       "url": "https://www.thewayagency.com",
     },
     ...(hasReview ? {
@@ -434,7 +455,7 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   <meta property="og:image:type" content="image/jpeg">
   <meta property="article:published_time" content="${esc(meta.date)}">
   <meta property="article:modified_time" content="${esc(meta.modified || meta.date)}">
-  <meta property="article:author" content="${esc(meta.author)}">
+  <meta property="article:author" content="${esc(byline ? byline.name : contentGuard.AGENCY_AUTHOR)}">
   <meta property="article:section" content="${esc(meta.category || 'insurance')}">
   ${tags.map(t => `<meta property="article:tag" content="${esc(t)}">`).join('\n  ')}
   <meta name="twitter:card" content="summary_large_image">
@@ -475,7 +496,7 @@ ${renderNav()}
   <main id="main">
     <article class="product-content blog-content">
       ${featuredFigure}<div class="blog-meta">
-        <span>${authorSlug ? `Written by ${authorLink}, ${esc(meta.author_title || 'Licensed Agent')}, The Way Agency` : 'Written by The Way Agency'}</span>
+        <span>${writtenBy}</span>
         <span>|</span>${hasReview ? `
         <span>Reviewed by ${reviewerLink}${meta.reviewer_title ? `, ${esc(meta.reviewer_title)}` : ''} on ${esc(fmtDate(meta.reviewed_date))}</span>
         <span>|</span>` : ''}
@@ -778,20 +799,44 @@ if (!fs.existsSync(BLOG_BUILD)) {
 //     a file's front matter are otherwise ignored, however they are spelled,
 //     and every other front-matter value is encoded as data (esc / ldJson),
 //     so no value can print a byline or add a reviewedBy of its own;
-//   - a post whose front matter carries markup ('<' or '>' in a value) or an
-//     unsafe slug is not rendered at all (review-credit.js frontMatterProblem);
-//   - a calendar post renders only from its own file, under its own slug.
+//   - the "Written by" byline is a data/team.json member (their name and
+//     title as team.json gives them) or the agency, never front-matter text;
+//   - a post whose front matter carries markup, an invisible or look-alike
+//     character, an unsafe slug, an author that is not the team member its
+//     author_slug names, or a review or approval credit in any value the page
+//     prints, or whose body states a credit naming the team, the agency or a
+//     licensed agent, is not rendered at all (blog-content-guard.js, through
+//     review-credit.js renderDecision);
+//   - a calendar post renders only from its own file, under its own slug;
+//   - build/blog/ ends up holding only the pages this run rendered and the
+//     frozen hand-made pages (scripts/lib/legacy-blog-pages.js) no markdown
+//     post claims: anything else there, such as a hand-made copy of a post
+//     this run refused to render, is removed.
 const {
   isKnownStatus, isPublishable, isHeld,
 } = require('./lib/calendar-status');
 const {
-  renderDecision, reviewSecret, isReviewerKey, frontMatterProblem,
+  renderDecision, reviewSecret, isReviewerKey, frontMatterProblem, bodyProblem,
 } = require('./lib/review-credit');
+const { LEGACY_BLOG_PAGES } = require('./lib/legacy-blog-pages');
 
 const RENDER_TODAY = new Date().toISOString().split('T')[0]; // YYYY-MM-DD, as the publisher
-const REVIEW_SECRET = reviewSecret(process.env);
+// Cloudflare Pages builds every pushed branch (Preview) with that branch's own
+// code. BLOG_REVIEW_TOKEN_SECRET belongs to the Production environment only:
+// a branch build that has it can print it, and with it sign an approval_mac or
+// credit_mac offline that verifies on main. A Preview build that has it says
+// so loudly and credits no one; the variable must be removed from Preview.
+const PREVIEW_BRANCH = process.env.CF_PAGES === '1' && process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'main'
+  ? process.env.CF_PAGES_BRANCH : null;
+let REVIEW_SECRET = reviewSecret(process.env);
+if (PREVIEW_BRANCH && REVIEW_SECRET) {
+  console.log(`  ! BLOG_REVIEW_TOKEN_SECRET is set in a Cloudflare Pages PREVIEW build (branch ${JSON.stringify(PREVIEW_BRANCH).slice(0, 80)}). `
+    + 'Branch code can read it and forge review credits on main: remove it from the Preview environment (Production only) and rotate it. '
+    + 'This build credits no one.');
+  REVIEW_SECRET = null;
+}
 if (!REVIEW_SECRET) {
-  console.log('  ! BLOG_REVIEW_TOKEN_SECRET is not set (or under 32 characters): no "Reviewed by" credit can be verified, so none is rendered');
+  console.log('  ! BLOG_REVIEW_TOKEN_SECRET is not set (or under 32 characters, or this is a Preview build): no "Reviewed by" credit can be verified, so none is rendered');
 }
 const calendarEntries = (() => {
   const bySlug = new Map();
@@ -820,6 +865,11 @@ const REVIEW_TEAM = (() => {
   } catch { return []; }
 })();
 const posts = [];
+// What this run rendered, the URL slugs markdown files claim (a hand-made page
+// of that name is not kept), and why a post was not rendered.
+const renderedSlugs = new Set();
+const claimedSlugs = new Set();
+const notRendered = new Map();
 
 if (fs.existsSync(BLOG_SRC)) {
   const mdFiles = fs.readdirSync(BLOG_SRC).filter(f => f.endsWith('.md'));
@@ -828,6 +878,8 @@ if (fs.existsSync(BLOG_SRC)) {
     for (const file of mdFiles) {
       const rawBytes = fs.readFileSync(path.join(BLOG_SRC, file));
       const peek = parseFrontMatter(rawBytes.toString('utf8')).meta;
+      claimedSlugs.add(file.slice(0, -'.md'.length));
+      if (typeof peek.slug === 'string' && peek.slug) claimedSlugs.add(peek.slug);
 
       if (!peek.title || !peek.slug) {
         console.log(`  ! Skipping ${file}  -  missing title or slug in front matter`);
@@ -855,14 +907,17 @@ if (fs.existsSync(BLOG_SRC)) {
         console.log(`  ! Skipping ${file}  -  slug mismatch: it is the calendar post "${stem}" but its front matter says slug "${peek.slug}"`);
         continue;
       }
-      const unsafe = calendarEntries.error ? frontMatterProblem(rawBytes.toString('utf8')) : null;
+      const text = rawBytes.toString('utf8');
+      const unsafe = calendarEntries.error ? frontMatterProblem(text, REVIEW_TEAM) : null;
+      const claim = calendarEntries.error && !unsafe ? bodyProblem(text, REVIEW_TEAM) : null;
       const decision = calendarEntries.error
-        ? (unsafe
-          ? { render: false, credit: false, markdown: '', why: `${unsafe} (unsafe_frontmatter)` }
-          : { render: true, credit: false, markdown: rawBytes.toString('utf8'), why: 'calendar unreadable' })
+        ? (unsafe || claim
+          ? { render: false, credit: false, markdown: '', why: unsafe ? `${unsafe} (unsafe_frontmatter)` : `${claim} (review_claim_in_body)` }
+          : { render: true, credit: false, markdown: text, why: 'calendar unreadable' })
         : renderDecision(entry, rawBytes, REVIEW_TEAM, { secret: REVIEW_SECRET, today: RENDER_TODAY, isKnownStatus, isPublishable, isHeld });
       if (!decision.render) {
         console.log(`  ~ Not rendered ${peek.slug}.html  -  ${decision.why}`);
+        notRendered.set(peek.slug, decision.why);
         continue;
       }
 
@@ -883,13 +938,30 @@ if (fs.existsSync(BLOG_SRC)) {
       let bodyHtml = markdownToHtml(cleanBody);
       // Enhance first paragraph with text-lg class (matches hand-crafted posts)
       bodyHtml = bodyHtml.replace(/^<p>/, '<p class="text-lg">');
-      const html = generateBlogPost(meta, bodyHtml, faqs);
+      const html = generateBlogPost(meta, bodyHtml, faqs, { team: REVIEW_TEAM });
 
       fs.writeFileSync(path.join(BLOG_BUILD, `${meta.slug}.html`), html);
+      renderedSlugs.add(meta.slug);
       posts.push(meta);
       console.log(`  ✓ ${meta.slug}.html  -  "${meta.title}"`);
     }
   }
+}
+
+// 1b. build/blog/ holds only what this run rendered, the index, and the frozen
+// hand-made pages that no markdown post claims. scripts/build.js copies the
+// hand-made pages in before this runs (scripts/builders/blog-helpers.js); a
+// copy of one under the name of a post this run did not render (held, in
+// error, not due, unsafe) would otherwise be served there around the gate,
+// and so would a page left from an earlier build or written there by hand.
+for (const file of fs.readdirSync(BLOG_BUILD)) {
+  if (!file.endsWith('.html') || file === 'index.html') continue;
+  const slug = file.slice(0, -'.html'.length);
+  if (renderedSlugs.has(slug)) continue;
+  if (Object.prototype.hasOwnProperty.call(LEGACY_BLOG_PAGES, file) && !claimedSlugs.has(slug)) continue;
+  fs.rmSync(path.join(BLOG_BUILD, file), { force: true });
+  const why = notRendered.get(slug);
+  console.log(`  ~ Removed blog/${file}  -  ${why ? `not rendered (${why})` : 'not rendered by this build and not a frozen hand-made page'}`);
 }
 
 // 2. Generate blog index from content-calendar.json
@@ -1003,7 +1075,9 @@ for (const m of posts) postMetaMap[m.slug] = m;
 
 for (const p of rssPosts) {
   const meta = postMetaMap[p.slug] || {};
-  const author = meta.author || 'The Way Agency';
+  // The same author the page's byline names (a team.json member, or the agency).
+  const byline = contentGuard.bylineAuthor(meta, REVIEW_TEAM);
+  const author = byline ? byline.name : contentGuard.AGENCY_AUTHOR;
   const category = meta.category || '';
   // Read full content for content:encoded if file exists
   let contentEncoded = '';

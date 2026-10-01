@@ -347,7 +347,10 @@ function _buildArticle(context, agency) {
     ? {
         '@type': 'Person',
         name: authorName,
-        jobTitle: context.author_title || 'Licensed Agent',
+        // No invented title: "Licensed Agent" by default credited non-agents
+        // as licensed (sage-server BL-07). generate-blog.js takes the name and
+        // title from data/team.json.
+        ...(context.author_title ? { jobTitle: context.author_title } : {}),
         url: `${SITE_URL}/about/team.html#${context.author_slug}`,
         worksFor: {
           '@type': 'InsuranceAgency',

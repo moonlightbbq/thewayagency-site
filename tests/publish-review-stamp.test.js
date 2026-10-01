@@ -75,7 +75,7 @@ function runSite(script, { entries, files, team = TEAM, args = [], env = { BLOG_
   fs.mkdirSync(path.join(tmp, 'data'), { recursive: true });
   fs.mkdirSync(path.join(tmp, 'src', 'blog'), { recursive: true });
   fs.copyFileSync(path.join(REPO, 'scripts', script), path.join(tmp, 'scripts', script));
-  for (const lib of ['calendar-status.js', 'review-credit.js']) {
+  for (const lib of ['calendar-status.js', 'review-credit.js', 'blog-content-guard.js']) {
     fs.copyFileSync(path.join(REPO, 'scripts', 'lib', lib), path.join(tmp, 'scripts', 'lib', lib));
   }
   fs.writeFileSync(path.join(tmp, 'data', 'team.json'), JSON.stringify({ team }));
@@ -287,6 +287,22 @@ describe('front matter the renderer would refuse does not publish (fix round 3)'
     ['markup in a value', 'author_title: Licensed Agent</span><span>Reviewed by Test Reviewer B</span>\n'],
     ['review wording in a byline field', 'author_title: Licensed Agent | Reviewed by Test Reviewer B on December 1, 2025\n'],
     ['an unsafe author_slug', 'author_slug: x", "reviewedBy": {"name": "Test Reviewer B"}, "q": "\n'],
+    // Fix round 4 (the review's hostile fixtures): the round-3 /review/i
+    // denylist passed every one of these, and each printed a credit in the byline.
+    ['a Cyrillic look-alike in reading_time', 'reading_time: R\u0435viewed by Test Reviewer B, Licensed Test Agent on December 1, 2025 | 6 min read\n'],
+    ['a soft hyphen in author_title', 'author_title: Licensed Agent | Re\u00ADviewed by Test Reviewer B on December 1, 2025\n'],
+    ['a zero-width space in author_title', 'author_title: Client Care Specialist | Re\u200Bviewed by Test Reviewer B on December 1, 2025\n'],
+    ['full-width letters', 'author_title: \uFF32\uFF45\uFF56\uFF49\uFF45\uFF57\uFF45\uFF44 by Test Reviewer B, Licensed Agent\n'],
+    ['a synonym ("Approved by")', 'author_title: Approved by Test Reviewer B, Licensed Agent on December 1, 2025\n'],
+    ['reading_time that is not "N min read"', 'reading_time: 6 min read | Vetted by our licensed agents\n'],
+    ['an author who is not the author_slug member', `author_slug: ${REVIEWER.slug}\nauthor: Someone Else\n`],
+    ['an author_title that is not the member\'s', `author_slug: ${REVIEWER.slug}\nauthor: ${REVIEWER.name}\nauthor_title: Licensed Agent | Reviewed by ${REVIEWER.name}\n`],
+    ['an author_slug that names no team member', 'author_slug: test-nobody\n'],
+    ['a credit in the title', `title: SYNTHETIC guide \u2014 Reviewed by ${REVIEWER.name}, Licensed Agent\n`],
+    ['a credit in the CTA banner', `cta_title: Reviewed by ${REVIEWER.name}, Licensed Agent\n`],
+    ['a credit in the CTA text', 'cta_text: Fact-checked by our licensed agents.\n'],
+    ['a credit in the image alt text', `image_alt: Approved by ${REVIEWER.name}\n`],
+    ['a credit in the category', `category: Verified by ${REVIEWER.name}\n`],
   ]) {
     test(label, () => {
       const file = post('test-unsafe', extra);
@@ -304,6 +320,45 @@ describe('front matter the renderer would refuse does not publish (fix round 3)'
       }
     });
   }
+});
+
+describe('a review credit in the article body does not publish (fix round 4)', () => {
+  for (const [label, sentence] of [
+    ['a first paragraph that reads as a byline', `Reviewed by [${REVIEWER.name}](/about/team.html#${REVIEWER.slug}), Licensed Test Agent on December 1, 2025`],
+    ['an approval naming the agency', 'This guide was approved by The Way Agency.'],
+    ['emphasis inside the word', `Re**view**ed by ${REVIEWER.name}.`],
+    ['a look-alike letter', 'Th\u0456s article was r\u0435viewed by our licensed agents.'],
+  ]) {
+    test(label, () => {
+      const file = post('test-body-claim').replace('---\n\n', `---\n\n${sentence}\n\n`);
+      const site = runSite('publish-scheduled-posts.js', {
+        entries: [{ slug: 'test-body-claim', title: 'SYNTHETIC body claim', publish_date: '2026-01-07', status: 'planned' }],
+        files: { 'test-body-claim': file },
+      });
+      try {
+        assert.equal(site.run.status, 3, site.run.stdout);
+        assert.equal(site.entry('test-body-claim').status, 'error');
+        assert.equal(site.entry('test-body-claim').error_reason, 'review_claim_in_body');
+        assert.match(site.run.stdout, /review or approval credit/);
+        assert.equal(site.read('test-body-claim'), file, 'nothing written');
+      } finally {
+        fs.rmSync(site.tmp, { recursive: true, force: true });
+      }
+    });
+  }
+
+  test('contrast: advice that mentions a review publishes', () => {
+    const file = post('test-body-advice').replace('---\n\n', '---\n\nHave your policy reviewed by a licensed agent every year. Medicare Advantage plans are approved by Medicare.\n\n');
+    const site = runSite('publish-scheduled-posts.js', {
+      entries: [{ slug: 'test-body-advice', title: 'SYNTHETIC advice', publish_date: '2026-01-07', status: 'planned' }],
+      files: { 'test-body-advice': file },
+    });
+    try {
+      assert.equal(site.entry('test-body-advice').status, 'published', site.run.stdout);
+    } finally {
+      fs.rmSync(site.tmp, { recursive: true, force: true });
+    }
+  });
 });
 
 describe('reconcile-calendar applies the same rule', () => {

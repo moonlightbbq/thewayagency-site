@@ -322,3 +322,35 @@ describe('a held post never renders, and is loud when its date arrives', () => {
     assert.match(publish, /case "\$code" in\s+0\) ;;\s+3\)[^\n]*;;\s+\*\) exit "\$code" ;;/);
   });
 });
+
+// ─── Fix round 4: calendar and article values are data in these emails ─────
+//
+// The review and reminder emails go to a licensed reviewer. A title, pillar,
+// reading time, reviewer name or article paragraph used to be interpolated
+// into their HTML as is, so a hostile title could add markup (or a link of its
+// own) to an email asking a licensed agent to approve a post, and a markdown
+// link "[x](@host/y)" was prefixed into https://www.thewayagency.com@host/y,
+// a link to another host.
+describe('review emails encode every calendar and article value (fix round 4)', () => {
+  const hostile = { slug: 'test-hostile-email', title: 'T <img src=x onerror=alert(1)>', pillar: '<script>x</script>', publish_date: '2099-12-31', reading_time: '6 min<i>' };
+  const reviewer = { name: '<b>Eve</b> Test' };
+  const md = '---\ntitle: x\n---\n\nA <b>bold</b> claim & [the site](/personal/home.html?a=1&b=2) [elsewhere](https://example.com/x) [trick](@evil.example/approve).\n';
+
+  test('the review email', () => {
+    const html = formatReviewEmail(hostile, md, reviewer, VECTOR_TOKEN, { sageUrl: SAGE });
+    assert.doesNotMatch(html, /<img|<script|<b>|<i>/);
+    assert.match(html, /T &lt;img src=x onerror=alert\(1\)&gt;/);
+    assert.match(html, /Hi &lt;b&gt;Eve&lt;\/b&gt;,/);
+    assert.match(html, /A &lt;b&gt;bold&lt;\/b&gt; claim &amp; /);
+    assert.ok(html.includes('href="https://www.thewayagency.com/personal/home.html?a=1&amp;b=2"'));
+    assert.ok(html.includes('href="https://example.com/x"'));
+    assert.doesNotMatch(html, /@evil\.example/, 'no link to another host through the site prefix');
+  });
+
+  test('the reminder email', () => {
+    const html = formatReminderEmail(hostile, reviewer, { sageUrl: SAGE, token: VECTOR_TOKEN });
+    assert.doesNotMatch(html, /<img|<script|<b>/);
+    assert.match(html, /T &lt;img src=x onerror=alert\(1\)&gt;/);
+    assert.match(html, /&lt;script&gt;x&lt;\/script&gt;/);
+  });
+});

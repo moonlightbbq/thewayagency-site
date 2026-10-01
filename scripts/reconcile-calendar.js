@@ -50,7 +50,7 @@ const { PUBLISHABLE_STATUSES } = require('./lib/calendar-status');
 // publish at all: the same rule as publish-scheduled-posts.js (sage-server BL-07),
 // including the credit record the renderer checks before it prints "Reviewed by".
 const {
-  approvalCheck, creditCheck, applyReviewCredit, readinessError, reviewSecret, recordCredit, clearApprovalRecord,
+  approvalCheck, creditCheck, applyReviewCredit, readinessError, frontMatterProblem, bodyProblem, reviewSecret, recordCredit, clearApprovalRecord,
 } = require('./lib/review-credit');
 // Verifies SAGE's signature on an approval; without it an approved post is left alone.
 const SECRET = reviewSecret(process.env);
@@ -180,10 +180,11 @@ for (const post of calendar.year1) {
   // yet, but readiness does not depend on the date field.)
   const mdContent = fs.readFileSync(mdFile, 'utf8');
 
-  const notReady = readinessError(mdContent);
+  const notReady = readinessError(mdContent, TEAM);
   if (notReady) {
     const reason = notReady;
-    console.log(`  ! ERROR: "${post.title}" (${post.slug}) - ${{ missing_frontmatter: 'missing title or description in frontmatter', content_too_short: 'content too short (need 200+ words)', unsafe_frontmatter: 'its front matter carries markup or an unsafe slug' }[reason] || reason}`);
+    const detail = reason === 'unsafe_frontmatter' ? frontMatterProblem(mdContent, TEAM) : reason === 'review_claim_in_body' ? bodyProblem(mdContent, TEAM) : null;
+    console.log(`  ! ERROR: "${post.title}" (${post.slug}) - ${{ missing_frontmatter: 'missing title or description in frontmatter', content_too_short: 'content too short (need 200+ words)', unsafe_frontmatter: 'its front matter is unsafe to publish', review_claim_in_body: 'its body states a review or approval credit' }[reason] || reason}${detail ? `: ${detail}` : ''}`);
     if (post.status !== 'error' || post.error_reason !== reason) {
       post.status = 'error';
       post.error_reason = reason;
