@@ -62,10 +62,14 @@ Both are trust signals on a regulated-industry page, so neither is free text
   shows the same warning next to the text when a person approves an AI draft
   or an AI-proposed edit. Only the signed byline is a verified credit.
 - These do stop a post from publishing (`unsafe_frontmatter`): a front-matter
-  value with `<` or `>`, or an invisible, look-alike or full-width character;
-  a `slug`/`author_slug` that is not lower-case letters, digits and hyphens;
-  `date`/`modified` other than YYYY-MM-DD; `reading_time` other than "N min"
-  or "N min read" (or leave it out: it is computed).
+  value with `<` or `>`, or an invisible, control or bidi character
+  (zero-width, soft hyphen, direction marks, line separators; an emoji's own
+  joiners are fine); a `slug`/`author_slug` that is not lower-case letters,
+  digits and hyphens; `date`/`modified` other than YYYY-MM-DD. Arrows, emoji,
+  accents and other scripts are fine.
+- `reading_time` should be "N min" or "N min read", or left out. Any other
+  value is not printed: the page shows the computed time and the build logs a
+  warning.
 
 ## Team members (for `author_slug`, only when that person wrote the post)
 

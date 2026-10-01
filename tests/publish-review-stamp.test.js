@@ -162,6 +162,14 @@ describe('publish-scheduled-posts: silence and a matching approval', () => {
     assert.deepEqual(creditCheck(e, bytes, { secret: SECRET, team: [] }), gone);
     assert.deepEqual(creditCheck(e, bytes, { secret: SECRET, team: [{ ...TEAM[0], license_states: [] }] }), gone);
     assert.deepEqual(creditCheck(e, bytes, { secret: SECRET }), gone, 'no team list, no credit');
+    // Fix round 1 after the scope decision, as approvalCheck: a slug handed to
+    // someone else in data/team.json (another address or name) credits no one,
+    // so an old credit never links to the slug's new holder.
+    const reassigned = { credit: false, reason: 'the reviewer_slug member in data/team.json is no longer the credited reviewer (another address or name)' };
+    assert.deepEqual(creditCheck(e, bytes, { secret: SECRET, team: [{ ...TEAM[0], email: 'test-other-staff@example.com' }] }), reassigned);
+    assert.deepEqual(creditCheck(e, bytes, { secret: SECRET, team: [{ ...TEAM[0], name: 'Test Someone Else' }] }), reassigned);
+    assert.deepEqual(creditCheck(e, bytes, { secret: SECRET, team: [{ ...TEAM[0], email: REVIEWER.email.toUpperCase(), name: ` ${REVIEWER.name.toLowerCase()} ` }] }),
+      { credit: true, reason: 'credited' }, 'case and spacing do not matter (as approvalCheck)');
   });
 });
 
@@ -299,12 +307,14 @@ describe('front matter that breaks a deterministic rule does not publish (fix ro
     ['markup in a value', 'author_title: Licensed Agent</span><span>Reviewed by Test Reviewer B</span>\n'],
     ['an unsafe author_slug', 'author_slug: x", "reviewedBy": {"name": "Test Reviewer B"}, "q": "\n'],
     // Fix round 4 (the review's hostile fixtures): the round-3 /review/i
-    // denylist passed every one of these, and each printed a credit in the byline.
-    ['a Cyrillic look-alike in reading_time', 'reading_time: R\u0435viewed by Test Reviewer B, Licensed Test Agent on December 1, 2025 | 6 min read\n'],
+    // denylist passed every one of these, and each printed a credit in the
+    // byline. Since fix round 1 after the scope decision only the invisible
+    // and bidi ones refuse; the look-alike, full-width and reading_time ones
+    // publish, flagged (below).
     ['a soft hyphen in author_title', 'author_title: Licensed Agent | Re\u00ADviewed by Test Reviewer B on December 1, 2025\n'],
     ['a zero-width space in author_title', 'author_title: Client Care Specialist | Re\u200Bviewed by Test Reviewer B on December 1, 2025\n'],
-    ['full-width letters', 'author_title: \uFF32\uFF45\uFF56\uFF49\uFF45\uFF57\uFF45\uFF44 by Test Reviewer B, Licensed Agent\n'],
-    ['reading_time that is not "N min read"', 'reading_time: 6 min read | Vetted by our licensed agents\n'],
+    ['a bidi override in the title', 'title: SYNTHETIC \u202Eyb deweiveR\n'],
+    ['a line separator in the description', 'description: SYNTHETIC\u2028Reviewed by Test Reviewer B\n'],
   ]) {
     test(label, () => {
       const file = post('test-unsafe', extra);
@@ -338,6 +348,11 @@ describe('review-credit wording in a front-matter value is flagged, never refuse
     ['a credit in the CTA text', 'cta_text: Fact-checked by our licensed agents.\n'],
     ['a credit in the image alt text', `image_alt: Approved by ${REVIEWER.name}\n`],
     ['a credit in the category', `category: Verified by ${REVIEWER.name}\n`],
+    // Refused as characters until fix round 1 after the scope decision: an
+    // arrow in a live title and "reading_time: 7 minutes" took posts down.
+    ['a Cyrillic look-alike in reading_time', 'reading_time: R\u0435viewed by Test Reviewer B, Licensed Test Agent on December 1, 2025 | 6 min read\n'],
+    ['full-width letters', 'author_title: \uFF32\uFF45\uFF56\uFF49\uFF45\uFF57\uFF45\uFF44 by Test Reviewer B, Licensed Agent\n'],
+    ['a reading_time that is not "N min read", with wording', 'reading_time: 6 min read | Vetted by our licensed agents\n'],
   ]) {
     test(label, () => {
       const file = post('test-worded', extra);
@@ -353,6 +368,36 @@ describe('review-credit wording in a front-matter value is flagged, never refuse
         assert.equal(e.credited_sha256, undefined);
         assert.doesNotMatch(site.read('test-worded'), /^\s*(reviewer|reviewer_slug|reviewer_title|reviewed_date)\s*:/im, 'no review lines written');
         assert.match(site.run.stdout, /! test-worded: review-credit wording in the front-matter "[a-z_]+": .*only the signed byline is a verified credit/);
+      } finally {
+        fs.rmSync(site.tmp, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+describe('printable characters and reading_time never stop a post publishing (fix round 1 after the scope decision)', () => {
+  // The character allowlist refused an arrow or an emoji, and the
+  // reading_time rule refused "7 minutes": each took a live post down with
+  // the build still green. The renderer encodes every value and prints the
+  // computed reading time for a value that is not "N min" or "N min read".
+  for (const [label, extra] of [
+    ['an arrow and emoji in the title', 'title: SYNTHETIC term life vs. whole life \u2192 \u26A0\uFE0F \uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67\n'],
+    ['"reading_time: 7 minutes"', 'reading_time: 7 minutes\n'],
+    ['another script and comparison signs in the description', 'description: SYNTHETIC \u65E5\u672C\u8A9E \u2264 $500 \u2713\n'],
+  ]) {
+    test(label, () => {
+      const file = post('test-printable', extra);
+      const site = runSite('publish-scheduled-posts.js', {
+        entries: [{ slug: 'test-printable', title: 'SYNTHETIC printable', publish_date: '2026-01-07', status: 'planned' }],
+        files: { 'test-printable': file },
+      });
+      try {
+        assert.equal(site.run.status, 0, site.run.stdout);
+        const e = site.entry('test-printable');
+        assert.equal(e.status, 'published', site.run.stdout);
+        assert.equal(e.error_reason, undefined);
+        assert.equal(e.credit_mac, undefined);
+        assert.doesNotMatch(site.run.stdout, /review-credit wording/);
       } finally {
         fs.rmSync(site.tmp, { recursive: true, force: true });
       }

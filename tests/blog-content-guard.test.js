@@ -23,7 +23,15 @@
  * the field and the exact text), and only the deterministic rules refuse
  * (frontMatterProblem: markup, characters outside the allowed set, unsafe
  * slugs, dates and reading_time). The fixtures of rounds 4 and 5 stay below:
- * each must still be flagged, and none may refuse a post any more. The
+ * each must still be flagged, and none may refuse a post any more.
+ *
+ * Fix round 1 after the scope decision: an arrow in a live post's title, and
+ * "reading_time: 7 minutes", still took posts off the site. Only characters
+ * that print as nothing or reorder text (control, format, bidi, invisible,
+ * line separators, noncharacters) refuse now; look-alike, full-width,
+ * combining and other printable characters render and, when they spell a
+ * credit, are flagged. reading_time never refuses: the renderer prints the
+ * computed time for a value that is not "N min" or "N min read". The
  * structured credit is pinned elsewhere (render-review-gate.test.js): it
  * prints only from a signed approval.
  *
@@ -63,20 +71,70 @@ function flagged(md, field, text) {
 }
 
 describe('deterministic rules: front matter that does not publish or render', () => {
+  const UNSAFE = /invisible, control or bidi character/;
   for (const [label, md, why] of [
-    ['(a) a Cyrillic look-alike in reading_time', fm(`reading_time: Rеviewed by ${CREDIT} | 6 min read\n`), /character other than/],
-    ['(b) a soft hyphen in author_title', set('author_title', `Licensed Agent | Re­viewed by ${CREDIT}`), /character other than/],
-    ['(b) a zero-width space in author_title', set('author_title', `Client Care Specialist, The Way Agency | Re​viewed by ${CREDIT}`), /character other than/],
-    ['(c) full-width letters', set('author_title', `Ｒｅｖｉｅｗｅｄ by ${CREDIT}`), /character other than/],
-    ['a bidi override', set('title', 'SYNTHETIC ‮yb deweiveR'), /character other than/],
-    ['a combining mark', set('title', 'Réviewed by Test Reviewer A'), /character other than/],
-    ['reading_time that is not "N min read"', fm('reading_time: 6 min read | Approved by Test Reviewer A\n'), /reading_time/],
+    ['(b) a soft hyphen in author_title', set('author_title', `Licensed Agent | Re\u00ADviewed by ${CREDIT}`), UNSAFE],
+    ['(b) a zero-width space in author_title', set('author_title', `Client Care Specialist, The Way Agency | Re\u200Bviewed by ${CREDIT}`), UNSAFE],
+    ['a zero-width joiner between letters (not in an emoji)', set('title', 'SYNTHETIC Re\u200Dviewed guide'), UNSAFE],
+    ['a word joiner', set('title', 'SYNTHETIC\u2060guide'), UNSAFE],
+    ['a byte-order mark inside a value (a leading one is trimmed, as the renderer trims it)', set('title', 'SYNTHETIC\uFEFFguide'), UNSAFE],
+    ['a bidi override', set('title', 'SYNTHETIC \u202Eyb deweiveR'), UNSAFE],
+    ['a bidi isolate', set('title', 'SYNTHETIC \u2067guide\u2069'), UNSAFE],
+    ['a right-to-left mark', set('title', 'SYNTHETIC\u200F guide'), UNSAFE],
+    ['a line separator', set('title', 'SYNTHETIC\u2028guide'), UNSAFE],
+    ['a tab (a control character)', set('title', 'SYNTHETIC\tguide'), UNSAFE],
+    ['a C1 control character', set('title', 'SYNTHETIC\u0085guide'), UNSAFE],
+    ['a noncharacter (invalid in the RSS feed)', set('title', 'SYNTHETIC guide\uFFFF'), UNSAFE],
+    ['a Hangul filler (an invisible letter)', set('title', 'SYNTHETIC\u3164guide'), UNSAFE],
+    ['a variation selector outside an emoji', set('title', 'SYNTHETIC gui\uFE0Fde'), UNSAFE],
+    ['a tag character outside a flag', set('title', 'SYNTHETIC \u{E0041}guide'), UNSAFE],
+    ['an invisible character in a key', fm('ti\u200Btle: SYNTHETIC\n'), UNSAFE],
     ['an unsafe slug', set('slug', 'x/../y'), /lower-case letters/],
     ['an unsafe author_slug', set('author_slug', 'x"y'), /lower-case letters/],
     ['a date that is not YYYY-MM-DD', set('date', 'Reviewed by Test Reviewer A'), /YYYY-MM-DD/],
     ['markup', set('title', 'x</h1><span>Reviewed by Test Reviewer A</span>'), /'<' or '>'/],
   ]) {
     test(label, () => assert.match(String(g.frontMatterProblem(md)), why));
+  }
+});
+
+describe('fix round 1 after the scope decision: printable characters and reading_time never refuse a post', () => {
+  // An arrow appended to a live post's title took it off the site, and so did
+  // "reading_time: 7 minutes": both rules were wording defences, and wording
+  // is now a warning. Only characters that print as nothing or reorder the
+  // text still refuse (above).
+  for (const [label, md] of [
+    ['an arrow in a title', set('title', 'Term life vs. whole life →')],
+    ['an emoji in a title', set('title', 'Storm season 🌪 is here')],
+    ['an emoji with a presentation selector', set('title', '⚠\uFE0F Storm season checklist')],
+    ['an emoji ZWJ sequence', set('title', 'Coverage for the whole 👨\u200D👩\u200D👧 family')],
+    ['an emoji with a skin tone and a joiner', set('title', 'Working from home 🧑🏽\u200D💻')],
+    ['a keycap emoji', set('title', '1\uFE0F\u20E3 First steps')],
+    ['a subdivision flag', set('title', 'Travel to 🏴\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F} Scotland')],
+    ['a regional-indicator flag', set('title', '🇺🇸 Independence Day safety')],
+    ['check marks and comparison signs', set('description', '✓ ✔\uFE0F ✅ Deductibles ≤ $500 or ≥ $1,000 ★')],
+    ['another script', set('description', 'Seguro de auto — 日本語 — Ελληνικά')],
+    ['a no-break space and accents', set('title', 'Café\u00A0owners’ guide')],
+    ['"reading_time: 7 minutes" (the renderer prints the computed time)', fm('reading_time: 7 minutes\n')],
+    ['"reading_time: about 6 min read"', fm('reading_time: about 6 min read\n')],
+  ]) {
+    test(label, () => {
+      assert.equal(g.frontMatterProblem(md), null);
+      assert.deepEqual(warnings(md), []);
+    });
+  }
+
+  // Round 4 refused these as look-alike, full-width or combining characters
+  // that hid a credit from the wording rules. The wording rules fold them,
+  // so each is still flagged, with its exact text; none refuses the post.
+  for (const [label, md, field, text] of [
+    ['(a) a Cyrillic look-alike in reading_time', fm(`reading_time: Rеviewed by ${CREDIT} | 6 min read\n`), 'reading_time', `Rеviewed by ${CREDIT} | 6 min read`],
+    ['(c) full-width letters in author_title', set('author_title', `Ｒｅｖｉｅｗｅｄ by ${CREDIT}`), 'author_title', `Ｒｅｖｉｅｗｅｄ by ${CREDIT}`],
+    ['a combining mark in a title', set('title', 'Réviewed by Test Reviewer A'), 'title', 'Réviewed by Test Reviewer A'],
+    ['mathematical letters in a title', set('title', '𝐑𝐞𝐯𝐢𝐞𝐰𝐞𝐝 by Test Reviewer A'), 'title', '𝐑𝐞𝐯𝐢𝐞𝐰𝐞𝐝 by Test Reviewer A'],
+    ['a credit in reading_time', fm('reading_time: 6 min read | Approved by Test Reviewer A\n'), 'reading_time', '6 min read | Approved by Test Reviewer A'],
+  ]) {
+    test(`${label}: flagged, not refused`, () => flagged(md, field, text));
   }
 });
 

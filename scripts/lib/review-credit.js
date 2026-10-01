@@ -297,8 +297,9 @@ function approvalCheck(post, rawBytes, team, { secret = null } = {}) {
 /**
  * Whether a 'published' entry's "Reviewed by" may render: the publisher
  * credited it after approvalCheck, the file is still the one it committed,
- * and the reviewer is still a licensed data/team.json member (one who left
- * or lost their licences is credited no longer: the page renders uncredited).
+ * and the reviewer is still a licensed data/team.json member with the
+ * credited address and name (one who left, lost their licences, or whose slug
+ * now names someone else is credited no longer: the page renders uncredited).
  * @param {{secret?: string|null, team?: Array}} [opts]  team: data/team.json's
  *   team list; without it no credit renders
  * @returns {{credit: boolean, reason: string}}
@@ -318,15 +319,22 @@ function creditCheck(post, rawBytes, { secret = null, team = null } = {}) {
   if (!member || !Array.isArray(member.license_states) || member.license_states.length === 0) {
     return { credit: false, reason: 'the credited reviewer is no longer a licensed data/team.json member' };
   }
+  // As approvalCheck: the reviewer_slug member must still be the person
+  // credited (their address and name), so a slug handed to someone else in
+  // data/team.json does not keep an old credit linked to its new holder.
+  const key = personNameKey(member.name);
+  if (lower(member.email) !== lower(post.reviewer_email) || !key || personNameKey(post.reviewer) !== key) {
+    return { credit: false, reason: 'the reviewer_slug member in data/team.json is no longer the credited reviewer (another address or name)' };
+  }
   return { credit: true, reason: 'credited' };
 }
 
 /**
  * Why a post's front matter is unsafe to publish or render, or null
  * (scripts/lib/blog-content-guard.js, the same file sage-server's BL-06
- * promote and BL-07 approval check): markup or an invisible, control or
- * look-alike character in a value, an unsafe slug, or a reading_time or date
- * that is not the plain form. Deterministic rules only: wording that reads as
+ * promote and BL-07 approval check): markup or an invisible, control or bidi
+ * character in a value, or an unsafe slug or a date that is not the plain
+ * form. Deterministic rules only: wording that reads as
  * a review credit is a warning (reviewWordingWarnings), never a reason, and so
  * is who the byline names (the renderer prints the data/team.json member
  * author_slug names, or the agency: bylineAuthor), so a team.json edit never

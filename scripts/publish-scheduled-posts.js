@@ -235,8 +235,8 @@ if (errors.length > 0) {
   console.log('');
   console.log('  Calendar status set to "error" with error_reason and error_at.');
   console.log('  missing_*/content_too_short: investigate the sage Hive blog-writer pipeline.');
-  console.log('  unsafe_frontmatter: a front-matter value carries markup or an invisible or look-alike character,');
-  console.log('  or a slug, date or reading_time is not in its plain form. Fix the markdown by hand.');
+  console.log('  unsafe_frontmatter: a front-matter value carries markup or an invisible, control or bidi character,');
+  console.log('  or a slug or date is not in its plain form. Fix the markdown by hand.');
   console.log('  approval_*/approved_bytes_changed: the post changed after its reviewer approved it in SAGE, it was rescheduled,');
   console.log('  the approval is not the byline reviewer\'s, or SAGE did not sign it. It is not published under their name (sage-server BL-07).');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

@@ -354,7 +354,6 @@ describe('front matter cannot print a review claim through a non-review key', ()
     'test-inj-author-slug': withKey('test-inj-author-slug', 'author_slug', LD_INJECTION),
     'test-inj-title': withKey('test-inj-title', 'title', `SYNTHETIC</h1><div class="blog-meta"><span>Reviewed by <a href="/about/team.html#${LICENSED_SLUG}">Test Reviewer C</a></span></div><h1>`),
     'test-inj-description': withKey('test-inj-description', 'description', `d"><meta name="x" content="Reviewed by Test Reviewer C`),
-    'test-inj-reading-time': fm('test-inj-reading-time', 'reading_time: 6 min read | Reviewed by Test Reviewer C on December 1, 2025\n'),
   };
   // Plain text, no markup at all: a byline segment that reads as a credit.
   const PLAIN = withKey('test-inj-plain-title', 'author_title', 'Licensed Agent | Reviewed by Test Reviewer C, Licensed Test Agent on December 1, 2025');
@@ -399,6 +398,31 @@ describe('front matter cannot print a review claim through a non-review key', ()
       assert.equal(e.status, 'published');
       assert.equal(e.credit_mac, undefined);
       assert.ok(warned(pub.stdout, 'test-inj-plain-title'), pub.stdout);
+    } finally {
+      site.done();
+    }
+  });
+
+  test('credit wording in reading_time: rendered and published with the computed reading time, flagged, with no structured credit (fix round 1 after the scope decision)', () => {
+    // Round 4 refused a reading_time that was not "N min read". The renderer
+    // never prints one: it prints the time it computes, and logs the value.
+    const slug = 'test-inj-reading-time';
+    const site = makeSite({ year1: [planned(slug)], files: { [slug]: fm(slug, 'reading_time: 6 min read | Reviewed by Test Reviewer C on December 1, 2025\n') } });
+    try {
+      const gen = site.run('generate-blog.js');
+      assert.equal(gen.status, 0, gen.stdout + gen.stderr);
+      const html = site.page(slug);
+      assert.ok(html, gen.stdout);
+      assert.ok(!structuredCredit(html));
+      assert.ok(!html.includes('Reviewed by'), 'the front-matter reading_time is never printed');
+      assert.match(bylineOf(html), /<span>\d+ min read<\/span>/);
+      assert.ok(warned(gen.stdout, slug), gen.stdout);
+      assert.match(gen.stdout, new RegExp(`! ${slug}: the front-matter reading_time .* is not "N min" or "N min read"; the page prints the computed reading time instead`));
+      const pub = site.run('publish-scheduled-posts.js');
+      assert.equal(pub.status, 0, pub.stdout + pub.stderr);
+      const e = site.calendar().year1.find((p) => p.slug === slug);
+      assert.equal(e.status, 'published');
+      assert.equal(e.credit_mac, undefined);
     } finally {
       site.done();
     }
@@ -541,8 +565,10 @@ describe('fix round 3: slug binding, unverifiable approvals, rescheduling and wi
 // other printed value (title, CTA, alt text, ...) and the article body
 // unchecked, and a hand-made src/pages/blog/<slug>.html copied into the build
 // around a hold. The byline now prints a data/team.json member or the agency,
-// the deterministic front-matter rules refuse look-alike and invisible
-// characters, wording in every printed value and the body is flagged
+// the deterministic front-matter rules refuse invisible and bidi characters
+// (look-alike and full-width ones too, until fix round 1 after the scope
+// decision: now they are folded and flagged), wording in every printed value
+// and the body is flagged
 // (scripts/lib/blog-content-guard.js: a warning since the scope decision
 // after round 5; the post renders as written with no structured credit), and
 // build/blog/ keeps only what the gate rendered and the frozen hand-made pages.
@@ -551,15 +577,20 @@ describe('fix round 4: no forged credit through the byline, any printed value or
   const fm = (slug, lines = '', bodyText = body) => `---\ntitle: SYNTHETIC ${slug}\nslug: ${slug}\ndescription: SYNTHETIC description\nauthor: ${AUTHOR.name}\nauthor_slug: ${AUTHOR.slug}\nauthor_title: ${AUTHOR.title}\ndate: 2026-01-07\n${lines}---\n\n${bodyText}\n`;
   const withKey = (slug, key, value) => fm(slug).replace(new RegExp(`^${key}: .*$`, 'm'), `${key}: ${value}`);
   const credit = `${REVIEWER.name}, Licensed Test Agent on December 1, 2025`;
-  // Refused by a deterministic rule: a character outside the allowed set.
+  // Refused by a deterministic rule: an invisible or bidi character.
   const hostile = {
-    'test-r4-cyrillic': fm('test-r4-cyrillic', `reading_time: Rеviewed by ${credit} | 6 min read\n`),
-    'test-r4-shy': withKey('test-r4-shy', 'author_title', `Licensed Agent | Re­viewed by ${credit}`),
-    'test-r4-zwsp': withKey('test-r4-zwsp', 'author_title', `Client Care Specialist, The Way Agency | Re​viewed by ${credit}`),
-    'test-r4-fullwidth': withKey('test-r4-fullwidth', 'author_title', `Ｒｅｖｉｅｗｅｄ by ${credit}`),
+    'test-r4-shy': withKey('test-r4-shy', 'author_title', `Licensed Agent | Re\u00ADviewed by ${credit}`),
+    'test-r4-zwsp': withKey('test-r4-zwsp', 'author_title', `Client Care Specialist, The Way Agency | Re\u200Bviewed by ${credit}`),
+    'test-r4-bidi': withKey('test-r4-bidi', 'title', 'SYNTHETIC \u202Eyb deweiveR'),
   };
   // Plain-text wording: flagged, rendered as written, no structured credit.
+  // The look-alike and full-width fixtures were refused as characters until
+  // fix round 1 after the scope decision (an arrow in a live title took the
+  // post down); the wording rules fold them, so they are flagged like the rest.
   const worded = {
+    'test-r4-cyrillic': fm('test-r4-cyrillic', `reading_time: R\u0435viewed by ${credit} | 6 min read\n`),
+    'test-r4-fullwidth': withKey('test-r4-fullwidth', 'author_title', `\uFF32\uFF45\uFF56\uFF49\uFF45\uFF57\uFF45\uFF44 by ${credit}`),
+    'test-r4-fullwidth-title': withKey('test-r4-fullwidth-title', 'title', `SYNTHETIC \uFF32\uFF45\uFF56\uFF49\uFF45\uFF57\uFF45\uFF44 by ${REVIEWER.name}`),
     'test-r4-approved': withKey('test-r4-approved', 'author_title', `Approved by ${credit}`),
     'test-r4-author': withKey('test-r4-author', 'author', `${AUTHOR.name} | Reviewed by ${REVIEWER.name}`),
     'test-r4-title': withKey('test-r4-title', 'title', `SYNTHETIC guide — Reviewed by ${REVIEWER.name}, Licensed Agent`),
@@ -571,7 +602,7 @@ describe('fix round 4: no forged credit through the byline, any printed value or
   const planned = (slug, status) => ({ slug, title: `SYNTHETIC ${slug}`, publish_date: '2026-01-07', status, ...assigned });
 
   for (const [label, status] of [['planned and due', 'planned'], ['in review and due', 'in-review'], ['not on the calendar', null]]) {
-    test(`${label}: the look-alike and invisible characters do not render; the plain wording renders, flagged, with no structured credit`, () => {
+    test(`${label}: the invisible and bidi characters do not render; the wording renders, flagged, with no structured credit`, () => {
       const files = { ...hostile, ...worded };
       const site = makeSite({ year1: status ? Object.keys(files).map((slug) => planned(slug, status)) : [], files });
       try {
@@ -645,6 +676,47 @@ describe('fix round 4: no forged credit through the byline, any printed value or
       site.done();
     }
   });
+});
+
+describe('fix round 1 after the scope decision: printable characters and reading_time never take a post down', () => {
+  // The review appended " \u2192" to a live post's title, and set
+  // "reading_time: 7 minutes" on another: each was "Not rendered" with the
+  // build still exiting 0, so the live URL would have dropped off the site.
+  const fm = (slug, lines = '') => `---\ntitle: SYNTHETIC ${slug}\nslug: ${slug}\ndescription: SYNTHETIC description\nauthor: The Way Agency\ndate: 2026-01-07\n${lines}---\n\n${body}\n`;
+  const TITLE = 'SYNTHETIC term life vs. whole life \u2192 \u26A0\uFE0F \uD83D\uDC68\u200D\uD83D\uDC69\u200D\uD83D\uDC67 \u65E5\u672C \u2264 $500';
+  const files = {
+    'test-fr1-arrow': fm('test-fr1-arrow').replace('title: SYNTHETIC test-fr1-arrow', `title: ${TITLE}`),
+    'test-fr1-minutes': fm('test-fr1-minutes', 'reading_time: 7 minutes\n'),
+  };
+  for (const [label, status] of [['published long ago', 'published'], ['planned and due', 'planned'], ['not on the calendar', null]]) {
+    test(`${label}: both render; the title prints as written, the computed reading time is printed and the value logged`, () => {
+      const entry = (slug) => ({ slug, title: `SYNTHETIC ${slug}`, publish_date: '2026-01-07', status });
+      const site = makeSite({ year1: status ? Object.keys(files).map(entry) : [], files });
+      try {
+        const gen = site.run('generate-blog.js');
+        assert.equal(gen.status, 0, gen.stdout + gen.stderr);
+        assert.doesNotMatch(gen.stdout, /Not rendered test-fr1/);
+        const arrow = site.page('test-fr1-arrow');
+        assert.ok(arrow, gen.stdout);
+        assert.ok(arrow.includes(`<h1 class="hero__title">${TITLE}</h1>`), 'the title prints as written');
+        assert.equal(ldBlocks(arrow)[0].headline, TITLE);
+        const minutes = site.page('test-fr1-minutes');
+        assert.ok(minutes, gen.stdout);
+        assert.match(bylineOf(minutes), /<span>\d+ min read<\/span>/);
+        assert.ok(!minutes.includes('7 minutes'), 'a reading_time that is not "N min read" is never printed');
+        assert.match(gen.stdout, /! test-fr1-minutes: the front-matter reading_time "7 minutes" is not "N min" or "N min read"; the page prints the computed reading time instead/);
+        assert.doesNotMatch(gen.stdout, /review-credit wording/);
+        for (const html of [arrow, minutes]) assert.ok(!structuredCredit(html));
+        if (status !== 'planned') {
+          // The feed carries the title as written (a planned entry's card is the calendar's title).
+          const feed = fs.readFileSync(path.join(site.tmp, 'build', 'blog', 'feed.xml'), 'utf8');
+          assert.ok(!/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/.test(feed), 'the feed holds only XML characters');
+        }
+      } finally {
+        site.done();
+      }
+    });
+  }
 });
 
 describe('fix round 4: the template prints the byline from team.json, whatever the front matter says (behind the gate)', () => {

@@ -818,10 +818,13 @@ if (!fs.existsSync(BLOG_BUILD)) {
 //     so no value can print a byline or add a reviewedBy of its own;
 //   - the "Written by" byline is a data/team.json member (their name and
 //     title as team.json gives them) or the agency, never front-matter text;
-//   - a post whose front matter carries markup, an invisible or look-alike
-//     character, an unsafe slug, or a date or reading_time that is not its
-//     plain form is not rendered at all (blog-content-guard.js, through
-//     review-credit.js renderDecision): deterministic rules only;
+//   - a post whose front matter carries markup, an invisible, control or
+//     bidi character, an unsafe slug, or a date that is not its plain form
+//     is not rendered at all (blog-content-guard.js, through review-credit.js
+//     renderDecision): deterministic rules only. Any other printable
+//     character (an arrow, an emoji, another script) renders, encoded; a
+//     reading_time that is not "N min" or "N min read" is logged and the
+//     computed time is printed instead;
 //   - wording that reads as a review or approval credit (in any front-matter
 //     value the page prints, in the body as the page prints it, or in the
 //     text this run actually rendered) is logged as a warning and the post
@@ -990,6 +993,12 @@ if (fs.existsSync(BLOG_SRC)) {
       if (bylineIssue) {
         const printedAuthor = contentGuard.bylineAuthor(meta, REVIEW_TEAM);
         console.log(`  ! ${meta.slug}: ${bylineIssue}; the byline prints ${printedAuthor ? `${printedAuthor.name} as data/team.json gives them` : contentGuard.AGENCY_AUTHOR}`);
+      }
+      // A reading_time that is not "N min" or "N min read" is not printed: the
+      // page prints the computed time (generateBlogPost). The post renders;
+      // say so, so the front matter can be brought in line.
+      if (meta.reading_time && !contentGuard.READING_TIME_RE.test(String(meta.reading_time))) {
+        console.log(`  ! ${meta.slug}: the front-matter reading_time ${JSON.stringify(String(meta.reading_time).slice(0, 80))} is not "N min" or "N min read"; the page prints the computed reading time instead`);
       }
       const html = generateBlogPost(meta, bodyHtml, faqs, { team: REVIEW_TEAM });
 

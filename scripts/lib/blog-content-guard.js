@@ -30,15 +30,25 @@
  *                   approves it (bylineProblem; sage-server blog-publication.js)
  *   Every front-matter value (frontMatterProblem)
  *     - no '<' or '>' (markup);
- *     - only printable ASCII, Latin-1 and Latin Extended-A letters, general
- *       punctuation, currency signs and the trade mark sign: nothing invisible
- *       (soft hyphen, zero-width and bidi characters), no control characters,
- *       no combining marks, no other scripts' look-alike letters, no
- *       full-width or mathematical letters;
+ *     - no character that prints as nothing or changes how the text around
+ *       it reads (UNSAFE_CHAR): control characters, format characters (soft
+ *       hyphen, zero-width characters, bidi marks, embeddings, overrides and
+ *       isolates, the byte-order mark, tag characters), other invisible
+ *       characters (Hangul fillers, variation selectors), U+2028/U+2029, lone
+ *       surrogates and noncharacters (which also make the RSS feed invalid
+ *       XML). An emoji's own joiners, presentation selectors, keycap and
+ *       flag tags are part of the emoji and allowed. Every other printable
+ *       character is allowed: letters of any script, accents, arrows,
+ *       symbols, emoji. The renderer encodes every value; look-alike and
+ *       full-width letters matter only to the wording warnings, which fold
+ *       them (fix round 1 after the scope decision: an arrow in a title took
+ *       a live post down);
  *     - slug, author_slug and reviewer_slug are lower-case letters, digits
  *       and hyphens;
- *     - date and modified are YYYY-MM-DD; reading_time is "<1-3 digits> min"
- *       or "<1-3 digits> min read", or absent (then it is computed).
+ *     - date and modified are YYYY-MM-DD.
+ *   reading_time is not a rule: the renderer prints it only when it is
+ *     "<1-3 digits> min" or "<1-3 digits> min read" (READING_TIME_RE), and
+ *     the time it computes otherwise (it logs that it did).
  *
  * WORDING: a warning, never a refusal (reviewWordingWarnings).
  *   Free text can always say a review happened, and every tighter wording
@@ -106,15 +116,26 @@ const DATE_KEYS = Object.freeze(['date', 'modified']);
 const REVIEW_KEYS = Object.freeze(['reviewer', 'reviewer_slug', 'reviewer_title', 'reviewed_date', 'reviewed_by']);
 const AGENCY_AUTHOR = 'The Way Agency';
 
-// Every character a front-matter key or value may contain. Printable ASCII;
-// Latin-1 (U+00A0-U+00FF, without the soft hyphen U+00AD) and Latin
-// Extended-A (U+0100-U+017F) letters and symbols; general punctuation
-// U+2010-U+2027 and U+2030-U+205E (dashes, quotes, bullets, the ellipsis,
-// primes; it excludes the zero-width and bidi characters U+200B-U+200F and
-// U+202A-U+202E, the line separators U+2028/U+2029 and U+205F onwards);
-// currency signs; the trade mark sign. Nothing else: the live posts use
-// ASCII and the em dash.
-const FM_ALLOWED = /^[\x20-\x7E\u00A0-\u00AC\u00AE-\u017F\u2010-\u2027\u2030-\u205E\u20A0-\u20BF\u2122]*$/;
+// A character no front-matter key or value may contain: one that prints as
+// nothing, or changes how the text around it reads, or breaks a sink
+// (see the header). Control (Cc), format (Cf: soft hyphen, zero-width
+// characters, bidi marks, embeddings, overrides and isolates, the BOM, tag
+// characters), surrogate (Cs), line and paragraph separators (Zl, Zp), the
+// other default-ignorable characters (Hangul fillers, variation selectors,
+// the combining grapheme joiner) and noncharacters (U+FFFE, U+FFFF, ...;
+// not valid in XML). Everything else is printable and allowed.
+const UNSAFE_CHAR = /[\p{Cc}\p{Cf}\p{Cs}\p{Zl}\p{Zp}\p{Default_Ignorable_Code_Point}\p{Noncharacter_Code_Point}]/u;
+// An emoji, with the zero-width joiners (U+200D), presentation selectors
+// (U+FE0E, U+FE0F), skin tones, keycap (U+20E3) and subdivision-flag tags
+// that are part of it: a warning sign with U+FE0F, a family of three people
+// joined by U+200D, a digit with U+FE0F U+20E3. Removed before UNSAFE_CHAR is
+// tested, so only a joiner, selector or tag outside an emoji is refused.
+const EMOJI_SEQUENCE = /[#*0-9]\uFE0F?\u20E3|\p{Extended_Pictographic}[\uFE0E\uFE0F]?\p{Emoji_Modifier}?(?:[\u{E0020}-\u{E007E}]+\u{E007F})?(?:\u200D\p{Extended_Pictographic}[\uFE0E\uFE0F]?\p{Emoji_Modifier}?)*/gu;
+
+/** Whether `s` carries a character outside an emoji that UNSAFE_CHAR refuses. */
+function hasUnsafeChar(s) {
+  return UNSAFE_CHAR.test(String(s === undefined || s === null ? '' : s).replace(EMOJI_SEQUENCE, ''));
+}
 
 // Look-alike letters (after compatibility folding, accent stripping and
 // lower-casing) and the Latin letters they pass for. Cyrillic, Greek,
@@ -490,11 +511,12 @@ const _show = (key) => JSON.stringify(String(key).replace(/[^\x20-\x7E]/g, '?').
 
 /**
  * Why a post's front matter must not publish or render, or null: one of the
- * deterministic rules (markup, a character outside the allowed set, a slug,
- * date or reading_time that is not its plain form; see the header). Wording
- * is never a reason (reviewWordingWarnings), and neither is who the byline
- * names (bylineAuthor, bylineProblem): a data/team.json edit must never take
- * a live post off the site.
+ * deterministic rules (markup, an invisible, control or bidi character, a
+ * slug or date that is not its plain form; see the header). Wording is never
+ * a reason (reviewWordingWarnings), and neither is who the byline names
+ * (bylineAuthor, bylineProblem): a data/team.json edit must never take a live
+ * post off the site. Nor is a reading_time that is not "N min" or "N min
+ * read": the renderer prints the computed time instead.
  * @param {string} md  the markdown file
  */
 function frontMatterProblem(md) {
@@ -502,12 +524,11 @@ function frontMatterProblem(md) {
   if (!fm) return null;
   for (const { key, value } of fm.lines) {
     if (/[<>]/.test(key) || /[<>]/.test(value)) return `the front-matter line ${_show(key)} carries '<' or '>'`;
-    if (!FM_ALLOWED.test(key) || !FM_ALLOWED.test(value)) {
-      return `the front-matter line ${_show(key)} carries a character other than letters, digits and common punctuation (an invisible, control, combining or look-alike character)`;
+    if (hasUnsafeChar(key) || hasUnsafeChar(value)) {
+      return `the front-matter line ${_show(key)} carries an invisible, control or bidi character (a zero-width, soft-hyphen, direction or line-separator character, or a control code)`;
     }
     if (SLUG_KEYS.includes(key) && !SAFE_SLUG_RE.test(value)) return `the front-matter ${key} is not lower-case letters, digits and hyphens`;
     if (DATE_KEYS.includes(key) && !DATE_RE.test(value)) return `the front-matter ${key} is not a YYYY-MM-DD date`;
-    if (key === 'reading_time' && !READING_TIME_RE.test(value)) return 'the front-matter reading_time is not "<minutes> min" or "<minutes> min read"';
   }
   return null;
 }
@@ -612,7 +633,8 @@ module.exports = {
   SLUG_KEYS,
   REVIEW_KEYS,
   AGENCY_AUTHOR,
-  FM_ALLOWED,
+  UNSAFE_CHAR,
+  hasUnsafeChar,
   claimFold,
   reviewClaimIn,
   teamMember,
