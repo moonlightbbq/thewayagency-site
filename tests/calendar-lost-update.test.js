@@ -106,6 +106,75 @@ describe('saveCalendar does not clobber a concurrent writer', () => {
     assert.equal(after.reviewer, 'Sheilia Royal');
   });
 
+  test('an approval withdrawn after our read is not brought back by our stale copy', () => {
+    // Our copy has a signed approval; the review flow then withdraws it on
+    // disk (status back to in-review, the record deleted). The deletion wins.
+    const seeded = baseCalendar();
+    Object.assign(seeded.year1[0], { status: 'approved', approved_by: 'Test Reviewer', approved_sha256: 'a'.repeat(64), approval_mac: 'm'.repeat(43) });
+    write(seeded);
+    const mine = q.loadCalendar();
+    const theirs = read();
+    theirs.year1[0].status = 'in-review';
+    for (const k of ['approved_by', 'approved_sha256', 'approval_mac']) delete theirs.year1[0][k];
+    write(theirs);
+    q.saveCalendar(mine);
+
+    const after = read().year1.find(p => p.slug === 'how-to-compare-insurance-quotes');
+    assert.equal(after.status, 'in-review');
+    assert.equal(after.approval_mac, undefined, 'a withdrawn approval came back');
+    assert.equal(after.approved_sha256, undefined);
+    assert.equal(after.approved_by, undefined);
+  });
+
+  // BL-07 fix: MAC v2 signs approved_publish_date. The guard restored every
+  // other approval field from disk but not that one, so a real approval saved
+  // over by a stale queue copy lost it, no longer verified, and the publisher
+  // put the post in 'error' (approval_unsigned).
+  test('the guard owns every field of the approval and credit record (review-credit.js APPROVAL_RECORD_FIELDS)', () => {
+    const { APPROVAL_RECORD_FIELDS } = require('../scripts/lib/review-credit');
+    for (const f of APPROVAL_RECORD_FIELDS) assert.ok(q.REVIEW_OWNED_FIELDS.includes(f), `${f} is not owned by the review flow`);
+    assert.ok(q.REVIEW_OWNED_FIELDS.includes('approved_publish_date'));
+  });
+
+  test('a signed approval written after our read survives our write whole, approved_publish_date included, and still verifies', () => {
+    const { signApproval, approvalSigned } = require('../scripts/lib/review-credit');
+    const secret = 'test-vector-secret-test-vector-secret';
+    const mine = q.loadCalendar();
+    const theirs = read();
+    const approval = {
+      status: 'approved', reviewer: 'Test Reviewer A', reviewer_email: 'test-reviewer-a@example.com', reviewer_slug: 'test-reviewer-a',
+      approved_by: 'Test Reviewer A', approved_by_email: 'test-reviewer-a@example.com', approved_date: '2026-09-10',
+      approved_sha256: 'a'.repeat(64), approved_publish_date: '2026-09-16',
+    };
+    Object.assign(theirs.year1[0], approval);
+    theirs.year1[0].approval_mac = signApproval(theirs.year1[0], secret);
+    write(theirs);
+    q.saveCalendar(mine);
+
+    const after = read().year1.find(p => p.slug === 'how-to-compare-insurance-quotes');
+    assert.equal(after.approved_publish_date, '2026-09-16', 'the signed publish date was dropped');
+    assert.equal(after.approval_mac, theirs.year1[0].approval_mac);
+    assert.ok(approvalSigned(after, secret), 'the approval no longer verifies after the save');
+  });
+
+  test('a withdrawal after our read deletes approved_publish_date too (no partial record left behind)', () => {
+    const seeded = baseCalendar();
+    Object.assign(seeded.year1[0], {
+      status: 'approved', approved_by: 'Test Reviewer A', approved_sha256: 'a'.repeat(64), approved_publish_date: '2026-09-16', approval_mac: 'm'.repeat(43),
+    });
+    write(seeded);
+    const mine = q.loadCalendar();
+    const theirs = read();
+    theirs.year1[0].status = 'in-review';
+    for (const k of ['approved_by', 'approved_sha256', 'approved_publish_date', 'approval_mac']) delete theirs.year1[0][k];
+    write(theirs);
+    q.saveCalendar(mine);
+
+    const after = read().year1.find(p => p.slug === 'how-to-compare-insurance-quotes');
+    assert.equal(after.status, 'in-review');
+    for (const k of ['approved_by', 'approved_sha256', 'approved_publish_date', 'approval_mac']) assert.equal(after[k], undefined, `${k} came back`);
+  });
+
   test('an entry added after our read is carried over, not dropped', () => {
     const mine = q.loadCalendar();
     const theirs = read();

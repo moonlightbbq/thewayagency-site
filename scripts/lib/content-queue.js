@@ -19,6 +19,8 @@
  */
 const fs = require('fs');
 const path = require('path');
+const { isHeld, isKnownStatus } = require('./calendar-status');
+const { APPROVAL_RECORD_FIELDS } = require('./review-credit');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 // Overridable for the same reason loadBacklog takes a path: the lost-update
@@ -83,13 +85,21 @@ function publishDatesWithin(fromYmd, days) {
   return out;
 }
 
-// Fields the REVIEW flow owns. send-review-emails.js writes them; the queue
-// never sets them and must never clear them.
-const REVIEW_OWNED_FIELDS = [
+// Fields the REVIEW flow owns. send-review-emails.js, SAGE's approval
+// (sage-server BL-07: approved_* and its signature approval_mac) and the
+// publisher (the credit record) write them; the queue never sets them and must
+// never clear them. Dropping approval_mac or the credit record would silently
+// take a reviewer's earned byline off the post, and dropping one field the
+// MAC signs (approved_publish_date, since MAC v2) turns a real approval into
+// an unsigned one ('error', approval_unsigned). The approval and credit
+// record is review-credit.js APPROVAL_RECORD_FIELDS itself, so a field added
+// to the signed record is owned here the moment it exists.
+const REVIEW_OWNED_FIELDS = Object.freeze([
   'status', 'reviewer', 'reviewer_email', 'reviewer_slug', 'reviewer_title',
   'review_sent_date', 'review_send_error', 'reminder_sent',
-  'approved_date', 'reviewed_date',
-];
+  ...APPROVAL_RECORD_FIELDS,
+  'reviewed_date',
+]);
 
 // The exact bytes loadCalendar() last read, so saveCalendar() can tell whether
 // another writer got there first. See the lost-update note on saveCalendar.
@@ -174,9 +184,12 @@ function saveCalendar(cal) {
         const hit = diskBySlug.get(entry.slug);
         if (!hit) continue;
         for (const field of REVIEW_OWNED_FIELDS) {
-          if (hit.entry[field] === undefined) continue;
           if (entry[field] === hit.entry[field]) continue;
-          entry[field] = hit.entry[field];
+          // The review flow's version wins, including a field it REMOVED: an
+          // approval withdrawn on disk (approved_*, approval_mac deleted) must
+          // not come back from this job's stale copy.
+          if (hit.entry[field] === undefined) delete entry[field];
+          else entry[field] = hit.entry[field];
           if (field === 'reviewer') restored.push(`${entry.slug} -> ${hit.entry[field]}`);
         }
       }
@@ -681,7 +694,7 @@ function fillSlots(cal, backlog, today, windowMonths, opts = {}) {
 }
 
 /**
- * Evaluate the five queue invariants. Pure: takes the data and the clock,
+ * Evaluate the queue invariants (I1-I7). Pure: takes the data and the clock,
  * returns findings. `opts.hasMarkdown` is injectable so the rules can be
  * tested against fixtures rather than whatever happens to be on disk.
  *
@@ -753,6 +766,28 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
     add('I5', `approved backlog is ${approved.length}, below the floor of ${MIN_APPROVED_BACKLOG} (${MIN_APPROVED_BACKLOG / 2} weeks at 2x/week)`);
   }
 
+  // I6 - a post on a reviewer's change-request hold has reached its date. A
+  // hold never publishes (scripts/lib/calendar-status.js HOLD_STATUSES) and the
+  // publisher skips it without an error, so this is what makes the empty slot
+  // loud: it clears when the reviewer approves the edited version SAGE
+  // proposed, or the content owner releases the hold on the calendar.
+  for (const p of posts.filter(x => isHeld(x.status) && x.publish_date && daysBetween(today, x.publish_date) <= 0)) {
+    add('I6', `"${p.slug}" was due ${p.publish_date} but is on hold (${p.status}) for its reviewer's changes; it publishes only after the reviewer approves the edit or the hold is released`);
+  }
+
+  // I7 - a post the publisher refused: status 'error', with error_reason set by
+  // publish-scheduled-posts.js or reconcile-calendar.js (missing or unready
+  // markdown, or an approval whose bytes, byline or SAGE signature no longer
+  // match: scripts/lib/review-credit.js). Also a status neither repo knows,
+  // which the publisher only annotates. Neither publishes, and the renderer
+  // does not render either (scripts/generate-blog.js). The publish step
+  // commits and carries on (exit 3), so this is what keeps the workflow red
+  // until someone fixes the entry.
+  for (const p of posts.filter(x => x.status === 'error' || (x.status && !isKnownStatus(x.status)))) {
+    const why = x => (x.status === 'error' ? `is in error (${x.error_reason || 'no reason recorded'})` : `has unrecognised status "${x.status}"`);
+    add('I7', `"${p.slug}" (due ${p.publish_date || 'undated'}) ${why(p)} and is not publishing`);
+  }
+
   return {
     violations,
     stats: {
@@ -779,6 +814,6 @@ module.exports = {
   HORIZON_DAYS, LOCK_DAYS, MIN_LOCK_LEAD_DAYS, MARKDOWN_DUE_DAYS, MIN_APPROVED_BACKLOG, PUBLISH_WEEKDAYS,
   asDate, toYmd, daysBetween, isPublishDay, publishDatesWithin,
   loadAnchors, anchorForWindow, anchorRange, eligibilityOn, loadWindowMonths,
-  loadCalendar, loadBacklog, saveCalendar,
+  loadCalendar, loadBacklog, saveCalendar, REVIEW_OWNED_FIELDS,
   occupiedDates, hasMarkdown, approvedCandidates, isEligibleOn,
 };

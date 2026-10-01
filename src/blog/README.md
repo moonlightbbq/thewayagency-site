@@ -16,9 +16,8 @@
 title: Your Post Title Here
 slug: your-post-slug-here
 description: A 150-160 character SEO description for search results.
-author: Sheilia Royal
-author_title: Agency Principal / Licensed Agent
-author_slug: sheilia-royal
+author: The Way Agency
+author_title: Independent Insurance Agency
 date: 2026-03-15
 modified: 2026-03-20
 reading_time: 5 min read
@@ -34,7 +33,45 @@ image above the byline and uses it for og:image/twitter:image (1536x1024
 expected); without them the social logo is used. The hive pipeline generates
 these automatically for AI-drafted posts.
 
-## Available Authors
+## Who the byline names
+
+The byline says who wrote the post and, only when it is true, who reviewed it.
+Both are trust signals on a regulated-industry page, so neither is free text
+(sage-server BL-07; `scripts/lib/blog-content-guard.js`):
+
+- **"Written by"** is the agency ("Written by The Way Agency") unless a team
+  member actually wrote the post. Then add `author_slug` with their slug from
+  `data/team.json`; the page prints their name and title as `data/team.json`
+  gives them, so a new title shows on all their posts. `author` and
+  `author_title` are never printed; the build warns when they differ from
+  `data/team.json`. A slug that names no member (someone who left) prints
+  "Written by The Way Agency"; the post stays up. An AI-drafted post is written
+  by the agency: do not put a person's name on text they did not write (SAGE
+  refuses to promote an AI draft with an `author_slug` unless that person
+  approves it).
+- **"Reviewed by"** is never written here. The byline's "Reviewed by" (and the
+  JSON-LD reviewedBy) renders only for the assigned reviewer's approval in SAGE
+  of the exact file: the reviewer clicks "Review and approve in SAGE" in the
+  review email, and SAGE signs the approval. Review lines typed into the front
+  matter are ignored.
+- **Do not claim a review in the text either.** Don't write "Reviewed by ...",
+  "Checked by our licensed agents" and the like in a title, description, CTA,
+  alt text or the article. Code cannot reliably tell such a claim from advice
+  ("Ask your agent to check your coverage"), so it does not refuse the post:
+  the build logs a warning naming the text ("review-credit wording"), and SAGE
+  shows the same warning next to the text when a person approves an AI draft
+  or an AI-proposed edit. Only the signed byline is a verified credit.
+- These do stop a post from publishing (`unsafe_frontmatter`): a front-matter
+  value with `<` or `>`, or an invisible, control or bidi character
+  (zero-width, soft hyphen, direction marks, line separators; an emoji's own
+  joiners are fine); a `slug`/`author_slug` that is not lower-case letters,
+  digits and hyphens; `date`/`modified` other than YYYY-MM-DD. Arrows, emoji,
+  accents and other scripts are fine.
+- `reading_time` should be "N min" or "N min read", or left out. Any other
+  value is not printed: the page shows the computed time and the build logs a
+  warning.
+
+## Team members (for `author_slug`, only when that person wrote the post)
 
 | Name | Title | Slug |
 |------|-------|------|
@@ -42,6 +79,8 @@ these automatically for AI-drafted posts.
 | Audrey Lillpop | Licensed Agent | audrey-lillpop |
 | Kelly McCallister | Client Care Specialist | kelly-mccallister |
 | Jill Boone | Licensed Agent | jill-boone |
+
+`data/team.json` is the source of truth for names and titles.
 
 ## Markdown Formatting
 

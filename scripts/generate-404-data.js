@@ -17,6 +17,17 @@ const BUILD = path.join(ROOT, 'build');
 
 const suggestions = [];
 
+// Page titles are HTML-escaped where generate-blog.js prints them (<title>),
+// so a title scraped from a built page is decoded back to text here: the JSON
+// carries "Agency's", not "Agency&#39;s". &amp; last, so "&amp;lt;" stays "&lt;".
+function decodeHtmlText(s) {
+  return String(s)
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+    .replace(/&#(\d{1,7});/g, (m, n) => (Number(n) <= 0x10ffff ? String.fromCodePoint(Number(n)) : m))
+    .replace(/&#x([0-9a-f]{1,6});/gi, (m, n) => (parseInt(n, 16) <= 0x10ffff ? String.fromCodePoint(parseInt(n, 16)) : m))
+    .replace(/&amp;/g, '&');
+}
+
 // Products
 let products;
 try {
@@ -60,7 +71,7 @@ if (fs.existsSync(blogDir)) {
       const keywords = slug.split('-').filter(w => w.length > 3);
       const html = fs.readFileSync(path.join(blogDir, file), 'utf8');
       const titleMatch = html.match(/<title>([^|<]+)/);
-      const title = titleMatch ? titleMatch[1].trim() : slug.replace(/-/g, ' ');
+      const title = titleMatch ? decodeHtmlText(titleMatch[1].trim()) : slug.replace(/-/g, ' ');
       suggestions.push({ url: `/blog/${file}`, title, keywords });
     }
   }

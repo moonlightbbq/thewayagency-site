@@ -1,8 +1,9 @@
 /**
  * The calendar status vocabulary is a CROSS-REPO contract.
  *
- * sage writes statuses into data/content-calendar.json (blog-reviews.js sets
- * 'approved' on a reviewer's "Approved" reply, and commits it). This repo
+ * sage writes statuses into data/content-calendar.json (since BL-07 it sets
+ * 'approved' only when the assigned reviewer approves the exact text in SAGE,
+ * never on an email reply, and commits it). This repo
  * decides what publishes. Nothing tested the seam, so the two ends drifted:
  * the publisher recognised planned/in-review/in-draft and skipped 'approved'
  * with a bare `continue` — no error, no red run. occupiedDates() still counted
@@ -23,7 +24,7 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const { PUBLISHABLE_STATUSES, TERMINAL_STATUSES, isPublishable, isKnownStatus } =
+const { PUBLISHABLE_STATUSES, TERMINAL_STATUSES, HOLD_STATUSES, isPublishable, isKnownStatus, isHeld } =
   require('../scripts/lib/calendar-status');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -62,10 +63,31 @@ describe('publishable statuses', () => {
   });
 });
 
+describe('the reviewer hold (BL-07)', () => {
+  test("'changes-requested' is known, held, and does NOT publish", () => {
+    // sage writes it when the assigned reviewer asks for changes. If it were
+    // publishable the post would go live over the reviewer's objection; if it
+    // were unknown the publisher would treat it as a contract breach.
+    assert.equal(isKnownStatus('changes-requested'), true);
+    assert.equal(isHeld('changes-requested'), true);
+    assert.equal(isPublishable('changes-requested'), false);
+  });
+
+  test('publishable, terminal and hold sets are disjoint', () => {
+    for (const s of HOLD_STATUSES) {
+      assert.equal(PUBLISHABLE_STATUSES.has(s), false, `"${s}" is held and publishable`);
+      assert.equal(TERMINAL_STATUSES.has(s), false, `"${s}" is held and terminal`);
+    }
+  });
+});
+
 describe('the contract holds across both repos', () => {
   test('every status sage writes is one this repo knows', () => {
     // Read the statuses sage assigns straight out of its source. If sage adds
     // one, this fails here instead of a post going quietly unpublished.
+    // (sage-server BL-07 writes 'approved' and the 'changes-requested' hold:
+    // between sage's deploy and this repo's merge of the hold vocabulary, a
+    // host run against ../sage-main fails here, which is the alarm working.)
     const blogReviews = path.resolve(ROOT, '..', 'sage-main', 'src', 'email', 'blog-reviews.js');
     if (!fs.existsSync(blogReviews)) {
       // sage is not checked out beside this repo (CI runners, fresh clones).
