@@ -39,8 +39,8 @@ jobs:
           SAGE_CLIENT_ID: ${{ secrets.SAGE_CLIENT_ID }}
           # BL-07: signs the review-request token SAGE verifies on the reviewer's
           # change request. Same value as BLOG_REVIEW_TOKEN_SECRET in the sage .env.
-          # Unset: review emails still go out, but SAGE refuses every change
-          # request on them (approving in SAGE is unaffected).
+          # REQUIRED: unset (or under 32 characters), this step exits 2 before
+          # sending anything, and the run goes red.
           BLOG_REVIEW_TOKEN_SECRET: ${{ secrets.BLOG_REVIEW_TOKEN_SECRET }}
         run: node scripts/send-review-emails.js
 
@@ -92,7 +92,10 @@ jobs:
       # on 2026-08-03 instead of this workflow going red on 08-15. I2b (a date
       # that will publish nothing) is equally worth a red run, and so is I6 (a
       # post on a reviewer's change-request hold has reached its date and is
-      # not publishing until the reviewer approves a version in SAGE or the hold is released).
+      # not publishing until the reviewer approves a version in SAGE or the hold is released),
+      # and I7 (an entry the publisher put in 'error': missing or unready markdown,
+      # or an approval in SAGE whose bytes or byline no longer match, which the
+      # publish step's exit code cannot signal on its own).
       # Deliberately NOT fatal: I5 (thin backlog) is a planning signal.
       - name: Queue health
-        run: node scripts/queue-status.js --fail-on I4,I2b,I6
+        run: node scripts/queue-status.js --fail-on I4,I2b,I6,I7

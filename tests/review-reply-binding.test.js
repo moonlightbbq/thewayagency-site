@@ -76,7 +76,7 @@ describe('subjects and links', () => {
     assert.equal(s.reply, `Re: Review Request: "${post.title}" [ref:${VECTOR_TOKEN}]`);
   });
 
-  test('without a token, the legacy subjects (sage refuses a change request on them as unbound)', () => {
+  test('without a token, the legacy subjects (sage holds the post on a change request to them, but makes no AI edit)', () => {
     const s = buildReviewSubjects(post, null);
     assert.equal(s.email, `Review Request: "${post.title}" — publishes 2099-12-31`);
     assert.equal(s.reply, `Re: Review Request: "${post.title}"`);
@@ -98,9 +98,11 @@ describe('subjects and links', () => {
     assert.ok(html.includes(`href="${url}"`), 'the approval link');
     assert.match(html, />Review and approve in SAGE</);
     assert.match(html, /Approving is a click in SAGE, where you see the exact text that will publish\. Email replies cannot approve\./);
-    assert.match(html, /If you take no action it publishes on .* as written\./);
-    // The old (false) claim: the publisher credits the assigned reviewer on silence.
-    assert.doesNotMatch(html, /no reviewer credited|approving by reply/i);
+    // Silence publishes with no reviewer named (scripts/lib/review-credit.js),
+    // and the email says so: the credit is the reason to approve.
+    assert.match(html, /If you take no action it publishes on .* without a reviewer named: only an approval in SAGE puts your name on it\./);
+    assert.match(html, /It names you as reviewer only if you approve it in SAGE\./);
+    assert.doesNotMatch(html, /as written\.|approving by reply/i);
   });
 
   test('exactly one mailto: Request Changes, carrying the token-bearing reply subject and the label; no "Approved" reply', () => {
@@ -111,7 +113,21 @@ describe('subjects and links', () => {
     assert.ok(mailtos[0].endsWith(`body=${encodeURIComponent('Changes requested:\n\n')}`));
     assert.doesNotMatch(html, /body=Approved/);
     assert.match(html, />Request Changes</);
-    assert.match(html, /held until you approve a version in SAGE/);
+    assert.match(html, /SAGE holds the post and emails you a proposed edit to approve in SAGE\./);
+    assert.match(html, /SAGE holds the post and emails you the proposed edit as a list of changes/);
+    // SAGE's cut-off: from the publish date a reply no longer holds the post.
+    assert.match(html, /A change request has to reach SAGE before the publish date begins \(midnight UTC/);
+    assert.match(html, /keep the subject line as it is/);
+  });
+
+  test('without a token the email promises no AI edit: the post is held and the edit is made by hand', () => {
+    const html = formatReviewEmail(post, '---\ntitle: x\n---\n\nSynthetic body.\n', { name: 'Test Reviewer' }, null, { sageUrl: SAGE });
+    assert.match(html, /SAGE holds the post; the content owner makes the edit by hand\./);
+    assert.match(html, /This email carries no review code, so SAGE cannot prepare the edit itself/);
+    assert.doesNotMatch(html, /emails you a proposed edit|emails you the proposed edit/);
+    assert.doesNotMatch(html, /keep the subject line as it is/);
+    assert.match(html, /A change request has to reach SAGE before the publish date begins/);
+    assert.match(html, /without a reviewer named/);
   });
 
   test('the email cannot be built without the SAGE address, and only an https one', () => {
@@ -135,8 +151,12 @@ describe('subjects and links', () => {
     assert.match(html, /Email replies cannot approve/);
     assert.ok(html.includes(encodeURIComponent(buildReviewSubjects(post, VECTOR_TOKEN).reply)));
     assert.doesNotMatch(html, /No action needed to approve/);
+    assert.match(html, /without a reviewer named: only an approval in SAGE puts your name on it/);
+    assert.match(html, /A change request has to reach SAGE before the publish date begins/);
+    assert.match(html, /emails you the proposed edit/);
     const noToken = formatReminderEmail(post, { name: 'Test Reviewer' }, { sageUrl: SAGE });
     assert.match(noToken, /the Request Changes link in the original review email/);
+    assert.match(noToken, /the content owner makes it by hand/);
     assert.throws(() => formatReminderEmail(post, { name: 'Test Reviewer' }, {}), /sageUrl is required/);
   });
 
@@ -167,6 +187,23 @@ describe('loading the script', () => {
     const r = spawnSync(process.execPath, ['-e', `require(${JSON.stringify(SCRIPT)}); console.log('loaded')`], { encoding: 'utf8', env });
     assert.equal(r.status, 0, r.stderr);
     assert.equal(r.stdout.trim(), 'loaded');
+  });
+
+  test('a missing or short BLOG_REVIEW_TOKEN_SECRET exits 2 before anything is sent', () => {
+    for (const secret of [undefined, 'too-short-for-a-review-secret']) {
+      const env = {
+        ...process.env,
+        // Synthetic settings on an unroutable host: the check runs before any send.
+        SAGE_API_URL: 'https://sage-test.invalid', SAGE_API_TOKEN: 'synthetic-token', SAGE_CLIENT_ID: 'synthetic-client',
+        SAGE_REVIEW_URL: 'https://sage-test.invalid',
+      };
+      if (secret === undefined) delete env.BLOG_REVIEW_TOKEN_SECRET; else env.BLOG_REVIEW_TOKEN_SECRET = secret;
+      const run = spawnSync(process.execPath, [SCRIPT], { encoding: 'utf8', env, timeout: 20000 });
+      assert.equal(run.status, 2, run.stdout + run.stderr);
+      assert.match(run.stderr, /BLOG_REVIEW_TOKEN_SECRET is not set \(or shorter than 32 characters\)/);
+      assert.match(run.stderr, /No review email was sent/);
+      assert.doesNotMatch(run.stdout, /Review sent|Failed to send|review\(s\) sent/);
+    }
   });
 
   test('running it without the API settings still exits 1', () => {
@@ -203,6 +240,16 @@ describe('a held post never renders, and is loud when its date arrives', () => {
     const wf = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'publish-blog.yml'), 'utf8');
     assert.match(wf, /BLOG_REVIEW_TOKEN_SECRET: \$\{\{ secrets\.BLOG_REVIEW_TOKEN_SECRET \}\}/);
     assert.match(wf, /SAGE_REVIEW_URL: \$\{\{ secrets\.SAGE_REVIEW_URL \}\}/);
-    assert.match(wf, /queue-status\.js --fail-on I4,I2b,I6/);
+    assert.match(wf, /queue-status\.js --fail-on I4,I2b,I6,I7/);
+    assert.match(wf, /REQUIRED: unset \(or under 32 characters\), this step exits 2/);
+  });
+
+  test('I7 fires for any entry the publisher put in error, so a refused approval is never silent', () => {
+    const ids = (status) => q.evaluateInvariants({ slots: [], year1: [{ slug: 'test-err-a', status, publish_date: '2099-06-03', error_reason: 'approved_bytes_changed' }] },
+      { candidates: [] }, '2099-06-03', { hasMarkdown: () => true }).violations;
+    const i7 = ids('error').filter(v => v.id === 'I7');
+    assert.equal(i7.length, 1);
+    assert.match(i7[0].message, /approved_bytes_changed/);
+    for (const status of ['approved', 'in-review', 'published', 'changes-requested']) assert.ok(!ids(status).some(v => v.id === 'I7'), status);
   });
 });

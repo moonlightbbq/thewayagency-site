@@ -2,14 +2,14 @@
 /**
  * Read-only health view of the content queue.
  *
- * Reports the invariants in scripts/lib/content-queue.js (I1-I6). I4 is the one
+ * Reports the invariants in scripts/lib/content-queue.js (I1-I7). I4 is the one
  * that matters most: it is the check that would have caught
  * college-student-auto-insurance on 2026-08-03 instead of letting the publish
  * workflow go red on 2026-08-15.
  *
  * Usage: node scripts/queue-status.js [--today YYYY-MM-DD] [--strict]
  *   --strict            exit 1 if ANY invariant is violated
- *   --fail-on I4,I2b,I6 exit 1 only for these invariants (for CI)
+ *   --fail-on I4,I2b,I6,I7 exit 1 only for these invariants (for CI)
  *
  * CI uses --fail-on rather than --strict: an empty slot inside the markdown
  * window (I4) must break the build, but a thin backlog (I5) is a planning

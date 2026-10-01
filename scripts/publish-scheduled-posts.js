@@ -5,17 +5,23 @@
  * Checks content-calendar.json for posts with a publish_date <= today
  * whose status is publishable (see scripts/lib/calendar-status.js -- the
  * vocabulary is shared with sage, which writes 'approved'), verifies the markdown
- * file exists, reconciles its frontmatter date:/modified: to the calendar
+ * file exists, decides the review credit (scripts/lib/review-credit.js: an
+ * 'approved' post publishes crediting its reviewer only while its bytes are the
+ * ones approved in SAGE, else it goes to 'error'; any other post names no
+ * reviewer), reconciles its frontmatter date:/modified: to the calendar
  * publish_date, and updates the status to "published".
  *
  * Used by the GitHub Actions workflow to auto-publish blog posts on schedule.
  *
  * Exit codes:
  *   0 = posts were published (caller should commit and push)
- *   1 = no posts due today (no action needed) OR a scheduled post is
- *       missing its markdown file (loud-fail; surfaces a red workflow
- *       run + marks the calendar entry status='error' so an operator
- *       can see what's stuck).
+ *   1 = no posts due today (no action needed) OR a due post failed a check
+ *       (missing or unready markdown, or an approval that no longer matches
+ *       the bytes or the byline): its calendar entry is marked
+ *       status='error' with error_reason. The workflow's publish step does
+ *       not tell the two apart, so the red run comes from the queue check
+ *       that runs after the commit (scripts/queue-status.js I7: an entry in
+ *       'error').
  *
  * Usage: node scripts/publish-scheduled-posts.js
  */
@@ -23,6 +29,7 @@
 const fs = require('fs');
 const path = require('path');
 const { isPublishable, isKnownStatus } = require('./lib/calendar-status');
+const { approvalCheck, applyReviewCredit } = require('./lib/review-credit');
 
 const ROOT = path.resolve(__dirname, '..');
 const CALENDAR_PATH = path.join(ROOT, 'data', 'content-calendar.json');
@@ -40,11 +47,6 @@ const TEAM = (() => {
     return Array.isArray(t) ? t : (t.team || []); // file is { team: [...] }
   } catch { return []; }
 })();
-
-function reviewerTitle(slug, name) {
-  const m = TEAM.find(t => t && (t.slug === slug || t.name === name));
-  return (m && m.title) || 'The Way Agency';
-}
 
 let published = 0;
 const errors = [];
@@ -121,7 +123,7 @@ for (const post of calendar.year1) {
     continue;
   }
 
-  // A post a reviewer actually approved publishes crediting its reviewer.
+  // Who the post credits as its reviewer (scripts/lib/review-credit.js).
   //
   // This used to overwrite `author` with the reviewer's name, which credited
   // them with writing a post they had only checked. The two are separate
@@ -130,40 +132,35 @@ for (const post of calendar.year1) {
   // different fields.
   //
   // The licensed review stays ADVISORY for publishing (scripts/lib/calendar-
-  // status.js): a post whose reviewer never replied still publishes on its
-  // date. But silence is not a review, so it makes no "Reviewed by" claim. The
-  // byline names the reviewer only when they approved it: sage's blog-review
-  // reply handler records approved_by and approved_date when the reviewer
-  // replies "Approved" (BL-06 / AIA-002). A post nobody was asked to review
-  // gets no review line either.
-  if (post.reviewer && post.reviewer_slug && post.approved_by) {
-    let md = fs.readFileSync(mdFile, 'utf8');
-    // The reviewer's REAL title, from team.json — never a hardcoded one. This
-    // used to stamp "Licensed Agent" on everyone, which published six posts
-    // crediting a Client Care Specialist as a Licensed Agent, in the visible
-    // byline AND in the JSON-LD `jobTitle` schema.
-    const title = reviewerTitle(post.reviewer_slug, post.reviewer);
-    // The date they approved it; older entries fall back to the date it went
-    // to them for review.
-    const reviewed = String(post.approved_date || post.review_sent_date || post.publish_date).slice(0, 10);
-
-    const fields = {
-      reviewer: post.reviewer,
-      reviewer_slug: post.reviewer_slug,
-      reviewer_title: title,
-      reviewed_date: reviewed,
-    };
-    for (const [key, value] of Object.entries(fields)) {
-      const line = `${key}: ${value}`;
-      if (new RegExp(`^${key}:`, 'm').test(md)) {
-        md = md.replace(new RegExp(`^${key}: .*$`, 'm'), line);
-      } else {
-        // Append inside the front matter block rather than guessing a neighbour
-        // field is present — `author_slug` is absent on agency-authored posts.
-        md = md.replace(/^---\n([\s\S]*?)\n---/, (_m, fm) => `---\n${fm}\n${line}\n---`);
+  // status.js): a post whose reviewer never acted still publishes on its date.
+  // But silence is not a review, so it makes no "Reviewed by" claim, and any
+  // review line it carries is removed. Only an approval in SAGE credits the
+  // reviewer: the reviewer's click on the sha256 of the exact bytes sets
+  // status 'approved' and approved_by / approved_sha256 (sage-server BL-07).
+  // The bytes are checked again HERE, before anything below rewrites the
+  // front matter: a file changed after the click (or an approval that is not
+  // the byline reviewer's) does not publish at all, it goes to 'error'.
+  let credited = false;
+  {
+    const raw = fs.readFileSync(mdFile); // raw bytes: what the reviewer approved
+    const approval = approvalCheck(post, raw, TEAM);
+    if (approval.error) {
+      const reason = approval.error;
+      console.log(`  ! ERROR: "${post.title}" (${post.slug}) - approved in SAGE, but ${approval.detail}. Not published, and no reviewer credited.`);
+      console.log('      To publish it: the assigned reviewer approves the current text in SAGE (set the entry back to "in-review" first), or the approved bytes are restored.');
+      if (post.status !== 'error' || post.error_reason !== reason) {
+        post.status = 'error';
+        post.error_reason = reason;
+        post.error_at = new Date().toISOString();
+        calendarChanged = true;
       }
+      errors.push({ slug: post.slug, reason });
+      continue;
     }
-    fs.writeFileSync(mdFile, md);
+    const md = raw.toString('utf8');
+    const next = applyReviewCredit(md, post, TEAM, { credit: approval.credit });
+    if (next !== md) fs.writeFileSync(mdFile, next);
+    credited = approval.credit;
   }
 
   // Reconcile frontmatter dates: if the .md `date:`/`modified:` differ from
@@ -194,7 +191,7 @@ for (const post of calendar.year1) {
   post.status = 'published';
   published++;
   calendarChanged = true;
-  console.log(`  Published: "${post.title}" (${post.publish_date}) — byline: ${post.reviewer || 'The Way Agency'}`);
+  console.log(`  Published: "${post.title}" (${post.publish_date}) — ${credited ? `reviewed by ${post.reviewer} (approved in SAGE)` : 'no reviewer credited'}`);
 }
 
 // Persist any calendar mutations (publishes + error markings)
@@ -209,7 +206,9 @@ if (errors.length > 0) {
   for (const e of errors) console.log(`    - ${e.slug}: ${e.reason}`);
   console.log('');
   console.log('  Calendar status set to "error" with error_reason and error_at.');
-  console.log('  Investigate sage Hive blog-writer pipeline.');
+  console.log('  missing_*/content_too_short: investigate the sage Hive blog-writer pipeline.');
+  console.log('  approval_*/approved_bytes_changed: the post changed after its reviewer approved it in SAGE, or the approval');
+  console.log('  is not the byline reviewer\'s. It is not published under their name (sage-server BL-07).');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   process.exit(1);
 }

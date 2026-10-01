@@ -46,6 +46,15 @@ const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 // that one had already drifted apart from what sage writes, which is how
 // 'approved' became a status that silently blocked publication.
 const { PUBLISHABLE_STATUSES } = require('./lib/calendar-status');
+// Who a post credits as its reviewer, and whether an 'approved' post may
+// publish at all: the same rule as publish-scheduled-posts.js (sage-server BL-07).
+const { approvalCheck, applyReviewCredit } = require('./lib/review-credit');
+const TEAM = (() => {
+  try {
+    const t = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'team.json'), 'utf8'));
+    return Array.isArray(t) ? t : (t.team || []);
+  } catch { return []; }
+})();
 
 const calendar = JSON.parse(fs.readFileSync(CALENDAR_PATH, 'utf8'));
 
@@ -89,6 +98,26 @@ for (const post of calendar.year1) {
   // Entries that are neither publishable nor already published (e.g. error,
   // or some other state) are left alone.
   if (!isPublishable && !isPublished) continue;
+
+  // An 'approved' entry flips only while its file is the one approved in SAGE
+  // and the approval is the byline reviewer's; decided from the raw bytes,
+  // before the date rewrite below changes them.
+  let approval = { credit: false, error: null };
+  if (isPublishable) {
+    approval = approvalCheck(post, fs.readFileSync(mdFile), TEAM);
+    if (approval.error) {
+      const reason = approval.error;
+      console.log(`  ! ERROR: "${post.title}" (${post.slug}) - approved in SAGE, but ${approval.detail}. Not published, and no reviewer credited.`);
+      if (post.status !== 'error' || post.error_reason !== reason) {
+        post.status = 'error';
+        post.error_reason = reason;
+        post.error_at = new Date().toISOString();
+        calendarChanged = true;
+      }
+      errors.push({ slug: post.slug, reason });
+      continue;
+    }
+  }
 
   // ── (a) Frontmatter date reconcile ──────────────────────────────────
   // Read the frontmatter date:/modified: and, if either differs from the
@@ -157,7 +186,13 @@ for (const post of calendar.year1) {
     continue;
   }
 
-  console.log(`  + PUBLISH: "${post.title}" (${post.slug})  -  status ${post.status} -> published (date ${post.publish_date})`);
+  console.log(`  + PUBLISH: "${post.title}" (${post.slug})  -  status ${post.status} -> published (date ${post.publish_date}), ${approval.credit ? `reviewed by ${post.reviewer}` : 'no reviewer credited'}`);
+  if (APPLY) {
+    // Silence names no reviewer; an approval in SAGE whose bytes still match does.
+    const current = fs.readFileSync(mdFile, 'utf8');
+    const next = applyReviewCredit(current, post, TEAM, { credit: approval.credit });
+    if (next !== current) fs.writeFileSync(mdFile, next);
+  }
   post.status = 'published';
   // Clear any stale error markers now that it is ready.
   if (post.error_reason) { delete post.error_reason; delete post.error_at; }

@@ -20,6 +20,10 @@
  * into a held post and a proposed edit. A reply to an older email's "Approve"
  * link now gets SAGE's answer with the approval link, and changes nothing.
  *
+ * Silence publishes the post on its date with NO reviewer named: only an
+ * approval in SAGE earns the "Reviewed by" credit
+ * (scripts/lib/review-credit.js), and the emails say so.
+ *
  * Required env vars:
  *   SAGE_API_URL    — e.g., https://sage.thewayagency.com
  *   SAGE_API_TOKEN  — JWT token for sage-server API auth
@@ -29,8 +33,10 @@
  *     when SAGE_API_URL is not the address reviewers sign in at.
  *   BLOG_REVIEW_TOKEN_SECRET — signs the review-request token SAGE verifies on
  *     the reviewer's change request (BL-07). The same value is set in the sage
- *     .env. Unset: review emails go out with the legacy subject, and SAGE
- *     refuses every change request to them until it is set on both sides.
+ *     .env. REQUIRED: without it (or shorter than 32 characters) the run exits
+ *     2 before sending anything. A token-less email would still let SAGE hold
+ *     the post on a change request, but never prepare the edit, and the
+ *     misconfiguration would otherwise pass unseen.
  *
  * Loading this file (require) has no side effects; it only runs when executed.
  */
@@ -62,7 +68,8 @@ const REVIEW_CC = process.env.REVIEW_CC || 'partner@thewayagency.com';
 //   MAC   = base64url(HMAC-SHA256(secret, "blog-review-request/v1|<slug>|<reviewer email, lowercased>|<publish date>|<sha256 hex>")), first 22 chars
 //
 // The token expires on the publish date. Editing the article afterwards
-// invalidates it (SAGE refuses the reply as "content changed").
+// invalidates it for an AI edit (SAGE still holds the post on a change request
+// but makes the edit by hand: "content changed").
 const REQUEST_TOKEN_VERSION = 'blog-review-request/v1';
 const MIN_SECRET_LENGTH = 32;
 
@@ -88,7 +95,8 @@ function issueReviewToken({ slug, reviewerEmail, publishDate, content }, secret)
 /**
  * The review email's subject, and the subject its Request Changes link
  * composes. With a token both carry "[ref:<token>]"; without one they are the
- * legacy subjects (SAGE refuses a change request on them as unbound).
+ * legacy subjects (SAGE holds the post on a change request to them, but makes
+ * no AI edit).
  * @param {{title: string, publish_date: string}} post
  * @param {string|null} token
  * @returns {{email: string, reply: string}}
@@ -256,6 +264,23 @@ const pillarLabels = {
   seasonal: 'Seasonal & Industry'
 };
 
+// ─── Copy shared by the review and reminder emails ───────
+//
+// What happens on silence and on a change request, said the same way in both.
+// The cut-off is SAGE's: from the publish date (which begins at midnight UTC)
+// a post may already be live, so a reply can no longer hold it.
+function silenceSentence(publishDate) {
+  return `If you take no action it publishes on ${publishDate} without a reviewer named: only an approval in SAGE puts your name on it.`;
+}
+
+function changeRequestSentence(token) {
+  return token
+    ? 'If you request changes, SAGE holds the post and emails you the proposed edit as a list of changes, and nothing is published until you approve a version in SAGE.'
+    : 'If you request changes, SAGE holds the post until a version is approved in SAGE. This email carries no review code, so SAGE cannot prepare the edit itself: the content owner makes it by hand.';
+}
+
+const CUTOFF_SENTENCE = 'A change request has to reach SAGE before the publish date begins (midnight UTC, which is the evening before in US time): from then on the post may already be live, and SAGE can no longer hold it.';
+
 // ─── Format post as HTML email ─────────────
 function formatReviewEmail(post, content, reviewer, token = null, { sageUrl } = {}) {
   if (!sageUrl) throw new Error('formatReviewEmail: sageUrl is required (the approval link opens SAGE)');
@@ -314,14 +339,17 @@ function formatReviewEmail(post, content, reviewer, token = null, { sageUrl } = 
       </td>
       <td style="width:50%;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:14px 16px;text-align:center;vertical-align:top;">
         <a href="${changesHref}" style="display:block;font-weight:700;color:#9a3412;font-size:14px;text-decoration:underline;margin-bottom:4px;">Request Changes</a>
-        <p style="margin:0;color:#c2410c;font-size:12px;">Opens a reply &mdash; type your edits or notes. The post is held until you approve a version in SAGE.</p>
+        <p style="margin:0;color:#c2410c;font-size:12px;">Opens a reply &mdash; type your edits or notes. ${token
+    ? 'SAGE holds the post and emails you a proposed edit to approve in SAGE.'
+    : 'SAGE holds the post; the content owner makes the edit by hand.'}</p>
       </td>
     </tr></table>
     <p style="margin:14px 0 0;color:#475569;font-size:13px;line-height:1.6;">
       <strong style="color:#0f172a;">Approving is a click in SAGE, where you see the exact text that will publish. Email replies cannot approve.</strong>
-      If you request changes, SAGE emails you the proposed edit as a list of changes, and nothing is published until you approve a version in SAGE.
-      When you request changes, please keep the subject line as it is: it carries the code that ties your reply to this request.
-      If you take no action it publishes on ${publishDate} as written.
+      ${changeRequestSentence(token)}
+      ${CUTOFF_SENTENCE}${token ? `
+      When you request changes, please keep the subject line as it is: it carries the code that ties your reply to this request.` : ''}
+      ${silenceSentence(publishDate)}
     </p>
   </div>
 
@@ -334,7 +362,7 @@ function formatReviewEmail(post, content, reviewer, token = null, { sageUrl } = 
   <!-- Footer -->
   <div style="background:#0f172a;padding:20px 36px;border-radius:0 0 12px 12px;text-align:center;">
     <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>
-    <p style="margin:6px 0 0;font-size:11px;color:#475569;">This article will publish automatically on ${publishDate} unless changes are requested.</p>
+    <p style="margin:6px 0 0;font-size:11px;color:#475569;">This article publishes automatically on ${publishDate} unless changes are requested in time. It names you as reviewer only if you approve it in SAGE.</p>
   </div>
 
 </div>`;
@@ -363,7 +391,9 @@ function formatReminderEmail(post, reviewer, { sageUrl, token = null } = {}) {
     <p style="margin:0 0 14px;color:#1e293b;font-size:15px;">Hi ${reviewer.name.split(' ')[0]},</p>
     <p style="margin:0 0 18px;color:#475569;font-size:14px;line-height:1.6;">
       This article publishes in <strong style="color:#0f172a;">one week</strong> on <strong style="color:#0f172a;">${publishDate}</strong>.
-      To approve it, review it in SAGE. If you have changes, use ${changes}. If you take no action it publishes on ${publishDate} as written.
+      To approve it, review it in SAGE. If you have changes, use ${changes}. ${changeRequestSentence(token)}
+      ${CUTOFF_SENTENCE}
+      ${silenceSentence(publishDate)}
     </p>
     <p style="margin:0 0 18px;text-align:center;"><a href="${approveUrl}" style="display:inline-block;background:#166534;color:#ffffff;font-weight:700;padding:12px 20px;border-radius:8px;text-decoration:none;">Review and approve in SAGE</a></p>
     <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 18px;">
@@ -469,11 +499,14 @@ async function main() {
     process.exit(2);
   }
 
+  // The review code is what lets SAGE turn a change request into a proposed
+  // edit. Fail loudly on a missing or short secret, before anything is sent,
+  // rather than mail emails whose change requests can only be made by hand.
   const tokenSecret = reviewTokenSecret();
   if (!tokenSecret) {
-    console.log('  ! BLOG_REVIEW_TOKEN_SECRET is not set (or shorter than 32 characters): review emails go out '
-      + 'without a review code, and SAGE will refuse every change request on them until it is set here and in sage. '
-      + 'Approving in SAGE is unaffected.');
+    console.error(`  ! BLOG_REVIEW_TOKEN_SECRET is not set (or shorter than ${MIN_SECRET_LENGTH} characters). Set it in the `
+      + 'repository secrets, with the same value as in the sage .env. No review email was sent.');
+    process.exit(2);
   }
   let calendarChanged = false;
 

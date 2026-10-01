@@ -16,12 +16,18 @@
  * production, and because no test spans both repos — the sage-side test
  * asserted the write and could not see that the site would refuse to act on it.
  *
- * REVIEWER GATE SEMANTICS (decided 2026-08-07, hold added by BL-07): the
- * licensed review is ADVISORY on silence, BLOCKING on a change request.
+ * REVIEWER GATE SEMANTICS (decided 2026-08-07; hold and SAGE approval added
+ * by BL-07): the licensed review is ADVISORY on silence, BLOCKING on a clear
+ * change request, and a "Reviewed by" credit is earned only by an approval in
+ * SAGE (scripts/lib/review-credit.js).
  *
- *   no action          -> publishes on its date (status stays in-review)
- *   approved in SAGE   -> publishes on its date, approved_by (and the
- *                         approved_sha256 of the exact bytes) recorded
+ *   no action          -> publishes on its date (status stays in-review) with
+ *                         NO reviewer named: silence is not a review
+ *   approved in SAGE   -> publishes on its date crediting the reviewer, but
+ *                         only while the file's raw bytes still hash to the
+ *                         approved_sha256 the reviewer approved and the
+ *                         approval is the byline reviewer's; otherwise the
+ *                         entry goes to 'error' (I7) and nothing publishes
  *   change request     -> 'changes-requested' HOLD: never publishes, even past
  *                         its date, until the reviewer approves a version in
  *                         SAGE (the edit SAGE proposed, or the current text:
@@ -32,9 +38,10 @@
  * A reviewer being on vacation must never silently empty a slot. Anything that
  * should STOP a publish belongs in TERMINAL_STATUSES or HOLD_STATUSES below,
  * and stopping is always accompanied by something loud (`error` sets
- * error_reason and exits non-zero; the queue's I4/I2b invariants fail the
- * workflow; a held post at or past its date fails the queue's I6 invariant,
- * and SAGE bells the admins when it puts a post on hold).
+ * error_reason, and the queue's I7 invariant fails the workflow while any
+ * entry is in error; the queue's I4/I2b invariants fail it too; a held post at
+ * or past its date fails the queue's I6 invariant, and SAGE bells the admins
+ * when it puts a post on hold).
  */
 'use strict';
 
@@ -46,7 +53,7 @@ const PUBLISHABLE_STATUSES = Object.freeze(new Set([
   'planned',    // locked to a slot, drafting/awaiting its review window
   'in-draft',   // draft in flight
   'in-review',  // reviewer emailed, no reply yet — advisory, so it ships
-  'approved',   // the assigned reviewer approved it in SAGE — ships, and says who signed off
+  'approved',   // the assigned reviewer approved it in SAGE — ships crediting them, if its bytes are the approved ones
 ]));
 
 /**
@@ -55,7 +62,7 @@ const PUBLISHABLE_STATUSES = Object.freeze(new Set([
  */
 const TERMINAL_STATUSES = Object.freeze(new Set([
   'published',  // already shipped
-  'error',      // readiness check failed; carries error_reason + red workflow
+  'error',      // a readiness or approval check failed; carries error_reason + red workflow (I7)
 ]));
 
 /**

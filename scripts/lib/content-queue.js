@@ -682,7 +682,7 @@ function fillSlots(cal, backlog, today, windowMonths, opts = {}) {
 }
 
 /**
- * Evaluate the queue invariants (I1-I6). Pure: takes the data and the clock,
+ * Evaluate the queue invariants (I1-I7). Pure: takes the data and the clock,
  * returns findings. `opts.hasMarkdown` is injectable so the rules can be
  * tested against fixtures rather than whatever happens to be on disk.
  *
@@ -761,6 +761,16 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
   // proposed, or the content owner releases the hold on the calendar.
   for (const p of posts.filter(x => isHeld(x.status) && x.publish_date && daysBetween(today, x.publish_date) <= 0)) {
     add('I6', `"${p.slug}" was due ${p.publish_date} but is on hold (${p.status}) for its reviewer's changes; it publishes only after the reviewer approves the edit or the hold is released`);
+  }
+
+  // I7 - a post the publisher refused: status 'error', with error_reason set by
+  // publish-scheduled-posts.js or reconcile-calendar.js (missing or unready
+  // markdown, or an approval that no longer matches the post's bytes or its
+  // byline: scripts/lib/review-credit.js). It is not publishing. The publish
+  // step's own exit code cannot say so (it also means "nothing was due"), so
+  // this is what keeps the workflow red until someone fixes the entry.
+  for (const p of posts.filter(x => x.status === 'error')) {
+    add('I7', `"${p.slug}" (due ${p.publish_date || 'undated'}) is in error (${p.error_reason || 'no reason recorded'}) and is not publishing`);
   }
 
   return {
