@@ -1,8 +1,9 @@
 /**
  * The calendar status vocabulary is a CROSS-REPO contract.
  *
- * sage writes statuses into data/content-calendar.json (blog-reviews.js sets
- * 'approved' on a reviewer's "Approved" reply, and commits it). This repo
+ * sage writes statuses into data/content-calendar.json (since BL-07 it sets
+ * 'approved' only when the assigned reviewer approves the exact text in SAGE,
+ * never on an email reply, and commits it). This repo
  * decides what publishes. Nothing tested the seam, so the two ends drifted:
  * the publisher recognised planned/in-review/in-draft and skipped 'approved'
  * with a bare `continue` — no error, no red run. occupiedDates() still counted

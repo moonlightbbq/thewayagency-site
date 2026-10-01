@@ -2,8 +2,9 @@
  * The content calendar's status vocabulary — one definition, both repos.
  *
  * This exists because the vocabulary was implicit and the two ends disagreed.
- * sage's blog-review reply handler (src/email/blog-reviews.js) sets a post to
- * `approved` when a licensed reviewer replies "Approved", and commits it. The
+ * sage sets a post to `approved` when its assigned, licensed reviewer approves
+ * it (since BL-07 only by a click in SAGE on the exact text, never by an email
+ * reply: src/services/blog-review-approval.js), and commits it. The
  * publisher (scripts/publish-scheduled-posts.js) only recognised
  * planned/in-review/in-draft, so it skipped `approved` entirely — with a bare
  * `continue`, so no error, no red run, no alarm. And occupiedDates() counts any
@@ -18,12 +19,15 @@
  * REVIEWER GATE SEMANTICS (decided 2026-08-07, hold added by BL-07): the
  * licensed review is ADVISORY on silence, BLOCKING on a change request.
  *
- *   no reply   -> publishes on its date (status stays in-review)
- *   "Approved" -> publishes on its date, approved_by recorded
- *   feedback   -> 'changes-requested' HOLD: never publishes, even past its
- *                 date, until the reviewer approves the exact edited version
- *                 SAGE proposed (which sets 'approved') or the content owner
- *                 releases the hold by editing the calendar
+ *   no action          -> publishes on its date (status stays in-review)
+ *   approved in SAGE   -> publishes on its date, approved_by (and the
+ *                         approved_sha256 of the exact bytes) recorded
+ *   change request     -> 'changes-requested' HOLD: never publishes, even past
+ *                         its date, until the reviewer approves a version in
+ *                         SAGE (the edit SAGE proposed, or the current text:
+ *                         either sets 'approved') or the content owner
+ *                         releases the hold by editing the calendar
+ *   any other reply    -> nothing changes; SAGE answers with the approval link
  *
  * A reviewer being on vacation must never silently empty a slot. Anything that
  * should STOP a publish belongs in TERMINAL_STATUSES or HOLD_STATUSES below,
@@ -42,7 +46,7 @@ const PUBLISHABLE_STATUSES = Object.freeze(new Set([
   'planned',    // locked to a slot, drafting/awaiting its review window
   'in-draft',   // draft in flight
   'in-review',  // reviewer emailed, no reply yet — advisory, so it ships
-  'approved',   // reviewer replied "Approved" — ships, and says who signed off
+  'approved',   // the assigned reviewer approved it in SAGE — ships, and says who signed off
 ]));
 
 /**
@@ -56,8 +60,9 @@ const TERMINAL_STATUSES = Object.freeze(new Set([
 
 /**
  * States that HOLD a post: known, not publishable, not terminal. SAGE writes
- * 'changes-requested' when the post's assigned reviewer asks for changes
- * (src/email/blog-reviews.js in sage-server). generate-blog.js skips a held
+ * 'changes-requested' when the post's assigned reviewer emails a change
+ * request (src/email/blog-reviews.js in sage-server), and releases it only
+ * when the reviewer approves a version in SAGE. generate-blog.js skips a held
  * post even when its date has passed, so a live URL is never re-rendered over
  * the reviewer's objection, and queue-status reports it (I6).
  */

@@ -12,14 +12,25 @@
  *
  * Usage: node scripts/send-review-emails.js
  *
+ * Approving is a click in SAGE (BL-07): the email's primary action is
+ * "Review and approve in SAGE", a link to SAGE's review page for the post,
+ * where the assigned reviewer sees the exact text that will publish and
+ * approves it. Email replies cannot approve. The "Request Changes" link still
+ * composes a reply (carrying the signed review-request token) that SAGE turns
+ * into a held post and a proposed edit. A reply to an older email's "Approve"
+ * link now gets SAGE's answer with the approval link, and changes nothing.
+ *
  * Required env vars:
  *   SAGE_API_URL    — e.g., https://sage.thewayagency.com
  *   SAGE_API_TOKEN  — JWT token for sage-server API auth
  * Optional:
+ *   SAGE_REVIEW_URL — the public SAGE app URL the approval link opens (https).
+ *     Defaults to SAGE_API_URL (a trailing "/" or "/api" is dropped). Set it
+ *     when SAGE_API_URL is not the address reviewers sign in at.
  *   BLOG_REVIEW_TOKEN_SECRET — signs the review-request token SAGE verifies on
- *     the reviewer's reply (BL-07). The same value is set in the sage .env.
- *     Unset: review emails go out with the legacy subject, and SAGE refuses
- *     every reply to them (approvals included) until it is set on both sides.
+ *     the reviewer's change request (BL-07). The same value is set in the sage
+ *     .env. Unset: review emails go out with the legacy subject, and SAGE
+ *     refuses every change request to them until it is set on both sides.
  *
  * Loading this file (require) has no side effects; it only runs when executed.
  */
@@ -75,9 +86,9 @@ function issueReviewToken({ slug, reviewerEmail, publishDate, content }, secret)
 }
 
 /**
- * The review email's subject, and the subject its Approve / Request Changes
- * links compose. With a token both carry "[ref:<token>]"; without one they are
- * the legacy subjects (which SAGE refuses as unbound).
+ * The review email's subject, and the subject its Request Changes link
+ * composes. With a token both carry "[ref:<token>]"; without one they are the
+ * legacy subjects (SAGE refuses a change request on them as unbound).
  * @param {{title: string, publish_date: string}} post
  * @param {string|null} token
  * @returns {{email: string, reply: string}}
@@ -88,6 +99,35 @@ function buildReviewSubjects(post, token) {
     email: `Review Request: "${post.title}" — publishes ${post.publish_date}${tag}`,
     reply: `Re: Review Request: "${post.title}"${tag}`,
   };
+}
+
+// ─── The approval link (BL-07) ───────────────
+//
+// SAGE's review page for one post. The shape '#/content/review?post=<slug>' is
+// pinned in both repositories' tests (sage-server tests/blog-review-trigger-
+// binding.test.js checks it against its own reviewUrl).
+
+/**
+ * The SAGE base URL the approval link opens: SAGE_REVIEW_URL, else
+ * SAGE_API_URL, without a trailing "/" or "/api". https only: a reviewer
+ * signs in there.
+ * @returns {string}
+ */
+function sageReviewBase(env = process.env) {
+  const raw = String(env.SAGE_REVIEW_URL || env.SAGE_API_URL || '').trim();
+  const base = raw.replace(/\/+$/, '').replace(/\/api$/i, '').replace(/\/+$/, '');
+  if (!/^https:\/\/[^\s/?#@]+$/i.test(base)) {
+    throw new Error('sageReviewBase: SAGE_REVIEW_URL (or SAGE_API_URL) must be an https origin, e.g. https://sage.example.com');
+  }
+  return base;
+}
+
+/** The link that opens SAGE's review page for this post. */
+function reviewApprovalUrl(sageUrl, slug) {
+  const base = String(sageUrl || '').trim().replace(/\/+$/, '');
+  if (!/^https:\/\/[^\s/?#@]+$/i.test(base)) throw new Error('reviewApprovalUrl: sageUrl must be an https origin');
+  if (!slug) throw new Error('reviewApprovalUrl: slug is required');
+  return `${base}/#/content/review?post=${encodeURIComponent(slug)}`;
 }
 
 /** The signing secret when it is usable, else null. */
@@ -217,7 +257,9 @@ const pillarLabels = {
 };
 
 // ─── Format post as HTML email ─────────────
-function formatReviewEmail(post, content, reviewer, token = null) {
+function formatReviewEmail(post, content, reviewer, token = null, { sageUrl } = {}) {
+  if (!sageUrl) throw new Error('formatReviewEmail: sageUrl is required (the approval link opens SAGE)');
+  const approveUrl = reviewApprovalUrl(sageUrl, post.slug);
   const articleHtml = markdownToEmailHtml(content);
 
   const publishDate = new Date(post.publish_date + 'T12:00:00').toLocaleDateString('en-US', {
@@ -230,20 +272,18 @@ function formatReviewEmail(post, content, reviewer, token = null) {
     : 'General';
   const readingTime = post.reading_time || '5-7 min read';
 
-  // These two used to be styled <td> cells with no link in them. The green one
-  // read "Approve" and looked exactly like a button, so a reviewer would click
-  // it, nothing would happen, and the review went unrecorded. They are real
-  // mailto: links now.
+  // Approving is a click in SAGE (BL-07): the green action is a link to SAGE's
+  // review page, where the reviewer sees the exact text that will publish.
+  // An email reply cannot approve (it once could, and classifying emailed text
+  // as an approval proved unsafe), so there is no "Approve" mailto.
   //
-  // The subject has to satisfy sage's anchored reply grammar (src/email/
-  // blog-review-guard.js: reply prefix, the review marker, the quoted title,
-  // then only the binding tag) AND carry the review-request token, or SAGE
-  // refuses the reply. The approve body must be just "Approved" (a signature
-  // after it is fine). Replies go to the mailbox sage polls for intake, which
-  // is the same one it sends from.
+  // The orange Request Changes link composes a reply. Its subject has to
+  // satisfy sage's anchored reply grammar (src/email/blog-review-guard.js:
+  // reply prefix, the review marker, the quoted title, then only the binding
+  // tag) AND carry the review-request token, or SAGE refuses the change
+  // request. Replies go to the mailbox sage polls for intake.
   const replyTo = process.env.REVIEW_REPLY_TO || 'sage@thewayagency.com';
   const replySubject = encodeURIComponent(buildReviewSubjects(post, token).reply);
-  const approveHref = `mailto:${replyTo}?subject=${replySubject}&body=${encodeURIComponent('Approved')}`;
   const changesHref = `mailto:${replyTo}?subject=${replySubject}&body=${encodeURIComponent('Changes requested:\n\n')}`;
 
   return `
@@ -269,20 +309,19 @@ function formatReviewEmail(post, content, reviewer, token = null) {
     </p>
     <table style="width:100%;border-collapse:separate;border-spacing:8px 0;"><tr>
       <td style="width:50%;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:14px 16px;text-align:center;vertical-align:top;">
-        <a href="${approveHref}" style="display:block;font-weight:700;color:#166534;font-size:14px;text-decoration:underline;margin-bottom:4px;">Approve</a>
-        <p style="margin:0;color:#15803d;font-size:12px;">Opens a reply saying "Approved" &mdash; just hit send</p>
+        <a href="${approveUrl}" style="display:block;font-weight:700;color:#166534;font-size:14px;text-decoration:underline;margin-bottom:4px;">Review and approve in SAGE</a>
+        <p style="margin:0;color:#15803d;font-size:12px;">Opens SAGE, where you see the exact text that will publish and approve it with one click</p>
       </td>
       <td style="width:50%;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:14px 16px;text-align:center;vertical-align:top;">
         <a href="${changesHref}" style="display:block;font-weight:700;color:#9a3412;font-size:14px;text-decoration:underline;margin-bottom:4px;">Request Changes</a>
-        <p style="margin:0;color:#c2410c;font-size:12px;">Opens a reply &mdash; type your edits or notes. The post is held until you approve the edited version.</p>
+        <p style="margin:0;color:#c2410c;font-size:12px;">Opens a reply &mdash; type your edits or notes. The post is held until you approve a version in SAGE.</p>
       </td>
     </tr></table>
     <p style="margin:14px 0 0;color:#475569;font-size:13px;line-height:1.6;">
-      Either one opens a reply in your mail app. Please send one even when the article is fine:
-      <strong style="color:#0f172a;">approving by reply is what records your name on the published post.</strong>
-      If no reply arrives the article still publishes on ${publishDate}, but it publishes with no reviewer credited.
-      If you request changes, SAGE emails you the proposed edit as a list of changes, and nothing is published until you approve that exact version.
-      Please keep the subject line as it is: it carries the code that ties your reply to this request.
+      <strong style="color:#0f172a;">Approving is a click in SAGE, where you see the exact text that will publish. Email replies cannot approve.</strong>
+      If you request changes, SAGE emails you the proposed edit as a list of changes, and nothing is published until you approve a version in SAGE.
+      When you request changes, please keep the subject line as it is: it carries the code that ties your reply to this request.
+      If you take no action it publishes on ${publishDate} as written.
     </p>
   </div>
 
@@ -298,6 +337,42 @@ function formatReviewEmail(post, content, reviewer, token = null) {
     <p style="margin:6px 0 0;font-size:11px;color:#475569;">This article will publish automatically on ${publishDate} unless changes are requested.</p>
   </div>
 
+</div>`;
+}
+
+// ─── Reminder email (7 days before publish) ─
+function formatReminderEmail(post, reviewer, { sageUrl, token = null } = {}) {
+  if (!sageUrl) throw new Error('formatReminderEmail: sageUrl is required (the approval link opens SAGE)');
+  const approveUrl = reviewApprovalUrl(sageUrl, post.slug);
+  const publishDate = new Date(post.publish_date + 'T12:00:00').toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+  const pillarLabel = pillarLabels[post.pillar] || post.pillar;
+  const replyTo = process.env.REVIEW_REPLY_TO || 'sage@thewayagency.com';
+  const changes = token
+    ? `<a href="mailto:${replyTo}?subject=${encodeURIComponent(buildReviewSubjects(post, token).reply)}&body=${encodeURIComponent('Changes requested:\n\n')}" style="color:#9a3412;font-weight:700;">Request Changes</a>`
+    : 'the Request Changes link in the original review email';
+  return `
+<div style="max-width:680px;margin:0 auto;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;">
+  <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);color:white;padding:32px 36px;border-radius:12px 12px 0 0;">
+    <p style="margin:0 0 4px;font-size:11px;color:#fbbf24;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;">Reminder &middot; 1 Week Until Publish</p>
+    <h1 style="margin:0;font-size:22px;font-weight:700;line-height:1.3;">${post.title}</h1>
+    <p style="margin:10px 0 0;font-size:13px;color:#94a3b8;">${pillarLabel} &middot; Publishes ${publishDate}</p>
+  </div>
+  <div style="background:#ffffff;padding:28px 36px;border:1px solid #e2e8f0;">
+    <p style="margin:0 0 14px;color:#1e293b;font-size:15px;">Hi ${reviewer.name.split(' ')[0]},</p>
+    <p style="margin:0 0 18px;color:#475569;font-size:14px;line-height:1.6;">
+      This article publishes in <strong style="color:#0f172a;">one week</strong> on <strong style="color:#0f172a;">${publishDate}</strong>.
+      To approve it, review it in SAGE. If you have changes, use ${changes}. If you take no action it publishes on ${publishDate} as written.
+    </p>
+    <p style="margin:0 0 18px;text-align:center;"><a href="${approveUrl}" style="display:inline-block;background:#166534;color:#ffffff;font-weight:700;padding:12px 20px;border-radius:8px;text-decoration:none;">Review and approve in SAGE</a></p>
+    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 18px;">
+      <p style="margin:0;color:#92400e;font-size:13px;"><strong>Email replies cannot approve.</strong> Approving is a click in SAGE, where you see the exact text that will publish.</p>
+    </div>
+  </div>
+  <div style="background:#0f172a;padding:16px 36px;border-radius:0 0 12px 12px;text-align:center;">
+    <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>
+  </div>
 </div>`;
 }
 
@@ -384,10 +459,21 @@ async function main() {
   // Licensed agents only (have email and license_states)
   const reviewers = teamData.team.filter(t => t.email && t.license_states && t.license_states.length > 0);
 
+  // The approval link's base. Fail loudly on a bad value rather than mailing
+  // reviewers a link that does not open SAGE.
+  let sageUrl;
+  try {
+    sageUrl = sageReviewBase();
+  } catch (err) {
+    console.error(`  ! ${err.message}`);
+    process.exit(2);
+  }
+
   const tokenSecret = reviewTokenSecret();
   if (!tokenSecret) {
     console.log('  ! BLOG_REVIEW_TOKEN_SECRET is not set (or shorter than 32 characters): review emails go out '
-      + 'without a review code, and SAGE will refuse every reply to them until it is set here and in sage.');
+      + 'without a review code, and SAGE will refuse every change request on them until it is set here and in sage. '
+      + 'Approving in SAGE is unaffected.');
   }
   let calendarChanged = false;
 
@@ -421,7 +507,7 @@ async function main() {
       const token = tokenSecret
         ? issueReviewToken({ slug: post.slug, reviewerEmail: reviewer.email, publishDate: post.publish_date, content: bytes }, tokenSecret)
         : null;
-      const htmlBody = formatReviewEmail(post, content, reviewer, token);
+      const htmlBody = formatReviewEmail(post, content, reviewer, token, { sageUrl });
       try {
         await sendEmail(
           reviewer.email,
@@ -448,32 +534,11 @@ async function main() {
       const reviewer = reviewers.find(r => r.email === post.reviewer_email);
       if (!reviewer) continue;
 
-      const publishDate = new Date(post.publish_date + 'T12:00:00').toLocaleDateString('en-US', {
-        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-      });
-
-      const pillarLabel = pillarLabels[post.pillar] || post.pillar;
-      const reminderHtml = `
-<div style="max-width:680px;margin:0 auto;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;">
-  <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);color:white;padding:32px 36px;border-radius:12px 12px 0 0;">
-    <p style="margin:0 0 4px;font-size:11px;color:#fbbf24;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;">Reminder &middot; 1 Week Until Publish</p>
-    <h1 style="margin:0;font-size:22px;font-weight:700;line-height:1.3;">${post.title}</h1>
-    <p style="margin:10px 0 0;font-size:13px;color:#94a3b8;">${pillarLabel} &middot; Publishes ${publishDate}</p>
-  </div>
-  <div style="background:#ffffff;padding:28px 36px;border:1px solid #e2e8f0;">
-    <p style="margin:0 0 14px;color:#1e293b;font-size:15px;">Hi ${reviewer.name.split(' ')[0]},</p>
-    <p style="margin:0 0 18px;color:#475569;font-size:14px;line-height:1.6;">
-      This article publishes in <strong style="color:#0f172a;">one week</strong> on <strong style="color:#0f172a;">${publishDate}</strong>.
-      If you have changes, reply to the original review email. Otherwise, it will go live as written.
-    </p>
-    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 18px;">
-      <p style="margin:0;color:#92400e;font-size:13px;"><strong>No action needed to approve.</strong> The article publishes automatically on schedule.</p>
-    </div>
-  </div>
-  <div style="background:#0f172a;padding:16px 36px;border-radius:0 0 12px 12px;text-align:center;">
-    <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>
-  </div>
-</div>`;
+      const bytes = readPostBytes(post.slug);
+      const token = tokenSecret && bytes
+        ? issueReviewToken({ slug: post.slug, reviewerEmail: reviewer.email, publishDate: post.publish_date, content: bytes }, tokenSecret)
+        : null;
+      const reminderHtml = formatReminderEmail(post, reviewer, { sageUrl, token });
 
       try {
         await sendEmail(
@@ -514,7 +579,10 @@ async function main() {
   process.exit(0);
 }
 
-module.exports = { issueReviewToken, buildReviewSubjects, formatReviewEmail, reviewTokenSecret, MIN_SECRET_LENGTH };
+module.exports = {
+  issueReviewToken, buildReviewSubjects, formatReviewEmail, formatReminderEmail, reviewTokenSecret,
+  sageReviewBase, reviewApprovalUrl, MIN_SECRET_LENGTH,
+};
 
 if (require.main === module) {
   if (!SAGE_API_URL || !SAGE_API_TOKEN) {

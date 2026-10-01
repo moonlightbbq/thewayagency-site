@@ -670,7 +670,7 @@ if (!fs.existsSync(BLOG_BUILD)) {
 // 1. Convert Markdown posts to HTML
 // A post on a reviewer's change-request hold (scripts/lib/calendar-status.js)
 // is never rendered, even past its date: its reviewer asked for changes, and it
-// publishes only once they approve the edited version (or the hold is released).
+// publishes only once they approve a version in SAGE (or the hold is released).
 const { loadHeldSlugs } = require('./lib/calendar-status');
 const { held: heldSlugs, error: heldError } = loadHeldSlugs(path.join(DATA, 'content-calendar.json'));
 if (heldError) {
