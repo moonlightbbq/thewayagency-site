@@ -31,7 +31,7 @@ const {
 
 // A synthetic test secret (the real one lives only in the sage .env and the
 // repository's Actions secrets).
-const SECRET = 'TEST-vector-secret-0123456789abcdef0123';
+const SECRET = 'test-vector-secret-test-vector-secret';
 
 function frontmatter(md) {
   const m = md.match(/^---\n([\s\S]*?)\n---/);

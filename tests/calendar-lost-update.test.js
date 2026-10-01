@@ -138,7 +138,7 @@ describe('saveCalendar does not clobber a concurrent writer', () => {
 
   test('a signed approval written after our read survives our write whole, approved_publish_date included, and still verifies', () => {
     const { signApproval, approvalSigned } = require('../scripts/lib/review-credit');
-    const secret = 'TEST-vector-secret-0123456789abcdef0123';
+    const secret = 'test-vector-secret-test-vector-secret';
     const mine = q.loadCalendar();
     const theirs = read();
     const approval = {

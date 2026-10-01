@@ -35,10 +35,10 @@ const {
 const SAGE = 'https://sage-test.example.com';
 const q = require('../scripts/lib/content-queue');
 
-const SECRET = 'TEST-vector-secret-0123456789abcdef0123';
+const SECRET = 'test-vector-secret-test-vector-secret';
 const VECTOR_BYTES = Buffer.from('---\ntitle: "Café Test Vector"\nslug: test-vector-post\n---\n\nBody with é and — dash.\n', 'utf8');
 const VECTOR = { slug: 'test-vector-post', reviewerEmail: 'Test.Reviewer@Example.com', publishDate: '2099-12-31', content: VECTOR_BYTES };
-const VECTOR_TOKEN = '20991231.c0841c3afd9ee10b.N8Q5Xb55k2ygrr3vfLRBrg';
+const VECTOR_TOKEN = '20991231.c0841c3afd9ee10b.B052nW4erF6M4Z3xZk-Q_S';
 
 // SAGE's signature on an approval (sage-server src/email/blog-review-guard.js
 // signApproval, written to the calendar entry as approval_mac). The site
@@ -50,9 +50,9 @@ const APPROVAL_VECTOR = {
   approved_date: '2099-12-30', approved_publish_date: '2099-12-31',
 };
 // v2 (BL-07 fix round 3): the date the post was approved for is signed too.
-const APPROVAL_VECTOR_MAC = '0DMvzj3DMuuWwM1113eNOpOct7puPEZ_Mdy9zMu0FFE';
+const APPROVAL_VECTOR_MAC = 'EPUWxWuHILz7Ij6xqWF2y-5Z5XwKmwj69L1S6bWxblM';
 const APPROVAL_VECTOR_EDIT_ID = '00000000-0000-4000-8000-000000000001';
-const APPROVAL_VECTOR_MAC_EDIT = 'c4hcXpDzmIHSgmZ8pQOj3LlJHc9rO--jSoc6Si8LQp4';
+const APPROVAL_VECTOR_MAC_EDIT = 'V2wUEcagIbhRYC-Ld3n-9sbbAiNs-A58re6vwJnK-h4';
 
 describe('the approval signature (approval_mac)', () => {
   const rc = require('../scripts/lib/review-credit');

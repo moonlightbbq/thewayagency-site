@@ -30,7 +30,7 @@ const { spawnSync } = require('child_process');
 const REPO = path.join(__dirname, '..');
 const { signApproval } = require('../scripts/lib/review-credit');
 
-const SECRET = 'TEST-vector-secret-0123456789abcdef0123';
+const SECRET = 'test-vector-secret-test-vector-secret';
 const sha = (s) => crypto.createHash('sha256').update(Buffer.from(s, 'utf8')).digest('hex');
 const body = Array.from({ length: 240 }, (_, i) => `word${i}`).join(' ');
 // The synthetic team's first name is "Test": a title or description that put
