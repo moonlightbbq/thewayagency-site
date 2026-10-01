@@ -121,7 +121,7 @@ for (const post of calendar.year1) {
     continue;
   }
 
-  // A post that went out for review publishes crediting its reviewer.
+  // A post a reviewer actually approved publishes crediting its reviewer.
   //
   // This used to overwrite `author` with the reviewer's name, which credited
   // them with writing a post they had only checked. The two are separate
@@ -129,20 +129,23 @@ for (const post of calendar.year1) {
   // and generate-blog.js renders "Written by" and "Reviewed by" from the two
   // different fields.
   //
-  // Review here is by no objection, which is what the review email states:
-  // the article publishes as written unless the reviewer replies. So an
-  // assignment that reached its publish date without a change request IS the
-  // review, and the reviewer is named for it. A post nobody was asked to
-  // review still gets no review line at all.
-  if (post.reviewer && post.reviewer_slug) {
+  // The licensed review stays ADVISORY for publishing (scripts/lib/calendar-
+  // status.js): a post whose reviewer never replied still publishes on its
+  // date. But silence is not a review, so it makes no "Reviewed by" claim. The
+  // byline names the reviewer only when they approved it: sage's blog-review
+  // reply handler records approved_by and approved_date when the reviewer
+  // replies "Approved" (BL-06 / AIA-002). A post nobody was asked to review
+  // gets no review line either.
+  if (post.reviewer && post.reviewer_slug && post.approved_by) {
     let md = fs.readFileSync(mdFile, 'utf8');
     // The reviewer's REAL title, from team.json — never a hardcoded one. This
     // used to stamp "Licensed Agent" on everyone, which published six posts
     // crediting a Client Care Specialist as a Licensed Agent, in the visible
     // byline AND in the JSON-LD `jobTitle` schema.
     const title = reviewerTitle(post.reviewer_slug, post.reviewer);
-    // The date it went to them for review, which is when they read it.
-    const reviewed = String(post.review_sent_date || post.publish_date).slice(0, 10);
+    // The date they approved it; older entries fall back to the date it went
+    // to them for review.
+    const reviewed = String(post.approved_date || post.review_sent_date || post.publish_date).slice(0, 10);
 
     const fields = {
       reviewer: post.reviewer,
