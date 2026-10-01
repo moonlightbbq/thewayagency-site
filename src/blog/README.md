@@ -42,14 +42,24 @@ Both are trust signals on a regulated-industry page, so neither is free text
 - **"Written by"** is the agency ("Written by The Way Agency") unless a team
   member actually wrote the post. Then add `author_slug` with their slug from
   `data/team.json`; the page prints their name and title as `data/team.json`
-  gives them. `author` and `author_title`, if present, must be exactly that
-  name and title, or the post does not publish. An AI-drafted post is written
-  by the agency: do not put a person's name on text they did not write.
+  gives them, so a new title shows on all their posts. `author` and
+  `author_title` are never printed; the build warns when they differ from
+  `data/team.json`. A slug that names no member (someone who left) prints
+  "Written by The Way Agency"; the post stays up. An AI-drafted post is written
+  by the agency: do not put a person's name on text they did not write (SAGE
+  refuses to promote an AI draft with an `author_slug` unless that person
+  approves it).
 - **"Reviewed by"** is never written here. It renders only for the assigned
   reviewer's approval in SAGE of the exact file. No front-matter value (title,
-  description, CTA text, image alt text, ...) and no sentence in the article
-  may say that the post was reviewed, approved, checked, vetted or verified by
-  a team member, the agency or a licensed agent: such a post does not publish
+  description, CTA text, image alt text, ...) may use a review word (review,
+  approve, check, verify, vet, edit, audit, endorse, certify, sign off, ...)
+  together with a team member's name, the agency, "licensed", agent, principal,
+  producer, staff or expert, in any order: "Ask your agent to check your
+  coverage" is refused in a title or description too (a "coverage review" or
+  "premium audit" is fine). No sentence in the article (including an FAQ
+  answer, and across a line break) may put a review word next to a team
+  member's name, or credit a review or approval of the post to the agency or
+  a licensed agent. Such a post does not publish
   (`unsafe_frontmatter` / `review_claim_in_body`).
 - `reading_time` is "N min" or "N min read" (or leave it out: it is computed).
   `date` and `modified` are YYYY-MM-DD. Values are plain text: no `<` or `>`,

@@ -46,7 +46,11 @@ function frontmatter(md) {
 
 const sha = (s) => crypto.createHash('sha256').update(Buffer.from(s, 'utf8')).digest('hex');
 const body = Array.from({ length: 240 }, (_, i) => `word${i}`).join(' ');
-const post = (slug, extra = '') => `---\ntitle: SYNTHETIC ${slug}\ndescription: SYNTHETIC description for ${slug}\ndate: 2026-01-07\n${extra}---\n\n${body}\n`;
+// The synthetic team's first name is "Test": a title or description that put
+// it beside a credit word ("test-approved-review") is refused like a real name
+// would be (blog-content-guard.js), so the slug goes in without its prefix.
+const named = (slug) => slug.replace(/^test-/, '');
+const post = (slug, extra = '') => `---\ntitle: SYNTHETIC ${named(slug)}\ndescription: SYNTHETIC description for ${named(slug)}\ndate: 2026-01-07\n${extra}---\n\n${body}\n`;
 const REVIEWER = { name: 'Test Reviewer B', slug: 'test-reviewer-b', email: 'test-reviewer-b@example.com', title: 'Licensed Test Agent' };
 const TEAM = [{ name: REVIEWER.name, slug: REVIEWER.slug, email: REVIEWER.email, title: REVIEWER.title, license_states: ['KY'] }];
 const REVIEW_KEYS = ['reviewer', 'reviewer_slug', 'reviewer_title', 'reviewed_date', 'reviewed_by'];
@@ -130,7 +134,7 @@ describe('publish-scheduled-posts: silence and a matching approval', () => {
       for (const k of REVIEW_KEYS) assert.equal(meta[k], undefined, `${slug}: ${k} must not be stamped without an approval in SAGE`);
       const keys = site.read(slug).split('\n---\n')[0].split('\n').map(frontMatterKey).filter(Boolean);
       assert.deepEqual(keys.filter(isReviewerKey), [], `${slug}: no review key in any spelling survives`);
-      assert.equal(meta.title, `SYNTHETIC ${slug}`);
+      assert.equal(meta.title, `SYNTHETIC ${named(slug)}`);
       assert.equal(site.entry(slug).credited_sha256, undefined);
       assert.equal(site.entry(slug).credit_mac, undefined);
     }
@@ -149,7 +153,14 @@ describe('publish-scheduled-posts: silence and a matching approval', () => {
     const e = site.entry('test-approved-review');
     assert.equal(e.credited_sha256, sha256Hex(fs.readFileSync(path.join(site.tmp, 'src', 'blog', 'test-approved-review.md'))));
     assert.match(e.credit_mac, /^[A-Za-z0-9_-]{43}$/);
-    assert.deepEqual(creditCheck(e, fs.readFileSync(path.join(site.tmp, 'src', 'blog', 'test-approved-review.md')), { secret: SECRET }), { credit: true, reason: 'credited' });
+    const bytes = fs.readFileSync(path.join(site.tmp, 'src', 'blog', 'test-approved-review.md'));
+    assert.deepEqual(creditCheck(e, bytes, { secret: SECRET, team: TEAM }), { credit: true, reason: 'credited' });
+    // Fix round 5: the credit is re-checked against data/team.json at render.
+    // A reviewer who left, or lost their licences, is credited no longer.
+    const gone = { credit: false, reason: 'the credited reviewer is no longer a licensed data/team.json member' };
+    assert.deepEqual(creditCheck(e, bytes, { secret: SECRET, team: [] }), gone);
+    assert.deepEqual(creditCheck(e, bytes, { secret: SECRET, team: [{ ...TEAM[0], license_states: [] }] }), gone);
+    assert.deepEqual(creditCheck(e, bytes, { secret: SECRET }), gone, 'no team list, no credit');
   });
 });
 
@@ -295,9 +306,7 @@ describe('front matter the renderer would refuse does not publish (fix round 3)'
     ['full-width letters', 'author_title: \uFF32\uFF45\uFF56\uFF49\uFF45\uFF57\uFF45\uFF44 by Test Reviewer B, Licensed Agent\n'],
     ['a synonym ("Approved by")', 'author_title: Approved by Test Reviewer B, Licensed Agent on December 1, 2025\n'],
     ['reading_time that is not "N min read"', 'reading_time: 6 min read | Vetted by our licensed agents\n'],
-    ['an author who is not the author_slug member', `author_slug: ${REVIEWER.slug}\nauthor: Someone Else\n`],
     ['an author_title that is not the member\'s', `author_slug: ${REVIEWER.slug}\nauthor: ${REVIEWER.name}\nauthor_title: Licensed Agent | Reviewed by ${REVIEWER.name}\n`],
-    ['an author_slug that names no team member', 'author_slug: test-nobody\n'],
     ['a credit in the title', `title: SYNTHETIC guide \u2014 Reviewed by ${REVIEWER.name}, Licensed Agent\n`],
     ['a credit in the CTA banner', `cta_title: Reviewed by ${REVIEWER.name}, Licensed Agent\n`],
     ['a credit in the CTA text', 'cta_text: Fact-checked by our licensed agents.\n'],
@@ -315,6 +324,33 @@ describe('front matter the renderer would refuse does not publish (fix round 3)'
         assert.equal(site.entry('test-unsafe').status, 'error');
         assert.equal(site.entry('test-unsafe').error_reason, 'unsafe_frontmatter');
         assert.equal(site.read('test-unsafe'), file, 'nothing written');
+      } finally {
+        fs.rmSync(site.tmp, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+describe('who the byline names never stops a post publishing (fix round 5)', () => {
+  // Round 4 refused these, so an offboarding or a new title in data/team.json
+  // took live posts off the site. author and author_title are never printed:
+  // the byline is the member author_slug names, as team.json gives them, or
+  // the agency (blog-content-guard.js bylineAuthor). A BL-06 promote in SAGE
+  // still refuses them for new text (bylineProblem).
+  for (const [label, extra] of [
+    ['an author who is not the author_slug member', `author_slug: ${REVIEWER.slug}\nauthor: Someone Else\n`],
+    ['an author_title that is not the member\'s', `author_slug: ${REVIEWER.slug}\nauthor: ${REVIEWER.name}\nauthor_title: Client Care Specialist\n`],
+    ['an author_slug that names no team member', 'author_slug: test-nobody\n'],
+  ]) {
+    test(label, () => {
+      const file = post('test-byline-stale', extra);
+      const site = runSite('publish-scheduled-posts.js', {
+        entries: [{ slug: 'test-byline-stale', title: 'SYNTHETIC byline', publish_date: '2026-01-07', status: 'planned' }],
+        files: { 'test-byline-stale': file },
+      });
+      try {
+        assert.equal(site.run.status, 0, site.run.stdout);
+        assert.equal(site.entry('test-byline-stale').status, 'published');
       } finally {
         fs.rmSync(site.tmp, { recursive: true, force: true });
       }
@@ -408,7 +444,7 @@ describe('reconcile-calendar keeps a verified credit across its own date rewrite
       assert.equal(site.run.status, 0, site.run.stdout);
       const bytes = fs.readFileSync(path.join(site.tmp, 'src', 'blog', 'test-rc-credit.md'));
       assert.equal(frontmatter(bytes.toString('utf8')).date, '2026-01-07');
-      assert.deepEqual(creditCheck(site.entry('test-rc-credit'), bytes, { secret: SECRET }), { credit: true, reason: 'credited' });
+      assert.deepEqual(creditCheck(site.entry('test-rc-credit'), bytes, { secret: SECRET, team: TEAM }), { credit: true, reason: 'credited' });
     } finally {
       fs.rmSync(site.tmp, { recursive: true, force: true });
     }
@@ -419,7 +455,7 @@ describe('reconcile-calendar keeps a verified credit across its own date rewrite
     const site = runSite('reconcile-calendar.js', { args: ['--apply'], entries: [{ ...entry, credit_mac: 'x'.repeat(43) }], files: { 'test-rc-credit': md } });
     try {
       const bytes = fs.readFileSync(path.join(site.tmp, 'src', 'blog', 'test-rc-credit.md'));
-      assert.equal(creditCheck(site.entry('test-rc-credit'), bytes, { secret: SECRET }).credit, false);
+      assert.equal(creditCheck(site.entry('test-rc-credit'), bytes, { secret: SECRET, team: TEAM }).credit, false);
       assert.match(site.run.stdout, /not carried to the new bytes/);
     } finally {
       fs.rmSync(site.tmp, { recursive: true, force: true });

@@ -64,11 +64,18 @@ function copyBlogPages(SRC, BUILD, injectVersion) {
   if (blogCount > 0) console.log(`  ✓ Copied ${blogCount} blog pages (including index)`);
 }
 
+/**
+ * Run scripts/generate-blog.js. A failure fails the build: the generator is
+ * the review gate (sage-server BL-07), and it exits nonzero rather than render
+ * when it cannot tell a held post from a due one (an unreadable content
+ * calendar). Logging and carrying on deployed whatever build/blog/ held.
+ */
 function runBlogGenerator(ROOT) {
   try {
     execSync('node scripts/generate-blog.js', { cwd: ROOT, stdio: 'inherit' });
   } catch (e) {
-    console.log('  ! Blog generation error: ' + e.message);
+    console.error('\n✗ Blog generation failed: ' + e.message);
+    throw new Error('Blog generation failed (scripts/generate-blog.js exited nonzero); see its output above.');
   }
 }
 

@@ -37,8 +37,9 @@
  *   Answer paragraph. (H3s starting with "FAQ:" become FAQ accordion items)
  *
  * The byline prints the data/team.json member author_slug names (their name
- * and title from team.json), or "The Way Agency" without one; author and
- * author_title, if present, must match that member (src/blog/README.md).
+ * and title from team.json), or "The Way Agency" without one (or when the slug
+ * names no member). author and author_title are never printed; the build warns
+ * when they disagree with team.json (src/blog/README.md).
  */
 
 const fs = require('fs');
@@ -109,6 +110,21 @@ function safeHref(url) {
   // Browsers drop ASCII control characters and spaces inside a scheme.
   const scheme = String(url).replace(/[\u0000-\u0020]/g, '').toLowerCase();
   return /^(?:javascript|vbscript|data):/.test(scheme) ? '#' : url;
+}
+
+/**
+ * The text a reader sees in rendered body HTML: whitespace collapsed as a
+ * browser collapses it (a line break inside a paragraph is a space), each
+ * block on a line of its own, inline markup removed, entities decoded. The
+ * renderer checks this, and each FAQ question and answer as printed, for a
+ * review credit: what the page shows, not only what the markdown says.
+ */
+function printedText(html) {
+  return String(html === undefined || html === null ? '' : html)
+    .replace(/\s+/g, ' ')
+    .replace(/<\/?(?:p|h[1-6]|li|ul|ol|blockquote|div|hr|br|section|table|thead|tbody|tr|td|th|figure|figcaption|nav|pre)\b[^>]*>/gi, '\n')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 }
 
 // ─── Simple Markdown to HTML converter ──────
@@ -769,7 +785,7 @@ ${renderScripts()}
 // when this file is the program: `node scripts/generate-blog.js`, as
 // scripts/builders/blog-helpers.js runs it. (A top-level return is legal in a
 // CommonJS module.)
-module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, markdownToHtml, parseFrontMatter, generateBlogPost };
+module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, printedText, markdownToHtml, parseFrontMatter, extractFAQs, generateBlogPost };
 if (require.main !== module) return;
 
 // ─── Build ──────────────────────────────────
@@ -802,11 +818,15 @@ if (!fs.existsSync(BLOG_BUILD)) {
 //   - the "Written by" byline is a data/team.json member (their name and
 //     title as team.json gives them) or the agency, never front-matter text;
 //   - a post whose front matter carries markup, an invisible or look-alike
-//     character, an unsafe slug, an author that is not the team member its
-//     author_slug names, or a review or approval credit in any value the page
-//     prints, or whose body states a credit naming the team, the agency or a
-//     licensed agent, is not rendered at all (blog-content-guard.js, through
-//     review-credit.js renderDecision);
+//     character, an unsafe slug, or a review or approval credit in any value
+//     the page prints, or whose body states a credit naming the team, the
+//     agency or a licensed agent (read as the page prints it), is not rendered
+//     at all (blog-content-guard.js, through review-credit.js renderDecision);
+//     and the text this run actually rendered (the body, each FAQ question
+//     and answer) is checked again before the page is written;
+//   - without a readable content calendar nothing is rendered and the build
+//     fails: holds and errors cannot be told apart from silence, and the last
+//     deploy stays live;
 //   - a calendar post renders only from its own file, under its own slug;
 //   - build/blog/ ends up holding only the pages this run rendered and the
 //     frozen hand-made pages (scripts/lib/legacy-blog-pages.js) no markdown
@@ -842,21 +862,28 @@ const calendarEntries = (() => {
   const bySlug = new Map();
   const calPath = path.join(DATA, 'content-calendar.json');
   try {
-    if (!fs.existsSync(calPath)) return { bySlug, error: null };
+    if (!fs.existsSync(calPath)) return { bySlug, calendar: null, error: 'the file is missing' };
     const cal = JSON.parse(fs.readFileSync(calPath, 'utf8'));
+    if (!cal || typeof cal !== 'object' || (!Array.isArray(cal.existing_posts) && !Array.isArray(cal.year1))) {
+      return { bySlug, calendar: null, error: 'it has neither an existing_posts nor a year1 list' };
+    }
     for (const list of [cal.existing_posts, cal.year1]) {
       for (const p of Array.isArray(list) ? list : []) if (p && p.slug) bySlug.set(p.slug, p);
     }
-    return { bySlug, error: null };
+    return { bySlug, calendar: cal, error: null };
   } catch (err) {
-    return { bySlug, error: err && err.message ? err.message : String(err) };
+    return { bySlug, calendar: null, error: err && err.message ? err.message : String(err) };
   }
 })();
 if (calendarEntries.error) {
-  // Fail-open for PUBLICATION (the whole blog would otherwise vanish, and the
-  // publish workflow and the index step below stop on the same file), but
-  // fail-closed for CREDIT: with no calendar there is no approval to verify.
-  console.log(`  ! content-calendar.json could not be read (${calendarEntries.error}): holds CANNOT be identified, so no post is skipped for a hold, and no reviewer is credited`);
+  // Fail closed. Without the calendar a post on a reviewer's change-request
+  // hold, one in 'error' and one not yet due all look uncalendared, and would
+  // render on their front-matter dates: text a reviewer objected to would go
+  // live. So nothing is rendered or removed, and the build fails (scripts/
+  // build.js stops on this exit code); Cloudflare Pages keeps the last deploy.
+  console.error(`  ✗ data/content-calendar.json could not be read (${calendarEntries.error}). Holds and errors cannot be identified, `
+    + 'so no blog post is rendered and the build fails. Restore the file from git history (the last good commit) and rebuild.');
+  process.exit(1);
 }
 const REVIEW_TEAM = (() => {
   try {
@@ -907,20 +934,18 @@ if (fs.existsSync(BLOG_SRC)) {
         console.log(`  ! Skipping ${file}  -  slug mismatch: it is the calendar post "${stem}" but its front matter says slug "${peek.slug}"`);
         continue;
       }
-      const text = rawBytes.toString('utf8');
-      const unsafe = calendarEntries.error ? frontMatterProblem(text, REVIEW_TEAM) : null;
-      const claim = calendarEntries.error && !unsafe ? bodyProblem(text, REVIEW_TEAM) : null;
-      const decision = calendarEntries.error
-        ? (unsafe || claim
-          ? { render: false, credit: false, markdown: '', why: unsafe ? `${unsafe} (unsafe_frontmatter)` : `${claim} (review_claim_in_body)` }
-          : { render: true, credit: false, markdown: text, why: 'calendar unreadable' })
-        : renderDecision(entry, rawBytes, REVIEW_TEAM, { secret: REVIEW_SECRET, today: RENDER_TODAY, isKnownStatus, isPublishable, isHeld });
+      const decision = renderDecision(entry, rawBytes, REVIEW_TEAM, { secret: REVIEW_SECRET, today: RENDER_TODAY, isKnownStatus, isPublishable, isHeld });
       if (!decision.render) {
         console.log(`  ~ Not rendered ${peek.slug}.html  -  ${decision.why}`);
         notRendered.set(peek.slug, decision.why);
         continue;
       }
 
+      if (!decision.credit && entry && (entry.credit_mac || entry.credited_sha256)) {
+        // A credit the publisher recorded no longer verifies (the file changed,
+        // the reviewer left or lost their licences, no secret here): say so.
+        console.log(`  ! ${peek.slug}: rendered with no reviewer credited  -  ${decision.why}`);
+      }
       const { meta, body } = parseFrontMatter(decision.markdown);
       if (!decision.credit) {
         // Whatever survived the strip (any spelling of a review key): no claim.
@@ -938,6 +963,25 @@ if (fs.existsSync(BLOG_SRC)) {
       let bodyHtml = markdownToHtml(cleanBody);
       // Enhance first paragraph with text-lg class (matches hand-crafted posts)
       bodyHtml = bodyHtml.replace(/^<p>/, '<p class="text-lg">');
+      // What the page will show, checked as shown: the guard reads the
+      // markdown the way this renderer prints it, and this catches any way the
+      // two differ (sage-server BL-07, AIA-018).
+      const printed = [printedText(bodyHtml), ...faqs.flatMap((f) => [f.question, f.answer])];
+      const printedClaim = printed.map((t) => contentGuard.reviewClaimIn(t, REVIEW_TEAM)).find(Boolean);
+      if (printedClaim) {
+        const why = `the rendered page states a review or approval credit ("${printedClaim}") (review_claim_in_body)`;
+        console.log(`  ~ Not rendered ${meta.slug}.html  -  ${why}`);
+        notRendered.set(meta.slug, why);
+        continue;
+      }
+      // author and author_title are never printed; say so when they disagree
+      // with data/team.json (a new title, a member who left), so the front
+      // matter can be brought in line. The post renders either way.
+      const bylineIssue = contentGuard.bylineProblem(decision.markdown, REVIEW_TEAM);
+      if (bylineIssue) {
+        const printedAuthor = contentGuard.bylineAuthor(meta, REVIEW_TEAM);
+        console.log(`  ! ${meta.slug}: ${bylineIssue}; the byline prints ${printedAuthor ? `${printedAuthor.name} as data/team.json gives them` : contentGuard.AGENCY_AUTHOR}`);
+      }
       const html = generateBlogPost(meta, bodyHtml, faqs, { team: REVIEW_TEAM });
 
       fs.writeFileSync(path.join(BLOG_BUILD, `${meta.slug}.html`), html);
@@ -965,33 +1009,41 @@ for (const file of fs.readdirSync(BLOG_BUILD)) {
 }
 
 // 2. Generate blog index from content-calendar.json
-const calendarPath = path.join(DATA, 'content-calendar.json');
-if (fs.existsSync(calendarPath)) {
-  const calendar = JSON.parse(fs.readFileSync(calendarPath, 'utf8'));
+const calendar = calendarEntries.calendar;
+{
+  // Calendar titles and descriptions come from the Hive topic planner and the
+  // backlog: a person approves them as topics, not as credit-free text. They
+  // print on the index cards, the Related Articles cards and the RSS feed, so
+  // they get the front-matter wording check. A card whose calendar text states
+  // a credit uses the rendered post's own front matter (which passed the same
+  // check), or is left out when there is none (sage-server BL-07, AIA-018).
+  const renderedMeta = new Map(posts.map((m) => [m.slug, m]));
+  const credits = (v) => contentGuard.reviewClaimIn(String(v === undefined || v === null ? '' : v), REVIEW_TEAM, { strict: true });
+  const card = (post) => {
+    const own = renderedMeta.get(post.slug);
+    let { title, description } = post;
+    if (credits(title)) {
+      if (!own) {
+        console.log(`  ~ No card for ${JSON.stringify(String(post.slug)).slice(0, 80)}  -  its calendar title states a review or approval credit and no rendered post supplies one`);
+        return null;
+      }
+      console.log(`  ! ${post.slug}: its calendar title states a review or approval credit; the cards use the post's own title`);
+      title = own.title;
+    }
+    if (credits(description)) {
+      console.log(`  ! ${post.slug}: its calendar description states a review or approval credit; the cards use the post's own description`);
+      description = own ? own.description || '' : '';
+    }
+    return { slug: post.slug, title, description, publish_date: post.publish_date };
+  };
 
   // Collect all published posts: existing_posts + year1 entries with status "published"
   const allPublished = [];
 
-  for (const post of (calendar.existing_posts || [])) {
-    if (post.status === 'published') {
-      allPublished.push({
-        slug: post.slug,
-        title: post.title,
-        description: post.description,
-        publish_date: post.publish_date
-      });
-    }
-  }
-
-  for (const post of (calendar.year1 || [])) {
-    if (post.status === 'published') {
-      allPublished.push({
-        slug: post.slug,
-        title: post.title,
-        description: post.description,
-        publish_date: post.publish_date
-      });
-    }
+  for (const post of [...(calendar.existing_posts || []), ...(calendar.year1 || [])]) {
+    if (!post || post.status !== 'published') continue;
+    const c = card(post);
+    if (c) allPublished.push(c);
   }
 
   // Also include any markdown posts we just generated that aren't in the calendar
@@ -1062,13 +1114,14 @@ ${related.map(p => `          <a href="/blog/${esc(p.slug)}.html" class="card" s
       }
     }
   }
-} else {
-  console.log('  ! No content-calendar.json found — skipping index generation');
 }
 
 // 3. Generate enhanced RSS feed
 const rssItems = [];
-const rssPosts = (typeof allPublishedFiltered !== 'undefined' ? allPublishedFiltered : posts.map(m => ({ slug: m.slug, title: m.title, description: m.description || '', publish_date: m.date }))).slice(0, 20);
+// The rendered posts, with their own front matter (wording-checked above).
+// This always was the feed: it read a block-scoped list from step 2 through
+// `typeof`, which is undefined out here, so calendar titles never reached it.
+const rssPosts = posts.map(m => ({ slug: m.slug, title: m.title, description: m.description || '', publish_date: m.date })).slice(0, 20);
 // Build author/category map from posts metadata
 const postMetaMap = {};
 for (const m of posts) postMetaMap[m.slug] = m;

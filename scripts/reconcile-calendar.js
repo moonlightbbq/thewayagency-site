@@ -154,7 +154,7 @@ for (const post of calendar.year1) {
     // A published post credited for its old bytes keeps its credit: the date
     // rewrite is this script's own, so the credit record moves to the new
     // bytes, but only when it verified for the old ones.
-    const keepCredit = isPublished && creditCheck(post, Buffer.from(md, 'utf8'), { secret: SECRET }).credit;
+    const keepCredit = isPublished && creditCheck(post, Buffer.from(md, 'utf8'), { secret: SECRET, team: TEAM }).credit;
     if (isPublished && !keepCredit && post.credit_mac) {
       console.log(`      (its "Reviewed by" credit ${SECRET ? 'did not verify for the old bytes' : 'cannot be verified without BLOG_REVIEW_TOKEN_SECRET'}, so it is not carried to the new bytes)`);
     }

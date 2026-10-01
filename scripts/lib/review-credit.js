@@ -296,10 +296,14 @@ function approvalCheck(post, rawBytes, team, { secret = null } = {}) {
 
 /**
  * Whether a 'published' entry's "Reviewed by" may render: the publisher
- * credited it after approvalCheck, and the file is still the one it committed.
+ * credited it after approvalCheck, the file is still the one it committed,
+ * and the reviewer is still a licensed data/team.json member (one who left
+ * or lost their licences is credited no longer: the page renders uncredited).
+ * @param {{secret?: string|null, team?: Array}} [opts]  team: data/team.json's
+ *   team list; without it no credit renders
  * @returns {{credit: boolean, reason: string}}
  */
-function creditCheck(post, rawBytes, { secret = null } = {}) {
+function creditCheck(post, rawBytes, { secret = null, team = null } = {}) {
   if (!post || post.status !== 'published') return { credit: false, reason: 'not published' };
   if (!post.credited_sha256 && !post.credit_mac) return { credit: false, reason: 'no credit recorded' };
   if (!secret) return { credit: false, reason: 'BLOG_REVIEW_TOKEN_SECRET is not set here, so the credit cannot be verified' };
@@ -310,6 +314,10 @@ function creditCheck(post, rawBytes, { secret = null } = {}) {
   }
   const message = _creditMessage(post);
   if (!message || !_macEqual(post.credit_mac, _hmac(secret, message))) return { credit: false, reason: 'the credit record is not the publisher\'s' };
+  const member = _member(team, post);
+  if (!member || !Array.isArray(member.license_states) || member.license_states.length === 0) {
+    return { credit: false, reason: 'the credited reviewer is no longer a licensed data/team.json member' };
+  }
   return { credit: true, reason: 'credited' };
 }
 
@@ -317,10 +325,11 @@ function creditCheck(post, rawBytes, { secret = null } = {}) {
  * Why a post's front matter is unsafe to publish or render, or null
  * (scripts/lib/blog-content-guard.js, the same file sage-server's BL-06
  * promote and BL-07 approval check): markup or an invisible, control or
- * look-alike character in a value, an unsafe slug, an author_slug that names
- * no data/team.json member or an author/author_title that is not that
- * member's, a reading_time or date that is not the plain form, or a review or
- * approval credit in any value the page prints. Defence in depth behind the
+ * look-alike character in a value, an unsafe slug, a reading_time or date
+ * that is not the plain form, or a review or approval credit in any value the
+ * page prints. Who the byline names is not a reason: the renderer prints the
+ * data/team.json member author_slug names, or the agency (bylineAuthor), so a
+ * team.json edit never takes a post off the site. Defence in depth behind the
  * renderer's output encoding (every value stays text) and its byline (printed
  * from data/team.json and a signed approval only).
  * @param {string} md
@@ -330,7 +339,12 @@ function frontMatterProblem(md, team) {
   return contentGuard.frontMatterProblem(md, team);
 }
 
-/** Why a post's body is unsafe to publish or render (a review or approval credit naming the team, the agency or a licensed agent), or null. */
+/**
+ * Why a post's body is unsafe to publish or render, or null: a review or
+ * approval credit naming the team, the agency or a licensed agent in any text
+ * the page prints from it (the body with in-paragraph line breaks folded as
+ * the page prints them, and each FAQ question and answer).
+ */
 function bodyProblem(md, team) {
   return contentGuard.bodyProblem(md, team);
 }
@@ -425,7 +439,7 @@ function renderDecision(entry, rawBytes, team, opts) {
   if (status === 'error') return { render: false, credit: false, markdown: '', why: `the publisher put it in error (${entry.error_reason || 'no reason recorded'})` };
   if (!isKnownStatus(status)) return { render: false, credit: false, markdown: '', why: `unrecognised calendar status "${status}"` };
   if (status === 'published') {
-    const c = creditCheck(entry, rawBytes, { secret });
+    const c = creditCheck(entry, rawBytes, { secret, team });
     return { render: true, credit: c.credit, markdown: c.credit ? text : stripped(), why: c.credit ? 'published, credited' : `published, no reviewer credited (${c.reason})` };
   }
   if (!isPublishable(status)) return { render: false, credit: false, markdown: '', why: `status "${status}" does not publish` };

@@ -235,7 +235,7 @@ if (errors.length > 0) {
   console.log('  Calendar status set to "error" with error_reason and error_at.');
   console.log('  missing_*/content_too_short: investigate the sage Hive blog-writer pipeline.');
   console.log('  unsafe_frontmatter: a front-matter value carries markup, an invisible or look-alike character or a review credit,');
-  console.log('  a slug is unsafe, or the author is not the data/team.json member author_slug names. Fix the markdown by hand.');
+  console.log('  or a slug, date or reading_time is not in its plain form. Fix the markdown by hand.');
   console.log('  review_claim_in_body: the article text says it was reviewed or approved by the team, the agency or a licensed agent.');
   console.log('  Only the reviewer\'s approval in SAGE credits a review, in the byline. Remove the sentence.');
   console.log('  approval_*/approved_bytes_changed: the post changed after its reviewer approved it in SAGE, it was rescheduled,');

@@ -197,11 +197,22 @@ describe('subjects and links', () => {
   });
 
   test('sage parses and verifies what this script sends (when a sage checkout is beside this repo)', (t) => {
-    // Same resolution as calendar-status-contract.test.js. blog-review-guard.js
-    // is pure (it requires only crypto), so loading it has no side effects.
-    const guardPath = process.env.SAGE_GUARD_PATH || path.resolve(ROOT, '..', 'sage-main', 'src', 'email', 'blog-review-guard.js');
-    if (!fs.existsSync(guardPath)) { t.skip('sage is not checked out beside this repo'); return; }
+    // sage-server src/email/blog-review-guard.js (the email and approval-MAC
+    // guard, NOT src/services/blog-content-guard.js). SAGE_REVIEW_GUARD_PATH
+    // names it (SAGE_GUARD_PATH, the old name, still works); otherwise a sage
+    // checkout beside this repo, as calendar-status-contract.test.js finds it.
+    // It is pure (it requires only crypto), so loading it has no side effects.
+    const named = process.env.SAGE_REVIEW_GUARD_PATH || process.env.SAGE_GUARD_PATH || '';
+    const guardPath = named || [
+      path.resolve(ROOT, '..', 'sage-main', 'src', 'email', 'blog-review-guard.js'),
+      path.resolve(ROOT, '..', 'sage-server', 'src', 'email', 'blog-review-guard.js'),
+    ].find((p) => fs.existsSync(p));
+    if (!guardPath) { t.skip('no sage checkout beside this repo: set SAGE_REVIEW_GUARD_PATH to sage-server src/email/blog-review-guard.js'); return; }
+    assert.ok(fs.existsSync(guardPath), `SAGE_REVIEW_GUARD_PATH ${guardPath} does not exist`);
     const guard = require(guardPath);
+    const missing = ['sha256Hex', 'parseReviewSubject', 'verifyRequestToken', 'approvalMacMessage', 'signApproval'].filter((f) => typeof guard[f] !== 'function');
+    if (missing.length && !named) { t.skip(`the sage checkout at ${guardPath} predates BL-07 (no ${missing.join(', ')})`); return; }
+    assert.deepEqual(missing, [], `${guardPath} is not sage-server src/email/blog-review-guard.js (it has no ${missing.join(', ')}): point SAGE_REVIEW_GUARD_PATH at that file`);
     const contentSha256 = guard.sha256Hex(VECTOR_BYTES);
     for (const subject of [`RE: ${buildReviewSubjects(post, VECTOR_TOKEN).email}`, buildReviewSubjects(post, VECTOR_TOKEN).reply]) {
       const parsed = guard.parseReviewSubject(subject);
@@ -309,6 +320,18 @@ describe('a held post never renders, and is loud when its date arrives', () => {
     const unknown = ids('awaiting-legal').filter(v => v.id === 'I7');
     assert.equal(unknown.length, 1);
     assert.match(unknown[0].message, /unrecognised status "awaiting-legal"/);
+  });
+
+  test('a failed review step (a send, or the secret missing) does not stop the publish, and still fails the run (fix round 5)', () => {
+    const wf = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'publish-blog.yml'), 'utf8');
+    const review = wf.slice(wf.indexOf('- name: Send review emails'), wf.indexOf('- name: Update Google reviews'));
+    assert.match(review, /\n\s+continue-on-error: true\n/);
+    const publish = wf.slice(wf.indexOf('- name: Publish scheduled posts'), wf.indexOf('- name: Commit and push'));
+    assert.doesNotMatch(publish, /\bif:/, 'the publish step runs after a failed review step');
+    const last = wf.slice(wf.indexOf('- name: Fail the run if review emails failed'));
+    assert.ok(wf.indexOf('- name: Fail the run if review emails failed') > wf.indexOf('- name: Queue health'), 'it runs last');
+    assert.match(last, /if: \$\{\{ !cancelled\(\) && steps\.review\.outcome == 'failure' \}\}/);
+    assert.match(last, /exit 1/);
   });
 
   test('the workflow commits whatever changed (not only when a step reported output), and never after a failed publish', () => {

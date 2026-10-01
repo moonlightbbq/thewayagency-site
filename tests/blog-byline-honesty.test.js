@@ -112,7 +112,11 @@ describe('blog byline states only what the post can evidence', () => {
     const { bylineAuthor } = require('../scripts/lib/blog-content-guard');
     const team = [{ slug: 'test-author-q', name: 'Test Author Q', title: 'Licensed Test Agent' }];
     assert.equal(bylineAuthor({ author_slug: 'x"y' }, team), null, 'an unsafe slug names no one');
-    assert.equal(bylineAuthor({ author_slug: 'test-author-q', author: 'Someone Else' }, team), null, 'a name that is not the member\'s names no one');
+    assert.equal(bylineAuthor({ author_slug: 'test-nobody' }, team), null, 'a slug that names no member names no one');
+    // Fix round 5: author and author_title are never printed; team.json's
+    // name and title are, so a new title updates the byline (it used to drop
+    // to the agency, and round 4 took the post off the site).
+    assert.deepEqual(bylineAuthor({ author_slug: 'test-author-q', author: 'Someone Else' }, team), { slug: 'test-author-q', name: 'Test Author Q', title: 'Licensed Test Agent' });
     assert.deepEqual(bylineAuthor({ author_slug: 'test-author-q' }, team), { slug: 'test-author-q', name: 'Test Author Q', title: 'Licensed Test Agent' });
     assert.match(src, /"@type":\s*"Organization"/, 'agency-authored posts should use Organization');
   });

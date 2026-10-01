@@ -25,11 +25,17 @@ jobs:
           node-version: '18'
 
       # Step 1: Send review emails for posts due in ~2 weeks.
-      # Exit 0 = sent, or nothing was due. Exit 2 = a send FAILED, and this step
-      # must go red: the previous `if ... else ...` swallowed every exit code, so
-      # a two-month 403 outage reported green on every single run.
+      # Exit 0 = sent, or nothing was due. Exit 2 = a send FAILED, or
+      # BLOG_REVIEW_TOKEN_SECRET is unset or under 32 characters. The run must
+      # go red for it (the previous `if ... else ...` swallowed every exit code,
+      # so a two-month 403 outage reported green on every single run), but it
+      # must not stop today's posts: a review that cannot be requested credits
+      # no one, and the post publishes on its date as on silence. So the step
+      # continues on error, the publish below still runs, and the last step
+      # fails the run.
       - name: Send review emails
         id: review
+        continue-on-error: true
         env:
           SAGE_API_URL: ${{ secrets.SAGE_API_URL }}
           # BL-07: the public SAGE address the "Review and approve in SAGE" link
@@ -40,7 +46,7 @@ jobs:
           # BL-07: signs the review-request token SAGE verifies on the reviewer's
           # change request. Same value as BLOG_REVIEW_TOKEN_SECRET in the sage .env.
           # REQUIRED: unset (or under 32 characters), this step exits 2 before
-          # sending anything, and the run goes red.
+          # sending anything, and the run goes red (after the publish).
           BLOG_REVIEW_TOKEN_SECRET: ${{ secrets.BLOG_REVIEW_TOKEN_SECRET }}
         run: node scripts/send-review-emails.js
 
@@ -127,3 +133,12 @@ jobs:
       # Deliberately NOT fatal: I5 (thin backlog) is a planning signal.
       - name: Queue health
         run: node scripts/queue-status.js --fail-on I4,I2b,I6,I7
+
+      # Step 5: The review step continues on error so it cannot stop a publish
+      # (step 1); its failure still turns the run red, here, after everything
+      # else has run and been committed.
+      - name: Fail the run if review emails failed
+        if: ${{ !cancelled() && steps.review.outcome == 'failure' }}
+        run: |
+          echo "::error::Send review emails failed (see that step): a send failed, or BLOG_REVIEW_TOKEN_SECRET is unset or under 32 characters. Due posts were still published; no review was requested for the posts that step covers."
+          exit 1

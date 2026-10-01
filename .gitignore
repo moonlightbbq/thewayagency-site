@@ -6,3 +6,6 @@ node_modules/
 .env.*
 .DS_Store
 *.log
+
+# A worktree links node_modules (a symlink, not a directory): the bare form ignores it too.
+node_modules

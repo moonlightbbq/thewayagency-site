@@ -33,7 +33,11 @@ const { signApproval } = require('../scripts/lib/review-credit');
 const SECRET = 'TEST-vector-secret-0123456789abcdef0123';
 const sha = (s) => crypto.createHash('sha256').update(Buffer.from(s, 'utf8')).digest('hex');
 const body = Array.from({ length: 240 }, (_, i) => `word${i}`).join(' ');
-const post = (slug, extra = '', date = '2026-01-07') => `---\ntitle: SYNTHETIC ${slug}\nslug: ${slug}\ndescription: SYNTHETIC description for ${slug}\nauthor: The Way Agency\ndate: ${date}\n${extra}---\n\n${body}\n`;
+// The synthetic team's first name is "Test": a title or description that put
+// it beside a credit word ("test-approved-due") is refused like a real name
+// would be (blog-content-guard.js), so the slug goes in without its prefix.
+const named = (slug) => slug.replace(/^test-/, '');
+const post = (slug, extra = '', date = '2026-01-07') => `---\ntitle: SYNTHETIC ${named(slug)}\nslug: ${slug}\ndescription: SYNTHETIC description for ${named(slug)}\nauthor: The Way Agency\ndate: ${date}\n${extra}---\n\n${body}\n`;
 const REVIEWER = { name: 'Test Reviewer C', slug: 'test-reviewer-c', email: 'test-reviewer-c@example.com', title: 'Licensed Test Agent' };
 // An author (the byline's "Written by" prints a team.json member, never front-matter text).
 const AUTHOR = { name: 'Test Author Q', slug: 'test-author-q', email: 'test-author-q@example.com', title: 'Licensed Test Agent' };
@@ -191,19 +195,50 @@ describe('generate-blog renders no review claim without a signed approval', () =
   });
 });
 
-describe('an unreadable calendar', () => {
-  test('fails open for publication (the blog does not vanish) and closed for credit (no byline)', () => {
-    const md = post('test-unreadable');
-    const site = makeSite({ year1: [approved('test-unreadable', md)], files: { 'test-unreadable': md } });
+describe('a missing or unreadable calendar (fix round 5)', () => {
+  // It used to render every post on its own front-matter date, held
+  // ('changes-requested') and 'error' posts included: text a reviewer
+  // objected to went live after a bad merge. Now nothing renders, nothing is
+  // removed, and the generator exits nonzero, which fails scripts/build.js
+  // (Cloudflare Pages keeps the last deploy).
+  for (const [label, damage] of [
+    ['unparseable', (f) => fs.writeFileSync(f, '{ not json')],
+    ['missing', (f) => fs.rmSync(f)],
+    ['with neither list', (f) => fs.writeFileSync(f, '{"slots": []}')],
+  ]) {
+    test(`${label}: no post renders, a held one included, and the run fails`, () => {
+      const held = post('test-unreadable-held');
+      const site = makeSite({
+        year1: [{ slug: 'test-unreadable-held', title: 'SYNTHETIC held', publish_date: '2026-01-07', status: 'changes-requested', ...assigned }],
+        files: { 'test-unreadable-held': held, 'test-unreadable-uncal': post('test-unreadable-uncal') },
+      });
+      try {
+        const stale = path.join(site.tmp, 'build', 'blog', 'test-left-from-before.html');
+        fs.writeFileSync(stale, '<!DOCTYPE html><p>an earlier build</p>');
+        damage(path.join(site.tmp, 'data', 'content-calendar.json'));
+        const gen = site.run('generate-blog.js');
+        assert.notEqual(gen.status, 0, gen.stdout);
+        assert.match(gen.stderr, /content-calendar\.json could not be read.*no blog post is rendered and the build fails/s);
+        assert.equal(site.page('test-unreadable-held'), null);
+        assert.equal(site.page('test-unreadable-uncal'), null);
+        assert.ok(fs.existsSync(stale), 'nothing is removed either: the build fails as a whole');
+      } finally {
+        site.done();
+      }
+    });
+  }
+
+  test('scripts/build.js fails when the generator fails (runBlogGenerator no longer logs and carries on)', () => {
+    const { runBlogGenerator } = require('../scripts/builders/blog-helpers');
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'render-review-gate-run-'));
     try {
-      fs.writeFileSync(path.join(site.tmp, 'data', 'content-calendar.json'), '{ not json');
-      const gen = site.run('generate-blog.js');
-      assert.match(gen.stdout, /content-calendar\.json could not be read.*no reviewer is credited/);
-      const html = site.page('test-unreadable');
-      assert.ok(html, gen.stdout + gen.stderr);
-      assert.ok(!credits(html));
+      fs.mkdirSync(path.join(tmp, 'scripts'));
+      fs.writeFileSync(path.join(tmp, 'scripts', 'generate-blog.js'), 'process.exit(1);\n');
+      assert.throws(() => runBlogGenerator(tmp), /Blog generation failed/);
+      fs.writeFileSync(path.join(tmp, 'scripts', 'generate-blog.js'), '\n');
+      assert.doesNotThrow(() => runBlogGenerator(tmp));
     } finally {
-      site.done();
+      fs.rmSync(tmp, { recursive: true, force: true });
     }
   });
 });
@@ -344,6 +379,7 @@ describe('front matter cannot print a review claim through a non-review key', ()
       fs.writeFileSync(path.join(site.tmp, 'data', 'content-calendar.json'), '{ not json');
       site.clean();
       const gen = site.run('generate-blog.js');
+      assert.notEqual(gen.status, 0, 'an unreadable calendar renders nothing and fails the run (fix round 5)');
       assert.equal(site.page('test-inj-uncal'), null, gen.stdout);
     } finally {
       site.done();
@@ -553,7 +589,6 @@ describe('fix round 4: the template prints the byline from team.json, whatever t
       { ...base, author_title: `Licensed Agent | Re​viewed by ${REVIEWER.name}` },
       { ...base, author: `${AUTHOR.name} | Approved by ${REVIEWER.name}` },
       { ...base, reading_time: `Rеviewed by ${REVIEWER.name} | 6 min read` },
-      { ...base, author_slug: REVIEWER.slug, author: AUTHOR.name },
     ]) {
       const line = bylineOf(render(meta));
       assert.ok(!line.includes(REVIEWER.name), `${JSON.stringify(meta)}: ${line}`);
@@ -561,8 +596,24 @@ describe('fix round 4: the template prints the byline from team.json, whatever t
     }
   });
 
-  test('a mismatched author or title makes the agency the author; no "Licensed Agent" is invented', () => {
-    for (const meta of [{ ...base, author_title: 'Licensed Agent' }, { ...base, author: 'Someone Else' }, { ...base, author_slug: 'test-nobody' }]) {
+  test('author_slug alone names the author, as team.json gives them; author and author_title are never printed (fix round 5)', () => {
+    // A stale title or name (a promotion, a marriage) prints team.json's, so a
+    // team.json edit updates the byline instead of dropping it to the agency.
+    for (const meta of [{ ...base, author_title: 'Client Care Specialist' }, { ...base, author: 'Someone Else' }, { ...base, author: undefined, author_title: undefined }]) {
+      const html = render(meta);
+      assert.match(bylineOf(html), new RegExp(`>${AUTHOR.name}</a>, ${AUTHOR.title}, The Way Agency</span>`), JSON.stringify(meta));
+      assert.ok(!html.includes('Someone Else') && !html.includes('Client Care Specialist'), JSON.stringify(meta));
+      assert.deepEqual(ldBlocks(html)[0].author, { '@type': 'Person', name: AUTHOR.name, jobTitle: AUTHOR.title, url: `https://www.thewayagency.com/about/team.html#${AUTHOR.slug}` });
+    }
+    // The slug decides: the reviewer as AUTHOR is a "Written by", never a review credit.
+    const asAuthor = render({ ...base, author_slug: REVIEWER.slug, author: AUTHOR.name });
+    assert.match(bylineOf(asAuthor), new RegExp(`Written by <a[^>]*>${REVIEWER.name}</a>`));
+    assert.doesNotMatch(bylineOf(asAuthor), /Reviewed by/);
+    assert.equal(ldBlocks(asAuthor)[0].reviewedBy, undefined);
+  });
+
+  test('an author_slug that names no member makes the agency the author; no "Licensed Agent" is invented', () => {
+    for (const meta of [{ ...base, author_slug: 'test-nobody' }, { ...base, author_slug: 'x"y' }]) {
       const html = render(meta);
       assert.match(bylineOf(html), /<span>Written by The Way Agency<\/span>/, JSON.stringify(meta));
       assert.equal(ldBlocks(html)[0].author['@type'], 'Organization');
@@ -671,6 +722,142 @@ describe('fix round 4: a Cloudflare Pages Preview build credits no one', () => {
       site.clean();
       gen = site.run('generate-blog.js', { extraEnv: { CF_PAGES: '1', CF_PAGES_BRANCH: 'main' } });
       assert.ok(credits(site.page('test-r4-preview')), 'the production build credits it');
+    } finally {
+      site.done();
+    }
+  });
+});
+
+// ─── Fix round 5 ────────────────────────────────────────────────────────────
+
+describe('fix round 5: a data/team.json edit never takes a post off the site', () => {
+  test('a member\'s new title and another member\'s removal: every published and uncalendared post still renders, and the byline follows team.json', () => {
+    const by = (slug, m) => post(slug).replace('author: The Way Agency\n', `author: ${m.name}\nauthor_title: ${m.title}\nauthor_slug: ${m.slug}\n`);
+    const files = { 'test-team-pub': by('test-team-pub', AUTHOR), 'test-team-uncal': by('test-team-uncal', AUTHOR), 'test-team-rev': by('test-team-rev', REVIEWER) };
+    const site = makeSite({
+      existing: [
+        { slug: 'test-team-pub', title: 'SYNTHETIC team pub', publish_date: '2026-01-07', status: 'published' },
+        { slug: 'test-team-rev', title: 'SYNTHETIC team rev', publish_date: '2026-01-07', status: 'published' },
+      ],
+      files,
+    });
+    try {
+      let gen = site.run('generate-blog.js');
+      assert.equal(gen.status, 0, gen.stderr);
+      for (const slug of Object.keys(files)) assert.ok(site.page(slug), `${slug}: ${gen.stdout}`);
+      // Offboard AUTHOR; give REVIEWER a new title.
+      fs.writeFileSync(path.join(site.tmp, 'data', 'team.json'), JSON.stringify({ team: [{ ...TEAM[0], title: 'Senior Test Agent' }] }));
+      gen = site.run('generate-blog.js');
+      assert.equal(gen.status, 0, gen.stderr);
+      for (const slug of Object.keys(files)) assert.ok(site.page(slug), `${slug} went dark: ${gen.stdout}`);
+      assert.match(bylineOf(site.page('test-team-pub')), /<span>Written by The Way Agency<\/span>/);
+      assert.match(bylineOf(site.page('test-team-uncal')), /<span>Written by The Way Agency<\/span>/);
+      assert.match(bylineOf(site.page('test-team-rev')), new RegExp(`>${REVIEWER.name}</a>, Senior Test Agent, The Way Agency</span>`));
+      assert.match(gen.stdout, /test-team-pub: the front-matter author_slug "test-author-q" names no data\/team\.json member; the byline prints The Way Agency/);
+      assert.match(gen.stdout, /test-team-rev: the front-matter author_title is not the title data\/team\.json gives test-reviewer-c/);
+      const index = fs.readFileSync(path.join(site.tmp, 'build', 'blog', 'index.html'), 'utf8');
+      for (const slug of ['test-team-pub', 'test-team-rev']) assert.ok(index.includes(`/blog/${slug}.html`), slug);
+    } finally {
+      site.done();
+    }
+  });
+});
+
+describe('fix round 5: a credit split across a line break is read the way the page prints it', () => {
+  const withBody = (slug, extra) => post(slug).replace(`${body}\n`, `${body}\n\n${extra}\n`);
+  for (const [label, extra] of [
+    ['a line break after the participle', `This article was reviewed\nby ${REVIEWER.name}, Licensed Test Agent, on September 1, 2026.`],
+    ['a line break after "by"', `Reviewed by\n${REVIEWER.name}, Licensed Test Agent.`],
+    ['a blockquote over two lines', `> This guide was reviewed\n> by ${REVIEWER.name}.`],
+    ['an FAQ answer over two lines (printed joined, and in the FAQPage JSON-LD)', `### FAQ: Who checks this?\n\nReviewed\nby ${REVIEWER.name}, Licensed Test Agent.`],
+    ['an FAQ answer over two paragraphs', `### FAQ: Who checks this?\n\nReviewed\n\nby ${REVIEWER.name}, Licensed Test Agent.`],
+  ]) {
+    test(`${label}: not rendered`, () => {
+      const site = makeSite({ files: { 'test-linebreak': withBody('test-linebreak', extra) } });
+      try {
+        const gen = site.run('generate-blog.js');
+        assert.equal(site.page('test-linebreak'), null, gen.stdout);
+        assert.match(gen.stdout, /Not rendered test-linebreak\.html .*review_claim_in_body/);
+      } finally {
+        site.done();
+      }
+    });
+  }
+
+  test('the renderer checks the text it printed, so a gap in the markdown check is still caught', () => {
+    for (const extra of [`This article was reviewed\nby ${REVIEWER.name}.`, `### FAQ: Who checks this?\n\nReviewed\n\nby ${REVIEWER.name}, Licensed Test Agent.`]) {
+      const site = makeSite({ files: { 'test-printed': withBody('test-printed', extra), 'test-printed-ok': post('test-printed-ok') } });
+      try {
+        // Simulate a markdown check that misses it: the copied guard's
+        // bodyProblem passes everything; reviewClaimIn is intact.
+        fs.appendFileSync(path.join(site.tmp, 'scripts', 'lib', 'blog-content-guard.js'), '\nmodule.exports.bodyProblem = () => null;\n');
+        const gen = site.run('generate-blog.js');
+        assert.equal(site.page('test-printed'), null, gen.stdout);
+        assert.match(gen.stdout, /Not rendered test-printed\.html  -  the rendered page states a review or approval credit/);
+        assert.ok(site.page('test-printed-ok'), gen.stdout);
+      } finally {
+        site.done();
+      }
+    }
+  });
+
+  test('printedText: a line break inside a paragraph is a space; a block ends a line', () => {
+    const { printedText } = require('../scripts/generate-blog');
+    assert.equal(printedText('<p class="text-lg">This was re<strong>view</strong>ed\nby X &amp; Y.</p>').trim(), 'This was reviewed by X & Y.');
+    assert.deepEqual(printedText('<h2>Reviewed</h2>\n<p>by the numbers</p>').split('\n').map((l) => l.trim()).filter(Boolean), ['Reviewed', 'by the numbers']);
+  });
+});
+
+describe('fix round 5: calendar titles and descriptions on the cards get the wording check', () => {
+  test('a card whose calendar text states a credit uses the post\'s own front matter, or is left out', () => {
+    const { LEGACY_BLOG_PAGES } = require('../scripts/lib/legacy-blog-pages');
+    const legacy = Object.keys(LEGACY_BLOG_PAGES).find((f) => f !== 'index.html');
+    const legacySlug = legacy.slice(0, -'.html'.length);
+    const site = makeSite({
+      existing: [
+        { slug: 'test-card', title: `Reviewed by ${REVIEWER.name}: SYNTHETIC card`, description: `Every answer here was checked by ${REVIEWER.name}.`, publish_date: '2026-01-07', status: 'published' },
+        { slug: legacySlug, title: `Approved by ${REVIEWER.name}, Licensed Test Agent`, description: 'SYNTHETIC frozen', publish_date: '2026-01-06', status: 'published' },
+        { slug: 'test-card-ok', title: 'SYNTHETIC plain card', description: 'SYNTHETIC plain description', publish_date: '2026-01-05', status: 'published' },
+      ],
+      files: { 'test-card': post('test-card'), 'test-card-ok': post('test-card-ok') },
+    });
+    try {
+      fs.writeFileSync(path.join(site.tmp, 'build', 'blog', legacy), '<!DOCTYPE html><p>SYNTHETIC frozen page</p>');
+      const gen = site.run('generate-blog.js');
+      assert.equal(gen.status, 0, gen.stderr);
+      const index = fs.readFileSync(path.join(site.tmp, 'build', 'blog', 'index.html'), 'utf8');
+      assert.doesNotMatch(index, /Reviewed by|Approved by|checked by/i);
+      assert.match(index, />SYNTHETIC card</, 'the post\'s own title');
+      assert.match(index, />SYNTHETIC description for card</, 'the post\'s own description');
+      assert.ok(!index.includes(`/blog/${legacySlug}.html`), 'no card without a checked title');
+      assert.match(index, />SYNTHETIC plain card</);
+      assert.match(gen.stdout, /No card for "[^"]+"  -  its calendar title states a review or approval credit/);
+      const related = site.page('test-card-ok');
+      assert.doesNotMatch(related, /Reviewed by|Approved by/);
+      assert.match(related, /Related Articles[\s\S]*>SYNTHETIC card</);
+    } finally {
+      site.done();
+    }
+  });
+});
+
+describe('fix round 5: a credit is re-checked against data/team.json at render', () => {
+  test('a credited post whose reviewer leaves, or loses their licences, renders uncredited (and stays up)', () => {
+    const md = post('test-r5-credit');
+    const site = makeSite({ year1: [approved('test-r5-credit', md)], files: { 'test-r5-credit': md } });
+    try {
+      const pub = site.run('publish-scheduled-posts.js');
+      assert.equal(pub.status, 0, pub.stdout + pub.stderr);
+      let gen = site.run('generate-blog.js');
+      assert.match(site.page('test-r5-credit'), /Reviewed by .*Test Reviewer C/, gen.stdout);
+      for (const team of [[TEAM[1]], [{ ...TEAM[0], license_states: [] }, TEAM[1]]]) {
+        fs.writeFileSync(path.join(site.tmp, 'data', 'team.json'), JSON.stringify({ team }));
+        site.clean();
+        gen = site.run('generate-blog.js');
+        assert.ok(site.page('test-r5-credit'), gen.stdout);
+        assert.ok(!credits(site.page('test-r5-credit')), JSON.stringify(team));
+        assert.match(gen.stdout, /no longer a licensed data\/team\.json member/);
+      }
     } finally {
       site.done();
     }
