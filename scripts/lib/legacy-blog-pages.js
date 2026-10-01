@@ -4,8 +4,8 @@
  *
  * scripts/builders/blog-helpers.js copyBlogPages copies these into build/blog/
  * as they are. They pass none of the gates a markdown post passes (the content
- * calendar, a reviewer's hold, the signed review credit, the front-matter and
- * body checks of blog-content-guard.js), so any new or edited page there would
+ * calendar, a reviewer's hold, the signed review credit, the front-matter
+ * checks of blog-content-guard.js), so any new or edited page there would
  * publish whatever it says, including a "Reviewed by <a licensed agent>"
  * byline and a JSON-LD reviewedBy nobody approved, at any /blog/<name>.html
  * URL, around a hold on the post of that name. The set is therefore frozen:

@@ -49,21 +49,23 @@ Both are trust signals on a regulated-industry page, so neither is free text
   by the agency: do not put a person's name on text they did not write (SAGE
   refuses to promote an AI draft with an `author_slug` unless that person
   approves it).
-- **"Reviewed by"** is never written here. It renders only for the assigned
-  reviewer's approval in SAGE of the exact file. No front-matter value (title,
-  description, CTA text, image alt text, ...) may use a review word (review,
-  approve, check, verify, vet, edit, audit, endorse, certify, sign off, ...)
-  together with a team member's name, the agency, "licensed", agent, principal,
-  producer, staff or expert, in any order: "Ask your agent to check your
-  coverage" is refused in a title or description too (a "coverage review" or
-  "premium audit" is fine). No sentence in the article (including an FAQ
-  answer, and across a line break) may put a review word next to a team
-  member's name, or credit a review or approval of the post to the agency or
-  a licensed agent. Such a post does not publish
-  (`unsafe_frontmatter` / `review_claim_in_body`).
-- `reading_time` is "N min" or "N min read" (or leave it out: it is computed).
-  `date` and `modified` are YYYY-MM-DD. Values are plain text: no `<` or `>`,
-  and no invisible, look-alike or full-width characters.
+- **"Reviewed by"** is never written here. The byline's "Reviewed by" (and the
+  JSON-LD reviewedBy) renders only for the assigned reviewer's approval in SAGE
+  of the exact file: the reviewer clicks "Review and approve in SAGE" in the
+  review email, and SAGE signs the approval. Review lines typed into the front
+  matter are ignored.
+- **Do not claim a review in the text either.** Don't write "Reviewed by ...",
+  "Checked by our licensed agents" and the like in a title, description, CTA,
+  alt text or the article. Code cannot reliably tell such a claim from advice
+  ("Ask your agent to check your coverage"), so it does not refuse the post:
+  the build logs a warning naming the text ("review-credit wording"), and SAGE
+  shows the same warning next to the text when a person approves an AI draft
+  or an AI-proposed edit. Only the signed byline is a verified credit.
+- These do stop a post from publishing (`unsafe_frontmatter`): a front-matter
+  value with `<` or `>`, or an invisible, look-alike or full-width character;
+  a `slug`/`author_slug` that is not lower-case letters, digits and hyphens;
+  `date`/`modified` other than YYYY-MM-DD; `reading_time` other than "N min"
+  or "N min read" (or leave it out: it is computed).
 
 ## Team members (for `author_slug`, only when that person wrote the post)
 

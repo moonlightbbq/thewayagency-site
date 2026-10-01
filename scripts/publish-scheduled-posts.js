@@ -34,7 +34,8 @@ const fs = require('fs');
 const path = require('path');
 const { isPublishable, isKnownStatus } = require('./lib/calendar-status');
 const {
-  approvalCheck, applyReviewCredit, readinessError, frontMatterProblem, bodyProblem, reviewSecret, recordCredit, clearApprovalRecord,
+  approvalCheck, applyReviewCredit, readinessError, frontMatterProblem, reviewWordingWarnings, describeWordingWarning,
+  reviewSecret, recordCredit, clearApprovalRecord,
 } = require('./lib/review-credit');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -70,13 +71,10 @@ const NOT_READY_WHY = {
   missing_frontmatter: 'missing title or description in frontmatter',
   content_too_short: 'content too short (need 200+ words)',
   unsafe_frontmatter: 'its front matter is unsafe to publish',
-  review_claim_in_body: 'its body states a review or approval credit',
 };
 // The guard's own explanation (scripts/lib/blog-content-guard.js), for the log.
 function notReadyDetail(reason, md) {
-  if (reason === 'unsafe_frontmatter') return frontMatterProblem(md, TEAM);
-  if (reason === 'review_claim_in_body') return bodyProblem(md, TEAM);
-  return null;
+  return reason === 'unsafe_frontmatter' ? frontMatterProblem(md) : null;
 }
 
 // A withdrawn approval does not stay on the entry. SAGE writes an approval
@@ -144,7 +142,7 @@ for (const post of calendar.year1) {
 
   // Readiness checks: title and description in the front matter, and more
   // than 200 words of body (the same rule the renderer applies).
-  const notReady = readinessError(mdContent, TEAM);
+  const notReady = readinessError(mdContent);
   if (notReady) {
     const detail = notReadyDetail(notReady, mdContent);
     console.log(`  ! ERROR: "${post.title}" (${post.slug}) - ${NOT_READY_WHY[notReady] || notReady}${detail ? `: ${detail}` : ''}`);
@@ -218,6 +216,9 @@ for (const post of calendar.year1) {
   published++;
   calendarChanged = true;
   console.log(`  Published: "${post.title}" (${post.publish_date}) — ${approval.credit ? `reviewed by ${post.reviewer} (approved in SAGE)` : 'no reviewer credited'}`);
+  // Wording that reads as a review credit is flagged, never refused: only the
+  // signed approval above credits a reviewer (sage-server BL-07).
+  for (const w of reviewWordingWarnings(md, TEAM)) console.log(describeWordingWarning(post.slug, w));
 }
 
 // Persist: posts first, then the calendar that says they are published.
@@ -234,10 +235,8 @@ if (errors.length > 0) {
   console.log('');
   console.log('  Calendar status set to "error" with error_reason and error_at.');
   console.log('  missing_*/content_too_short: investigate the sage Hive blog-writer pipeline.');
-  console.log('  unsafe_frontmatter: a front-matter value carries markup, an invisible or look-alike character or a review credit,');
+  console.log('  unsafe_frontmatter: a front-matter value carries markup or an invisible or look-alike character,');
   console.log('  or a slug, date or reading_time is not in its plain form. Fix the markdown by hand.');
-  console.log('  review_claim_in_body: the article text says it was reviewed or approved by the team, the agency or a licensed agent.');
-  console.log('  Only the reviewer\'s approval in SAGE credits a review, in the byline. Remove the sentence.');
   console.log('  approval_*/approved_bytes_changed: the post changed after its reviewer approved it in SAGE, it was rescheduled,');
   console.log('  the approval is not the byline reviewer\'s, or SAGE did not sign it. It is not published under their name (sage-server BL-07).');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

@@ -47,8 +47,9 @@ function frontmatter(md) {
 const sha = (s) => crypto.createHash('sha256').update(Buffer.from(s, 'utf8')).digest('hex');
 const body = Array.from({ length: 240 }, (_, i) => `word${i}`).join(' ');
 // The synthetic team's first name is "Test": a title or description that put
-// it beside a credit word ("test-approved-review") is refused like a real name
-// would be (blog-content-guard.js), so the slug goes in without its prefix.
+// it beside a credit word ("test-approved-review") is flagged like a real name
+// would be (blog-content-guard.js reviewWordingWarnings), so the slug goes in
+// without its prefix and only the fixtures meant to be flagged are.
 const named = (slug) => slug.replace(/^test-/, '');
 const post = (slug, extra = '') => `---\ntitle: SYNTHETIC ${named(slug)}\ndescription: SYNTHETIC description for ${named(slug)}\ndate: 2026-01-07\n${extra}---\n\n${body}\n`;
 const REVIEWER = { name: 'Test Reviewer B', slug: 'test-reviewer-b', email: 'test-reviewer-b@example.com', title: 'Licensed Test Agent' };
@@ -293,10 +294,9 @@ describe('a withdrawn approval does not stay on the calendar (fix round 3)', () 
   });
 });
 
-describe('front matter the renderer would refuse does not publish (fix round 3)', () => {
+describe('front matter that breaks a deterministic rule does not publish (fix rounds 3 and 4)', () => {
   for (const [label, extra] of [
     ['markup in a value', 'author_title: Licensed Agent</span><span>Reviewed by Test Reviewer B</span>\n'],
-    ['review wording in a byline field', 'author_title: Licensed Agent | Reviewed by Test Reviewer B on December 1, 2025\n'],
     ['an unsafe author_slug', 'author_slug: x", "reviewedBy": {"name": "Test Reviewer B"}, "q": "\n'],
     // Fix round 4 (the review's hostile fixtures): the round-3 /review/i
     // denylist passed every one of these, and each printed a credit in the byline.
@@ -304,14 +304,7 @@ describe('front matter the renderer would refuse does not publish (fix round 3)'
     ['a soft hyphen in author_title', 'author_title: Licensed Agent | Re\u00ADviewed by Test Reviewer B on December 1, 2025\n'],
     ['a zero-width space in author_title', 'author_title: Client Care Specialist | Re\u200Bviewed by Test Reviewer B on December 1, 2025\n'],
     ['full-width letters', 'author_title: \uFF32\uFF45\uFF56\uFF49\uFF45\uFF57\uFF45\uFF44 by Test Reviewer B, Licensed Agent\n'],
-    ['a synonym ("Approved by")', 'author_title: Approved by Test Reviewer B, Licensed Agent on December 1, 2025\n'],
     ['reading_time that is not "N min read"', 'reading_time: 6 min read | Vetted by our licensed agents\n'],
-    ['an author_title that is not the member\'s', `author_slug: ${REVIEWER.slug}\nauthor: ${REVIEWER.name}\nauthor_title: Licensed Agent | Reviewed by ${REVIEWER.name}\n`],
-    ['a credit in the title', `title: SYNTHETIC guide \u2014 Reviewed by ${REVIEWER.name}, Licensed Agent\n`],
-    ['a credit in the CTA banner', `cta_title: Reviewed by ${REVIEWER.name}, Licensed Agent\n`],
-    ['a credit in the CTA text', 'cta_text: Fact-checked by our licensed agents.\n'],
-    ['a credit in the image alt text', `image_alt: Approved by ${REVIEWER.name}\n`],
-    ['a credit in the category', `category: Verified by ${REVIEWER.name}\n`],
   ]) {
     test(label, () => {
       const file = post('test-unsafe', extra);
@@ -324,6 +317,42 @@ describe('front matter the renderer would refuse does not publish (fix round 3)'
         assert.equal(site.entry('test-unsafe').status, 'error');
         assert.equal(site.entry('test-unsafe').error_reason, 'unsafe_frontmatter');
         assert.equal(site.read('test-unsafe'), file, 'nothing written');
+      } finally {
+        fs.rmSync(site.tmp, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
+describe('review-credit wording in a front-matter value is flagged, never refused (the scope decision after fix round 5)', () => {
+  // Free text can always claim a review; each tighter rule took legitimate
+  // posts down. The post publishes as written with NO review lines and no
+  // credit record (only a signed approval in SAGE credits a reviewer), and the
+  // publisher logs the wording.
+  for (const [label, extra] of [
+    ['review wording in a byline field', 'author_title: Licensed Agent | Reviewed by Test Reviewer B on December 1, 2025\n'],
+    ['a synonym ("Approved by")', 'author_title: Approved by Test Reviewer B, Licensed Agent on December 1, 2025\n'],
+    ['an author_title that is not the member\'s, with wording', `author_slug: ${REVIEWER.slug}\nauthor: ${REVIEWER.name}\nauthor_title: Licensed Agent | Reviewed by ${REVIEWER.name}\n`],
+    ['a credit in the title', `title: SYNTHETIC guide \u2014 Reviewed by ${REVIEWER.name}, Licensed Agent\n`],
+    ['a credit in the CTA banner', `cta_title: Reviewed by ${REVIEWER.name}, Licensed Agent\n`],
+    ['a credit in the CTA text', 'cta_text: Fact-checked by our licensed agents.\n'],
+    ['a credit in the image alt text', `image_alt: Approved by ${REVIEWER.name}\n`],
+    ['a credit in the category', `category: Verified by ${REVIEWER.name}\n`],
+  ]) {
+    test(label, () => {
+      const file = post('test-worded', extra);
+      const site = runSite('publish-scheduled-posts.js', {
+        entries: [{ slug: 'test-worded', title: 'SYNTHETIC worded', publish_date: '2026-01-07', status: 'planned', reviewer: REVIEWER.name, reviewer_slug: REVIEWER.slug, reviewer_email: REVIEWER.email }],
+        files: { 'test-worded': file },
+      });
+      try {
+        assert.equal(site.run.status, 0, site.run.stdout);
+        const e = site.entry('test-worded');
+        assert.equal(e.status, 'published');
+        assert.equal(e.credit_mac, undefined);
+        assert.equal(e.credited_sha256, undefined);
+        assert.doesNotMatch(site.read('test-worded'), /^\s*(reviewer|reviewer_slug|reviewer_title|reviewed_date)\s*:/im, 'no review lines written');
+        assert.match(site.run.stdout, /! test-worded: review-credit wording in the front-matter "[a-z_]+": .*only the signed byline is a verified credit/);
       } finally {
         fs.rmSync(site.tmp, { recursive: true, force: true });
       }
@@ -358,7 +387,7 @@ describe('who the byline names never stops a post publishing (fix round 5)', () 
   }
 });
 
-describe('a review credit in the article body does not publish (fix round 4)', () => {
+describe('a review credit in the article body is flagged, never refused (fix round 4 fixtures, the scope decision after round 5)', () => {
   for (const [label, sentence] of [
     ['a first paragraph that reads as a byline', `Reviewed by [${REVIEWER.name}](/about/team.html#${REVIEWER.slug}), Licensed Test Agent on December 1, 2025`],
     ['an approval naming the agency', 'This guide was approved by The Way Agency.'],
@@ -372,18 +401,18 @@ describe('a review credit in the article body does not publish (fix round 4)', (
         files: { 'test-body-claim': file },
       });
       try {
-        assert.equal(site.run.status, 3, site.run.stdout);
-        assert.equal(site.entry('test-body-claim').status, 'error');
-        assert.equal(site.entry('test-body-claim').error_reason, 'review_claim_in_body');
-        assert.match(site.run.stdout, /review or approval credit/);
-        assert.equal(site.read('test-body-claim'), file, 'nothing written');
+        assert.equal(site.run.status, 0, site.run.stdout);
+        assert.equal(site.entry('test-body-claim').status, 'published');
+        assert.equal(site.entry('test-body-claim').credit_mac, undefined);
+        assert.match(site.run.stdout, /! test-body-claim: review-credit wording in the body: .*only the signed byline is a verified credit/);
+        assert.doesNotMatch(site.read('test-body-claim'), /^\s*(reviewer|reviewer_slug|reviewer_title|reviewed_date)\s*:/im, 'no review lines written');
       } finally {
         fs.rmSync(site.tmp, { recursive: true, force: true });
       }
     });
   }
 
-  test('contrast: advice that mentions a review publishes', () => {
+  test('contrast: advice that mentions a review publishes, with no warning', () => {
     const file = post('test-body-advice').replace('---\n\n', '---\n\nHave your policy reviewed by a licensed agent every year. Medicare Advantage plans are approved by Medicare.\n\n');
     const site = runSite('publish-scheduled-posts.js', {
       entries: [{ slug: 'test-body-advice', title: 'SYNTHETIC advice', publish_date: '2026-01-07', status: 'planned' }],
@@ -391,6 +420,7 @@ describe('a review credit in the article body does not publish (fix round 4)', (
     });
     try {
       assert.equal(site.entry('test-body-advice').status, 'published', site.run.stdout);
+      assert.doesNotMatch(site.run.stdout, /review-credit wording/);
     } finally {
       fs.rmSync(site.tmp, { recursive: true, force: true });
     }

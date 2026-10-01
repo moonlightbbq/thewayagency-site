@@ -116,8 +116,9 @@ function safeHref(url) {
  * The text a reader sees in rendered body HTML: whitespace collapsed as a
  * browser collapses it (a line break inside a paragraph is a space), each
  * block on a line of its own, inline markup removed, entities decoded. The
- * renderer checks this, and each FAQ question and answer as printed, for a
- * review credit: what the page shows, not only what the markdown says.
+ * renderer reads this, and each FAQ question and answer as printed, for
+ * review-credit wording to log: what the page shows, not only what the
+ * markdown says.
  */
 function printedText(html) {
   return String(html === undefined || html === null ? '' : html)
@@ -818,12 +819,16 @@ if (!fs.existsSync(BLOG_BUILD)) {
 //   - the "Written by" byline is a data/team.json member (their name and
 //     title as team.json gives them) or the agency, never front-matter text;
 //   - a post whose front matter carries markup, an invisible or look-alike
-//     character, an unsafe slug, or a review or approval credit in any value
-//     the page prints, or whose body states a credit naming the team, the
-//     agency or a licensed agent (read as the page prints it), is not rendered
-//     at all (blog-content-guard.js, through review-credit.js renderDecision);
-//     and the text this run actually rendered (the body, each FAQ question
-//     and answer) is checked again before the page is written;
+//     character, an unsafe slug, or a date or reading_time that is not its
+//     plain form is not rendered at all (blog-content-guard.js, through
+//     review-credit.js renderDecision): deterministic rules only;
+//   - wording that reads as a review or approval credit (in any front-matter
+//     value the page prints, in the body as the page prints it, or in the
+//     text this run actually rendered) is logged as a warning and the post
+//     renders as written: free text can always claim a review, so code does
+//     not try to stop it; the structured credit above is the only one the
+//     site vouches for, and a person approves AI-written text in SAGE with
+//     the same warning in front of them (BL-06, BL-07);
 //   - without a readable content calendar nothing is rendered and the build
 //     fails: holds and errors cannot be told apart from silence, and the last
 //     deploy stays live;
@@ -836,7 +841,7 @@ const {
   isKnownStatus, isPublishable, isHeld,
 } = require('./lib/calendar-status');
 const {
-  renderDecision, reviewSecret, isReviewerKey, frontMatterProblem, bodyProblem,
+  renderDecision, reviewSecret, isReviewerKey, reviewWordingWarnings, describeWordingWarning,
 } = require('./lib/review-credit');
 const { LEGACY_BLOG_PAGES } = require('./lib/legacy-blog-pages');
 
@@ -963,17 +968,21 @@ if (fs.existsSync(BLOG_SRC)) {
       let bodyHtml = markdownToHtml(cleanBody);
       // Enhance first paragraph with text-lg class (matches hand-crafted posts)
       bodyHtml = bodyHtml.replace(/^<p>/, '<p class="text-lg">');
-      // What the page will show, checked as shown: the guard reads the
-      // markdown the way this renderer prints it, and this catches any way the
-      // two differ (sage-server BL-07, AIA-018).
-      const printed = [printedText(bodyHtml), ...faqs.flatMap((f) => [f.question, f.answer])];
-      const printedClaim = printed.map((t) => contentGuard.reviewClaimIn(t, REVIEW_TEAM)).find(Boolean);
-      if (printedClaim) {
-        const why = `the rendered page states a review or approval credit ("${printedClaim}") (review_claim_in_body)`;
-        console.log(`  ~ Not rendered ${meta.slug}.html  -  ${why}`);
-        notRendered.set(meta.slug, why);
-        continue;
+      // Review-credit wording is flagged, never refused (sage-server BL-07):
+      // the post renders as written, and only a signed approval prints a
+      // structured credit. The guard reads the markdown the way this renderer
+      // prints it; when it finds nothing in the body, the text this run
+      // actually rendered (the body, each FAQ question and answer) is read
+      // too, for any way the two differ.
+      const wording = reviewWordingWarnings(decision.markdown, REVIEW_TEAM);
+      if (!wording.some((w) => w.field === 'body' || w.field === 'FAQ')) {
+        const printed = [...printedText(bodyHtml).split('\n'), ...faqs.flatMap((f) => [f.question, f.answer])];
+        for (const text of printed) {
+          const found = text.trim() ? contentGuard.reviewClaimIn(text, REVIEW_TEAM) : null;
+          if (found) wording.push({ field: 'rendered text', text: text.replace(/\s+/g, ' ').trim().slice(0, 500), wording: found });
+        }
       }
+      for (const w of wording) console.log(describeWordingWarning(meta.slug, w));
       // author and author_title are never printed; say so when they disagree
       // with data/team.json (a new title, a member who left), so the front
       // matter can be brought in line. The post renders either way.
@@ -1014,27 +1023,14 @@ const calendar = calendarEntries.calendar;
   // Calendar titles and descriptions come from the Hive topic planner and the
   // backlog: a person approves them as topics, not as credit-free text. They
   // print on the index cards, the Related Articles cards and the RSS feed, so
-  // they get the front-matter wording check. A card whose calendar text states
-  // a credit uses the rendered post's own front matter (which passed the same
-  // check), or is left out when there is none (sage-server BL-07, AIA-018).
-  const renderedMeta = new Map(posts.map((m) => [m.slug, m]));
-  const credits = (v) => contentGuard.reviewClaimIn(String(v === undefined || v === null ? '' : v), REVIEW_TEAM, { strict: true });
+  // they get the front-matter wording check, as a warning: the card prints
+  // them as written (sage-server BL-07).
   const card = (post) => {
-    const own = renderedMeta.get(post.slug);
-    let { title, description } = post;
-    if (credits(title)) {
-      if (!own) {
-        console.log(`  ~ No card for ${JSON.stringify(String(post.slug)).slice(0, 80)}  -  its calendar title states a review or approval credit and no rendered post supplies one`);
-        return null;
-      }
-      console.log(`  ! ${post.slug}: its calendar title states a review or approval credit; the cards use the post's own title`);
-      title = own.title;
+    for (const [key, value] of [['title', post.title], ['description', post.description]]) {
+      const found = contentGuard.reviewClaimIn(String(value === undefined || value === null ? '' : value), REVIEW_TEAM, { strict: true });
+      if (found) console.log(describeWordingWarning(String(post.slug), { field: `calendar ${key}`, text: String(value).slice(0, 500), wording: found }));
     }
-    if (credits(description)) {
-      console.log(`  ! ${post.slug}: its calendar description states a review or approval credit; the cards use the post's own description`);
-      description = own ? own.description || '' : '';
-    }
-    return { slug: post.slug, title, description, publish_date: post.publish_date };
+    return { slug: post.slug, title: post.title, description: post.description, publish_date: post.publish_date };
   };
 
   // Collect all published posts: existing_posts + year1 entries with status "published"
@@ -1118,7 +1114,7 @@ ${related.map(p => `          <a href="/blog/${esc(p.slug)}.html" class="card" s
 
 // 3. Generate enhanced RSS feed
 const rssItems = [];
-// The rendered posts, with their own front matter (wording-checked above).
+// The rendered posts, with their own front matter (wording logged above).
 // This always was the feed: it read a block-scoped list from step 2 through
 // `typeof`, which is undefined out here, so calendar titles never reached it.
 const rssPosts = posts.map(m => ({ slug: m.slug, title: m.title, description: m.description || '', publish_date: m.date })).slice(0, 20);

@@ -11,25 +11,24 @@
  *
  * A "Reviewed by" credit is earned only through the assigned reviewer's
  * approval in SAGE, signed by SAGE and bound to the exact bytes; the renderer
- * prints it from the data/team.json member that approval is bound to
- * (review-credit.js). This guard keeps every OTHER value the page prints from
- * carrying a credit or a byline of its own:
+ * prints it, in the byline and the JSON-LD reviewedBy, from the data/team.json
+ * member that approval is bound to (review-credit.js), never from any text in
+ * the post. That structured credit is the only credit code can vouch for.
+ * This file holds two kinds of rule.
  *
+ * DETERMINISTIC RULES: a post that breaks one does not publish or render.
  *   Byline identity: an allowlist, not a wording test
  *     author_slug   names a data/team.json member, or is absent; the byline
  *                   prints that member's name and title from data/team.json
  *                   (bylineAuthor), never the front matter's author or
- *                   author_title, and "Written by The Way Agency" without one.
+ *                   author_title, and the agency (AGENCY_AUTHOR) without one.
  *                   A slug that names no member (one who left) prints the
  *                   agency: the post still renders.
  *     author, author_title  never printed. A BL-06 promote (new text entering
  *                   src/blog/) also requires them to be that member's, and
  *                   author_slug to be absent on an AI draft unless that member
  *                   approves it (bylineProblem; sage-server blog-publication.js)
- *     reading_time  "<1-3 digits> min" or "<1-3 digits> min read", or absent
- *                   (then it is computed); any other value refuses the post
- *     date, modified  YYYY-MM-DD
- *   Every front-matter value
+ *   Every front-matter value (frontMatterProblem)
  *     - no '<' or '>' (markup);
  *     - only printable ASCII, Latin-1 and Latin Extended-A letters, general
  *       punctuation, currency signs and the trade mark sign: nothing invisible
@@ -38,46 +37,52 @@
  *       full-width or mathematical letters;
  *     - slug, author_slug and reviewer_slug are lower-case letters, digits
  *       and hyphens;
- *     - no review or approval credit. A value is short, so word order and
- *       distance are not weighed: a credit word in any form (review,
- *       reviewed, reviewer, approve, approval, vet, verify, check, fact-check,
- *       endorse, certify, audit, sign off, proofread, edit, validate, ...)
- *       ANYWHERE beside an identity ANYWHERE (a team member's full name, first
- *       name or surname, the agency, "licensed", agent, principal, producer,
- *       staff, expert, a team title) refuses the value; so does a credit
- *       participle followed by "by" with any object, however many words lie
- *       between them in the clause ("Reviewed for accuracy and compliance
- *       by ..."). A service the agency sells is not a credit: "coverage
- *       review", "premium audit", "policy endorsement" (unless a colon, a dash
- *       or "by" follows it). A slug or image path, printed only inside URLs,
- *       gets the "by" and colon rules but not the anywhere ones.
- *       The review keys themselves (reviewer, reviewer_slug, ...) are the
- *       signed credit's own lines: the publisher writes them and strips any
- *       others, so they are not wording-checked here.
- *   The body, read the way the page prints it
- *     The renderer prints a single line break inside a paragraph or a
- *     blockquote as a space, and joins an FAQ answer's lines (blank ones too)
- *     with spaces, in the page and in the FAQPage JSON-LD. So the body is read
- *     as written, with those line breaks folded, and each FAQ question and
- *     answer as printed (bodyViews). In each:
- *     - no sentence that has a credit word in any form or voice and a team
- *       member's full name, first name or honorific and surname ("Ms.
- *       Royal"), in any order and at any distance ("Jill Boone reviewed and
- *       approved this guide.");
- *     - no review or approval credit naming the agency, a licensed agent, a
- *       team title or "our" staff about the text itself (the body may well
- *       say "approved by the state", "inspected by the health department" or
- *       "have it reviewed by a licensed agent").
+ *     - date and modified are YYYY-MM-DD; reading_time is "<1-3 digits> min"
+ *       or "<1-3 digits> min read", or absent (then it is computed).
+ *
+ * WORDING: a warning, never a refusal (reviewWordingWarnings).
+ *   Free text can always say a review happened, and every tighter wording
+ *   rule refused more legitimate posts ("Check with your agent" in a title).
+ *   So text that reads as a review or approval credit is flagged, not
+ *   refused: SAGE shows the flag next to the exact text in the approval page
+ *   of an AI draft (BL-06) and of an AI-proposed edit (BL-07), where a person
+ *   approves those exact bytes, and the site's build logs it. The post
+ *   renders as written, and carries no structured credit unless its reviewer
+ *   approved it in SAGE. What is flagged:
+ *   Front-matter values: a value is short, so word order and distance are
+ *     not weighed. A credit word in any form (review, reviewed, reviewer,
+ *     approve, approval, vet, verify, check, fact-check, endorse, certify,
+ *     audit, sign off, proofread, edit, validate, ...) ANYWHERE beside an
+ *     identity ANYWHERE (a team member's full name, first name or surname, the
+ *     agency, "licensed", agent, principal, producer, staff, expert, a team
+ *     title); a credit participle followed by "by" with any object, however
+ *     many words lie between them in the clause ("Reviewed for accuracy and
+ *     compliance by ..."). A service the agency sells is not a credit:
+ *     "coverage review", "premium audit", "policy endorsement" (unless a
+ *     colon, a dash or "by" follows it). A slug or image path, printed only
+ *     inside URLs, gets the "by" and colon rules but not the anywhere ones.
+ *     The review keys themselves (reviewer, reviewer_slug, ...) are the
+ *     signed credit's own lines: the publisher writes them and strips any
+ *     others, so they are not read here.
+ *   The body, read the way the page prints it: the renderer prints a single
+ *     line break inside a paragraph or a blockquote as a space, and joins an
+ *     FAQ answer's lines (blank ones too) with spaces, in the page and in the
+ *     FAQPage JSON-LD. So the body is read as written, with those line breaks
+ *     folded, and each FAQ question and answer as printed (bodyViews). In
+ *     each: a sentence that has a credit word in any form or voice and a team
+ *     member's full name, first name or honorific and surname ("Ms. Royal"),
+ *     in any order and at any distance; a review or approval credit naming
+ *     the agency, a licensed agent, a team title or "our" staff about the
+ *     text itself (not "approved by the state", "inspected by the health
+ *     department" or "have it reviewed by a licensed agent").
  *
  * Wording is read through Unicode compatibility folding (full-width and
  * mathematical letters), with invisible characters removed, accents stripped,
  * Cyrillic, Greek and other look-alike letters mapped to Latin, digits and
  * symbols standing in for letters ("Rev1ewed"), punctuation or markdown
  * emphasis inside a word ("Re-viewed", "Re**viewed**") and letter-spaced
- * words ("R e v i e w e d") collapsed. A wording test on free text is best
- * effort: no list holds every way to say "reviewed". The structured credit
- * (the byline and the JSON-LD reviewedBy) never depends on it: it prints only
- * from data/team.json and a signed approval.
+ * words ("R e v i e w e d") collapsed. It is best effort: no list holds every
+ * way to say "reviewed", which is why it only warns.
  *
  * Front matter is read exactly as the site's renderer reads it
  * (scripts/generate-blog.js parseFrontMatter): the block between a first line
@@ -148,7 +153,7 @@ const CONFUSABLE = Object.freeze({
 const LOOK = Object.freeze({ a: 'a4@', b: 'b8', e: 'e3', g: 'g9', i: 'i1l!|', l: 'l1i!|', o: 'o0', s: 's5$', t: 't7+', z: 'z2' });
 
 // Participles that state a credit with any object: "Reviewed by", "Approved
-// by". Refused in any front-matter value; in the body only with an identity.
+// by". Flagged in any front-matter value; in the body only with an identity.
 const CREDIT_PARTICIPLES = Object.freeze([
   'reviewed', 'approved', 'vetted', 'checked', 'verified', 'endorsed',
   'vouched', 'proofread', 'proofed', 'edited', 'okayed', 'signed off', 'signed-off',
@@ -171,7 +176,7 @@ const CREDIT_AGENTS = Object.freeze([
   'reviewers', 'reviewer', 'approver', 'checker', 'verifier', 'editor', 'auditor', 'endorser', 'certifier', 'validator',
 ]);
 // Every form of a credit word, in any voice: a front-matter value with one
-// beside an identity is refused, and so is a body sentence with one beside a
+// beside an identity is flagged, and so is a body sentence with one beside a
 // team member's name, in any order and at any distance.
 const CREDIT_FORMS = Object.freeze([
   'review', 'reviews', 'reviewed', 'reviewing', 'reviewer', 'reviewers',
@@ -188,15 +193,15 @@ const CREDIT_FORMS = Object.freeze([
   'vouch', 'vouches', 'vouched', 'okayed', 'validate', 'validates', 'validated', 'validator',
 ]);
 const CREDIT_PREFIX = '(?:(?:fact|double|pre|peer|co|expert|human|agent|hand)[^a-z0-9\\n]{0,2})?';
-// Fixed identities a credit in the body may not name (the team's names and
-// titles are added from data/team.json).
+// Fixed identities a credit in the body is flagged for naming (the team's
+// names and titles are added from data/team.json).
 const FIXED_IDENTITIES = [
   'the way agency', 'way agency', 'agency principal',
   'licensed (?:[a-z]+ ){0,2}?(?:agents?|producers?|professionals?)',
   'our (?:[a-z\'-]+ ){0,2}?(?:team|agents?|staff|producers?|principal|experts?|specialists?|advisors?|advisers?|professionals?|licensed|editors?|reviewers?|agency)',
 ];
-// Identities a front-matter value may not put beside a credit word, on top of
-// the team's names and titles and FIXED_IDENTITIES.
+// Identities a front-matter value is flagged for putting beside a credit word,
+// on top of the team's names and titles and FIXED_IDENTITIES.
 const IDENTITY_WORDS = ['licensed', 'agents?', 'principals?', 'producers?', 'staff', 'staffers?', 'experts?', '(?:the|our) agency'];
 const HONORIFIC = '(?:mr|mrs|ms|miss|dr|mx)';
 
@@ -265,13 +270,13 @@ function teamMember(team, slug) {
 }
 
 /**
- * The identities a credit may not name, as patterns:
+ * The identities a credit is flagged for naming, as patterns:
  *   named      every team member's full name, first name, and honorific and
  *              surname ("Ms. Royal"): read from the start of the text after
  *              "by" (or the colon), up to four words in, a credit naming one
- *              is refused wherever it stands;
+ *              is flagged wherever it stands;
  *   generic    the agency, a licensed agent, a team title, "our" staff, read
- *              the same way: refused when the credit is about the text itself
+ *              the same way: flagged when the credit is about the text itself
  *              (see _aboutTheText), not in advice such as "have your policy
  *              reviewed by a licensed agent";
  *   inSentence a team member's name anywhere (the sentence rule);
@@ -421,7 +426,7 @@ function frontMatterOf(md) {
 // ─── The body as the page prints it ─────────────────────────────────────────
 //
 // These mirror scripts/generate-blog.js (markdownToHtml, extractFAQs); the
-// site renderer also checks the text it actually rendered.
+// site renderer also reads the text it actually rendered.
 
 // A line the renderer prints as a block of its own: a heading (##, ###,
 // ####), a list item ("- ", "1. "), a stat, a rule, a blockquote ("> ").
@@ -484,13 +489,15 @@ function bylineAuthor(meta, team) {
 const _show = (key) => JSON.stringify(String(key).replace(/[^\x20-\x7E]/g, '?').slice(0, 40));
 
 /**
- * Why a post's front matter must not publish or render, or null. Who the
- * byline names is not a reason (see bylineAuthor and bylineProblem): a
- * data/team.json edit must never take a live post off the site.
- * @param {string} md    the markdown file
- * @param {Array} team   data/team.json's team list (a credit naming a member is refused)
+ * Why a post's front matter must not publish or render, or null: one of the
+ * deterministic rules (markup, a character outside the allowed set, a slug,
+ * date or reading_time that is not its plain form; see the header). Wording
+ * is never a reason (reviewWordingWarnings), and neither is who the byline
+ * names (bylineAuthor, bylineProblem): a data/team.json edit must never take
+ * a live post off the site.
+ * @param {string} md  the markdown file
  */
-function frontMatterProblem(md, team) {
+function frontMatterProblem(md) {
   const fm = frontMatterOf(md);
   if (!fm) return null;
   for (const { key, value } of fm.lines) {
@@ -501,11 +508,6 @@ function frontMatterProblem(md, team) {
     if (SLUG_KEYS.includes(key) && !SAFE_SLUG_RE.test(value)) return `the front-matter ${key} is not lower-case letters, digits and hyphens`;
     if (DATE_KEYS.includes(key) && !DATE_RE.test(value)) return `the front-matter ${key} is not a YYYY-MM-DD date`;
     if (key === 'reading_time' && !READING_TIME_RE.test(value)) return 'the front-matter reading_time is not "<minutes> min" or "<minutes> min read"';
-    if (_isReviewKey(key)) continue;
-    // A slug or an image path is printed only inside URLs: it gets the "by"
-    // rules, not the anywhere ones ("what-your-agent-checks" is a path).
-    const claim = reviewClaimIn(value, team, { strict: URL_KEYS.includes(key) ? 'by' : true });
-    if (claim) return `the front-matter ${_show(key)} states a review or approval credit ("${claim}")`;
   }
   return null;
 }
@@ -530,18 +532,77 @@ function bylineProblem(md, team) {
   return null;
 }
 
-/**
- * Why a post's body must not publish or render (it states a review or approval
- * credit naming a team member, the agency, a licensed agent or our staff, in
- * any text the page prints from it: bodyViews), or null.
- */
-function bodyProblem(md, team) {
-  const ids = _identityPatterns(team);
-  for (const view of bodyViews(md)) {
-    const claim = _claimIn(claimFold(view), ids, false);
-    if (claim) return `the article body states a review or approval credit ("${claim}"); a credit is earned only by the reviewer's approval in SAGE, and the byline prints it`;
+// ─── Wording: warnings, never refusals ──────────────────────────────────────
+
+/** What a review-wording warning tells the person looking at the text. */
+const REVIEW_WORDING_NOTICE = 'This text contains review-credit wording; only the signed byline is a verified credit.';
+const WARNING_TEXT_MAX = 500;
+// Past this many, a post's remaining wording is not listed (a page of them
+// helps nobody; the first ones say what to look for).
+const WARNINGS_MAX = 50;
+
+const _excerpt = (s) => {
+  const t = String(s).replace(/\s+/g, ' ').trim();
+  return t.length > WARNING_TEXT_MAX ? `${t.slice(0, WARNING_TEXT_MAX - 3)}...` : t;
+};
+
+/** Each sentence of `text` that carries wording, as [sentence, wording]; else [[text, wording]]. */
+function _flaggedSentences(text, wording, ids, strict) {
+  const sentences = text.split(/(?<=[.!?;])\s+/);
+  const found = [];
+  if (sentences.length > 1) {
+    for (const s of sentences) {
+      const w = _claimIn(claimFold(s), ids, strict);
+      if (w) found.push([s, w]);
+    }
   }
-  return null;
+  return found.length ? found : [[text, wording]];
+}
+
+/**
+ * Review or approval credit wording in the text a post prints, as warnings
+ * (see the header). Never a reason to refuse a post: the post renders as
+ * written, and only a signed approval prints a structured credit.
+ * @param {string} md    the markdown file
+ * @param {Array} team   data/team.json's team list (wording naming a member is flagged)
+ * @returns {Array<{field: string, text: string, wording: string}>}
+ *   field    the front-matter key, 'body' or 'FAQ'
+ *   text     the exact text as written: the front-matter value, or each
+ *            sentence (else the paragraph) that carries the wording, cut at
+ *            500 characters; at most 50 warnings
+ *   wording  what was read as a credit, folded (lower case, look-alikes mapped)
+ */
+function reviewWordingWarnings(md, team) {
+  const ids = _identityPatterns(team);
+  const out = [];
+  const inBody = (field) => field === 'body' || field === 'FAQ';
+  const add = (field, text, wording) => {
+    if (out.length >= WARNINGS_MAX) return;
+    const t = _excerpt(text);
+    // The body is read in views that overlap: one warning per passage.
+    const seen = out.some((w) => (inBody(field)
+      ? inBody(w.field) && (w.text.includes(t) || t.includes(w.text))
+      : w.field === field && w.text === t));
+    if (!seen) out.push({ field, text: t, wording });
+  };
+  const fm = frontMatterOf(md);
+  for (const { key, value } of fm ? fm.lines : []) {
+    if (_isReviewKey(key)) continue;
+    // A slug or an image path is printed only inside URLs: it gets the "by"
+    // rules, not the anywhere ones ("what-your-agent-checks" is a path).
+    const strict = URL_KEYS.includes(key) ? 'by' : true;
+    const wording = _claimIn(claimFold(value), ids, strict);
+    if (wording) add(key, value, wording);
+  }
+  const [asWritten, printed, ...faq] = bodyViews(md);
+  for (const [field, texts] of [['body', [...printed.split('\n'), ...asWritten.split('\n')]], ['FAQ', faq]]) {
+    for (const text of texts) {
+      if (!text.trim()) continue;
+      const wording = _claimIn(claimFold(text), ids, false);
+      if (wording) for (const [sentence, w] of _flaggedSentences(text, wording, ids, false)) add(field, sentence, w);
+    }
+  }
+  return out;
 }
 
 module.exports = {
@@ -560,5 +621,6 @@ module.exports = {
   bylineAuthor,
   bylineProblem,
   frontMatterProblem,
-  bodyProblem,
+  REVIEW_WORDING_NOTICE,
+  reviewWordingWarnings,
 };

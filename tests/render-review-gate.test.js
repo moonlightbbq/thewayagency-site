@@ -34,8 +34,9 @@ const SECRET = 'TEST-vector-secret-0123456789abcdef0123';
 const sha = (s) => crypto.createHash('sha256').update(Buffer.from(s, 'utf8')).digest('hex');
 const body = Array.from({ length: 240 }, (_, i) => `word${i}`).join(' ');
 // The synthetic team's first name is "Test": a title or description that put
-// it beside a credit word ("test-approved-due") is refused like a real name
-// would be (blog-content-guard.js), so the slug goes in without its prefix.
+// it beside a credit word ("test-approved-due") is flagged like a real name
+// would be (blog-content-guard.js reviewWordingWarnings), so the slug goes in
+// without its prefix and only the fixtures meant to be flagged are.
 const named = (slug) => slug.replace(/^test-/, '');
 const post = (slug, extra = '', date = '2026-01-07') => `---\ntitle: SYNTHETIC ${named(slug)}\nslug: ${slug}\ndescription: SYNTHETIC description for ${named(slug)}\nauthor: The Way Agency\ndate: ${date}\n${extra}---\n\n${body}\n`;
 const REVIEWER = { name: 'Test Reviewer C', slug: 'test-reviewer-c', email: 'test-reviewer-c@example.com', title: 'Licensed Test Agent' };
@@ -314,8 +315,11 @@ describe('end to end: publisher then renderer', () => {
 // <a ...>A Licensed Agent</a>...` printed a "Reviewed by" byline, and an
 // author_slug carrying '"' added a top-level reviewedBy to the JSON-LD, on a
 // post no reviewer approved. Two layers now: the publish/render gate refuses
-// such front matter (frontMatterProblem), and the template encodes every value
-// for where it lands, so neither layer alone is load-bearing.
+// such front matter (frontMatterProblem: markup, unsafe slugs and the other
+// deterministic rules), and the template encodes every value for where it
+// lands, so neither layer alone is load-bearing. Plain-text WORDING that reads
+// as a credit is flagged, not refused (the scope decision after round 5): the
+// byline never prints author_title, so it carries no structured credit.
 
 const LICENSED_SLUG = 'test-reviewer-c';
 const BYLINE_INJECTION = `Licensed Agent, The Way Agency</span><span>|</span><span>Reviewed by <a href="/about/team.html#${LICENSED_SLUG}">Test Reviewer C</a>, Licensed Test Agent on December 1, 2025`;
@@ -332,6 +336,14 @@ function hasKeyDeep(v, key) {
   return false;
 }
 const bylineOf = (html) => (html.match(/<div class="blog-meta">[\s\S]*?<\/div>/) || [''])[0];
+/**
+ * Whether the page carries a STRUCTURED review credit: the byline's "Reviewed
+ * by" element or a JSON-LD reviewedBy. Wording in the text (a title, the body)
+ * is not one: it is flagged, never refused, and prints as written.
+ */
+const structuredCredit = (html) => /Reviewed by/.test(bylineOf(html)) || ldBlocks(html).some((b) => hasKeyDeep(b, 'reviewedBy'));
+/** The build or publish log flagged review-credit wording for this post. */
+const warned = (stdout, slug) => new RegExp(`! ${slug}: review-credit wording in .*only the signed byline is a verified credit`).test(stdout);
 
 describe('front matter cannot print a review claim through a non-review key', () => {
   const fm = (slug, lines) => `---\ntitle: SYNTHETIC ${slug}\nslug: ${slug}\ndescription: SYNTHETIC description\nauthor: Test Author Q\nauthor_slug: test-author-q\nauthor_title: Licensed Test Agent\ndate: 2026-01-07\n${lines}---\n\n${body}\n`;
@@ -342,10 +354,10 @@ describe('front matter cannot print a review claim through a non-review key', ()
     'test-inj-author-slug': withKey('test-inj-author-slug', 'author_slug', LD_INJECTION),
     'test-inj-title': withKey('test-inj-title', 'title', `SYNTHETIC</h1><div class="blog-meta"><span>Reviewed by <a href="/about/team.html#${LICENSED_SLUG}">Test Reviewer C</a></span></div><h1>`),
     'test-inj-description': withKey('test-inj-description', 'description', `d"><meta name="x" content="Reviewed by Test Reviewer C`),
-    // Plain text, no markup at all: a byline segment that reads as a credit.
-    'test-inj-plain-title': withKey('test-inj-plain-title', 'author_title', 'Licensed Agent | Reviewed by Test Reviewer C, Licensed Test Agent on December 1, 2025'),
     'test-inj-reading-time': fm('test-inj-reading-time', 'reading_time: 6 min read | Reviewed by Test Reviewer C on December 1, 2025\n'),
   };
+  // Plain text, no markup at all: a byline segment that reads as a credit.
+  const PLAIN = withKey('test-inj-plain-title', 'author_title', 'Licensed Agent | Reviewed by Test Reviewer C, Licensed Test Agent on December 1, 2025');
 
   test('the publisher refuses each one (error / unsafe_frontmatter) and the renderer renders none of them, before or after', () => {
     const site = makeSite({ year1: Object.keys(injected).map(planned), files: injected });
@@ -366,6 +378,27 @@ describe('front matter cannot print a review claim through a non-review key', ()
       site.clean();
       gen = site.run('generate-blog.js');
       for (const slug of Object.keys(injected)) assert.equal(site.page(slug), null, `${slug} must not render after the publisher ran`);
+    } finally {
+      site.done();
+    }
+  });
+
+  test('plain-text credit wording in author_title: flagged, rendered and published, with no structured credit (author_title is never printed)', () => {
+    const site = makeSite({ year1: [planned('test-inj-plain-title')], files: { 'test-inj-plain-title': PLAIN } });
+    try {
+      const gen = site.run('generate-blog.js');
+      assert.equal(gen.status, 0, gen.stdout + gen.stderr);
+      const html = site.page('test-inj-plain-title');
+      assert.ok(html, gen.stdout);
+      assert.ok(!structuredCredit(html));
+      assert.ok(!html.includes('Reviewed by'), 'author_title is never printed');
+      assert.ok(warned(gen.stdout, 'test-inj-plain-title'), gen.stdout);
+      const pub = site.run('publish-scheduled-posts.js');
+      assert.equal(pub.status, 0, pub.stdout + pub.stderr);
+      const e = site.calendar().year1.find((p) => p.slug === 'test-inj-plain-title');
+      assert.equal(e.status, 'published');
+      assert.equal(e.credit_mac, undefined);
+      assert.ok(warned(pub.stdout, 'test-inj-plain-title'), pub.stdout);
     } finally {
       site.done();
     }
@@ -508,19 +541,25 @@ describe('fix round 3: slug binding, unverifiable approvals, rescheduling and wi
 // other printed value (title, CTA, alt text, ...) and the article body
 // unchecked, and a hand-made src/pages/blog/<slug>.html copied into the build
 // around a hold. The byline now prints a data/team.json member or the agency,
-// every printed value and the body are checked for a credit
-// (scripts/lib/blog-content-guard.js), and build/blog/ keeps only what the
-// gate rendered and the frozen hand-made pages.
+// the deterministic front-matter rules refuse look-alike and invisible
+// characters, wording in every printed value and the body is flagged
+// (scripts/lib/blog-content-guard.js: a warning since the scope decision
+// after round 5; the post renders as written with no structured credit), and
+// build/blog/ keeps only what the gate rendered and the frozen hand-made pages.
 
 describe('fix round 4: no forged credit through the byline, any printed value or the body', () => {
   const fm = (slug, lines = '', bodyText = body) => `---\ntitle: SYNTHETIC ${slug}\nslug: ${slug}\ndescription: SYNTHETIC description\nauthor: ${AUTHOR.name}\nauthor_slug: ${AUTHOR.slug}\nauthor_title: ${AUTHOR.title}\ndate: 2026-01-07\n${lines}---\n\n${bodyText}\n`;
   const withKey = (slug, key, value) => fm(slug).replace(new RegExp(`^${key}: .*$`, 'm'), `${key}: ${value}`);
   const credit = `${REVIEWER.name}, Licensed Test Agent on December 1, 2025`;
+  // Refused by a deterministic rule: a character outside the allowed set.
   const hostile = {
     'test-r4-cyrillic': fm('test-r4-cyrillic', `reading_time: Rеviewed by ${credit} | 6 min read\n`),
     'test-r4-shy': withKey('test-r4-shy', 'author_title', `Licensed Agent | Re­viewed by ${credit}`),
     'test-r4-zwsp': withKey('test-r4-zwsp', 'author_title', `Client Care Specialist, The Way Agency | Re​viewed by ${credit}`),
     'test-r4-fullwidth': withKey('test-r4-fullwidth', 'author_title', `Ｒｅｖｉｅｗｅｄ by ${credit}`),
+  };
+  // Plain-text wording: flagged, rendered as written, no structured credit.
+  const worded = {
     'test-r4-approved': withKey('test-r4-approved', 'author_title', `Approved by ${credit}`),
     'test-r4-author': withKey('test-r4-author', 'author', `${AUTHOR.name} | Reviewed by ${REVIEWER.name}`),
     'test-r4-title': withKey('test-r4-title', 'title', `SYNTHETIC guide — Reviewed by ${REVIEWER.name}, Licensed Agent`),
@@ -532,14 +571,22 @@ describe('fix round 4: no forged credit through the byline, any printed value or
   const planned = (slug, status) => ({ slug, title: `SYNTHETIC ${slug}`, publish_date: '2026-01-07', status, ...assigned });
 
   for (const [label, status] of [['planned and due', 'planned'], ['in review and due', 'in-review'], ['not on the calendar', null]]) {
-    test(`none renders when ${label}, and none names the reviewer anywhere`, () => {
-      const site = makeSite({ year1: status ? Object.keys(hostile).map((slug) => planned(slug, status)) : [], files: hostile });
+    test(`${label}: the look-alike and invisible characters do not render; the plain wording renders, flagged, with no structured credit`, () => {
+      const files = { ...hostile, ...worded };
+      const site = makeSite({ year1: status ? Object.keys(files).map((slug) => planned(slug, status)) : [], files });
       try {
         const gen = site.run('generate-blog.js');
         assert.equal(gen.status, 0, gen.stdout + gen.stderr);
         for (const slug of Object.keys(hostile)) {
           assert.equal(site.page(slug), null, `${slug} must not render (${label})`);
-          assert.match(gen.stdout, new RegExp(`Not rendered ${slug}\\.html .*(unsafe_frontmatter|review_claim_in_body)`), slug);
+          assert.match(gen.stdout, new RegExp(`Not rendered ${slug}\\.html .*unsafe_frontmatter`), slug);
+        }
+        for (const slug of Object.keys(worded)) {
+          const html = site.page(slug);
+          assert.ok(html, `${slug} renders (${label}): ${gen.stdout}`);
+          assert.ok(!structuredCredit(html), `${slug}: no byline credit and no reviewedBy (${label})`);
+          assert.ok(!bylineOf(html).includes(REVIEWER.name), `${slug}: the byline never names the reviewer`);
+          assert.ok(warned(gen.stdout, slug), `${slug} is flagged in the build log`);
         }
       } finally {
         site.done();
@@ -547,16 +594,37 @@ describe('fix round 4: no forged credit through the byline, any printed value or
     });
   }
 
-  test('the publisher refuses each one (error), with the reason', () => {
-    const site = makeSite({ year1: Object.keys(hostile).map((slug) => planned(slug, 'planned')), files: hostile });
+  test('the publisher refuses the deterministic ones (error, unsafe_frontmatter) and publishes the worded ones uncredited, logging the wording', () => {
+    const files = { ...hostile, ...worded };
+    const site = makeSite({ year1: Object.keys(files).map((slug) => planned(slug, 'planned')), files });
     try {
       const pub = site.run('publish-scheduled-posts.js');
       assert.equal(pub.status, 3, pub.stdout + pub.stderr);
       for (const slug of Object.keys(hostile)) {
         const e = site.calendar().year1.find((p) => p.slug === slug);
         assert.equal(e.status, 'error', slug);
-        assert.equal(e.error_reason, slug === 'test-r4-body' ? 'review_claim_in_body' : 'unsafe_frontmatter', slug);
+        assert.equal(e.error_reason, 'unsafe_frontmatter', slug);
       }
+      for (const slug of Object.keys(worded)) {
+        const e = site.calendar().year1.find((p) => p.slug === slug);
+        assert.equal(e.status, 'published', slug);
+        assert.equal(e.credit_mac, undefined, slug);
+        assert.ok(warned(pub.stdout, slug), `${slug}: ${pub.stdout}`);
+      }
+    } finally {
+      site.done();
+    }
+  });
+
+  test('worded text with a signed approval: the structured credit is the approval\'s, whatever the text says', () => {
+    const md = worded['test-r4-title'];
+    const site = makeSite({ year1: [approved('test-r4-title', md)], files: { 'test-r4-title': md } });
+    try {
+      const gen = site.run('generate-blog.js');
+      const html = site.page('test-r4-title');
+      assert.ok(html, gen.stdout);
+      assert.match(bylineOf(html), new RegExp(`Reviewed by <a href="/about/team.html#${REVIEWER.slug}"[^>]*>${REVIEWER.name}</a>, ${REVIEWER.title} on December 23, 2025`));
+      assert.ok(warned(gen.stdout, 'test-r4-title'));
     } finally {
       site.done();
     }
@@ -763,7 +831,7 @@ describe('fix round 5: a data/team.json edit never takes a post off the site', (
   });
 });
 
-describe('fix round 5: a credit split across a line break is read the way the page prints it', () => {
+describe('fix round 5: a credit split across a line break is read the way the page prints it (flagged, never refused)', () => {
   const withBody = (slug, extra) => post(slug).replace(`${body}\n`, `${body}\n\n${extra}\n`);
   for (const [label, extra] of [
     ['a line break after the participle', `This article was reviewed\nby ${REVIEWER.name}, Licensed Test Agent, on September 1, 2026.`],
@@ -772,29 +840,33 @@ describe('fix round 5: a credit split across a line break is read the way the pa
     ['an FAQ answer over two lines (printed joined, and in the FAQPage JSON-LD)', `### FAQ: Who checks this?\n\nReviewed\nby ${REVIEWER.name}, Licensed Test Agent.`],
     ['an FAQ answer over two paragraphs', `### FAQ: Who checks this?\n\nReviewed\n\nby ${REVIEWER.name}, Licensed Test Agent.`],
   ]) {
-    test(`${label}: not rendered`, () => {
+    test(`${label}: rendered, flagged in the build log, with no structured credit`, () => {
       const site = makeSite({ files: { 'test-linebreak': withBody('test-linebreak', extra) } });
       try {
         const gen = site.run('generate-blog.js');
-        assert.equal(site.page('test-linebreak'), null, gen.stdout);
-        assert.match(gen.stdout, /Not rendered test-linebreak\.html .*review_claim_in_body/);
+        const html = site.page('test-linebreak');
+        assert.ok(html, gen.stdout);
+        assert.ok(!structuredCredit(html));
+        assert.match(gen.stdout, new RegExp(`! test-linebreak: review-credit wording in the (body|FAQ): "[^"]*by ${REVIEWER.name}`));
       } finally {
         site.done();
       }
     });
   }
 
-  test('the renderer checks the text it printed, so a gap in the markdown check is still caught', () => {
+  test('the renderer reads the text it printed, so a gap in the markdown reading is still flagged', () => {
     for (const extra of [`This article was reviewed\nby ${REVIEWER.name}.`, `### FAQ: Who checks this?\n\nReviewed\n\nby ${REVIEWER.name}, Licensed Test Agent.`]) {
       const site = makeSite({ files: { 'test-printed': withBody('test-printed', extra), 'test-printed-ok': post('test-printed-ok') } });
       try {
-        // Simulate a markdown check that misses it: the copied guard's
-        // bodyProblem passes everything; reviewClaimIn is intact.
-        fs.appendFileSync(path.join(site.tmp, 'scripts', 'lib', 'blog-content-guard.js'), '\nmodule.exports.bodyProblem = () => null;\n');
+        // Simulate a markdown reading that misses it: the copied guard's
+        // reviewWordingWarnings finds nothing; reviewClaimIn is intact.
+        fs.appendFileSync(path.join(site.tmp, 'scripts', 'lib', 'blog-content-guard.js'), '\nmodule.exports.reviewWordingWarnings = () => [];\n');
         const gen = site.run('generate-blog.js');
-        assert.equal(site.page('test-printed'), null, gen.stdout);
-        assert.match(gen.stdout, /Not rendered test-printed\.html  -  the rendered page states a review or approval credit/);
+        assert.ok(site.page('test-printed'), gen.stdout);
+        assert.ok(!structuredCredit(site.page('test-printed')));
+        assert.match(gen.stdout, new RegExp(`! test-printed: review-credit wording in the rendered text: "[^"]*reviewed by ${REVIEWER.name}`, 'i'));
         assert.ok(site.page('test-printed-ok'), gen.stdout);
+        assert.ok(!warned(gen.stdout, 'test-printed-ok'));
       } finally {
         site.done();
       }
@@ -808,8 +880,8 @@ describe('fix round 5: a credit split across a line break is read the way the pa
   });
 });
 
-describe('fix round 5: calendar titles and descriptions on the cards get the wording check', () => {
-  test('a card whose calendar text states a credit uses the post\'s own front matter, or is left out', () => {
+describe('fix round 5: calendar titles and descriptions on the cards get the wording check (a warning since the scope decision)', () => {
+  test('a card whose calendar text reads as a credit is kept as written and flagged in the build log', () => {
     const { LEGACY_BLOG_PAGES } = require('../scripts/lib/legacy-blog-pages');
     const legacy = Object.keys(LEGACY_BLOG_PAGES).find((f) => f !== 'index.html');
     const legacySlug = legacy.slice(0, -'.html'.length);
@@ -826,15 +898,16 @@ describe('fix round 5: calendar titles and descriptions on the cards get the wor
       const gen = site.run('generate-blog.js');
       assert.equal(gen.status, 0, gen.stderr);
       const index = fs.readFileSync(path.join(site.tmp, 'build', 'blog', 'index.html'), 'utf8');
-      assert.doesNotMatch(index, /Reviewed by|Approved by|checked by/i);
-      assert.match(index, />SYNTHETIC card</, 'the post\'s own title');
-      assert.match(index, />SYNTHETIC description for card</, 'the post\'s own description');
-      assert.ok(!index.includes(`/blog/${legacySlug}.html`), 'no card without a checked title');
+      assert.match(index, new RegExp(`>Reviewed by ${REVIEWER.name}: SYNTHETIC card<`), 'the calendar title, as written');
+      assert.ok(index.includes(`/blog/${legacySlug}.html`), 'the frozen page keeps its card');
       assert.match(index, />SYNTHETIC plain card</);
-      assert.match(gen.stdout, /No card for "[^"]+"  -  its calendar title states a review or approval credit/);
+      assert.match(gen.stdout, new RegExp(`! test-card: review-credit wording in the calendar title: "Reviewed by ${REVIEWER.name}: SYNTHETIC card"`));
+      assert.match(gen.stdout, new RegExp(`! test-card: review-credit wording in the calendar description: "Every answer here was checked by ${REVIEWER.name}\\."`));
+      assert.match(gen.stdout, new RegExp(`! ${legacySlug}: review-credit wording in the calendar title`));
+      assert.doesNotMatch(gen.stdout, /! test-card-ok: review-credit wording/);
       const related = site.page('test-card-ok');
-      assert.doesNotMatch(related, /Reviewed by|Approved by/);
-      assert.match(related, /Related Articles[\s\S]*>SYNTHETIC card</);
+      assert.ok(!structuredCredit(related), 'a card title is text, not a credit');
+      assert.match(related, new RegExp(`Related Articles[\\s\\S]*>Reviewed by ${REVIEWER.name}: SYNTHETIC card<`));
     } finally {
       site.done();
     }

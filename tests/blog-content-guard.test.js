@@ -17,6 +17,16 @@
  * its JSON-LD). Those are fixtures below too. And who the byline names is no
  * longer a reason to refuse a post (a team.json edit took live posts down).
  *
+ * Scope decision (after fix round 5): free text can always claim a review,
+ * and each tighter wording rule took more legitimate posts down ("Check with
+ * your agent" in a title). So the wording rules now WARN (reviewWordingWarnings:
+ * the field and the exact text), and only the deterministic rules refuse
+ * (frontMatterProblem: markup, characters outside the allowed set, unsafe
+ * slugs, dates and reading_time). The fixtures of rounds 4 and 5 stay below:
+ * each must still be flagged, and none may refuse a post any more. The
+ * structured credit is pinned elsewhere (render-review-gate.test.js): it
+ * prints only from a signed approval.
+ *
  * The same file runs in sage-server (src/services/blog-content-guard.js),
  * whose tests/blog-content-guard-parity.test.js fails when the two differ.
  */
@@ -38,16 +48,26 @@ const TEAM = [
 const body = Array.from({ length: 240 }, (_, i) => `word${i}`).join(' ');
 const fm = (lines = '', b = body) => `---\ntitle: SYNTHETIC guide\nslug: test-guide\ndescription: SYNTHETIC description.\nauthor: Test Author Q\nauthor_title: Client Care Specialist\nauthor_slug: test-author-q\ndate: 2026-09-30\n${lines}---\n\n${b}\n`;
 const set = (key, value) => fm().replace(new RegExp(`^${key}: .*$`, 'm'), `${key}: ${value}`);
-const problem = (md) => g.frontMatterProblem(md, TEAM) || g.bodyProblem(md, TEAM);
+const warnings = (md) => g.reviewWordingWarnings(md, TEAM);
 const CREDIT = 'Test Reviewer A, Agency Principal / Licensed Agent on September 30, 2026';
 
-describe('front matter: the review\'s fixtures are refused', () => {
+/** The post is not refused, and the wording is flagged in `field` with its exact text. */
+function flagged(md, field, text) {
+  assert.equal(g.frontMatterProblem(md), null, 'wording never refuses a post');
+  const w = warnings(md);
+  assert.ok(w.length > 0, `no warning for ${JSON.stringify(text)}`);
+  if (field) assert.ok(w.some((x) => x.field === field), `no warning in ${field}: ${JSON.stringify(w)}`);
+  if (text) assert.ok(w.some((x) => x.text === text), `no warning carries the exact text ${JSON.stringify(text)}: ${JSON.stringify(w)}`);
+  for (const x of w) assert.equal(typeof x.wording, 'string');
+  return w;
+}
+
+describe('deterministic rules: front matter that does not publish or render', () => {
   for (const [label, md, why] of [
     ['(a) a Cyrillic look-alike in reading_time', fm(`reading_time: Rеviewed by ${CREDIT} | 6 min read\n`), /character other than/],
     ['(b) a soft hyphen in author_title', set('author_title', `Licensed Agent | Re­viewed by ${CREDIT}`), /character other than/],
     ['(b) a zero-width space in author_title', set('author_title', `Client Care Specialist, The Way Agency | Re​viewed by ${CREDIT}`), /character other than/],
     ['(c) full-width letters', set('author_title', `Ｒｅｖｉｅｗｅｄ by ${CREDIT}`), /character other than/],
-    ['(d) "Approved by"', set('author_title', `Approved by ${CREDIT}`), /credit/],
     ['a bidi override', set('title', 'SYNTHETIC ‮yb deweiveR'), /character other than/],
     ['a combining mark', set('title', 'Réviewed by Test Reviewer A'), /character other than/],
     ['reading_time that is not "N min read"', fm('reading_time: 6 min read | Approved by Test Reviewer A\n'), /reading_time/],
@@ -56,11 +76,15 @@ describe('front matter: the review\'s fixtures are refused', () => {
     ['a date that is not YYYY-MM-DD', set('date', 'Reviewed by Test Reviewer A'), /YYYY-MM-DD/],
     ['markup', set('title', 'x</h1><span>Reviewed by Test Reviewer A</span>'), /'<' or '>'/],
   ]) {
-    test(label, () => assert.match(String(g.frontMatterProblem(md, TEAM)), why));
+    test(label, () => assert.match(String(g.frontMatterProblem(md)), why));
   }
 });
 
-describe('front matter: a credit in ANY value the page prints is refused', () => {
+describe('wording: "(d) Approved by" in a byline field is flagged, not refused (author_title is never printed)', () => {
+  test('author_title: Approved by ...', () => flagged(set('author_title', `Approved by ${CREDIT}`), 'author_title', `Approved by ${CREDIT}`));
+});
+
+describe('wording: a credit in ANY value the page prints is flagged with its key and exact text, never refused', () => {
   for (const [key, value] of [
     ['title', 'SYNTHETIC guide — Reviewed by Test Reviewer A, Licensed Agent'],
     ['title', 'Guide (Verified by Test Reviewer A)'],
@@ -78,12 +102,12 @@ describe('front matter: a credit in ANY value the page prints is refused', () =>
   ]) {
     test(`${key}: ${value}`, () => {
       const md = fm().includes(`\n${key}: `) ? set(key, value) : fm(`${key}: ${value}\n`);
-      assert.match(String(g.frontMatterProblem(md, TEAM)), /review or approval credit/);
+      flagged(md, key, value);
     });
   }
 });
 
-describe('the body: a credit naming the team, the agency or a licensed agent is refused', () => {
+describe('wording: a credit in the body naming the team, the agency or a licensed agent is flagged, never refused', () => {
   for (const sentence of [
     'Reviewed by [Test Reviewer A](/about/team.html#test-reviewer-a), Agency Principal / Licensed Agent on September 30, 2026',
     'This article was reviewed by our licensed agents.',
@@ -99,12 +123,13 @@ describe('the body: a credit naming the team, the agency or a licensed agent is 
     '### FAQ: Who reviewed this?\n\nThis answer was verified by an Agency Principal.',
   ]) {
     test(sentence.replace(/\s+/g, ' ').slice(0, 70), () => {
-      assert.match(String(g.bodyProblem(fm('', `${sentence}\n\n${body}`), TEAM)), /review or approval credit/);
+      const w = flagged(fm('', `${sentence}\n\n${body}`));
+      assert.ok(w.every((x) => x.field === 'body' || x.field === 'FAQ'), JSON.stringify(w));
     });
   }
 });
 
-describe('contrasts that must keep passing', () => {
+describe('contrasts: no refusal and no warning', () => {
   for (const [label, md] of [
     ['the plain post', fm('reading_time: 6 min read\n')],
     ['an agency post with no author_slug', fm().replace(/author: .*\nauthor_title: .*\nauthor_slug: .*\n/, 'author: The Way Agency\nauthor_title: Independent Insurance Agency\n')],
@@ -115,7 +140,10 @@ describe('contrasts that must keep passing', () => {
     ['advice in the body', fm('', `${body}\n\nHave your policy reviewed by a licensed agent every year. Medicare Advantage plans are approved by Medicare. The kitchen was inspected by the health department. Rates are approved by the Kentucky DOI. Ask us for a coverage review.\n`)],
     ['review keys themselves (the publisher strips or rewrites them)', fm('reviewer: Test Reviewer A\nreviewed_date: 2026-09-01\n')],
   ]) {
-    test(label, () => assert.equal(problem(md), null));
+    test(label, () => {
+      assert.equal(g.frontMatterProblem(md), null);
+      assert.deepEqual(warnings(md), []);
+    });
   }
 });
 
@@ -143,7 +171,7 @@ describe('bylineProblem: what a BL-06 promote refuses in new text, and the rende
   ]) {
     test(label, () => {
       assert.match(String(g.bylineProblem(md, TEAM)), why);
-      assert.equal(g.frontMatterProblem(md, TEAM), null, 'never a reason not to publish or render');
+      assert.equal(g.frontMatterProblem(md), null, 'never a reason not to publish or render');
     });
   }
   test('no author_slug, or a consistent one: nothing to say', () => {
@@ -152,7 +180,7 @@ describe('bylineProblem: what a BL-06 promote refuses in new text, and the rende
   });
 });
 
-describe('fix round 5: front matter, a credit word beside an identity, in any order and at any distance', () => {
+describe('fix round 5 fixtures, front matter: a credit word beside an identity, in any order and at any distance, is flagged', () => {
   for (const [key, value] of [
     // The review's four values (synthetic names).
     ['cta_text', 'Every answer here was reviewed for accuracy and compliance by Synthia Testerly, Licensed Agent.'],
@@ -173,12 +201,12 @@ describe('fix round 5: front matter, a credit word beside an identity, in any or
   ]) {
     test(`${key}: ${value}`, () => {
       const md = fm().includes(`\n${key}: `) ? set(key, value) : fm(`${key}: ${value}\n`);
-      assert.match(String(g.frontMatterProblem(md, TEAM)), /review or approval credit/);
+      flagged(md, key, value);
     });
   }
 });
 
-describe('fix round 5: the body, a sentence with a credit word and a team member\'s name, and a credit across a line break', () => {
+describe('fix round 5 fixtures, the body: a sentence with a credit word and a team member\'s name, and a credit across a line break, are flagged', () => {
   for (const sentence of [
     'This guide was reviewed for accuracy and compliance by Synthia Testerly, Licensed Agent.',
     'Synthia Testerly, Licensed Agent, reviewed and approved this guide.',
@@ -196,7 +224,7 @@ describe('fix round 5: the body, a sentence with a credit word and a team member
     'R e v i e w e d\nb y  S y n t h i a  T e s t e r l y',
   ]) {
     test(sentence.replace(/\s+/g, ' ').slice(0, 70), () => {
-      assert.match(String(g.bodyProblem(fm('', `${body}\n\n${sentence}\n`), TEAM)), /review or approval credit/);
+      flagged(fm('', `${body}\n\n${sentence}\n`));
     });
   }
 
@@ -207,7 +235,7 @@ describe('fix round 5: the body, a sentence with a credit word and a team member
   });
 });
 
-describe('fix round 5: contrasts that must keep passing', () => {
+describe('fix round 5: contrasts, no refusal and no warning', () => {
   for (const [label, md] of [
     ['a live description: "your independent agent ... coverage reviews"', set('description', 'Your policy renewal isn\'t automatic. Here\'s what your independent agent actually does behind the scenes — from rate analysis to carrier shopping to coverage reviews.')],
     ['a service beside an identity in a CTA', fm('cta_text: Ask your agent for a free coverage review, or a premium audit walkthrough.\n')],
@@ -218,39 +246,96 @@ describe('fix round 5: contrasts that must keep passing', () => {
     ['a name with no credit word', fm('', `${body}\n\nSynthia Testerly answers the phone on Saturdays.\n`)],
     ['a name in one sentence, a credit word in the next', fm('', `${body}\n\nCall Synthia Testerly. Rates are approved by the Kentucky DOI.\n`)],
   ]) {
-    test(label, () => assert.equal(problem(md), null));
+    test(label, () => {
+      assert.equal(g.frontMatterProblem(md), null);
+      assert.deepEqual(warnings(md), []);
+    });
   }
+});
+
+describe('the scope decision: wording that used to take a post down only warns', () => {
+  // Round 5's own residual-risk list: ordinary advice in a title,
+  // description or CTA, and a first name beside a credit word in the body.
+  for (const [label, md, field, text] of [
+    ['"Check with your agent" in a title', set('title', 'Check with your agent before you renew'), 'title', 'Check with your agent before you renew'],
+    ['"Verify coverage with a licensed agent" in a description', set('description', 'Verify coverage with a licensed agent.'), 'description', 'Verify coverage with a licensed agent.'],
+    ['"Ask your agent to check your coverage" in a CTA', fm('cta_text: Ask your agent to check your coverage.\n'), 'cta_text', 'Ask your agent to check your coverage.'],
+    ['a first name beside a credit word in the body', fm('', `${body}\n\nCall Synthia to review your policy.\n`), 'body', 'Call Synthia to review your policy.'],
+  ]) {
+    test(label, () => flagged(md, field, text));
+  }
+
+  test('a warning carries the exact text as written (case, accents and markdown kept), narrowed to its sentence', () => {
+    const md = fm('', `Intro sentence one. Synthia Testerly **reviewed** this article. Another sentence here.\n\n${body}`);
+    assert.deepEqual(warnings(md), [{ field: 'body', text: 'Synthia Testerly **reviewed** this article.', wording: 'synthia testerly reviewed this article' }]);
+  });
+
+  test('one warning per passage, though the body is read in overlapping views', () => {
+    const md = fm('', `${body}\n\nThis article was reviewed\nby Synthia Testerly, Licensed Agent.\n\n### FAQ: Who checks this?\n\nReviewed\n\nby Synthia Testerly, Licensed Agent.\n`);
+    assert.deepEqual(warnings(md).map((w) => [w.field, w.text]), [
+      ['body', 'This article was reviewed by Synthia Testerly, Licensed Agent.'],
+      ['FAQ', 'Reviewed by Synthia Testerly, Licensed Agent.'],
+    ]);
+  });
+
+  test('every flagged sentence of a paragraph is listed, up to 50 warnings', () => {
+    const md = fm('', `${body}\n\nSynthia Testerly reviewed this guide. Rates rose. Every figure was checked by Synthia Testerly.\n`);
+    assert.deepEqual(warnings(md).map((w) => w.text), ['Synthia Testerly reviewed this guide.', 'Every figure was checked by Synthia Testerly.']);
+    const many = fm('', Array.from({ length: 80 }, (_, i) => `Synthia Testerly reviewed part ${i}.`).join(' '));
+    assert.equal(warnings(many).length, 50);
+  });
+
+  test('a long passage is cut at 500 characters', () => {
+    const long = `Reviewed by Synthia Testerly ${'x'.repeat(800)}`;
+    const [w] = warnings(fm(`cta_text: ${long}\n`));
+    assert.equal(w.text.length, 500);
+    assert.ok(w.text.endsWith('...'));
+  });
+
+  test('the notice SAGE and the build show with every warning', () => {
+    assert.equal(g.REVIEW_WORDING_NOTICE, 'This text contains review-credit wording; only the signed byline is a verified credit.');
+  });
 });
 
 describe('the live posts', () => {
   const t = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'team.json'), 'utf8'));
   const team = Array.isArray(t) ? t : t.team;
   const dir = path.join(ROOT, 'src', 'blog');
-  const refusedWith = (members) => fs.readdirSync(dir).filter((f) => f.endsWith('.md')).map((f) => {
-    const md = fs.readFileSync(path.join(dir, f), 'utf8');
-    const why = g.frontMatterProblem(md, members) || g.bodyProblem(md, members);
+  const files = () => fs.readdirSync(dir).filter((f) => f.endsWith('.md')).map((f) => [f, fs.readFileSync(path.join(dir, f), 'utf8')]);
+  const refused = () => files().map(([f, md]) => {
+    const why = g.frontMatterProblem(md);
     return why ? `${f}: ${why}` : null;
   }).filter(Boolean);
 
-  test('every src/blog/*.md passes against data/team.json (nothing on the site goes dark)', () => {
-    assert.deepEqual(refusedWith(team), []);
+  test('no src/blog/*.md breaks a deterministic rule (nothing on the site goes dark)', () => {
+    assert.deepEqual(refused(), []);
   });
 
-  test('...and still passes after a member\'s title changes and another member leaves (fix round 5)', () => {
+  test('a data/team.json edit cannot take a post down: no rule that refuses reads the team (fix round 5, and the scope decision)', () => {
     // Round 4 refused every post whose author or author_title no longer
     // matched: one title change and one offboarding took 15 live URLs to 404.
+    // The wording rules read the team, and since the scope decision they only warn.
+    assert.equal(g.frontMatterProblem.length, 1);
     assert.ok(team.length >= 2);
-    const edited = [{ ...team[0], title: 'SYNTHETIC New Title' }, ...team.slice(2)];
-    assert.deepEqual(refusedWith(edited), []);
-    assert.deepEqual(refusedWith([]), []);
+    for (const [, md] of files()) {
+      assert.doesNotThrow(() => g.reviewWordingWarnings(md, [{ ...team[0], title: 'SYNTHETIC New Title' }, ...team.slice(2)]));
+      assert.doesNotThrow(() => g.reviewWordingWarnings(md, []));
+    }
   });
 });
 
 describe('cost', () => {
-  test('a large adversarial body is checked in linear time (SAGE runs this inside a request)', () => {
+  test('a large adversarial body is read in linear time (SAGE runs this inside a request)', () => {
     const big = fm('', Array.from({ length: 20000 }, (_, i) => `reviewed word${i} by nobody in particular.`).join(' '));
     const t0 = Date.now();
-    assert.equal(g.bodyProblem(big, TEAM), null);
+    assert.deepEqual(warnings(big), []);
+    assert.ok(Date.now() - t0 < 3000, `took ${Date.now() - t0} ms`);
+  });
+
+  test('...and so is one where every sentence is flagged', () => {
+    const big = fm('', Array.from({ length: 5000 }, (_, i) => `Synthia Testerly reviewed part ${i}.`).join(' '));
+    const t0 = Date.now();
+    assert.equal(warnings(big).length, 50);
     assert.ok(Date.now() - t0 < 3000, `took ${Date.now() - t0} ms`);
   });
 });

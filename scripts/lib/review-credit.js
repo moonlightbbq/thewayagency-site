@@ -325,42 +325,53 @@ function creditCheck(post, rawBytes, { secret = null, team = null } = {}) {
  * Why a post's front matter is unsafe to publish or render, or null
  * (scripts/lib/blog-content-guard.js, the same file sage-server's BL-06
  * promote and BL-07 approval check): markup or an invisible, control or
- * look-alike character in a value, an unsafe slug, a reading_time or date
- * that is not the plain form, or a review or approval credit in any value the
- * page prints. Who the byline names is not a reason: the renderer prints the
- * data/team.json member author_slug names, or the agency (bylineAuthor), so a
- * team.json edit never takes a post off the site. Defence in depth behind the
- * renderer's output encoding (every value stays text) and its byline (printed
- * from data/team.json and a signed approval only).
+ * look-alike character in a value, an unsafe slug, or a reading_time or date
+ * that is not the plain form. Deterministic rules only: wording that reads as
+ * a review credit is a warning (reviewWordingWarnings), never a reason, and so
+ * is who the byline names (the renderer prints the data/team.json member
+ * author_slug names, or the agency: bylineAuthor), so a team.json edit never
+ * takes a post off the site. Defence in depth behind the renderer's output
+ * encoding (every value stays text) and its byline (printed from
+ * data/team.json and a signed approval only).
  * @param {string} md
- * @param {Array} team  data/team.json's team list
  */
-function frontMatterProblem(md, team) {
-  return contentGuard.frontMatterProblem(md, team);
+function frontMatterProblem(md) {
+  return contentGuard.frontMatterProblem(md);
 }
 
 /**
- * Why a post's body is unsafe to publish or render, or null: a review or
- * approval credit naming the team, the agency or a licensed agent in any text
- * the page prints from it (the body with in-paragraph line breaks folded as
- * the page prints them, and each FAQ question and answer).
+ * Review or approval credit wording in the text a post prints (front-matter
+ * values, the body as the page prints it, each FAQ question and answer), as
+ * warnings to log: [{field, text, wording}]. Never a reason not to publish or
+ * render; the post carries no structured credit unless its reviewer approved
+ * it in SAGE.
+ * @param {string} md
+ * @param {Array} team  data/team.json's team list
  */
-function bodyProblem(md, team) {
-  return contentGuard.bodyProblem(md, team);
+function reviewWordingWarnings(md, team) {
+  return contentGuard.reviewWordingWarnings(md, team);
+}
+
+// Warning fields that are not a front-matter key.
+const TEXT_FIELDS = Object.freeze(['body', 'FAQ', 'rendered text', 'calendar title', 'calendar description']);
+
+/** One log line for a review-wording warning (scripts log these; nothing is refused for one). */
+function describeWordingWarning(slug, w) {
+  const where = TEXT_FIELDS.includes(w.field) ? `the ${w.field}` : `the front-matter ${JSON.stringify(String(w.field))}`;
+  return `  ! ${slug}: review-credit wording in ${where}: ${JSON.stringify(String(w.text))}. `
+    + `${contentGuard.REVIEW_WORDING_NOTICE} It is printed as written.`;
 }
 
 /**
  * Why a markdown file is not ready to publish (the publisher's readiness
- * checks), or null: 'missing_frontmatter', 'unsafe_frontmatter',
- * 'review_claim_in_body' or 'content_too_short'.
+ * checks), or null: 'missing_frontmatter', 'unsafe_frontmatter' or
+ * 'content_too_short'.
  * @param {string} md
- * @param {Array} team  data/team.json's team list
  */
-function readinessError(md, team) {
+function readinessError(md) {
   const text = String(md);
   if (!text.includes('title:') || !text.includes('description:')) return 'missing_frontmatter';
-  if (frontMatterProblem(text, team)) return 'unsafe_frontmatter';
-  if (bodyProblem(text, team)) return 'review_claim_in_body';
+  if (frontMatterProblem(text)) return 'unsafe_frontmatter';
   const words = text.replace(/---[\s\S]*?---/, '').trim().split(/\s+/).length;
   if (words < MIN_WORDS) return 'content_too_short';
   return null;
@@ -406,8 +417,9 @@ function applyReviewCredit(md, post, team, { credit }) {
  * which markdown (review lines only when the credit is proven). It renders
  * exactly what the publisher would publish:
  *
- *   unsafe front matter             -> not rendered (frontMatterProblem)
- *   a review credit in the body     -> not rendered (bodyProblem)
+ *   unsafe front matter             -> not rendered (frontMatterProblem:
+ *                                      the deterministic rules only; review
+ *                                      wording is a warning the caller logs)
  *   not on the calendar             -> renders (by its own date:), no credit
  *   held ('changes-requested')      -> not rendered
  *   'error', or an unknown status   -> not rendered
@@ -429,10 +441,8 @@ function renderDecision(entry, rawBytes, team, opts) {
   const { secret = null, today, isKnownStatus, isPublishable, isHeld } = opts;
   const text = rawBytes.toString('utf8');
   const stripped = () => stripReviewerFields(text);
-  const unsafe = frontMatterProblem(text, team);
+  const unsafe = frontMatterProblem(text);
   if (unsafe) return { render: false, credit: false, markdown: '', why: `${unsafe} (unsafe_frontmatter)` };
-  const claim = bodyProblem(text, team);
-  if (claim) return { render: false, credit: false, markdown: '', why: `${claim} (review_claim_in_body)` };
   if (!entry) return { render: true, credit: false, markdown: stripped(), why: 'not on the content calendar' };
   const status = entry.status;
   if (isHeld(status)) return { render: false, credit: false, markdown: '', why: 'its reviewer requested changes; it renders once they approve a version in SAGE or the hold is released' };
@@ -444,7 +454,7 @@ function renderDecision(entry, rawBytes, team, opts) {
   }
   if (!isPublishable(status)) return { render: false, credit: false, markdown: '', why: `status "${status}" does not publish` };
   if (!entry.publish_date || String(entry.publish_date) > today) return { render: false, credit: false, markdown: '', why: `scheduled for ${entry.publish_date || 'no date'}` };
-  const notReady = readinessError(text, team);
+  const notReady = readinessError(text);
   if (notReady) return { render: false, credit: false, markdown: '', why: `not ready to publish (${notReady})` };
   const approval = approvalCheck(entry, rawBytes, team, { secret });
   if (approval.error) return { render: false, credit: false, markdown: '', why: `approved in SAGE, but ${approval.detail} (${approval.error})` };
@@ -484,7 +494,8 @@ module.exports = {
   approvalCheck,
   creditCheck,
   frontMatterProblem,
-  bodyProblem,
+  reviewWordingWarnings,
+  describeWordingWarning,
   readinessError,
   reviewerTitle,
   applyReviewCredit,
