@@ -47,13 +47,75 @@ const BLOG_SRC = path.join(ROOT, 'src', 'blog');
 const BLOG_BUILD = path.join(ROOT, 'build', 'blog');
 const DATA = path.join(ROOT, 'data');
 
-// ─── Simple Markdown to HTML converter ──────
-function markdownToHtml(md) {
-  let html = md
-    // Escape HTML entities in content
+// ─── Output encoding ─────────────────────────
+//
+// Every value that comes from a post's front matter, its FAQ text or the
+// content calendar is DATA, never markup. Each one is encoded for the place it
+// lands: esc() for HTML text and attribute values, ldJson() for a value inside
+// an application/ld+json block, cdata() for RSS. Without this, a front-matter
+// value such as `author_title: ...</span><span>Reviewed by <a ...>A Licensed
+// Agent</a>` printed a "Reviewed by" byline (and an author_slug carrying `"`
+// added a top-level reviewedBy to the JSON-LD) on a post that no reviewer
+// approved, around the signed review gate (sage-server BL-07, AIA-018).
+
+/** HTML-escape a value for element text or a double- or single-quoted attribute. */
+function esc(value) {
+  return String(value === undefined || value === null ? '' : value)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
+ * A value as JSON for an inline <script type="application/ld+json"> block:
+ * JSON.stringify (so no value can close a string or add a key), with '<', '>'
+ * and '&' as \u escapes so no value can close the script element either.
+ */
+function ldJson(value, indent) {
+  return JSON.stringify(value === undefined ? null : value, null, indent)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+}
+
+/** A value inside <![CDATA[ ... ]]> (RSS): only ']]>' can end the section. */
+function cdata(value) {
+  return String(value === undefined || value === null ? '' : value).replace(/]]>/g, ']]]]><![CDATA[>');
+}
+
+// Slugs become file names, URL paths and fragments: lower-case letters, digits
+// and hyphens only.
+const SAFE_SLUG_RE = /^[a-z0-9-]+$/;
+/** The slug when it is safe to use, else ''. */
+function safeSlug(value) {
+  const s = String(value === undefined || value === null ? '' : value);
+  return SAFE_SLUG_RE.test(s) ? s : '';
+}
+/** A site-relative path (/x/y.html), else '' (an absolute or protocol-relative URL, 'null', anything else). */
+function sitePath(value) {
+  const s = String(value === undefined || value === null ? '' : value).trim();
+  return /^\/(?!\/)[^\s"'<>\\]*$/.test(s) ? s : '';
+}
+/** A markdown link target the body may use: anything but a script or data URL. */
+function safeHref(url) {
+  // Browsers drop ASCII control characters and spaces inside a scheme.
+  const scheme = String(url).replace(/[\u0000-\u0020]/g, '').toLowerCase();
+  return /^(?:javascript|vbscript|data):/.test(scheme) ? '#' : url;
+}
+
+// ─── Simple Markdown to HTML converter ──────
+function markdownToHtml(md) {
+  let html = md
+    // Escape HTML entities in content. Quotes too: link targets below land in
+    // a double-quoted href, which a '"' in the markdown would otherwise close.
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     // Horizontal rules (--- on its own line)
     .replace(/^\n?---\n?$/gm, '<hr>')
     // Stat highlights: !!!stat Value | Label
@@ -77,7 +139,7 @@ function markdownToHtml(md) {
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     // Links
-    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
+    .replace(/\[(.+?)\]\((.+?)\)/g, (_m, text, url) => `<a href="${safeHref(url)}">${text}</a>`)
     // Unordered lists
     .replace(/^- (.+)$/gm, '<li>$1</li>')
     .replace(/(<li>.*<\/li>\n?)+/g, (match) => `<ul>\n${match}</ul>\n`)
@@ -161,7 +223,9 @@ function generateTOC(html) {
   while ((match = regex.exec(html)) !== null) {
     const level = parseInt(match[1]);
     const text = match[2].replace(/<[^>]+>/g, '').trim();
-    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    // The id from the heading's text as written: a '"' is escaped in the
+    // body (&quot;), and must not become "quot" in the anchor.
+    const id = text.replace(/&quot;/g, '"').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
     headings.push({ level, text, id });
   }
   if (headings.length < 3) return { tocHtml: '', anchoredBody: html };
@@ -171,9 +235,10 @@ function generateTOC(html) {
   for (const h of headings) {
     const tag = `h${h.level}`;
     // Replace first occurrence of this heading without an id
+    // A function replacement: '$&' or "$'" in a heading is text, not a pattern.
     anchoredBody = anchoredBody.replace(
       new RegExp(`<${tag}>${h.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}</${tag}>`),
-      `<${tag} id="${h.id}">${h.text}</${tag}>`
+      () => `<${tag} id="${h.id}">${h.text}</${tag}>`
     );
   }
 
@@ -232,17 +297,23 @@ function injectMidPostCTA(html, category, relatedPage) {
 
 // ─── Blog post HTML template ────────────────
 function generateBlogPost(meta, bodyHtml, faqs) {
+  // Every front-matter value below is encoded where it lands (esc / ldJson);
+  // see "Output encoding" above. Slugs and paths are validated, not escaped:
+  // an unsafe one is dropped.
+  const slug = safeSlug(meta.slug);
+  const authorSlug = safeSlug(meta.author_slug);
+
   const faqSection = faqs.length > 0 ? `
       <section class="faq-section" style="margin-top:var(--space-2xl);">
         <h2>Frequently asked questions</h2>
         ${faqs.map(f => `
         <div class="faq-item">
           <button class="faq-item__question" aria-expanded="false">
-            <h3 style="margin:0;font-size:var(--text-lg);pointer-events:none;">${f.question}</h3>
+            <h3 style="margin:0;font-size:var(--text-lg);pointer-events:none;">${esc(f.question)}</h3>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;transition:transform 0.2s;pointer-events:none;"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <div class="faq-item__answer">
-            <p>${f.answer}</p>
+            <p>${esc(f.answer)}</p>
           </div>
         </div>`).join('')}
       </section>` : '';
@@ -255,8 +326,8 @@ function generateBlogPost(meta, bodyHtml, faqs) {
     "mainEntity": [
       ${faqs.map(f => `{
         "@type": "Question",
-        "name": ${JSON.stringify(f.question)},
-        "acceptedAnswer": { "@type": "Answer", "text": ${JSON.stringify(f.answer)} }
+        "name": ${ldJson(f.question)},
+        "acceptedAnswer": { "@type": "Answer", "text": ${ldJson(f.answer)} }
       }`).join(',\n      ')}
     ]
   }
@@ -264,9 +335,9 @@ function generateBlogPost(meta, bodyHtml, faqs) {
 
   const fmtDate = (d) => new Date(String(d).slice(0, 10) + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const dateFormatted = fmtDate(meta.date);
-  const authorLink = meta.author_slug
-    ? `<a href="/about/team.html#${meta.author_slug}" style="color:var(--cyan);text-decoration:none;">${meta.author}</a>`
-    : meta.author;
+  const authorLink = authorSlug
+    ? `<a href="/about/team.html#${authorSlug}" style="color:var(--cyan);text-decoration:none;">${esc(meta.author)}</a>`
+    : esc(meta.author);
 
   // Byline honesty rule. "Written by" is a fact we always know. "Reviewed by"
   // is a professional-review claim on a regulated-industry page, so it renders
@@ -276,10 +347,10 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   // agent's name against a review that has no record of happening. A post with
   // no recorded reviewer now simply makes no review claim.
   const reviewerName = meta.reviewer || meta.reviewed_by || '';
-  const reviewerSlug = meta.reviewer_slug || '';
+  const reviewerSlug = safeSlug(meta.reviewer_slug);
   const reviewerLink = reviewerSlug
-    ? `<a href="/about/team.html#${reviewerSlug}" style="color:var(--cyan);text-decoration:none;">${reviewerName}</a>`
-    : reviewerName;
+    ? `<a href="/about/team.html#${reviewerSlug}" style="color:var(--cyan);text-decoration:none;">${esc(reviewerName)}</a>`
+    : esc(reviewerName);
   const hasReview = Boolean(reviewerName && meta.reviewed_date);
 
   // Reading time
@@ -290,50 +361,86 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   const { tocHtml, anchoredBody } = generateTOC(bodyHtml);
 
   // Mid-post CTA
-  const enhancedBody = injectMidPostCTA(anchoredBody, meta.category || '', meta.related_page);
+  const relatedPage = sitePath(meta.related_page);
+  const enhancedBody = injectMidPostCTA(anchoredBody, meta.category || '', relatedPage);
 
   // Featured image (optional front matter: image + image_alt). Site-relative
   // path in front matter; og/twitter need the absolute URL. Falls back to the
   // social logo when a post has no image.
-  const featuredImage = meta.image ? String(meta.image).trim() : null;
-  const featuredAlt = (meta.image_alt || meta.title || '').trim();
+  const featuredImage = sitePath(meta.image) || null;
+  const featuredAlt = String(meta.image_alt || meta.title || '').trim();
   const ogImage = featuredImage ? `https://www.thewayagency.com${featuredImage}` : 'https://www.thewayagency.com/src/assets/images/logo-social.jpg';
   const ogImageW = featuredImage ? '1536' : '631';
   const ogImageH = featuredImage ? '1024' : '631';
   const featuredFigure = featuredImage
-    ? `<figure class="blog-featured-image" style="margin:0 0 1.5rem;"><img src="${featuredImage}" alt="${featuredAlt}" width="1536" height="1024" loading="eager" fetchpriority="high" style="width:100%;height:auto;border-radius:12px;display:block;"></figure>\n      `
+    ? `<figure class="blog-featured-image" style="margin:0 0 1.5rem;"><img src="${esc(featuredImage)}" alt="${esc(featuredAlt)}" width="1536" height="1024" loading="eager" fetchpriority="high" style="width:100%;height:auto;border-radius:12px;display:block;"></figure>\n      `
     : '';
+
+  // Article structured data, built as an object and serialized once: no
+  // front-matter value can add a key (such as "reviewedBy") or close the block.
+  const articleLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": String(meta.title || ''),
+    "author": authorSlug ? {
+      "@type": "Person",
+      "name": String(meta.author || ''),
+      "jobTitle": String(meta.author_title || 'The Way Agency'),
+      "url": `https://www.thewayagency.com/about/team.html#${authorSlug}`,
+    } : {
+      "@type": "Organization",
+      "name": String(meta.author || 'The Way Agency'),
+      "url": "https://www.thewayagency.com",
+    },
+    ...(hasReview ? {
+      "reviewedBy": {
+        "@type": "Person",
+        "name": String(reviewerName),
+        ...(reviewerSlug ? { "url": `https://www.thewayagency.com/about/team.html#${reviewerSlug}` } : {}),
+      },
+    } : {}),
+    "publisher": {
+      "@type": "InsuranceAgency",
+      "name": "The Way Agency",
+      "url": "https://www.thewayagency.com",
+    },
+    "datePublished": String(meta.date || ''),
+    "dateModified": String(meta.modified || meta.date || ''),
+    "description": String(meta.description || ''),
+  };
+  const tags = (Array.isArray(meta.tags) ? meta.tags : String(meta.tags || '').replace(/[\[\]]/g, '').split(','))
+    .map(t => String(t).trim()).filter(Boolean);
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${meta.title} | The Way Agency</title>
-  <meta name="description" content="${meta.description || ''}">
+  <title>${esc(meta.title)} | The Way Agency</title>
+  <meta name="description" content="${esc(meta.description)}">
   <meta name="theme-color" content="#173358">
   <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
   <link rel="icon" href="/src/assets/images/favicon.png">
   <link rel="apple-touch-icon" href="/src/assets/images/apple-touch-icon.png">
-  <link rel="canonical" href="https://www.thewayagency.com/blog/${meta.slug}">
-  <meta property="og:title" content="${meta.title} | The Way Agency">
-  <meta property="og:description" content="${meta.description || ''}">
+  <link rel="canonical" href="https://www.thewayagency.com/blog/${slug}">
+  <meta property="og:title" content="${esc(meta.title)} | The Way Agency">
+  <meta property="og:description" content="${esc(meta.description)}">
   <meta property="og:type" content="article">
-  <meta property="og:url" content="https://www.thewayagency.com/blog/${meta.slug}">
+  <meta property="og:url" content="https://www.thewayagency.com/blog/${slug}">
   <meta property="og:site_name" content="The Way Agency">
-  <meta property="og:image" content="${ogImage}">
+  <meta property="og:image" content="${esc(ogImage)}">
   <meta property="og:image:width" content="${ogImageW}">
   <meta property="og:image:height" content="${ogImageH}">
   <meta property="og:image:type" content="image/jpeg">
-  <meta property="article:published_time" content="${meta.date}">
-  <meta property="article:modified_time" content="${meta.modified || meta.date}">
-  <meta property="article:author" content="${meta.author}">
-  <meta property="article:section" content="${meta.category || 'insurance'}">
-  ${(Array.isArray(meta.tags) ? meta.tags : (meta.tags || '').replace(/[\[\]]/g, '').split(',')).map(t => t.trim()).filter(Boolean).map(t => `<meta property="article:tag" content="${t}">`).join('\n  ')}
+  <meta property="article:published_time" content="${esc(meta.date)}">
+  <meta property="article:modified_time" content="${esc(meta.modified || meta.date)}">
+  <meta property="article:author" content="${esc(meta.author)}">
+  <meta property="article:section" content="${esc(meta.category || 'insurance')}">
+  ${tags.map(t => `<meta property="article:tag" content="${esc(t)}">`).join('\n  ')}
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${meta.title}">
-  <meta name="twitter:description" content="${meta.description || ''}">
-  <meta name="twitter:image" content="${ogImage}">
+  <meta name="twitter:title" content="${esc(meta.title)}">
+  <meta name="twitter:description" content="${esc(meta.description)}">
+  <meta name="twitter:image" content="${esc(ogImage)}">
   <link rel="alternate" type="application/rss+xml" title="The Way Agency Blog" href="/blog/feed.xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -346,34 +453,7 @@ function generateBlogPost(meta, bodyHtml, faqs) {
   <link rel="stylesheet" href="/src/css/leadgen.css">
   <link rel="stylesheet" href="/src/css/blog.css">
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": ${JSON.stringify(meta.title)},
-    "author": ${meta.author_slug ? `{
-      "@type": "Person",
-      "name": ${JSON.stringify(meta.author)},
-      "jobTitle": ${JSON.stringify(meta.author_title || 'The Way Agency')},
-      "url": "https://www.thewayagency.com/about/team.html#${meta.author_slug}"
-    }` : `{
-      "@type": "Organization",
-      "name": ${JSON.stringify(meta.author || 'The Way Agency')},
-      "url": "https://www.thewayagency.com"
-    }`},${hasReview ? `
-    "reviewedBy": {
-      "@type": "Person",
-      "name": ${JSON.stringify(reviewerName)}${reviewerSlug ? `,
-      "url": "https://www.thewayagency.com/about/team.html#${reviewerSlug}"` : ''}
-    },` : ''}
-    "publisher": {
-      "@type": "InsuranceAgency",
-      "name": "The Way Agency",
-      "url": "https://www.thewayagency.com"
-    },
-    "datePublished": "${meta.date}",
-    "dateModified": "${meta.modified || meta.date}",
-    "description": ${JSON.stringify(meta.description || '')}
-  }
+  ${ldJson(articleLd, 2).replace(/\n/g, '\n  ')}
   </script>${faqSchema}
 ${renderHead_GTM()}
 </head>
@@ -387,7 +467,7 @@ ${renderNav()}
     <div class="hero__texture"></div>
     <div class="hero__content">
       <p class="hero__eyebrow"><a href="/blog/" style="color:var(--cyan);text-decoration:none;">Blog</a></p>
-      <h1 class="hero__title">${meta.title}</h1>
+      <h1 class="hero__title">${esc(meta.title)}</h1>
     </div>
     <div class="hero__accent"></div>
   </section>
@@ -395,28 +475,28 @@ ${renderNav()}
   <main id="main">
     <article class="product-content blog-content">
       ${featuredFigure}<div class="blog-meta">
-        <span>${meta.author_slug ? `Written by ${authorLink}, ${meta.author_title || 'Licensed Agent'}, The Way Agency` : 'Written by The Way Agency'}</span>
+        <span>${authorSlug ? `Written by ${authorLink}, ${esc(meta.author_title || 'Licensed Agent')}, The Way Agency` : 'Written by The Way Agency'}</span>
         <span>|</span>${hasReview ? `
-        <span>Reviewed by ${reviewerLink}${meta.reviewer_title ? `, ${meta.reviewer_title}` : ''} on ${fmtDate(meta.reviewed_date)}</span>
+        <span>Reviewed by ${reviewerLink}${meta.reviewer_title ? `, ${esc(meta.reviewer_title)}` : ''} on ${esc(fmtDate(meta.reviewed_date))}</span>
         <span>|</span>` : ''}
-        <span>Published ${dateFormatted}</span>
+        <span>Published ${esc(dateFormatted)}</span>
         <span>|</span>
-        <span>${readingTime}</span>
+        <span>${esc(readingTime)}</span>
       </div>
       <div class="blog-share" style="display:flex;gap:8px;margin-bottom:var(--space-lg);flex-wrap:wrap;">
-        <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(meta.title)}&url=https://www.thewayagency.com/blog/${meta.slug}.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on Twitter">
+        <a href="https://twitter.com/intent/tweet?text=${esc(encodeURIComponent(String(meta.title || '')))}&url=https://www.thewayagency.com/blog/${slug}.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on Twitter">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           Share
         </a>
-        <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.thewayagency.com/blog/${meta.slug}.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on Facebook">
+        <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.thewayagency.com/blog/${slug}.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on Facebook">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
           Share
         </a>
-        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://www.thewayagency.com/blog/${meta.slug}.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on LinkedIn">
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://www.thewayagency.com/blog/${slug}.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on LinkedIn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
           Share
         </a>
-        <button onclick="navigator.clipboard.writeText('https://www.thewayagency.com/blog/${meta.slug}.html').then(function(){this.textContent='Copied!';setTimeout(function(){this.textContent='Copy Link'}.bind(this),2000)}.bind(this))" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);background:var(--white);cursor:pointer;font-family:var(--font-body);font-weight:500;" aria-label="Copy link">
+        <button onclick="navigator.clipboard.writeText('https://www.thewayagency.com/blog/${slug}.html').then(function(){this.textContent='Copied!';setTimeout(function(){this.textContent='Copy Link'}.bind(this),2000)}.bind(this))" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);background:var(--white);cursor:pointer;font-family:var(--font-body);font-weight:500;" aria-label="Copy link">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           Copy Link
         </button>
@@ -424,11 +504,11 @@ ${renderNav()}
 ${tocHtml}
       ${enhancedBody}
       ${faqSection}
-${meta.related_page ? `
+${relatedPage ? `
       <h2 style="margin-top:var(--space-2xl);">Related Coverage</h2>
       <div class="related-posts">
-        <a href="${meta.related_page}" class="card" style="text-decoration:none;">
-          <h3 class="card__title" style="font-size:var(--text-xl);">${meta.related_page.replace(/^\/(personal|commercial|life|health)\//, '').replace(/\.html$/, '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</h3>
+        <a href="${esc(relatedPage)}" class="card" style="text-decoration:none;">
+          <h3 class="card__title" style="font-size:var(--text-xl);">${esc(relatedPage.replace(/^\/(personal|commercial|life|health)\//, '').replace(/\.html$/, '').replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()))}</h3>
           <p class="card__text">Learn more about this coverage and how it protects you.</p>
           <span class="card__link">Learn more <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
         </a>
@@ -438,10 +518,10 @@ ${meta.related_page ? `
 
     <section class="cta-banner">
       <div class="container">
-        <h2 class="cta-banner__title">${meta.cta_title || 'Have questions about your coverage?'}</h2>
-        <p class="cta-banner__text">${meta.cta_text || "We're here to help. Get a quote or request a coverage review."}</p>
+        <h2 class="cta-banner__title">${esc(meta.cta_title || 'Have questions about your coverage?')}</h2>
+        <p class="cta-banner__text">${esc(meta.cta_text || "We're here to help. Get a quote or request a coverage review.")}</p>
         <div class="cta-banner__actions">
-          <a href="${intakeHref(meta.related_page)}" class="btn btn--primary btn--lg">Get a Quote</a>
+          <a href="${intakeHref(relatedPage)}" class="btn btn--primary btn--lg">Get a Quote</a>
           <a href="/contact.html" class="btn btn--outline-white btn--lg">Contact Us</a>
         </div>
       </div>
@@ -478,17 +558,19 @@ function generateBlogIndex(allPosts, postsMeta) {
     const date = new Date(p.publish_date + 'T12:00:00');
     const dateLabel = date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
     const cat = categoryMap[p.slug] || p.category || '';
+    // Titles and descriptions come from the calendar and from front matter:
+    // data, encoded (see "Output encoding").
     return `
-          <a href="/blog/${p.slug}.html" class="card blog-card" data-category="${cat}" data-title="${p.title.toLowerCase()}" data-desc="${(p.description || '').toLowerCase()}" style="text-decoration:none;">
-            <p style="font-size:var(--text-xs);color:var(--slate);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--space-sm);">${dateLabel}${cat ? ` · ${categoryLabels[cat] || cat}` : ''}</p>
-            <h3 class="card__title" style="font-size:var(--text-xl);">${p.title}</h3>
-            <p class="card__text">${p.description}</p>
+          <a href="/blog/${esc(p.slug)}.html" class="card blog-card" data-category="${esc(cat)}" data-title="${esc(String(p.title || '').toLowerCase())}" data-desc="${esc(String(p.description || '').toLowerCase())}" style="text-decoration:none;">
+            <p style="font-size:var(--text-xs);color:var(--slate);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--space-sm);">${esc(dateLabel)}${cat ? ` · ${esc(categoryLabels[cat] || cat)}` : ''}</p>
+            <h3 class="card__title" style="font-size:var(--text-xl);">${esc(p.title)}</h3>
+            <p class="card__text">${esc(p.description)}</p>
             <span class="card__link">Read article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
           </a>`;
   }).join('\n');
 
   const filterPills = categories.map(c =>
-    `<button class="blog-filter__pill" data-category="${c}">${categoryLabels[c] || c}</button>`
+    `<button class="blog-filter__pill" data-category="${esc(c)}">${esc(categoryLabels[c] || c)}</button>`
   ).join('\n            ');
 
   return `<!DOCTYPE html>
@@ -660,6 +742,15 @@ ${renderScripts()}
 </html>`;
 }
 
+// The page template and its encoders are importable, so a test can render
+// hostile front matter through generateBlogPost directly (the build's own
+// front-matter gate would otherwise stop it first). The build below runs only
+// when this file is the program: `node scripts/generate-blog.js`, as
+// scripts/builders/blog-helpers.js runs it. (A top-level return is legal in a
+// CommonJS module.)
+module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, markdownToHtml, parseFrontMatter, generateBlogPost };
+if (require.main !== module) return;
+
 // ─── Build ──────────────────────────────────
 
 // Ensure build/blog/ exists
@@ -684,11 +775,18 @@ if (!fs.existsSync(BLOG_BUILD)) {
 //   - "Reviewed by" renders ONLY for an approval SAGE signed whose bytes are
 //     the ones on disk (the publisher's credit record for a published post,
 //     the approval itself for one it has not published yet). Review lines in
-//     a file's front matter are otherwise ignored, however they are spelled.
+//     a file's front matter are otherwise ignored, however they are spelled,
+//     and every other front-matter value is encoded as data (esc / ldJson),
+//     so no value can print a byline or add a reviewedBy of its own;
+//   - a post whose front matter carries markup ('<' or '>' in a value) or an
+//     unsafe slug is not rendered at all (review-credit.js frontMatterProblem);
+//   - a calendar post renders only from its own file, under its own slug.
 const {
   isKnownStatus, isPublishable, isHeld,
 } = require('./lib/calendar-status');
-const { renderDecision, reviewSecret, isReviewerKey } = require('./lib/review-credit');
+const {
+  renderDecision, reviewSecret, isReviewerKey, frontMatterProblem,
+} = require('./lib/review-credit');
 
 const RENDER_TODAY = new Date().toISOString().split('T')[0]; // YYYY-MM-DD, as the publisher
 const REVIEW_SECRET = reviewSecret(process.env);
@@ -736,6 +834,12 @@ if (fs.existsSync(BLOG_SRC)) {
         continue;
       }
 
+      // The slug is the output file name and part of every URL on the page.
+      if (!safeSlug(peek.slug)) {
+        console.log(`  ! Skipping ${file}  -  its slug ${JSON.stringify(String(peek.slug)).slice(0, 80)} is not lower-case letters, digits and hyphens`);
+        continue;
+      }
+
       const entry = calendarEntries.bySlug.get(peek.slug) || null;
       // A calendar post renders only from its own file: another file claiming
       // its slug would otherwise publish at its URL around its hold or approval.
@@ -743,8 +847,19 @@ if (fs.existsSync(BLOG_SRC)) {
         console.log(`  ! Skipping ${file}  -  its slug "${peek.slug}" belongs to the calendar post src/blog/${peek.slug}.md`);
         continue;
       }
+      // ...and a calendar post's own file renders only under its own slug: a
+      // held or failed post whose front matter claimed another slug would
+      // otherwise render there as an uncalendared post, around its hold.
+      const stem = file.slice(0, -'.md'.length);
+      if (calendarEntries.bySlug.has(stem) && peek.slug !== stem) {
+        console.log(`  ! Skipping ${file}  -  slug mismatch: it is the calendar post "${stem}" but its front matter says slug "${peek.slug}"`);
+        continue;
+      }
+      const unsafe = calendarEntries.error ? frontMatterProblem(rawBytes.toString('utf8')) : null;
       const decision = calendarEntries.error
-        ? { render: true, credit: false, markdown: rawBytes.toString('utf8'), why: 'calendar unreadable' }
+        ? (unsafe
+          ? { render: false, credit: false, markdown: '', why: `${unsafe} (unsafe_frontmatter)` }
+          : { render: true, credit: false, markdown: rawBytes.toString('utf8'), why: 'calendar unreadable' })
         : renderDecision(entry, rawBytes, REVIEW_TEAM, { secret: REVIEW_SECRET, today: RENDER_TODAY, isKnownStatus, isPublishable, isHeld });
       if (!decision.render) {
         console.log(`  ~ Not rendered ${peek.slug}.html  -  ${decision.why}`);
@@ -863,13 +978,14 @@ if (fs.existsSync(calendarPath)) {
       <section style="margin-top:var(--space-2xl);padding-top:var(--space-2xl);border-top:1px solid var(--border);">
         <h2 style="font-size:var(--text-2xl);">Related Articles</h2>
         <div class="grid grid--3" style="margin-top:var(--space-lg);">
-${related.map(p => `          <a href="/blog/${p.slug}.html" class="card" style="text-decoration:none;">
-            <h3 class="card__title" style="font-size:var(--text-lg);">${p.title}</h3>
+${related.map(p => `          <a href="/blog/${esc(p.slug)}.html" class="card" style="text-decoration:none;">
+            <h3 class="card__title" style="font-size:var(--text-lg);">${esc(p.title)}</h3>
             <span class="card__link">Read article ${arrowSvg}</span>
           </a>`).join('\n')}
         </div>
       </section>`;
-        html = html.replace('</article>', relatedHtml + '\n    </article>');
+        // A function replacement: '$&' or "$'" in a title is text, not a pattern.
+        html = html.replace('</article>', () => relatedHtml + '\n    </article>');
         fs.writeFileSync(filePath, html);
       }
     }
@@ -895,18 +1011,23 @@ for (const p of rssPosts) {
   if (fs.existsSync(builtFile)) {
     const html = fs.readFileSync(builtFile, 'utf8');
     const articleMatch = html.match(/<article[^>]*>([\s\S]*?)<\/article>/);
-    if (articleMatch) contentEncoded = articleMatch[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 2000);
+    // Text, so the page's entities are decoded back (CDATA holds it literally).
+    if (articleMatch) {
+      contentEncoded = articleMatch[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+        .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')
+        .substring(0, 2000);
+    }
   }
 
   rssItems.push(`    <item>
-      <title><![CDATA[${p.title}]]></title>
-      <link>https://www.thewayagency.com/blog/${p.slug}.html</link>
-      <guid isPermaLink="true">https://www.thewayagency.com/blog/${p.slug}.html</guid>
+      <title><![CDATA[${cdata(p.title)}]]></title>
+      <link>https://www.thewayagency.com/blog/${esc(p.slug)}.html</link>
+      <guid isPermaLink="true">https://www.thewayagency.com/blog/${esc(p.slug)}.html</guid>
       <pubDate>${new Date(p.publish_date + 'T12:00:00').toUTCString()}</pubDate>
-      <dc:creator><![CDATA[${author}]]></dc:creator>${category ? `
-      <category><![CDATA[${category}]]></category>` : ''}
-      <description><![CDATA[${p.description || ''}]]></description>${contentEncoded ? `
-      <content:encoded><![CDATA[${contentEncoded}]]></content:encoded>` : ''}
+      <dc:creator><![CDATA[${cdata(author)}]]></dc:creator>${category ? `
+      <category><![CDATA[${cdata(category)}]]></category>` : ''}
+      <description><![CDATA[${cdata(p.description)}]]></description>${contentEncoded ? `
+      <content:encoded><![CDATA[${cdata(contentEncoded)}]]></content:encoded>` : ''}
     </item>`);
 }
 

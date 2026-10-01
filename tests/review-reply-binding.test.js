@@ -47,11 +47,12 @@ const VECTOR_TOKEN = '20991231.c0841c3afd9ee10b.N8Q5Xb55k2ygrr3vfLRBrg';
 const APPROVAL_VECTOR = {
   slug: 'test-vector-post', reviewer_slug: 'test-reviewer', reviewer_email: 'Test.Reviewer@Example.com',
   approved_by_email: 'test.reviewer@example.com', approved_sha256: 'c0841c3afd9ee10b379e19209d951848bb5791c973f7ee7295525ab69d2704a0',
-  approved_date: '2099-12-30',
+  approved_date: '2099-12-30', approved_publish_date: '2099-12-31',
 };
-const APPROVAL_VECTOR_MAC = 'OPiVjkk1WmIDoCWMPHO6Oe3_C9kg71Qnt3nfZTVteh0';
+// v2 (BL-07 fix round 3): the date the post was approved for is signed too.
+const APPROVAL_VECTOR_MAC = '0DMvzj3DMuuWwM1113eNOpOct7puPEZ_Mdy9zMu0FFE';
 const APPROVAL_VECTOR_EDIT_ID = '00000000-0000-4000-8000-000000000001';
-const APPROVAL_VECTOR_MAC_EDIT = '-lnwGHiGnkVuLF17teMjrA2qtb4c74vih_4sKC2oec8';
+const APPROVAL_VECTOR_MAC_EDIT = 'c4hcXpDzmIHSgmZ8pQOj3LlJHc9rO--jSoc6Si8LQp4';
 
 describe('the approval signature (approval_mac)', () => {
   const rc = require('../scripts/lib/review-credit');
@@ -66,8 +67,9 @@ describe('the approval signature (approval_mac)', () => {
     const signed = { ...APPROVAL_VECTOR, approval_mac: APPROVAL_VECTOR_MAC };
     for (const [k, v] of Object.entries({
       slug: 'test-vector-other', reviewer_slug: 'test-reviewer-2', reviewer_email: 'test.other@example.com', approved_by_email: 'test.other@example.com',
-      approved_sha256: '0'.repeat(64), approved_date: '2099-12-31', approved_edit_id: APPROVAL_VECTOR_EDIT_ID,
+      approved_sha256: '0'.repeat(64), approved_date: '2099-12-31', approved_publish_date: '2099-12-30', approved_edit_id: APPROVAL_VECTOR_EDIT_ID,
     })) assert.ok(!rc.approvalSigned({ ...signed, [k]: v }, SECRET), k);
+    assert.ok(!rc.approvalSigned({ ...signed, approved_publish_date: undefined }, SECRET), 'v1-shaped (no approved_publish_date)');
     assert.ok(!rc.approvalSigned(signed, `${SECRET}x`));
     assert.throws(() => rc.signApproval({ ...APPROVAL_VECTOR, approved_by_email: 'a|b@example.com' }, SECRET), /line break|"\|"/);
     assert.throws(() => rc.signApproval(APPROVAL_VECTOR, 'short'), /32/);
@@ -210,6 +212,13 @@ describe('subjects and links', () => {
       guard.verifyRequestToken({ token: VECTOR_TOKEN, slug: VECTOR.slug, senderEmail: 'test.reviewer@example.com', contentSha256, secret: SECRET, today: '2026-10-01' }),
       { ok: true, expires: '2099-12-31' },
     );
+    // ...and SAGE's approval signature is the one this repo verifies.
+    if (typeof guard.signApproval === 'function') {
+      const rc = require('../scripts/lib/review-credit');
+      for (const fields of [APPROVAL_VECTOR, { ...APPROVAL_VECTOR, approved_edit_id: APPROVAL_VECTOR_EDIT_ID }]) {
+        assert.equal(guard.signApproval(fields, SECRET), rc.signApproval(fields, SECRET));
+      }
+    }
   });
 });
 

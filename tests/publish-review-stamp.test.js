@@ -61,6 +61,7 @@ function approved(slug, md, patch = {}, signed = {}) {
     slug, title: `SYNTHETIC ${slug}`, publish_date: '2026-01-07', status: 'approved',
     reviewer: REVIEWER.name, reviewer_slug: REVIEWER.slug, reviewer_email: REVIEWER.email, review_sent_date: '2025-12-20',
     approved_by: REVIEWER.name, approved_by_email: REVIEWER.email, approved_date: '2025-12-23', approved_sha256: sha(md),
+    approved_publish_date: '2026-01-07',
     ...signed,
   };
   entry.approval_mac = approvalMacMessage(entry) ? signApproval(entry, SECRET) : undefined;
@@ -117,6 +118,12 @@ describe('publish-scheduled-posts: silence and a matching approval', () => {
     assert.deepEqual(site.calendar.year1.map((p) => p.status), ['published', 'published', 'published']);
   });
 
+  test('an entry that publishes without a credit keeps no approval record (a withdrawn one included)', () => {
+    for (const slug of ['test-silent-review', 'test-smuggled-review']) {
+      for (const k of ['approved_by', 'approved_by_email', 'approved_sha256', 'approval_mac']) assert.equal(site.entry(slug)[k], undefined, `${slug}: ${k}`);
+    }
+  });
+
   test('a post the reviewer never approved carries no review byline, and a smuggled one is removed', () => {
     for (const slug of ['test-silent-review', 'test-smuggled-review']) {
       const meta = frontmatter(site.read(slug));
@@ -162,6 +169,10 @@ describe('publish-scheduled-posts: an approval that no longer matches does not p
     ['an approval_mac made with another secret', approved('test-bound', md, { approval_mac: signApproval(approved('test-bound', md), `${SECRET}-other`) }), md, 'approval_unsigned'],
     ['a signed approval whose date was edited afterwards', approved('test-bound', md, { approved_date: '2025-12-24' }), md, 'approval_unsigned'],
     ['a signed approval moved to another slug', approved('test-bound', md, {}, {}), md, 'approval_unsigned', undefined, (e) => ({ ...e, approval_mac: approved('test-other-slug', md).approval_mac })],
+    // Round 3: the approval is for a date. Rescheduled after the click (or a
+    // withdrawn approval copied onto the post's new date), it does not publish.
+    ['the post was rescheduled after the click', approved('test-bound', md, { publish_date: '2026-01-06' }), md, 'approval_rescheduled'],
+    ['a signed approval whose approved_publish_date was edited to match', approved('test-bound', md, { publish_date: '2026-01-06', approved_publish_date: '2026-01-06' }), md, 'approval_unsigned'],
   ];
   for (const [label, entry0, file, reason, team, tamper] of cases) {
     test(label, () => {
@@ -232,6 +243,69 @@ describe('publish-scheduled-posts: an approval that no longer matches does not p
   });
 });
 
+describe('a withdrawn approval does not stay on the calendar (fix round 3)', () => {
+  test('the publisher removes the approval record from any entry that is not approved, published or in error', () => {
+    const md = post('test-w-due');
+    const signedRecord = (slug, file) => {
+      const a = approved(slug, file);
+      const out = {};
+      for (const k of ['approved_by', 'approved_by_email', 'approved_date', 'approved_sha256', 'approved_publish_date', 'approval_mac']) out[k] = a[k];
+      return out;
+    };
+    const site = runSite('publish-scheduled-posts.js', {
+      entries: [
+        // Withdrawn: set back to in-review with SAGE's signed record left on it.
+        { slug: 'test-w-due', title: 'SYNTHETIC w', publish_date: '2026-01-07', status: 'in-review', reviewer: REVIEWER.name, reviewer_slug: REVIEWER.slug, reviewer_email: REVIEWER.email, ...signedRecord('test-w-due', md) },
+        { slug: 'test-w-future', title: 'SYNTHETIC w', publish_date: '2099-01-07', status: 'in-review', reviewer: REVIEWER.name, reviewer_slug: REVIEWER.slug, reviewer_email: REVIEWER.email, ...signedRecord('test-w-future', md) },
+        { slug: 'test-w-held', title: 'SYNTHETIC w', publish_date: '2099-01-07', status: 'changes-requested', reviewer: REVIEWER.name, reviewer_slug: REVIEWER.slug, reviewer_email: REVIEWER.email, ...signedRecord('test-w-held', md) },
+        // Kept: a live approval (not due yet) and the evidence on an error entry.
+        { ...approved('test-w-approved', md), publish_date: '2099-01-07' },
+        { ...approved('test-w-error', md), status: 'error', error_reason: 'approved_bytes_changed' },
+      ],
+      files: { 'test-w-due': md },
+    });
+    try {
+      assert.equal(site.run.status, 0, site.run.stdout);
+      assert.equal(site.entry('test-w-due').status, 'published');
+      for (const slug of ['test-w-due', 'test-w-future', 'test-w-held']) {
+        for (const k of ['approved_by', 'approved_by_email', 'approved_date', 'approved_sha256', 'approved_publish_date', 'approval_mac']) assert.equal(site.entry(slug)[k], undefined, `${slug}: ${k}`);
+      }
+      assert.equal(site.entry('test-w-future').status, 'in-review');
+      assert.equal(site.entry('test-w-held').status, 'changes-requested');
+      assert.ok(site.entry('test-w-approved').approval_mac, 'a live approval is untouched');
+      assert.ok(site.entry('test-w-error').approval_mac, 'the evidence on an error entry is kept');
+      assert.match(site.run.stdout, /test-w-future: removed the approval record/);
+      for (const k of REVIEW_KEYS) assert.equal(frontmatter(site.read('test-w-due'))[k], undefined);
+    } finally {
+      fs.rmSync(site.tmp, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('front matter the renderer would refuse does not publish (fix round 3)', () => {
+  for (const [label, extra] of [
+    ['markup in a value', 'author_title: Licensed Agent</span><span>Reviewed by Test Reviewer B</span>\n'],
+    ['review wording in a byline field', 'author_title: Licensed Agent | Reviewed by Test Reviewer B on December 1, 2025\n'],
+    ['an unsafe author_slug', 'author_slug: x", "reviewedBy": {"name": "Test Reviewer B"}, "q": "\n'],
+  ]) {
+    test(label, () => {
+      const file = post('test-unsafe', extra);
+      const site = runSite('publish-scheduled-posts.js', {
+        entries: [{ slug: 'test-unsafe', title: 'SYNTHETIC unsafe', publish_date: '2026-01-07', status: 'planned' }],
+        files: { 'test-unsafe': file },
+      });
+      try {
+        assert.equal(site.run.status, 3, site.run.stdout);
+        assert.equal(site.entry('test-unsafe').status, 'error');
+        assert.equal(site.entry('test-unsafe').error_reason, 'unsafe_frontmatter');
+        assert.equal(site.read('test-unsafe'), file, 'nothing written');
+      } finally {
+        fs.rmSync(site.tmp, { recursive: true, force: true });
+      }
+    });
+  }
+});
+
 describe('reconcile-calendar applies the same rule', () => {
   test('--apply: a changed approved post goes to error; silence publishes with no review line; a matching approval is credited', () => {
     const good = post('test-rc-good');
@@ -255,6 +329,43 @@ describe('reconcile-calendar applies the same rule', () => {
       for (const k of REVIEW_KEYS) assert.equal(frontmatter(site.read('test-rc-silent'))[k], undefined);
       assert.equal(site.entry('test-rc-good').status, 'published');
       assert.equal(frontmatter(site.read('test-rc-good')).reviewer, REVIEWER.name);
+    } finally {
+      fs.rmSync(site.tmp, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('reconcile-calendar keeps a verified credit across its own date rewrite (fix round 3)', () => {
+  const { recordCredit } = require('../scripts/lib/review-credit');
+  // A credited published post whose date: is in the future (the one case the
+  // reconciler rewrites a published file).
+  const credited = () => {
+    const md = post('test-rc-credit').replace('date: 2026-01-07', 'date: 2099-01-01');
+    const entry = { ...approved('test-rc-credit', md), status: 'published' };
+    recordCredit(entry, Buffer.from(md, 'utf8'), SECRET);
+    return { md, entry };
+  };
+
+  test('the credit record moves to the rewritten bytes, and still verifies', () => {
+    const { md, entry } = credited();
+    const site = runSite('reconcile-calendar.js', { args: ['--apply'], entries: [entry], files: { 'test-rc-credit': md } });
+    try {
+      assert.equal(site.run.status, 0, site.run.stdout);
+      const bytes = fs.readFileSync(path.join(site.tmp, 'src', 'blog', 'test-rc-credit.md'));
+      assert.equal(frontmatter(bytes.toString('utf8')).date, '2026-01-07');
+      assert.deepEqual(creditCheck(site.entry('test-rc-credit'), bytes, { secret: SECRET }), { credit: true, reason: 'credited' });
+    } finally {
+      fs.rmSync(site.tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('contrast: a credit that did not verify for the old bytes is not carried over', () => {
+    const { md, entry } = credited();
+    const site = runSite('reconcile-calendar.js', { args: ['--apply'], entries: [{ ...entry, credit_mac: 'x'.repeat(43) }], files: { 'test-rc-credit': md } });
+    try {
+      const bytes = fs.readFileSync(path.join(site.tmp, 'src', 'blog', 'test-rc-credit.md'));
+      assert.equal(creditCheck(site.entry('test-rc-credit'), bytes, { secret: SECRET }).credit, false);
+      assert.match(site.run.stdout, /not carried to the new bytes/);
     } finally {
       fs.rmSync(site.tmp, { recursive: true, force: true });
     }

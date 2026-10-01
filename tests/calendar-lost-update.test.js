@@ -106,6 +106,26 @@ describe('saveCalendar does not clobber a concurrent writer', () => {
     assert.equal(after.reviewer, 'Sheilia Royal');
   });
 
+  test('an approval withdrawn after our read is not brought back by our stale copy', () => {
+    // Our copy has a signed approval; the review flow then withdraws it on
+    // disk (status back to in-review, the record deleted). The deletion wins.
+    const seeded = baseCalendar();
+    Object.assign(seeded.year1[0], { status: 'approved', approved_by: 'Test Reviewer', approved_sha256: 'a'.repeat(64), approval_mac: 'm'.repeat(43) });
+    write(seeded);
+    const mine = q.loadCalendar();
+    const theirs = read();
+    theirs.year1[0].status = 'in-review';
+    for (const k of ['approved_by', 'approved_sha256', 'approval_mac']) delete theirs.year1[0][k];
+    write(theirs);
+    q.saveCalendar(mine);
+
+    const after = read().year1.find(p => p.slug === 'how-to-compare-insurance-quotes');
+    assert.equal(after.status, 'in-review');
+    assert.equal(after.approval_mac, undefined, 'a withdrawn approval came back');
+    assert.equal(after.approved_sha256, undefined);
+    assert.equal(after.approved_by, undefined);
+  });
+
   test('an entry added after our read is carried over, not dropped', () => {
     const mine = q.loadCalendar();
     const theirs = read();

@@ -50,7 +50,7 @@ const { PUBLISHABLE_STATUSES } = require('./lib/calendar-status');
 // publish at all: the same rule as publish-scheduled-posts.js (sage-server BL-07),
 // including the credit record the renderer checks before it prints "Reviewed by".
 const {
-  approvalCheck, applyReviewCredit, readinessError, reviewSecret, recordCredit, clearCredit,
+  approvalCheck, creditCheck, applyReviewCredit, readinessError, reviewSecret, recordCredit, clearApprovalRecord,
 } = require('./lib/review-credit');
 // Verifies SAGE's signature on an approval; without it an approved post is left alone.
 const SECRET = reviewSecret(process.env);
@@ -151,12 +151,23 @@ for (const post of calendar.year1) {
     console.log(`  ~ FRONTMATTER: "${post.title}" (${post.slug})`);
     if (dateNeedsFix) console.log(`      date:     ${normalize(curDate)}  ->  ${post.publish_date}`);
     if (modifiedNeedsFix) console.log(`      modified: ${normalize(curModified)}  ->  ${post.publish_date}`);
+    // A published post credited for its old bytes keeps its credit: the date
+    // rewrite is this script's own, so the credit record moves to the new
+    // bytes, but only when it verified for the old ones.
+    const keepCredit = isPublished && creditCheck(post, Buffer.from(md, 'utf8'), { secret: SECRET }).credit;
+    if (isPublished && !keepCredit && post.credit_mac) {
+      console.log(`      (its "Reviewed by" credit ${SECRET ? 'did not verify for the old bytes' : 'cannot be verified without BLOG_REVIEW_TOKEN_SECRET'}, so it is not carried to the new bytes)`);
+    }
     if (APPLY) {
       let next = md;
       if (dateNeedsFix) next = next.replace(/^date:\s*.*$/m, `date: ${post.publish_date}`);
       if (modifiedNeedsFix) next = next.replace(/^modified:\s*.*$/m, `modified: ${post.publish_date}`);
       fs.writeFileSync(mdFile, next);
       md = next;
+      if (keepCredit) {
+        recordCredit(post, Buffer.from(next, 'utf8'), SECRET);
+        calendarChanged = true;
+      }
     }
     mdChanges++;
   }
@@ -172,7 +183,7 @@ for (const post of calendar.year1) {
   const notReady = readinessError(mdContent);
   if (notReady) {
     const reason = notReady;
-    console.log(`  ! ERROR: "${post.title}" (${post.slug}) - ${reason === 'missing_frontmatter' ? 'missing title or description in frontmatter' : 'content too short (need 200+ words)'}`);
+    console.log(`  ! ERROR: "${post.title}" (${post.slug}) - ${{ missing_frontmatter: 'missing title or description in frontmatter', content_too_short: 'content too short (need 200+ words)', unsafe_frontmatter: 'its front matter carries markup or an unsafe slug' }[reason] || reason}`);
     if (post.status !== 'error' || post.error_reason !== reason) {
       post.status = 'error';
       post.error_reason = reason;
@@ -191,7 +202,7 @@ for (const post of calendar.year1) {
     if (next !== current) fs.writeFileSync(mdFile, next);
     // Bound to the bytes just written: the renderer credits only these.
     if (approval.credit) recordCredit(post, Buffer.from(next, 'utf8'), SECRET);
-    else clearCredit(post);
+    else clearApprovalRecord(post);
   }
   post.status = 'published';
   // Clear any stale error markers now that it is ready.

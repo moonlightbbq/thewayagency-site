@@ -180,9 +180,12 @@ function saveCalendar(cal) {
         const hit = diskBySlug.get(entry.slug);
         if (!hit) continue;
         for (const field of REVIEW_OWNED_FIELDS) {
-          if (hit.entry[field] === undefined) continue;
           if (entry[field] === hit.entry[field]) continue;
-          entry[field] = hit.entry[field];
+          // The review flow's version wins, including a field it REMOVED: an
+          // approval withdrawn on disk (approved_*, approval_mac deleted) must
+          // not come back from this job's stale copy.
+          if (hit.entry[field] === undefined) delete entry[field];
+          else entry[field] = hit.entry[field];
           if (field === 'reviewer') restored.push(`${entry.slug} -> ${hit.entry[field]}`);
         }
       }

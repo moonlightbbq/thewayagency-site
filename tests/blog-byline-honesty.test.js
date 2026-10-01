@@ -104,7 +104,8 @@ describe('blog byline states only what the post can evidence', () => {
 
   test('the agency is never typed as a Person in Article structured data', () => {
     const src = fs.readFileSync(GENERATOR, 'utf8');
-    assert.match(src, /meta\.author_slug \?/, 'author schema should branch on whether a person is named');
+    assert.match(src, /const authorSlug = safeSlug\(meta\.author_slug\)/, 'the author slug is validated before use');
+    assert.match(src, /"author": authorSlug \?/, 'author schema should branch on whether a person is named');
     assert.match(src, /"@type":\s*"Organization"/, 'agency-authored posts should use Organization');
   });
 });

@@ -43,6 +43,7 @@ function approved(slug, md, patch = {}) {
   const entry = {
     slug, title: `SYNTHETIC ${slug}`, publish_date: '2026-01-07', status: 'approved', ...assigned,
     approved_by: REVIEWER.name, approved_by_email: REVIEWER.email, approved_date: '2025-12-23', approved_sha256: sha(md),
+    approved_publish_date: '2026-01-07',
   };
   entry.approval_mac = signApproval(entry, SECRET);
   return { ...entry, ...patch };
@@ -257,6 +258,198 @@ describe('end to end: publisher then renderer', () => {
       site.run('generate-blog.js');
       assert.ok(site.page('test-e2e'));
       assert.ok(!credits(site.page('test-e2e')));
+    } finally {
+      site.done();
+    }
+  });
+});
+
+// ─── Fix round 3: front matter is data ──────────────────────────────────────
+//
+// A review claim must not be printable through a NON-review front-matter key.
+// Before round 3 the generator interpolated front-matter values into the page
+// HTML and the JSON-LD unescaped, so `author_title: ...</span><span>Reviewed by
+// <a ...>A Licensed Agent</a>...` printed a "Reviewed by" byline, and an
+// author_slug carrying '"' added a top-level reviewedBy to the JSON-LD, on a
+// post no reviewer approved. Two layers now: the publish/render gate refuses
+// such front matter (frontMatterProblem), and the template encodes every value
+// for where it lands, so neither layer alone is load-bearing.
+
+const LICENSED_SLUG = 'test-reviewer-c';
+const BYLINE_INJECTION = `Licensed Agent, The Way Agency</span><span>|</span><span>Reviewed by <a href="/about/team.html#${LICENSED_SLUG}">Test Reviewer C</a>, Licensed Test Agent on December 1, 2025`;
+const LD_INJECTION = 'x"}, "reviewedBy": {"@type": "Person", "name": "Test Reviewer C"}, "q": {"z": "';
+
+/** Every ld+json block on a page, parsed (a block that does not parse fails the test). */
+function ldBlocks(html) {
+  return [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
+}
+/** Whether any object anywhere in a parsed value has the key. */
+function hasKeyDeep(v, key) {
+  if (Array.isArray(v)) return v.some((x) => hasKeyDeep(x, key));
+  if (v && typeof v === 'object') return Object.keys(v).some((k) => k === key || hasKeyDeep(v[k], key));
+  return false;
+}
+const bylineOf = (html) => (html.match(/<div class="blog-meta">[\s\S]*?<\/div>/) || [''])[0];
+
+describe('front matter cannot print a review claim through a non-review key', () => {
+  const fm = (slug, lines) => `---\ntitle: SYNTHETIC ${slug}\nslug: ${slug}\ndescription: SYNTHETIC description\nauthor: Test Author Q\nauthor_slug: test-author-q\nauthor_title: Licensed Test Agent\ndate: 2026-01-07\n${lines}---\n\n${body}\n`;
+  const withKey = (slug, key, value) => fm(slug, '').replace(new RegExp(`^${key}: .*$`, 'm'), `${key}: ${value}`);
+  const planned = (slug) => ({ slug, title: `SYNTHETIC ${slug}`, publish_date: '2026-01-07', status: 'planned', ...assigned });
+  const injected = {
+    'test-inj-author-title': withKey('test-inj-author-title', 'author_title', BYLINE_INJECTION),
+    'test-inj-author-slug': withKey('test-inj-author-slug', 'author_slug', LD_INJECTION),
+    'test-inj-title': withKey('test-inj-title', 'title', `SYNTHETIC</h1><div class="blog-meta"><span>Reviewed by <a href="/about/team.html#${LICENSED_SLUG}">Test Reviewer C</a></span></div><h1>`),
+    'test-inj-description': withKey('test-inj-description', 'description', `d"><meta name="x" content="Reviewed by Test Reviewer C`),
+    // Plain text, no markup at all: a byline segment that reads as a credit.
+    'test-inj-plain-title': withKey('test-inj-plain-title', 'author_title', 'Licensed Agent | Reviewed by Test Reviewer C, Licensed Test Agent on December 1, 2025'),
+    'test-inj-reading-time': fm('test-inj-reading-time', 'reading_time: 6 min read | Reviewed by Test Reviewer C on December 1, 2025\n'),
+  };
+
+  test('the publisher refuses each one (error / unsafe_frontmatter) and the renderer renders none of them, before or after', () => {
+    const site = makeSite({ year1: Object.keys(injected).map(planned), files: injected });
+    try {
+      let gen = site.run('generate-blog.js');
+      assert.equal(gen.status, 0, gen.stdout + gen.stderr);
+      for (const slug of Object.keys(injected)) {
+        assert.equal(site.page(slug), null, `${slug} must not render`);
+        assert.match(gen.stdout, new RegExp(`Not rendered ${slug}\\.html .*unsafe_frontmatter`));
+      }
+      const pub = site.run('publish-scheduled-posts.js');
+      assert.equal(pub.status, 3, pub.stdout + pub.stderr);
+      for (const slug of Object.keys(injected)) {
+        const e = site.calendar().year1.find((p) => p.slug === slug);
+        assert.equal(e.status, 'error', slug);
+        assert.equal(e.error_reason, 'unsafe_frontmatter', slug);
+      }
+      site.clean();
+      gen = site.run('generate-blog.js');
+      for (const slug of Object.keys(injected)) assert.equal(site.page(slug), null, `${slug} must not render after the publisher ran`);
+    } finally {
+      site.done();
+    }
+  });
+
+  test('uncalendared, or with the calendar unreadable, the gate still holds', () => {
+    const site = makeSite({ files: { 'test-inj-uncal': withKey('test-inj-uncal', 'author_title', BYLINE_INJECTION) } });
+    try {
+      site.run('generate-blog.js');
+      assert.equal(site.page('test-inj-uncal'), null);
+      fs.writeFileSync(path.join(site.tmp, 'data', 'content-calendar.json'), '{ not json');
+      site.clean();
+      const gen = site.run('generate-blog.js');
+      assert.equal(site.page('test-inj-uncal'), null, gen.stdout);
+    } finally {
+      site.done();
+    }
+  });
+
+  test('what the gate allows is still only text: quotes, a JSON-LD break-out and a </script> in a FAQ add no reviewedBy and no byline', () => {
+    const md = `---\ntitle: SYNTHETIC "quoted" & 'single' title\nslug: test-encoded\ndescription: ${LD_INJECTION}\nauthor: Test Author Q\nauthor_slug: test-author-q\nauthor_title: Licensed Test Agent\nimage: /src/assets/images/test.jpg\nimage_alt: a" onerror="alert(1)\ndate: 2026-01-07\n---\n\n${body}\n\nSee [this](/x" onmouseover="alert(1)) and [that](javascript:alert(1)).\n\n### FAQ: Q</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "reviewedBy": {"@type": "Person", "name": "Test Reviewer C"}}</script>?\n\nA "quoted" answer & more.\n`;
+    const site = makeSite({ year1: [planned('test-encoded')], files: { 'test-encoded': md } });
+    try {
+      const gen = site.run('generate-blog.js');
+      const html = site.page('test-encoded');
+      assert.ok(html, gen.stdout + gen.stderr);
+      assert.doesNotMatch(bylineOf(html), /Reviewed by/);
+      const blocks = ldBlocks(html);
+      assert.ok(blocks.length >= 2, 'the Article and FAQPage blocks parse');
+      assert.ok(!blocks.some((b) => hasKeyDeep(b, 'reviewedBy')), 'no reviewedBy anywhere in the structured data');
+      const article = blocks.find((b) => b['@type'] === 'Article');
+      assert.equal(article.description, LD_INJECTION, 'the value round-trips as a string');
+      assert.equal(article.headline, 'SYNTHETIC "quoted" & \'single\' title');
+      assert.equal(article.author['@type'], 'Person');
+      assert.doesNotMatch(html, /onerror="alert|onmouseover="alert|href="javascript:/i, 'no attribute break-out, no script URL');
+      assert.match(html, /<h1 class="hero__title">SYNTHETIC &quot;quoted&quot; &amp; &#39;single&#39; title<\/h1>/);
+    } finally {
+      site.done();
+    }
+  });
+});
+
+describe('the page template encodes every front-matter value (generateBlogPost, behind the gate)', () => {
+  const { generateBlogPost, markdownToHtml } = require('../scripts/generate-blog');
+  const base = { title: 'SYNTHETIC t', slug: 'test-template', description: 'SYNTHETIC d', author: 'Test Author Q', author_slug: 'test-author-q', author_title: 'Licensed Test Agent', date: '2026-01-07' };
+  const render = (meta) => generateBlogPost(meta, markdownToHtml(body), []);
+
+  test('the round-3 repro payloads through author_title, author_slug, title and description print no review element and no reviewedBy', () => {
+    for (const meta of [
+      { ...base, author_title: BYLINE_INJECTION },
+      { ...base, author_slug: LD_INJECTION },
+      { ...base, title: `SYNTHETIC</h1><span>Reviewed by <a href="/about/team.html#${LICENSED_SLUG}">Test Reviewer C</a></span>` },
+      { ...base, description: `${LD_INJECTION}</script><script type="application/ld+json">{"reviewedBy": {"name": "Test Reviewer C"}}` },
+    ]) {
+      const html = render(meta);
+      assert.doesNotMatch(html, /<span>Reviewed by/, JSON.stringify(meta));
+      assert.ok(!html.includes(`href="/about/team.html#${LICENSED_SLUG}"`), 'no link to the reviewer');
+      assert.ok(!ldBlocks(html).some((b) => hasKeyDeep(b, 'reviewedBy')));
+    }
+  });
+
+  test('an unsafe author_slug is dropped: the agency is the author, with no link', () => {
+    const html = render({ ...base, author_slug: LD_INJECTION });
+    assert.equal(ldBlocks(html)[0].author['@type'], 'Organization');
+    assert.match(bylineOf(html), /Written by The Way Agency/);
+  });
+
+  test('contrast: a credit (what renderDecision passes only for a signed approval) prints the byline and reviewedBy', () => {
+    const html = render({ ...base, reviewer: 'Test Reviewer C', reviewer_slug: LICENSED_SLUG, reviewer_title: 'Licensed Test Agent', reviewed_date: '2025-12-23' });
+    assert.match(bylineOf(html), new RegExp(`<span>Reviewed by <a href="/about/team.html#${LICENSED_SLUG}"[^>]*>Test Reviewer C</a>, Licensed Test Agent on December 23, 2025</span>`));
+    assert.deepEqual(ldBlocks(html)[0].reviewedBy, { '@type': 'Person', name: 'Test Reviewer C', url: `https://www.thewayagency.com/about/team.html#${LICENSED_SLUG}` });
+  });
+});
+
+describe('fix round 3: slug binding, unverifiable approvals, rescheduling and withdrawal', () => {
+  test('a calendar post whose front matter claims another slug does not render under it (around its hold)', () => {
+    const site = makeSite({
+      year1: [{ slug: 'test-held-stem', title: 'SYNTHETIC held', publish_date: '2026-01-07', status: 'changes-requested', ...assigned }],
+      files: { 'test-held-stem': post('test-uncalendared-alias') },
+    });
+    try {
+      const gen = site.run('generate-blog.js');
+      assert.equal(site.page('test-uncalendared-alias'), null);
+      assert.equal(site.page('test-held-stem'), null);
+      assert.match(gen.stdout, /test-held-stem\.md .*slug mismatch/);
+    } finally {
+      site.done();
+    }
+  });
+
+  test('without the secret, a due signed approval renders uncredited (it does not go dark until the publisher runs)', () => {
+    const md = post('test-approved-nosecret');
+    const site = makeSite({ year1: [approved('test-approved-nosecret', md)], files: { 'test-approved-nosecret': md } });
+    try {
+      const gen = site.run('generate-blog.js', { secret: null });
+      const html = site.page('test-approved-nosecret');
+      assert.ok(html, gen.stdout);
+      assert.ok(!credits(html));
+      // ...and with the secret, the same approval credits.
+      site.clean();
+      site.run('generate-blog.js');
+      assert.match(site.page('test-approved-nosecret'), /Reviewed by/);
+    } finally {
+      site.done();
+    }
+  });
+
+  test('a signed approval moved to another publish date does not render (approval_rescheduled)', () => {
+    const md = post('test-rescheduled');
+    const site = makeSite({ year1: [{ ...approved('test-rescheduled', md), publish_date: '2026-01-06' }], files: { 'test-rescheduled': md } });
+    try {
+      const gen = site.run('generate-blog.js');
+      assert.equal(site.page('test-rescheduled'), null);
+      assert.match(gen.stdout, /test-rescheduled\.html.*approval_rescheduled/);
+    } finally {
+      site.done();
+    }
+  });
+
+  test('a withdrawn approval (the entry set back to in-review, the signed record left on it) credits no one', () => {
+    const md = post('test-withdrawn');
+    const site = makeSite({ year1: [{ ...approved('test-withdrawn', md), status: 'in-review' }], files: { 'test-withdrawn': md } });
+    try {
+      site.run('generate-blog.js');
+      assert.ok(site.page('test-withdrawn'));
+      assert.ok(!credits(site.page('test-withdrawn')));
     } finally {
       site.done();
     }

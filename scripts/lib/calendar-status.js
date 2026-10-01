@@ -26,8 +26,10 @@
  *   approved in SAGE   -> publishes on its date crediting the reviewer, but
  *                         only while the file's raw bytes still hash to the
  *                         approved_sha256 the reviewer approved, the
- *                         approval is the byline reviewer's and SAGE signed
- *                         it (approval_mac); otherwise the entry goes to
+ *                         approval is the byline reviewer's, it is still
+ *                         scheduled for the date it was approved for, and
+ *                         SAGE signed it (approval_mac); otherwise the entry
+ *                         goes to
  *                         'error' (I7) and nothing publishes or renders. The
  *                         renderer (generate-blog.js) prints the credit only
  *                         while the publisher's credit record still matches
@@ -38,6 +40,9 @@
  *                         either sets 'approved') or the content owner
  *                         releases the hold by editing the calendar
  *   any other reply    -> nothing changes; SAGE answers with the approval link
+ *   withdrawn          -> the content owner sets an 'approved' entry back to
+ *                         'in-review'; the publisher removes the approval
+ *                         record it leaves (review-credit.js clearApprovalRecord)
  *
  * A reviewer being on vacation must never silently empty a slot. Anything that
  * should STOP a publish belongs in TERMINAL_STATUSES or HOLD_STATUSES below,

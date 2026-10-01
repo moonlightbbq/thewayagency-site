@@ -34,7 +34,7 @@ const fs = require('fs');
 const path = require('path');
 const { isPublishable, isKnownStatus } = require('./lib/calendar-status');
 const {
-  approvalCheck, applyReviewCredit, readinessError, reviewSecret, recordCredit, clearCredit,
+  approvalCheck, applyReviewCredit, readinessError, reviewSecret, recordCredit, clearApprovalRecord,
 } = require('./lib/review-credit');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -65,6 +65,27 @@ const unverified = [];
 let calendarChanged = false;
 // path -> final text. Written at the end: posts first, then the calendar.
 const pendingWrites = new Map();
+
+const NOT_READY_WHY = {
+  missing_frontmatter: 'missing title or description in frontmatter',
+  content_too_short: 'content too short (need 200+ words)',
+  unsafe_frontmatter: 'its front matter carries markup (\'<\' or \'>\' in a value) or an unsafe slug',
+};
+
+// A withdrawn approval does not stay on the entry. SAGE writes an approval
+// record only together with status 'approved'; on an entry that is now
+// planned, in-draft, in-review or held it is one the content owner withdrew
+// (by setting the entry back to 'in-review') or SAGE released, and leaving it
+// there would let anyone who can edit the calendar re-activate it by setting
+// the status back. 'published' and 'error' entries keep theirs (the credit,
+// and the evidence of what failed).
+for (const post of calendar.year1) {
+  if (!post || ['approved', 'published', 'error'].includes(post.status) || !isKnownStatus(post.status)) continue;
+  if (clearApprovalRecord(post)) {
+    calendarChanged = true;
+    console.log(`  ~ ${post.slug}: removed the approval record left on an entry that is '${post.status}' (a withdrawn approval)`);
+  }
+}
 
 /** Mark a due entry 'error' (once; the approval evidence on it is kept). */
 function markError(post, reason) {
@@ -118,7 +139,7 @@ for (const post of calendar.year1) {
   // than 200 words of body (the same rule the renderer applies).
   const notReady = readinessError(mdContent);
   if (notReady) {
-    console.log(`  ! ERROR: "${post.title}" (${post.slug}) - ${notReady === 'missing_frontmatter' ? 'missing title or description in frontmatter' : 'content too short (need 200+ words)'}`);
+    console.log(`  ! ERROR: "${post.title}" (${post.slug}) - ${NOT_READY_WHY[notReady] || notReady}`);
     markError(post, notReady);
     continue;
   }
@@ -144,7 +165,7 @@ for (const post of calendar.year1) {
   const approval = approvalCheck(post, raw, TEAM, { secret: SECRET });
   if (approval.error) {
     console.log(`  ! ERROR: "${post.title}" (${post.slug}) - approved in SAGE, but ${approval.detail}. Not published, and no reviewer credited.`);
-    console.log('      To publish it: the assigned reviewer approves the current text in SAGE (set the entry back to "in-review" first), or the approved bytes are restored.');
+    console.log('      To publish it: the assigned reviewer approves the current text, for the current date, in SAGE (set the entry back to "in-review" first), or the approved bytes and date are restored.');
     markError(post, approval.error);
     continue;
   }
@@ -181,8 +202,9 @@ for (const post of calendar.year1) {
   // The credit record binds the "Reviewed by" line to the exact bytes this run
   // commits: the renderer prints it only while the file still hashes to
   // credited_sha256 and the publisher's credit_mac verifies.
+  // A post published without a credit keeps no approval record either.
   if (approval.credit) recordCredit(post, Buffer.from(md, 'utf8'), SECRET);
-  else clearCredit(post);
+  else clearApprovalRecord(post);
 
   post.status = 'published';
   published++;
@@ -204,8 +226,9 @@ if (errors.length > 0) {
   console.log('');
   console.log('  Calendar status set to "error" with error_reason and error_at.');
   console.log('  missing_*/content_too_short: investigate the sage Hive blog-writer pipeline.');
-  console.log('  approval_*/approved_bytes_changed: the post changed after its reviewer approved it in SAGE, the approval');
-  console.log('  is not the byline reviewer\'s, or SAGE did not sign it. It is not published under their name (sage-server BL-07).');
+  console.log('  unsafe_frontmatter: a front-matter value carries markup, or a slug is unsafe. Fix the markdown by hand.');
+  console.log('  approval_*/approved_bytes_changed: the post changed after its reviewer approved it in SAGE, it was rescheduled,');
+  console.log('  the approval is not the byline reviewer\'s, or SAGE did not sign it. It is not published under their name (sage-server BL-07).');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 }
 if (published > 0) console.log(`\n  ${published} post(s) published. Calendar updated.`);
