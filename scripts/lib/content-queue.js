@@ -19,6 +19,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const { isHeld } = require('./calendar-status');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 // Overridable for the same reason loadBacklog takes a path: the lost-update
@@ -681,7 +682,7 @@ function fillSlots(cal, backlog, today, windowMonths, opts = {}) {
 }
 
 /**
- * Evaluate the five queue invariants. Pure: takes the data and the clock,
+ * Evaluate the queue invariants (I1-I6). Pure: takes the data and the clock,
  * returns findings. `opts.hasMarkdown` is injectable so the rules can be
  * tested against fixtures rather than whatever happens to be on disk.
  *
@@ -751,6 +752,15 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
   const approved = approvedCandidates(backlog);
   if (approved.length < MIN_APPROVED_BACKLOG) {
     add('I5', `approved backlog is ${approved.length}, below the floor of ${MIN_APPROVED_BACKLOG} (${MIN_APPROVED_BACKLOG / 2} weeks at 2x/week)`);
+  }
+
+  // I6 - a post on a reviewer's change-request hold has reached its date. A
+  // hold never publishes (scripts/lib/calendar-status.js HOLD_STATUSES) and the
+  // publisher skips it without an error, so this is what makes the empty slot
+  // loud: it clears when the reviewer approves the edited version SAGE
+  // proposed, or the content owner releases the hold on the calendar.
+  for (const p of posts.filter(x => isHeld(x.status) && x.publish_date && daysBetween(today, x.publish_date) <= 0)) {
+    add('I6', `"${p.slug}" was due ${p.publish_date} but is on hold (${p.status}) for its reviewer's changes; it publishes only after the reviewer approves the edit or the hold is released`);
   }
 
   return {

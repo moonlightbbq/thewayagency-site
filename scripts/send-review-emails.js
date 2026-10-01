@@ -15,10 +15,18 @@
  * Required env vars:
  *   SAGE_API_URL    — e.g., https://sage.thewayagency.com
  *   SAGE_API_TOKEN  — JWT token for sage-server API auth
+ * Optional:
+ *   BLOG_REVIEW_TOKEN_SECRET — signs the review-request token SAGE verifies on
+ *     the reviewer's reply (BL-07). The same value is set in the sage .env.
+ *     Unset: review emails go out with the legacy subject, and SAGE refuses
+ *     every reply to them (approvals included) until it is set on both sides.
+ *
+ * Loading this file (require) has no side effects; it only runs when executed.
  */
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const ROOT = path.resolve(__dirname, '..');
 const CALENDAR_PATH = path.join(ROOT, 'data', 'content-calendar.json');
@@ -30,17 +38,63 @@ const SAGE_API_TOKEN = process.env.SAGE_API_TOKEN;
 const SAGE_CLIENT_ID = process.env.SAGE_CLIENT_ID;
 const REVIEW_CC = process.env.REVIEW_CC || 'partner@thewayagency.com';
 
-if (!SAGE_API_URL || !SAGE_API_TOKEN) {
-  console.log('  ! SAGE_API_URL and SAGE_API_TOKEN are required');
-  process.exit(1);
+// ─── Review-request token (BL-07) ───────────
+//
+// SAGE acts on a reviewer's reply only when its subject carries a token this
+// script signed for that post, that reviewer and the exact article bytes the
+// reviewer was sent. The reference implementation is signRequestToken in
+// sage-server src/email/blog-review-guard.js; both repositories pin the same
+// fixed test vector (tests/review-reply-binding.test.js here), so the two can
+// never drift apart unnoticed.
+//
+//   token = YYYYMMDD "." <first 16 hex of sha256(article bytes)> "." <MAC>
+//   MAC   = base64url(HMAC-SHA256(secret, "blog-review-request/v1|<slug>|<reviewer email, lowercased>|<publish date>|<sha256 hex>")), first 22 chars
+//
+// The token expires on the publish date. Editing the article afterwards
+// invalidates it (SAGE refuses the reply as "content changed").
+const REQUEST_TOKEN_VERSION = 'blog-review-request/v1';
+const MIN_SECRET_LENGTH = 32;
+
+/**
+ * @param {{slug: string, reviewerEmail: string, publishDate: string, content: Buffer}} args
+ *   content: the RAW BYTES of src/blog/<slug>.md (fs.readFileSync without an encoding)
+ * @param {string} secret
+ * @returns {string}
+ */
+function issueReviewToken({ slug, reviewerEmail, publishDate, content }, secret) {
+  if (!secret || String(secret).length < MIN_SECRET_LENGTH) {
+    throw new Error(`issueReviewToken: the secret must be at least ${MIN_SECRET_LENGTH} characters`);
+  }
+  if (!slug || !reviewerEmail || !/^\d{4}-\d{2}-\d{2}$/.test(String(publishDate || '')) || !Buffer.isBuffer(content)) {
+    throw new Error('issueReviewToken: slug, reviewerEmail, publishDate (YYYY-MM-DD) and content (a Buffer) are required');
+  }
+  const contentSha256 = crypto.createHash('sha256').update(content).digest('hex');
+  const message = [REQUEST_TOKEN_VERSION, slug, String(reviewerEmail).trim().toLowerCase(), publishDate, contentSha256].join('|');
+  const mac = crypto.createHmac('sha256', String(secret)).update(message, 'utf8').digest('base64url').slice(0, 22);
+  return `${publishDate.replace(/-/g, '')}.${contentSha256.slice(0, 16)}.${mac}`;
 }
 
-// ─── Load data ──────────────────────────────
-const calendar = JSON.parse(fs.readFileSync(CALENDAR_PATH, 'utf8'));
-const teamData = JSON.parse(fs.readFileSync(TEAM_PATH, 'utf8'));
+/**
+ * The review email's subject, and the subject its Approve / Request Changes
+ * links compose. With a token both carry "[ref:<token>]"; without one they are
+ * the legacy subjects (which SAGE refuses as unbound).
+ * @param {{title: string, publish_date: string}} post
+ * @param {string|null} token
+ * @returns {{email: string, reply: string}}
+ */
+function buildReviewSubjects(post, token) {
+  const tag = token ? ` [ref:${token}]` : '';
+  return {
+    email: `Review Request: "${post.title}" — publishes ${post.publish_date}${tag}`,
+    reply: `Re: Review Request: "${post.title}"${tag}`,
+  };
+}
 
-// Licensed agents only (have email and license_states)
-const reviewers = teamData.team.filter(t => t.email && t.license_states && t.license_states.length > 0);
+/** The signing secret when it is usable, else null. */
+function reviewTokenSecret(env = process.env) {
+  const s = env.BLOG_REVIEW_TOKEN_SECRET || '';
+  return s.length >= MIN_SECRET_LENGTH ? s : null;
+}
 
 // ─── Date helpers ───────────────────────────
 function today() {
@@ -55,7 +109,7 @@ function daysUntil(dateStr) {
 }
 
 // ─── Reviewer rotation ─────────────────────
-function getNextReviewer(calendar) {
+function getNextReviewer(calendar, reviewers) {
   // Count how many times each reviewer has been assigned
   const counts = {};
   for (const r of reviewers) counts[r.email] = 0;
@@ -79,10 +133,11 @@ function getNextReviewer(calendar) {
 }
 
 // ─── Read markdown post ────────────────────
-function readPostContent(slug) {
+// Raw bytes: the token hashes exactly what is on disk (and on the branch).
+function readPostBytes(slug) {
   const mdPath = path.join(BLOG_SRC, `${slug}.md`);
   if (!fs.existsSync(mdPath)) return null;
-  return fs.readFileSync(mdPath, 'utf8');
+  return fs.readFileSync(mdPath);
 }
 
 // ─── Markdown to email HTML ─────────────────
@@ -162,7 +217,7 @@ const pillarLabels = {
 };
 
 // ─── Format post as HTML email ─────────────
-function formatReviewEmail(post, content, reviewer) {
+function formatReviewEmail(post, content, reviewer, token = null) {
   const articleHtml = markdownToEmailHtml(content);
 
   const publishDate = new Date(post.publish_date + 'T12:00:00').toLocaleDateString('en-US', {
@@ -180,13 +235,14 @@ function formatReviewEmail(post, content, reviewer) {
   // it, nothing would happen, and the review went unrecorded. They are real
   // mailto: links now.
   //
-  // The subject has to satisfy sage's REVIEW_REPLY_PATTERN
-  // (/re:\s*(review request|expedited review)[:\s]*["""](.+?)["""]/i) or the
-  // reply is never recognised as a review reply, and the approve body has to
-  // satisfy its /approved|looks good|lgtm|no changes/i check. Replies go to the
-  // mailbox sage polls for intake, which is the same one it sends from.
+  // The subject has to satisfy sage's anchored reply grammar (src/email/
+  // blog-review-guard.js: reply prefix, the review marker, the quoted title,
+  // then only the binding tag) AND carry the review-request token, or SAGE
+  // refuses the reply. The approve body must be just "Approved" (a signature
+  // after it is fine). Replies go to the mailbox sage polls for intake, which
+  // is the same one it sends from.
   const replyTo = process.env.REVIEW_REPLY_TO || 'sage@thewayagency.com';
-  const replySubject = encodeURIComponent(`Re: Review Request: "${post.title}"`);
+  const replySubject = encodeURIComponent(buildReviewSubjects(post, token).reply);
   const approveHref = `mailto:${replyTo}?subject=${replySubject}&body=${encodeURIComponent('Approved')}`;
   const changesHref = `mailto:${replyTo}?subject=${replySubject}&body=${encodeURIComponent('Changes requested:\n\n')}`;
 
@@ -218,13 +274,15 @@ function formatReviewEmail(post, content, reviewer) {
       </td>
       <td style="width:50%;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:14px 16px;text-align:center;vertical-align:top;">
         <a href="${changesHref}" style="display:block;font-weight:700;color:#9a3412;font-size:14px;text-decoration:underline;margin-bottom:4px;">Request Changes</a>
-        <p style="margin:0;color:#c2410c;font-size:12px;">Opens a reply &mdash; type your edits or notes</p>
+        <p style="margin:0;color:#c2410c;font-size:12px;">Opens a reply &mdash; type your edits or notes. The post is held until you approve the edited version.</p>
       </td>
     </tr></table>
     <p style="margin:14px 0 0;color:#475569;font-size:13px;line-height:1.6;">
       Either one opens a reply in your mail app. Please send one even when the article is fine:
       <strong style="color:#0f172a;">approving by reply is what records your name on the published post.</strong>
       If no reply arrives the article still publishes on ${publishDate}, but it publishes with no reviewer credited.
+      If you request changes, SAGE emails you the proposed edit as a list of changes, and nothing is published until you approve that exact version.
+      Please keep the subject line as it is: it carries the code that ties your reply to this request.
     </p>
   </div>
 
@@ -319,6 +377,18 @@ async function main() {
     console.error(`  ! Missing required secret(s): ${missing.join(', ')}`);
     process.exit(2);
   }
+
+  // ─── Load data ──────────────────────────────
+  const calendar = JSON.parse(fs.readFileSync(CALENDAR_PATH, 'utf8'));
+  const teamData = JSON.parse(fs.readFileSync(TEAM_PATH, 'utf8'));
+  // Licensed agents only (have email and license_states)
+  const reviewers = teamData.team.filter(t => t.email && t.license_states && t.license_states.length > 0);
+
+  const tokenSecret = reviewTokenSecret();
+  if (!tokenSecret) {
+    console.log('  ! BLOG_REVIEW_TOKEN_SECRET is not set (or shorter than 32 characters): review emails go out '
+      + 'without a review code, and SAGE will refuse every reply to them until it is set here and in sage.');
+  }
   let calendarChanged = false;
 
   for (const post of calendar.year1) {
@@ -333,13 +403,14 @@ async function main() {
     // reviewer ever emailed, and publish with a byline nobody earned. A 10-18
     // window always gives the file at least one cron hit after it lands.
     if (post.status === 'planned' && days >= 10 && days <= 18) {
-      const content = readPostContent(post.slug);
-      if (!content) {
+      const bytes = readPostBytes(post.slug);
+      if (!bytes) {
         console.log(`  ! Skipping "${post.title}" — markdown file not found`);
         continue;
       }
+      const content = bytes.toString('utf8');
 
-      const reviewer = getNextReviewer(calendar);
+      const reviewer = getNextReviewer(calendar, reviewers);
       post.status = 'in-review';
       post.reviewer = reviewer.name;
       post.reviewer_email = reviewer.email;
@@ -347,11 +418,14 @@ async function main() {
       post.review_sent_date = today();
       calendarChanged = true;
 
-      const htmlBody = formatReviewEmail(post, content, reviewer);
+      const token = tokenSecret
+        ? issueReviewToken({ slug: post.slug, reviewerEmail: reviewer.email, publishDate: post.publish_date, content: bytes }, tokenSecret)
+        : null;
+      const htmlBody = formatReviewEmail(post, content, reviewer, token);
       try {
         await sendEmail(
           reviewer.email,
-          `Review Request: "${post.title}" — publishes ${post.publish_date}`,
+          buildReviewSubjects(post, token).email,
           htmlBody
         );
         reviewsSent++;
@@ -440,7 +514,15 @@ async function main() {
   process.exit(0);
 }
 
-main().catch(err => {
-  console.error('  ! Review script error:', err.message);
-  process.exit(2);
-});
+module.exports = { issueReviewToken, buildReviewSubjects, formatReviewEmail, reviewTokenSecret, MIN_SECRET_LENGTH };
+
+if (require.main === module) {
+  if (!SAGE_API_URL || !SAGE_API_TOKEN) {
+    console.log('  ! SAGE_API_URL and SAGE_API_TOKEN are required');
+    process.exit(1);
+  }
+  main().catch(err => {
+    console.error('  ! Review script error:', err.message);
+    process.exit(2);
+  });
+}

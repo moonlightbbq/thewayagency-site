@@ -668,6 +668,14 @@ if (!fs.existsSync(BLOG_BUILD)) {
 }
 
 // 1. Convert Markdown posts to HTML
+// A post on a reviewer's change-request hold (scripts/lib/calendar-status.js)
+// is never rendered, even past its date: its reviewer asked for changes, and it
+// publishes only once they approve the edited version (or the hold is released).
+const { loadHeldSlugs } = require('./lib/calendar-status');
+const { held: heldSlugs, error: heldError } = loadHeldSlugs(path.join(DATA, 'content-calendar.json'));
+if (heldError) {
+  console.log(`  ! content-calendar.json could not be read (${heldError}): posts on a reviewer hold CANNOT be identified, so no post is skipped for a hold`);
+}
 const posts = [];
 
 if (fs.existsSync(BLOG_SRC)) {
@@ -680,6 +688,12 @@ if (fs.existsSync(BLOG_SRC)) {
 
       if (!meta.title || !meta.slug) {
         console.log(`  ! Skipping ${file}  -  missing title or slug in front matter`);
+        continue;
+      }
+
+      // Skip posts on a reviewer hold, whatever their date
+      if (heldSlugs.has(meta.slug)) {
+        console.log(`  ~ Held ${meta.slug}.html  -  its reviewer requested changes; it renders once they approve the edit`);
         continue;
       }
 

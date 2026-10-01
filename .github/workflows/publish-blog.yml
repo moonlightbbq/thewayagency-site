@@ -34,6 +34,10 @@ jobs:
           SAGE_API_URL: ${{ secrets.SAGE_API_URL }}
           SAGE_API_TOKEN: ${{ secrets.SAGE_API_TOKEN }}
           SAGE_CLIENT_ID: ${{ secrets.SAGE_CLIENT_ID }}
+          # BL-07: signs the review-request token SAGE verifies on the reviewer's
+          # reply. Same value as BLOG_REVIEW_TOKEN_SECRET in the sage .env. Unset:
+          # review emails still go out, but SAGE refuses every reply to them.
+          BLOG_REVIEW_TOKEN_SECRET: ${{ secrets.BLOG_REVIEW_TOKEN_SECRET }}
         run: node scripts/send-review-emails.js
 
       # Step 1b: Update Google reviews from sage public endpoint.
@@ -82,7 +86,9 @@ jobs:
       # content that is ready. I4 (a post inside 10 days with no markdown on
       # disk) is the check that would have caught college-student-auto-insurance
       # on 2026-08-03 instead of this workflow going red on 08-15. I2b (a date
-      # that will publish nothing) is equally worth a red run.
+      # that will publish nothing) is equally worth a red run, and so is I6 (a
+      # post on a reviewer's change-request hold has reached its date and is
+      # not publishing until the reviewer approves an edit or the hold is released).
       # Deliberately NOT fatal: I5 (thin backlog) is a planning signal.
       - name: Queue health
-        run: node scripts/queue-status.js --fail-on I4,I2b
+        run: node scripts/queue-status.js --fail-on I4,I2b,I6
