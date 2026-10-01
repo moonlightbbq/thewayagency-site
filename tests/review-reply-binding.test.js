@@ -40,6 +40,40 @@ const VECTOR_BYTES = Buffer.from('---\ntitle: "Café Test Vector"\nslug: test-ve
 const VECTOR = { slug: 'test-vector-post', reviewerEmail: 'Test.Reviewer@Example.com', publishDate: '2099-12-31', content: VECTOR_BYTES };
 const VECTOR_TOKEN = '20991231.c0841c3afd9ee10b.N8Q5Xb55k2ygrr3vfLRBrg';
 
+// SAGE's signature on an approval (sage-server src/email/blog-review-guard.js
+// signApproval, written to the calendar entry as approval_mac). The site
+// verifies it before it publishes or renders a "Reviewed by" credit; sage-server
+// tests/blog-review-approval-endpoint.test.js pins the SAME vector.
+const APPROVAL_VECTOR = {
+  slug: 'test-vector-post', reviewer_slug: 'test-reviewer', reviewer_email: 'Test.Reviewer@Example.com',
+  approved_by_email: 'test.reviewer@example.com', approved_sha256: 'c0841c3afd9ee10b379e19209d951848bb5791c973f7ee7295525ab69d2704a0',
+  approved_date: '2099-12-30',
+};
+const APPROVAL_VECTOR_MAC = 'OPiVjkk1WmIDoCWMPHO6Oe3_C9kg71Qnt3nfZTVteh0';
+const APPROVAL_VECTOR_EDIT_ID = '00000000-0000-4000-8000-000000000001';
+const APPROVAL_VECTOR_MAC_EDIT = '-lnwGHiGnkVuLF17teMjrA2qtb4c74vih_4sKC2oec8';
+
+describe('the approval signature (approval_mac)', () => {
+  const rc = require('../scripts/lib/review-credit');
+  test('matches the fixed cross-repo test vector, for a current-text approval and a proposal approval', () => {
+    assert.equal(APPROVAL_VECTOR.approved_sha256, rc.sha256Hex(VECTOR_BYTES));
+    assert.equal(rc.signApproval(APPROVAL_VECTOR, SECRET), APPROVAL_VECTOR_MAC);
+    assert.equal(rc.signApproval({ ...APPROVAL_VECTOR, approved_edit_id: APPROVAL_VECTOR_EDIT_ID }, SECRET), APPROVAL_VECTOR_MAC_EDIT);
+    assert.ok(rc.approvalSigned({ ...APPROVAL_VECTOR, approval_mac: APPROVAL_VECTOR_MAC }, SECRET));
+  });
+
+  test('every signed field matters, and an ambiguous field cannot be signed', () => {
+    const signed = { ...APPROVAL_VECTOR, approval_mac: APPROVAL_VECTOR_MAC };
+    for (const [k, v] of Object.entries({
+      slug: 'test-vector-other', reviewer_slug: 'test-reviewer-2', reviewer_email: 'test.other@example.com', approved_by_email: 'test.other@example.com',
+      approved_sha256: '0'.repeat(64), approved_date: '2099-12-31', approved_edit_id: APPROVAL_VECTOR_EDIT_ID,
+    })) assert.ok(!rc.approvalSigned({ ...signed, [k]: v }, SECRET), k);
+    assert.ok(!rc.approvalSigned(signed, `${SECRET}x`));
+    assert.throws(() => rc.signApproval({ ...APPROVAL_VECTOR, approved_by_email: 'a|b@example.com' }, SECRET), /line break|"\|"/);
+    assert.throws(() => rc.signApproval(APPROVAL_VECTOR, 'short'), /32/);
+  });
+});
+
 describe('the review-request token', () => {
   test('matches the fixed cross-repo test vector', () => {
     assert.equal(issueReviewToken(VECTOR, SECRET), VECTOR_TOKEN);
@@ -217,13 +251,21 @@ describe('loading the script', () => {
 });
 
 describe('a held post never renders, and is loud when its date arrives', () => {
-  test('generate-blog.js skips held slugs (from the shared helper) before its date check', () => {
+  test('generate-blog.js decides every post with the shared renderDecision before its date check', () => {
+    // Behaviour is pinned end to end in tests/render-review-gate.test.js; this
+    // pins the wiring: the decision (holds included) runs before, and
+    // regardless of, the file's own date.
     const src = fs.readFileSync(path.join(ROOT, 'scripts', 'generate-blog.js'), 'utf8');
     assert.match(src, /require\('\.\/lib\/calendar-status'\)/);
-    assert.match(src, /loadHeldSlugs\(/);
-    const held = src.indexOf('heldSlugs.has(meta.slug)');
+    assert.match(src, /require\('\.\/lib\/review-credit'\)/);
+    const decided = src.indexOf('renderDecision(entry, rawBytes');
     const future = src.indexOf('// Skip future-dated posts');
-    assert.ok(held > 0 && future > 0 && held < future, 'the hold check must run before (and regardless of) the date check');
+    assert.ok(decided > 0 && future > 0 && decided < future, 'the decision must run before (and regardless of) the date check');
+    const rc = require('../scripts/lib/review-credit');
+    const cs = require('../scripts/lib/calendar-status');
+    const d = rc.renderDecision({ slug: 'test-held-x', status: 'changes-requested', publish_date: '2000-01-01' }, Buffer.from('---\ntitle: t\n---\n'), [],
+      { today: '2099-01-01', isKnownStatus: cs.isKnownStatus, isPublishable: cs.isPublishable, isHeld: cs.isHeld });
+    assert.equal(d.render, false);
   });
 
   test('I6 fires for a held post at or past its date, and not before', () => {
@@ -239,6 +281,9 @@ describe('a held post never renders, and is loud when its date arrives', () => {
   test('the publish workflow passes the secret and fails on I6', () => {
     const wf = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'publish-blog.yml'), 'utf8');
     assert.match(wf, /BLOG_REVIEW_TOKEN_SECRET: \$\{\{ secrets\.BLOG_REVIEW_TOKEN_SECRET \}\}/);
+    // The publish step needs it too: it verifies SAGE's approval_mac and signs the credit record.
+    const publishStep = wf.slice(wf.indexOf('- name: Publish scheduled posts'), wf.indexOf('- name: Commit and push'));
+    assert.match(publishStep, /BLOG_REVIEW_TOKEN_SECRET: \$\{\{ secrets\.BLOG_REVIEW_TOKEN_SECRET \}\}/);
     assert.match(wf, /SAGE_REVIEW_URL: \$\{\{ secrets\.SAGE_REVIEW_URL \}\}/);
     assert.match(wf, /queue-status\.js --fail-on I4,I2b,I6,I7/);
     assert.match(wf, /REQUIRED: unset \(or under 32 characters\), this step exits 2/);
@@ -251,5 +296,20 @@ describe('a held post never renders, and is loud when its date arrives', () => {
     assert.equal(i7.length, 1);
     assert.match(i7[0].message, /approved_bytes_changed/);
     for (const status of ['approved', 'in-review', 'published', 'changes-requested']) assert.ok(!ids(status).some(v => v.id === 'I7'), status);
+    // A status neither repo knows does not publish or render either.
+    const unknown = ids('awaiting-legal').filter(v => v.id === 'I7');
+    assert.equal(unknown.length, 1);
+    assert.match(unknown[0].message, /unrecognised status "awaiting-legal"/);
+  });
+
+  test('the workflow commits whatever changed (not only when a step reported output), and never after a failed publish', () => {
+    const wf = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'publish-blog.yml'), 'utf8');
+    const commit = wf.slice(wf.indexOf('- name: Commit and push'), wf.indexOf('- name: Queue health'));
+    assert.match(commit, /if: \$\{\{ !cancelled\(\) && steps\.publish\.outcome != 'failure' \}\}/);
+    assert.doesNotMatch(commit, /outputs\.(published|reviews_sent|reviews_updated)/);
+    assert.match(commit, /git diff --cached --quiet && exit 0/);
+    const publish = wf.slice(wf.indexOf('- name: Publish scheduled posts'), wf.indexOf('- name: Commit and push'));
+    // 0 and 3 (an entry in error, its changes written) keep the step green so they are committed; anything else fails it.
+    assert.match(publish, /case "\$code" in\s+0\) ;;\s+3\)[^\n]*;;\s+\*\) exit "\$code" ;;/);
   });
 });

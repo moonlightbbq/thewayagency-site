@@ -1,34 +1,54 @@
 /**
- * Who a published post credits as its reviewer (sage-server BL-07, AIA-018 and
- * AIA-019) -- one definition for every script that publishes a post.
+ * Who a blog post credits as its reviewer, and whether a scheduled post renders
+ * at all (sage-server BL-07, AIA-018 and AIA-019). One definition for every
+ * script that publishes or renders a post: publish-scheduled-posts.js,
+ * reconcile-calendar.js and generate-blog.js (the renderer, which is the step
+ * that actually puts a page on the site).
  *
  * A "Reviewed by" byline puts a licensed agent's name, title and the date they
  * signed off on public text, in the visible byline and in the JSON-LD. Since
  * BL-07 the only sign-off is the assigned reviewer's click in SAGE on the
  * sha256 of the exact bytes of src/blog/<slug>.md (sage-server
- * src/services/blog-review-approval.js). SAGE records it on the calendar
- * entry: status 'approved', approved_by, approved_by_email, approved_date,
- * approved_sha256 (and approved_edit_id when it approved a proposed edit).
+ * src/services/blog-review-approval.js). SAGE records it on the calendar entry:
+ * status 'approved', approved_by, approved_by_email, approved_date,
+ * approved_sha256, approved_edit_id (when it approved a proposed edit) and
+ * approval_mac, an HMAC over those fields with BLOG_REVIEW_TOKEN_SECRET that
+ * only a holder of the secret can make. Plain calendar fields prove nothing:
+ * anyone who can edit data/content-calendar.json could type them.
  *
- * The click binds those bytes in SAGE, so the publish step binds them too:
+ *   APPROVAL (status 'approved', before the publisher runs)
+ *     the raw file bytes hash to approved_sha256, the approval is the byline
+ *     reviewer's, and approval_mac verifies    -> publishes CREDITING them
+ *     anything else                             -> does NOT publish ('error',
+ *                                                  and the renderer skips it)
+ *     no secret here to verify with             -> left 'approved', not
+ *                                                  published or rendered yet
+ *   CREDIT (status 'published', after it)
+ *     the publisher credits a reviewer only after the check above, then
+ *     records credited_sha256 (the sha256 of the file it committed, review
+ *     lines and date rewrite included) and credit_mac (an HMAC over the slug,
+ *     credited_sha256 and approval_mac). The renderer prints "Reviewed by"
+ *     only while the file still hashes to credited_sha256 and both MACs
+ *     verify. Any later change to the file drops the byline.
+ *   SILENCE (any other publishable status)       -> publishes with NO review
+ *                                                  line; any it has is ignored
+ *                                                  by the renderer and removed
+ *                                                  by the publisher
  *
- *   status 'approved', and the raw file bytes still hash to approved_sha256,
- *   and the approval is the byline reviewer's  -> publishes CREDITING them
- *   status 'approved', anything else            -> does NOT publish ('error')
- *   any other publishable status (silence)      -> publishes with NO review
- *                                                  line; any it had is removed
+ * "The approval is the byline reviewer's" means: the address that approved is
+ * the entry's reviewer_email, which is still the address data/team.json gives
+ * the reviewer_slug member (a licensed one), and the entry's reviewer name is
+ * that member's. So an address re-pointed in team.json after the click, or a
+ * byline swapped on the calendar, refuses too.
  *
- * Anything that changes the file after the click (a later commit, a merged
- * batch PR, a BL-06 promote for the same slug) therefore cannot publish under
- * the reviewer's name. "The approval is the byline reviewer's" means: the
- * address that approved is the entry's reviewer_email, which is still the
- * address data/team.json gives the reviewer_slug member (a licensed one), and
- * the entry's reviewer name is that member's. So an address re-pointed in
- * team.json after the click, or a byline swapped on the calendar, refuses too.
+ * Front-matter keys are read the way generate-blog.js's parseFrontMatter reads
+ * them (the text before the first ':' on a line, trimmed), and review keys are
+ * matched case-insensitively, so " reviewer: X" or "Reviewer: X" is a review
+ * claim here exactly when the renderer could print it.
  *
- * The hash covers the file as committed, before this repo's publisher rewrites
- * any front matter (the reviewer lines below, and date/modified): callers hash
- * fs.readFileSync(path) with no encoding, before writing anything.
+ * The approval hash covers the file as committed, before this repo's publisher
+ * rewrites any front matter: callers hash fs.readFileSync(path) with no
+ * encoding, before writing anything.
  */
 'use strict';
 
@@ -36,15 +56,32 @@ const crypto = require('crypto');
 
 /** Front-matter keys that make a review claim (generate-blog.js renders them). */
 const REVIEWER_FIELDS = Object.freeze(['reviewer', 'reviewer_slug', 'reviewer_title', 'reviewed_date', 'reviewed_by']);
-const REVIEWER_LINE = new RegExp(`^(?:${REVIEWER_FIELDS.join('|')})\\s*:`);
-const FRONT_MATTER = /^---\n([\s\S]*?)\n---/;
+// The renderer's front-matter block: generate-blog.js parseFrontMatter matches
+// /^---\n([\s\S]*?)\n---\n([\s\S]*)$/. A file it does not match renders with no
+// front matter (and is skipped for having no title), so this is the only block
+// a review line can be read from.
+const FRONT_MATTER = /^---\n([\s\S]*?)\n---\n/;
 const SHA256_RE = /^[0-9a-f]{64}$/;
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+// Shared with sage-server (src/email/blog-review-guard.js). The secret is the
+// one that signs review-request tokens; the version strings keep the messages
+// apart.
+const MIN_SECRET_LENGTH = 32;
+const APPROVAL_MAC_VERSION = 'blog-review-approval/v1';
+const CREDIT_MAC_VERSION = 'blog-review-credit/v1';
+const MIN_WORDS = 200;
 
 const lower = (s) => String(s || '').trim().toLowerCase();
 
 /** sha256 hex of a file's raw bytes. */
 function sha256Hex(bytes) {
   return crypto.createHash('sha256').update(bytes).digest('hex');
+}
+
+/** BLOG_REVIEW_TOKEN_SECRET when it is usable (32+ characters), else null. */
+function reviewSecret(env = process.env) {
+  const s = env && typeof env.BLOG_REVIEW_TOKEN_SECRET === 'string' ? env.BLOG_REVIEW_TOKEN_SECRET : '';
+  return s.length >= MIN_SECRET_LENGTH ? s : null;
 }
 
 /**
@@ -57,15 +94,130 @@ function personNameKey(name) {
     .replace(/[^\p{L}\p{N}\s]/gu, ' ').replace(/\s+/g, ' ').trim();
 }
 
+/** The key generate-blog.js reads from a front-matter line, or null. */
+function frontMatterKey(line) {
+  const idx = String(line).indexOf(':');
+  return idx > 0 ? String(line).slice(0, idx).trim() : null;
+}
+
+/** Whether a front-matter key makes a review claim (trimmed, any case). */
+function isReviewerKey(key) {
+  return key !== null && key !== undefined && REVIEWER_FIELDS.includes(String(key).trim().toLowerCase());
+}
+
+/** The front matter without any review claim; every other byte unchanged. */
+function stripReviewerFields(md) {
+  const s = String(md);
+  const m = FRONT_MATTER.exec(s);
+  if (!m) return s;
+  const kept = m[1].split('\n').filter((line) => !isReviewerKey(frontMatterKey(line)));
+  return `---\n${kept.join('\n')}\n---\n${s.slice(m[0].length)}`;
+}
+
+/** Whether the front matter carries any review claim. */
+function hasReviewerFields(md) {
+  const m = FRONT_MATTER.exec(String(md));
+  return !!m && m[1].split('\n').some((line) => isReviewerKey(frontMatterKey(line)));
+}
+
+// ─── Signed records ─────────────────────────────────────────────────────────
+
+const _clean = (v) => !/[|\r\n\u0000]/.test(String(v));
+
 /**
- * Whether this entry may publish, and whether it credits its reviewer.
+ * The message approval_mac signs, or null when a field could make it
+ * ambiguous. sage-server builds the same string (blog-review-guard.js
+ * approvalMacMessage); a fixed test vector pins the two together.
+ *
+ *   blog-review-approval/v1|<slug>|<reviewer_slug>|<reviewer_email, lowercased>
+ *     |<approved_by_email, lowercased>|<approved_sha256>|<approved_date>|<approved_edit_id or ''>
+ */
+function approvalMacMessage(post) {
+  if (!post) return null;
+  const parts = [
+    APPROVAL_MAC_VERSION,
+    String(post.slug || ''),
+    String(post.reviewer_slug || ''),
+    lower(post.reviewer_email),
+    lower(post.approved_by_email),
+    String(post.approved_sha256 || ''),
+    String(post.approved_date || ''),
+    String(post.approved_edit_id || ''),
+  ];
+  if (!parts[1] || !parts[2] || !parts[3] || !parts[4] || !SHA256_RE.test(parts[5]) || !DATE_RE.test(parts[6])) return null;
+  if (!parts.every(_clean)) return null;
+  return parts.join('|');
+}
+
+function _hmac(secret, message) {
+  return crypto.createHmac('sha256', String(secret)).update(message, 'utf8').digest('base64url');
+}
+
+function _macEqual(a, b) {
+  const x = Buffer.from(String(a || ''), 'utf8');
+  const y = Buffer.from(String(b || ''), 'utf8');
+  return x.length === y.length && x.length > 0 && crypto.timingSafeEqual(x, y);
+}
+
+/** approval_mac for an entry's approval fields (SAGE makes it; tests use this). */
+function signApproval(post, secret) {
+  if (!secret || String(secret).length < MIN_SECRET_LENGTH) throw new Error(`signApproval: the secret must be at least ${MIN_SECRET_LENGTH} characters`);
+  const message = approvalMacMessage(post);
+  if (!message) throw new Error('signApproval: slug, reviewer_slug, reviewer_email, approved_by_email, approved_sha256 and approved_date are required, and none may contain "|" or a line break');
+  return _hmac(secret, message);
+}
+
+/** Whether the entry's approval_mac is SAGE's signature over its approval fields. */
+function approvalSigned(post, secret) {
+  if (!secret) return false;
+  const message = approvalMacMessage(post);
+  return !!message && _macEqual(post.approval_mac, _hmac(secret, message));
+}
+
+function _creditMessage(post) {
+  const parts = [CREDIT_MAC_VERSION, String(post.slug || ''), String(post.credited_sha256 || ''), String(post.approval_mac || '')];
+  if (!parts[1] || !SHA256_RE.test(parts[2]) || !parts[3] || !parts.every(_clean)) return null;
+  return parts.join('|');
+}
+
+/**
+ * Record that this entry was published crediting its reviewer, bound to the
+ * exact bytes committed. Call only after approvalCheck() returned credit.
+ */
+function recordCredit(post, committedBytes, secret) {
+  if (!Buffer.isBuffer(committedBytes)) throw new TypeError('recordCredit: committedBytes must be the file as a Buffer');
+  post.credited_sha256 = sha256Hex(committedBytes);
+  const message = _creditMessage(post);
+  if (!secret || !message) throw new Error('recordCredit: needs the secret and a signed approval');
+  post.credit_mac = _hmac(secret, message);
+}
+
+/** Remove a credit record (a post that publishes without a credit). */
+function clearCredit(post) {
+  delete post.credited_sha256;
+  delete post.credit_mac;
+}
+
+// ─── Decisions ──────────────────────────────────────────────────────────────
+
+/** The member data/team.json gives this entry's reviewer_slug, or null. */
+function _member(team, post) {
+  return (Array.isArray(team) ? team : []).find((m) => m && post.reviewer_slug && m.slug === post.reviewer_slug) || null;
+}
+
+/**
+ * Whether an 'approved' entry may publish, and whether it credits its reviewer.
  * @param {object} post      the calendar entry
  * @param {Buffer} rawBytes  src/blog/<slug>.md as read from disk, before any rewrite
  * @param {Array} team       data/team.json's team list
- * @returns {{credit: boolean, error: string|null, detail?: string}}
+ * @param {{secret?: string|null}} [opts]  reviewSecret(): verifies approval_mac
+ * @returns {{credit: boolean, error: string|null, unverifiable?: boolean, detail?: string}}
  *   error set: the entry must not publish (mark it 'error' with that reason)
+ *   unverifiable: there is no secret here to check SAGE's signature with; the
+ *     entry must neither publish nor be marked 'error' (leave it for a run that
+ *     has the secret)
  */
-function approvalCheck(post, rawBytes, team) {
+function approvalCheck(post, rawBytes, team, { secret = null } = {}) {
   if (!post || post.status !== 'approved') return { credit: false, error: null };
   if (!Buffer.isBuffer(rawBytes)) throw new TypeError('approvalCheck: rawBytes must be the file as a Buffer (fs.readFileSync with no encoding)');
   const want = String(post.approved_sha256 || '');
@@ -80,7 +232,7 @@ function approvalCheck(post, rawBytes, team) {
   if (!assigned || lower(post.approved_by_email) !== assigned) {
     return { credit: false, error: 'approval_not_by_assigned_reviewer', detail: 'the address that approved is not the entry\'s reviewer_email' };
   }
-  const member = (Array.isArray(team) ? team : []).find((m) => m && post.reviewer_slug && m.slug === post.reviewer_slug);
+  const member = _member(team, post);
   const licensed = !!member && Array.isArray(member.license_states) && member.license_states.length > 0;
   if (!member || !licensed || lower(member.email) !== assigned) {
     return { credit: false, error: 'approval_reviewer_not_byline', detail: 'the reviewer_slug member in data/team.json is missing, unlicensed or no longer has the address that approved' };
@@ -89,7 +241,44 @@ function approvalCheck(post, rawBytes, team) {
   if (!key || personNameKey(post.reviewer) !== key) {
     return { credit: false, error: 'approval_reviewer_not_byline', detail: 'the entry\'s reviewer name is not the reviewer_slug member\'s name in data/team.json' };
   }
+  if (!secret) {
+    return { credit: false, error: null, unverifiable: true, detail: 'BLOG_REVIEW_TOKEN_SECRET is not set here, so SAGE\'s signature on the approval cannot be checked' };
+  }
+  if (!approvalSigned(post, secret)) {
+    return { credit: false, error: 'approval_unsigned', detail: 'the approval carries no valid approval_mac: SAGE did not record it (or it was edited after SAGE did)' };
+  }
   return { credit: true, error: null };
+}
+
+/**
+ * Whether a 'published' entry's "Reviewed by" may render: the publisher
+ * credited it after approvalCheck, and the file is still the one it committed.
+ * @returns {{credit: boolean, reason: string}}
+ */
+function creditCheck(post, rawBytes, { secret = null } = {}) {
+  if (!post || post.status !== 'published') return { credit: false, reason: 'not published' };
+  if (!post.credited_sha256 && !post.credit_mac) return { credit: false, reason: 'no credit recorded' };
+  if (!secret) return { credit: false, reason: 'BLOG_REVIEW_TOKEN_SECRET is not set here, so the credit cannot be verified' };
+  if (!Buffer.isBuffer(rawBytes)) throw new TypeError('creditCheck: rawBytes must be the file as a Buffer');
+  if (sha256Hex(rawBytes) !== post.credited_sha256) return { credit: false, reason: 'the file changed after it was published crediting its reviewer' };
+  if (lower(post.approved_by_email) !== lower(post.reviewer_email) || !approvalSigned(post, secret)) {
+    return { credit: false, reason: 'the approval it credits is not signed by SAGE' };
+  }
+  const message = _creditMessage(post);
+  if (!message || !_macEqual(post.credit_mac, _hmac(secret, message))) return { credit: false, reason: 'the credit record is not the publisher\'s' };
+  return { credit: true, reason: 'credited' };
+}
+
+/**
+ * Why a markdown file is not ready to publish (the publisher's readiness
+ * checks), or null.
+ */
+function readinessError(md) {
+  const text = String(md);
+  if (!text.includes('title:') || !text.includes('description:')) return 'missing_frontmatter';
+  const words = text.replace(/---[\s\S]*?---/, '').trim().split(/\s+/).length;
+  if (words < MIN_WORDS) return 'content_too_short';
+  return null;
 }
 
 /** The reviewer's REAL title from team.json, never a hardcoded one. */
@@ -98,43 +287,105 @@ function reviewerTitle(team, slug, name) {
   return (m && m.title) || 'The Way Agency';
 }
 
-/** The front matter without any review claim. */
-function stripReviewerFields(md) {
-  return String(md).replace(FRONT_MATTER, (_m, fm) => `---\n${fm.split('\n').filter((line) => !REVIEWER_LINE.test(line)).join('\n')}\n---`);
-}
+const _oneLine = (v) => String(v === undefined || v === null ? '' : v).replace(/[\r\n]+/g, ' ').trim();
 
 /**
- * The markdown as it publishes: the review lines set from the calendar entry
- * when `credit` (only ever the result of approvalCheck), else removed.
+ * The markdown as it publishes: the review lines set from the approval when
+ * `credit` (only ever the result of approvalCheck), else removed.
  * @returns {string}
  */
 function applyReviewCredit(md, post, team, { credit }) {
   let out = stripReviewerFields(md);
   if (!credit) return out;
+  // The name, slug and title are the team.json member approvalCheck bound the
+  // approval to, not free text from the calendar entry.
+  const member = _member(team, post) || {};
   const fields = {
-    reviewer: post.reviewer,
-    reviewer_slug: post.reviewer_slug,
+    reviewer: _oneLine(member.name || post.reviewer),
+    reviewer_slug: _oneLine(member.slug || post.reviewer_slug),
     // This used to stamp "Licensed Agent" on everyone, which published posts
     // crediting a Client Care Specialist as a Licensed Agent, in the visible
     // byline AND in the JSON-LD jobTitle.
-    reviewer_title: reviewerTitle(team, post.reviewer_slug, post.reviewer),
-    // The date they approved it in SAGE.
-    reviewed_date: String(post.approved_date || post.review_sent_date || post.publish_date).slice(0, 10),
+    reviewer_title: _oneLine(member.title || reviewerTitle(team, post.reviewer_slug, post.reviewer)),
+    // The date they approved it in SAGE (it is inside approval_mac).
+    reviewed_date: _oneLine(post.approved_date).slice(0, 10),
   };
-  for (const [key, value] of Object.entries(fields)) {
-    // Inside the front matter block, after whatever it has: `author_slug` is
-    // absent on agency-authored posts, so no neighbour field can be assumed.
-    out = out.replace(FRONT_MATTER, (_m, fm) => `---\n${fm}\n${key}: ${value}\n---`);
+  const lines = Object.entries(fields).map(([k, v]) => `${k}: ${v}`).join('\n');
+  // Inside the front matter block, after whatever it has: `author_slug` is
+  // absent on agency-authored posts, so no neighbour field can be assumed.
+  return out.replace(FRONT_MATTER, (_m, fm) => `---\n${fm}\n${lines}\n---\n`);
+}
+
+/**
+ * What the renderer does with one markdown file: whether it renders, and with
+ * which markdown (review lines only when the credit is proven). It renders
+ * exactly what the publisher would publish:
+ *
+ *   not on the calendar             -> renders (by its own date:), no credit
+ *   held ('changes-requested')      -> not rendered
+ *   'error', or an unknown status   -> not rendered
+ *   'published'                     -> renders; credited only by creditCheck
+ *   publishable, publish_date ahead -> not rendered yet
+ *   publishable, due                -> rendered only if the publisher would
+ *                                      publish it now (readiness, approval);
+ *                                      an 'approved' one is credited as the
+ *                                      publisher would credit it
+ *
+ * @param {object|null} entry  the calendar entry for this slug (year1 or existing_posts)
+ * @param {Buffer} rawBytes    the file's raw bytes
+ * @param {Array} team         data/team.json's team list
+ * @param {{secret?: string|null, today: string, isKnownStatus: Function, isPublishable: Function, isHeld: Function}} opts
+ * @returns {{render: boolean, credit: boolean, markdown: string, why: string}}
+ */
+function renderDecision(entry, rawBytes, team, opts) {
+  const { secret = null, today, isKnownStatus, isPublishable, isHeld } = opts;
+  const text = rawBytes.toString('utf8');
+  const stripped = () => stripReviewerFields(text);
+  if (!entry) return { render: true, credit: false, markdown: stripped(), why: 'not on the content calendar' };
+  const status = entry.status;
+  if (isHeld(status)) return { render: false, credit: false, markdown: '', why: 'its reviewer requested changes; it renders once they approve a version in SAGE or the hold is released' };
+  if (status === 'error') return { render: false, credit: false, markdown: '', why: `the publisher put it in error (${entry.error_reason || 'no reason recorded'})` };
+  if (!isKnownStatus(status)) return { render: false, credit: false, markdown: '', why: `unrecognised calendar status "${status}"` };
+  if (status === 'published') {
+    const c = creditCheck(entry, rawBytes, { secret });
+    return { render: true, credit: c.credit, markdown: c.credit ? text : stripped(), why: c.credit ? 'published, credited' : `published, no reviewer credited (${c.reason})` };
   }
-  return out;
+  if (!isPublishable(status)) return { render: false, credit: false, markdown: '', why: `status "${status}" does not publish` };
+  if (!entry.publish_date || String(entry.publish_date) > today) return { render: false, credit: false, markdown: '', why: `scheduled for ${entry.publish_date || 'no date'}` };
+  const notReady = readinessError(text);
+  if (notReady) return { render: false, credit: false, markdown: '', why: `not ready to publish (${notReady})` };
+  const approval = approvalCheck(entry, rawBytes, team, { secret });
+  if (approval.error) return { render: false, credit: false, markdown: '', why: `approved in SAGE, but ${approval.detail} (${approval.error})` };
+  if (approval.unverifiable) return { render: false, credit: false, markdown: '', why: `approved in SAGE, but ${approval.detail}; it renders once the publisher has published it` };
+  return {
+    render: true,
+    credit: approval.credit,
+    markdown: applyReviewCredit(text, entry, team, { credit: approval.credit }),
+    why: approval.credit ? 'due, approved in SAGE, credited' : 'due, no reviewer credited',
+  };
 }
 
 module.exports = {
   REVIEWER_FIELDS,
+  MIN_SECRET_LENGTH,
+  APPROVAL_MAC_VERSION,
+  CREDIT_MAC_VERSION,
   sha256Hex,
+  reviewSecret,
   personNameKey,
-  approvalCheck,
-  reviewerTitle,
+  frontMatterKey,
+  isReviewerKey,
   stripReviewerFields,
+  hasReviewerFields,
+  approvalMacMessage,
+  signApproval,
+  approvalSigned,
+  recordCredit,
+  clearCredit,
+  approvalCheck,
+  creditCheck,
+  readinessError,
+  reviewerTitle,
   applyReviewCredit,
+  renderDecision,
 };

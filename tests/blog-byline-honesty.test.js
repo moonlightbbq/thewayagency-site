@@ -12,6 +12,13 @@
  * named reviewer and the date they signed off are both recorded. A post with
  * no recorded reviewer makes no review claim at all.
  *
+ * Since sage-server BL-07 "recorded" means more than a front-matter line: the
+ * generator prints "Reviewed by" only for an approval in SAGE that SAGE signed
+ * and whose bytes are the ones on disk (scripts/lib/review-credit.js
+ * renderDecision; behaviour in tests/render-review-gate.test.js). Review lines
+ * a file merely carries (the 2026-09-21 backfill credited reviewers for
+ * silence) are ignored. The source checks below still keep those lines honest.
+ *
  * These assertions read sources rather than build output on purpose. Both
  * generate-blog.js and build.js write build/blog, and node --test runs suites
  * in parallel processes — a suite that builds races build-gate-wiring.test.js
@@ -68,11 +75,12 @@ describe('blog byline states only what the post can evidence', () => {
     assert.deepEqual(offenders, [], `reviewer not on team.json: ${offenders.join(', ')}`);
   });
 
-  test('some post actually credits a reviewer', () => {
-    // Guards the other direction: suppressing reviews that genuinely happened
-    // makes recording one pointless.
-    const credited = posts().filter(p => p.meta.reviewer && p.meta.reviewed_date);
-    assert.ok(credited.length > 0, 'no post credits a reviewer — the backfill did not land');
+  test('the byline is decided by the signed review gate, not by front-matter lines alone', () => {
+    // The other direction (a review that genuinely happened, approved in SAGE,
+    // IS printed) is pinned end to end in tests/render-review-gate.test.js.
+    const src = fs.readFileSync(GENERATOR, 'utf8');
+    assert.match(src, /renderDecision\(entry, rawBytes/, 'every markdown post goes through the shared render decision');
+    assert.match(src, /if \(isReviewerKey\(key\)\) delete meta\[key\]/, 'review keys are dropped unless the credit is proven');
   });
 
   test('the hand-maintained pages make no review claim', () => {

@@ -19,7 +19,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { isHeld } = require('./calendar-status');
+const { isHeld, isKnownStatus } = require('./calendar-status');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 // Overridable for the same reason loadBacklog takes a path: the lost-update
@@ -84,12 +84,17 @@ function publishDatesWithin(fromYmd, days) {
   return out;
 }
 
-// Fields the REVIEW flow owns. send-review-emails.js writes them; the queue
-// never sets them and must never clear them.
+// Fields the REVIEW flow owns. send-review-emails.js, SAGE's approval
+// (sage-server BL-07: approved_* and its signature approval_mac) and the
+// publisher (the credit record) write them; the queue never sets them and must
+// never clear them. Dropping approval_mac or the credit record would silently
+// take a reviewer's earned byline off the post.
 const REVIEW_OWNED_FIELDS = [
   'status', 'reviewer', 'reviewer_email', 'reviewer_slug', 'reviewer_title',
   'review_sent_date', 'review_send_error', 'reminder_sent',
-  'approved_date', 'reviewed_date',
+  'approved_by', 'approved_by_email', 'approved_date', 'approved_sha256', 'approved_edit_id', 'approval_mac',
+  'credited_sha256', 'credit_mac',
+  'reviewed_date',
 ];
 
 // The exact bytes loadCalendar() last read, so saveCalendar() can tell whether
@@ -765,12 +770,15 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
 
   // I7 - a post the publisher refused: status 'error', with error_reason set by
   // publish-scheduled-posts.js or reconcile-calendar.js (missing or unready
-  // markdown, or an approval that no longer matches the post's bytes or its
-  // byline: scripts/lib/review-credit.js). It is not publishing. The publish
-  // step's own exit code cannot say so (it also means "nothing was due"), so
-  // this is what keeps the workflow red until someone fixes the entry.
-  for (const p of posts.filter(x => x.status === 'error')) {
-    add('I7', `"${p.slug}" (due ${p.publish_date || 'undated'}) is in error (${p.error_reason || 'no reason recorded'}) and is not publishing`);
+  // markdown, or an approval whose bytes, byline or SAGE signature no longer
+  // match: scripts/lib/review-credit.js). Also a status neither repo knows,
+  // which the publisher only annotates. Neither publishes, and the renderer
+  // does not render either (scripts/generate-blog.js). The publish step
+  // commits and carries on (exit 3), so this is what keeps the workflow red
+  // until someone fixes the entry.
+  for (const p of posts.filter(x => x.status === 'error' || (x.status && !isKnownStatus(x.status)))) {
+    const why = x => (x.status === 'error' ? `is in error (${x.error_reason || 'no reason recorded'})` : `has unrecognised status "${x.status}"`);
+    add('I7', `"${p.slug}" (due ${p.publish_date || 'undated'}) ${why(p)} and is not publishing`);
   }
 
   return {

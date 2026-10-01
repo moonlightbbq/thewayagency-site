@@ -25,9 +25,13 @@
  *                         NO reviewer named: silence is not a review
  *   approved in SAGE   -> publishes on its date crediting the reviewer, but
  *                         only while the file's raw bytes still hash to the
- *                         approved_sha256 the reviewer approved and the
- *                         approval is the byline reviewer's; otherwise the
- *                         entry goes to 'error' (I7) and nothing publishes
+ *                         approved_sha256 the reviewer approved, the
+ *                         approval is the byline reviewer's and SAGE signed
+ *                         it (approval_mac); otherwise the entry goes to
+ *                         'error' (I7) and nothing publishes or renders. The
+ *                         renderer (generate-blog.js) prints the credit only
+ *                         while the publisher's credit record still matches
+ *                         the file (scripts/lib/review-credit.js)
  *   change request     -> 'changes-requested' HOLD: never publishes, even past
  *                         its date, until the reviewer approves a version in
  *                         SAGE (the edit SAGE proposed, or the current text:
@@ -70,8 +74,9 @@ const TERMINAL_STATUSES = Object.freeze(new Set([
  * 'changes-requested' when the post's assigned reviewer emails a change
  * request (src/email/blog-reviews.js in sage-server), and releases it only
  * when the reviewer approves a version in SAGE. generate-blog.js skips a held
- * post even when its date has passed, so a live URL is never re-rendered over
- * the reviewer's objection, and queue-status reports it (I6).
+ * post even when its date has passed (review-credit.js renderDecision), so a
+ * live URL is never re-rendered over the reviewer's objection, and
+ * queue-status reports it (I6).
  */
 const HOLD_STATUSES = Object.freeze(new Set([
   'changes-requested', // the reviewer asked for changes; nothing publishes until they approve
@@ -96,38 +101,6 @@ function isHeld(status) {
   return HOLD_STATUSES.has(status);
 }
 
-/** Slugs of every held entry, in year1 and existing_posts. */
-function heldSlugs(calendar) {
-  const held = new Set();
-  for (const list of [calendar && calendar.year1, calendar && calendar.existing_posts]) {
-    for (const p of Array.isArray(list) ? list : []) {
-      if (p && p.slug && isHeld(p.status)) held.add(p.slug);
-    }
-  }
-  return held;
-}
-
-/**
- * Held slugs from the calendar file, for the blog generator. Never throws: a
- * missing calendar holds nothing, and an unreadable one is reported in `error`
- * (the caller logs it) and holds nothing, so the build still renders the blog
- * instead of losing every post. That is fail-OPEN for holds, chosen because the
- * alternative drops the whole blog, and a calendar that does not parse also
- * stops the publish workflow and the index step that read the same file.
- *
- * @param {string} calendarPath
- * @param {{existsSync: Function, readFileSync: Function}} [fsImpl]
- * @returns {{held: Set<string>, error: string|null}}
- */
-function loadHeldSlugs(calendarPath, fsImpl = require('fs')) {
-  try {
-    if (!fsImpl.existsSync(calendarPath)) return { held: new Set(), error: null };
-    return { held: heldSlugs(JSON.parse(fsImpl.readFileSync(calendarPath, 'utf8'))), error: null };
-  } catch (err) {
-    return { held: new Set(), error: err && err.message ? err.message : String(err) };
-  }
-}
-
 module.exports = {
   PUBLISHABLE_STATUSES,
   TERMINAL_STATUSES,
@@ -135,6 +108,4 @@ module.exports = {
   isPublishable,
   isKnownStatus,
   isHeld,
-  heldSlugs,
-  loadHeldSlugs,
 };

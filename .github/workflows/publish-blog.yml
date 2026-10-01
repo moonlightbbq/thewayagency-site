@@ -63,20 +63,41 @@ jobs:
             exit "$code"
           fi
 
-      # Step 2: Publish posts that are due today
+      # Step 2: Publish posts that are due today.
+      # Exit 0 = ran cleanly (published, or nothing due). Exit 3 = a due post was
+      # put in 'error' (its changes, and every other change of the run, are
+      # written): the step stays green so they are committed below, and the
+      # queue check (I7) turns the run red afterwards. Anything else (2: an
+      # approval could not be verified for want of the secret; 1: the script
+      # crashed) fails the step, and nothing it may have half-written is committed.
       - name: Publish scheduled posts
         id: publish
+        env:
+          # BL-07: verifies SAGE's signature on an approval (approval_mac) and
+          # signs the credit record the renderer checks before it prints
+          # "Reviewed by". Same secret as the review step above.
+          BLOG_REVIEW_TOKEN_SECRET: ${{ secrets.BLOG_REVIEW_TOKEN_SECRET }}
         run: |
-          if node scripts/publish-scheduled-posts.js; then
-            echo "published=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "published=false" >> "$GITHUB_OUTPUT"
-            echo "No posts due today. Nothing to deploy."
-          fi
+          set +e
+          node scripts/publish-scheduled-posts.js
+          code=$?
+          set -e
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          case "$code" in
+            0) ;;
+            3) echo "::warning::A scheduled post was put in 'error'; the queue health check below reports it (I7)." ;;
+            *) exit "$code" ;;
+          esac
 
-      # Step 3: Commit any changes (review status updates + published posts)
+      # Step 3: Commit whatever the steps above changed (review status updates,
+      # published posts, credit records, Google reviews). It no longer depends
+      # on which step reported output: a run where only the publisher changed
+      # files (a publish, a stripped review line, an 'error') used to throw them
+      # away. It runs after a failed review or reviews step too (their writes,
+      # e.g. review_sent_date for emails already sent, must not be lost and
+      # resent), but not after a failed publish step.
       - name: Commit and push
-        if: steps.review.outputs.reviews_sent == 'true' || steps.publish.outputs.published == 'true' || steps.google_reviews.outputs.reviews_updated == 'true'
+        if: ${{ !cancelled() && steps.publish.outcome != 'failure' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -94,8 +115,9 @@ jobs:
       # post on a reviewer's change-request hold has reached its date and is
       # not publishing until the reviewer approves a version in SAGE or the hold is released),
       # and I7 (an entry the publisher put in 'error': missing or unready markdown,
-      # or an approval in SAGE whose bytes or byline no longer match, which the
-      # publish step's exit code cannot signal on its own).
+      # or an approval in SAGE whose bytes, byline or signature no longer match,
+      # or a status neither repo knows; the publish step stays green so its
+      # changes are committed first).
       # Deliberately NOT fatal: I5 (thin backlog) is a planning signal.
       - name: Queue health
         run: node scripts/queue-status.js --fail-on I4,I2b,I6,I7

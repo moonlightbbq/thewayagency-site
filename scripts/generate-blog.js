@@ -668,14 +668,59 @@ if (!fs.existsSync(BLOG_BUILD)) {
 }
 
 // 1. Convert Markdown posts to HTML
-// A post on a reviewer's change-request hold (scripts/lib/calendar-status.js)
-// is never rendered, even past its date: its reviewer asked for changes, and it
-// publishes only once they approve a version in SAGE (or the hold is released).
-const { loadHeldSlugs } = require('./lib/calendar-status');
-const { held: heldSlugs, error: heldError } = loadHeldSlugs(path.join(DATA, 'content-calendar.json'));
-if (heldError) {
-  console.log(`  ! content-calendar.json could not be read (${heldError}): posts on a reviewer hold CANNOT be identified, so no post is skipped for a hold`);
+//
+// This is the step that actually publishes a page, so it applies the same
+// rules as the publisher (scripts/lib/review-credit.js renderDecision) rather
+// than trusting whatever a markdown file's front matter says (sage-server
+// BL-07, AIA-018):
+//   - a post on a reviewer's change-request hold is never rendered, even past
+//     its date: it publishes only once its reviewer approves a version in SAGE
+//     (or the hold is released);
+//   - an entry the publisher put in 'error' (an approval whose bytes, byline or
+//     signature no longer match, unready markdown), or one whose status this
+//     repo does not know, is not rendered;
+//   - a scheduled post renders once it is due only if the publisher would
+//     publish it now;
+//   - "Reviewed by" renders ONLY for an approval SAGE signed whose bytes are
+//     the ones on disk (the publisher's credit record for a published post,
+//     the approval itself for one it has not published yet). Review lines in
+//     a file's front matter are otherwise ignored, however they are spelled.
+const {
+  isKnownStatus, isPublishable, isHeld,
+} = require('./lib/calendar-status');
+const { renderDecision, reviewSecret, isReviewerKey } = require('./lib/review-credit');
+
+const RENDER_TODAY = new Date().toISOString().split('T')[0]; // YYYY-MM-DD, as the publisher
+const REVIEW_SECRET = reviewSecret(process.env);
+if (!REVIEW_SECRET) {
+  console.log('  ! BLOG_REVIEW_TOKEN_SECRET is not set (or under 32 characters): no "Reviewed by" credit can be verified, so none is rendered');
 }
+const calendarEntries = (() => {
+  const bySlug = new Map();
+  const calPath = path.join(DATA, 'content-calendar.json');
+  try {
+    if (!fs.existsSync(calPath)) return { bySlug, error: null };
+    const cal = JSON.parse(fs.readFileSync(calPath, 'utf8'));
+    for (const list of [cal.existing_posts, cal.year1]) {
+      for (const p of Array.isArray(list) ? list : []) if (p && p.slug) bySlug.set(p.slug, p);
+    }
+    return { bySlug, error: null };
+  } catch (err) {
+    return { bySlug, error: err && err.message ? err.message : String(err) };
+  }
+})();
+if (calendarEntries.error) {
+  // Fail-open for PUBLICATION (the whole blog would otherwise vanish, and the
+  // publish workflow and the index step below stop on the same file), but
+  // fail-closed for CREDIT: with no calendar there is no approval to verify.
+  console.log(`  ! content-calendar.json could not be read (${calendarEntries.error}): holds CANNOT be identified, so no post is skipped for a hold, and no reviewer is credited`);
+}
+const REVIEW_TEAM = (() => {
+  try {
+    const t = JSON.parse(fs.readFileSync(path.join(DATA, 'team.json'), 'utf8'));
+    return Array.isArray(t) ? t : (t.team || []);
+  } catch { return []; }
+})();
 const posts = [];
 
 if (fs.existsSync(BLOG_SRC)) {
@@ -683,18 +728,33 @@ if (fs.existsSync(BLOG_SRC)) {
   if (mdFiles.length > 0) {
     console.log(`\n  Generating ${mdFiles.length} blog posts from Markdown...\n`);
     for (const file of mdFiles) {
-      const raw = fs.readFileSync(path.join(BLOG_SRC, file), 'utf8');
-      const { meta, body } = parseFrontMatter(raw);
+      const rawBytes = fs.readFileSync(path.join(BLOG_SRC, file));
+      const peek = parseFrontMatter(rawBytes.toString('utf8')).meta;
 
-      if (!meta.title || !meta.slug) {
+      if (!peek.title || !peek.slug) {
         console.log(`  ! Skipping ${file}  -  missing title or slug in front matter`);
         continue;
       }
 
-      // Skip posts on a reviewer hold, whatever their date
-      if (heldSlugs.has(meta.slug)) {
-        console.log(`  ~ Held ${meta.slug}.html  -  its reviewer requested changes; it renders once they approve the edit`);
+      const entry = calendarEntries.bySlug.get(peek.slug) || null;
+      // A calendar post renders only from its own file: another file claiming
+      // its slug would otherwise publish at its URL around its hold or approval.
+      if (entry && file !== `${peek.slug}.md`) {
+        console.log(`  ! Skipping ${file}  -  its slug "${peek.slug}" belongs to the calendar post src/blog/${peek.slug}.md`);
         continue;
+      }
+      const decision = calendarEntries.error
+        ? { render: true, credit: false, markdown: rawBytes.toString('utf8'), why: 'calendar unreadable' }
+        : renderDecision(entry, rawBytes, REVIEW_TEAM, { secret: REVIEW_SECRET, today: RENDER_TODAY, isKnownStatus, isPublishable, isHeld });
+      if (!decision.render) {
+        console.log(`  ~ Not rendered ${peek.slug}.html  -  ${decision.why}`);
+        continue;
+      }
+
+      const { meta, body } = parseFrontMatter(decision.markdown);
+      if (!decision.credit) {
+        // Whatever survived the strip (any spelling of a review key): no claim.
+        for (const key of Object.keys(meta)) if (isReviewerKey(key)) delete meta[key];
       }
 
       // Skip future-dated posts

@@ -24,7 +24,7 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const { PUBLISHABLE_STATUSES, TERMINAL_STATUSES, HOLD_STATUSES, isPublishable, isKnownStatus, isHeld, heldSlugs, loadHeldSlugs } =
+const { PUBLISHABLE_STATUSES, TERMINAL_STATUSES, HOLD_STATUSES, isPublishable, isKnownStatus, isHeld } =
   require('../scripts/lib/calendar-status');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -78,30 +78,6 @@ describe('the reviewer hold (BL-07)', () => {
       assert.equal(PUBLISHABLE_STATUSES.has(s), false, `"${s}" is held and publishable`);
       assert.equal(TERMINAL_STATUSES.has(s), false, `"${s}" is held and terminal`);
     }
-  });
-
-  test('heldSlugs picks held entries from year1 and existing_posts', () => {
-    const cal = {
-      year1: [
-        { slug: 'test-held-a', status: 'changes-requested' },
-        { slug: 'test-review-b', status: 'in-review' },
-        { slug: 'test-approved-c', status: 'approved' },
-      ],
-      existing_posts: [{ slug: 'test-held-d', status: 'changes-requested' }, { slug: 'test-live-e', status: 'published' }],
-    };
-    assert.deepEqual([...heldSlugs(cal)].sort(), ['test-held-a', 'test-held-d']);
-    assert.deepEqual([...heldSlugs({})], []);
-  });
-
-  test('loadHeldSlugs never throws: missing holds nothing, unreadable is reported', () => {
-    const fake = (files) => ({ existsSync: (p) => p in files, readFileSync: (p) => files[p] });
-    assert.deepEqual(loadHeldSlugs('/x/cal.json', fake({})), { held: new Set(), error: null });
-    const bad = loadHeldSlugs('/x/cal.json', fake({ '/x/cal.json': '{ not json' }));
-    assert.equal(bad.held.size, 0);
-    assert.match(bad.error, /JSON/);
-    const good = loadHeldSlugs('/x/cal.json', fake({ '/x/cal.json': JSON.stringify({ year1: [{ slug: 'test-held-a', status: 'changes-requested' }] }) }));
-    assert.deepEqual([...good.held], ['test-held-a']);
-    assert.equal(good.error, null);
   });
 });
 

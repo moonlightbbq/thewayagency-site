@@ -6,8 +6,11 @@
  * status.js): a post whose reviewer never acted still publishes on its date.
  * But silence is not a review, so it names no reviewer, and any review line it
  * carries is removed. An 'approved' post credits its reviewer only while the
- * sha256 of the file's raw bytes equals approved_sha256 and the approval is
- * the byline reviewer's; anything else does not publish at all ('error').
+ * sha256 of the file's raw bytes equals approved_sha256, the approval is the
+ * byline reviewer's, and SAGE signed it (approval_mac, an HMAC with
+ * BLOG_REVIEW_TOKEN_SECRET: typed calendar fields prove nothing); anything else
+ * does not publish at all ('error'). A credited publish records credited_sha256
+ * and credit_mac, which the renderer checks (tests/render-review-gate.test.js).
  *
  * Runs the real scripts against a temp copy of the site tree with synthetic
  * data, so nothing in this repo is touched.
@@ -21,7 +24,14 @@ const path = require('path');
 const { spawnSync } = require('child_process');
 
 const REPO = path.join(__dirname, '..');
-const { approvalCheck, applyReviewCredit, stripReviewerFields, personNameKey } = require('../scripts/lib/review-credit');
+const {
+  approvalCheck, applyReviewCredit, stripReviewerFields, personNameKey, signApproval, approvalMacMessage, creditCheck, sha256Hex,
+  frontMatterKey, isReviewerKey,
+} = require('../scripts/lib/review-credit');
+
+// A synthetic test secret (the real one lives only in the sage .env and the
+// repository's Actions secrets).
+const SECRET = 'TEST-vector-secret-0123456789abcdef0123';
 
 function frontmatter(md) {
   const m = md.match(/^---\n([\s\S]*?)\n---/);
@@ -41,18 +51,24 @@ const REVIEWER = { name: 'Test Reviewer B', slug: 'test-reviewer-b', email: 'tes
 const TEAM = [{ name: REVIEWER.name, slug: REVIEWER.slug, email: REVIEWER.email, title: REVIEWER.title, license_states: ['KY'] }];
 const REVIEW_KEYS = ['reviewer', 'reviewer_slug', 'reviewer_title', 'reviewed_date', 'reviewed_by'];
 
-/** A calendar entry the assigned reviewer approved in SAGE, for these bytes. */
-function approved(slug, md, patch = {}) {
-  return {
+/**
+ * A calendar entry the assigned reviewer approved in SAGE, for these bytes,
+ * signed the way SAGE signs it. `patch` applies after signing (so it can break
+ * the signature); `signed` patches before signing (so the signature covers it).
+ */
+function approved(slug, md, patch = {}, signed = {}) {
+  const entry = {
     slug, title: `SYNTHETIC ${slug}`, publish_date: '2026-01-07', status: 'approved',
     reviewer: REVIEWER.name, reviewer_slug: REVIEWER.slug, reviewer_email: REVIEWER.email, review_sent_date: '2025-12-20',
     approved_by: REVIEWER.name, approved_by_email: REVIEWER.email, approved_date: '2025-12-23', approved_sha256: sha(md),
-    ...patch,
+    ...signed,
   };
+  entry.approval_mac = approvalMacMessage(entry) ? signApproval(entry, SECRET) : undefined;
+  return { ...entry, ...patch };
 }
 
 /** A temp site tree; runs `script` once and returns the result. */
-function runSite(script, { entries, files, team = TEAM, args = [] }) {
+function runSite(script, { entries, files, team = TEAM, args = [], env = { BLOG_REVIEW_TOKEN_SECRET: SECRET } }) {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'publish-review-stamp-'));
   fs.mkdirSync(path.join(tmp, 'scripts', 'lib'), { recursive: true });
   fs.mkdirSync(path.join(tmp, 'data'), { recursive: true });
@@ -64,7 +80,9 @@ function runSite(script, { entries, files, team = TEAM, args = [] }) {
   fs.writeFileSync(path.join(tmp, 'data', 'team.json'), JSON.stringify({ team }));
   fs.writeFileSync(path.join(tmp, 'data', 'content-calendar.json'), JSON.stringify({ year1: entries }, null, 2));
   for (const [slug, md] of Object.entries(files)) fs.writeFileSync(path.join(tmp, 'src', 'blog', `${slug}.md`), md);
-  const run = spawnSync(process.execPath, [path.join(tmp, 'scripts', script), ...args], { encoding: 'utf8' });
+  const childEnv = { ...process.env, ...env };
+  if (!('BLOG_REVIEW_TOKEN_SECRET' in env)) delete childEnv.BLOG_REVIEW_TOKEN_SECRET;
+  const run = spawnSync(process.execPath, [path.join(tmp, 'scripts', script), ...args], { encoding: 'utf8', env: childEnv });
   const calendar = JSON.parse(fs.readFileSync(path.join(tmp, 'data', 'content-calendar.json'), 'utf8'));
   const read = (slug) => fs.readFileSync(path.join(tmp, 'src', 'blog', `${slug}.md`), 'utf8');
   return { tmp, run, calendar, read, entry: (slug) => calendar.year1.find((p) => p.slug === slug) };
@@ -75,7 +93,9 @@ describe('publish-scheduled-posts: silence and a matching approval', () => {
   const silentMd = post('test-silent-review');
   // A post published on silence that somehow carries a review line (an AI
   // edit, a hand edit): the line is removed, never published.
-  const smuggledMd = post('test-smuggled-review', `reviewer: ${REVIEWER.name}\nreviewer_slug: ${REVIEWER.slug}\nreviewer_title: Licensed Agent\nreviewed_date: 2025-12-01\n`);
+  // Including spellings the renderer reads as review keys too: a leading space
+  // and another case (generate-blog.js trims keys).
+  const smuggledMd = post('test-smuggled-review', `reviewer: ${REVIEWER.name}\n reviewer_slug: ${REVIEWER.slug}\nReviewer_Title: Licensed Agent\n\treviewed_date : 2025-12-01\n`);
   const approvedMd = post('test-approved-review');
 
   before(() => {
@@ -101,7 +121,11 @@ describe('publish-scheduled-posts: silence and a matching approval', () => {
     for (const slug of ['test-silent-review', 'test-smuggled-review']) {
       const meta = frontmatter(site.read(slug));
       for (const k of REVIEW_KEYS) assert.equal(meta[k], undefined, `${slug}: ${k} must not be stamped without an approval in SAGE`);
+      const keys = site.read(slug).split('\n---\n')[0].split('\n').map(frontMatterKey).filter(Boolean);
+      assert.deepEqual(keys.filter(isReviewerKey), [], `${slug}: no review key in any spelling survives`);
       assert.equal(meta.title, `SYNTHETIC ${slug}`);
+      assert.equal(site.entry(slug).credited_sha256, undefined);
+      assert.equal(site.entry(slug).credit_mac, undefined);
     }
     assert.match(site.run.stdout, /test-silent-review.*no reviewer credited|SYNTHETIC silent.*no reviewer credited/);
   });
@@ -112,6 +136,13 @@ describe('publish-scheduled-posts: silence and a matching approval', () => {
     assert.equal(meta.reviewer_slug, REVIEWER.slug);
     assert.equal(meta.reviewer_title, REVIEWER.title);
     assert.equal(meta.reviewed_date, '2025-12-23');
+  });
+
+  test('the credited publish records credited_sha256 of the exact bytes committed, and a credit_mac', () => {
+    const e = site.entry('test-approved-review');
+    assert.equal(e.credited_sha256, sha256Hex(fs.readFileSync(path.join(site.tmp, 'src', 'blog', 'test-approved-review.md'))));
+    assert.match(e.credit_mac, /^[A-Za-z0-9_-]{43}$/);
+    assert.deepEqual(creditCheck(e, fs.readFileSync(path.join(site.tmp, 'src', 'blog', 'test-approved-review.md')), { secret: SECRET }), { credit: true, reason: 'credited' });
   });
 });
 
@@ -125,12 +156,19 @@ describe('publish-scheduled-posts: an approval that no longer matches does not p
     ['team.json re-pointed the byline member\'s address', approved('test-bound', md), md, 'approval_reviewer_not_byline', [{ ...TEAM[0], email: 'test-other-staff@example.com' }]],
     ['the byline member is not licensed', approved('test-bound', md), md, 'approval_reviewer_not_byline', [{ ...TEAM[0], license_states: [] }]],
     ['the calendar byline names someone else', approved('test-bound', md, { reviewer: 'Test Someone Else' }), md, 'approval_reviewer_not_byline'],
+    // Typed by hand on the calendar (an admin or a merged PR): every field
+    // agrees with team.json and the file's hash, but SAGE never signed it.
+    ['a hand-typed approval with no approval_mac', approved('test-bound', md, { approval_mac: undefined }), md, 'approval_unsigned'],
+    ['an approval_mac made with another secret', approved('test-bound', md, { approval_mac: signApproval(approved('test-bound', md), `${SECRET}-other`) }), md, 'approval_unsigned'],
+    ['a signed approval whose date was edited afterwards', approved('test-bound', md, { approved_date: '2025-12-24' }), md, 'approval_unsigned'],
+    ['a signed approval moved to another slug', approved('test-bound', md, {}, {}), md, 'approval_unsigned', undefined, (e) => ({ ...e, approval_mac: approved('test-other-slug', md).approval_mac })],
   ];
-  for (const [label, entry, file, reason, team] of cases) {
+  for (const [label, entry0, file, reason, team, tamper] of cases) {
     test(label, () => {
+      const entry = tamper ? tamper(entry0) : entry0;
       const site = runSite('publish-scheduled-posts.js', { entries: [entry], files: { 'test-bound': file }, team });
       try {
-        assert.equal(site.run.status, 1, site.run.stdout);
+        assert.equal(site.run.status, 3, site.run.stdout);
         const e = site.entry('test-bound');
         assert.equal(e.status, 'error');
         assert.equal(e.error_reason, reason);
@@ -140,11 +178,45 @@ describe('publish-scheduled-posts: an approval that no longer matches does not p
         assert.equal(site.read('test-bound'), file);
         for (const k of REVIEW_KEYS) assert.equal(frontmatter(site.read('test-bound'))[k], undefined);
         assert.match(site.run.stdout, new RegExp(reason));
+        assert.equal(e.credited_sha256, undefined);
       } finally {
         fs.rmSync(site.tmp, { recursive: true, force: true });
       }
     });
   }
+
+  test('with no secret to verify SAGE\'s signature, an approved post is left alone (exit 2), not published and not errored', () => {
+    const site = runSite('publish-scheduled-posts.js', {
+      entries: [approved('test-bound', md), { slug: 'test-silent-ok', title: 'SYNTHETIC silent', publish_date: '2026-01-07', status: 'planned' }],
+      files: { 'test-bound': md, 'test-silent-ok': post('test-silent-ok') },
+      env: {},
+    });
+    try {
+      assert.equal(site.run.status, 2, site.run.stdout);
+      assert.equal(site.entry('test-bound').status, 'approved');
+      assert.equal(site.read('test-bound'), md);
+      // Silence does not need the secret: it publishes as usual.
+      assert.equal(site.entry('test-silent-ok').status, 'published');
+      assert.match(site.run.stdout, /BLOG_REVIEW_TOKEN_SECRET/);
+    } finally {
+      fs.rmSync(site.tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('an entry in error and a clean publish in one run: both are written, exit 3', () => {
+    const site = runSite('publish-scheduled-posts.js', {
+      entries: [approved('test-bound', md), { slug: 'test-silent-ok', title: 'SYNTHETIC silent', publish_date: '2026-01-07', status: 'planned' }],
+      files: { 'test-bound': `${md}\nChanged.\n`, 'test-silent-ok': post('test-silent-ok', 'reviewer: Someone\n') },
+    });
+    try {
+      assert.equal(site.run.status, 3, site.run.stdout);
+      assert.equal(site.entry('test-bound').status, 'error');
+      assert.equal(site.entry('test-silent-ok').status, 'published');
+      assert.equal(frontmatter(site.read('test-silent-ok')).reviewer, undefined);
+    } finally {
+      fs.rmSync(site.tmp, { recursive: true, force: true });
+    }
+  });
 
   test('the hash is of the raw bytes before the publisher rewrites date:, so a future date: still matches', () => {
     const future = post('test-future').replace('date: 2026-01-07', 'date: 2099-01-01');
@@ -176,6 +248,8 @@ describe('reconcile-calendar applies the same rule', () => {
     try {
       assert.equal(site.run.status, 1, site.run.stdout);
       assert.equal(site.entry('test-rc-changed').status, 'error');
+      assert.equal(site.entry('test-rc-good').credited_sha256, sha256Hex(fs.readFileSync(path.join(site.tmp, 'src', 'blog', 'test-rc-good.md'))));
+      assert.ok(site.entry('test-rc-good').credit_mac);
       assert.equal(site.entry('test-rc-changed').error_reason, 'approved_bytes_changed');
       assert.equal(site.entry('test-rc-silent').status, 'published');
       for (const k of REVIEW_KEYS) assert.equal(frontmatter(site.read('test-rc-silent'))[k], undefined);
@@ -194,13 +268,27 @@ describe('review-credit helpers', () => {
 
   test('a non-approved entry is never credited and never an error', () => {
     for (const status of ['planned', 'in-review', 'in-draft']) {
-      assert.deepEqual(approvalCheck({ ...approved('x', 'x'), status }, Buffer.from('x'), TEAM), { credit: false, error: null });
+      assert.deepEqual(approvalCheck({ ...approved('x', 'x'), status }, Buffer.from('x'), TEAM, { secret: SECRET }), { credit: false, error: null });
     }
   });
 
   test('stripReviewerFields touches the front matter only', () => {
     const md = `---\ntitle: T\nreviewer: A\nreviewed_by: A\nreviewer_title: X\n---\n\nreviewer: this line is body text\n`;
     assert.equal(stripReviewerFields(md), '---\ntitle: T\n---\n\nreviewer: this line is body text\n');
+  });
+
+  test('stripReviewerFields removes every spelling the renderer reads as a review key', () => {
+    // generate-blog.js parseFrontMatter takes the text before the first ':'
+    // and trims it, so all of these would have printed a byline.
+    const md = '---\ntitle: T\n reviewer: A\n\treviewer_slug: a\nREVIEWED_DATE: 2026-01-01\nreviewer_title : X\nreviewed_by:A\n---\nbody\n';
+    assert.equal(stripReviewerFields(md), '---\ntitle: T\n---\nbody\n');
+  });
+
+  test('stripReviewerFields reads the same front-matter block the renderer does', () => {
+    // A line starting "---x" does not close the renderer's block (it needs
+    // "\n---\n"), so the review line after it is still front matter.
+    const md = '---\ntitle: T\n---x: y\nreviewer: A\nreviewed_date: 2026-01-01\n---\nbody\n';
+    assert.equal(stripReviewerFields(md), '---\ntitle: T\n---x: y\n---\nbody\n');
   });
 
   test('applyReviewCredit replaces stale review lines rather than duplicating them', () => {

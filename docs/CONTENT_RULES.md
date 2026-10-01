@@ -25,7 +25,7 @@ These are the gates every new piece of content on thewayagency.com passes throug
 Every new blog post in `src/blog/` must include all of the following before it ships:
 
 - [ ] A specific Kentucky data point OR a named local landmark (KY DOI rule, FEMA flood zone, KY-44 corridor, Floyds Fork, etc.)
-- [ ] A named author with `author_slug` matching a `data/team.json` entry. The Article schema and "Reviewed by" byline both source from this.
+- [ ] A named author with `author_slug` matching a `data/team.json` entry. The Article schema's author sources from this. Do not write `reviewer:`/`reviewed_date:` lines: a "Reviewed by" byline renders only for the assigned reviewer's approval in SAGE, signed by SAGE and bound to the exact file (`scripts/lib/review-credit.js`), and hand-written review lines are ignored.
 - [ ] A real `description` line (150 to 160 chars) for the meta tag.
 - [ ] At least one internal link to a relevant priority hub (`/insurance/owensboro-ky.html`, `/insurance/mt-washington-ky.html`) or LOB page.
 - [ ] Honest scope claims. If we do not write a coverage type, the post acknowledges that and points to a specialist. Example: multi-peril crop insurance is referred out; we write farm packages only.
