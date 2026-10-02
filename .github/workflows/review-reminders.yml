@@ -12,7 +12,7 @@ name: Blog Review Reminders
 
 on:
   schedule:
-    # Daily at 13:00 UTC (9:00 AM Eastern): three hours after the Wed/Sat
+    # Daily at 13:00 UTC (9:00 AM EDT, 8:00 AM EST): three hours after the Wed/Sat
     # publish run (10:00 UTC), so on those days it finds that run's reminders
     # recorded and sends nothing twice.
     - cron: '0 13 * * *'
@@ -21,6 +21,13 @@ on:
 
 permissions:
   contents: write
+
+# One group for both workflows: each reads and commits the calendar, so an
+# overlap (a delayed publish run, a manual dispatch) would send a reviewer two
+# reminders the same day and turn one run red on the refused push.
+concurrency:
+  group: blog-review-calendar
+  cancel-in-progress: false
 
 jobs:
   final-review-reminders:

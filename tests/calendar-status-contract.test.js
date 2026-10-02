@@ -73,7 +73,22 @@ describe('publishable statuses', () => {
   });
 
   test('the frozen advisory exceptions: exact slug AND date, awaiting statuses only; back-dating anything else does not qualify', () => {
-    assert.equal(ADVISORY_GRANDFATHERED.length, 13);
+    // Pinned pair by pair: swapping one for a new post must fail here.
+    assert.deepEqual(ADVISORY_GRANDFATHERED.map((g) => [g.slug, g.publish_date]), [
+      ['insurance-restaurants-food-service-kentucky', '2026-08-08'],
+      ['final-expense-insurance-guide', '2026-08-12'],
+      ['insurance-options-frankfort-state-employees', '2026-08-15'],
+      ['professional-liability-who-needs-eo', '2026-08-19'],
+      ['surety-bonds-explained', '2026-08-22'],
+      ['group-health-insurance-small-business-kentucky', '2026-09-02'],
+      ['insurance-guide-electrical-contractors', '2026-09-05'],
+      ['community-involvement-2026', '2026-09-09'],
+      ['community-spotlight-local-businesses', '2026-09-12'],
+      ['how-to-compare-insurance-quotes', '2026-09-16'],
+      ['replacement-cost-vs-actual-cash-value', '2026-09-19'],
+      ['understanding-certificates-of-insurance', '2026-09-23'],
+      ['understanding-insurance-endorsements', '2026-09-26'],
+    ]);
     assert.ok(Object.isFrozen(ADVISORY_GRANDFATHERED));
     for (const g of ADVISORY_GRANDFATHERED) {
       assert.ok(Object.isFrozen(g));

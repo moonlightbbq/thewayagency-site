@@ -12,6 +12,13 @@ on:
 permissions:
   contents: write
 
+# One group for both workflows: each reads and commits the calendar, so an
+# overlap (a delayed publish run, a manual dispatch) would send a reviewer two
+# reminders the same day and turn one run red on the refused push.
+concurrency:
+  group: blog-review-calendar
+  cancel-in-progress: false
+
 jobs:
   review-and-publish:
     runs-on: ubuntu-latest
