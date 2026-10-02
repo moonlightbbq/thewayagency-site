@@ -318,3 +318,40 @@ describe('annuity and whole-life pages (TRUST-07)', () => {
     assert.ok(!RATE_RANGE.test(post));
   });
 });
+
+// ─── Inline-form lead disclosure on health pages (TRUST-01; spec 3.3.1-3.3.2) ─
+
+describe('inline quote form: the lead disclosure on every health page', () => {
+  const M = require('../scripts/lib/medicare-disclaimer');
+  const formOf = (html) => {
+    const m = html.match(/<form class="inline-quote-form"[\s\S]*?<\/form>/);
+    assert.ok(m, 'inline form present');
+    return m[0];
+  };
+
+  test('/health/medicare: the Medicare inline text, 14px, inside the form directly above the button', () => {
+    const form = formOf(productPage('medicare'));
+    const m = form.match(/<p class="form-disclosure" style="([^"]*)">([^<]*)<\/p>\s*<button type="submit">/);
+    assert.ok(m, 'disclosure directly above the button');
+    assert.match(m[1], /font-size:14px/);
+    assert.equal(visibleText(m[2]), M.leadDisclosureText(SITE_TPMO, { context: 'medicare', form: 'inline' }));
+    assert.ok(m[2].includes('This is a solicitation for insurance.'));
+    assert.ok(!productPage('medicare').includes('Currently we represent'), 'no TPMO statement while pending_owner');
+  });
+
+  test('each of the seven health pages carries it ("health insurance" outside Medicare); no other page does', () => {
+    const ctx = buildCtx();
+    assert.equal(ctx.products.health.length, 7);
+    for (const p of ctx.products.health) {
+      const form = formOf(pages.generateProductPage(p, 'Health Insurance', 'health', 'health', ctx));
+      const want = M.leadDisclosureText(SITE_TPMO, { context: p.id === 'medicare' ? 'medicare' : 'health', form: 'inline' });
+      assert.ok(visibleText(form).includes(want), p.id);
+    }
+    for (const id of ['auto', 'annuities', 'general-liability']) {
+      const html = Object.values(ctx.products).flat().some((p) => p.id === id) ? productPage(id, ctx) : null;
+      if (!html) continue;
+      assert.ok(!html.includes('form-disclosure') && !html.includes('solicitation for insurance'), id);
+      assert.ok(!html.includes('Currently we represent'), id);
+    }
+  });
+});

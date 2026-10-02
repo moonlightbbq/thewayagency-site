@@ -242,7 +242,7 @@ console.log(`  ✓ Generated ${carrierCount} carrier pages + index`);
 assets.copyRootFiles(ROOT, BUILD);
 
 // 8. Copy portal pages
-const portalPages = assets.copyPortalPages(SRC, BUILD, injectVersion);
+const portalPages = assets.copyPortalPages(SRC, BUILD, injectVersion, tpmo);
 
 // 8b. Generate llms.txt and llms-full.txt for LLM grounding
 require('./builders/llms').generate(BUILD, { agency: locations.agency, office, landingData, entity });
