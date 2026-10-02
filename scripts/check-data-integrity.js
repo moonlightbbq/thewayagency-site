@@ -234,6 +234,29 @@ if (healthFacts) {
   if (problems.length === 0) pass(`health-facts.json: ${(healthFacts.facts || []).length} facts; every token in data/content-*.json resolves`);
 }
 
+// The health compliance guard's copy rules over the data the pages are built
+// from (scripts/check-health-compliance.js scanText), so copy that no page
+// renders today (knowledge-base entries beyond the five FAQs a page shows) is
+// covered too.
+{
+  const { scanText } = require('./check-health-compliance');
+  let scanned = 0;
+  let found = 0;
+  const visit = (v, file, where) => {
+    if (typeof v === 'string') {
+      scanned++;
+      const { problems: ps, warnings: ws } = scanText(v, { file: `${file} ${where}`, tpmo });
+      ps.forEach((p) => { error(p); found++; });
+      ws.forEach((w) => warn(w));
+    } else if (Array.isArray(v)) v.forEach((x, i) => visit(x, file, `${where}[${i}]`));
+    else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) visit(x, file, where ? `${where}.${k}` : k);
+  };
+  for (const f of fs.readdirSync(DATA).filter((n) => /^content-.*\.json$/.test(n) || n === 'knowledge-base.json')) {
+    try { visit(JSON.parse(fs.readFileSync(path.join(DATA, f), 'utf8')), `data/${f}`, ''); } catch { /* reported by its own check */ }
+  }
+  if (found === 0) pass(`Health compliance copy rules: ${scanned} strings in data/content-*.json and knowledge-base.json clean`);
+}
+
 // content-calendar.json
 const calendar = loadJson('content-calendar.json');
 if (calendar) {

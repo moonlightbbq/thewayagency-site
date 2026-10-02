@@ -289,6 +289,21 @@ console.log('  ✓ Legal pages clean (em dashes / anchors)');
   console.log('  ✓ Entity schema: one #organization entity, no invented locations, no review markup');
 }
 
+// 11c. Guard: Medicare and health compliance (TRUST-01, TRUST-04, TRUST-07,
+//      BLOG-02): stale CMS/ACA figures, agency Medicare Advantage / Part D
+//      comparison claims, guaranty-association and undated annuity rates,
+//      1-800-MEDICARE as a tel: link, unresolved {{fact:...}} tokens.
+//      scripts/check-health-compliance.js lists every rule.
+const { checkHealthCompliance } = require('./check-health-compliance');
+const healthGuard = checkHealthCompliance(BUILD, { tpmo });
+healthGuard.warnings.forEach((w) => console.log('  ! ' + w));
+if (healthGuard.problems.length) {
+  console.error('\n✗ Health compliance guard failed:');
+  healthGuard.problems.forEach((p) => console.error('  - ' + p));
+  throw new Error(`Health compliance guard failed (${healthGuard.problems.length} issue(s)).`);
+}
+console.log('  ✓ Health compliance guard clean (Medicare/ACA figures, MA/PDP claims, annuity wording, Medicare numbers)');
+
 // 11b. Guard: the out-of-area decline must stay warm, silent about commercial,
 //      and gated on a state we actually collect before paging a producer.
 //
