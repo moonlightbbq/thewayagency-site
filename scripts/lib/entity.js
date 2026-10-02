@@ -102,7 +102,7 @@ function agencyNode({ agency, office, entity }) {
     name: agency.dba,
     legalName: agency.legal_name,
     url: HOME_URL,
-    logo: { '@type': 'ImageObject', url: LOGO_URL, width: 631, height: 631 },
+    logo: LOGO_URL, // a URL (Google's Organization doc); an ImageObject's width/height need a QuantitativeValue
     telephone,
     email: office.email,
     areaServed,
