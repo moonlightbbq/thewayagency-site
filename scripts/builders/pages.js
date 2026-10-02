@@ -1093,7 +1093,9 @@ ${linkedProducts.map(p => `          <a href="${p.url}" class="card" style="text
           ${carrier.strengths.map(s => `<li>${s}</li>`).join('\n          ')}
         </ul>` : '';
 
-  const ratingBadge = carrier.am_best_rating ? `<p style="margin-top:var(--space-lg);"><strong>AM Best Rating:</strong> ${carrier.am_best_rating}</p>` : '';
+  // No rating is printed until it carries an as-of date and a source (TRUST-05:
+  // GUARD was shown A++ against its own A+, and no rating was dated).
+  const ratingBadge = '';
 
   const breadcrumbs = renderBreadcrumbs([
     { name: 'Home', url: '/' },
@@ -1161,6 +1163,13 @@ ${renderScripts()}
 
 // ─── Carriers Index Page ────────────────────────
 
+// First sentence without cutting "U.S." (TRUST-05): it ends at . ! or ? followed
+// by whitespace and a capital letter, or by the end of the text.
+function firstSentence(t) {
+  const m = String(t || '').match(/^.*?[.!?](?=\s+[A-Z]|\s*$)/);
+  return m ? m[0] : String(t || '');
+}
+
 function generateCarriersIndex(carriers, ctx) {
   const { office, renderNav, renderFooter, renderScripts } = ctx;
   const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
@@ -1182,16 +1191,16 @@ function generateCarriersIndex(carriers, ctx) {
   const featured = allCarriers.filter(c => c.description);
   const standard = allCarriers.filter(c => !c.description);
 
+  // Ratings are not printed (see generateCarrierPage); the card text is the
+  // description's first sentence without cutting "U.S." short.
   const featuredCards = featured.map(c => `          <a href="/carriers/${c.slug}.html" class="card" style="text-decoration:none;">
             <h3 class="card__title" style="font-size:var(--text-xl);">${c.name}</h3>
-            ${c.am_best_rating ? `<p style="font-size:var(--text-xs);color:var(--green);font-weight:600;margin-bottom:var(--space-sm);">AM Best: ${c.am_best_rating}</p>` : ''}
-            <p class="card__text">${c.description.split('.')[0]}.</p>
+            <p class="card__text">${firstSentence(c.description)}</p>
             <span class="card__link">Learn more ${arrowSvg}</span>
           </a>`).join('\n');
 
   const standardList = standard.map(c => {
-    const rating = c.am_best_rating ? ` <span style="color:var(--green);font-size:var(--text-xs);font-weight:600;">(${c.am_best_rating})</span>` : '';
-    return `<li style="padding:var(--space-sm) 0;border-bottom:1px solid var(--border);">${c.name}${rating}</li>`;
+    return `<li style="padding:var(--space-sm) 0;border-bottom:1px solid var(--border);">${c.name}</li>`;
   }).join('\n            ');
 
   return `<!DOCTYPE html>
