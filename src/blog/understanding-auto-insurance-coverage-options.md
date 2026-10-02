@@ -2,18 +2,12 @@
 title: Understanding Your Auto Insurance Coverage Options
 slug: understanding-auto-insurance-coverage-options
 description: Liability, collision, comprehensive, PIP, uninsured motorist — auto insurance has a lot of parts. Here's what each one does and how to choose the right combination.
-author: Sheilia Royal
-author_title: Agency Principal / Licensed Agent
-author_slug: sheilia-royal
-reviewed_date: 2026-07-15
+author: The Way Agency
 date: 2026-08-01
 modified: 2026-08-01
 reading_time: 7 min read
 related_page: /personal/auto.html
 tags: auto insurance, coverage types, liability, collision, comprehensive, PIP, uninsured motorist
-reviewer: Sheilia Royal
-reviewer_slug: sheilia-royal
-reviewer_title: Agency Principal / Licensed Agent
 ---
 
 Auto insurance is not a single product. It is a collection of separate coverages, each designed to protect you from a different type of risk. The confusion starts when you see a quote with six or seven line items and abbreviations you have never seen before.

@@ -2,18 +2,12 @@
 title: "Commercial Property Insurance: Protecting Your Business Assets"
 slug: commercial-property-insurance-guide
 description: Your building, equipment, inventory, and income are all at risk. Learn what commercial property insurance covers, what it costs, and what most policies miss.
-author: Kelly McCallister
-author_title: Client Care Specialist
-author_slug: kelly-mccallister
-reviewed_date: 2026-07-15
+author: The Way Agency
 date: 2026-07-25
 modified: 2026-07-25
 reading_time: 7 min read
 related_page: /commercial/commercial-property.html
 tags: commercial property insurance, business insurance, BOP, equipment coverage
-reviewer: Kelly McCallister
-reviewer_slug: kelly-mccallister
-reviewer_title: Client Care Specialist
 ---
 
 If you own a business, you have property at risk. Your building, your equipment, your inventory, your signage, your computers — all of it can be damaged or destroyed by fire, severe weather, theft, or vandalism. Commercial property insurance is the policy that pays to repair or replace those assets so you can keep operating.
