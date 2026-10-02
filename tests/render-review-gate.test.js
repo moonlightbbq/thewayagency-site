@@ -494,7 +494,10 @@ describe('the page template encodes every front-matter value (generateBlogPost, 
   test('contrast: a credit (what renderDecision passes only for a signed approval) prints the byline and reviewedBy', () => {
     const html = render({ ...base, reviewer: 'Test Reviewer C', reviewer_slug: LICENSED_SLUG, reviewer_title: 'Licensed Test Agent', reviewed_date: '2025-12-23' });
     assert.match(bylineOf(html), new RegExp(`<span>Reviewed by <a href="/about/team.html#${LICENSED_SLUG}"[^>]*>Test Reviewer C</a>, Licensed Test Agent on December 23, 2025</span>`));
-    assert.deepEqual(ldBlocks(html)[0].reviewedBy, { '@type': 'Person', name: 'Test Reviewer C', url: `https://www.thewayagency.com/about/team.html#${LICENSED_SLUG}` });
+    // reviewedBy is a WebPage property (schema.org): it sits on the Article's mainEntityOfPage, never on the Article.
+    assert.equal(ldBlocks(html)[0].reviewedBy, undefined);
+    assert.deepEqual(ldBlocks(html)[0].mainEntityOfPage.reviewedBy, { '@type': 'Person', name: 'Test Reviewer C', '@id': `https://www.thewayagency.com/about/team#${LICENSED_SLUG}`, url: `https://www.thewayagency.com/about/team#${LICENSED_SLUG}` });
+    assert.equal(ldBlocks(html)[0].mainEntityOfPage.lastReviewed, '2025-12-23');
   });
 });
 
@@ -743,7 +746,7 @@ describe('fix round 4: the template prints the byline from team.json, whatever t
       const html = render(meta);
       assert.match(bylineOf(html), new RegExp(`>${AUTHOR.name}</a>, ${AUTHOR.title}, The Way Agency</span>`), JSON.stringify(meta));
       assert.ok(!html.includes('Someone Else') && !html.includes('Client Care Specialist'), JSON.stringify(meta));
-      assert.deepEqual(ldBlocks(html)[0].author, { '@type': 'Person', name: AUTHOR.name, jobTitle: AUTHOR.title, url: `https://www.thewayagency.com/about/team.html#${AUTHOR.slug}` });
+      assert.deepEqual(ldBlocks(html)[0].author, { '@type': 'Person', '@id': `https://www.thewayagency.com/about/team#${AUTHOR.slug}`, name: AUTHOR.name, jobTitle: AUTHOR.title, url: `https://www.thewayagency.com/about/team#${AUTHOR.slug}` });
     }
     // The slug decides: the reviewer as AUTHOR is a "Written by", never a review credit.
     const asAuthor = render({ ...base, author_slug: REVIEWER.slug, author: AUTHOR.name });

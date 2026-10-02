@@ -30,6 +30,7 @@ const { ORG_ID, agencyNode, orgRef } = require('../scripts/lib/entity');
 const { createSchemaInjector, _readPage } = require('../scripts/builders/schema-generator');
 const pages = require('../scripts/builders/pages');
 const shared = require('../scripts/shared-templates');
+const { generateBlogPost, markdownToHtml, parseFrontMatter } = require('../scripts/generate-blog');
 
 const locations = load('locations.json');
 const entity = load('entity.json');
@@ -264,7 +265,7 @@ describe('hand-made pages', () => {
         const f = path.join(d, e.name);
         if (e.isDirectory()) { walk(f); continue; }
         const rel = path.relative(path.join(ROOT, 'src', 'pages'), f).split(path.sep).join('/');
-        if (!f.endsWith('.html') || rel === 'index.html' || rel.startsWith('blog/')) continue;
+        if (!f.endsWith('.html') || rel === 'index.html') continue;
         problems.push(...entitySchemaProblems(fs.readFileSync(f, 'utf8'), rel, OPTS));
         noLocationClaims(fs.readFileSync(f, 'utf8'), rel);
       }
@@ -285,5 +286,67 @@ describe('hand-made pages', () => {
       assert.ok(html.includes(`id="${slug}"`), `${slug}: the fragment names an element on the page`);
       assert.deepEqual(p.worksFor, orgRef());
     }
+  });
+});
+
+describe('blog Article markup (SCHEMA-04)', () => {
+  const TEAM_URL = 'https://www.thewayagency.com/about/team#';
+  const teamHtml = fs.readFileSync(path.join(ROOT, 'src', 'pages', 'about', 'team.html'), 'utf8');
+  test('the frozen hand-made posts: @id, url and mainEntityOfPage are the canonical URL, publisher by @id, one person as author, full dates', () => {
+    const dir = path.join(ROOT, 'src', 'pages', 'blog');
+    const posts = fs.readdirSync(dir).filter((x) => x.endsWith('.html') && x !== 'index.html');
+    assert.equal(posts.length, 12);
+    for (const f of posts) {
+      const html = fs.readFileSync(path.join(dir, f), 'utf8');
+      const url = `https://www.thewayagency.com/blog/${f.replace(/\.html$/, '')}`;
+      assert.ok(html.includes(`<link rel="canonical" href="${url}">`), f);
+      const a = tops(html)[0];
+      assert.equal(a['@type'], 'Article', f);
+      assert.equal(a['@id'], `${url}#article`, f);
+      assert.equal(a.url, url, f);
+      assert.deepEqual(a.mainEntityOfPage, { '@type': 'WebPage', '@id': url, url }, f);
+      assert.deepEqual(a.publisher, orgRef(), f);
+      assert.ok(a.author.url.startsWith(TEAM_URL) && a.author['@id'] === a.author.url, f);
+      assert.ok(teamHtml.includes(`id="${a.author.url.slice(TEAM_URL.length)}"`), `${f}: the author fragment names a team card`);
+      assert.match(a.datePublished, /^\d{4}-\d{2}-\d{2}$/, f);
+      // No real date of the last body edit is known (entity-schema D5): dateModified = datePublished, no visible "Last updated".
+      assert.equal(a.dateModified, a.datePublished, f);
+      assert.ok(!/Last updated: March 2026/.test(html), f);
+      assert.equal(a.image, undefined, f);
+    }
+  });
+  test('every markdown post carries date: and modified: as YYYY-MM-DD', () => {
+    const dir = path.join(ROOT, 'src', 'blog');
+    for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.md') && x !== 'README.md')) {
+      const { meta } = parseFrontMatter(fs.readFileSync(path.join(dir, f), 'utf8'));
+      assert.match(String(meta.date), /^\d{4}-\d{2}-\d{2}$/, `${f} date`);
+      if (meta.modified !== undefined) assert.match(String(meta.modified), /^\d{4}-\d{2}-\d{2}$/, `${f} modified`);
+    }
+  });
+  test('a generated post: Article first, linked to its page, publisher by @id, author IRI identifies the person, no image without front matter', () => {
+    const team = [{ name: 'Test Author Q', slug: 'test-author-q', title: 'Licensed Test Agent' }];
+    const body = markdownToHtml(Array.from({ length: 240 }, (_, i) => `word${i}`).join(' '));
+    for (const meta of [
+      { title: 'SYNTHETIC t', slug: 'test-entity', description: 'd', author_slug: 'test-author-q', date: '2026-01-07' },
+      { title: 'SYNTHETIC t', slug: 'test-entity', description: 'd', date: '2026-01-07', modified: '2026-02-03' },
+    ]) {
+      const html = generateBlogPost(meta, body, [], { team });
+      clean(html, 'blog/test-entity.html');
+      const a = tops(html)[0];
+      assert.equal(a['@type'], 'Article');
+      assert.equal(a['@id'], 'https://www.thewayagency.com/blog/test-entity#article');
+      assert.deepEqual(a.mainEntityOfPage, { '@type': 'WebPage', '@id': 'https://www.thewayagency.com/blog/test-entity', url: 'https://www.thewayagency.com/blog/test-entity' });
+      assert.deepEqual(a.publisher, orgRef());
+      assert.doesNotMatch(a.author.url, /\.html/);
+      if (meta.author_slug) assert.equal(a.author['@id'], `${TEAM_URL}test-author-q`);
+      else assert.deepEqual(a.author, orgRef());
+      assert.equal(a.dateModified, meta.modified || meta.date);
+      assert.equal(a.image, undefined, 'no image without a front-matter image (never the logo)');
+      assert.equal(a.reviewedBy, undefined);
+    }
+  });
+  test('a front-matter image becomes the Article image', () => {
+    const html = generateBlogPost({ title: 'SYNTHETIC t', slug: 'test-img', description: 'd', date: '2026-01-07', image: '/src/assets/images/blog/test.jpg' }, markdownToHtml('x'), [], { team: [] });
+    assert.deepEqual(tops(html)[0].image, ['https://www.thewayagency.com/src/assets/images/blog/test.jpg']);
   });
 });

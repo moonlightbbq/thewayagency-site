@@ -46,6 +46,8 @@ const fs = require('fs');
 const path = require('path');
 
 const contentGuard = require('./lib/blog-content-guard');
+// The agency reference and the canonical page and person IRIs (SCHEMA-02, SCHEMA-04).
+const { orgRef, teamMemberUrl, blogPostUrl, SITE_URL } = require('./lib/entity');
 
 const ROOT = path.resolve(__dirname, '..');
 const BLOG_SRC = path.join(ROOT, 'src', 'blog');
@@ -419,29 +421,38 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
   const articleLd = {
     "@context": "https://schema.org",
     "@type": "Article",
+    "@id": `${blogPostUrl(slug)}#article`,
+    "url": blogPostUrl(slug),
+    // schema.org defines reviewedBy and lastReviewed on WebPage only, so a
+    // signed review credit sits on the page the article is the main entity of.
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": blogPostUrl(slug),
+      "url": blogPostUrl(slug),
+      ...(hasReview ? {
+        "reviewedBy": {
+          "@type": "Person",
+          "name": String(reviewerName),
+          ...(reviewerSlug ? { "@id": teamMemberUrl(reviewerSlug), "url": teamMemberUrl(reviewerSlug) } : {}),
+        },
+        "lastReviewed": String(meta.reviewed_date),
+      } : {}),
+    },
     "headline": String(meta.title || ''),
     "author": byline ? {
       "@type": "Person",
+      "@id": teamMemberUrl(authorSlug),
       "name": byline.name,
       ...(byline.title ? { "jobTitle": byline.title } : {}),
-      "url": `https://www.thewayagency.com/about/team.html#${authorSlug}`,
+      "url": teamMemberUrl(authorSlug),
     } : {
       "@type": "Organization",
+      ...orgRef(),
       "name": contentGuard.AGENCY_AUTHOR,
-      "url": "https://www.thewayagency.com",
     },
-    ...(hasReview ? {
-      "reviewedBy": {
-        "@type": "Person",
-        "name": String(reviewerName),
-        ...(reviewerSlug ? { "url": `https://www.thewayagency.com/about/team.html#${reviewerSlug}` } : {}),
-      },
-    } : {}),
-    "publisher": {
-      "@type": "InsuranceAgency",
-      "name": "The Way Agency",
-      "url": "https://www.thewayagency.com",
-    },
+    "publisher": orgRef(),
+    // Only an image the post itself carries (front matter), never the logo.
+    ...(featuredImage ? { "image": [`${SITE_URL}${featuredImage}`] } : {}),
     "datePublished": String(meta.date || ''),
     "dateModified": String(meta.modified || meta.date || ''),
     "description": String(meta.description || ''),
@@ -659,11 +670,7 @@ function generateBlogIndex(allPosts, postsMeta) {
     "name": "Insurance Blog | Tips & Insights",
     "url": "https://www.thewayagency.com/blog/",
     "description": "Insurance insights, tips, and Kentucky-specific guidance from The Way Agency team.",
-    "publisher": {
-      "@type": "Organization",
-      "name": "The Way Agency",
-      "url": "https://www.thewayagency.com"
-    }
+    "publisher": ${ldJson(orgRef())}
   }
   </script>
 ${renderHead_GTM()}

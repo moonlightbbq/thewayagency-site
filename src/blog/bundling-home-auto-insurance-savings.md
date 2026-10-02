@@ -6,7 +6,7 @@ author: Audrey Lillpop
 author_slug: audrey-lillpop
 author_title: Licensed Agent
 date: 2026-03-27
-modified: 2026-03-27
+modified: 2026-05-16
 category: personal
 tags: [bundling, home-insurance, auto-insurance, savings, kentucky]
 status: published
