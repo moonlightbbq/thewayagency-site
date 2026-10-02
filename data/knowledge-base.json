@@ -1228,7 +1228,7 @@
     {
       "id": "medicare-cost",
       "question": "How much does Medicare cost?",
-      "answer": "Most people pay $0 for Part A (hospital). Part B costs $202.90 a month in 2026 (standard premium) for most enrollees, with higher-income individuals paying more. Medicare Advantage plans can have $0 premiums with copays at point of service. We help compare total out-of-pocket costs across all options.",
+      "answer": "Most people pay $0 for Part A (hospital). Part B costs $202.90 a month in 2026 (standard premium) for most enrollees, with higher-income individuals paying more. Medicare Advantage plans can have $0 premiums with copays at point of service. A licensed agent can walk you through total costs, not just premiums.",
       "category": "health",
       "product": "medicare",
       "related_products": [

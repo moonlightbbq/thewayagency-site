@@ -91,7 +91,7 @@ You have solid local resources available — take advantage of them.
 
 Here is something a lot of people do not realize: working with an independent insurance agent to navigate Medicare costs you nothing. We are compensated by the insurance carriers, not by you. Our service is free.
 
-As an independent agency, we are not locked into one company. We work with multiple carriers, which means we can show you Medicare Supplement plans, Medicare Advantage options, and Part D plans side by side and help you find the one that actually fits your situation — your doctors, your medications, your budget.
+A licensed agent can review your Medicare options with you.
 
 We sit down with you, walk through your options, answer your questions, and help you enroll when you are ready. No pressure, no hard sell. Just straightforward guidance from someone who knows these plans inside and out.
 
