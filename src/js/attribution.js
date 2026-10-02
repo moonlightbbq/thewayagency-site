@@ -251,6 +251,21 @@
     _log('enhanced_conversion', { email: '***', phone: '***' });
   }
 
+  // ─── Purge pre-fix intake drafts (CONV-08, owner decision D11) ───────
+  // Drafts written before the retention change kept name, email, phone,
+  // address, date of birth and health answers in localStorage for 7 days.
+  // Every page removes any intake draft that is not the current version (v2,
+  // allowlisted fields only) or is older than 24 hours, so an old draft does
+  // not wait for the next /intake/ visit. Keep in step with src/intake.html.
+  (function purgeStaleIntakeDraft() {
+    try {
+      var raw = localStorage.getItem('twa_intake_draft');
+      if (!raw) return;
+      var d = JSON.parse(raw);
+      if (!d || d.v !== 2 || !(Date.now() - d.savedAt <= 24 * 60 * 60 * 1000)) localStorage.removeItem('twa_intake_draft');
+    } catch (e) { try { localStorage.removeItem('twa_intake_draft'); } catch (e2) { /* storage blocked */ } }
+  })();
+
   window.TWA = {
     setCookie: setCookie,
     getCookie: getCookie,

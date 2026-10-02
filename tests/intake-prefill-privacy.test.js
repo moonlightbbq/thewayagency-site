@@ -145,7 +145,8 @@ describe('a legacy hand-off URL is scrubbed before anything reads it', () => {
 
 describe('the inline-form hand-off (clean URL plus a sessionStorage stash)', () => {
   const CLEAN = 'https://www.thewayagency.com/intake/?product=auto&line=personal&src=inline';
-  const DRAFT = JSON.stringify({ fields: { i_state: 'KY' }, products: ['homeowners'], vehicles: [], step: 2, hoSameAddr: true, savedAt: Date.now() - 60 * 1000 });
+  // A cross-visit draft in the current format (v2: allowlisted fields only).
+  const DRAFT = JSON.stringify({ v: 2, fields: { i_state: 'KY' }, products: ['homeowners'], vehicles: [], step: 2, hoSameAddr: true, savedAt: Date.now() - 60 * 1000 });
 
   test('fields are prefilled, and an older draft does not raise the resume toast', async () => {
     const w = await loadIntake(CLEAN, {

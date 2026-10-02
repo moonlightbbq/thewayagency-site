@@ -1997,6 +1997,10 @@ function sanitizePhone(val) {
     }
     setVal('i_email', sanitizeEmail(pre.email));
     setVal('i_phone', sanitizePhone(pre.phone));
+    // A same-tab reload keeps the hand-off: it lands in this tab's session draft
+    // only (CONV-08). Deferred because the DRAFT_* consts are declared further
+    // down this script.
+    setTimeout(() => { try { saveDraft(); } catch (e) {} }, 0);
   }
 
   // Geo context (from city/industry pages)
@@ -2239,6 +2243,9 @@ async function trackPartial(notify) {
 
     if (data.sessionId) {
       sessionId = data.sessionId;
+      // Keep the SAGE session in this tab's draft, so a reload right after
+      // Continue resumes the same partial instead of starting a new one.
+      scheduleDraftSave();
       contactTracked = true;
       // Start polling for agent takeover
       if (!pollTimer) {
@@ -3766,9 +3773,20 @@ document.addEventListener('keydown', (e) => {
   toggleQCard(head);
 });
 
-// ── Form Auto-Save (localStorage) ────────────────────────────────────────────
+// ── Form Auto-Save ───────────────────────────────────────────────────────────
+// Two stores (CONV-08, owner decision pii-and-privacy D11):
+//  - sessionStorage[DRAFT_SESSION_KEY]: the full draft, identity and the SAGE
+//    sessionId included, for this tab only. A reload resumes it and keeps the
+//    SAGE session, so SAGE does not page a producer again.
+//  - localStorage[DRAFT_KEY]: the cross-visit draft. Only the non-identifying
+//    fields in DRAFT_PERSIST_FIELD_IDS, products, vehicles and the step, kept at
+//    most 24 hours. It used to hold name, email, phone, address, date of birth,
+//    notes and health answers for 7 days, readable by the next user of a shared
+//    device. src/js/attribution.js purges drafts in the old format on any page.
 const DRAFT_KEY = 'twa_intake_draft';
-const DRAFT_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
+const DRAFT_SESSION_KEY = 'twa_intake_draft_s';
+const DRAFT_VERSION = 2;
+const DRAFT_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 
 // Fields to save from step 1 and step 4
 const DRAFT_FIELD_IDS = [
@@ -3793,6 +3811,27 @@ const DRAFT_FIELD_IDS = [
   ...SCHEMA_FIELD_IDS, 'i_fl_zone',
 ];
 
+// The ONLY fields the cross-visit (localStorage) draft may keep: non-identifying
+// selections. An allowlist, so a new field stays in the tab-only store until
+// someone decides it is safe to keep across visits (fails safe). Never add name,
+// email, phone, date of birth, any address, city or ZIP, i_notes, i_other_desc,
+// i_biz_name, i_umb_assets, or any i_li_, i_med_, i_mcd_, i_ih_, i_fh_, i_gh_,
+// i_sh_, i_dv_, i_ann_ or i_dis_ field (tests/intake-draft-privacy.test.js).
+const DRAFT_PERSIST_FIELD_IDS = ['i_state', 'i_current_carrier', 'i_policy_expiry', 'i_ho_value', 'i_ho_yearbuilt',
+  'i_umb_limit', 'i_umb_drivers', 'i_fl_foundation', 'i_fl_claims', 'i_fl_zone', 'i_rent_coverage', 'i_rent_type',
+  'i_rent_highvalue', 'i_mc_year', 'i_mc_make', 'i_mc_model', 'i_boat_year', 'i_boat_make', 'i_boat_length',
+  'i_boat_type', 'i_rv_year', 'i_rv_make', 'i_rv_model', 'i_rv_type', 'i_bop_ownlease', 'i_df_use', 'i_df_value',
+  'i_cgl_limit', 'i_ca_numveh', 'i_ca_vehtype', 'i_wc_payroll', 'i_eo_profession', 'i_fr_type', 'i_fr_acres',
+  'i_bond_type', 'i_bond_amount', 'i_br_projtype', 'i_br_value', 'i_biz_type', 'i_biz_employees', 'i_biz_years',
+  'i_biz_revenue', 'i_cyber_revenue', 'i_cyber_records', 'i_cyber_priorbreach', 'i_eq_proptype',
+  'i_eq_construction', 'i_eq_yearbuilt', 'i_pet_type', 'i_pet_count', 'i_pet_age', 'i_cp_ownlease', 'i_cp_type',
+  'i_cp_value', 'i_se_type', 'i_se_date', 'i_se_attendance', 'i_se_alcohol'];
+function persistableFields(fields) {
+  const out = {};
+  for (const id of DRAFT_PERSIST_FIELD_IDS) if (fields && fields[id]) out[id] = fields[id];
+  return out;
+}
+
 function collectDraft() {
   const fields = {};
   for (const id of DRAFT_FIELD_IDS) {
@@ -3808,11 +3847,13 @@ function collectDraft() {
     if (yr || mk || md) vehicles.push({ year: yr, make: mk, model: md });
   });
   return {
+    v: DRAFT_VERSION,
     fields,
     products: [...selectedProducts],
     vehicles,
     step: currentStep,
     hoSameAddr,
+    sessionId: sessionId || null,
     savedAt: Date.now(),
   };
 }
@@ -3822,8 +3863,19 @@ function saveDraft() {
   if (_submitted) return;
   const draft = collectDraft();
   if (!Object.keys(draft.fields).length && !draft.products.length) return;
+  let saved = false;
+  // Full draft, identity and SAGE session included: this tab only.
+  try { sessionStorage.setItem(DRAFT_SESSION_KEY, JSON.stringify(draft)); saved = true; } catch (e) { /* unavailable */ }
+  // Cross-visit draft: allowlisted selections only, never identity.
   try {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    const local = {
+      v: DRAFT_VERSION, fields: persistableFields(draft.fields), products: draft.products, vehicles: draft.vehicles,
+      step: Math.min(draft.step || 1, 2), hoSameAddr: draft.hoSameAddr, savedAt: draft.savedAt,
+    };
+    if (Object.keys(local.fields).length || local.products.length) { localStorage.setItem(DRAFT_KEY, JSON.stringify(local)); saved = true; }
+    else localStorage.removeItem(DRAFT_KEY);
+  } catch (e) { /* localStorage full or unavailable */ }
+  if (saved) {
     // Show "Draft saved" indicator briefly
     const indicator = document.getElementById('draft-saved-indicator');
     if (indicator) {
@@ -3831,23 +3883,36 @@ function saveDraft() {
       clearTimeout(indicator._hideTimer);
       indicator._hideTimer = setTimeout(() => indicator.classList.remove('show'), 2000);
     }
-  } catch (e) { /* localStorage full or unavailable */ }
+  }
 }
 
 function clearDraft() {
   try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+  try { sessionStorage.removeItem(DRAFT_SESSION_KEY); } catch (e) {}
 }
 
+// Reads one store; a draft of another version, older than DRAFT_MAX_AGE, or
+// with nothing in it is removed, not returned.
+function readDraftFrom(getStore, key, local) {
+  let store = null, raw = null;
+  try { store = getStore(); raw = store.getItem(key); } catch (e) { return null; }
+  if (!raw) return null;
+  const drop = () => { try { store.removeItem(key); } catch (e) {} return null; };
+  let draft = null;
+  try { draft = JSON.parse(raw); } catch (e) { return drop(); }
+  if (!draft || draft.v !== DRAFT_VERSION || typeof draft.savedAt !== 'number' || !(Date.now() - draft.savedAt <= DRAFT_MAX_AGE)) return drop();
+  if (!draft.fields || typeof draft.fields !== 'object') return drop();
+  // Defence in depth: whatever wrote it, a cross-visit draft restores only allowlisted fields.
+  if (local) { draft.fields = persistableFields(draft.fields); draft.sessionId = null; }
+  // Only resume if there's meaningful data
+  if (!Object.keys(draft.fields).length && !(Array.isArray(draft.products) && draft.products.length)) return drop();
+  return draft;
+}
+
+// This tab's full draft first, then the cross-visit one.
 function loadDraft() {
-  try {
-    const raw = localStorage.getItem(DRAFT_KEY);
-    if (!raw) return null;
-    const draft = JSON.parse(raw);
-    if (Date.now() - draft.savedAt > DRAFT_MAX_AGE) { clearDraft(); return null; }
-    // Only resume if there's meaningful data (at least a name or product)
-    if (!Object.keys(draft.fields).length && !draft.products?.length) { clearDraft(); return null; }
-    return draft;
-  } catch (e) { return null; }
+  return readDraftFrom(() => sessionStorage, DRAFT_SESSION_KEY, false)
+    || readDraftFrom(() => localStorage, DRAFT_KEY, true);
 }
 
 function restoreDraft(draft) {
@@ -3879,8 +3944,13 @@ function restoreDraft(draft) {
   window._draftFields = draft.fields;
   // Store vehicles to restore when step 4 renders
   if (draft.vehicles?.length) window._draftVehicles = draft.vehicles;
-  // Navigate to the step the user was on (but cap at step 2 — step 3/4 have dynamic content)
-  const targetStep = Math.min(draft.step || 1, 2);
+  // Same-tab draft: carry the SAGE session on, so autosaves update the same
+  // partial and SAGE does not page a producer again for this person.
+  if (draft.sessionId) { sessionId = draft.sessionId; contactTracked = true; contactValidated = true; }
+  // A cross-visit draft has no contact details, so it resumes at step 1.
+  // A same-tab draft goes back to the step the user was on, capped at step 2
+  // (steps 3 and 4 have dynamic content).
+  const targetStep = draft.sessionId ? Math.min(draft.step || 1, 2) : 1;
   if (targetStep > 1) showStep(targetStep);
   // A resumed draft carries both a state and a cart, so re-run the decision.
   evaluateStateEligibility();
