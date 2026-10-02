@@ -55,7 +55,7 @@ Service-area business. No public storefront. We meet clients by phone, video, em
 
 - Phone or text: ${phone}
 - Email: ${email}
-- Mailing: ${mailing}
+- Mailing address (mail only; no walk-in office): ${mailing}
 
 ## Canonical pages
 

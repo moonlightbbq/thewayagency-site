@@ -2,7 +2,7 @@
   "pages": {
     "/": {
       "title": "The Way Agency | Independent Insurance in Owensboro, KY",
-      "description": "The Way Agency is an independent insurance agency serving Kentucky, Indiana, and Tennessee since 1998. We represent top-rated carriers to find the right personal, commercial, and life insurance for your situation.",
+      "description": "Independent insurance agency licensed in KY, IN and TN: home, auto, business and life insurance. Call or text (502) 413-5335.",
       "schema_types": ["Organization", "WebSite", "FAQPage"],
       "last_reviewed": "2026-03"
     },
@@ -32,13 +32,13 @@
     },
     "/about/": {
       "title": "About The Way Agency | Independent Insurance in Kentucky",
-      "description": "Learn about The Way Agency  -  an independent insurance agency serving Kentucky, Indiana, and Tennessee since 1998. We represent top-rated carriers to find you the right coverage.",
+      "description": "The Way Agency helps families and businesses in Kentucky, Indiana, and Tennessee find the right insurance, with a faith-based, client-centered approach.",
       "schema_types": ["AboutPage"],
       "last_reviewed": "2026-03"
     },
     "/about/team.html": {
       "title": "Our Insurance Team | Licensed Agents | The Way Agency",
-      "description": "Meet the licensed insurance professionals at The Way Agency. Our team is licensed across Kentucky, Indiana, and Tennessee and serves Owensboro, Mt Washington, and the surrounding region.",
+      "description": "Meet the licensed insurance professionals at The Way Agency.",
       "schema_types": ["WebPage", "Person"],
       "last_reviewed": "2026-03"
     },
