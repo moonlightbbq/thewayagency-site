@@ -11,6 +11,10 @@
  * Idempotent - re-running never duplicates a slot, and slots that have fallen
  * behind the window are pruned once they are past and unlocked.
  *
+ * The rules are the lib's reserveSlots(), the one SAGE's queue adapter and
+ * fill-slots.js run. This script used to carry its own copy of them, which
+ * would have re-reserved the dates of an explicit pause (BLOG-06).
+ *
  * Usage: node scripts/reserve-slots.js [--dry-run] [--today YYYY-MM-DD]
  */
 const q = require('./lib/content-queue');
@@ -21,43 +25,18 @@ const todayArg = args.indexOf('--today');
 const today = todayArg !== -1 ? args[todayArg + 1] : new Date().toISOString().slice(0, 10);
 
 const cal = q.loadCalendar();
-if (!Array.isArray(cal.slots)) cal.slots = [];
 
-const taken = q.occupiedDates(cal);
-const bySlotDate = new Map(cal.slots.map(s => [s.date, s]));
-
-const added = [];
-for (const date of q.publishDatesWithin(today, q.HORIZON_DAYS)) {
-  if (taken.has(date)) continue;      // a real post already owns this date
-  if (bySlotDate.has(date)) continue; // already reserved
-  const slot = {
-    date,
-    state: 'reserved',
-    locked_slug: null,
-    locked_at: null,
-    reserved_at: today,
-  };
-  cal.slots.push(slot);
-  bySlotDate.set(date, slot);
-  added.push(date);
-}
-
-// Drop slots that a real post has since claimed, and past slots that were
-// never locked. A past LOCKED slot is left in place - it is evidence that
-// something was committed and then not published, which queue-status reports.
-const before = cal.slots.length;
-cal.slots = cal.slots.filter(s => {
-  if (taken.has(s.date) && s.state !== 'locked') return false;
-  if (q.daysBetween(today, s.date) < 0 && s.state !== 'locked') return false;
-  return true;
-});
-const pruned = before - cal.slots.length;
-
-cal.slots.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+// Drops slots a real post has since claimed, past slots never locked, and
+// unlocked slots inside a pause. A past LOCKED slot is left in place - it is
+// evidence that something was committed and then not published, which
+// queue-status reports.
+const { added, pruned } = q.reserveSlots(cal, today);
 
 if (!dryRun) q.saveCalendar(cal);
 
 console.log(`${dryRun ? '[dry-run] ' : ''}Reserved window: ${today} +${q.HORIZON_DAYS}d`);
+const pause = q.queuePause(cal);
+if (pause && today <= pause.until) console.log(`  PAUSED until ${pause.until}: no slot is reserved on or before it`);
 console.log(`  reserved ${added.length} new slot(s)${added.length ? ': ' + added.join(', ') : ''}`);
 console.log(`  pruned ${pruned} stale slot(s)`);
 console.log(`  ${cal.slots.length} slot(s) now tracked`);
