@@ -2,6 +2,33 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>/* twa-url-scrub (TRUST-08). Must stay the FIRST script in <head>: above
+   every stylesheet (a script after a stylesheet waits for it), attribution.js,
+   GTM and Clarity (scripts/validate-build.js checks this). Legacy hand-off
+   links carried name, email and phone in the query string. Move them into this
+   tab's sessionStorage and out of the address bar before any tag reads the
+   location or a later page reads the referrer. Keep the keys in sync with
+   SENSITIVE_PARAMS in src/js/attribution.js. Never write them back into a URL. */
+(function () {
+  try {
+    var u = new URL(location.href), p = u.searchParams, got = {}, hit = false;
+    var keys = ['name', 'first_name', 'last_name', 'email', 'phone', 't', 'token'];
+    for (var i = 0; i < keys.length; i++) {
+      if (p.has(keys[i])) { got[keys[i]] = p.get(keys[i]); p.delete(keys[i]); hit = true; }
+    }
+    if (!hit) return;
+    try {
+      var name = got.name || [got.first_name, got.last_name].filter(Boolean).join(' ');
+      if (!sessionStorage.getItem('twa_inline_prefill') && (name || got.email || got.phone)) {
+        sessionStorage.setItem('twa_inline_prefill', JSON.stringify({ v: 1, at: Date.now(),
+          name: name || '', email: got.email || '', phone: got.phone || '' }));
+      }
+    } catch (e) { /* storage blocked: drop the values */ }
+    var q = p.toString();
+    history.replaceState(history.state, '', u.pathname + (q ? '?' + q : '') + u.hash);
+  } catch (e) {}
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1a6fb5">
@@ -585,7 +612,7 @@
 <body>
 
 <!-- Draft resume toast -->
-<div class="draft-toast" id="draft-toast" role="alert" aria-live="polite">
+<div class="draft-toast" id="draft-toast" role="alert" aria-live="polite" data-clarity-mask="True">
   <div class="draft-toast-text">
     <strong>Resume your quote?</strong>
     <span id="draft-toast-detail">You have a saved draft.</span>
@@ -625,7 +652,15 @@
   </div>
 </div>
 
-<div class="container">
+<!-- Clarity session replay (TRUST-12). Balanced mode masks what is typed into
+     inputs, not text the page echoes back: #review-summary repeats name,
+     email, phone, address and coverage, #step-confirm the products and the
+     reference, and #draft-toast a saved draft. data-clarity-mask="True" masks
+     an element and everything inside it. The wizard container, #draft-toast,
+     #review-summary and #step-confirm all carry it, so moving one of the
+     inner blocks out of the container keeps it masked. scripts/validate-build.js
+     checks all four. -->
+<div class="container" data-clarity-mask="True">
   <!-- Headline + response time promise -->
   <div style="text-align:center;padding:var(--space-lg) 0 var(--space-sm);">
     <h1 id="intake-headline" style="font-size:clamp(1.5rem,3.5vw,2rem);color:var(--navy);margin-bottom:8px;">Get a Quote</h1>
@@ -805,7 +840,7 @@
   <div id="step-4" class="card hidden">
     <h2>Review your information</h2>
     <p class="card-desc">Please confirm everything looks correct before submitting.</p>
-    <div id="review-summary"></div>
+    <div id="review-summary" data-clarity-mask="True"></div>
     <!-- Honeypot — must be display:none, never off-screen. Chrome autofill and
          the password managers skip display:none fields but happily populate an
          off-screen one; combined with the "Company" label this used to autofill
@@ -830,7 +865,7 @@
   </div>
 
   <!-- Confirmation -->
-  <div id="step-confirm" class="card hidden">
+  <div id="step-confirm" class="card hidden" data-clarity-mask="True">
     <div class="confirmation">
       <div class="check-circle">&#10003;</div>
       <h2>Quote Request Received!</h2>
@@ -1154,8 +1189,21 @@ function trackSubmitSuccess(reference, productCount) {
     products: selectedProducts.join(','),
     time_to_complete_sec: Math.round((Date.now() - _funnelData.entryTime) / 1000),
   });
-  // Meta Lead event (single, clean fire — no duplicate)
-  if (window.fbq) fbq('track', 'Lead', { content_name: selectedProducts.join(','), content_category: 'quote_request', currency: 'USD' }, { eventID: reference });
+  // Meta Lead event (single, clean fire — no duplicate). No product or line
+  // data, and none at all for a health cart (TRUST-12, see sendMetaLead()).
+  if (window.fbq && sendMetaLead()) fbq('track', 'Lead', { content_category: 'quote_request', currency: 'USD' }, { eventID: reference });
+}
+
+// Meta's Business Tools Terms bar sending health information, including through
+// event names or the criteria an event fires on. A Lead fired only for health
+// carts would itself say "this browser asked about health insurance", so a cart
+// with any health tile sends no Lead at all, and no Lead carries content_name
+// (no coarse bucket such as "life_health" either). This is the owner's D-10
+// choice for whenever the Meta Pixel runs (medicare-health-compliance 3.11.7).
+// getProductLine() is the grid's display line; 'health' is exactly the seven
+// health tiles in PRODUCTS.
+function sendMetaLead() {
+  return !selectedProducts.some((p) => getProductLine(p) === 'health');
 }
 
 // ─── Form field focus tracking (Phase 2: friction detection) ────────────────
@@ -1881,7 +1929,8 @@ function syncBundlePills() {
   applyEnhancers();
 })();
 
-// ── Pre-fill form fields from URL params (from inline forms, geo pages, etc.) ─
+// ── Pre-fill: page context (geo, industry, county) from URL params; contact ──
+// ── fields only from the sessionStorage hand-off (TRUST-08) ─────────────────
 // ── Input sanitization helpers ───────────────────────────────────────────────
 function sanitizeText(val, maxLen) {
   if (!val) return '';
@@ -1914,17 +1963,22 @@ function sanitizePhone(val) {
     if (el) { el.value = val; el.classList.add('filled'); }
   };
 
-  // Contact fields (from inline forms)
-  const rawName = sanitizeText(params.get('name'), 100);
-  if (rawName) {
-    const parts = rawName.split(/\s+/);
-    const fname = document.getElementById('i_fname');
-    const lname = document.getElementById('i_lname');
-    if (fname) { fname.value = parts[0] || ''; if (fname.value) fname.classList.add('filled'); }
-    if (lname) { lname.value = parts.slice(1).join(' ') || ''; if (lname.value) lname.classList.add('filled'); }
+  // Contact fields come from this tab's sessionStorage (the inline-form
+  // hand-off, or a legacy URL that the twa-url-scrub in <head> moved there),
+  // never from the URL (TRUST-08). One-shot: a reload does not refill them.
+  const pre = (window.TWA && typeof TWA.takePrefill === 'function') ? TWA.takePrefill() : null;
+  if (pre) {
+    window._prefilledThisLoad = true;
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) { el.value = val; el.classList.add('filled'); } };
+    const rawName = sanitizeText(pre.name, 100);
+    if (rawName) {
+      const parts = rawName.split(/\s+/);
+      setVal('i_fname', parts[0] || '');
+      setVal('i_lname', parts.slice(1).join(' '));
+    }
+    setVal('i_email', sanitizeEmail(pre.email));
+    setVal('i_phone', sanitizePhone(pre.phone));
   }
-  fill('email', 'i_email', sanitizeEmail);
-  fill('phone', 'i_phone', sanitizePhone);
 
   // Geo context (from city/industry pages)
   fill('city', 'i_city', sanitizeAlpha);
@@ -3344,7 +3398,7 @@ async function submitQuickLead() {
       if (window.dataLayer) {
         dataLayer.push({ event: 'conversion', conversion_type: 'quick_lead', conversion_products: selectedProducts.join(','), conversion_reference: data.reference, conversion_source: srcParam || 'intake' });
       }
-      if (window.fbq) fbq('track', 'Lead', { content_name: selectedProducts.join(','), content_category: 'quick_lead', currency: 'USD' }, { eventID: data.reference });
+      if (window.fbq && sendMetaLead()) fbq('track', 'Lead', { content_category: 'quick_lead', currency: 'USD' }, { eventID: data.reference });
     } else {
       renderSubmitError(err, res.status, data);
     }
@@ -3605,6 +3659,9 @@ function _parsePlaceAddress(place) {
   const full = [street, city, [state, zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
   return { street, city, state, zip, full };
 }
+function _maskPlacesSuggestions() {
+  document.querySelectorAll('.pac-container').forEach((el) => el.setAttribute('data-clarity-mask', 'True'));
+}
 function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
   const input = document.getElementById(inputId);
   if (!input || !window.google?.maps?.places) return;
@@ -3613,6 +3670,13 @@ function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
     const ac = new google.maps.places.Autocomplete(input, {
       types: ['address'], componentRestrictions: { country: 'us' }
     });
+    // Google appends its suggestion list (.pac-container) to the document body, outside the
+    // masked wizard container, and its rows echo the typed address as page text.
+    // Mask it for Clarity (TRUST-12): now, and again whenever the input is used,
+    // because Google creates one list per Autocomplete and may add it late.
+    _maskPlacesSuggestions();
+    input.addEventListener('focus', _maskPlacesSuggestions);
+    input.addEventListener('input', _maskPlacesSuggestions);
     ac.addListener('place_changed', () => {
       const place = ac.getPlace();
       if (!place.address_components) return;
@@ -3821,6 +3885,8 @@ document.addEventListener('change', scheduleDraftSave);
 
 // Check for saved draft on page load
 (function checkDraft() {
+  // A fresh inline-form hand-off supersedes an older draft: no resume toast.
+  if (window._prefilledThisLoad) return;
   const draft = loadDraft();
   if (!draft) return;
   const toast = document.getElementById('draft-toast');

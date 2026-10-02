@@ -5,6 +5,15 @@
 
 const { execSync } = require('child_process');
 
+// Pages that load no third-party tags (TRUST-08). /portal/?t= and
+// /partner/?token= carry bearer tokens in the URL, and GA4, Clarity and the
+// GTM-loaded Meta Pixel collect page URLs; /login is staff sign-in. Output
+// paths come from assets.js copyPortalPages (/portal/index.html,
+// /partner/index.html) and copyRootPages (/login.html). /intake/ keeps GTM.
+// pii-and-privacy decisions D1 (option A) and D4 (drop tags on /login).
+const NO_TAG_PAGE = /^\/(portal|partner)\/|^\/login(\.html|\/|$)/;
+function isNoTagPage(outputPath) { return !!(outputPath && NO_TAG_PAGE.test(outputPath)); }
+
 function getGitInfo(ROOT) {
   try {
     const commit = execSync('git rev-parse --short HEAD', { cwd: ROOT }).toString().trim();
@@ -73,8 +82,12 @@ function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, render
     html = html.replace(/src="\/src\/js\/([\w-]+)\.js"/g, `src="/src/js/$1.js?v=${buildVersion}"`);
     html = html.replace(/href="\/src\/css\/(\w+)\.css"/g, `href="/src/css/$1.css?v=${buildVersion}"`);
 
-    // Inject GTM head snippet (before </head>) and body snippet (after <body>)
-    if (!html.includes('gtm.js')) {
+    // Inject GTM head snippet (before </head>) and body snippet (after <body>).
+    // Token-bearing and staff-auth pages load no third-party tags (TRUST-08):
+    // renderHead_GTM() also carries the Clarity snippet, and GTM loads GA4 and
+    // the Meta Pixel, so skipping it removes all of them. Cloudflare's own
+    // edge injections are outside the build (owner: gateway off).
+    if (!isNoTagPage(outputPath) && !html.includes('gtm.js')) {
       html = html.replace('</head>', renderHead_GTM() + '\n</head>');
       html = html.replace(/<body[^>]*>/, '$&\n' + renderBody_GTM());
     }
@@ -82,4 +95,4 @@ function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, render
   };
 }
 
-module.exports = { getGitInfo, createVersionInfo, createInjectVersion };
+module.exports = { getGitInfo, createVersionInfo, createInjectVersion, isNoTagPage };

@@ -9,6 +9,8 @@
 
 const fs = require('fs');
 const path = require('path');
+// Token-bearing and staff-auth pages load no third-party tags (TRUST-08).
+const { isNoTagPage } = require('./builders/seo');
 
 const BUILD = path.join(__dirname, '..', 'build');
 
@@ -521,7 +523,13 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
     const html = fs.readFileSync(file, 'utf8');
     const r = rel(file);
 
-    if (!html.includes('GTM-MCQG9SN3')) {
+    if (isNoTagPage('/' + r)) {
+      // /portal/, /partner/ and /login must NOT load GTM (TRUST-08).
+      if (html.includes('GTM-MCQG9SN3')) {
+        error(`GTM container on a token/auth page: ${r}`);
+        scriptErrors++;
+      }
+    } else if (!html.includes('GTM-MCQG9SN3')) {
       error(`Missing GTM container (GTM-MCQG9SN3): ${r}`);
       scriptErrors++;
     }

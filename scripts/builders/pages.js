@@ -241,6 +241,15 @@ ${buttons.map(b => `          <a href="${b.href}" class="${b.className || 'btn b
     </section>`;
 }
 
+// The inline quote form only hands off to /intake/ (src/js/app.js
+// initInlineForms). Privacy hardening (TRUST-08), no visible change:
+// - The name/email/phone inputs carry data-field and NO name attribute, so no
+//   native submit can ever put them in a URL, and app.js reads them by
+//   data-field and passes them on through sessionStorage.
+// - action/method send a submit that happens before app.js has bound its
+//   handler (app.js is deferred) to /intake/ with page context only, instead
+//   of a GET to this page's own URL carrying the typed values.
+// - data-ab-arm is inert until the CONV-06 A/B test exists.
 function renderInlineForm(formId, hiddenFields) {
   const hiddenHtml = Object.entries(hiddenFields).map(([k, v]) =>
     `          <input type="hidden" name="${esc(k)}" value="${esc(v)}">`
@@ -248,14 +257,15 @@ function renderInlineForm(formId, hiddenFields) {
   return `        <div class="inline-quote-section">
           <h3>%%FORM_HEADING%%</h3>
           <p>%%FORM_SUBTEXT%%</p>
-          <form class="inline-quote-form" novalidate>
+          <form class="inline-quote-form" data-ab-arm="control" action="/intake/" method="get" novalidate>
 ${hiddenHtml}
+            <input type="hidden" name="src" value="inline">
             <label for="${formId}-name" class="sr-only">Your name</label>
-            <input id="${formId}-name" type="text" name="name" placeholder="Your name" required autocomplete="name">
+            <input id="${formId}-name" type="text" data-field="name" placeholder="Your name" required autocomplete="name">
             <label for="${formId}-email" class="sr-only">Email address</label>
-            <input id="${formId}-email" type="email" name="email" placeholder="Email address" required autocomplete="email">
+            <input id="${formId}-email" type="email" data-field="email" placeholder="Email address" required autocomplete="email">
             <label for="${formId}-phone" class="sr-only">Phone (optional)</label>
-            <input id="${formId}-phone" type="tel" name="phone" placeholder="Phone (optional)" autocomplete="tel">
+            <input id="${formId}-phone" type="tel" data-field="phone" placeholder="Phone (optional)" autocomplete="tel">
             <!-- Honeypot - display:none, never off-screen. display:none is what
                  actually defeats autofill (Chrome and the password managers skip
                  it, but fill an off-screen field and 403 a real lead at sage's
@@ -630,7 +640,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
   }, null, 2).replace(/</g, '\\u003c')}
   </script>${faqSchema}`;
 
-  const formHtml = renderInlineForm(product.id, { product: product.id, lineOfBusiness: lineSlug })
+  const formHtml = renderInlineForm(product.id, { product: product.id, line: lineSlug })
     .replace('%%FORM_HEADING%%', `Let's find the right ${product.name.toLowerCase()} for you`)
     .replace('%%FORM_SUBTEXT%%', 'Tell us a little about yourself and we\'ll come back with the best options for your situation. No pressure, no jargon, just clear answers.');
 
@@ -999,7 +1009,7 @@ function generateIndustryPage(ind, ctx) {
 
   const coverageList = ind.typical_coverage.map(c => `<li>${c}</li>`).join('\n            ');
 
-  const indFormHtml = renderInlineForm(ind.slug, { industry: ind.slug, lineOfBusiness: 'commercial' })
+  const indFormHtml = renderInlineForm(ind.slug, { industry: ind.slug, line: 'commercial' })
     .replace('%%FORM_HEADING%%', `Get a quote for your ${ind.name.toLowerCase().replace(/s$/, '')} business`)
     .replace('%%FORM_SUBTEXT%%', 'Tell us about your business and we\'ll come back with coverage options from carriers that specialize in your industry.');
 
