@@ -19,8 +19,6 @@
     if (DEBUG) console.log('%c[TWA:attr] ' + event, 'color:#0891b2;font-weight:bold', params || '');
   }
 
-  var FB_PIXEL_ID = '33110648475215550'; // used for fbq('setUserProperties') only
-
   // ─── Cookie helpers ───────────────────────────
   function setCookie(name, value, days) {
     document.cookie = name + '=' + encodeURIComponent(JSON.stringify(value)) + ';path=/;max-age=' + (days * 86400) + ';SameSite=Lax';
@@ -80,7 +78,9 @@
     if (src) touchData.src = src;
     if (agent) touchData.agent = agent;
 
-    touchData.landing_page = window.location.pathname + window.location.search;
+    // The first/last-touch cookies keep this for 365/30 days and ride every
+    // SAGE submission: never store identity or a token in them (TRUST-08).
+    touchData.landing_page = window.location.pathname + stripSensitive(window.location.search);
     touchData.date = new Date().toISOString().split('T')[0];
 
     // First-touch: set once, never overwrite (365-day expiry)
@@ -128,6 +128,70 @@
     };
   }
 
+  // ─── Privacy guard: identity never rides a URL (TRUST-08) ──────────────
+  // GA4, Clarity and the Meta Pixel collect the page URL and the referrer.
+  // Keep this list identical to the twa-url-scrub list in src/intake.html
+  // <head> (tests/pii-url-guard.test.js compares them).
+  var SENSITIVE_PARAMS = ['name', 'first_name', 'last_name', 'email', 'phone', 't', 'token'];
+  var PREFILL_KEY = 'twa_inline_prefill';
+  var PREFILL_MAX_AGE_MS = 30 * 60 * 1000;
+
+  // Drops the sensitive keys and keeps everything else (utm_*, gclid, src...).
+  function stripSensitive(search) {
+    var p = new URLSearchParams(search || '');
+    for (var i = 0; i < SENSITIVE_PARAMS.length; i++) p.delete(SENSITIVE_PARAMS[i]);
+    var s = p.toString();
+    return s ? '?' + s : '';
+  }
+
+  // Inline quote form -> /intake/. Page context goes in the URL; what the
+  // visitor typed goes to this tab's sessionStorage only. Never add identity,
+  // a SAGE sessionId or utm_* here: attribution already rides the twa_ft and
+  // twa_lt cookies and TWA.getAttribution().
+  function buildIntakeHandoff(data, pageSearch) {
+    var params = new URLSearchParams();
+    if (data.product) params.set('product', data.product);
+    var line = data.line || data.lineOfBusiness;
+    if (line) params.set('line', line);
+    if (data.industry) params.set('industry', data.industry);
+    if (data.city) params.set('city', data.city);
+    if (data.county) params.set('county', data.county);
+    if (data.state) params.set('state', data.state);
+    var agent = new URLSearchParams(pageSearch || '').get('agent');
+    if (agent) params.set('agent', agent);
+    params.set('src', data.src || 'inline');
+    return {
+      url: '/intake/?' + params.toString(),
+      prefill: { name: data.name || '', email: data.email || '', phone: data.phone || '' },
+    };
+  }
+
+  // Writes the hand-off for the next page in this tab. Returns false when
+  // storage is blocked: the caller then navigates without a prefill and never
+  // falls back to URL parameters.
+  function stashPrefill(prefill) {
+    try {
+      var rec = { v: 1, at: Date.now() };
+      for (var k in prefill) {
+        if (Object.prototype.hasOwnProperty.call(prefill, k) && prefill[k]) rec[k] = String(prefill[k]).slice(0, 254);
+      }
+      sessionStorage.setItem(PREFILL_KEY, JSON.stringify(rec));
+      return true;
+    } catch (e) { return false; }
+  }
+
+  // One-shot: returns the stash (or null) and always removes it.
+  function takePrefill() {
+    var raw = null;
+    try { raw = sessionStorage.getItem(PREFILL_KEY); sessionStorage.removeItem(PREFILL_KEY); } catch (e) { return null; }
+    if (!raw) return null;
+    try {
+      var rec = JSON.parse(raw);
+      if (!rec || rec.v !== 1 || typeof rec.at !== 'number' || Date.now() - rec.at > PREFILL_MAX_AGE_MS) return null;
+      return rec;
+    } catch (e) { return null; }
+  }
+
   // ─── A/B assignment ───────────────────────────
   // Uniform split: hash(visitorId:testName) % variantCount. Weights are NOT
   // supported — a weighted rollout must launch as a NEW test name, because
@@ -158,7 +222,10 @@
   }
 
   // ─── Enhanced conversions (hashed PII) ────────
-  async function pushEnhancedConversion(data, fbPixelId) {
+  // dataLayer only. No Meta advanced matching of any kind (TRUST-12): Meta's
+  // Business Tools Terms bar unhashed contact data, and these forms can carry
+  // health and Medicare interest.
+  async function pushEnhancedConversion(data) {
     if (!data.email && !data.phone) return;
     var hashed = await Promise.all([
       sha256(data.email || ''),
@@ -181,20 +248,23 @@
         },
       },
     });
-    // Meta Advanced Matching (fbq handles its own hashing)
-    if (window.fbq) {
-      window.fbq('setUserProperties', fbPixelId || FB_PIXEL_ID, {
-        em: (data.email || '').toLowerCase().trim(),
-        ph: (data.phone || '').replace(/\D/g, ''),
-        fn: (data.firstName || '').toLowerCase().trim(),
-        ln: (data.lastName || '').toLowerCase().trim(),
-        zp: (data.zip || '').trim(),
-        country: 'us',
-        external_id: getVisitorId(),
-      });
-    }
     _log('enhanced_conversion', { email: '***', phone: '***' });
   }
+
+  // ─── Purge pre-fix intake drafts (CONV-08, owner decision D11) ───────
+  // Drafts written before the retention change kept name, email, phone,
+  // address, date of birth and health answers in localStorage for 7 days.
+  // Every page removes any intake draft that is not the current version (v2,
+  // allowlisted fields only) or is older than 24 hours, so an old draft does
+  // not wait for the next /intake/ visit. Keep in step with src/intake.html.
+  (function purgeStaleIntakeDraft() {
+    try {
+      var raw = localStorage.getItem('twa_intake_draft');
+      if (!raw) return;
+      var d = JSON.parse(raw);
+      if (!d || d.v !== 2 || !(Date.now() - d.savedAt <= 24 * 60 * 60 * 1000)) localStorage.removeItem('twa_intake_draft');
+    } catch (e) { try { localStorage.removeItem('twa_intake_draft'); } catch (e2) { /* storage blocked */ } }
+  })();
 
   window.TWA = {
     setCookie: setCookie,
@@ -208,5 +278,10 @@
     pushExposure: pushExposure,
     sha256: sha256,
     pushEnhancedConversion: pushEnhancedConversion,
+    SENSITIVE_PARAMS: SENSITIVE_PARAMS.slice(),
+    stripSensitive: stripSensitive,
+    buildIntakeHandoff: buildIntakeHandoff,
+    stashPrefill: stashPrefill,
+    takePrefill: takePrefill,
   };
 })();

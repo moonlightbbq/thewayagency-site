@@ -2,6 +2,33 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>/* twa-url-scrub (TRUST-08). Must stay the FIRST script in <head>: above
+   every stylesheet (a script after a stylesheet waits for it), attribution.js,
+   GTM and Clarity (scripts/validate-build.js checks this). Legacy hand-off
+   links carried name, email and phone in the query string. Move them into this
+   tab's sessionStorage and out of the address bar before any tag reads the
+   location or a later page reads the referrer. Keep the keys in sync with
+   SENSITIVE_PARAMS in src/js/attribution.js. Never write them back into a URL. */
+(function () {
+  try {
+    var u = new URL(location.href), p = u.searchParams, got = {}, hit = false;
+    var keys = ['name', 'first_name', 'last_name', 'email', 'phone', 't', 'token'];
+    for (var i = 0; i < keys.length; i++) {
+      if (p.has(keys[i])) { got[keys[i]] = p.get(keys[i]); p.delete(keys[i]); hit = true; }
+    }
+    if (!hit) return;
+    try {
+      var name = got.name || [got.first_name, got.last_name].filter(Boolean).join(' ');
+      if (!sessionStorage.getItem('twa_inline_prefill') && (name || got.email || got.phone)) {
+        sessionStorage.setItem('twa_inline_prefill', JSON.stringify({ v: 1, at: Date.now(),
+          name: name || '', email: got.email || '', phone: got.phone || '' }));
+      }
+    } catch (e) { /* storage blocked: drop the values */ }
+    var q = p.toString();
+    history.replaceState(history.state, '', u.pathname + (q ? '?' + q : '') + u.hash);
+  } catch (e) {}
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1a6fb5">
@@ -585,7 +612,7 @@
 <body>
 
 <!-- Draft resume toast -->
-<div class="draft-toast" id="draft-toast" role="alert" aria-live="polite">
+<div class="draft-toast" id="draft-toast" role="alert" aria-live="polite" data-clarity-mask="True">
   <div class="draft-toast-text">
     <strong>Resume your quote?</strong>
     <span id="draft-toast-detail">You have a saved draft.</span>
@@ -625,7 +652,15 @@
   </div>
 </div>
 
-<div class="container">
+<!-- Clarity session replay (TRUST-12). Balanced mode masks what is typed into
+     inputs, not text the page echoes back: #review-summary repeats name,
+     email, phone, address and coverage, #step-confirm the products and the
+     reference, and #draft-toast a saved draft. data-clarity-mask="True" masks
+     an element and everything inside it. The wizard container, #draft-toast,
+     #review-summary and #step-confirm all carry it, so moving one of the
+     inner blocks out of the container keeps it masked. scripts/validate-build.js
+     checks all four. -->
+<div class="container" data-clarity-mask="True">
   <!-- Headline + response time promise -->
   <div style="text-align:center;padding:var(--space-lg) 0 var(--space-sm);">
     <h1 id="intake-headline" style="font-size:clamp(1.5rem,3.5vw,2rem);color:var(--navy);margin-bottom:8px;">Get a Quote</h1>
@@ -805,7 +840,7 @@
   <div id="step-4" class="card hidden">
     <h2>Review your information</h2>
     <p class="card-desc">Please confirm everything looks correct before submitting.</p>
-    <div id="review-summary"></div>
+    <div id="review-summary" data-clarity-mask="True"></div>
     <!-- Honeypot — must be display:none, never off-screen. Chrome autofill and
          the password managers skip display:none fields but happily populate an
          off-screen one; combined with the "Company" label this used to autofill
@@ -830,7 +865,7 @@
   </div>
 
   <!-- Confirmation -->
-  <div id="step-confirm" class="card hidden">
+  <div id="step-confirm" class="card hidden" data-clarity-mask="True">
     <div class="confirmation">
       <div class="check-circle">&#10003;</div>
       <h2>Quote Request Received!</h2>
@@ -915,12 +950,14 @@ window.addEventListener('online', function () {
   updateDot();
 })();
 
-// beforeunload warning for unsaved data
-window.addEventListener('beforeunload', function(e) {
+// beforeunload warning for unsaved data. Named so markSubmitted() can remove it:
+// after a successful submit there is nothing unsaved to warn about (CONV-08).
+function onBeforeUnload(e) {
   if (_submitted) return;
   const hasData = v('i_fname') || v('i_email') || selectedProducts.length;
   if (hasData) { e.preventDefault(); e.returnValue = ''; }
-});
+}
+window.addEventListener('beforeunload', onBeforeUnload);
 
 // ── System status banner ────────────────────────────────────────────────────
 (function() {
@@ -1078,6 +1115,7 @@ const _funnelData = {
   agent: new URLSearchParams(window.location.search).get('agent') || '',
 };
 let _submitted = false;
+let _abandonSent = false;   // intake_abandoned goes out at most once per page load
 
 // ─── Core intake event dispatcher ───────────────────────────────────────────
 function trackIntake(eventName, params) {
@@ -1134,8 +1172,12 @@ function trackValidationError(step, message) {
 }
 
 // ─── Abandonment tracking ───────────────────────────────────────────────────
+// Both listeners below stay: visibilitychange to hidden is the reliable signal on
+// mobile, pagehide the fallback (MDN; Chrome Page Lifecycle). Every tab switch
+// used to fire another event, so one visitor counted as several abandonments.
 function trackAbandonment() {
-  if (_submitted) return;
+  if (_submitted || _abandonSent) return;
+  _abandonSent = true;
   trackIntake('intake_abandoned', {
     abandoned_at_step: currentStep,
     abandoned_at_name: STEP_NAMES[currentStep],
@@ -1154,8 +1196,33 @@ function trackSubmitSuccess(reference, productCount) {
     products: selectedProducts.join(','),
     time_to_complete_sec: Math.round((Date.now() - _funnelData.entryTime) / 1000),
   });
-  // Meta Lead event (single, clean fire — no duplicate)
-  if (window.fbq) fbq('track', 'Lead', { content_name: selectedProducts.join(','), content_category: 'quote_request', currency: 'USD' }, { eventID: reference });
+  // Meta Lead event (single, clean fire — no duplicate). No product or line
+  // data, and none at all for a health cart (TRUST-12, see sendMetaLead()).
+  if (window.fbq && sendMetaLead()) fbq('track', 'Lead', { content_category: 'quote_request', currency: 'USD' }, { eventID: reference });
+}
+
+// Meta's Business Tools Terms bar sending health information, including through
+// event names or the criteria an event fires on. A Lead fired only for health
+// carts would itself say "this browser asked about health insurance", so a cart
+// with any health tile sends no Lead at all, and no Lead carries content_name
+// (no coarse bucket such as "life_health" either). This is the owner's D-10
+// choice for whenever the Meta Pixel runs (medicare-health-compliance 3.11.7).
+// getProductLine() is the grid's display line; 'health' is exactly the seven
+// health tiles in PRODUCTS.
+function sendMetaLead() {
+  return !selectedProducts.some((p) => getProductLine(p) === 'health');
+}
+
+// Ends the page's "unsaved form" life after a successful submit (CONV-08): no
+// Leave-site prompt, no abandonment event, no exit flush, no draft re-created.
+// Both success paths (quick lead and full submit) call it. The quick lead never
+// reached trackSubmitSuccess(), so a visitor who had just been told "we'll reach
+// out" was then asked whether to leave without saving.
+function markSubmitted() {
+  _submitted = true;
+  _fieldsDirtySinceTrack = false;
+  window.removeEventListener('beforeunload', onBeforeUnload);
+  clearDraft();
 }
 
 // ─── Form field focus tracking (Phase 2: friction detection) ────────────────
@@ -1881,7 +1948,8 @@ function syncBundlePills() {
   applyEnhancers();
 })();
 
-// ── Pre-fill form fields from URL params (from inline forms, geo pages, etc.) ─
+// ── Pre-fill: page context (geo, industry, county) from URL params; contact ──
+// ── fields only from the sessionStorage hand-off (TRUST-08) ─────────────────
 // ── Input sanitization helpers ───────────────────────────────────────────────
 function sanitizeText(val, maxLen) {
   if (!val) return '';
@@ -1914,17 +1982,26 @@ function sanitizePhone(val) {
     if (el) { el.value = val; el.classList.add('filled'); }
   };
 
-  // Contact fields (from inline forms)
-  const rawName = sanitizeText(params.get('name'), 100);
-  if (rawName) {
-    const parts = rawName.split(/\s+/);
-    const fname = document.getElementById('i_fname');
-    const lname = document.getElementById('i_lname');
-    if (fname) { fname.value = parts[0] || ''; if (fname.value) fname.classList.add('filled'); }
-    if (lname) { lname.value = parts.slice(1).join(' ') || ''; if (lname.value) lname.classList.add('filled'); }
+  // Contact fields come from this tab's sessionStorage (the inline-form
+  // hand-off, or a legacy URL that the twa-url-scrub in <head> moved there),
+  // never from the URL (TRUST-08). One-shot: a reload does not refill them.
+  const pre = (window.TWA && typeof TWA.takePrefill === 'function') ? TWA.takePrefill() : null;
+  if (pre) {
+    window._prefilledThisLoad = true;
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val) { el.value = val; el.classList.add('filled'); } };
+    const rawName = sanitizeText(pre.name, 100);
+    if (rawName) {
+      const parts = rawName.split(/\s+/);
+      setVal('i_fname', parts[0] || '');
+      setVal('i_lname', parts.slice(1).join(' '));
+    }
+    setVal('i_email', sanitizeEmail(pre.email));
+    setVal('i_phone', sanitizePhone(pre.phone));
+    // A same-tab reload keeps the hand-off: it lands in this tab's session draft
+    // only (CONV-08). Deferred because the DRAFT_* consts are declared further
+    // down this script.
+    setTimeout(() => { try { saveDraft(); } catch (e) {} }, 0);
   }
-  fill('email', 'i_email', sanitizeEmail);
-  fill('phone', 'i_phone', sanitizePhone);
 
   // Geo context (from city/industry pages)
   fill('city', 'i_city', sanitizeAlpha);
@@ -2166,6 +2243,9 @@ async function trackPartial(notify) {
 
     if (data.sessionId) {
       sessionId = data.sessionId;
+      // Keep the SAGE session in this tab's draft, so a reload right after
+      // Continue resumes the same partial instead of starting a new one.
+      scheduleDraftSave();
       contactTracked = true;
       // Start polling for agent takeover
       if (!pollTimer) {
@@ -2199,7 +2279,7 @@ function scheduleTrack() {
 let _fieldsDirtySinceTrack = false;
 document.addEventListener('input', () => { _fieldsDirtySinceTrack = true; }, true);
 function _flushTrackOnExit() {
-  if (!_fieldsDirtySinceTrack || !sessionId) return;
+  if (_submitted || !_fieldsDirtySinceTrack || !sessionId) return;
   const firstName = v('i_fname'), lastName = v('i_lname');
   const email = v('i_email'), phone = v('i_phone');
   if (!firstName || !lastName || (!email && !phone) || mustDecline()) return;
@@ -3338,13 +3418,13 @@ async function submitQuickLead() {
       } else {
         msg.textContent = 'Thank you! A licensed agent will reach out to discuss your coverage options shortly.';
       }
-      clearDraft();
+      markSubmitted();
       // Tracking
       if (window.gtag) gtag('event', 'intake_quick_lead', { products: selectedProducts.join(','), product_count: selectedProducts.length });
       if (window.dataLayer) {
         dataLayer.push({ event: 'conversion', conversion_type: 'quick_lead', conversion_products: selectedProducts.join(','), conversion_reference: data.reference, conversion_source: srcParam || 'intake' });
       }
-      if (window.fbq) fbq('track', 'Lead', { content_name: selectedProducts.join(','), content_category: 'quick_lead', currency: 'USD' }, { eventID: data.reference });
+      if (window.fbq && sendMetaLead()) fbq('track', 'Lead', { content_category: 'quick_lead', currency: 'USD' }, { eventID: data.reference });
     } else {
       renderSubmitError(err, res.status, data);
     }
@@ -3516,7 +3596,7 @@ async function submitIntake() {
         const msg = document.getElementById('confirm-message');
         if (msg) msg.textContent = 'Thank you for choosing The Way Agency. ' + a.name.split(' ')[0] + ' will review your information and reach out with your personalized quote within one business day.';
       }
-      clearDraft();
+      markSubmitted();
       trackStepComplete(4);
       trackSubmitSuccess(data.reference, selectedProducts.length);
       // Google Ads conversion (configured in GTM)
@@ -3605,6 +3685,9 @@ function _parsePlaceAddress(place) {
   const full = [street, city, [state, zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
   return { street, city, state, zip, full };
 }
+function _maskPlacesSuggestions() {
+  document.querySelectorAll('.pac-container').forEach((el) => el.setAttribute('data-clarity-mask', 'True'));
+}
 function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
   const input = document.getElementById(inputId);
   if (!input || !window.google?.maps?.places) return;
@@ -3613,6 +3696,13 @@ function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
     const ac = new google.maps.places.Autocomplete(input, {
       types: ['address'], componentRestrictions: { country: 'us' }
     });
+    // Google appends its suggestion list (.pac-container) to the document body, outside the
+    // masked wizard container, and its rows echo the typed address as page text.
+    // Mask it for Clarity (TRUST-12): now, and again whenever the input is used,
+    // because Google creates one list per Autocomplete and may add it late.
+    _maskPlacesSuggestions();
+    input.addEventListener('focus', _maskPlacesSuggestions);
+    input.addEventListener('input', _maskPlacesSuggestions);
     ac.addListener('place_changed', () => {
       const place = ac.getPlace();
       if (!place.address_components) return;
@@ -3683,9 +3773,20 @@ document.addEventListener('keydown', (e) => {
   toggleQCard(head);
 });
 
-// ── Form Auto-Save (localStorage) ────────────────────────────────────────────
+// ── Form Auto-Save ───────────────────────────────────────────────────────────
+// Two stores (CONV-08, owner decision pii-and-privacy D11):
+//  - sessionStorage[DRAFT_SESSION_KEY]: the full draft, identity and the SAGE
+//    sessionId included, for this tab only. A reload resumes it and keeps the
+//    SAGE session, so SAGE does not page a producer again.
+//  - localStorage[DRAFT_KEY]: the cross-visit draft. Only the non-identifying
+//    fields in DRAFT_PERSIST_FIELD_IDS, products, vehicles and the step, kept at
+//    most 24 hours. It used to hold name, email, phone, address, date of birth,
+//    notes and health answers for 7 days, readable by the next user of a shared
+//    device. src/js/attribution.js purges drafts in the old format on any page.
 const DRAFT_KEY = 'twa_intake_draft';
-const DRAFT_MAX_AGE = 7 * 24 * 60 * 60 * 1000; // 7 days
+const DRAFT_SESSION_KEY = 'twa_intake_draft_s';
+const DRAFT_VERSION = 2;
+const DRAFT_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 
 // Fields to save from step 1 and step 4
 const DRAFT_FIELD_IDS = [
@@ -3710,6 +3811,27 @@ const DRAFT_FIELD_IDS = [
   ...SCHEMA_FIELD_IDS, 'i_fl_zone',
 ];
 
+// The ONLY fields the cross-visit (localStorage) draft may keep: non-identifying
+// selections. An allowlist, so a new field stays in the tab-only store until
+// someone decides it is safe to keep across visits (fails safe). Never add name,
+// email, phone, date of birth, any address, city or ZIP, i_notes, i_other_desc,
+// i_biz_name, i_umb_assets, or any i_li_, i_med_, i_mcd_, i_ih_, i_fh_, i_gh_,
+// i_sh_, i_dv_, i_ann_ or i_dis_ field (tests/intake-draft-privacy.test.js).
+const DRAFT_PERSIST_FIELD_IDS = ['i_state', 'i_current_carrier', 'i_policy_expiry', 'i_ho_value', 'i_ho_yearbuilt',
+  'i_umb_limit', 'i_umb_drivers', 'i_fl_foundation', 'i_fl_claims', 'i_fl_zone', 'i_rent_coverage', 'i_rent_type',
+  'i_rent_highvalue', 'i_mc_year', 'i_mc_make', 'i_mc_model', 'i_boat_year', 'i_boat_make', 'i_boat_length',
+  'i_boat_type', 'i_rv_year', 'i_rv_make', 'i_rv_model', 'i_rv_type', 'i_bop_ownlease', 'i_df_use', 'i_df_value',
+  'i_cgl_limit', 'i_ca_numveh', 'i_ca_vehtype', 'i_wc_payroll', 'i_eo_profession', 'i_fr_type', 'i_fr_acres',
+  'i_bond_type', 'i_bond_amount', 'i_br_projtype', 'i_br_value', 'i_biz_type', 'i_biz_employees', 'i_biz_years',
+  'i_biz_revenue', 'i_cyber_revenue', 'i_cyber_records', 'i_cyber_priorbreach', 'i_eq_proptype',
+  'i_eq_construction', 'i_eq_yearbuilt', 'i_pet_type', 'i_pet_count', 'i_pet_age', 'i_cp_ownlease', 'i_cp_type',
+  'i_cp_value', 'i_se_type', 'i_se_date', 'i_se_attendance', 'i_se_alcohol'];
+function persistableFields(fields) {
+  const out = {};
+  for (const id of DRAFT_PERSIST_FIELD_IDS) if (fields && fields[id]) out[id] = fields[id];
+  return out;
+}
+
 function collectDraft() {
   const fields = {};
   for (const id of DRAFT_FIELD_IDS) {
@@ -3725,11 +3847,13 @@ function collectDraft() {
     if (yr || mk || md) vehicles.push({ year: yr, make: mk, model: md });
   });
   return {
+    v: DRAFT_VERSION,
     fields,
     products: [...selectedProducts],
     vehicles,
     step: currentStep,
     hoSameAddr,
+    sessionId: sessionId || null,
     savedAt: Date.now(),
   };
 }
@@ -3739,8 +3863,19 @@ function saveDraft() {
   if (_submitted) return;
   const draft = collectDraft();
   if (!Object.keys(draft.fields).length && !draft.products.length) return;
+  let saved = false;
+  // Full draft, identity and SAGE session included: this tab only.
+  try { sessionStorage.setItem(DRAFT_SESSION_KEY, JSON.stringify(draft)); saved = true; } catch (e) { /* unavailable */ }
+  // Cross-visit draft: allowlisted selections only, never identity.
   try {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    const local = {
+      v: DRAFT_VERSION, fields: persistableFields(draft.fields), products: draft.products, vehicles: draft.vehicles,
+      step: Math.min(draft.step || 1, 2), hoSameAddr: draft.hoSameAddr, savedAt: draft.savedAt,
+    };
+    if (Object.keys(local.fields).length || local.products.length) { localStorage.setItem(DRAFT_KEY, JSON.stringify(local)); saved = true; }
+    else localStorage.removeItem(DRAFT_KEY);
+  } catch (e) { /* localStorage full or unavailable */ }
+  if (saved) {
     // Show "Draft saved" indicator briefly
     const indicator = document.getElementById('draft-saved-indicator');
     if (indicator) {
@@ -3748,23 +3883,36 @@ function saveDraft() {
       clearTimeout(indicator._hideTimer);
       indicator._hideTimer = setTimeout(() => indicator.classList.remove('show'), 2000);
     }
-  } catch (e) { /* localStorage full or unavailable */ }
+  }
 }
 
 function clearDraft() {
   try { localStorage.removeItem(DRAFT_KEY); } catch (e) {}
+  try { sessionStorage.removeItem(DRAFT_SESSION_KEY); } catch (e) {}
 }
 
+// Reads one store; a draft of another version, older than DRAFT_MAX_AGE, or
+// with nothing in it is removed, not returned.
+function readDraftFrom(getStore, key, local) {
+  let store = null, raw = null;
+  try { store = getStore(); raw = store.getItem(key); } catch (e) { return null; }
+  if (!raw) return null;
+  const drop = () => { try { store.removeItem(key); } catch (e) {} return null; };
+  let draft = null;
+  try { draft = JSON.parse(raw); } catch (e) { return drop(); }
+  if (!draft || draft.v !== DRAFT_VERSION || typeof draft.savedAt !== 'number' || !(Date.now() - draft.savedAt <= DRAFT_MAX_AGE)) return drop();
+  if (!draft.fields || typeof draft.fields !== 'object') return drop();
+  // Defence in depth: whatever wrote it, a cross-visit draft restores only allowlisted fields.
+  if (local) { draft.fields = persistableFields(draft.fields); draft.sessionId = null; }
+  // Only resume if there's meaningful data
+  if (!Object.keys(draft.fields).length && !(Array.isArray(draft.products) && draft.products.length)) return drop();
+  return draft;
+}
+
+// This tab's full draft first, then the cross-visit one.
 function loadDraft() {
-  try {
-    const raw = localStorage.getItem(DRAFT_KEY);
-    if (!raw) return null;
-    const draft = JSON.parse(raw);
-    if (Date.now() - draft.savedAt > DRAFT_MAX_AGE) { clearDraft(); return null; }
-    // Only resume if there's meaningful data (at least a name or product)
-    if (!Object.keys(draft.fields).length && !draft.products?.length) { clearDraft(); return null; }
-    return draft;
-  } catch (e) { return null; }
+  return readDraftFrom(() => sessionStorage, DRAFT_SESSION_KEY, false)
+    || readDraftFrom(() => localStorage, DRAFT_KEY, true);
 }
 
 function restoreDraft(draft) {
@@ -3796,18 +3944,20 @@ function restoreDraft(draft) {
   window._draftFields = draft.fields;
   // Store vehicles to restore when step 4 renders
   if (draft.vehicles?.length) window._draftVehicles = draft.vehicles;
-  // Navigate to the step the user was on (but cap at step 2 — step 3/4 have dynamic content)
-  const targetStep = Math.min(draft.step || 1, 2);
+  // Same-tab draft: carry the SAGE session on, so autosaves update the same
+  // partial and SAGE does not page a producer again for this person.
+  if (draft.sessionId) { sessionId = draft.sessionId; contactTracked = true; contactValidated = true; }
+  // A cross-visit draft has no contact details, so it resumes at step 1.
+  // A same-tab draft goes back to the step the user was on, capped at step 2
+  // (steps 3 and 4 have dynamic content).
+  const targetStep = draft.sessionId ? Math.min(draft.step || 1, 2) : 1;
   if (targetStep > 1) showStep(targetStep);
-  // A resumed draft carries both a state and a cart, so re-run the decision: this
-  // is another door into trackPartial(true) below (the producer page), and it must
-  // not be the one that slips an out-of-area lead through.
+  // A resumed draft carries both a state and a cart, so re-run the decision.
   evaluateStateEligibility();
-  // If resuming with contact info already filled, fire notify so agent gets assigned
-  if (draft.fields.i_email && draft.fields.i_phone && draft.fields.i_fname && draft.fields.i_lname) {
-    contactValidated = true; // skip re-validation on resume
-    setTimeout(() => trackPartial(true), 500);
-  }
+  // A resumed draft never pages a producer by itself (CONV-08). It used to fire
+  // trackPartial(true) here, which re-paged a producer about a lead SAGE already
+  // had, or, on a shared device, about the previous person. Only the visitor's
+  // own Continue on step 1 (or a submit) notifies.
 }
 
 // Debounced auto-save on any input change
@@ -3821,18 +3971,20 @@ document.addEventListener('change', scheduleDraftSave);
 
 // Check for saved draft on page load
 (function checkDraft() {
+  // A fresh inline-form hand-off supersedes an older draft: no resume toast.
+  if (window._prefilledThisLoad) return;
   const draft = loadDraft();
   if (!draft) return;
   const toast = document.getElementById('draft-toast');
   const detail = document.getElementById('draft-toast-detail');
   if (!toast) return;
-  // Build description
-  const name = [draft.fields.i_fname, draft.fields.i_lname].filter(Boolean).join(' ');
+  // Build description. No name: on a shared device the toast greeted the next
+  // person with the previous visitor's full name (CONV-08).
   const ago = Math.round((Date.now() - draft.savedAt) / (1000 * 60));
   let agoText = ago < 60 ? `${ago} minute${ago !== 1 ? 's' : ''} ago` :
                 ago < 1440 ? `${Math.round(ago/60)} hour${Math.round(ago/60) !== 1 ? 's' : ''} ago` :
                 `${Math.round(ago/1440)} day${Math.round(ago/1440) !== 1 ? 's' : ''} ago`;
-  detail.textContent = (name ? `For ${name} — ` : '') + `saved ${agoText}`;
+  detail.textContent = 'Saved ' + agoText + '.';
   // Show toast with slight delay for smooth entrance
   setTimeout(() => toast.classList.add('visible'), 300);
   // Resume button
