@@ -429,7 +429,7 @@
     {
       "id": "flood-not-in-zone",
       "question": "Do I need flood insurance if I am not in a flood zone?",
-      "answer": "Over 25% of all NFIP flood claims come from properties outside high-risk flood zones. Any property can flood from heavy rain, drainage issues, or nearby waterway overflow. Properties in low-to-moderate risk zones (Zone X) can often get Preferred Risk policies starting around $400-$600 per year. Major river systems can impact properties well outside mapped flood zones.",
+      "answer": "According to FEMA (https://www.fema.gov/blog/floods-can-happen-anywhere-be-prepared-flood-insurance), about 40% of NFIP flood insurance claims come from outside high-risk flood zones. Any property can flood from heavy rain, drainage issues, or nearby waterway overflow. Major river systems can impact properties well outside mapped flood zones.",
       "category": "personal",
       "product": "flood",
       "related_products": [
@@ -1212,7 +1212,7 @@
     {
       "id": "medicare-part-d",
       "question": "Do I need Medicare Part D prescription drug coverage?",
-      "answer": "If you do not have creditable drug coverage from another source (like an employer plan), you should enroll in Part D when first eligible. Late enrollment results in a permanent penalty of 1% per month for each month you delayed. Part D plans range from $10-$80 per month depending on the formulary. Even if you take few medications now, the late enrollment penalty makes delaying a costly gamble.",
+      "answer": "If you do not have creditable drug coverage from another source (like an employer plan), you should enroll in Part D when first eligible. Late enrollment results in a permanent penalty of 1% per month for each month you delayed. Even if you take few medications now, the late enrollment penalty makes delaying a costly gamble.",
       "category": "health",
       "product": "medicare",
       "related_products": [],
@@ -1228,7 +1228,7 @@
     {
       "id": "medicare-cost",
       "question": "How much does Medicare cost?",
-      "answer": "Most people pay $0 for Part A (hospital). Part B costs $185/month in 2026 for most enrollees, with higher-income individuals paying more. Medicare Supplement plans range from $80-$300/month depending on the plan letter and your age. Medicare Advantage plans can have $0 premiums with copays at point of service. Part D drug plans range from $10-$80/month. We help compare total out-of-pocket costs across all options.",
+      "answer": "Most people pay $0 for Part A (hospital). Part B costs $202.90 a month in 2026 (standard premium) for most enrollees, with higher-income individuals paying more. Medicare Advantage plans can have $0 premiums with copays at point of service. We help compare total out-of-pocket costs across all options.",
       "category": "health",
       "product": "medicare",
       "related_products": [
@@ -1364,7 +1364,7 @@
     {
       "id": "individual-health-marketplace",
       "question": "How do I get health insurance through the marketplace?",
-      "answer": "Each state has a health insurance marketplace (either state-run or through healthcare.gov). Open enrollment typically runs November through mid-January. You can apply, compare plans, and check subsidy eligibility online. Subsidies are available for individuals earning up to 400% of the federal poverty level. Special enrollment periods are available after qualifying life events like losing employer coverage, marriage, or having a baby.",
+      "answer": "Each state has a health insurance marketplace (either state-run or through healthcare.gov). Open enrollment for 2027 coverage starts November 1, 2026; check HealthCare.gov (Indiana and Tennessee) or kynect (Kentucky) for the end date. You can apply, compare plans, and check subsidy eligibility online. Subsidies are available for individuals earning up to 400% of the federal poverty level. Special enrollment periods are available after qualifying life events like losing employer coverage, marriage, or having a baby.",
       "category": "health",
       "product": "individual-health",
       "related_products": [
@@ -2239,7 +2239,7 @@
     {
       "id": "family-health-aca",
       "question": "Can I get health insurance for my family through the ACA marketplace?",
-      "answer": "Yes. Each state has a health insurance marketplace (either state-run or through healthcare.gov). During open enrollment (typically November 1 to January 15), you can compare plans and check if you qualify for premium subsidies based on household income. Special enrollment periods are available if you have a qualifying life event like marriage, birth of a child, or job loss.",
+      "answer": "Yes. Each state has a health insurance marketplace (either state-run or through healthcare.gov). During open enrollment, you can compare plans and check if you qualify for premium subsidies based on household income. Open enrollment for 2027 coverage starts November 1, 2026; check HealthCare.gov (Indiana and Tennessee) or kynect (Kentucky) for the end date. Special enrollment periods are available if you have a qualifying life event like marriage, birth of a child, or job loss.",
       "category": "health",
       "product": "family-health",
       "tags": [

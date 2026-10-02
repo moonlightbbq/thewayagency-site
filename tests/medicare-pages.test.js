@@ -102,3 +102,124 @@ describe('blog template: Sources block (BLOG-02)', () => {
     assert.ok(!html.includes('"citation"'));
   });
 });
+
+// ─── Product pages (TRUST-04 figures; spec 3.5) ───────────────────────────────
+
+const pages = require('../scripts/builders/pages');
+const shared = require('../scripts/shared-templates');
+
+/** The build's shared context (scripts/build.js), read from the repo's data. */
+function buildCtx(patch = {}) {
+  const data = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, 'data', f), 'utf8'));
+  const locations = data('locations.json');
+  const office = locations.offices[0];
+  const reviews = { rating: locations.agency.google_rating || '5.0', count: locations.agency.google_review_count || '20+' };
+  const richContent = {};
+  for (const f of ['content-personal.json', 'content-commercial.json', 'content-life.json', 'content-health.json']) Object.assign(richContent, data(f));
+  return {
+    products: data('products.json'), office, team: data('team.json'), knowledgeBase: data('knowledge-base.json'),
+    tpmo: SITE_TPMO, healthFacts: data('health-facts.json'), carriers: data('carriers.json'), testimonials: data('testimonials.json'),
+    reviews, richContent, landingData: data('landing-pages.json'), seoData: data('seo.json'),
+    renderNav: shared.renderNav, renderFooter: () => shared.renderFooter(office, reviews), renderScripts: shared.renderScripts,
+    ...patch,
+  };
+}
+const LINES = { personal: 'Personal Insurance', commercial: 'Commercial Insurance', life: 'Life Insurance', health: 'Health Insurance' };
+function productPage(id, ctx = buildCtx()) {
+  for (const [lineKey, list] of Object.entries(ctx.products)) {
+    const p = (list || []).find((x) => x.id === id);
+    if (p) return pages.generateProductPage(p, LINES[lineKey], lineKey, lineKey, ctx);
+  }
+  throw new Error(`no product ${id}`);
+}
+/** Visible text: scripts and styles dropped, tags stripped, entities decoded. */
+function visibleText(html) {
+  return html.replace(/<script[\s\S]*?<\/script>/gi, ' ').replace(/<style[\s\S]*?<\/style>/gi, ' ').replace(/<[^>]+>/g, ' ')
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/\s+/g, ' ');
+}
+function faqLd(html) {
+  for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+    const d = JSON.parse(m[1]);
+    if (d['@type'] === 'FAQPage') return d.mainEntity;
+  }
+  return [];
+}
+
+describe('product pages: 2026 and 2027 figures (TRUST-04)', () => {
+  test('/health/medicare states the 2026 CMS amounts and both Part D years, and none of the stale ones', () => {
+    const html = productPage('medicare');
+    const text = visibleText(html);
+    for (const s of ['$202.90 a month in 2026', '$1,736 per benefit period', '$283 a year in 2026', '$2,100 in 2026 and $2,400 in 2027', '$615 in 2026 and $700 in 2027']) {
+      assert.ok(text.includes(s), s);
+    }
+    for (const s of ['$185', '$1,632', '$257', '$2,000 for Medicare Part D', 'save thousands of dollars']) assert.ok(!text.includes(s), s);
+    const partD = faqLd(html).find((q) => q.name === 'Does Medicare cover prescription drugs?');
+    assert.ok(partD, 'Part D FAQ in FAQPage');
+    assert.ok(text.includes(partD.acceptedAnswer.text), 'the FAQPage answer is the visible answer');
+    assert.ok(partD.acceptedAnswer.text.includes('$2,100') && partD.acceptedAnswer.text.includes('$2,400'));
+  });
+
+  test('Marketplace pages read the dated plan year 2027 enrollment fact; no token or enhanced-subsidy claim survives', () => {
+    for (const id of ['individual_health', 'family_health']) {
+      const product = Object.values(buildCtx().products).flat().find((p) => p.id === id || p.slug === id.replace('_', '-'));
+      const html = pages.generateProductPage(product, 'Health Insurance', 'health', 'health', buildCtx());
+      const text = visibleText(html);
+      assert.ok(text.includes('As of October 2026, open enrollment for 2027 coverage runs November 1, 2026 to January 15, 2027'), id);
+      assert.ok(!html.includes('{{fact:'), `${id}: no unresolved token`);
+      assert.ok(!/enhanced subsidies/i.test(html), id);
+      assert.ok(!/through January 15(?!, 20)/.test(text), `${id}: no undated January 15`);
+      for (const q of faqLd(html)) assert.ok(!q.acceptedAnswer.text.includes('{{fact:'), `${id}: JSON-LD token resolved`);
+    }
+  });
+
+  test('Medicaid, group health and family health carry the 2026 values', () => {
+    const products = Object.values(buildCtx().products).flat();
+    const page = (slug) => visibleText(pages.generateProductPage(products.find((p) => p.slug === slug), 'Health Insurance', 'health', 'health', buildCtx()));
+    const medicaid = page('medicaid');
+    assert.ok(medicaid.includes('$22,025') && medicaid.includes('$29,863') && medicaid.includes('$37,702'));
+    assert.ok(medicaid.includes('Tennessee has not expanded Medicaid'));
+    assert.ok(!/\$(20,783|28,208|35,632)/.test(medicaid));
+    const group = page('group-health');
+    assert.ok(group.includes('$1,700 for self-only') && group.includes('$4,400 for self-only') && group.includes('$8,750 for family'));
+    const family = page('family-health');
+    assert.ok(family.includes('$21,200 for a family plan in 2026') && family.includes('$24,000 in 2027'));
+    assert.ok(!family.includes('$18,900'));
+    const individual = page('individual-health');
+    assert.ok(!individual.includes('$60,240'), 'no 400% dollar figure until the reviewer confirms it');
+  });
+});
+
+// ─── Frozen legacy guide (spec 3.10) ─────────────────────────────────────────
+
+describe('legacy Medicare guide', () => {
+  const { copyBlogPages } = require('../scripts/builders/blog-helpers');
+  const { LEGACY_BLOG_PAGES, legacyPageHash } = require('../scripts/lib/legacy-blog-pages');
+  const SRC_PAGE = path.join(ROOT, 'src', 'pages', 'blog', 'medicare-enrollment-guide.html');
+
+  test('the edited page matches its pin and carries one TPMO placeholder under the byline', () => {
+    const src = fs.readFileSync(SRC_PAGE, 'utf8');
+    assert.equal(legacyPageHash(src), LEGACY_BLOG_PAGES['medicare-enrollment-guide.html']);
+    assert.equal(src.split('<!--TPMO-DISCLAIMER-->').length - 1, 1);
+    assert.ok(src.indexOf('class="blog-meta"') < src.indexOf('<!--TPMO-DISCLAIMER-->'));
+  });
+
+  test('copyBlogPages fills the placeholder from the record: nothing while pending, the statement when active', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'medicare-legacy-'));
+    try {
+      fs.mkdirSync(path.join(tmp, 'src', 'pages', 'blog'), { recursive: true });
+      fs.mkdirSync(path.join(tmp, 'src', 'blog'), { recursive: true });
+      fs.copyFileSync(SRC_PAGE, path.join(tmp, 'src', 'pages', 'blog', 'medicare-enrollment-guide.html'));
+      const SRC = path.join(tmp, 'src');
+      const BUILD = path.join(tmp, 'build');
+      const out = () => fs.readFileSync(path.join(BUILD, 'blog', 'medicare-enrollment-guide.html'), 'utf8');
+      copyBlogPages(SRC, BUILD, (c) => c, SITE_TPMO);
+      assert.ok(!out().includes('<!--TPMO-DISCLAIMER-->') && !out().includes('tpmo-disclaimer'), 'pending: placeholder removed, no statement');
+      copyBlogPages(SRC, BUILD, (c) => c, activeTpmo());
+      const html = out();
+      assert.ok(html.includes('id="tpmo-disclaimer"') && html.includes('Currently we represent 3 organizations which offer 12 products in your area.'));
+      assert.ok(html.indexOf('class="blog-meta"') < html.indexOf('id="tpmo-disclaimer"'));
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+});

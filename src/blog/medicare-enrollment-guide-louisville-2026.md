@@ -6,10 +6,11 @@ author: Jill Boone
 author_slug: jill-boone
 author_title: Licensed Agent
 date: 2026-03-27
-modified: 2026-03-27
+modified: 2026-10-02
 category: health
 tags: [medicare, louisville, kentucky, seniors, health-insurance, enrollment]
 status: published
+sources: [CMS 2026 Medicare Parts A and B premiums and deductibles | https://www.cms.gov/newsroom/fact-sheets/2026-medicare-parts-b-premiums-deductibles, Medicare.gov when coverage starts | https://www.medicare.gov/basics/get-started-with-medicare/sign-up/when-does-medicare-coverage-start, CMS CY2027 Rate Announcement | https://www.cms.gov/files/document/2027-announcement.pdf, Kentucky SHIP (CHFS DAIL) | https://www.chfs.ky.gov/agencies/dail/Pages/ship.aspx, Medicare Plan Finder | https://www.medicare.gov/plan-compare]
 ---
 
 If you are turning 65 this year — or helping a parent or spouse figure out their options — Medicare can feel like a lot to take in. There are letters attached to everything, deadlines that actually matter, and more plan choices than anyone expected. But once you break it down, it is manageable. And you do not have to figure it out alone.
@@ -22,7 +23,7 @@ Medicare is divided into parts, each covering a different piece of your healthca
 
 **Part A (Hospital Insurance)** covers inpatient hospital stays, skilled nursing facility care, hospice, and some home health services. Most people do not pay a premium for Part A if they or their spouse paid Medicare taxes for at least 10 years.
 
-**Part B (Medical Insurance)** covers doctor visits, outpatient care, preventive services, lab work, and medical equipment. Part B has a monthly premium — for 2026, the standard premium is set by CMS each fall. You pay this whether you choose Original Medicare or Medicare Advantage.
+**Part B (Medical Insurance)** covers doctor visits, outpatient care, preventive services, lab work, and medical equipment. Part B has a monthly premium: the standard premium is $202.90 a month in 2026. You pay this whether you choose Original Medicare or Medicare Advantage.
 
 **Part C (Medicare Advantage)** is an alternative way to receive your Part A and Part B benefits. These plans are offered by private insurance companies and typically bundle hospital, medical, and prescription drug coverage into one plan. Many include extras like dental, vision, and hearing. The trade-off is that you are usually limited to a provider network.
 
@@ -36,7 +37,7 @@ Timing matters with Medicare. Miss a window and you could face penalties or gaps
 
 **Initial Enrollment Period (IEP).** This is the seven-month window around your 65th birthday — it starts three months before your birthday month, includes your birthday month, and extends three months after. This is your best opportunity to enroll without penalties or complications. If you are still working and covered by an employer plan, you may be able to delay, but talk to someone before you assume that.
 
-**General Enrollment Period.** If you missed your IEP and are not covered by an employer plan, you can sign up between January 1 and March 31 each year. Coverage begins July 1. Late enrollment penalties may apply, so this is not the ideal route.
+**General Enrollment Period.** If you missed your IEP and are not covered by an employer plan, you can sign up between January 1 and March 31 each year. Your coverage starts the month after you sign up. Late enrollment penalties may apply, so this is not the ideal route.
 
 **Medicare Advantage and Part D Open Enrollment (October 15 - December 7).** This is the annual window to switch Medicare Advantage plans, move between Advantage and Original Medicare, or change your Part D plan. Changes take effect January 1 of the following year.
 
@@ -60,7 +61,7 @@ Do not overlook Part D. Even if you are healthy and take few medications now, en
 
 Each Part D plan has a formulary — a list of covered drugs organized into cost tiers. The same medication can be on different tiers depending on the plan, which means your out-of-pocket cost varies. If you take regular prescriptions, compare formularies before choosing a plan. The Medicare Plan Finder at medicare.gov lets you enter your specific medications and see estimated costs for each available plan.
 
-For 2026, the Inflation Reduction Act provisions continue to cap insulin costs and limit annual out-of-pocket spending on Part D drugs. These are meaningful protections, especially for seniors managing chronic conditions.
+For 2026, the Inflation Reduction Act provisions continue to cap insulin costs and limit annual out-of-pocket spending on Part D drugs to $2,100 in 2026. These are meaningful protections, especially for seniors managing chronic conditions.
 
 ## Common Medicare mistakes to avoid
 
@@ -78,9 +79,9 @@ For 2026, the Inflation Reduction Act provisions continue to cap insulin costs a
 
 You have solid local resources available — take advantage of them.
 
-**Kentucky State Health Insurance Assistance Program (SHIP).** SHIP counselors provide free, unbiased Medicare counseling. They can help you understand your options, compare plans, and enroll. In the Louisville area, you can reach SHIP through the Louisville Metro Department of Public Health and Wellness or by calling 1-877-293-7447.
+**Kentucky State Health Insurance Assistance Program (SHIP).** Kentucky's SHIP, run by the Cabinet for Health and Family Services' Department for Aging and Independent Living, gives free, unbiased Medicare counseling. Its counselors can help you understand your options and compare plans, and they do not sell insurance. Call the statewide SHIP hotline at (877) 293-7447 (option 2).
 
-**Social Security offices.** The Louisville Social Security office on West Broadway handles Medicare enrollment and questions about eligibility. You can schedule an appointment at ssa.gov or call 1-800-772-1213. There is also an office in Elizabethtown if that is more convenient for you.
+**Social Security.** Social Security handles Medicare enrollment and questions about eligibility. You can apply or make an appointment at ssa.gov or call 1-800-772-1213.
 
 **Medicare.gov Plan Finder.** Use the official tool at medicare.gov/plan-compare to enter your medications, preferred pharmacy, and doctors. It gives you a side-by-side comparison of available plans in your ZIP code.
 

@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 // The agency reference for every JSON-LD block here (never a full agency node: SCHEMA-01, SCHEMA-02).
 const { orgRef } = require('../lib/entity');
+const { resolveFacts } = require('../lib/health-facts');
 
 // ─── HTML Escape Helper ────────────────────────
 
@@ -511,7 +512,10 @@ ${renderScripts()}
 
 function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
   const { products, office, knowledgeBase, carriers, testimonials, testimonialsBlocklist, reviews, richContent, seoData, renderNav, renderFooter, renderScripts } = ctx;
-  const rc = richContent[product.id] || {};
+  // {{fact:<id>}} tokens read dated values from data/health-facts.json, in the
+  // visible copy and the FAQPage JSON-LD alike (TRUST-04). An unknown token is
+  // left in place and fails the build guard.
+  const rc = resolveFacts(richContent[product.id] || {}, ctx.healthFacts);
   const faqs = rc.faqs || [];
   const kbFaqs = getFAQsForProduct(knowledgeBase, product.id);
   const allFaqs = [...faqs];

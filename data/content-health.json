@@ -1,7 +1,7 @@
 {
   "medicare": {
-    "direct_answer": "Medicare is the federal health insurance program for Americans 65 and older, as well as certain younger people with disabilities or end-stage renal disease. It consists of Part A (hospital insurance, premium-free for most people), Part B (medical insurance, approximately $185/month in 2026), Part C (Medicare Advantage plans offered by private insurers), and Part D (prescription drug coverage). Original Medicare covers about 80% of approved costs, leaving significant gaps that supplemental coverage can fill.",
-    "who_needs_it": "If you are approaching 65 or already enrolled, Medicare is your primary health insurance. The Initial Enrollment Period starts three months before your 65th birthday month and ends three months after. Many retirees transition from employer coverage or marketplace plans to Medicare, and making the right choice between Original Medicare with a Medigap supplement versus a Medicare Advantage plan can save thousands of dollars annually. Chronic conditions like diabetes and heart disease make comprehensive Medicare coverage especially important. The Way Agency helps clients compare all available plans during Annual Enrollment (October 15 through December 7) and advises on Special Enrollment Periods for qualifying life events.",
+    "direct_answer": "Medicare is the federal health insurance program for Americans 65 and older, as well as certain younger people with disabilities or end-stage renal disease. It consists of Part A (hospital insurance, premium-free for most people), Part B (medical insurance; the standard premium is $202.90 a month in 2026), Part C (Medicare Advantage plans offered by private insurers), and Part D (prescription drug coverage). Original Medicare covers about 80% of approved costs, leaving significant gaps that supplemental coverage can fill.",
+    "who_needs_it": "If you are approaching 65 or already enrolled, Medicare is your primary health insurance. The Initial Enrollment Period starts three months before your 65th birthday month and ends three months after. Many retirees transition from employer coverage or marketplace plans to Medicare, and the choice between Original Medicare with a Medigap supplement and a Medicare Advantage plan affects both your costs and which doctors you can see. Chronic conditions like diabetes and heart disease make comprehensive Medicare coverage especially important. The Way Agency helps clients compare all available plans during Annual Enrollment (October 15 through December 7) and advises on Special Enrollment Periods for qualifying life events.",
     "what_it_covers": [
       "Part A: Inpatient hospital stays, skilled nursing facility care (up to 100 days), hospice care, some home health services",
       "Part B: Doctor visits, outpatient surgery, preventive screenings, durable medical equipment, mental health services",
@@ -17,7 +17,7 @@
       "Concierge or private-duty nursing",
       "Most prescription drugs under Original Medicare alone (requires Part D or Advantage plan)"
     ],
-    "cost_narrative": "Medicare Part A is premium-free for most people who paid Medicare taxes for at least 10 years. Part B costs approximately $185 per month in 2026, with higher earners paying more through Income-Related Monthly Adjustment Amounts (IRMAA). Beyond premiums, Original Medicare has a Part A hospital deductible of around $1,632 per benefit period and a Part B deductible of approximately $257 annually. After the deductible, you typically pay 20% of approved costs with no out-of-pocket maximum, which is why most Medicare enrollees add a Medigap supplement or choose a Medicare Advantage plan. The Way Agency can walk you through the actual cost comparison based on your medications and doctors.",
+    "cost_narrative": "Medicare Part A is premium-free for most people who paid Medicare taxes for at least 10 years. In 2026 the standard Part B premium is $202.90 a month, with higher earners paying more through Income-Related Monthly Adjustment Amounts (IRMAA). Original Medicare also has a Part A hospital deductible of $1,736 per benefit period and a Part B deductible of $283 a year in 2026 (CMS, November 14, 2025). CMS publishes the 2027 amounts in the fall, and we update this page when it does. After the deductible, you typically pay 20% of approved costs with no out-of-pocket maximum, which is why most Medicare enrollees add a Medigap supplement or choose a Medicare Advantage plan. The Way Agency can walk you through the actual cost comparison based on your medications and doctors.",
     "faqs": [
       {
         "question": "When should I enroll in Medicare?",
@@ -33,7 +33,7 @@
       },
       {
         "question": "Does Medicare cover prescription drugs?",
-        "answer": "Original Medicare (Parts A and B) does not cover most outpatient prescriptions. You need a standalone Part D plan or a Medicare Advantage plan with drug coverage. In 2026, the Inflation Reduction Act caps annual out-of-pocket drug spending at $2,000 for Medicare Part D enrollees, which is a significant benefit for anyone managing chronic conditions with expensive medications."
+        "answer": "Original Medicare (Parts A and B) does not cover most outpatient prescriptions. You need a standalone Part D plan or a Medicare Advantage plan with drug coverage. Under the Inflation Reduction Act, out-of-pocket costs for covered Part D drugs are capped at $2,100 in 2026 and $2,400 in 2027. The standard Part D deductible is $615 in 2026 and $700 in 2027, and plans may charge less (CMS CY2027 Rate Announcement, April 6, 2026)."
       },
       {
         "question": "I am still working at 65. Do I need to sign up for Medicare?",
@@ -42,7 +42,7 @@
     ]
   },
   "medicaid": {
-    "direct_answer": "Medicaid is a joint federal and state health insurance program that provides free or low-cost coverage to low-income individuals and families. Many states have expanded Medicaid under the Affordable Care Act to cover adults with household incomes up to 138% of the federal poverty level (approximately $20,783 for an individual in 2026). Enrollment and applications are handled through your state's health insurance marketplace or Medicaid office.",
+    "direct_answer": "Medicaid is a joint federal and state health insurance program that provides free or low-cost coverage to low-income individuals and families. Many states have expanded Medicaid under the Affordable Care Act to cover adults with household incomes up to 138% of the federal poverty level (about $22,025 a year for one person under the 2026 HHS poverty guidelines). Tennessee has not expanded Medicaid to low-income adults. In Kentucky you apply through kynect; in other states, through the state Medicaid agency or HealthCare.gov.",
     "who_needs_it": "Medicaid expansion has provided coverage to millions of Americans who previously had no affordable insurance options. If you are an adult under 65 with income at or below 138% of the federal poverty level, you likely qualify in states that have expanded Medicaid. Families with children may qualify at higher income levels, and pregnant women are often covered at higher FPL thresholds depending on your state. The program is particularly significant in areas where lower median incomes and higher rates of uninsurance historically left many residents without access to preventive care. You apply through your state's health insurance marketplace, and unlike marketplace plans, Medicaid enrollment is open year-round with no limited enrollment period. The Way Agency can help you determine whether Medicaid, a marketplace plan with subsidies, or another option is the best fit for your situation.",
     "what_it_covers": [
       "Doctor visits and specialist care",
@@ -72,7 +72,7 @@
       },
       {
         "question": "What is the income limit for Medicaid?",
-        "answer": "For adults aged 19 to 64 under Medicaid expansion, the income limit is 138% of the federal poverty level. In 2026, that is approximately $20,783 for an individual, $28,208 for a family of two, and $35,632 for a family of three. Children often qualify at higher income levels through your state's Children's Health Insurance Program (CHIP), and pregnant women may qualify at higher FPL thresholds depending on your state. Income is calculated based on Modified Adjusted Gross Income (MAGI)."
+        "answer": "For adults aged 19 to 64 under Medicaid expansion, the income limit is 138% of the federal poverty level. Under the 2026 HHS poverty guidelines (48 contiguous states), 138% is about $22,025 a year for one person, $29,863 for two and $37,702 for three. Children often qualify at higher income levels through your state's Children's Health Insurance Program (CHIP), and pregnant women may qualify at higher FPL thresholds depending on your state. Income is calculated based on Modified Adjusted Gross Income (MAGI)."
       },
       {
         "question": "Can I have Medicaid and other insurance at the same time?",
@@ -167,13 +167,13 @@
       },
       {
         "question": "Is an HSA-compatible high-deductible plan a good option for my small business?",
-        "answer": "High-deductible health plans (HDHPs) paired with Health Savings Accounts (HSAs) can significantly reduce premium costs for both employers and employees. In 2026, the minimum HDHP deductible is $1,650 for self-only and $3,300 for family coverage. HSA contribution limits are $4,300 individual and $8,550 family. This approach works well for younger, healthier workforces but may not suit businesses with older employees or those managing chronic conditions. The Way Agency models both traditional and HDHP options side by side."
+        "answer": "High-deductible health plans (HDHPs) paired with Health Savings Accounts (HSAs) can significantly reduce premium costs for both employers and employees. For 2026, the minimum HDHP deductible is $1,700 for self-only and $3,400 for family coverage, and HSA contribution limits are $4,400 for self-only and $8,750 for family coverage (IRS Rev. Proc. 2025-19). This approach works well for younger, healthier workforces but may not suit businesses with older employees or those managing chronic conditions. The Way Agency models both traditional and HDHP options side by side."
       }
     ]
   },
   "individual-health": {
     "direct_answer": "Individual health insurance is a policy you purchase on your own rather than receiving through an employer. You can buy individual plans through your state's health insurance marketplace or directly from insurance carriers. Marketplace plans may qualify for premium tax credits and cost-sharing reductions based on your household income, making comprehensive coverage affordable for many people who do not have employer-sponsored insurance.",
-    "who_needs_it": "Individual health insurance is essential for the self-employed, freelancers, gig workers, small business owners who cannot form a group, early retirees not yet eligible for Medicare, and anyone between jobs. In areas where small businesses and self-employment are common, individual marketplace plans are often the primary coverage option. If your household income is between 100% and 400% of the federal poverty level, you likely qualify for premium subsidies; enhanced subsidies extended through recent legislation have made even higher earners eligible for assistance. Open enrollment typically runs from November 1 through January 15 annually, and the Way Agency helps clients navigate plan selection, subsidy calculations, and enrollment every year.",
+    "who_needs_it": "Individual health insurance is essential for the self-employed, freelancers, gig workers, small business owners who cannot form a group, early retirees not yet eligible for Medicare, and anyone between jobs. In areas where small businesses and self-employment are common, individual marketplace plans are often the primary coverage option. If your household income is between 100% and 400% of the federal poverty level, you may qualify for premium tax credits. {{fact:marketplace_oe_py2027}} The Way Agency helps clients navigate plan selection, subsidy calculations, and enrollment every year.",
     "what_it_covers": [
       "All ACA essential health benefits: hospitalization, prescriptions, maternity, mental health, preventive care",
       "Preventive services with no cost-sharing (annual physicals, cancer screenings, immunizations)",
@@ -196,11 +196,11 @@
     "faqs": [
       {
         "question": "When can I enroll in an individual health plan?",
-        "answer": "The annual Open Enrollment Period typically runs from November 1 through January 15. Outside of open enrollment, you can only enroll during a Special Enrollment Period triggered by a qualifying life event such as losing other coverage, getting married, having a baby, or moving to a new area. Medicaid and CHIP enrollment is available year-round."
+        "answer": "{{fact:marketplace_oe_py2027}} Outside of open enrollment, you can only enroll during a Special Enrollment Period triggered by a qualifying life event such as losing other coverage, getting married, having a baby, or moving to a new area. Medicaid and CHIP enrollment is available year-round."
       },
       {
         "question": "How do I know if I qualify for marketplace subsidies?",
-        "answer": "Premium tax credits are based on your household income relative to the federal poverty level. If your income is between 100% and 400% FPL, you likely qualify, and enhanced subsidies currently extend assistance to higher earners as well. For a single person in 2026, 400% FPL is approximately $60,240. The Way Agency can estimate your subsidy amount before you apply by reviewing your expected annual income."
+        "answer": "Premium tax credits are based on your household income relative to the federal poverty level. If your income is between 100% and 400% FPL, you likely qualify. The Way Agency can estimate your subsidy amount before you apply by reviewing your expected annual income."
       },
       {
         "question": "What is the difference between Bronze, Silver, Gold, and Platinum plans?",
@@ -218,7 +218,7 @@
   },
   "family-health": {
     "direct_answer": "Family health insurance covers you, your spouse, and your dependent children under a single policy. Family plans are available through employer group coverage, the health insurance marketplace, or directly from carriers. Marketplace family plans may qualify for premium tax credits based on household income, and children may qualify for your state's Children's Health Insurance Program (CHIP) if household income is too high for Medicaid but purchasing private coverage is a hardship.",
-    "who_needs_it": "Any family without employer-sponsored coverage should explore family health plans on the marketplace, especially during open enrollment from November 1 through January 15. Many families face a patchwork of coverage situations: one spouse may have employer insurance that does not extend to dependents at an affordable rate, a child may age off a parent's plan at 26, or a family may be transitioning between jobs. Your state's CHIP program may cover children in families at moderate income levels at little or no cost. The Way Agency helps families evaluate whether one combined plan, separate individual plans, or a mix of marketplace coverage and CHIP provides the best value.",
+    "who_needs_it": "Any family without employer-sponsored coverage should explore family health plans on the marketplace, especially during open enrollment. {{fact:marketplace_oe_py2027}} Many families face a patchwork of coverage situations: one spouse may have employer insurance that does not extend to dependents at an affordable rate, a child may age off a parent's plan at 26, or a family may be transitioning between jobs. Your state's CHIP program may cover children in families at moderate income levels at little or no cost. The Way Agency helps families evaluate whether one combined plan, separate individual plans, or a mix of marketplace coverage and CHIP provides the best value.",
     "what_it_covers": [
       "All ACA essential health benefits for every covered family member",
       "Pediatric dental and vision care (included in marketplace plans for children under 19)",
@@ -237,7 +237,7 @@
       "Experimental treatments",
       "Long-term custodial care"
     ],
-    "cost_narrative": "Family health plan premiums are significantly higher than individual plans, often $1,200 to $2,000 per month before subsidies for a family of four on a Silver plan. Premium tax credits can reduce this dramatically. A family of four earning $60,000 per year might pay $300 to $500 per month after subsidies. There is a family cap on ACA marketplace out-of-pocket costs (approximately $18,900 for 2026), which limits your total spending. Cost-sharing reductions on Silver plans further lower deductibles and copays for families earning below 250% FPL. The Way Agency models total annual healthcare costs, not just premiums, to find the most cost-effective family coverage strategy.",
+    "cost_narrative": "Family health plan premiums are significantly higher than individual plans, often $1,200 to $2,000 per month before subsidies for a family of four on a Silver plan. Premium tax credits can reduce this dramatically. A family of four earning $60,000 per year might pay $300 to $500 per month after subsidies. Marketplace plans cap your yearly out-of-pocket costs: $21,200 for a family plan in 2026 ($10,600 for one person) and $24,000 in 2027 ($12,000 for one person) (HealthCare.gov). Cost-sharing reductions on Silver plans further lower deductibles and copays for families earning below 250% FPL. The Way Agency models total annual healthcare costs, not just premiums, to find the most cost-effective family coverage strategy.",
     "faqs": [
       {
         "question": "Should my whole family be on one plan, or should we use separate plans?",

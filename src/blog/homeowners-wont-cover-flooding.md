@@ -52,7 +52,7 @@ Flood insurance is available through the NFIP and from a growing number of priva
 
 ## Do you need flood insurance if you are not in a flood zone?
 
-This is where the statistics matter. According to [FEMA](https://www.fema.gov/blog/floods-can-happen-anywhere-be-prepared-flood-insurance), nearly one in three NFIP flood insurance claims over the 2014–2024 period — about 29% — came from properties located outside high-risk flood zones.
+This is where the statistics matter. According to [FEMA](https://www.fema.gov/blog/floods-can-happen-anywhere-be-prepared-flood-insurance), about 40% of NFIP flood insurance claims come from outside high-risk flood zones.
 
 Floods do not respect map boundaries. Here is why properties outside flood zones still flood:
 
@@ -71,7 +71,7 @@ General ranges for Kentucky homeowners:
 
 - **High-risk flood zone (Zone A/AE):** $1,200 to $3,000+ per year
 - **Moderate-risk zone (Zone X shaded):** $400 to $1,000 per year
-- **Low-risk zone (Zone X unshaded):** $300 to $600 per year (Preferred Risk Policies, when available, can be even lower)
+- **Low-risk zone (Zone X unshaded):** $300 to $600 per year
 
 Private flood insurance has become more competitive and may offer lower rates for some properties, especially newer homes with good elevation. An independent agent can compare NFIP and private options.
 
