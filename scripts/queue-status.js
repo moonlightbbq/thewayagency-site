@@ -2,7 +2,9 @@
 /**
  * Read-only health view of the content queue.
  *
- * Reports the invariants in scripts/lib/content-queue.js (I1-I7, I9). I4 is the one
+ * Reports the invariants in scripts/lib/content-queue.js (I1-I9). I8 (a post
+ * due without its licensed reviewer's approval, held: owner decision
+ * 2026-10-02) lists every held post below as well. I4 is the one
  * that matters most: it is the check that would have caught
  * college-student-auto-insurance on 2026-08-03 instead of letting the publish
  * workflow go red on 2026-08-15. An explicit pause (calendar queue_pause,
@@ -10,7 +12,7 @@
  *
  * Usage: node scripts/queue-status.js [--today YYYY-MM-DD] [--strict]
  *   --strict            exit 1 if ANY invariant is violated
- *   --fail-on I4,I2b,I6,I7,I9 exit 1 only for these invariants (for CI)
+ *   --fail-on I4,I2b,I6,I7,I8,I9 exit 1 only for these invariants (for CI)
  *
  * CI uses --fail-on rather than --strict: an empty slot inside the markdown
  * window (I4) must break the build, but a thin backlog (I5) is a planning
@@ -107,12 +109,12 @@ if (unknownWindows.size) {
   console.log('  Not defined in content-taxonomy.json and claimed by no anchor.');
 }
 
-if (stats.reviewSkipped.length) {
-  console.log(`\nPublishing WITHOUT a reviewer email (${stats.reviewSkipped.length}):`);
-  for (const p of stats.reviewSkipped) {
-    console.log(`  ${p.publish_date}  ${p.slug}`);
+if (stats.heldForApproval.length) {
+  console.log(`\nHELD: due without their licensed reviewer's approval (${stats.heldForApproval.length}):`);
+  for (const p of stats.heldForApproval) {
+    console.log(`  ${p.publish_date}  ${String(p.status).padEnd(9)} ${p.slug}  reviewer: ${p.reviewer_email || 'none assigned'}`);
   }
-  console.log('  These were locked inside the D-10 review window to keep the date from going silent.');
+  console.log('  Not published and not rendered until the assigned reviewer approves (I8).');
 }
 
 console.log(`\n${'='.repeat(46)}`);

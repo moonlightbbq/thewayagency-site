@@ -134,10 +134,10 @@ describe('subjects and links', () => {
     assert.ok(html.includes(`href="${url}"`), 'the approval link');
     assert.match(html, />Review and approve in SAGE</);
     assert.match(html, /Approving is a click in SAGE, where you see the exact text that will publish\. Email replies cannot approve\./);
-    // Silence publishes with no reviewer named (scripts/lib/review-credit.js),
-    // and the email says so: the credit is the reason to approve.
-    assert.match(html, /If you take no action it publishes on .* without a reviewer named: only an approval in SAGE puts your name on it\./);
-    assert.match(html, /It names you as reviewer only if you approve it in SAGE\./);
+    // Silence HOLDS the post (owner decision 2026-10-02), and the email says so.
+    assert.match(html, /It will NOT publish until you approve it in SAGE\. Until you do, you get a reminder on each of the 3 days before .*; if it is still not approved on .*, it does not publish that day and the content owner is told\./);
+    assert.match(html, /This article publishes on .* only once you approve it in SAGE, and then names you as its reviewer\./);
+    assert.doesNotMatch(html, /without a reviewer named|If you take no action it publishes/);
     assert.doesNotMatch(html, /as written\.|approving by reply/i);
   });
 
@@ -163,7 +163,7 @@ describe('subjects and links', () => {
     assert.doesNotMatch(html, /emails you a proposed edit|emails you the proposed edit/);
     assert.doesNotMatch(html, /keep the subject line as it is/);
     assert.match(html, /A change request has to reach SAGE before the publish date begins/);
-    assert.match(html, /without a reviewer named/);
+    assert.match(html, /It will NOT publish until you approve it in SAGE/);
   });
 
   test('the email cannot be built without the SAGE address, and only an https one', () => {
@@ -187,7 +187,8 @@ describe('subjects and links', () => {
     assert.match(html, /Email replies cannot approve/);
     assert.ok(html.includes(encodeURIComponent(buildReviewSubjects(post, VECTOR_TOKEN).reply)));
     assert.doesNotMatch(html, /No action needed to approve/);
-    assert.match(html, /without a reviewer named: only an approval in SAGE puts your name on it/);
+    assert.match(html, /It will NOT publish until you approve it in SAGE/);
+    assert.doesNotMatch(html, /without a reviewer named/);
     assert.match(html, /A change request has to reach SAGE before the publish date begins/);
     assert.match(html, /emails you the proposed edit/);
     const noToken = formatReminderEmail(post, { name: 'Test Reviewer' }, { sageUrl: SAGE });
@@ -298,14 +299,14 @@ describe('a held post never renders, and is loud when its date arrives', () => {
     assert.ok(!q.evaluateInvariants(inReview, { candidates: [] }, '2099-06-03', { hasMarkdown: () => true }).violations.some(v => v.id === 'I6'));
   });
 
-  test('the publish workflow passes the secret and fails on I6', () => {
+  test('the publish workflow passes the secret and fails on I6 and I8', () => {
     const wf = fs.readFileSync(path.join(ROOT, '.github', 'workflows', 'publish-blog.yml'), 'utf8');
     assert.match(wf, /BLOG_REVIEW_TOKEN_SECRET: \$\{\{ secrets\.BLOG_REVIEW_TOKEN_SECRET \}\}/);
     // The publish step needs it too: it verifies SAGE's approval_mac and signs the credit record.
     const publishStep = wf.slice(wf.indexOf('- name: Publish scheduled posts'), wf.indexOf('- name: Commit and push'));
     assert.match(publishStep, /BLOG_REVIEW_TOKEN_SECRET: \$\{\{ secrets\.BLOG_REVIEW_TOKEN_SECRET \}\}/);
     assert.match(wf, /SAGE_REVIEW_URL: \$\{\{ secrets\.SAGE_REVIEW_URL \}\}/);
-    assert.match(wf, /queue-status\.js --fail-on I4,I2b,I6,I7/);
+    assert.match(wf, /queue-status\.js --fail-on I4,I2b,I6,I7,I8,I9\n/, 'I8 (due without licensed approval) turns the publish run red');
     assert.match(wf, /REQUIRED: unset \(or under 32 characters\), this step exits 2/);
   });
 

@@ -7,9 +7,16 @@
  *
  * A "Reviewed by" byline puts a licensed agent's name, title and the date they
  * signed off on public text, in the visible byline and in the JSON-LD. Since
- * BL-07 the only sign-off is the assigned reviewer's click in SAGE on the
- * sha256 of the exact bytes of src/blog/<slug>.md (sage-server
- * src/services/blog-review-approval.js). SAGE records it on the calendar entry:
+ * BL-07 the sign-off is the assigned reviewer's approval of the sha256 of the
+ * exact bytes of src/blog/<slug>.md: a click in SAGE (sage-server
+ * src/services/blog-review-approval.js), or, since 2026-10-02, for a reviewer
+ * whose data/team.json entry says "review_via": "email", an "APPROVED" email
+ * reply that SAGE verified (the signed request token, the bytes, the sender and
+ * the message's email authentication) and records the same way, adding
+ * approved_via 'email' (not signed, and not needed by any check here: the
+ * signed fields are the same for both). Since the owner's decision of
+ * 2026-10-02 the approval is also REQUIRED to publish at all
+ * (scripts/lib/calendar-status.js). SAGE records it on the calendar entry:
  * status 'approved', approved_by, approved_by_email, approved_date,
  * approved_sha256, approved_publish_date (the publish_date it was approved
  * for), approved_edit_id (when it approved a proposed edit) and approval_mac,
@@ -37,7 +44,9 @@
  *                                                  and the renderer skips it)
  *     no secret here to verify with             -> the publisher leaves it
  *                                                  'approved'; the renderer
- *                                                  renders it uncredited
+ *                                                  does not render it (an
+ *                                                  approval it cannot verify
+ *                                                  must not put a page up)
  *   CREDIT (status 'published', after it)
  *     the publisher credits a reviewer only after the check above, then
  *     records credited_sha256 (the sha256 of the file it committed, review
@@ -45,12 +54,19 @@
  *     credited_sha256 and approval_mac). The renderer prints "Reviewed by"
  *     only while the file still hashes to credited_sha256 and both MACs
  *     verify. Any later change to the file drops the byline.
- *   SILENCE (any other publishable status)       -> publishes with NO review
- *                                                  line; any it has is ignored
- *                                                  by the renderer and removed
- *                                                  by the publisher, and so is
- *                                                  any approval record left on
- *                                                  the entry
+ *   SILENCE (planned, in-draft, in-review)       -> HELD: does not publish or
+ *                                                  render on its date (owner
+ *                                                  decision 2026-10-02; the
+ *                                                  queue's I8). The frozen
+ *                                                  advisory exceptions
+ *                                                  (calendar-status.js
+ *                                                  ADVISORY_GRANDFATHERED)
+ *                                                  publish with NO review line;
+ *                                                  any it has is ignored by the
+ *                                                  renderer and removed by the
+ *                                                  publisher, and so is any
+ *                                                  approval record left on the
+ *                                                  entry
  *
  * "The approval is the byline reviewer's" means: the address that approved is
  * the entry's reviewer_email, which is still the address data/team.json gives
@@ -71,6 +87,7 @@
 
 const crypto = require('crypto');
 const contentGuard = require('./blog-content-guard');
+const { isAwaitingApproval } = require('./calendar-status');
 
 /** Front-matter keys that make a review claim (generate-blog.js renders them). */
 const REVIEWER_FIELDS = Object.freeze(['reviewer', 'reviewer_slug', 'reviewer_title', 'reviewed_date', 'reviewed_by']);
@@ -92,6 +109,10 @@ const MIN_WORDS = 200;
 const APPROVAL_RECORD_FIELDS = Object.freeze([
   'approved_by', 'approved_by_email', 'approved_date', 'approved_sha256', 'approved_publish_date', 'approved_edit_id',
   'approval_mac', 'credited_sha256', 'credit_mac',
+  // How the approval arrived: 'email' for an emailed APPROVED reply SAGE
+  // verified. Not signed and never checked here; listed so a withdrawn
+  // approval clears it and the queue's lost-update guard keeps it.
+  'approved_via',
 ]);
 
 const lower = (s) => String(s || '').trim().toLowerCase();
@@ -432,17 +453,22 @@ function applyReviewCredit(md, post, team, { credit }) {
  *   held ('changes-requested')      -> not rendered
  *   'error', or an unknown status   -> not rendered
  *   'published'                     -> renders; credited only by creditCheck
+ *   awaiting approval (planned,     -> not rendered: due, it is HELD for its
+ *   in-draft, in-review)               licensed reviewer's approval (owner
+ *                                      decision 2026-10-02); the frozen
+ *                                      advisory exceptions are publishable
  *   publishable, publish_date ahead -> not rendered yet
  *   publishable, due                -> rendered only if the publisher would
  *                                      publish it now (readiness, approval);
  *                                      an 'approved' one is credited as the
  *                                      publisher would credit it (without the
- *                                      secret it renders uncredited)
+ *                                      secret it is not rendered)
  *
  * @param {object|null} entry  the calendar entry for this slug (year1 or existing_posts)
  * @param {Buffer} rawBytes    the file's raw bytes
  * @param {Array} team         data/team.json's team list
  * @param {{secret?: string|null, today: string, isKnownStatus: Function, isPublishable: Function, isHeld: Function}} opts
+ *   isPublishable is called as isPublishable(status, entry) (calendar-status.js)
  * @returns {{render: boolean, credit: boolean, markdown: string, why: string}}
  */
 function renderDecision(entry, rawBytes, team, opts) {
@@ -460,17 +486,24 @@ function renderDecision(entry, rawBytes, team, opts) {
     const c = creditCheck(entry, rawBytes, { secret, team });
     return { render: true, credit: c.credit, markdown: c.credit ? text : stripped(), why: c.credit ? 'published, credited' : `published, no reviewer credited (${c.reason})` };
   }
-  if (!isPublishable(status)) return { render: false, credit: false, markdown: '', why: `status "${status}" does not publish` };
+  if (!isPublishable(status, entry)) {
+    if (!isAwaitingApproval(status)) return { render: false, credit: false, markdown: '', why: `status "${status}" does not publish` };
+    if (!entry.publish_date || String(entry.publish_date) > today) {
+      return { render: false, credit: false, markdown: '', why: `scheduled for ${entry.publish_date || 'no date'}, awaiting its licensed reviewer's approval` };
+    }
+    return { render: false, credit: false, markdown: '', why: `due ${entry.publish_date} without its licensed reviewer's approval (status ${status}): held until they approve it` };
+  }
   if (!entry.publish_date || String(entry.publish_date) > today) return { render: false, credit: false, markdown: '', why: `scheduled for ${entry.publish_date || 'no date'}` };
   const notReady = readinessError(text);
   if (notReady) return { render: false, credit: false, markdown: '', why: `not ready to publish (${notReady})` };
   const approval = approvalCheck(entry, rawBytes, team, { secret });
   if (approval.error) return { render: false, credit: false, markdown: '', why: `approved in SAGE, but ${approval.detail} (${approval.error})` };
-  // No secret in this build: the approval cannot be verified, so it credits
-  // no one, but the post renders as it would on silence (a planned or
-  // in-review post with these bytes renders uncredited today). Taking it off
-  // the site until the publisher runs would punish the reviewer's approval.
-  if (approval.unverifiable) return { render: true, credit: false, markdown: stripped(), why: `approved in SAGE, but ${approval.detail}; rendered with no reviewer credited` };
+  // No secret in this build: the approval cannot be verified. Since the
+  // owner's decision of 2026-10-02 an approval is what lets a post publish at
+  // all, so one that cannot be verified (typed into the calendar by hand, for
+  // all this build can tell) does not put a page up. The publisher, which has
+  // the secret, publishes it on its next run, and a 'published' post renders.
+  if (approval.unverifiable) return { render: false, credit: false, markdown: '', why: `approved, but ${approval.detail}; not rendered until the publisher (which can verify it) publishes it` };
   return {
     render: true,
     credit: approval.credit,

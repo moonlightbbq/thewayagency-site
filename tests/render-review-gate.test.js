@@ -9,8 +9,11 @@
  * SAGE at all. These tests run the real generator (and, end to end, the real
  * publisher) against a temp copy of the site tree with synthetic data:
  *
- *   - a 'planned' post past its date with review lines renders with no credit,
- *     in any spelling of the review keys the generator's parser accepts;
+ *   - a 'planned' or 'in-review' post past its date is HELD: it does not
+ *     render without its licensed reviewer's approval (owner decision
+ *     2026-10-02), except the frozen advisory exceptions, which render with no
+ *     credit; a published post with review lines renders with no credit, in
+ *     any spelling of the review keys the generator's parser accepts;
  *   - an entry in 'error' (approved_bytes_changed) neither renders nor credits;
  *   - a hold, an unknown status and a file claiming another post's slug do not
  *     render;
@@ -92,6 +95,7 @@ function makeSite({ year1 = [], existing = [], files = {} }) {
 }
 
 const credits = (html) => /Reviewed by/.test(html) || /"reviewedBy"/.test(html);
+const GRANDFATHERED = require('../scripts/lib/calendar-status').ADVISORY_GRANDFATHERED[0];
 
 describe('generate-blog renders no review claim without a signed approval', () => {
   let site;
@@ -102,7 +106,10 @@ describe('generate-blog renders no review claim without a signed approval', () =
     site = makeSite({
       year1: [
         { slug: 'test-planned-past', title: 'SYNTHETIC planned', publish_date: '2026-01-07', status: 'planned', ...assigned },
-        { slug: 'test-spellings', title: 'SYNTHETIC spellings', publish_date: '2026-01-07', status: 'in-review', ...assigned },
+        { slug: 'test-spellings', title: 'SYNTHETIC spellings', publish_date: '2026-01-07', status: 'published', ...assigned },
+        { slug: 'test-review-past', title: 'SYNTHETIC in review', publish_date: '2026-01-07', status: 'in-review', ...assigned },
+        // A frozen advisory exception (calendar-status.js ADVISORY_GRANDFATHERED): its exact slug and date.
+        { slug: GRANDFATHERED.slug, title: 'SYNTHETIC grandfathered', publish_date: GRANDFATHERED.publish_date, status: 'planned', ...assigned },
         { ...approved('test-error-changed', changedBase), status: 'error', error_reason: 'approved_bytes_changed' },
         { slug: 'test-held', title: 'SYNTHETIC held', publish_date: '2026-01-07', status: 'changes-requested', ...assigned },
         { slug: 'test-unknown', title: 'SYNTHETIC unknown', publish_date: '2026-01-07', status: 'awaiting-legal', ...assigned },
@@ -117,6 +124,8 @@ describe('generate-blog renders no review claim without a signed approval', () =
       ],
       files: {
         'test-planned-past': post('test-planned-past', REVIEW_LINES),
+        'test-review-past': post('test-review-past'),
+        [GRANDFATHERED.slug]: post(GRANDFATHERED.slug, REVIEW_LINES, GRANDFATHERED.publish_date),
         // Every spelling generate-blog.js's parser reads as a key once trimmed.
         'test-spellings': post('test-spellings', ` reviewer: ${REVIEWER.name}\n\treviewer_slug: ${REVIEWER.slug}\nreviewed_date : 2025-12-01\nReviewer: ${REVIEWER.name}\n reviewed_by: ${REVIEWER.name}\n`),
         'test-error-changed': `${changedBase.replace('---\n\n', `${REVIEW_LINES}---\n\n`)}\nAn AI-added paragraph the reviewer never saw.\n`,
@@ -140,10 +149,17 @@ describe('generate-blog renders no review claim without a signed approval', () =
     assert.equal(gen.status, 0, gen.stdout + gen.stderr);
   });
 
-  test('a planned post past its date renders, with review lines in its front matter, and credits no one', () => {
-    const html = site.page('test-planned-past');
+  test('a planned or in-review post past its date is HELD: not rendered without its licensed reviewer\'s approval (owner decision 2026-10-02)', () => {
+    assert.equal(site.page('test-planned-past'), null, gen.stdout);
+    assert.equal(site.page('test-review-past'), null, gen.stdout);
+    assert.match(gen.stdout, /Not rendered test-planned-past\.html  -  due 2026-01-07 without its licensed reviewer's approval \(status planned\): held until they approve it/);
+    assert.match(gen.stdout, /Not rendered test-review-past\.html  -  due 2026-01-07 without its licensed reviewer's approval \(status in-review\)/);
+  });
+
+  test('a frozen advisory exception renders at its exact slug and date, with review lines in its front matter, and credits no one', () => {
+    const html = site.page(GRANDFATHERED.slug);
     assert.ok(html, gen.stdout);
-    assert.ok(!credits(html), 'no "Reviewed by" and no reviewedBy without an approval in SAGE');
+    assert.ok(!credits(html), 'no "Reviewed by" and no reviewedBy without an approval');
     assert.ok(!html.includes(REVIEWER.name), 'the reviewer is not named anywhere on the page');
   });
 
@@ -265,7 +281,8 @@ describe('end to end: publisher then renderer', () => {
       let gen = site.run('generate-blog.js');
       assert.equal(gen.status, 0, gen.stdout + gen.stderr);
       assert.match(site.page('test-e2e'), /Reviewed by .*Test Reviewer C/);
-      assert.ok(!credits(site.page('test-e2e-silent')), 'silence names no reviewer');
+      assert.equal(site.page('test-e2e-silent'), null, 'silence is HELD: no page (owner decision 2026-10-02)');
+      assert.equal(site.calendar().year1.find((p) => p.slug === 'test-e2e-silent').status, 'in-review', 'and the publisher left it as it was');
 
       // A build without the secret cannot verify the credit, so prints none.
       site.clean();
@@ -292,6 +309,7 @@ describe('end to end: publisher then renderer', () => {
       fs.writeFileSync(calPath, JSON.stringify(cal, null, 2));
       site.clean();
       site.run('generate-blog.js');
+      assert.ok(site.page('test-e2e-silent'), 'published: it renders');
       assert.ok(!credits(site.page('test-e2e-silent')), 'a hand-typed credit record credits no one');
 
       // Any change to the credited file after publishing drops the byline.
@@ -348,7 +366,10 @@ const warned = (stdout, slug) => new RegExp(`! ${slug}: review-credit wording in
 describe('front matter cannot print a review claim through a non-review key', () => {
   const fm = (slug, lines) => `---\ntitle: SYNTHETIC ${slug}\nslug: ${slug}\ndescription: SYNTHETIC description\nauthor: Test Author Q\nauthor_slug: test-author-q\nauthor_title: Licensed Test Agent\ndate: 2026-01-07\n${lines}---\n\n${body}\n`;
   const withKey = (slug, key, value) => fm(slug, '').replace(new RegExp(`^${key}: .*$`, 'm'), `${key}: ${value}`);
-  const planned = (slug) => ({ slug, title: `SYNTHETIC ${slug}`, publish_date: '2026-01-07', status: 'planned', ...assigned });
+  // Since the owner's decision of 2026-10-02 a due 'planned' post is held, so
+  // what renders uncredited is a published post with no credit record ('live'),
+  // and what the publisher publishes is a signed approval for the exact bytes.
+  const live = (slug) => ({ slug, title: `SYNTHETIC ${slug}`, publish_date: '2026-01-07', status: 'published', ...assigned });
   const injected = {
     'test-inj-author-title': withKey('test-inj-author-title', 'author_title', BYLINE_INJECTION),
     'test-inj-author-slug': withKey('test-inj-author-slug', 'author_slug', LD_INJECTION),
@@ -359,7 +380,7 @@ describe('front matter cannot print a review claim through a non-review key', ()
   const PLAIN = withKey('test-inj-plain-title', 'author_title', 'Licensed Agent | Reviewed by Test Reviewer C, Licensed Test Agent on December 1, 2025');
 
   test('the publisher refuses each one (error / unsafe_frontmatter) and the renderer renders none of them, before or after', () => {
-    const site = makeSite({ year1: Object.keys(injected).map(planned), files: injected });
+    const site = makeSite({ year1: Object.entries(injected).map(([slug, md]) => approved(slug, md)), files: injected });
     try {
       let gen = site.run('generate-blog.js');
       assert.equal(gen.status, 0, gen.stdout + gen.stderr);
@@ -383,7 +404,8 @@ describe('front matter cannot print a review claim through a non-review key', ()
   });
 
   test('plain-text credit wording in author_title: flagged, rendered and published, with no structured credit (author_title is never printed)', () => {
-    const site = makeSite({ year1: [planned('test-inj-plain-title')], files: { 'test-inj-plain-title': PLAIN } });
+    const site = makeSite({ year1: [live('test-inj-plain-title')], files: { 'test-inj-plain-title': PLAIN } });
+    const toPublish = makeSite({ year1: [approved('test-inj-plain-title', PLAIN)], files: { 'test-inj-plain-title': PLAIN } });
     try {
       const gen = site.run('generate-blog.js');
       assert.equal(gen.status, 0, gen.stdout + gen.stderr);
@@ -392,14 +414,15 @@ describe('front matter cannot print a review claim through a non-review key', ()
       assert.ok(!structuredCredit(html));
       assert.ok(!html.includes('Reviewed by'), 'author_title is never printed');
       assert.ok(warned(gen.stdout, 'test-inj-plain-title'), gen.stdout);
-      const pub = site.run('publish-scheduled-posts.js');
+      // Approved, it publishes: the wording is flagged, not refused.
+      const pub = toPublish.run('publish-scheduled-posts.js');
       assert.equal(pub.status, 0, pub.stdout + pub.stderr);
-      const e = site.calendar().year1.find((p) => p.slug === 'test-inj-plain-title');
+      const e = toPublish.calendar().year1.find((p) => p.slug === 'test-inj-plain-title');
       assert.equal(e.status, 'published');
-      assert.equal(e.credit_mac, undefined);
       assert.ok(warned(pub.stdout, 'test-inj-plain-title'), pub.stdout);
     } finally {
       site.done();
+      toPublish.done();
     }
   });
 
@@ -407,7 +430,9 @@ describe('front matter cannot print a review claim through a non-review key', ()
     // Round 4 refused a reading_time that was not "N min read". The renderer
     // never prints one: it prints the time it computes, and logs the value.
     const slug = 'test-inj-reading-time';
-    const site = makeSite({ year1: [planned(slug)], files: { [slug]: fm(slug, 'reading_time: 6 min read | Reviewed by Test Reviewer C on December 1, 2025\n') } });
+    const file = fm(slug, 'reading_time: 6 min read | Reviewed by Test Reviewer C on December 1, 2025\n');
+    const site = makeSite({ year1: [live(slug)], files: { [slug]: file } });
+    const toPublish = makeSite({ year1: [approved(slug, file)], files: { [slug]: file } });
     try {
       const gen = site.run('generate-blog.js');
       assert.equal(gen.status, 0, gen.stdout + gen.stderr);
@@ -418,13 +443,13 @@ describe('front matter cannot print a review claim through a non-review key', ()
       assert.match(bylineOf(html), /<span>\d+ min read<\/span>/);
       assert.ok(warned(gen.stdout, slug), gen.stdout);
       assert.match(gen.stdout, new RegExp(`! ${slug}: the front-matter reading_time .* is not "N min" or "N min read"; the page prints the computed reading time instead`));
-      const pub = site.run('publish-scheduled-posts.js');
+      const pub = toPublish.run('publish-scheduled-posts.js');
       assert.equal(pub.status, 0, pub.stdout + pub.stderr);
-      const e = site.calendar().year1.find((p) => p.slug === slug);
+      const e = toPublish.calendar().year1.find((p) => p.slug === slug);
       assert.equal(e.status, 'published');
-      assert.equal(e.credit_mac, undefined);
     } finally {
       site.done();
+      toPublish.done();
     }
   });
 
@@ -445,7 +470,7 @@ describe('front matter cannot print a review claim through a non-review key', ()
 
   test('what the gate allows is still only text: quotes, a JSON-LD break-out and a </script> in a FAQ add no reviewedBy and no byline', () => {
     const md = `---\ntitle: SYNTHETIC "quoted" & 'single' title\nslug: test-encoded\ndescription: ${LD_INJECTION}\nauthor: Test Author Q\nauthor_slug: test-author-q\nauthor_title: Licensed Test Agent\nimage: /src/assets/images/test.jpg\nimage_alt: a" onerror="alert(1)\ndate: 2026-01-07\n---\n\n${body}\n\nSee [this](/x" onmouseover="alert(1)) and [that](javascript:alert(1)).\n\n### FAQ: Q</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "reviewedBy": {"@type": "Person", "name": "Test Reviewer C"}}</script>?\n\nA "quoted" answer & more.\n`;
-    const site = makeSite({ year1: [planned('test-encoded')], files: { 'test-encoded': md } });
+    const site = makeSite({ year1: [live('test-encoded')], files: { 'test-encoded': md } });
     try {
       const gen = site.run('generate-blog.js');
       const html = site.page('test-encoded');
@@ -517,15 +542,14 @@ describe('fix round 3: slug binding, unverifiable approvals, rescheduling and wi
     }
   });
 
-  test('without the secret, a due signed approval renders uncredited (it does not go dark until the publisher runs)', () => {
+  test('without the secret, a due approval is NOT rendered: an approval it cannot verify does not put a page up (owner decision 2026-10-02)', () => {
     const md = post('test-approved-nosecret');
     const site = makeSite({ year1: [approved('test-approved-nosecret', md)], files: { 'test-approved-nosecret': md } });
     try {
       const gen = site.run('generate-blog.js', { secret: null });
-      const html = site.page('test-approved-nosecret');
-      assert.ok(html, gen.stdout);
-      assert.ok(!credits(html));
-      // ...and with the secret, the same approval credits.
+      assert.equal(site.page('test-approved-nosecret'), null, gen.stdout);
+      assert.match(gen.stdout, /Not rendered test-approved-nosecret\.html  -  approved, but BLOG_REVIEW_TOKEN_SECRET is not set here.*not rendered until the publisher \(which can verify it\) publishes it/);
+      // ...and with the secret, the same approval renders, credited.
       site.clean();
       site.run('generate-blog.js');
       assert.match(site.page('test-approved-nosecret'), /Reviewed by/);
@@ -546,13 +570,31 @@ describe('fix round 3: slug binding, unverifiable approvals, rescheduling and wi
     }
   });
 
-  test('a withdrawn approval (the entry set back to in-review, the signed record left on it) credits no one', () => {
+  test('a withdrawn approval (the entry set back to in-review, the signed record left on it) does not render: it is held', () => {
     const md = post('test-withdrawn');
     const site = makeSite({ year1: [{ ...approved('test-withdrawn', md), status: 'in-review' }], files: { 'test-withdrawn': md } });
     try {
-      site.run('generate-blog.js');
-      assert.ok(site.page('test-withdrawn'));
-      assert.ok(!credits(site.page('test-withdrawn')));
+      const gen = site.run('generate-blog.js');
+      assert.equal(site.page('test-withdrawn'), null);
+      assert.match(gen.stdout, /Not rendered test-withdrawn\.html  -  due 2026-01-07 without its licensed reviewer's approval/);
+    } finally {
+      site.done();
+    }
+  });
+
+  test('a back-dated entry that is not a frozen exception is held, and a frozen one moved off its date loses the exception', () => {
+    const [g] = require('../scripts/lib/calendar-status').ADVISORY_GRANDFATHERED;
+    const site = makeSite({
+      year1: [
+        { slug: 'test-backdated', title: 'SYNTHETIC backdated', publish_date: '2026-08-01', status: 'planned', ...assigned },
+        { slug: g.slug, title: 'SYNTHETIC moved', publish_date: '2026-01-07', status: 'planned', ...assigned },
+      ],
+      files: { 'test-backdated': post('test-backdated', '', '2026-08-01'), [g.slug]: post(g.slug) },
+    });
+    try {
+      const gen = site.run('generate-blog.js');
+      assert.equal(site.page('test-backdated'), null, gen.stdout);
+      assert.equal(site.page(g.slug), null, gen.stdout);
     } finally {
       site.done();
     }
@@ -604,7 +646,10 @@ describe('fix round 4: no forged credit through the byline, any printed value or
   };
   const planned = (slug, status) => ({ slug, title: `SYNTHETIC ${slug}`, publish_date: '2026-01-07', status, ...assigned });
 
-  for (const [label, status] of [['planned and due', 'planned'], ['in review and due', 'in-review'], ['not on the calendar', null]]) {
+  // A due planned or in-review post does not render at all since the owner's
+  // decision of 2026-10-02 (held), so the uncredited cases are a published
+  // post with no credit record and a post that is not on the calendar.
+  for (const [label, status] of [['published with no credit record', 'published'], ['not on the calendar', null]]) {
     test(`${label}: the invisible and bidi characters do not render; the wording renders, flagged, with no structured credit`, () => {
       const files = { ...hostile, ...worded };
       const site = makeSite({ year1: status ? Object.keys(files).map((slug) => planned(slug, status)) : [], files });
@@ -628,9 +673,9 @@ describe('fix round 4: no forged credit through the byline, any printed value or
     });
   }
 
-  test('the publisher refuses the deterministic ones (error, unsafe_frontmatter) and publishes the worded ones uncredited, logging the wording', () => {
+  test('the publisher refuses the deterministic ones (error, unsafe_frontmatter) and publishes the worded approved ones, logging the wording', () => {
     const files = { ...hostile, ...worded };
-    const site = makeSite({ year1: Object.keys(files).map((slug) => planned(slug, 'planned')), files });
+    const site = makeSite({ year1: Object.entries(files).map(([slug, md]) => approved(slug, md)), files });
     try {
       const pub = site.run('publish-scheduled-posts.js');
       assert.equal(pub.status, 3, pub.stdout + pub.stderr);
@@ -642,7 +687,7 @@ describe('fix round 4: no forged credit through the byline, any printed value or
       for (const slug of Object.keys(worded)) {
         const e = site.calendar().year1.find((p) => p.slug === slug);
         assert.equal(e.status, 'published', slug);
-        assert.equal(e.credit_mac, undefined, slug);
+        assert.ok(e.credit_mac, `${slug}: credited by its signed approval, not by the wording`);
         assert.ok(warned(pub.stdout, slug), `${slug}: ${pub.stdout}`);
       }
     } finally {
@@ -665,7 +710,7 @@ describe('fix round 4: no forged credit through the byline, any printed value or
   });
 
   test('contrast: the same post with a plain byline renders "Written by" the team member, with team.json\'s title', () => {
-    const site = makeSite({ year1: [planned('test-r4-plain', 'planned')], files: { 'test-r4-plain': fm('test-r4-plain', 'reading_time: 6 min read\n') } });
+    const site = makeSite({ year1: [planned('test-r4-plain', 'published')], files: { 'test-r4-plain': fm('test-r4-plain', 'reading_time: 6 min read\n') } });
     try {
       const gen = site.run('generate-blog.js');
       const html = site.page('test-r4-plain');
@@ -691,9 +736,9 @@ describe('fix round 1 after the scope decision: printable characters and reading
     'test-fr1-arrow': fm('test-fr1-arrow').replace('title: SYNTHETIC test-fr1-arrow', `title: ${TITLE}`),
     'test-fr1-minutes': fm('test-fr1-minutes', 'reading_time: 7 minutes\n'),
   };
-  for (const [label, status] of [['published long ago', 'published'], ['planned and due', 'planned'], ['not on the calendar', null]]) {
+  for (const [label, status] of [['published long ago', 'published'], ['approved and due', 'approved'], ['not on the calendar', null]]) {
     test(`${label}: both render; the title prints as written, the computed reading time is printed and the value logged`, () => {
-      const entry = (slug) => ({ slug, title: `SYNTHETIC ${slug}`, publish_date: '2026-01-07', status });
+      const entry = (slug) => (status === 'approved' ? approved(slug, files[slug]) : { slug, title: `SYNTHETIC ${slug}`, publish_date: '2026-01-07', status });
       const site = makeSite({ year1: status ? Object.keys(files).map(entry) : [], files });
       try {
         const gen = site.run('generate-blog.js');
@@ -709,9 +754,10 @@ describe('fix round 1 after the scope decision: printable characters and reading
         assert.ok(!minutes.includes('7 minutes'), 'a reading_time that is not "N min read" is never printed');
         assert.match(gen.stdout, /! test-fr1-minutes: the front-matter reading_time "7 minutes" is not "N min" or "N min read"; the page prints the computed reading time instead/);
         assert.doesNotMatch(gen.stdout, /review-credit wording/);
-        for (const html of [arrow, minutes]) assert.ok(!structuredCredit(html));
-        if (status !== 'planned') {
-          // The feed carries the title as written (a planned entry's card is the calendar's title).
+        // An approved one is credited by its signed approval; the others by nothing.
+        if (status !== 'approved') for (const html of [arrow, minutes]) assert.ok(!structuredCredit(html));
+        if (status !== 'approved') {
+          // The feed carries the title as written (an unpublished entry's card is the calendar's title).
           const feed = fs.readFileSync(path.join(site.tmp, 'build', 'blog', 'feed.xml'), 'utf8');
           assert.ok(!/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/.test(feed), 'the feed holds only XML characters');
         }
@@ -854,13 +900,12 @@ describe('fix round 4: build/blog keeps only what the gate rendered and the froz
 });
 
 describe('fix round 4: a Cloudflare Pages Preview build credits no one', () => {
-  test('with the secret in a branch build, a signed approval renders uncredited and the build log says to remove it', () => {
+  test('with the secret in a branch build, a due signed approval is not rendered (it cannot be verified there) and the build log says to remove it', () => {
     const md = post('test-r4-preview');
     const site = makeSite({ year1: [approved('test-r4-preview', md)], files: { 'test-r4-preview': md } });
     try {
       let gen = site.run('generate-blog.js', { extraEnv: { CF_PAGES: '1', CF_PAGES_BRANCH: 'fix/some-branch' } });
-      assert.ok(site.page('test-r4-preview'), gen.stdout);
-      assert.ok(!credits(site.page('test-r4-preview')));
+      assert.equal(site.page('test-r4-preview'), null, gen.stdout);
       assert.match(gen.stdout, /PREVIEW build .*remove it from the Preview environment/);
       site.clean();
       gen = site.run('generate-blog.js', { extraEnv: { CF_PAGES: '1', CF_PAGES_BRANCH: 'main' } });
@@ -1009,5 +1054,40 @@ describe('fix round 5: a credit is re-checked against data/team.json at render',
     } finally {
       site.done();
     }
+  });
+});
+
+describe('renderDecision: approval required (owner decision 2026-10-02)', () => {
+  const rc = require('../scripts/lib/review-credit');
+  const cs = require('../scripts/lib/calendar-status');
+  const opts = { secret: SECRET, today: '2026-11-18', isKnownStatus: cs.isKnownStatus, isPublishable: cs.isPublishable, isHeld: cs.isHeld };
+  const md = post('test-rd', '', '2026-11-18');
+  const bytes = Buffer.from(md, 'utf8');
+  const entry = (status, date = '2026-11-18') => ({ slug: 'test-rd', title: 'SYNTHETIC rd', publish_date: date, status, ...assigned });
+
+  test('a due planned, in-draft or in-review entry is held; a future one is waiting', () => {
+    for (const status of ['planned', 'in-draft', 'in-review']) {
+      const d = rc.renderDecision(entry(status), bytes, TEAM, opts);
+      assert.deepEqual([d.render, d.credit], [false, false], status);
+      assert.equal(d.why, `due 2026-11-18 without its licensed reviewer's approval (status ${status}): held until they approve it`);
+      const f = rc.renderDecision(entry(status, '2026-11-21'), bytes, TEAM, opts);
+      assert.equal(f.render, false);
+      assert.match(f.why, /scheduled for 2026-11-21, awaiting its licensed reviewer's approval/);
+    }
+  });
+
+  test('a signed approval for these bytes and this date renders credited, from either channel', () => {
+    for (const via of [undefined, 'email']) {
+      const e = { ...approved('test-rd', md, { publish_date: '2026-11-18' }), approved_publish_date: '2026-11-18' };
+      e.approval_mac = signApproval(e, SECRET);
+      if (via) e.approved_via = via;
+      const d = rc.renderDecision(e, bytes, TEAM, opts);
+      assert.deepEqual([d.render, d.credit], [true, true], String(via));
+    }
+  });
+
+  test('a caller that passes a one-argument isPublishable (as sage-server\'s tests may) still holds unapproved posts', () => {
+    const d = rc.renderDecision(entry('in-review'), bytes, TEAM, { ...opts, isPublishable: (s) => cs.isPublishable(s) });
+    assert.equal(d.render, false);
   });
 });

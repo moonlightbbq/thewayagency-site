@@ -44,7 +44,7 @@ TRACKING="refs/remotes/origin/${BRANCH}"
 # and what to do next.
 give_up() {
   trap - ERR
-  echo "::error::$1 Nothing was pushed: origin/${BRANCH} has none of this run's changes, and no side was picked. Do NOT use \"Re-run jobs\": a re-run replays this run's original commit and fails the same way. Start a new run instead (Actions > Publish Scheduled Blog Posts > Run workflow), or wait for the next scheduled run; it redoes today's publish from the current ${BRANCH}. Review emails and reminders this run sent were not recorded on ${BRANCH}, so the new run sends them again."
+  echo "::error::$1 Nothing was pushed: origin/${BRANCH} has none of this run's changes, and no side was picked. Do NOT use \"Re-run jobs\": a re-run replays this run's original commit and fails the same way. Start a new run instead (Actions > ${GITHUB_WORKFLOW:-Publish Scheduled Blog Posts} > Run workflow), or wait for the next scheduled run; it redoes today's publish from the current ${BRANCH}. Review emails and reminders this run sent were not recorded on ${BRANCH}, so the new run sends them again."
   exit 1
 }
 trap 'give_up "git-push-rebase.sh failed unexpectedly (exit $?, line ${LINENO}; see the output above)."' ERR

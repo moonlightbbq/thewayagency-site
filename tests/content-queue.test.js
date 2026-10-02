@@ -106,8 +106,9 @@ describe('I1/I2 - capacity and commitment', () => {
   });
 
   test('I2b flags a slot too close to fill without skipping review', () => {
-    // 4d out: send-review-emails fires at D-10..18, so committing a topic here
-    // would publish it unreviewed. That is reported, not silently filled.
+    // 4d out: inside the reviewer's D-10 lead time, and nothing publishes
+    // without their approval, so committing a topic here would only hold.
+    // That is reported, not silently filled.
     const slots = [{ date: '2026-08-08', state: 'reserved', locked_slug: null }];
     const r = q.evaluateInvariants(calendar({ slots }), {}, TODAY, { hasMarkdown: allMarkdown });
     assert.ok(ids(r).includes('I2b'));
@@ -218,5 +219,68 @@ describe('occupiedDates', () => {
     const taken = q.occupiedDates(cal);
     assert.ok(taken.has('2026-08-08'));
     assert.ok(!taken.has('2026-08-12'), 'a published date is free to reserve again');
+  });
+});
+
+describe('I8 - a post due without its licensed reviewer\'s approval is HELD, loudly (owner decision 2026-10-02)', () => {
+  const i8 = (r) => r.violations.filter(v => v.id === 'I8');
+
+  test('fires for a due planned, in-draft or in-review post, on and after its date', () => {
+    for (const status of ['planned', 'in-draft', 'in-review']) {
+      for (const date of [TODAY, '2026-08-01']) {
+        const r = q.evaluateInvariants(calendar({ posts: [post(date, { status })] }), {}, TODAY, { hasMarkdown: allMarkdown });
+        assert.equal(i8(r).length, 1, `${status} due ${date}`);
+        assert.match(i8(r)[0].message, new RegExp(`"post-${date}" was due ${date} but has no licensed approval \\(status ${status}`));
+        assert.deepEqual(r.stats.heldForApproval.map(p => p.slug), [`post-${date}`]);
+      }
+    }
+  });
+
+  test('does not fire for a future, approved, published, change-requested, error or frozen-exception post', () => {
+    const { ADVISORY_GRANDFATHERED } = require('../scripts/lib/calendar-status');
+    const g = ADVISORY_GRANDFATHERED[0];
+    const posts = [
+      post('2026-08-05', { status: 'in-review' }),
+      post('2026-08-01', { slug: 'a1', status: 'approved' }),
+      post('2026-08-01', { slug: 'p1', status: 'published' }),
+      post('2026-08-01', { slug: 'h1', status: 'changes-requested' }),
+      post('2026-08-01', { slug: 'e1', status: 'error', error_reason: 'missing_markdown' }),
+      { slug: g.slug, title: 'T', publish_date: g.publish_date, status: 'planned' },
+    ];
+    const r = q.evaluateInvariants(calendar({ posts }), {}, '2026-10-02', { hasMarkdown: allMarkdown });
+    assert.deepEqual(i8(r).filter(v => !v.message.includes('"post-2026-08-05"')), [], 'only the (now past) in-review post');
+    const early = q.evaluateInvariants(calendar({ posts: [post('2026-08-05', { status: 'in-review' })] }), {}, TODAY, { hasMarkdown: allMarkdown });
+    assert.deepEqual(i8(early), [], 'not due yet');
+    assert.ok(ids(r).includes('I6') && ids(r).includes('I7'), 'the hold and the error keep their own invariants');
+  });
+
+  test('the message says what to do: approve (reviewer asked), re-date (nobody asked), or write the markdown', () => {
+    const asked = post(TODAY, { slug: 'asked', status: 'in-review', reviewer: 'Test Reviewer', reviewer_email: 'test-reviewer@example.com' });
+    const notAsked = post(TODAY, { slug: 'not-asked', status: 'planned' });
+    const noMd = post(TODAY, { slug: 'no-md', status: 'planned' });
+    const r = q.evaluateInvariants(calendar({ posts: [asked, notAsked, noMd] }), {}, TODAY, { hasMarkdown: (slug) => slug !== 'no-md' });
+    const msg = (slug) => i8(r).find(v => v.message.includes(`"${slug}"`)).message;
+    assert.match(msg('asked'), /reviewer Test Reviewer <test-reviewer@example.com>\); it is held and publishes on the first publish run after its assigned reviewer approves it, while still scheduled for 2026-08-04/);
+    assert.match(msg('not-asked'), /reviewer none assigned\); no review request went out for it, so nobody can approve it: move it to a future date/);
+    assert.match(msg('no-md'), /its markdown \(src\/blog\/no-md\.md\) is missing too/);
+  });
+
+  test('a held post keeps its date (no double booking) and blocks only that date: later slots still reserve and fill', () => {
+    const heldDate = '2026-08-01';
+    const cal = calendar({ posts: [post(heldDate, { status: 'in-review' })] });
+    assert.ok(q.occupiedDates(cal).has(heldDate), 'its date stays taken until it publishes or moves');
+    const reserved = q.reserveSlots(cal, TODAY);
+    assert.ok(reserved.added.length > 0, 'the horizon still reserves');
+    const backlog = { candidates: [{ slug: 'next-up', title: 'Next', primary_keyword: 'umbrella limits explained', status: 'approved', seasonality_window: null, target_location_pages: [] }] };
+    const { locked } = q.fillSlots(cal, backlog, TODAY, {}, { hasMarkdown: allMarkdown });
+    assert.equal(locked.length, 1, 'a later slot in the lock window is filled as usual');
+    assert.ok(locked[0].date > heldDate);
+    const r = q.evaluateInvariants(cal, backlog, TODAY, { hasMarkdown: allMarkdown });
+    assert.equal(i8(r).length, 1);
+  });
+
+  test('the review flow owns final_reminder_dates and approved_via (the queue never clears them)', () => {
+    assert.ok(q.REVIEW_OWNED_FIELDS.includes('final_reminder_dates'));
+    assert.ok(q.REVIEW_OWNED_FIELDS.includes('approved_via'));
   });
 });

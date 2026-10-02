@@ -251,59 +251,60 @@ describe('reserveSlots', () => {
   });
 });
 
-describe('allowReviewSkip: keeping a date from going silent', () => {
-  // 2026-08-05 is 4d from TODAY, inside the D-10 review window.
+describe('a slot nearer than D-10 is never filled: nothing publishes without its reviewer\'s approval (owner decision 2026-10-02)', () => {
+  // 2026-08-05 is 4d from TODAY, inside the reviewer's D-10 lead time.
   const TOO_CLOSE = '2026-08-05';
 
-  test('by default the slot is left empty and the reason is reported', () => {
+  test('the slot is left empty and the reason is reported', () => {
     const cal = calendar({ slots: [{ date: TOO_CLOSE, state: 'reserved', locked_slug: null }] });
     const backlog = { candidates: [candidate({ slug: 'ready' })] };
     const { locked, skipped } = q.fillSlots(cal, backlog, TODAY, WINDOWS, { hasMarkdown: hasDraft });
     assert.equal(locked.length, 0);
-    assert.match(skipped[0].reason, /review window/);
+    assert.match(skipped[0].reason, /only 4d out; too late for the licensed reviewer's D-10 lead time, and nothing publishes without their approval/);
   });
 
-  test('with the override the date is filled and marked review_skipped', () => {
+  test('the removed allowReviewSkip option is ignored: no fill, no review_skipped, a ready draft included', () => {
     const cal = calendar({ slots: [{ date: TOO_CLOSE, state: 'reserved', locked_slug: null }] });
     const backlog = { candidates: [candidate({ slug: 'ready' })] };
-    const { locked } = q.fillSlots(cal, backlog, TODAY, WINDOWS,
-      { hasMarkdown: hasDraft, allowReviewSkip: true });
-    assert.equal(locked.length, 1);
-    assert.equal(locked[0].reviewSkipped, true);
-    assert.equal(cal.year1[0].review_skipped, true);
-    assert.match(cal.year1[0].notes, /no reviewer email/);
-  });
-
-  test('the override never picks a candidate whose draft is not written', () => {
-    // There is no time to write one, so an unwritten candidate is useless here.
-    const cal = calendar({ slots: [{ date: TOO_CLOSE, state: 'reserved', locked_slug: null }] });
-    const backlog = { candidates: [candidate({ slug: 'unwritten' })] };
-    const { locked, skipped } = q.fillSlots(cal, backlog, TODAY, WINDOWS,
-      { hasMarkdown: noDraft, allowReviewSkip: true });
+    const { locked } = q.fillSlots(cal, backlog, TODAY, WINDOWS, { hasMarkdown: hasDraft, allowReviewSkip: true });
     assert.equal(locked.length, 0);
-    assert.match(skipped[0].reason, /no ready draft/);
+    assert.equal(cal.year1.length, 0);
+    assert.equal(cal.slots[0].state, 'reserved');
+    assert.equal(cal.slots[0].review_skipped, undefined);
+    assert.equal(backlog.candidates.length, 1, 'the candidate stays in the backlog');
   });
 
-  test('it still will not place an out-of-season post', () => {
-    const cal = calendar({ slots: [{ date: TOO_CLOSE, state: 'reserved', locked_slug: null }] });
-    const backlog = { candidates: [candidate({ seasonality_window: 'winter-prep' })] };
-    const { locked } = q.fillSlots(cal, backlog, TODAY, WINDOWS,
-      { hasMarkdown: hasDraft, allowReviewSkip: true });
-    assert.equal(locked.length, 0, 'urgency never overrides the seasonal filter');
-  });
-
-  test('a normally-locked slot is NOT marked review_skipped', () => {
+  test('a normally-locked slot carries no review_skipped, and the stats no longer have a reviewSkipped list', () => {
     const cal = calendar({ slots: [{ date: NEAR, state: 'reserved', locked_slug: null }] });
     const backlog = { candidates: [candidate({ slug: 'in-time' })] };
-    q.fillSlots(cal, backlog, TODAY, WINDOWS, { hasMarkdown: hasDraft, allowReviewSkip: true });
+    const { locked } = q.fillSlots(cal, backlog, TODAY, WINDOWS, { hasMarkdown: hasDraft });
+    assert.equal(locked.length, 1);
     assert.equal(cal.year1[0].review_skipped, undefined);
+    assert.equal(cal.slots[0].review_skipped, undefined);
+    assert.equal('reviewSkipped' in locked[0], false);
+    const { stats } = q.evaluateInvariants(cal, backlog, TODAY, { hasMarkdown: hasDraft });
+    assert.equal(stats.reviewSkipped, undefined);
+    assert.deepEqual(stats.heldForApproval, []);
   });
 
-  test('review-skipped posts are surfaced in the invariant stats', () => {
-    const cal = calendar({ slots: [{ date: TOO_CLOSE, state: 'reserved', locked_slug: null }] });
-    const backlog = { candidates: [candidate({ slug: 'ready' })] };
-    q.fillSlots(cal, backlog, TODAY, WINDOWS, { hasMarkdown: hasDraft, allowReviewSkip: true });
-    const { stats } = q.evaluateInvariants(cal, backlog, TODAY, { hasMarkdown: hasDraft });
-    assert.equal(stats.reviewSkipped.length, 1, 'the trade-off must never be invisible');
+  test('fill-slots --allow-review-skip exits 2 with the reason, and writes nothing', () => {
+    const fs = require('fs');
+    const os = require('os');
+    const path = require('path');
+    const { spawnSync } = require('child_process');
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'fill-slots-flag-'));
+    try {
+      const calPath = path.join(tmp, 'content-calendar.json');
+      const text = `${JSON.stringify(calendar({ slots: [{ date: TOO_CLOSE, state: 'reserved', locked_slug: null }] }), null, 2)}\n`;
+      fs.writeFileSync(calPath, text);
+      const r = spawnSync(process.execPath, [path.join(__dirname, '..', 'scripts', 'fill-slots.js'), '--allow-review-skip', '--today', TODAY],
+        { encoding: 'utf8', env: { ...process.env, CONTENT_CALENDAR_PATH: calPath } });
+      assert.equal(r.status, 2, r.stdout + r.stderr);
+      assert.match(r.stderr, /--allow-review-skip was removed on 2026-10-02: every post needs its licensed reviewer's approval/);
+      assert.match(r.stderr, /Nothing was changed/);
+      assert.equal(fs.readFileSync(calPath, 'utf8'), text);
+    } finally {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    }
   });
 });

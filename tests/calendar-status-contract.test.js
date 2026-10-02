@@ -2,8 +2,9 @@
  * The calendar status vocabulary is a CROSS-REPO contract.
  *
  * sage writes statuses into data/content-calendar.json (since BL-07 it sets
- * 'approved' only when the assigned reviewer approves the exact text in SAGE,
- * never on an email reply, and commits it). This repo
+ * 'approved' only when the assigned reviewer approves the exact text: in SAGE,
+ * or, for a reviewer who reviews by email, by a verified APPROVED reply, and
+ * commits it). This repo
  * decides what publishes. Nothing tested the seam, so the two ends drifted:
  * the publisher recognised planned/in-review/in-draft and skipped 'approved'
  * with a bare `continue` — no error, no red run. occupiedDates() still counted
@@ -17,6 +18,11 @@
  * These tests are the contract. If sage introduces a new status, one of them
  * fails here rather than a post going quietly unpublished.
  *
+ * Since the owner's decision of 2026-10-02 'approved' is the ONLY publishable
+ * status: planned, in-draft and in-review are known, awaiting approval, and
+ * HELD once their date arrives (except the frozen advisory exceptions, by
+ * exact slug and date).
+ *
  *   node --test tests/          (npm test)
  */
 const { test, describe } = require('node:test');
@@ -24,8 +30,10 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 
-const { PUBLISHABLE_STATUSES, TERMINAL_STATUSES, HOLD_STATUSES, isPublishable, isKnownStatus, isHeld } =
-  require('../scripts/lib/calendar-status');
+const {
+  PUBLISHABLE_STATUSES, AWAITING_APPROVAL_STATUSES, TERMINAL_STATUSES, HOLD_STATUSES, ADVISORY_GRANDFATHERED,
+  isPublishable, isKnownStatus, isHeld, isAwaitingApproval, heldForApproval, isGrandfathered,
+} = require('../scripts/lib/calendar-status');
 
 const ROOT = path.resolve(__dirname, '..');
 
@@ -36,14 +44,50 @@ describe('publishable statuses', () => {
     assert.equal(isPublishable('approved'), true);
   });
 
-  test('the advisory gate: no reply still publishes', () => {
-    // A reviewer on vacation must never silently empty a slot.
-    assert.equal(isPublishable('in-review'), true);
+  test("approval is REQUIRED: 'approved' is the only publishable status (owner decision 2026-10-02)", () => {
+    assert.deepEqual([...PUBLISHABLE_STATUSES], ['approved']);
+    for (const s of ['planned', 'in-draft', 'in-review']) {
+      assert.equal(isPublishable(s), false, s);
+      assert.equal(isPublishable(s, { slug: 'test-x', publish_date: '2026-01-07', status: s }), false, `${s} with its entry`);
+      assert.equal(isKnownStatus(s), true, `${s} is known`);
+      assert.equal(isAwaitingApproval(s), true);
+      assert.equal(isHeld(s), false, `${s} is not a change-request hold`);
+    }
+    assert.equal(isAwaitingApproval('approved'), false);
   });
 
-  test('planned and in-draft publish', () => {
-    assert.equal(isPublishable('planned'), true);
-    assert.equal(isPublishable('in-draft'), true);
+  test('one-argument calls (sage-server\'s cross-repo tests) keep working: approved true, everything else false', () => {
+    assert.equal(isPublishable('approved'), true);
+    assert.equal(isPublishable('changes-requested'), false);
+    assert.equal(isPublishable('planned'), false);
+  });
+
+  test('heldForApproval: an awaiting entry at or past its date, never a future, approved, held or terminal one', () => {
+    const e = (status, date) => ({ slug: 'test-held-y', status, publish_date: date });
+    assert.equal(heldForApproval(e('planned', '2026-11-18'), '2026-11-18'), true, 'on its date');
+    assert.equal(heldForApproval(e('in-review', '2026-11-18'), '2026-11-20'), true, 'past it');
+    assert.equal(heldForApproval(e('in-draft', '2026-11-18'), '2026-11-20'), true);
+    assert.equal(heldForApproval(e('in-review', '2026-11-18'), '2026-11-17'), false, 'not due yet');
+    for (const s of ['approved', 'published', 'error', 'changes-requested']) assert.equal(heldForApproval(e(s, '2026-11-18'), '2026-11-20'), false, s);
+    assert.equal(heldForApproval({ slug: 'test-held-y', status: 'planned' }, '2026-11-20'), false, 'undated');
+  });
+
+  test('the frozen advisory exceptions: exact slug AND date, awaiting statuses only; back-dating anything else does not qualify', () => {
+    assert.equal(ADVISORY_GRANDFATHERED.length, 13);
+    assert.ok(Object.isFrozen(ADVISORY_GRANDFATHERED));
+    for (const g of ADVISORY_GRANDFATHERED) {
+      assert.ok(Object.isFrozen(g));
+      assert.ok(g.publish_date < '2026-10-03', `${g.slug} predates the decision`);
+      for (const s of ['planned', 'in-review', 'in-draft']) {
+        const entry = { slug: g.slug, publish_date: g.publish_date, status: s };
+        assert.equal(isPublishable(s, entry), true, `${g.slug} ${s}`);
+        assert.equal(heldForApproval(entry, '2026-10-02'), false);
+      }
+      assert.equal(isPublishable('planned', { slug: g.slug, publish_date: '2026-10-07', status: 'planned' }), false, 're-dated: no exception');
+      assert.equal(isGrandfathered({ slug: g.slug, publish_date: g.publish_date, status: 'changes-requested' }), false, 'a hold stays a hold');
+      assert.equal(isPublishable('planned', { slug: g.slug, publish_date: g.publish_date, status: 'in-review' }), false, 'the status must be the entry\'s');
+    }
+    assert.equal(isPublishable('planned', { slug: 'test-backdated', publish_date: '2026-01-01', status: 'planned' }), false);
   });
 
   test('terminal statuses do not publish', () => {
@@ -73,10 +117,14 @@ describe('the reviewer hold (BL-07)', () => {
     assert.equal(isPublishable('changes-requested'), false);
   });
 
-  test('publishable, terminal and hold sets are disjoint', () => {
-    for (const s of HOLD_STATUSES) {
-      assert.equal(PUBLISHABLE_STATUSES.has(s), false, `"${s}" is held and publishable`);
-      assert.equal(TERMINAL_STATUSES.has(s), false, `"${s}" is held and terminal`);
+  test('publishable, awaiting, terminal and hold sets are disjoint', () => {
+    const sets = { PUBLISHABLE_STATUSES, AWAITING_APPROVAL_STATUSES, TERMINAL_STATUSES, HOLD_STATUSES };
+    const seen = new Map();
+    for (const [name, set] of Object.entries(sets)) {
+      for (const st of set) {
+        assert.equal(seen.has(st), false, `"${st}" is in ${seen.get(st)} and ${name}`);
+        seen.set(st, name);
+      }
     }
   });
 });
@@ -118,9 +166,13 @@ describe('the contract holds across both repos', () => {
     assert.doesNotMatch(src, /status !== 'planned' && post\.status !== 'in-review'/);
   });
 
-  test('reconcile-calendar shares it too', () => {
+  test('reconcile-calendar shares it too, with the entry (the exceptions are per entry)', () => {
     const src = fs.readFileSync(path.join(ROOT, 'scripts', 'reconcile-calendar.js'), 'utf8');
     assert.match(src, /require\(['"]\.\/lib\/calendar-status['"]\)/);
     assert.doesNotMatch(src, /new Set\(\['planned', 'in-review', 'in-draft'\]\)/);
+    assert.doesNotMatch(src, /PUBLISHABLE_STATUSES/, 'the bare set ignores the per-entry exceptions');
+    assert.match(src, /publishable\(post\.status, post\)/);
+    const pub = fs.readFileSync(path.join(ROOT, 'scripts', 'publish-scheduled-posts.js'), 'utf8');
+    assert.match(pub, /isPublishable\(post\.status, post\)/);
   });
 });

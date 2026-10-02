@@ -95,6 +95,17 @@ if (team) {
     if (!m.name) { error(`team.json: member missing name`); teamErrors++; }
     if (!m.slug) { error(`team.json: ${m.name || 'unknown'} missing slug`); teamErrors++; }
     if (!m.title) { error(`team.json: ${m.name || 'unknown'} missing title`); teamErrors++; }
+    // How a licensed reviewer reviews blog posts (scripts/send-review-emails.js
+    // reviewChannel): absent or "sage" = in SAGE, "email" = by email reply
+    // (owner decision 2026-10-02). Anything else would quietly take the member
+    // out of the review rotation, so it fails the build instead.
+    if (m.review_via !== undefined) {
+      if (m.review_via !== 'sage' && m.review_via !== 'email') {
+        error(`team.json: ${m.slug || m.name || 'unknown'} review_via is ${JSON.stringify(m.review_via)}; it must be "sage" or "email" (or absent)`); teamErrors++;
+      } else if (!m.email || !Array.isArray(m.license_states) || m.license_states.length === 0) {
+        error(`team.json: ${m.slug || m.name || 'unknown'} has review_via but no email or no license_states, so cannot be a blog reviewer`); teamErrors++;
+      }
+    }
   }
   if (teamErrors === 0) pass(`team.json: ${(team.team || []).length} members, all valid`);
 }
