@@ -61,7 +61,7 @@ Do not overlook Part D. Even if you are healthy and take few medications now, en
 
 Each Part D plan has a formulary — a list of covered drugs organized into cost tiers. The same medication can be on different tiers depending on the plan, which means your out-of-pocket cost varies. If you take regular prescriptions, compare formularies before choosing a plan. The Medicare Plan Finder at medicare.gov lets you enter your specific medications and see estimated costs for each available plan.
 
-For 2026, the Inflation Reduction Act provisions continue to cap insulin costs and limit annual out-of-pocket spending on Part D drugs to $2,100 in 2026. These are meaningful protections, especially for seniors managing chronic conditions.
+For 2026, the Inflation Reduction Act provisions continue to cap insulin costs and limit annual out-of-pocket spending on Part D drugs to $2,100. These are meaningful protections, especially for seniors managing chronic conditions.
 
 ## Common Medicare mistakes to avoid
 
