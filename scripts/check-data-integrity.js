@@ -319,6 +319,15 @@ if (calendar) {
     }
   }
 
+  // queue_pause (BLOG-06): the owner's explicit pause. Its rules live in the
+  // queue lib, and invariant I9 reports the same list.
+  if (Object.prototype.hasOwnProperty.call(calendar, 'queue_pause')) {
+    const problems = queueLib
+      ? queueLib.queuePauseProblems(calendar)
+      : ['cannot be validated: scripts/lib/content-queue.js did not load'];
+    for (const p of problems) { error(`content-calendar.json: queue_pause ${p}`); queueErrors++; }
+  }
+
   const backlog = loadJson('content-backlog.json');
   const candidates = (backlog && Array.isArray(backlog.candidates)) ? backlog.candidates : [];
   const seenCandidateSlugs = new Set();
