@@ -313,6 +313,11 @@ if (fs.existsSync(redirectsPath)) {
       if (!tag) perr(`Privacy: intake/index.html has no ${label} element to mask`);
       else if (!/\sdata-clarity-mask="True"/.test(tag)) perr(`Privacy: ${label} in intake/index.html lacks data-clarity-mask="True"`);
     }
+    // The fifth echo: Google Places' suggestion list is created at runtime and
+    // appended to <body>, so the page must mask it in code.
+    if (!/querySelectorAll\(\s*['"]\.pac-container['"]\s*\)[\s\S]{0,160}data-clarity-mask['"]\s*,\s*['"]True['"]/.test(intake)) {
+      perr('Privacy: intake/index.html no longer masks the Places suggestion list (.pac-container) for Clarity');
+    }
   }
 
   // 10c. Inline quote forms: no input named name/email/phone (so no native
@@ -321,9 +326,10 @@ if (fs.existsSync(redirectsPath)) {
   let inlineForms = 0;
   for (const file of htmlFiles) {
     const html = fs.readFileSync(file, 'utf8');
-    if (!html.includes('<form class="inline-quote-form')) continue;
+    // Any attribute order: a reordered <form> tag must not make the guard skip it.
+    const forms = html.match(/<form\b[^>]*\bclass="[^"]*\binline-quote-form\b[^"]*"[^>]*>[\s\S]*?<\/form>/g) || [];
+    if (!/<form\b[^>]*\bclass="[^"]*\binline-quote-form\b/.test(html)) continue;
     const rel = path.relative(BUILD, file);
-    const forms = html.match(/<form class="inline-quote-form[^>]*>[\s\S]*?<\/form>/g) || [];
     if (!forms.length) { perr(`Privacy: unterminated inline quote form in ${rel}`); continue; }
     for (const form of forms) {
       inlineForms++;
@@ -339,7 +345,9 @@ if (fs.existsSync(redirectsPath)) {
       }
     }
   }
-  if (inlineForms === 0) warn('Privacy: no inline quote forms found (expected on product, hub and industry pages)');
+  // 65 are expected (product, hub and industry pages): finding none means the
+  // guard has stopped seeing them, which must fail, not pass quietly.
+  if (inlineForms === 0) perr('Privacy: no inline quote forms found (expected on product, hub and industry pages)');
   if (privacyErrors === 0) pass(`Privacy guards: hand-off, intake URL scrub, Meta payload, Clarity masks and ${inlineForms} inline forms checked`);
 }
 
