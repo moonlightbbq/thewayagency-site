@@ -1,6 +1,12 @@
 {
   "_doc": "Content calendar for The Way Agency blog. Single source of truth for all blog content — planned, in-progress, and published.\n\nUpdated 2026-05-02: Re-paced future entries from 1×/week (Wed) to 2×/week (Wed + Sat). Fixed entries (week 1-5) untouched. New schedule runs through ~2026-10-14; plan year-2 content by mid-September.\n\nUpdated 2026-08-04: REVERTED the 2026-05-02 re-pace for all unpublished entries. That change re-dated posts by list position rather than by target date, compressing a 52-week editorial arc into ~29 weeks and pulling every future post 91-161 days early — seasonal posts landed months out of season (a winter-driving guide was scheduled for 2026-08-19 and caught in review). Restored each unpublished entry to the date in its markdown `date:` frontmatter, which was authored against the original 1×/week Wednesday schedule. Calendar now runs through 2027-03-24 at 1×/week. Posts already published under the compressed schedule were left live. check-data-integrity.js now fails the build if a post's month falls outside its seasonality_window.\n\nUpdated 2026-08-05: retired roadmap.year2-year5. They planned content by theme through 2030, which is the same far-future assumption that let the 2026-05-02 re-pace silently re-time a year of seasonal posts. Standing coverage gaps were preserved as `coverage_targets`; what to publish next now comes from the backlog + slot queue, chosen ~14 days out against current signals.",
   "version": "1.1",
+  "queue_pause": {
+    "until": "2026-10-27",
+    "reason": "accuracy and consolidation program (SEO/AEO audit 2026-10-02)",
+    "set_by": "owner",
+    "set_on": "2026-10-02"
+  },
   "program_start": "2026-04-01",
   "default_author": "The Way Agency",
   "default_author_title": "Independent Insurance Agency",
@@ -2972,55 +2978,6 @@
       "locked_slug": "understanding-insurance-endorsements",
       "locked_at": "2026-09-12",
       "reserved_at": "2026-08-29"
-    },
-    {
-      "date": "2026-10-03",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
-      "reserved_at": "2026-09-05"
-    },
-    {
-      "date": "2026-10-07",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
-      "reserved_at": "2026-09-09"
-    },
-    {
-      "date": "2026-10-10",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
-      "reserved_at": "2026-09-12"
-    },
-    {
-      "date": "2026-10-14",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
-      "reserved_at": "2026-09-16"
-    },
-    {
-      "date": "2026-10-17",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
-      "reserved_at": "2026-09-19"
-    },
-    {
-      "date": "2026-10-21",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
-      "reserved_at": "2026-09-23"
-    },
-    {
-      "date": "2026-10-24",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
-      "reserved_at": "2026-09-26"
     },
     {
       "date": "2026-10-28",

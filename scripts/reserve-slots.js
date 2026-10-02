@@ -2,7 +2,7 @@
 /**
  * Reserve the rolling publish window.
  *
- * Creates a `reserved` slot for every Wed/Sat inside HORIZON_DAYS that is not
+ * Creates a `reserved` slot for every publish day inside HORIZON_DAYS that is not
  * already held by a dated post. Reserving capacity before a topic exists is
  * the point: an empty slot is visible weeks out instead of surfacing as a
  * missing-markdown error on publish day, which is how 2026-08-13 was going to

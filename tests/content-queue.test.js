@@ -34,21 +34,25 @@ function ids(result) {
 }
 
 describe('publish-day arithmetic', () => {
-  test('only ever returns Wednesdays and Saturdays', () => {
-    for (const d of q.publishDatesWithin(TODAY, 60)) {
+  test('only ever returns publish days (Wednesdays)', () => {
+    const dates = q.publishDatesWithin(TODAY, 60);
+    assert.equal(dates.length, 9);
+    for (const d of dates) {
       assert.ok(q.isPublishDay(d), `${d} is not a publish day`);
+      assert.equal(q.asDate(d).getUTCDay(), 3, `${d} is not a Wednesday`);
     }
   });
 
-  test('matches the workflow cron (Wed=3, Sat=6)', () => {
-    assert.deepEqual(q.PUBLISH_WEEKDAYS, [3, 6]);
+  test('matches the workflow cron (Wed=3; one post a week since content-accuracy D10)', () => {
+    assert.deepEqual(q.PUBLISH_WEEKDAYS, [3]);
+    // tests/content-queue-cadence.test.js reads the cron itself and compares.
   });
 
   test('excludes today and is inclusive of the far edge', () => {
     const dates = q.publishDatesWithin('2026-08-05', 7); // 08-05 is a Wednesday
     assert.ok(!dates.includes('2026-08-05'), 'should not include the start date');
-    assert.ok(dates.includes('2026-08-08'), 'should include the Saturday');
-    assert.ok(dates.includes('2026-08-12'), 'should include the far-edge Wednesday');
+    assert.ok(!dates.includes('2026-08-08'), 'a Saturday is no longer a publish day');
+    assert.deepEqual(dates, ['2026-08-12'], 'should include the far-edge Wednesday');
   });
 
   test('day math is stable across a DST boundary', () => {

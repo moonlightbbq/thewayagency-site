@@ -2,9 +2,16 @@ name: Publish Scheduled Blog Posts
 
 on:
   schedule:
-    # Wednesday + Saturday at 10:00 UTC (6:00 AM Eastern). Calendar runs
-    # on a 2×/week cadence; running both days lets posts ship on the day
-    # they're scheduled rather than waiting up to 4 days for a Wednesday.
+    # Wednesday + Saturday at 10:00 UTC (6:00 AM Eastern). Posts publish on
+    # Wednesdays only (one a week, content-accuracy D10, BLOG-06:
+    # PUBLISH_WEEKDAYS in scripts/lib/content-queue.js), and publishing is
+    # date-driven, so the Saturday run publishes nothing extra. It stays
+    # because the rest of this job needs two runs a week:
+    # send-review-emails.js asks for a review 10-18 days out, and SAGE locks
+    # a slot at T-14 in the afternoon, after the Wednesday run, so only the
+    # Saturday run (T-11) catches it. The Google review sync also runs here.
+    # Every PUBLISH_WEEKDAYS day must be in this list
+    # (tests/content-queue-cadence.test.js).
     - cron: '0 10 * * 3,6'
   workflow_dispatch:
     # Allow manual trigger from GitHub Actions UI

@@ -8,7 +8,7 @@
  *
  * The model has three parts:
  *   backlog  data/content-backlog.json - undated candidates, nothing scheduled
- *   slots    content-calendar.json#slots - the rolling Wed/Sat ledger
+ *   slots    content-calendar.json#slots - the rolling Wednesday ledger
  *   posts    content-calendar.json#year1 - the dated, authoritative record
  *
  * A slot is reserved HORIZON_DAYS out so capacity is visible, then a topic is
@@ -48,12 +48,18 @@ const MIN_LOCK_LEAD_DAYS = 10;
 // just inside the review lead time so the alarm fires while there is still
 // room to act, not on publish day.
 const MARKDOWN_DUE_DAYS = 10;
-// Four weeks of approved candidates at the 2x/week cadence.
-const MIN_APPROVED_BACKLOG = 8;
+// Four weeks of approved candidates at the 1x/week cadence.
+const MIN_APPROVED_BACKLOG = 4;
 
-// Wednesday and Saturday, matching .github/workflows/publish-blog.yml's
-// `cron: '0 10 * * 3,6'`.
-const PUBLISH_WEEKDAYS = [3, 6];
+// Wednesday only (content-accuracy D10, BLOG-06: one post a week). Every one
+// of these days must be in .github/workflows/publish-blog.yml's cron
+// (`'0 10 * * 3,6'`): the workflow keeps its Saturday run for review emails
+// and the review sync, and publishes nothing extra on it. The queue ran
+// Wednesday and Saturday from 2026-08-04 to 2026-10-02; slots dated before
+// PUBLISH_WEEKDAYS_SINCE are that history, and check-data-integrity.js checks
+// the weekday only from that date on.
+const PUBLISH_WEEKDAYS = [3];
+const PUBLISH_WEEKDAYS_SINCE = '2026-10-03';
 
 const DAY_MS = 86400000;
 
@@ -74,7 +80,7 @@ function isPublishDay(ymd) {
   return PUBLISH_WEEKDAYS.includes(asDate(ymd).getUTCDay());
 }
 
-/** Every Wed/Sat date in [fromYmd, fromYmd + days], exclusive of fromYmd. */
+/** Every publish date in [fromYmd, fromYmd + days], exclusive of fromYmd. */
 function publishDatesWithin(fromYmd, days) {
   const out = [];
   const start = asDate(fromYmd);
@@ -839,7 +845,8 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
   // I5 - enough approved candidates to keep filling slots.
   const approved = approvedCandidates(backlog);
   if (approved.length < MIN_APPROVED_BACKLOG) {
-    add('I5', `approved backlog is ${approved.length}, below the floor of ${MIN_APPROVED_BACKLOG} (${MIN_APPROVED_BACKLOG / 2} weeks at 2x/week)`);
+    add('I5', `approved backlog is ${approved.length}, below the floor of ${MIN_APPROVED_BACKLOG} `
+      + `(${MIN_APPROVED_BACKLOG / PUBLISH_WEEKDAYS.length} weeks at ${PUBLISH_WEEKDAYS.length}x/week)`);
   }
 
   // I6 - a post on a reviewer's change-request hold has reached its date. A
@@ -900,6 +907,7 @@ module.exports = {
   buildSchedulingContext, cannibalizationConflict, scoreCandidate,
   candidateToPost, reserveSlots, fillSlots,
   HORIZON_DAYS, LOCK_DAYS, MIN_LOCK_LEAD_DAYS, MARKDOWN_DUE_DAYS, MIN_APPROVED_BACKLOG, PUBLISH_WEEKDAYS,
+  PUBLISH_WEEKDAYS_SINCE,
   asDate, toYmd, daysBetween, isPublishDay, publishDatesWithin,
   loadAnchors, anchorForWindow, anchorRange, eligibilityOn, loadWindowMonths,
   loadCalendar, loadBacklog, saveCalendar, REVIEW_OWNED_FIELDS,

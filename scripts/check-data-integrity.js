@@ -252,17 +252,24 @@ if (calendar) {
   }
 
   // ── Rolling queue: slots + backlog ──────────────────────────────────────
-  // The slot ledger is the rolling Wed/Sat window; the backlog holds undated
+  // The slot ledger is the rolling publish-day window; the backlog holds undated
   // candidates. Both are new in the 2026-08 queue redesign, so validate their
   // shape here rather than discovering a malformed entry when the scheduler
   // reads it.
   const VALID_SLOT_STATES = ['reserved', 'locked'];
   const VALID_BACKLOG_STATUS = ['proposed', 'approved', 'on-hold', 'rejected'];
-  const PUBLISH_WEEKDAYS = [3, 6]; // Wed + Sat, matching publish-blog.yml
+  // The queue lib's own publish days (it matches publish-blog.yml's cron), from
+  // the date they apply: earlier slots ran on the Wed/Sat cadence and are history.
+  const PUBLISH_WEEKDAYS = queueLib ? queueLib.PUBLISH_WEEKDAYS : null;
+  const PUBLISH_WEEKDAYS_SINCE = queueLib ? queueLib.PUBLISH_WEEKDAYS_SINCE : null;
+  const WEEKDAY_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
   let queueErrors = 0;
   const slots = Array.isArray(calendar.slots) ? calendar.slots : [];
   const seenSlotDates = new Set();
+  if (!PUBLISH_WEEKDAYS || !PUBLISH_WEEKDAYS_SINCE) {
+    error('content-calendar.json: slot weekdays cannot be validated: scripts/lib/content-queue.js did not load'); queueErrors++;
+  }
   for (const s of slots) {
     const label = s.date || '(no date)';
     if (!/^\d{4}-\d{2}-\d{2}$/.test(s.date || '')) {
@@ -270,8 +277,9 @@ if (calendar) {
     }
     if (seenSlotDates.has(s.date)) { error(`content-calendar.json: duplicate slot for ${s.date}`); queueErrors++; }
     seenSlotDates.add(s.date);
-    if (!PUBLISH_WEEKDAYS.includes(new Date(`${s.date}T12:00:00Z`).getUTCDay())) {
-      error(`content-calendar.json: slot ${s.date} is not a Wednesday or Saturday`); queueErrors++;
+    if (PUBLISH_WEEKDAYS && PUBLISH_WEEKDAYS_SINCE && s.date >= PUBLISH_WEEKDAYS_SINCE
+        && !PUBLISH_WEEKDAYS.includes(new Date(`${s.date}T12:00:00Z`).getUTCDay())) {
+      error(`content-calendar.json: slot ${s.date} is not a ${PUBLISH_WEEKDAYS.map(d => WEEKDAY_NAMES[d]).join(' or ')}`); queueErrors++;
     }
     if (!VALID_SLOT_STATES.includes(s.state)) {
       error(`content-calendar.json: slot ${s.date} has invalid state "${s.state}"`); queueErrors++;
