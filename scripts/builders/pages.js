@@ -71,11 +71,12 @@ function getFAQsForProduct(knowledgeBase, productId) {
 }
 
 function getCarriersForLine(carriers, lineKey) {
-  // life/health carriers fall back to personal carriers since the marquee
-  // is a generic logo strip; specific L/H carrier lists can be added to
-  // data/carriers.json later if we want differentiation.
-  const key = (lineKey === 'life' || lineKey === 'health') ? 'personal' : lineKey;
-  return carriers[key] || carriers.personal || [];
+  // No cross-line fallback: life and health pages never show the property and
+  // casualty carriers (TRUST-05). data/carriers.json has no life or health rows
+  // yet, so those pages show no strip. Wholesalers and MGAs (type
+  // "intermediary") are not carriers "we represent" and stay off the strip.
+  const rows = Array.isArray(carriers[lineKey]) ? carriers[lineKey] : [];
+  return rows.filter(c => c.type !== 'intermediary');
 }
 
 function generateCarrierMarquee(carriers, lineKey) {
@@ -96,27 +97,28 @@ function generateCarrierMarquee(carriers, lineKey) {
     </section>`;
 }
 
-function getTestimonialsForLine(testimonials, lineKey) {
+function getTestimonialsForLine(testimonials, lineKey, blocked = []) {
   const lineMap = { personal: 'personal', commercial: 'commercial', life: 'life', health: 'health' };
   const lineName = lineMap[lineKey] || 'personal';
+  const blockedIds = new Set(blocked || []);
   // Accept testimonials tagged with either the new line keys or the legacy
-  // 'life_health' bucket so existing testimonial data still surfaces.
-  let filtered = testimonials.testimonials.filter(t => {
-    if (t.product_lines.includes(lineName)) return true;
-    if ((lineName === 'life' || lineName === 'health') && t.product_lines.includes('life_health')) return true;
+  // 'life_health' bucket so existing testimonial data still surfaces. No
+  // padding from other lines: a page shows only reviews about its own line,
+  // even if that means none (TRUST-11; health pages are regulated, 806 KAR 12:010).
+  const filtered = testimonials.testimonials.filter(t => {
+    if (blockedIds.has(t.id)) return false;
+    const lines = Array.isArray(t.product_lines) ? t.product_lines : [];
+    if (lines.includes(lineName)) return true;
+    if ((lineName === 'life' || lineName === 'health') && lines.includes('life_health')) return true;
     return false;
   });
-  if (filtered.length < 2) {
-    const others = testimonials.testimonials.filter(t => !filtered.includes(t));
-    filtered = [...filtered, ...others].slice(0, 3);
-  }
   return filtered.slice(0, 3);
 }
 
 const starSvg = '<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
 
-function generateTestimonials(testimonials, reviews, lineKey) {
-  const revs = getTestimonialsForLine(testimonials, lineKey);
+function generateTestimonials(testimonials, reviews, lineKey, blocked = []) {
+  const revs = getTestimonialsForLine(testimonials, lineKey, blocked);
   if (!revs.length) return '';
   return `
     <section class="section section--light">
@@ -145,19 +147,6 @@ function generateTestimonials(testimonials, reviews, lineKey) {
         </div>
       </div>
     </section>`;
-}
-
-function findReviewerForProduct(team, product, lineKey) {
-  const lineSpecialty = lineKey === 'personal' ? 'personal_lines'
-    : lineKey === 'commercial' ? 'commercial_lines'
-    : lineKey === 'life' ? 'life'
-    : lineKey === 'health' ? 'health'
-    : 'personal_lines';
-  const match = team.team.find(member =>
-    member.specialties.includes(product.id) ||
-    member.specialties.includes(lineSpecialty)
-  );
-  return match || team.team[0];
 }
 
 // ─── Template Functions ─────────────────────────
@@ -521,7 +510,7 @@ ${renderScripts()}
 // ─── Product Page Template ──────────────────────
 
 function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
-  const { products, office, team, knowledgeBase, carriers, testimonials, reviews, richContent, seoData, renderNav, renderFooter, renderScripts } = ctx;
+  const { products, office, knowledgeBase, carriers, testimonials, testimonialsBlocklist, reviews, richContent, seoData, renderNav, renderFooter, renderScripts } = ctx;
   const rc = richContent[product.id] || {};
   const faqs = rc.faqs || [];
   const kbFaqs = getFAQsForProduct(knowledgeBase, product.id);
@@ -712,28 +701,13 @@ ${breadcrumbs.html}
 ${formHtml}
 
       ${relatedSection}
-
-      ${(() => {
-        const reviewer = findReviewerForProduct(team, product, lineKey);
-        const designations = reviewer.designations && reviewer.designations.length > 0 ? reviewer.designations.join(', ') + ' | ' : '';
-        const reviewDate = product.last_reviewed ? new Date(product.last_reviewed + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'March 2026';
-        return `<div style="margin-top:var(--space-2xl);padding:var(--space-lg);background:var(--light-bg);border:1px solid var(--border);border-radius:var(--border-radius-lg);">
-        <p style="font-size:var(--text-sm);color:var(--slate);margin-bottom:4px;">Reviewed by</p>
-        <p style="font-weight:600;color:var(--navy);margin-bottom:2px;">
-          <a href="/about/team.html#${reviewer.slug}" style="color:var(--navy);">${reviewer.name}</a>, ${reviewer.title}
-        </p>
-        <p style="font-size:var(--text-sm);color:var(--slate);margin-bottom:0;">
-          ${designations}Licensed in KY, IN &amp; TN | ${reviewer.years_experience} years experience | Last reviewed: ${reviewDate}
-        </p>
-      </div>`;
-      })()}
     </article>
 
     ${crossSellSection}
 
     <!-- City-specific links handled by dedicated landing pages -->
 
-    ${generateTestimonials(testimonials, reviews, lineKey)}
+    ${generateTestimonials(testimonials, reviews, lineKey, (testimonialsBlocklist && testimonialsBlocklist.blocked) || [])}
 
 ${renderCTA({
       title: `Ready to talk about ${product.name.toLowerCase()}?`,
