@@ -198,6 +198,25 @@ function isHeld(status) {
   return HOLD_STATUSES.has(status);
 }
 
+/**
+ * What a held post (heldForApproval) needs, in one sentence, shared by the
+ * queue's I8 and the publisher's summary so they never disagree. Review
+ * requests go out only from D-18 down to the publish date, so a past-due post
+ * that never got one cannot be approved where it stands: it has to move.
+ * @param {object} entry       the calendar entry
+ * @param {boolean} hasMarkdown whether src/blog/<slug>.md exists
+ * @returns {string}
+ */
+function heldNextStep(entry, hasMarkdown) {
+  if (!hasMarkdown) {
+    return `its markdown (src/blog/${entry.slug}.md) is missing too, so it cannot be reviewed: write it and move the entry to a future date (the review request goes out from D-18), or remove the entry`;
+  }
+  if (entry.status === 'in-review' && entry.reviewer_email) {
+    return `it is held and publishes on the first publish run after its assigned reviewer approves it, while still scheduled for ${entry.publish_date}`;
+  }
+  return 'no review request went out for it, so nobody can approve it: move it to a future date (the request goes out from D-18 down to the publish date), or remove the entry';
+}
+
 module.exports = {
   PUBLISHABLE_STATUSES,
   AWAITING_APPROVAL_STATUSES,
@@ -208,6 +227,7 @@ module.exports = {
   isPublishable,
   isAwaitingApproval,
   heldForApproval,
+  heldNextStep,
   isKnownStatus,
   isHeld,
 };

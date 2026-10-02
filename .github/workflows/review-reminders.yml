@@ -24,7 +24,10 @@ permissions:
 
 # One group for both workflows: each reads and commits the calendar, so an
 # overlap (a delayed publish run, a manual dispatch) would send a reviewer two
-# reminders the same day and turn one run red on the refused push.
+# reminders the same day and turn one run red on the refused push. GitHub
+# keeps one PENDING run per group: a third run queued while one runs and one
+# waits replaces the waiting one (shown cancelled, grey). A dropped publish run
+# leaves due posts for the next Wed/Sat run; dispatch it again by hand.
 concurrency:
   group: blog-review-calendar
   cancel-in-progress: false

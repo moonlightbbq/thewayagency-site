@@ -19,7 +19,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { isHeld, isKnownStatus, heldForApproval } = require('./calendar-status');
+const { isHeld, isKnownStatus, heldForApproval, heldNextStep } = require('./calendar-status');
 const { APPROVAL_RECORD_FIELDS } = require('./review-credit');
 
 const ROOT = path.resolve(__dirname, '..', '..');
@@ -864,11 +864,7 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
   for (const p of heldPosts) {
     const md = markdownFor(p.slug);
     add('I8', `"${p.slug}" was due ${p.publish_date} but has no licensed approval (status ${p.status}, reviewer ${p.reviewer_email ? `${p.reviewer || '?'} <${p.reviewer_email}>` : 'none assigned'})`
-      + (!md
-        ? `; its markdown (src/blog/${p.slug}.md) is missing too, so it cannot be reviewed: write it and move the entry to a future date (the review request goes out from D-18), or remove the entry`
-        : (p.status === 'in-review' && p.reviewer_email
-          ? `; it is held and publishes on the first publish run after its assigned reviewer approves it, while still scheduled for ${p.publish_date}`
-          : `; no review request went out for it, so nobody can approve it: move it to a future date (the request goes out from D-18 down to the publish date), or remove the entry`)));
+      + `; ${heldNextStep(p, md)}`);
   }
 
   return {

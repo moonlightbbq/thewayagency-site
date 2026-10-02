@@ -33,6 +33,7 @@ const path = require('path');
 const {
   PUBLISHABLE_STATUSES, AWAITING_APPROVAL_STATUSES, TERMINAL_STATUSES, HOLD_STATUSES, ADVISORY_GRANDFATHERED,
   isPublishable, isKnownStatus, isHeld, isAwaitingApproval, heldForApproval, isGrandfathered,
+  heldNextStep,
 } = require('../scripts/lib/calendar-status');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -189,5 +190,13 @@ describe('the contract holds across both repos', () => {
     assert.match(src, /publishable\(post\.status, post\)/);
     const pub = fs.readFileSync(path.join(ROOT, 'scripts', 'publish-scheduled-posts.js'), 'utf8');
     assert.match(pub, /isPublishable\(post\.status, post\)/);
+  });
+  test('heldNextStep: wait for approval only when a request went out (in-review with a reviewer); otherwise move the entry', () => {
+    const e = (status, reviewer_email) => ({ slug: 'test-held-z', publish_date: '2026-11-18', status, reviewer_email });
+    assert.match(heldNextStep(e('in-review', 'test-r@example.com'), true), /publishes on the first publish run after its assigned reviewer approves it/);
+    // a failed request send leaves reviewer_email on a 'planned' entry: nobody received it
+    assert.match(heldNextStep(e('planned', 'test-r@example.com'), true), /no review request went out .* move it to a future date/);
+    assert.match(heldNextStep(e('planned', null), true), /no review request went out/);
+    assert.match(heldNextStep(e('in-review', 'test-r@example.com'), false), /markdown .* missing .* write it and move the entry/);
   });
 });

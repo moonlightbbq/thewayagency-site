@@ -41,7 +41,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { isPublishable, isKnownStatus, isAwaitingApproval } = require('./lib/calendar-status');
+const { isPublishable, isKnownStatus, isAwaitingApproval, heldNextStep } = require('./lib/calendar-status');
 const {
   approvalCheck, applyReviewCredit, readinessError, frontMatterProblem, reviewWordingWarnings, describeWordingWarning,
   reviewSecret, recordCredit, clearApprovalRecord,
@@ -128,7 +128,7 @@ for (const post of calendar.year1) {
       const md = fs.existsSync(path.join(BLOG_SRC, `${post.slug}.md`));
       console.log(`  ! HELD (no licensed approval): "${post.title}" (${post.slug}) due ${post.publish_date}, status ${post.status}, `
         + `reviewer ${post.reviewer_email ? `${post.reviewer || '?'} <${post.reviewer_email}>` : 'none assigned'}${md ? '' : ', and its markdown is missing'}`);
-      held.push({ slug: post.slug, date: post.publish_date, md, reviewer: !!post.reviewer_email });
+      held.push({ slug: post.slug, date: post.publish_date, next: heldNextStep(post, md) });
       continue;
     }
     // An unknown status is a contract breach between this repo and sage, and
@@ -267,12 +267,7 @@ if (errors.length > 0) {
 if (held.length > 0) {
   console.log('');
   console.log(`  ${held.length} due post(s) HELD: not published, because their licensed reviewer has not approved them (owner decision 2026-10-02):`);
-  for (const h of held) {
-    const why = !h.md ? 'no draft: write it or re-date/remove the entry'
-      : !h.reviewer ? 'no reviewer assigned: assign one, who then approves it'
-      : 'the assigned reviewer approves it';
-    console.log(`    - ${h.slug} (due ${h.date}): ${why}`);
-  }
+  for (const h of held) console.log(`    - ${h.slug} (due ${h.date}): ${h.next}`);
   console.log('  A reviewer approves in SAGE, or by replying APPROVED to the review email if they review by email.');
   console.log('  It then publishes on the next run, while it is still scheduled for that date. Moving it to another date needs a new approval.');
   console.log('  The queue check (I8) keeps the workflow red until then. Not an error: nothing was changed.');
