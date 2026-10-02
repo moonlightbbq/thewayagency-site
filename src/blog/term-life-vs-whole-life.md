@@ -114,7 +114,7 @@ The policy expires and coverage ends. You do not receive any money back. You can
 
 ### FAQ: Is whole life insurance a good investment?
 
-Whole life should not be compared directly to investments like mutual funds or index funds. The guaranteed cash value growth rate is typically 2 to 4 percent, which is lower than historical stock market returns. However, it offers guarantees that investments do not: the cash value cannot go down, and the death benefit is certain. Whole life works best as part of a broader financial plan, not as a standalone investment.
+Whole life should not be compared directly to investments like mutual funds or index funds. The guaranteed cash value growth rate is set in each policy's contract (we show you the insurer's illustration), and it is lower than historical stock market returns. However, it offers guarantees that investments do not: the cash value cannot go down, and the death benefit is certain. Whole life works best as part of a broader financial plan, not as a standalone investment.
 
 ### FAQ: How much life insurance can I get without a medical exam?
 

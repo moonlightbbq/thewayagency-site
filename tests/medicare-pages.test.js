@@ -285,3 +285,36 @@ describe('no agency Medicare Advantage or Part D comparison claim (owner decisio
     }
   });
 });
+
+// ─── Annuities and whole life (TRUST-07; spec 3.14) ──────────────────────────
+
+describe('annuity and whole-life pages (TRUST-07)', () => {
+  const lifePage = (id) => {
+    const ctx = buildCtx();
+    return pages.generateProductPage(ctx.products.life.find((p) => p.id === id), 'Life Insurance', 'life', 'life', ctx);
+  };
+  const RATE_RANGE = /typically [0-9]+ ?(?:-|to) ?[0-9]+ ?(?:%|percent)/i;
+
+  test('/life/annuities: no guaranty-association answer, rate range, CD comparison or "cannot lose", visible or in FAQPage', () => {
+    const html = lifePage('annuities');
+    const text = visibleText(html);
+    const ld = JSON.stringify(faqLd(html));
+    for (const s of [text, ld]) {
+      assert.ok(!/guarant(?:y|ee)\s+(?:association|fund)/i.test(s));
+      assert.ok(!/typically 3-5%|cannot lose money|similar to a CD/i.test(s));
+      assert.ok(!RATE_RANGE.test(s), 'no undated rate range');
+    }
+    const safe = faqLd(html).find((q) => q.name === 'Are annuities safe if the insurance company fails?');
+    assert.equal(safe.acceptedAnswer.text, "Annuity guarantees depend on the financial strength and claims-paying ability of the issuing insurance company. Annuities are not bank deposits and are not FDIC-insured. Before you decide, we'll show you the insurer's current AM Best financial strength rating and the date it was issued.");
+    assert.ok(text.includes(safe.acceptedAnswer.text), 'FAQPage answer is the visible answer');
+    assert.ok(text.includes('surrender charges, market value adjustments and rider fees'), '"cannot lose" only with the qualifier');
+  });
+
+  test('/life/whole-life and the term-vs-whole post: no undated guaranteed-rate or loan-rate range', () => {
+    const text = visibleText(lifePage('whole-life'));
+    assert.ok(!RATE_RANGE.test(text));
+    assert.ok(text.includes("set in each policy's contract"));
+    const post = fs.readFileSync(path.join(ROOT, 'src', 'blog', 'term-life-vs-whole-life.md'), 'utf8');
+    assert.ok(!RATE_RANGE.test(post));
+  });
+});
