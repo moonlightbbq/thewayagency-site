@@ -134,6 +134,29 @@ for (const file of htmlFiles) {
 }
 if (oversized === 0) pass(`All pages under 500KB`);
 
+// 5b. Stylesheets block render (PERF-03). A media="print" swap restyled sections after
+// first paint, and a calc() whose + lost its spaces is dropped by the browser.
+let printSwaps = 0;
+for (const file of htmlFiles) {
+  if (/<link\b[^>]*\bmedia=["']print["']/.test(fs.readFileSync(file, 'utf8'))) {
+    error(`Stylesheet loaded with a media="print" swap: ${path.relative(BUILD, file)}`);
+    printSwaps++;
+  }
+}
+if (printSwaps === 0) pass('No media="print" stylesheet swaps');
+let badCalc = 0;
+const builtCssDir = path.join(BUILD, 'src', 'css');
+if (fs.existsSync(builtCssDir)) {
+  for (const name of fs.readdirSync(builtCssDir).filter((n) => n.endsWith('.css'))) {
+    const css = fs.readFileSync(path.join(builtCssDir, name), 'utf8');
+    for (const m of css.match(/calc\([^;}]*?(?:\S\+|\+\S)[^;}]*/g) || []) {
+      error(`calc() with a + not surrounded by spaces in src/css/${name}: ${m.slice(0, 80)}`);
+      badCalc++;
+    }
+  }
+}
+if (badCalc === 0) pass('Every calc() + in the built CSS keeps its spaces');
+
 // 6. All referenced images exist
 let missingImages = 0;
 for (const file of htmlFiles) {

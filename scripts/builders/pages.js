@@ -142,19 +142,11 @@ function findReviewerForProduct(team, product, lineKey) {
 
 // ─── Template Functions ─────────────────────────
 
-// Critical CSS is injected by the build orchestrator via setCriticalCss()
-let _criticalCssInline = '';
-function setCriticalCss(css) { _criticalCssInline = css; }
-
 function renderHead({ title, description, canonical, ogTitle, ogDescription, ogUrl, schema, robots }) {
-  const cssBlock = _criticalCssInline
-    ? `
-  <style>${_criticalCssInline}</style>
-  <link rel="stylesheet" href="/src/css/base.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="/src/css/components.css" media="print" onload="this.media='all'">
-  <link rel="stylesheet" href="/src/css/leadgen.css" media="print" onload="this.media='all'">
-  <noscript><link rel="stylesheet" href="/src/css/base.css"><link rel="stylesheet" href="/src/css/components.css"><link rel="stylesheet" href="/src/css/leadgen.css"></noscript>`
-    : `
+  // Ordinary render-blocking links (same-origin, versioned, immutable-cached). No
+  // inlined critical subset and no media="print" swap: that swap restyled sections
+  // after first paint (PERF-03).
+  const cssBlock = `
   <link rel="stylesheet" href="/src/css/base.css">
   <link rel="stylesheet" href="/src/css/components.css">
   <link rel="stylesheet" href="/src/css/leadgen.css">`;
@@ -1284,7 +1276,6 @@ module.exports = {
   generateIndustryPage,
   generateCarrierPage,
   generateCarriersIndex,
-  setCriticalCss,
   renderHead,
   renderHero,
   renderCTA,

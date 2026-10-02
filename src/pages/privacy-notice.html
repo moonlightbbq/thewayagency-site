@@ -149,10 +149,10 @@ strong{font-weight:600}
 .hero__bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 30%,rgba(32,188,238,.12) 0%,transparent 60%),radial-gradient(ellipse at 20% 70%,rgba(101,197,179,.08) 0%,transparent 50%)}
 .hero__texture{position:absolute;inset:0;opacity:.02;background-image:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h1v1H0z' fill='%23fff' fill-opacity='1'/%3E%3C/svg%3E");z-index:1}
 .hero__content{position:relative;z-index:2;max-width:var(--max-width);margin:0 auto;padding:var(--space-4xl) var(--space-xl);color:var(--white)}
-.hero__eyebrow{font-size:var(--text-sm);font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:var(--space-md);opacity:0;animation:fadeUp .6s ease .2s forwards}
-.hero__title{color:var(--white);max-width:700px;margin-bottom:var(--space-lg);opacity:0;animation:fadeUp .6s ease .4s forwards}
-.hero__subtitle{font-size:var(--text-lg);font-weight:300;line-height:1.8;max-width:560px;color:rgba(255,255,255,.8);margin-bottom:var(--space-2xl);opacity:0;animation:fadeUp .6s ease .6s forwards}
-.hero__actions{display:flex;gap:var(--space-md);flex-wrap:wrap;opacity:0;animation:fadeUp .6s ease .8s forwards}
+.hero__eyebrow{font-size:var(--text-sm);font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:var(--space-md)}
+.hero__title{color:var(--white);max-width:700px;margin-bottom:var(--space-lg)}
+.hero__subtitle{font-size:var(--text-lg);font-weight:300;line-height:1.8;max-width:560px;color:rgba(255,255,255,.8);margin-bottom:var(--space-2xl)}
+.hero__actions{display:flex;gap:var(--space-md);flex-wrap:wrap}
 .hero__accent{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--blue) 0%,var(--cyan) 40%,var(--green) 100%);z-index:2}
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 @media(max-width:768px){.hero{min-height:60vh}.hero__content{padding:var(--space-3xl) var(--space-xl)}}
