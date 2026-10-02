@@ -48,11 +48,20 @@ const path = require('path');
 const contentGuard = require('./lib/blog-content-guard');
 // The agency reference and the canonical page and person IRIs (SCHEMA-02, SCHEMA-04).
 const { orgRef, teamMemberUrl, blogPostUrl, SITE_URL } = require('./lib/entity');
+const { isMedicarePost, renderTpmoForAreas } = require('./lib/medicare-disclaimer');
 
 const ROOT = path.resolve(__dirname, '..');
 const BLOG_SRC = path.join(ROOT, 'src', 'blog');
 const BLOG_BUILD = path.join(ROOT, 'build', 'blog');
 const DATA = path.join(ROOT, 'data');
+
+// The CMS TPMO record (data/medicare-tpmo.json; TRUST-01), read once. Medicare
+// posts print its statement under the byline. renderTpmoForAreas() prints
+// nothing unless the record is active with signed counts, so a missing or
+// unreadable file means no statement (check-data-integrity.js reports it).
+const TPMO_DATA = (() => {
+  try { return JSON.parse(fs.readFileSync(path.join(DATA, 'medicare-tpmo.json'), 'utf8')); } catch { return null; }
+})();
 
 // ─── Output encoding ─────────────────────────
 //
@@ -291,20 +300,29 @@ function productSlugFromRelatedPage(relatedPage) {
   return m ? m[1] : null;
 }
 
-function intakeHref(relatedPage) {
+// A Medicare post with no product page of its own sends readers to the
+// Medicare intake, where the Medicare lead disclosure shows (TRUST-01).
+function intakeHref(relatedPage, { medicare = false } = {}) {
   const slug = productSlugFromRelatedPage(relatedPage);
-  return slug ? `/intake/?product=${slug}` : '/intake/';
+  if (slug) return `/intake/?product=${slug}`;
+  return medicare ? '/intake/?product=medicare' : '/intake/';
 }
 
 // ─── Mid-Post CTA Injection ─────────────────
-function injectMidPostCTA(html, category, relatedPage) {
+// On a Medicare post the CTA makes no "we shop carriers" claim: whether the
+// agency sells Medicare Advantage or Part D for several companies is the
+// owner's open answer (medicare-health-compliance.md 3.7 step 3, D-1).
+function injectMidPostCTA(html, category, relatedPage, { medicare = false } = {}) {
   const categoryLabels = { personal: 'personal insurance', commercial: 'business insurance', life: 'life insurance', health: 'health insurance', life_health: 'life and health insurance' };
   const label = categoryLabels[category] || 'insurance';
-  const href = intakeHref(relatedPage);
+  const href = intakeHref(relatedPage, { medicare });
+  const ctaText = medicare
+    ? 'Talk with a licensed agent about your Medicare options.'
+    : 'Get a free quote from an independent agent. We shop top-rated carriers for you.';
   const ctaHtml = `
       <div style="background:linear-gradient(135deg,var(--navy-dark),var(--navy));border-radius:var(--border-radius-lg);padding:var(--space-2xl);margin:var(--space-2xl) 0;text-align:center;">
         <p style="color:var(--white);font-size:var(--text-xl);font-weight:600;margin-bottom:var(--space-sm);">Need help with ${label}?</p>
-        <p style="color:rgba(255,255,255,0.75);font-size:var(--text-sm);font-weight:300;margin-bottom:var(--space-lg);">Get a free quote from an independent agent. We shop top-rated carriers for you.</p>
+        <p style="color:rgba(255,255,255,0.75);font-size:var(--text-sm);font-weight:300;margin-bottom:var(--space-lg);">${ctaText}</p>
         <a href="${href}" style="display:inline-block;padding:10px 24px;background:var(--cyan);color:var(--navy-dark);border-radius:var(--border-radius);font-size:var(--text-sm);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;text-decoration:none;">Get a Free Quote</a>
       </div>`;
 
@@ -318,17 +336,49 @@ function injectMidPostCTA(html, category, relatedPage) {
   return count >= 3 ? result : html;
 }
 
+// ─── Sources (BLOG-02) ───────────────────────
+// Front matter, one line: `sources: [Label | https://url, https://url]`.
+// Each item is "Label | https://url" or a bare https URL (its label is then the
+// host and path). parseFrontMatter() splits the list on commas, so a label or
+// URL must not contain one. Only https URLs without spaces, quotes or angle
+// brackets are kept; anything else is dropped, not printed.
+const SOURCE_URL_RE = /^https:\/\/[^\s"'<>]+$/;
+
+/** A bare URL's label: host (without "www.") and path. */
+function sourceUrlLabel(url) {
+  try {
+    const u = new URL(url);
+    return `${u.host.replace(/^www\./, '')}${u.pathname}`.replace(/\/$/, '');
+  } catch { return url; }
+}
+
+/** The post's sources as [{ label, url }], in front-matter order. */
+function postSources(meta) {
+  const raw = Array.isArray(meta.sources) ? meta.sources : (meta.sources ? [meta.sources] : []);
+  const out = [];
+  for (const item of raw) {
+    const parts = String(item).split(/\s+\|\s+/).map((p) => p.trim());
+    const url = parts[parts.length - 1];
+    if (!SOURCE_URL_RE.test(url)) continue;
+    const label = parts.length > 1 ? parts.slice(0, -1).join(' | ') : sourceUrlLabel(url);
+    if (label) out.push({ label, url });
+  }
+  return out;
+}
+
 // ─── Blog post HTML template ────────────────
 /**
  * @param {object} meta     the post's front matter (parseFrontMatter)
  * @param {string} bodyHtml
  * @param {Array} faqs
- * @param {{team?: Array}} [opts]  data/team.json's team list: the byline's
- *   author name and title come from the member author_slug names, never from
- *   the front matter (blog-content-guard.js bylineAuthor). Without a matching
- *   member the agency is the author.
+ * @param {{team?: Array, tpmo?: object|null}} [opts]  team: data/team.json's
+ *   team list: the byline's author name and title come from the member
+ *   author_slug names, never from the front matter (blog-content-guard.js
+ *   bylineAuthor). Without a matching member the agency is the author.
+ *   tpmo: the data/medicare-tpmo.json record (a test passes a fixture); a
+ *   Medicare post prints its statement under the byline when it is active.
  */
-function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
+function generateBlogPost(meta, bodyHtml, faqs, { team = [], tpmo = TPMO_DATA } = {}) {
   // Every front-matter value below is encoded where it lands (esc / ldJson);
   // see "Output encoding" above. Slugs and paths are validated, not escaped:
   // an unsafe one is dropped.
@@ -402,7 +452,23 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
 
   // Mid-post CTA
   const relatedPage = sitePath(meta.related_page);
-  const enhancedBody = injectMidPostCTA(anchoredBody, meta.category || '', relatedPage);
+  const medicarePost = isMedicarePost(meta);
+  const enhancedBody = injectMidPostCTA(anchoredBody, meta.category || '', relatedPage, { medicare: medicarePost });
+
+  // CMS TPMO statement under the byline of every Medicare post (TRUST-01,
+  // 42 CFR 422.2267(e)(41)(iv)): '' unless the record is active with counts.
+  const tpmoHtml = medicarePost && tpmo && tpmo.display && tpmo.display.medicare_posts ? renderTpmoForAreas(tpmo) : '';
+
+  // Sources (BLOG-02): after the FAQ, outside the body, so they are neither in
+  // the table of contents nor counted for the mid-post CTA.
+  const sources = postSources(meta);
+  const sourcesSection = sources.length ? `
+      <section class="blog-sources" aria-labelledby="sources-heading">
+        <h2 id="sources-heading">Sources</h2>
+        <ul>
+          ${sources.map((s) => `<li><a href="${esc(s.url)}" rel="noopener">${esc(s.label)}</a></li>`).join('\n          ')}
+        </ul>
+      </section>` : '';
 
   // Featured image (optional front matter: image + image_alt). Site-relative
   // path in front matter; og/twitter need the absolute URL. Falls back to the
@@ -456,6 +522,7 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
     "datePublished": String(meta.date || ''),
     "dateModified": String(meta.modified || meta.date || ''),
     "description": String(meta.description || ''),
+    ...(sources.length ? { "citation": sources.map((s) => s.url) } : {}),
   };
   const tags = (Array.isArray(meta.tags) ? meta.tags : String(meta.tags || '').replace(/[\[\]]/g, '').split(','))
     .map(t => String(t).trim()).filter(Boolean);
@@ -531,7 +598,8 @@ ${renderNav()}
         <span>Published ${esc(dateFormatted)}</span>
         <span>|</span>
         <span>${esc(readingTime)}</span>
-      </div>
+      </div>${tpmoHtml ? `
+      ${tpmoHtml}` : ''}
       <div class="blog-share" style="display:flex;gap:8px;margin-bottom:var(--space-lg);flex-wrap:wrap;">
         <a href="https://twitter.com/intent/tweet?text=${esc(encodeURIComponent(String(meta.title || '')))}&url=https://www.thewayagency.com/blog/${slug}.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on Twitter">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
@@ -552,7 +620,7 @@ ${renderNav()}
       </div>
 ${tocHtml}
       ${enhancedBody}
-      ${faqSection}
+      ${faqSection}${sourcesSection}
 ${relatedPage ? `
       <h2 style="margin-top:var(--space-2xl);">Related Coverage</h2>
       <div class="related-posts">
@@ -570,7 +638,7 @@ ${relatedPage ? `
         <h2 class="cta-banner__title">${esc(meta.cta_title || 'Have questions about your coverage?')}</h2>
         <p class="cta-banner__text">${esc(meta.cta_text || "We're here to help. Get a quote or request a coverage review.")}</p>
         <div class="cta-banner__actions">
-          <a href="${intakeHref(relatedPage)}" class="btn btn--primary btn--lg">Get a Quote</a>
+          <a href="${intakeHref(relatedPage, { medicare: medicarePost })}" class="btn btn--primary btn--lg">Get a Quote</a>
           <a href="/contact.html" class="btn btn--outline-white btn--lg">Contact Us</a>
         </div>
       </div>
@@ -793,7 +861,7 @@ ${renderScripts()}
 // when this file is the program: `node scripts/generate-blog.js`, as
 // scripts/builders/blog-helpers.js runs it. (A top-level return is legal in a
 // CommonJS module.)
-module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, printedText, markdownToHtml, parseFrontMatter, extractFAQs, generateBlogPost };
+module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, printedText, markdownToHtml, parseFrontMatter, extractFAQs, generateBlogPost, postSources, intakeHref, injectMidPostCTA };
 if (require.main !== module) return;
 
 // ─── Build ──────────────────────────────────

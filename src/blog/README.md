@@ -25,6 +25,7 @@ related_page: /personal/home.html
 tags: home insurance, kentucky, weather
 image: /src/assets/images/blog/your-post-slug-here.jpg
 image_alt: Short description of the featured image
+sources: [CMS CY2027 Rate Announcement | https://www.cms.gov/files/document/2027-announcement.pdf, https://www.medicare.gov/plan-compare]
 ---
 ```
 
@@ -32,6 +33,15 @@ image_alt: Short description of the featured image
 image above the byline and uses it for og:image/twitter:image (1536x1024
 expected); without them the social logo is used. The hive pipeline generates
 these automatically for AI-drafted posts.
+
+`sources` is optional: the primary sources behind the post's statutes,
+deadlines and figures. Write it on one line, as a list of items that are each
+either `Label | https://url` or a bare `https://url` (the page then shows the
+host and path as the label). The page prints a "Sources" list after the FAQ
+and adds the URLs to the Article structured data as `citation`. Only `https://`
+URLs without spaces, quotes or angle brackets are kept. Items are split on
+commas, so no label or URL may contain a comma. Keep linking each statute
+inline in the body as well.
 
 ## Who the byline names
 
