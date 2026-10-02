@@ -15,6 +15,26 @@ function esc(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// The agency is licensed in these states (KY DOI 1244675, Indiana firm licence
+// 3874966, Tennessee business entity producer). Hub eyebrows and trust bars
+// state the hub's state from this map; they never print a founding or
+// "serving since" year (TRUST-02).
+const STATE_NAMES = { KY: 'Kentucky', IN: 'Indiana', TN: 'Tennessee' };
+
+// One hours line for the hub trust bars (owner decision 2026-10-02: Monday to
+// Friday, 9:00 AM to 5:00 PM Eastern; shown as ET so it stays right in daylight time).
+const HUB_HOURS_TEXT = 'Call or text Mon–Fri, 9–5 ET';
+
+function renderHubTrustBar(stateFull) {
+  return `    <div class="trust-bar"><div class="trust-bar__inner">
+      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Licensed in ${stateFull}</div>
+      <div class="trust-bar__divider"></div>
+      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Independent agency</div>
+      <div class="trust-bar__divider"></div>
+      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${HUB_HOURS_TEXT}</div>
+    </div></div>`;
+}
+
 // ─── Breadcrumb Helper ──────────────────────────
 
 function renderBreadcrumbs(items) {
@@ -794,9 +814,9 @@ ${renderHead({
 ${renderNav()}
 
 ${renderHero({
-    eyebrow: `Independent agency · Serving ${city.county} since 1998`,
+    eyebrow: `Independent agency · Licensed in ${STATE_NAMES[city.state] || city.state}`,
     title: `Insurance in <span class="hero__title-accent">${city.city}</span>, ${city.state}`,
-    subtitle: `Top-rated carriers, right-sized coverage, local service. Personal, commercial, and life insurance for ${city.city} families and businesses.`,
+    subtitle: `Top-rated carriers, right-sized coverage. Personal, commercial, and life insurance for ${city.city} families and businesses.`,
     buttons: [
       { href: `/intake/?city=${encodeURIComponent(city.city)}&state=${encodeURIComponent(city.state)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
       { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
@@ -807,13 +827,7 @@ ${renderHero({
   })}
 
   <main id="main">
-    <div class="trust-bar"><div class="trust-bar__inner">
-      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Since 1998</div>
-      <div class="trust-bar__divider"></div>
-      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Top-Rated Carriers</div>
-      <div class="trust-bar__divider"></div>
-      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Licensed in ${city.state}</div>
-    </div></div>
+${renderHubTrustBar(STATE_NAMES[city.state] || city.state)}
 
     <section class="section">
       <div class="container container--narrow">
@@ -824,7 +838,6 @@ ${(city.context_sections || []).map(s => {
           return `        <h3 id="${sectionId}">${s.heading}</h3>\n        <p>${s.body}</p>`;
         }).join('\n')}
 ${city.context_closing ? `        <p>${city.context_closing}</p>` : ''}
-${city.context_closing ? '' : `        <p>As an independent agency, we are not tied to one insurance company. We represent top-rated carriers &mdash; including Travelers, Progressive, Liberty Mutual, Chubb, The Hartford, and more &mdash; and we match you with the right ones for your specific situation in ${city.county}.</p>`}
 
         <h2>Insurance options in ${city.city}</h2>
         ${(() => {
@@ -874,6 +887,7 @@ function generateCountyPage(county, ctx) {
   const { office, renderNav, renderFooter, renderScripts } = ctx;
   const countyName = county.county_name;
   const stateAbbr = county.state;
+  const stateFull = county.state_full || STATE_NAMES[stateAbbr] || stateAbbr;
 
   // The hub's WebPage + Service JSON-LD comes from schema-generator.js
   // _buildHubNodes (the county only as an area served; no agency node here).
@@ -932,9 +946,9 @@ ${renderHead({
 ${renderNav()}
 
 ${renderHero({
-    eyebrow: `Independent agency · Serving ${countyName} since 1998`,
+    eyebrow: `Independent agency · Licensed in ${stateFull}`,
     title: `Insurance in <span class="hero__title-accent">${countyName}</span>, ${stateAbbr}`,
-    subtitle: `Top-rated carriers, right-sized coverage, local service. Personal, commercial, farm, and life insurance for ${countyName} families and businesses.`,
+    subtitle: `Top-rated carriers, right-sized coverage. Personal, commercial, farm, and life insurance for ${countyName} families and businesses.`,
     buttons: [
       { href: `/intake/?county=${encodeURIComponent(countyName)}&state=${encodeURIComponent(stateAbbr)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
       { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
@@ -945,13 +959,7 @@ ${renderHero({
   })}
 
   <main id="main">
-    <div class="trust-bar"><div class="trust-bar__inner">
-      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Since 1998</div>
-      <div class="trust-bar__divider"></div>
-      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Top-Rated Carriers</div>
-      <div class="trust-bar__divider"></div>
-      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Licensed in ${stateAbbr}</div>
-    </div></div>
+${renderHubTrustBar(stateFull)}
 
     <section class="section">
       <div class="container container--narrow">
