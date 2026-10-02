@@ -67,7 +67,6 @@
     calendarUrl: '',
     // GA4 + Meta Pixel are loaded by GTM (GTM-MCQG9SN3). Do not initialize here.
     // GA4 measurement ID: G-0LQ0W8VBR7 (configure in GTM, not in code — verified live 2026-06-23 in sage src/lib/api-config.js)
-    fbPixelId: '33110648475215550', // used for fbq('setUserProperties') only
     debug: new URLSearchParams(window.location.search).has('twa_debug'),
   };
 
@@ -210,8 +209,9 @@
   // ═══════════════════════════════════════════════
   // ENHANCED CONVERSIONS (hashed PII)
   // ═══════════════════════════════════════════════
-  // Moved to TWA (shared with /intake/); CONFIG.fbPixelId threaded here.
-  const pushEnhancedConversion = (data) => window.TWA.pushEnhancedConversion(data, CONFIG.fbPixelId);
+  // Moved to TWA (shared with /intake/). dataLayer only: no Meta advanced
+  // matching (TRUST-12).
+  const pushEnhancedConversion = (data) => window.TWA.pushEnhancedConversion(data);
 
   // ═══════════════════════════════════════════════
   // CONVERSION EVENTS
@@ -227,10 +227,11 @@
       conversion_reference: data.reference || '',
       conversion_source: data.source || '',
     });
-    // Meta conversion events
+    // Meta conversion events. The Lead carries no product or line (TRUST-12:
+    // Meta's terms bar health information, including in event parameters).
     if (window.fbq) {
       if (type === 'quote_request') {
-        fbq('track', 'Lead', { content_name: data.products, content_category: 'quote', value: data.value || 0, currency: 'USD' });
+        fbq('track', 'Lead', { content_category: 'quote', value: data.value || 0, currency: 'USD' });
       } else if (type === 'contact_form') {
         fbq('track', 'Contact', { content_name: 'contact_form' });
       } else if (type === 'phone_call') {
@@ -529,11 +530,18 @@
         e.preventDefault();
         form.querySelectorAll('.field-error').forEach(el => el.remove());
         form.querySelectorAll('input').forEach(el => { el.style.borderColor = ''; el.removeAttribute('aria-invalid'); el.removeAttribute('aria-describedby'); });
+        // FormData holds only the hidden page context and the honeypot. The
+        // name/email/phone inputs have no name attribute (a native submit must
+        // never put them in a URL), so they are read by data-field (TRUST-08).
         const data = Object.fromEntries(new FormData(form));
+        const val = (k) => ((form.querySelector(`[data-field="${k}"]`) || {}).value || '').trim();
+        data.name = val('name');
+        data.email = val('email');
+        data.phone = val('phone');
         let hasError = false;
         function showErr(field, msg) {
           hasError = true;
-          const el = form.querySelector(`[name="${field}"]`);
+          const el = form.querySelector(`[data-field="${field}"]`);
           if (el) { const errId = 'err-' + field + '-' + Date.now(); el.style.borderColor = 'var(--error)'; el.setAttribute('aria-invalid', 'true'); el.setAttribute('aria-describedby', errId); el.insertAdjacentHTML('afterend', `<p id="${errId}" class="field-error" role="alert" style="color:var(--error);font-size:12px;margin:4px 0 0;">${msg}</p>`); }
         }
         if (!data.name || !data.name.trim()) showErr('name', 'Name is required');
@@ -552,23 +560,14 @@
         // event/source pair must be retargeted before this ships.
         track('inline_quote_start', { category: 'funnel', source: 'inline-product-form', products: data.product || '' });
 
-        const params = new URLSearchParams();
-        if (data.product) params.set('product', data.product);
-        if (data.lineOfBusiness) params.set('line', data.lineOfBusiness);
-        if (data.name) params.set('name', data.name);
-        if (data.email) params.set('email', data.email);
-        if (data.phone) params.set('phone', data.phone);
-        if (data.industry) params.set('industry', data.industry);
-        // City/county/state hidden fields (26 geo landing pages) were collected
-        // and then dropped on this hop — the wizard prefloads them.
-        if (data.city) params.set('city', data.city);
-        if (data.county) params.set('county', data.county);
-        if (data.state) params.set('state', data.state);
-        const pageAgent = new URLSearchParams(window.location.search).get('agent');
-        if (pageAgent) params.set('agent', pageAgent);
-        params.set('src', 'inline');
-
-        window.location.href = '/intake/?' + params.toString();
+        // The URL carries page context only (product, line, industry, city,
+        // county, state, agent, src); the wizard preloads it. What the visitor
+        // typed rides this tab's sessionStorage and never a URL, because GA4,
+        // Clarity and the Meta Pixel collect page URLs (TRUST-08). If storage
+        // is blocked the visitor retypes: never fall back to URL parameters.
+        const handoff = window.TWA.buildIntakeHandoff(data, window.location.search);
+        window.TWA.stashPrefill(handoff.prefill);
+        window.location.href = handoff.url;
       });
     });
   }
@@ -589,7 +588,9 @@
             category: 'engagement',
             form_id: formId,
             page_path: window.location.pathname,
-            field: (e.target && e.target.name) || '',
+            // The field's name, never its value. Inline-form inputs carry
+            // data-field instead of a name attribute (TRUST-08).
+            field: (e.target && (e.target.name || (e.target.getAttribute && e.target.getAttribute('data-field')))) || '',
           });
           form.removeEventListener('input', onFirstTouch);
           form.removeEventListener('change', onFirstTouch);
