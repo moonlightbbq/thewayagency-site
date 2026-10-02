@@ -9,6 +9,13 @@ const { execSync } = require('child_process');
 const { ensureDir } = require('./assets');
 const { legacyPageProblem } = require('../lib/legacy-blog-pages');
 const { frontMatterOf } = require('../lib/blog-content-guard');
+const { renderTpmoForAreas } = require('../lib/medicare-disclaimer');
+
+// A frozen page marks where the CMS TPMO statement goes with this comment
+// (src/pages/blog/medicare-enrollment-guide.html, under the byline). The
+// statement is filled in here from data/medicare-tpmo.json, so the counts can
+// change without re-hashing the frozen source (TRUST-01, spec 3.10).
+const TPMO_PLACEHOLDER = '<!--TPMO-DISCLAIMER-->';
 
 /** The URL slugs src/blog/*.md claims: each file's name and its front-matter slug. */
 function markdownSlugs(blogMdDir) {
@@ -31,8 +38,12 @@ function markdownSlugs(blogMdDir) {
  * name a markdown post claims is not copied: the post owns that URL, and
  * renders there only if the review gate lets it (scripts/generate-blog.js
  * removes what it does not render).
+ *
+ * `tpmo` is the data/medicare-tpmo.json record: each TPMO_PLACEHOLDER becomes
+ * its statement (renderTpmoForAreas: nothing unless the record is active with
+ * counts, and nothing when display.legacy_guide is off).
  */
-function copyBlogPages(SRC, BUILD, injectVersion) {
+function copyBlogPages(SRC, BUILD, injectVersion, tpmo = null) {
   const blogSrcDir = path.join(SRC, 'pages', 'blog');
   if (!fs.existsSync(blogSrcDir)) return;
   const claimed = markdownSlugs(path.join(SRC, 'blog'));
@@ -51,6 +62,7 @@ function copyBlogPages(SRC, BUILD, injectVersion) {
     throw new Error(`Hand-made blog page guard failed (${problems.length} issue(s)).`);
   }
   ensureDir(path.join(BUILD, 'blog'));
+  const tpmoHtml = tpmo && tpmo.display && tpmo.display.legacy_guide ? renderTpmoForAreas(tpmo) : '';
   let blogCount = 0;
   for (const { file, content } of pages) {
     const slug = file.slice(0, -'.html'.length);
@@ -58,7 +70,10 @@ function copyBlogPages(SRC, BUILD, injectVersion) {
       console.log(`  ~ Not copied blog/${file}  -  src/blog/ has a markdown post for /blog/${slug}, which renders there only through the review gate`);
       continue;
     }
-    fs.writeFileSync(path.join(BUILD, 'blog', file), injectVersion(content));
+    // split/join rather than replace(): every placeholder is filled, and a '$&'
+    // in the statement stays text.
+    const filled = content.split(TPMO_PLACEHOLDER).join(tpmoHtml);
+    fs.writeFileSync(path.join(BUILD, 'blog', file), injectVersion(filled));
     blogCount++;
   }
   if (blogCount > 0) console.log(`  ✓ Copied ${blogCount} blog pages (including index)`);
@@ -79,4 +94,4 @@ function runBlogGenerator(ROOT) {
   }
 }
 
-module.exports = { copyBlogPages, runBlogGenerator, markdownSlugs };
+module.exports = { copyBlogPages, runBlogGenerator, markdownSlugs, TPMO_PLACEHOLDER };
