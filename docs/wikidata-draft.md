@@ -1,6 +1,6 @@
 # Wikidata item draft, The Way Agency
 
-This is the proposed Wikidata item for The Way Agency. Once created, paste the Q-ID into `data/locations.json` `agency.social.wikidata` and move it out of `pending_sameAs`. The schema injectors will then emit it as a `sameAs` URL.
+This is the proposed Wikidata item for The Way Agency. Once created, add its URL to `data/entity.json` `same_as` (with Sheilia's sign-off) and remove it from `pending_same_as`. The homepage's agency node (`scripts/lib/entity.js`) then emits it as a `sameAs` URL.
 
 Create at https://www.wikidata.org/wiki/Special:NewItem while logged into a Wikidata account.
 
@@ -21,15 +21,14 @@ Create at https://www.wikidata.org/wiki/Special:NewItem while logged into a Wiki
 | instance of (P31) | insurance broker (Q806798) or insurance agency | self-description |
 | country (P17) | United States of America (Q30) | self-description |
 | headquarters location (P159) | Owensboro (Q484908) | data/locations.json |
-| inception (P571) | 1998 | data/locations.json `agency.founded` |
+| inception (P571) | Only if documented: `data/entity.json` `founding.date` with `founding.evidence`. Otherwise omit. | data/entity.json `founding` |
 | area served (P2541) | Kentucky (Q1603), Indiana (Q1415), Tennessee (Q1509) | data/locations.json `service_areas` |
 | official website (P856) | https://www.thewayagency.com | site root |
 | legal form (P1454) | corporation (or LLC if Way Associates, Inc is a different entity) | data/locations.json `agency.legal_name` |
 | owned by (P127) | (skip unless you want it public) | n/a |
 | official name (P1448) | Way Associates, Inc | data/locations.json |
-| Facebook ID (P2013) | TheWayAgency | data/locations.json |
-| Instagram username (P2003) | thewayagencyins | data/locations.json |
-| LinkedIn personal profile ID (P6634) or LinkedIn company ID | the-way-agency-insurance | data/locations.json |
+| Facebook ID (P2013) | TheWayAgency | data/entity.json `same_as` |
+| LinkedIn personal profile ID (P6634) or LinkedIn company ID | the-way-agency-insurance | data/entity.json `same_as` |
 
 ## Sitelinks
 
@@ -38,11 +37,11 @@ Skip unless an English Wikipedia article exists. The Way Agency does not current
 ## After creation
 
 1. Note the Q-ID (e.g., Q123456789).
-2. In `data/locations.json`, change `pending_sameAs.wikidata` to a key under `agency.social`:
+2. In `data/entity.json`, add the item URL to `same_as` and remove `pending_same_as.wikidata`:
    ```json
-   "wikidata": "https://www.wikidata.org/wiki/Q123456789"
+   "https://www.wikidata.org/wiki/Q123456789"
    ```
-3. Commit and push. The schema-generator emits `Organization.sameAs` from `Object.values(agency.social)`, so the Q-ID URL flows automatically.
+3. Commit and push. The homepage's agency node emits `sameAs` from `data/entity.json` `same_as`, so the Q-ID URL flows automatically. Add a profile there only once the owner confirms it is official and maintained (Instagram, X, YouTube and BBB are not listed today).
 
 ## Why this matters
 

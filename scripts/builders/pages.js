@@ -5,17 +5,14 @@
 
 const fs = require('fs');
 const path = require('path');
+// The agency reference for every JSON-LD block here (never a full agency node: SCHEMA-01, SCHEMA-02).
+const { orgRef } = require('../lib/entity');
 
 // ─── HTML Escape Helper ────────────────────────
 
 function esc(str) {
   if (!str) return '';
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-}
-
-function escJson(str) {
-  if (!str) return '';
-  return String(str).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t');
 }
 
 // ─── Breadcrumb Helper ──────────────────────────
@@ -418,16 +415,14 @@ ${renderHead({
     schema: `<script type="application/ld+json">
   ${JSON.stringify({
       "@context": "https://schema.org",
-      "@type": "InsuranceAgency",
-      "name": "The Way Agency",
-      "legalName": "Way Associates, Inc",
-      "url": "https://www.thewayagency.com",
-      "telephone": office.phone,
-      "email": office.email,
-      "address": { "@type": "PostalAddress", "streetAddress": office.street, "addressLocality": office.city, "addressRegion": office.state, "postalCode": office.zip },
-      "areaServed": [{ "@type": "State", "name": "Kentucky" }, { "@type": "State", "name": "Indiana" }, { "@type": "State", "name": "Tennessee" }],
-      "sameAs": (seoData && seoData.social_profiles) || [],
-      "makesOffer": { "@type": "Offer", "itemOffered": { "@type": "Service", "name": config.schema.serviceName, "serviceType": config.schema.serviceType, "description": config.schema.serviceDesc } }
+      "@type": "Service",
+      "@id": `https://www.thewayagency.com${config.canonical}#service`,
+      "name": config.schema.serviceName,
+      "serviceType": config.schema.serviceType,
+      "description": config.schema.serviceDesc,
+      "url": `https://www.thewayagency.com${config.canonical}`,
+      "provider": orgRef(),
+      "areaServed": [{ "@type": "State", "name": "Kentucky" }, { "@type": "State", "name": "Indiana" }, { "@type": "State", "name": "Tennessee" }]
     }, null, 2)}
   </script>
   <script type="application/ld+json">
@@ -616,34 +611,23 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
         </div>
       </section>`;
 
-  const socialProfiles = (seoData && seoData.social_profiles) || [];
+  const productUrl = `https://www.thewayagency.com${product.url.replace(/\.html$/, '')}`;
   const serviceSchema = `<script type="application/ld+json">
-  {
+  ${JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Service",
-    "name": "${product.name}",
-    "serviceType": "${product.name}",
-    "provider": {
-      "@type": "InsuranceAgency",
-      "name": "The Way Agency",
-      "url": "https://www.thewayagency.com",
-      "telephone": "${office.phone}",
-      "sameAs": ${JSON.stringify(socialProfiles)},
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "${office.street}",
-        "addressLocality": "${office.city}",
-        "addressRegion": "${office.state}",
-        "postalCode": "${office.zip}"
-      }
-    },
+    "@id": `${productUrl}#service`,
+    "name": product.name,
+    "serviceType": product.name,
+    "url": productUrl,
+    "provider": orgRef(),
     "areaServed": [
       { "@type": "State", "name": "Kentucky" },
       { "@type": "State", "name": "Indiana" },
       { "@type": "State", "name": "Tennessee" }
     ],
-    "description": "${escJson(product.summary)}"
-  }
+    "description": product.summary || ''
+  }, null, 2).replace(/</g, '\\u003c')}
   </script>${faqSchema}`;
 
   const formHtml = renderInlineForm(product.id, { product: product.id, lineOfBusiness: lineSlug })
@@ -743,17 +727,8 @@ ${renderScripts()}
 function generateCityPage(city, ctx) {
   const { office, landingData, renderNav, renderFooter, renderScripts } = ctx;
 
-  const citySchema = `<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "InsuranceAgency",
-    "name": "The Way Agency",
-    "url": "https://www.thewayagency.com",
-    "telephone": "${office.phone}",
-    "address": {"@type": "PostalAddress", "addressLocality": "${office.city}", "addressRegion": "${office.state}", "postalCode": "${office.zip}", "addressCountry": "US"},
-    "areaServed": {"@type": "City", "name": "${escJson(city.city)}", "containedIn": {"@type": "State", "name": "${city.state === 'KY' ? 'Kentucky' : city.state === 'IN' ? 'Indiana' : 'Tennessee'}"}}
-  }
-  </script>`;
+  // The hub's WebPage + Service JSON-LD comes from schema-generator.js
+  // _buildHubNodes (the city only as an area served; no agency node here).
 
   const faqs = Array.isArray(city.faqs) ? city.faqs : [];
   const faqAccordion = faqs.length > 0 ? `
@@ -802,7 +777,7 @@ ${renderHead({
     ogTitle: city.title || defaultTitle,
     ogDescription: city.meta_description || defaultOgDescription,
     ogUrl: `https://www.thewayagency.com/insurance/${city.slug}`,
-    schema: citySchema + (faqSchema ? '\n  ' + faqSchema : ''),
+    schema: faqSchema,
   })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -889,19 +864,9 @@ function generateCountyPage(county, ctx) {
   const { office, renderNav, renderFooter, renderScripts } = ctx;
   const countyName = county.county_name;
   const stateAbbr = county.state;
-  const stateFull = county.state_full || (stateAbbr === 'KY' ? 'Kentucky' : stateAbbr === 'IN' ? 'Indiana' : 'Tennessee');
 
-  const countySchema = `<script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "InsuranceAgency",
-    "name": "The Way Agency",
-    "url": "https://www.thewayagency.com",
-    "telephone": "${office.phone}",
-    "address": {"@type": "PostalAddress", "addressLocality": "${office.city}", "addressRegion": "${office.state}", "postalCode": "${office.zip}", "addressCountry": "US"},
-    "areaServed": {"@type": "AdministrativeArea", "name": "${escJson(countyName)}, ${stateAbbr}", "containedIn": {"@type": "State", "name": "${stateFull}"}}
-  }
-  </script>`;
+  // The hub's WebPage + Service JSON-LD comes from schema-generator.js
+  // _buildHubNodes (the county only as an area served; no agency node here).
 
   const faqs = Array.isArray(county.faqs) ? county.faqs : [];
   const faqAccordion = faqs.length > 0 ? `
@@ -950,7 +915,7 @@ ${renderHead({
     ogTitle: county.title || defaultTitle,
     ogDescription: county.meta_description || defaultDescription,
     ogUrl: `https://www.thewayagency.com/insurance/${county.slug}`,
-    schema: countySchema + (faqSchema ? '\n  ' + faqSchema : ''),
+    schema: faqSchema,
   })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -1047,9 +1012,8 @@ ${renderHead({
     ogTitle: `Insurance for ${ind.name} in Kentucky | The Way Agency`,
     ogDescription: `Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. Get a quote from top-rated carriers.`,
     ogUrl: `https://www.thewayagency.com/industries/${ind.slug}`,
-    schema: `<script type="application/ld+json">
-  ${JSON.stringify({"@context":"https://schema.org","@type":"InsuranceAgency","name":"The Way Agency","knowsAbout":ind.name})}
-  </script>`,
+    // The page's Service JSON-LD comes from schema-generator.js _buildIndustryService.
+    schema: '',
   })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -1249,15 +1213,11 @@ ${renderHead({
     ogUrl: 'https://www.thewayagency.com/carriers/',
     schema: JSON.stringify({
       "@context": "https://schema.org",
-      "@type": "InsuranceAgency",
-      "name": "The Way Agency",
-      "url": "https://www.thewayagency.com",
-      "description": "Independent insurance agency representing top-rated carriers across personal, commercial, and life lines.",
-      "areaServed": [
-        { "@type": "State", "name": "Kentucky" },
-        { "@type": "State", "name": "Indiana" },
-        { "@type": "State", "name": "Tennessee" }
-      ]
+      "@type": "CollectionPage",
+      "@id": "https://www.thewayagency.com/carriers/#webpage",
+      "url": "https://www.thewayagency.com/carriers/",
+      "name": "Our Insurance Carriers",
+      "publisher": orgRef()
     }, null, 2),
   })}
 <body>

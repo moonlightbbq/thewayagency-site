@@ -10,7 +10,7 @@ These are the gates every new piece of content on thewayagency.com passes throug
 
 3. **Click-to-call always pairs with text.** Every phone CTA on every page must offer text as a clickable peer option (`sms:+15024135335`). Footer, hero, intake, error pages, all in scope.
 
-4. **Service-area business posture in JSON-LD.** `streetAddress` does not appear in `LocalBusiness`, `InsuranceAgency`, or `Organization` JSON-LD. The PO Box appears in human-readable `<address>` tags only. Schema uses `addressLocality` + `addressRegion` + `postalCode` + `addressCountry` + `areaServed`.
+4. **Service-area business posture in JSON-LD.** The agency has no storefront. JSON-LD never gives the agency a `streetAddress`, `postalCode`, `geo`, opening hours, `priceRange`, `aggregateRating` or `review`, and never a per-city or per-county `LocalBusiness`/`InsuranceAgency` node. The one agency node (`@id` `https://www.thewayagency.com/#organization`) is generated on the homepage from `data/entity.json`. Its `address`, if any, is the owner-approved base city only. Every other page refers to it with `orgRef()` (`scripts/lib/entity.js`). A city or county appears only in `Service.areaServed`. The PO Box appears in visible `<address>` text (and, only if the owner approves, as a mailing `contactPoint` using `postOfficeBoxNumber`). `scripts/lib/entity-schema-guard.js` fails the build otherwise. `data/entity.json` changes only with Sheilia's sign-off.
 
 5. **No interpretation stated as fact.** Phrases like "she founded", "primary point of contact", "specializes in", "leads", "focuses on" require attestation by the named individual. Use only what is sourced verbatim from `data/team.json` or other verified data files.
 
@@ -38,8 +38,8 @@ Every new entry in `data/landing-pages.json` `cities[]` must include:
 - [ ] Real prose for the city's `context` field. No "Welcome to {city}, where we proudly serve..." auto-fill.
 - [ ] At least four `context_sections` covering home, auto, commercial, and life/health, each with named local landmarks (roads, corridors, neighborhoods, employers) specific to the city.
 - [ ] A `context_closing` paragraph that ties the city back to either Owensboro HQ or a named team specialty.
-- [ ] An `faqs[]` array of 8 to 13 questions, 40 to 90 word definition-first answers, sourced from the audit Pillar 8 list or equivalent. Answer the questions Google PAA and AI engines actually ask.
-- [ ] Schema validation passes the Rich Results Test for `LocalBusiness`, `InsuranceAgency`, `Service`, and `FAQPage`.
+- [ ] An `faqs[]` array of the questions customers actually ask (calls, texts, emails, chats, People Also Ask), each with an accurate, definition-first answer. No fixed count.
+- [ ] Schema: the hub's JSON-LD is generated (never hand-add nodes) and names the city or county only in `Service.areaServed`. `node scripts/build.js` passes (its entity schema guard) and validator.schema.org shows no errors. A Rich Results Test pass is not a gate: FAQ rich results were retired on 2026-05-07, Service has no rich result, and a "Review snippets" pass on the agency's own rating is a violation, not compliance. Once visible breadcrumbs ship (TECH-01), the Rich Results Test must show no Breadcrumbs errors.
 
 ## Carrier mentions
 
@@ -49,13 +49,14 @@ For Owensboro and Mt Washington hubs, the "we represent top-rated carriers inclu
 
 ## Schema validation
 
-Before any commit that touches a city hub, product page, blog post, or team page, run:
+Before any commit that touches a city hub, product page, blog post, team page, or `data/entity.json`, run:
 
 ```
 node scripts/build.js
+npm test
 ```
 
-Then validate at least one priority page (`/insurance/owensboro-ky.html` or `/insurance/mt-washington-ky.html`) at https://search.google.com/test/rich-results.
+The build runs the entity schema guard (`scripts/lib/entity-schema-guard.js`): it fails on a per-city `LocalBusiness`, a street address, geo, hours, `priceRange`, a rating or review, an owner placeholder, or a second description of the agency. Then check `/`, `/insurance/owensboro-ky` and `/insurance/mt-washington-ky` at https://validator.schema.org/ (no errors) and at https://search.google.com/test/rich-results. Organization markup is checked on the homepage, JobPosting on the careers pages. Rich Results Test warnings about a missing street address, `geo`, opening hours or `priceRange` are expected for a service-area business: do not "fix" them. No rich result is promised, so a missing one is not a failure.
 
 ## Why these rules exist
 
@@ -63,4 +64,4 @@ Then validate at least one priority page (`/insurance/owensboro-ky.html` or `/in
 - An insurance agency is a YMYL (your money or your life) site. Google holds YMYL content to a higher E-E-A-T standard, and AI engines (ChatGPT, Claude, Perplexity, Gemini) weight named authors and verifiable claims heavily for grounding.
 - Owensboro and Mt Washington are the priority markets at every decision point. Every new piece of content should be evaluated against whether it strengthens or dilutes one of those two markets.
 
-Owner: Sheilia Royal. Last updated 2026-05-15.
+Owner: Sheilia Royal. Last updated 2026-10-02.
