@@ -2,18 +2,12 @@
 title: How Independent Insurance Agents Save You Money
 slug: how-independent-agents-save-money
 description: Independent agents compare rates from top-rated carriers, not just one. Learn how the independent agency model works and why it usually means better coverage at lower cost.
-author: Sheilia Royal
-author_title: Agency Principal / Licensed Agent
-author_slug: sheilia-royal
+author: The Way Agency
 date: 2026-06-10
 modified: 2026-06-10
 reading_time: 6 min read
 related_page: /about/
 tags: independent agent, insurance agent, captive agent, save money, insurance basics
-reviewer: Sheilia Royal
-reviewer_slug: sheilia-royal
-reviewer_title: Agency Principal / Licensed Agent
-reviewed_date: 2026-05-09
 ---
 
 When most people think about buying insurance, they picture one of two things: calling a big-name company they have seen on TV, or going online and filling out a form. In both cases, you are dealing with a single insurance company that can only offer you their products at their prices.
