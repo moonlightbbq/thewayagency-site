@@ -265,6 +265,98 @@ if (fs.existsSync(redirectsPath)) {
   if (conflicts === 0) pass(`${redirectSources.length} redirects, no conflicts`);
 }
 
+// 10. Privacy guards (TRUST-08 / TRUST-12). Plain string and regex checks on the
+// built files: CI runs this on Node 18 without `npm ci`, so no dependencies.
+{
+  const readBuild = (rel) => {
+    const p = path.join(BUILD, rel);
+    return fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : null;
+  };
+  let privacyErrors = 0;
+  const perr = (msg) => { error(msg); privacyErrors++; };
+  // A Meta Lead call whose first object literal carries content_name (product
+  // ids such as "medicare"). Matches source and terser output alike.
+  const LEAD_WITH_CONTENT_NAME = /["']Lead["']\s*,\s*\{[^}]*content_name/;
+
+  // 10a. The JS that every page loads: the bundled app.js (attribution.js is
+  // prepended) and the standalone attribution.js that /intake/ loads.
+  for (const rel of ['src/js/app.js', 'src/js/attribution.js']) {
+    const js = readBuild(rel);
+    if (js === null) { perr(`Privacy: ${rel} missing from the build`); continue; }
+    if (/\.set\(\s*["'](name|email|phone)["']/.test(js)) perr(`Privacy: ${rel} puts name/email/phone into URL parameters`);
+    if (/setUserProperties/.test(js)) perr(`Privacy: ${rel} still calls fbq setUserProperties (plain-text contact data to Meta)`);
+    if (LEAD_WITH_CONTENT_NAME.test(js)) perr(`Privacy: ${rel} sends content_name on the Meta Lead event`);
+    if (!js.includes('twa_inline_prefill')) perr(`Privacy: ${rel} lacks the sessionStorage hand-off (twa_inline_prefill)`);
+  }
+  const appJs = readBuild('src/js/app.js') || '';
+  if (!appJs.includes('buildIntakeHandoff')) perr('Privacy: app.js inline forms no longer hand off through TWA.buildIntakeHandoff');
+
+  // 10b. /intake/: the URL scrub must be the first script in the document,
+  // ahead of every stylesheet (an inline script after a stylesheet waits for
+  // it), attribution.js and the GTM/Clarity snippets.
+  const intake = readBuild('intake/index.html');
+  if (intake === null) {
+    perr('Privacy: intake/index.html missing from the build');
+  } else {
+    const scrubAt = intake.indexOf('twa-url-scrub');
+    const firstScriptAt = intake.search(/<script\b/i);
+    const firstScriptEnd = firstScriptAt < 0 ? -1 : intake.indexOf('</script>', firstScriptAt);
+    const firstCss = intake.search(/<link[^>]+rel="stylesheet"/);
+    const attrAt = intake.indexOf('/src/js/attribution.js');
+    const gtmAt = intake.indexOf('gtm.js');
+    const clarityAt = intake.indexOf('clarity.ms/tag');
+    const before = (at) => at < 0 || scrubAt < at;
+    if (scrubAt < 0) perr('Privacy: intake/index.html has no twa-url-scrub');
+    else if (!(scrubAt > firstScriptAt && scrubAt < firstScriptEnd)) perr('Privacy: twa-url-scrub is not the first <script> in intake/index.html');
+    else if (!before(firstCss) || !before(attrAt) || !before(gtmAt) || !before(clarityAt)) perr('Privacy: twa-url-scrub must come before stylesheets, attribution.js, GTM and Clarity in intake/index.html');
+    if (/content_name:\s*selectedProducts/.test(intake) || LEAD_WITH_CONTENT_NAME.test(intake)) perr('Privacy: intake sends products on the Meta Lead event');
+    if (/setUserProperties/.test(intake)) perr('Privacy: intake calls fbq setUserProperties');
+    if (/params\.get\(\s*['"](name|email|phone)['"]\s*\)/.test(intake)) perr('Privacy: intake reads name/email/phone from the URL');
+    // Clarity masks: the union of pii-and-privacy PR 1 item 5 (#draft-toast,
+    // #review-summary, #step-confirm) and medicare-health-compliance 3.11.8
+    // (#draft-toast and the wizard .container). Checked per element, not by
+    // count: both specs' counts (>= 3 and exactly 2) describe subsets of these.
+    const MASKED = [
+      ['#draft-toast', /<div\b[^>]*\bid="draft-toast"[^>]*>/],
+      ['wizard .container', /<div\b[^>]*\bclass="container"[^>]*>/],
+      ['#review-summary', /<div\b[^>]*\bid="review-summary"[^>]*>/],
+      ['#step-confirm', /<div\b[^>]*\bid="step-confirm"[^>]*>/],
+    ];
+    for (const [label, re] of MASKED) {
+      const tag = (intake.match(re) || [])[0];
+      if (!tag) perr(`Privacy: intake/index.html has no ${label} element to mask`);
+      else if (!/\sdata-clarity-mask="True"/.test(tag)) perr(`Privacy: ${label} in intake/index.html lacks data-clarity-mask="True"`);
+    }
+  }
+
+  // 10c. Inline quote forms: no input named name/email/phone (so no native
+  // submit can put them in a URL), data-field on all three, and a pre-JS
+  // submit goes to /intake/ by GET.
+  let inlineForms = 0;
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, 'utf8');
+    if (!html.includes('<form class="inline-quote-form')) continue;
+    const rel = path.relative(BUILD, file);
+    const forms = html.match(/<form class="inline-quote-form[^>]*>[\s\S]*?<\/form>/g) || [];
+    if (!forms.length) { perr(`Privacy: unterminated inline quote form in ${rel}`); continue; }
+    for (const form of forms) {
+      inlineForms++;
+      const open = form.slice(0, form.indexOf('>') + 1);
+      if (!/\saction="\/intake\/"/.test(open) || !/\smethod="get"/.test(open)) perr(`Privacy: inline quote form in ${rel} lacks action="/intake/" method="get"`);
+      for (const input of form.match(/<input\b[^>]*>/g) || []) {
+        if (/\sname="(name|email|phone)"/.test(input) || (/\sdata-field="/.test(input) && /\sname="/.test(input))) {
+          perr(`Privacy: inline form PII input has a name attribute in ${rel}`);
+        }
+      }
+      for (const f of ['name', 'email', 'phone']) {
+        if (!form.includes(`data-field="${f}"`)) perr(`Privacy: inline quote form in ${rel} has no data-field="${f}" input`);
+      }
+    }
+  }
+  if (inlineForms === 0) warn('Privacy: no inline quote forms found (expected on product, hub and industry pages)');
+  if (privacyErrors === 0) pass(`Privacy guards: hand-off, intake URL scrub, Meta payload, Clarity masks and ${inlineForms} inline forms checked`);
+}
+
 // Summary
 console.log(`\n${errors === 0 ? '✅' : '❌'} Validation complete: ${errors} errors, ${warnings} warnings, ${htmlFiles.length} pages checked`);
 process.exit(errors > 0 ? 1 : 0);
