@@ -1586,7 +1586,7 @@
     {
       "id": "annuities-types",
       "question": "What are the different types of annuities?",
-      "answer": "Fixed annuities guarantee a set interest rate for a defined period  -  safe and predictable. Fixed indexed annuities earn interest linked to a market index (like the S&P 500) with a floor protecting against losses. Variable annuities invest in sub-accounts similar to mutual funds with higher growth potential but more risk. Each type serves different retirement goals based on your risk tolerance and income needs.",
+      "answer": "Fixed annuities guarantee a set interest rate for a defined period. Fixed indexed annuities earn interest linked to a market index (like the S&P 500); index credits can't be negative, but surrender charges, market value adjustments and rider fees can reduce what you get back if you withdraw early. Variable annuities invest in sub-accounts similar to mutual funds with higher growth potential but more risk. Each type serves different retirement goals based on your risk tolerance and income needs.",
       "category": "life",
       "product": "annuities",
       "related_products": [
@@ -2297,7 +2297,7 @@
     {
       "id": "annuities-types",
       "question": "What is the difference between fixed and variable annuities?",
-      "answer": "A fixed annuity guarantees a set interest rate for a specified period, similar to a CD but with tax-deferred growth. A variable annuity lets you invest in sub-accounts (similar to mutual funds) with the potential for higher returns but also market risk. Fixed annuities are simpler and safer; variable annuities offer growth potential with more complexity and fees.",
+      "answer": "A fixed annuity guarantees a set interest rate for a specified period, with tax-deferred growth. A variable annuity lets you invest in sub-accounts (similar to mutual funds) with the potential for higher returns but also market risk. Fixed annuities are simpler and safer; variable annuities offer growth potential with more complexity and fees.",
       "category": "life",
       "product": "annuities",
       "tags": [

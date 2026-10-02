@@ -57,17 +57,17 @@
       "Material misrepresentation on the application (contestable in first two years)",
       "Cash value is not accessible until it builds over several years (typically 5-10 years before meaningful accumulation)",
       "Outstanding policy loans reduce the death benefit if not repaid",
-      "Does not provide investment-level returns (cash value growth is conservative, typically 2-4% guaranteed)"
+      "Does not provide investment-level returns (the guaranteed cash value growth rate is set in each policy's contract; we show you the insurer's illustration)"
     ],
     "cost_narrative": "Whole life premiums are substantially higher than term. A healthy 35-year-old might pay $300 to $500 per month for $250,000 of whole life coverage, compared to $25 to $40 for the same amount in 20-year term. The cost reflects the lifetime guarantee and cash value accumulation. Purchasing whole life younger locks in a lower premium, and the cash value has more time to grow. By age 50, the same $250,000 policy might cost $500 to $800 per month. It is important to understand that surrendering a whole life policy in the first 10 to 15 years often means receiving less than you paid in premiums. The Way Agency provides detailed illustrations showing projected cash value growth so you can see the long-term value proposition clearly.",
     "faqs": [
       {
         "question": "Is whole life insurance a good investment?",
-        "answer": "Whole life should not be viewed primarily as an investment. The guaranteed cash value growth rate is typically 2 to 4%, which is lower than long-term stock market returns. However, it offers guaranteed growth with no market risk, tax-deferred accumulation, and tax-free access through policy loans. For conservative savers who have maxed out their 401(k) and IRA contributions, whole life can serve as a supplemental savings vehicle. For most people, buying term and investing the difference in a diversified portfolio produces better returns."
+        "answer": "Whole life should not be viewed primarily as an investment. The guaranteed cash value growth rate is set in each policy's contract (we show you the insurer's illustration), and it is lower than long-term stock market returns. However, it offers guaranteed growth with no market risk, tax-deferred accumulation, and tax-free access through policy loans. For conservative savers who have maxed out their 401(k) and IRA contributions, whole life can serve as a supplemental savings vehicle. For most people, buying term and investing the difference in a diversified portfolio produces better returns."
       },
       {
         "question": "How does the cash value in whole life work?",
-        "answer": "A portion of each premium goes into a cash value account that grows at a guaranteed rate. After several years, you can borrow against the cash value at interest rates set by the carrier, typically 5 to 8%. You do not have to repay the loan, but unpaid loans plus interest reduce the death benefit. You can also surrender the policy and receive the cash value minus any surrender charges. Cash value grows tax-deferred and loans are not taxable as long as the policy stays in force."
+        "answer": "A portion of each premium goes into a cash value account that grows at a guaranteed rate. After several years, you can borrow against the cash value at a loan interest rate set in each policy's contract; we show you the insurer's illustration. You do not have to repay the loan, but unpaid loans plus interest reduce the death benefit. You can also surrender the policy and receive the cash value minus any surrender charges. Cash value grows tax-deferred and loans are not taxable as long as the policy stays in force."
       },
       {
         "question": "At what age should I buy whole life insurance?",
@@ -89,8 +89,8 @@
     "what_it_covers": [
       "Guaranteed income payments for life or a set period (depending on payout option selected)",
       "Tax-deferred growth on earnings until withdrawal",
-      "Fixed annuities: Guaranteed minimum interest rate (typically 3-5% in current rate environment)",
-      "Fixed indexed annuities: Returns linked to market index (e.g., S&P 500) with a 0% floor (you cannot lose money to market declines)",
+      "Fixed annuities: a guaranteed interest rate for a set period; the contract also states a minimum guaranteed rate",
+      "Fixed indexed annuities: returns linked to a market index (for example, the S&P 500); index credits can't be negative, but surrender charges, market value adjustments and rider fees can reduce what you get back if you withdraw early",
       "Death benefit to beneficiaries if you die before or during the payout phase",
       "Optional riders for enhanced income, long-term care benefits, or inflation adjustment"
     ],
@@ -102,11 +102,11 @@
       "Inflation can erode the purchasing power of fixed payments unless an inflation rider is added",
       "Annuity income is taxed as ordinary income, not at capital gains rates"
     ],
-    "cost_narrative": "Annuities do not have a straightforward monthly premium like insurance policies. You either invest a lump sum (common with money from a 401(k) rollover, inheritance, or savings) or make scheduled contributions over time. Fixed annuities typically have no explicit fees but earn lower interest than you might get in riskier investments. Fixed indexed annuities may have caps on returns (for example, a 6 to 8% cap on annual gains) and participation rates. Variable annuities carry annual fees of 2 to 3% including mortality charges, administrative fees, and fund management expenses. Surrender charges range from 5 to 10% in the first year, declining to zero over 5 to 10 years. The Way Agency explains all costs in plain language and only recommends annuities when the guaranteed income benefit justifies the tradeoffs.",
+    "cost_narrative": "Annuities do not have a straightforward monthly premium like insurance policies. You either invest a lump sum (common with money from a 401(k) rollover, inheritance, or savings) or make scheduled contributions over time. Fixed annuities typically have no explicit fees but earn lower interest than you might get in riskier investments. Fixed indexed annuities may have caps on returns and participation rates, which each contract states. Variable annuities carry annual fees of 2 to 3% including mortality charges, administrative fees, and fund management expenses. Surrender charges range from 5 to 10% in the first year, declining to zero over 5 to 10 years. The Way Agency explains all costs in plain language and only recommends annuities when the guaranteed income benefit justifies the tradeoffs.",
     "faqs": [
       {
         "question": "What is the difference between a fixed annuity and a fixed indexed annuity?",
-        "answer": "A fixed annuity pays a guaranteed interest rate for a set period, similar to a CD but with tax-deferred growth. A fixed indexed annuity ties your returns to a market index like the S&P 500, with a floor (typically 0%) that protects against losses and a cap (typically 6 to 10%) that limits gains. Fixed annuities are simpler and more predictable. Fixed indexed annuities offer higher growth potential but are more complex. Neither can lose principal to market declines."
+        "answer": "A fixed annuity pays a guaranteed interest rate for a set period, with tax-deferred growth. A fixed indexed annuity ties your returns to a market index like the S&P 500, with a floor that keeps index credits from going below zero and a cap or participation rate that limits gains. Fixed annuities are simpler and more predictable. Fixed indexed annuities offer higher growth potential but are more complex. Neither loses value from market declines alone, but surrender charges, market value adjustments and rider fees can reduce what you receive if you withdraw early."
       },
       {
         "question": "When can I start receiving income from an annuity?",
@@ -114,7 +114,7 @@
       },
       {
         "question": "Are annuities safe if the insurance company fails?",
-        "answer": "Annuities are backed by the financial strength of the issuing insurance company, not by the FDIC. Every state has a guaranty association that protects annuity owners up to certain limits (typically $250,000 in present value of annuity benefits) if a carrier becomes insolvent. The Way Agency recommends annuities only from carriers with strong financial ratings (A-rated or better by AM Best) to minimize this risk."
+        "answer": "Annuity guarantees depend on the financial strength and claims-paying ability of the issuing insurance company. Annuities are not bank deposits and are not FDIC-insured. Before you decide, we'll show you the insurer's current AM Best financial strength rating and the date it was issued."
       },
       {
         "question": "Can I get my money back if I change my mind about an annuity?",
