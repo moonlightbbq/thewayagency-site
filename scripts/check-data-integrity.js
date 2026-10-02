@@ -192,6 +192,23 @@ if (kb) {
   if (kbErrors === 0) pass(`knowledge-base.json: ${(kb.entries || []).length} entries, all valid`);
 }
 
+// medicare-tpmo.json: the CMS TPMO statement inputs and the lead-disclosure
+// wording (scripts/lib/medicare-disclaimer.js; TRUST-01). Every problem is an
+// error once the record is "active" (the statement then renders with these
+// counts); while it waits for the owner's signed record it is a warning.
+const tpmo = loadJson('medicare-tpmo.json');
+if (tpmo) {
+  const { tpmoProblems } = require('./lib/medicare-disclaimer');
+  const problems = tpmoProblems(tpmo);
+  const report = tpmo.status === 'active' ? error : warn;
+  for (const p of problems) report(`medicare-tpmo.json: ${p}`);
+  if (tpmo.status === 'pending_owner') {
+    warn('medicare-tpmo.json: status pending_owner, so no TPMO statement renders (owner inputs D-1 to D-4 missing); health forms show the default lead disclosure');
+  } else if (problems.length === 0) {
+    pass(`medicare-tpmo.json: status ${tpmo.status}, branch ${tpmo.branch}, valid`);
+  }
+}
+
 // content-calendar.json
 const calendar = loadJson('content-calendar.json');
 if (calendar) {
