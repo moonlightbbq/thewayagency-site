@@ -223,6 +223,28 @@ if (fs.existsSync(carrierDir)) {
   else pass(`${carrierPages.length} carrier pages (including index)`);
 }
 
+// 7d. Turnstile loads only where a widget renders, async; app.js is deferred (PERF-02).
+// A deferred Turnstile loader on every page held DOMContentLoaded, and with it all of
+// app.js's set-up, on 179 pages that never render a widget.
+const TURNSTILE_PAGES = new Set(['contact.html', 'about/careers/apply.html', 'forrest-frank-2026.html', 'intake/index.html']);
+let turnstileIssues = 0;
+for (const file of htmlFiles) {
+  const html = fs.readFileSync(file, 'utf8');
+  const rel = path.relative(BUILD, file).split(path.sep).join('/');
+  const loaders = html.match(/<script\b[^>]*challenges\.cloudflare\.com\/turnstile[^>]*>/g) || [];
+  if (loaders.length && !TURNSTILE_PAGES.has(rel)) { error(`Turnstile loaded on a page with no widget: ${rel}`); turnstileIssues++; }
+  if (rel !== 'intake/index.html') {
+    for (const tag of loaders) if (!/\sasync\b/.test(tag)) { error(`Turnstile loader is not async in ${rel}`); turnstileIssues++; }
+  }
+  if (/<link\b[^>]*rel="preconnect"[^>]*href="https:\/\/challenges\.cloudflare\.com"[^>]*crossorigin/.test(html)) {
+    error(`crossorigin preconnect to challenges.cloudflare.com in ${rel} (the script request is no-cors)`); turnstileIssues++;
+  }
+  for (const tag of html.match(/<script\b[^>]*src="\/src\/js\/app\.js[^"]*"[^>]*>/g) || []) {
+    if (!/\sdefer\b/.test(tag)) { error(`app.js is not deferred in ${rel}`); turnstileIssues++; }
+  }
+}
+if (turnstileIssues === 0) pass('Turnstile only on widget pages (async); app.js deferred everywhere');
+
 // 8. Image size check (warn on images >500KB)
 let largeImages = 0;
 const assetsDir = path.join(BUILD, 'src', 'assets');

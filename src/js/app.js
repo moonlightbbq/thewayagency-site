@@ -1805,7 +1805,11 @@
   // ═══════════════════════════════════════════════
   // INITIALIZE
   // ═══════════════════════════════════════════════
-  document.addEventListener('DOMContentLoaded', () => {
+  // Runs when app.js runs (it is deferred, so the DOM is parsed), not at
+  // DOMContentLoaded: DCL also waits for every other deferred or module script
+  // (Cloudflare's edge-injected beacon, formerly Turnstile on every page), and a slow
+  // one held the menu, forms, sticky bar and chat hostage (PERF-02).
+  function init() {
     initABTests();
     initNav();
     initFAQ();
@@ -1833,6 +1837,8 @@
         filter: el.getAttribute('data-testimonial-filter') || null,
       });
     });
-  });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init, { once: true });
+  else init();
 
 })();
