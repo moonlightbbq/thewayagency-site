@@ -949,6 +949,9 @@ if (fs.existsSync(BLOG_SRC)) {
         console.log(`  ! Skipping ${file}  -  slug mismatch: it is the calendar post "${stem}" but its front matter says slug "${peek.slug}"`);
         continue;
       }
+      // The shared rule (scripts/lib/review-credit.js renderDecision): since the
+      // owner's decision of 2026-10-02 a due post renders only once its
+      // licensed reviewer approved it; an unapproved one is HELD (not rendered).
       const decision = renderDecision(entry, rawBytes, REVIEW_TEAM, { secret: REVIEW_SECRET, today: RENDER_TODAY, isKnownStatus, isPublishable, isHeld });
       if (!decision.render) {
         console.log(`  ~ Not rendered ${peek.slug}.html  -  ${decision.why}`);

@@ -8,19 +8,23 @@
  * ranks otherwise. That is the property the 2026-05-02 re-pace violated.
  *
  * Usage: node scripts/fill-slots.js [--dry-run] [--today YYYY-MM-DD]
- *                                    [--allow-review-skip]
  *
- * --allow-review-skip fills slots that are already inside the D-10 review
- * window rather than letting the date publish nothing. Only ever uses a
- * candidate whose draft is already written, and records review_skipped on the
- * entry so the trade-off stays visible.
+ * Slots nearer than D-10 (content-queue.js MIN_LOCK_LEAD_DAYS) are left empty
+ * and reported: every post needs its licensed reviewer's approval to publish
+ * (owner decision 2026-10-02). --allow-review-skip, which filled them and
+ * published with no reviewer, was removed with that decision; passing it now
+ * exits 2 without changing anything.
  */
 const fs = require('fs');
 const q = require('./lib/content-queue');
 
 const args = process.argv.slice(2);
+if (args.includes('--allow-review-skip')) {
+  console.error('  ! --allow-review-skip was removed on 2026-10-02: every post needs its licensed reviewer\'s approval to publish (owner decision), '
+    + 'so a slot nearer than D-10 is left empty and reported (I2b). Nothing was changed. Run without the flag.');
+  process.exit(2);
+}
 const dryRun = args.includes('--dry-run');
-const allowReviewSkip = args.includes('--allow-review-skip');
 const todayArg = args.indexOf('--today');
 const today = todayArg !== -1 ? args[todayArg + 1] : new Date().toISOString().slice(0, 10);
 
@@ -33,7 +37,7 @@ const backlog = q.loadBacklog();
 const windows = q.loadWindowMonths();
 
 const reserved = q.reserveSlots(cal, today);
-const { locked, skipped } = q.fillSlots(cal, backlog, today, windows, { allowReviewSkip });
+const { locked, skipped } = q.fillSlots(cal, backlog, today, windows);
 
 if (!dryRun) {
   q.saveCalendar(cal);

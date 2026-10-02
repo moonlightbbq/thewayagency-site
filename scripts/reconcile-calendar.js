@@ -8,15 +8,18 @@
  *      src/blog/<slug>.md frontmatter carries a FUTURE `date:`/`modified:`.
  *      generate-blog.js skips future-dated markdown (and the index filters
  *      future publish_dates), so the post silently never renders.
- *   2. A post still sitting in status "planned" / "in-review" / "in-draft"
- *      whose publish_date has already arrived and never got flipped.
+ *   2. A post that is publishable (scripts/lib/calendar-status.js: 'approved',
+ *      or a frozen advisory exception) whose publish_date has already arrived
+ *      and never got flipped. Since the owner's decision of 2026-10-02 a due
+ *      'planned'/'in-review'/'in-draft' post is HELD for its licensed
+ *      reviewer's approval: it is logged as HELD and left alone.
  *
  * For every year1 entry whose markdown exists AND whose publish_date <= today:
  *   (a) if the .md frontmatter `date:`/`modified:` differ from the calendar
  *       publish_date, rewrite them to equal publish_date;
- *   (b) if status is planned/in-review/in-draft, re-validate readiness
- *       (title + description present, body > ~200 words) and flip to
- *       "published" (or "error" + error_reason if it fails, mirroring
+ *   (b) if it is publishable, re-validate readiness (title + description
+ *       present, body > ~200 words) and the approval, and flip to "published"
+ *       (or "error" + error_reason if it fails, mirroring
  *       publish-scheduled-posts.js).
  *
  * FUTURE-dated planned entries are left untouched.
@@ -45,7 +48,7 @@ const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 // Shared with publish-scheduled-posts.js rather than mirrored: this list and
 // that one had already drifted apart from what sage writes, which is how
 // 'approved' became a status that silently blocked publication.
-const { PUBLISHABLE_STATUSES } = require('./lib/calendar-status');
+const { isPublishable: publishable, isAwaitingApproval } = require('./lib/calendar-status');
 // Who a post credits as its reviewer, and whether an 'approved' post may
 // publish at all: the same rule as publish-scheduled-posts.js (sage-server BL-07),
 // including the credit record the renderer checks before it prints "Reviewed by".
@@ -67,6 +70,7 @@ let calendarChanged = false;
 let mdChanges = 0;
 let statusFlips = 0;
 const errors = [];
+const held = [];
 const unverified = [];
 
 console.log('');
@@ -78,13 +82,21 @@ for (const post of calendar.year1) {
   // Only consider entries whose date has arrived.
   if (post.publish_date > today) continue;
 
+  // Due without its licensed reviewer's approval: HELD, as the publisher holds
+  // it (owner decision 2026-10-02). Never flipped, never marked 'error'.
+  if (isAwaitingApproval(post.status) && !publishable(post.status, post)) {
+    console.log(`  ! HELD (no licensed approval): "${post.title}" (${post.slug}) due ${post.publish_date}, status ${post.status}; left alone`);
+    held.push(post.slug);
+    continue;
+  }
+
   const mdFile = path.join(BLOG_SRC, `${post.slug}.md`);
   if (!fs.existsSync(mdFile)) {
     // No markdown on disk: only a problem if this entry is supposed to go
     // live (publishable status). Published-status entries with no markdown
     // are out of scope for this reconciler. Match the publish script's
     // loud-fail behaviour for the publishable case.
-    if (PUBLISHABLE_STATUSES.has(post.status)) {
+    if (publishable(post.status, post)) {
       const reason = 'missing_markdown';
       console.log(`  ! ERROR: "${post.title}" (${post.slug}) - markdown file not found: src/blog/${post.slug}.md`);
       if (post.status !== 'error' || post.error_reason !== reason) {
@@ -98,7 +110,7 @@ for (const post of calendar.year1) {
     continue;
   }
 
-  const isPublishable = PUBLISHABLE_STATUSES.has(post.status);
+  const isPublishable = publishable(post.status, post);
   const isPublished = post.status === 'published';
 
   // Entries that are neither publishable nor already published (e.g. error,
@@ -197,7 +209,7 @@ for (const post of calendar.year1) {
 
   console.log(`  + PUBLISH: "${post.title}" (${post.slug})  -  status ${post.status} -> published (date ${post.publish_date}), ${approval.credit ? `reviewed by ${post.reviewer}` : 'no reviewer credited'}`);
   if (APPLY) {
-    // Silence names no reviewer; an approval in SAGE whose bytes still match does.
+    // An advisory exception names no reviewer; an approval whose bytes still match does.
     const current = fs.readFileSync(mdFile, 'utf8');
     const next = applyReviewCredit(current, post, TEAM, { credit: approval.credit });
     if (next !== current) fs.writeFileSync(mdFile, next);
@@ -222,6 +234,7 @@ console.log('━━━━━━━━━━━━━━━━━━━━━━�
 console.log(`  Frontmatter date rewrites: ${mdChanges}`);
 console.log(`  Status flips -> published:  ${statusFlips}`);
 console.log(`  Readiness errors:           ${errors.length}`);
+console.log(`  Held (no licensed approval): ${held.length}${held.length ? ` (${held.join(', ')})` : ''}`);
 if (errors.length > 0) {
   for (const e of errors) console.log(`    - ${e.slug}: ${e.reason}`);
 }

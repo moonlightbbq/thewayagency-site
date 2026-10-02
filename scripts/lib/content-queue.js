@@ -19,7 +19,7 @@
  */
 const fs = require('fs');
 const path = require('path');
-const { isHeld, isKnownStatus } = require('./calendar-status');
+const { isHeld, isKnownStatus, heldForApproval, heldNextStep } = require('./calendar-status');
 const { APPROVAL_RECORD_FIELDS } = require('./review-credit');
 
 const ROOT = path.resolve(__dirname, '..', '..');
@@ -38,11 +38,13 @@ const ANCHORS_PATH = path.join(ROOT, 'data', 'seasonal-anchors.json');
 // Reserve capacity 4 weeks out; commit a topic to it 2 weeks out.
 const HORIZON_DAYS = 28;
 const LOCK_DAYS = 14;
-// The floor for committing a topic. send-review-emails.js only picks a post up
-// at `days >= 10 && days <= 18`, so locking anything nearer than 10 days
-// publishes it without a reviewer ever seeing it. Filling a slot is not worth
-// silently skipping review, so slots closer than this are reported as
-// unfillable rather than quietly filled.
+// The floor for committing a topic: the licensed reviewer's lead time. Since
+// the owner's decision of 2026-10-02 nothing publishes without its reviewer's
+// approval, and send-review-emails.js sends the request from D-18 (normally
+// D-14) down to the publish date. A topic locked nearer than this leaves the
+// reviewer under 10 days to read and approve a draft that may not even be
+// written yet, so the date would most likely HOLD (I8) instead of publishing.
+// Slots closer than this are reported as unfillable (I2b) rather than filled.
 const MIN_LOCK_LEAD_DAYS = 10;
 // A slot this close to publishing must already have markdown on disk. Set
 // just inside the review lead time so the alarm fires while there is still
@@ -97,6 +99,9 @@ function publishDatesWithin(fromYmd, days) {
 const REVIEW_OWNED_FIELDS = Object.freeze([
   'status', 'reviewer', 'reviewer_email', 'reviewer_slug', 'reviewer_title',
   'review_sent_date', 'review_send_error', 'reminder_sent',
+  // The dates send-review-emails.js sent the D-3/D-2/D-1 final reminders
+  // (owner decision 2026-10-02): once per day, never resent on a rerun.
+  'final_reminder_dates',
   ...APPROVAL_RECORD_FIELDS,
   'reviewed_date',
 ]);
@@ -696,70 +701,54 @@ function reserveSlots(cal, today) {
 function fillSlots(cal, backlog, today, windowMonths, opts = {}) {
   const locked = [];
   const skipped = [];
-  const markdownFor = opts.hasMarkdown || hasMarkdown;
   const reserved = (cal.slots || []).filter(s => s.state === 'reserved');
 
-  // Slots split into two kinds. Anything nearer than MIN_LOCK_LEAD_DAYS is
-  // past the D-10 review email, so filling it publishes without a reviewer.
-  // Default is to leave it empty and say so. `allowReviewSkip` is the
-  // deliberate override for "no date goes silent": it fills the date anyway,
-  // records that review was skipped on the entry, and only ever uses a
-  // candidate whose draft is ALREADY written - there is no time to write one.
+  // Anything nearer than MIN_LOCK_LEAD_DAYS is left empty and reported: there
+  // is no time left for the licensed reviewer to approve it, and nothing
+  // publishes without that approval (owner decision 2026-10-02). The old
+  // `allowReviewSkip` override, which filled such a date and published it
+  // with no reviewer, was removed with that decision.
   const targets = [];
   for (const slot of reserved) {
     if (isPaused(cal, slot.date)) continue; // BLOG-06: no topic is committed to a paused date
     const d = daysBetween(today, slot.date);
     if (d < 0 || d > LOCK_DAYS) continue;
-    if (d >= MIN_LOCK_LEAD_DAYS) { targets.push({ slot, reviewSkip: false, daysOut: d }); continue; }
-    if (opts.allowReviewSkip) targets.push({ slot, reviewSkip: true, daysOut: d });
-    else skipped.push({ date: slot.date, reason: `only ${d}d out; locking now would skip the D-${MIN_LOCK_LEAD_DAYS} review window` });
+    if (d >= MIN_LOCK_LEAD_DAYS) { targets.push({ slot }); continue; }
+    skipped.push({ date: slot.date, reason: `only ${d}d out; too late for the licensed reviewer's D-${MIN_LOCK_LEAD_DAYS} lead time, and nothing publishes without their approval` });
   }
   // Nearest first: the most urgent date gets first pick of the backlog.
   targets.sort((a, b) => (a.slot.date < b.slot.date ? -1 : 1));
 
-  for (const { slot, reviewSkip, daysOut } of targets) {
+  for (const { slot } of targets) {
     // Rebuilt each iteration so a lock made a moment ago counts against the
     // next one -- otherwise two near-identical candidates both get placed.
     const ctx = buildSchedulingContext(cal, opts);
-    let ranked = (backlog.candidates || [])
+    const ranked = (backlog.candidates || [])
       .map(c => ({ candidate: c, ...scoreCandidate(c, slot.date, ctx, windowMonths, opts) }))
       .filter(r => r.eligible);
-    if (reviewSkip) ranked = ranked.filter(r => markdownFor(r.candidate.slug));
     ranked.sort((a, b) => b.score - a.score);
 
     if (!ranked.length) {
-      skipped.push({
-        date: slot.date,
-        reason: reviewSkip
-          ? `${daysOut}d out and no ready draft available to fill it in time`
-          : 'no eligible approved candidate',
-      });
+      skipped.push({ date: slot.date, reason: 'no eligible approved candidate' });
       continue;
     }
     const winner = ranked[0];
     const post = candidateToPost(winner.candidate, slot.date, today);
-    if (reviewSkip) {
-      post.review_skipped = true;
-      post.notes = `${post.notes ? `${post.notes} ` : ''}Locked ${daysOut}d before publish so the date would not go silent. `
-        + `That is inside send-review-emails' D-${MIN_LOCK_LEAD_DAYS} window, so no reviewer email goes out for this post. `
-        + 'Draft was already written and on disk.';
-    }
     cal.year1.push(post);
     slot.state = 'locked';
     slot.locked_slug = winner.candidate.slug;
     slot.locked_at = today;
-    slot.review_skipped = reviewSkip || undefined;
     backlog.candidates = (backlog.candidates || []).filter(c => c.slug !== winner.candidate.slug);
     locked.push({
       date: slot.date, slug: winner.candidate.slug, score: winner.score,
-      reasons: winner.reasons, reviewSkipped: reviewSkip,
+      reasons: winner.reasons,
     });
   }
   return { locked, skipped };
 }
 
 /**
- * Evaluate the queue invariants (I1-I7, I9). Pure: takes the data and the clock,
+ * Evaluate the queue invariants (I1-I9). Pure: takes the data and the clock,
  * returns findings. `opts.hasMarkdown` is injectable so the rules can be
  * tested against fixtures rather than whatever happens to be on disk.
  *
@@ -799,10 +788,9 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
   }
 
   // I2 - a topic committed once inside the lock window.
-  // Only slots that can still be filled without skipping review. A slot
-  // nearer than MIN_LOCK_LEAD_DAYS is past saving; that is an I1/I4 concern,
-  // not a scheduling failure, and demanding a lock there would push the
-  // scheduler into the exact review-skipping behaviour this floor prevents.
+  // Only slots that can still be filled with the reviewer's lead time. A slot
+  // nearer than MIN_LOCK_LEAD_DAYS is past saving (I2b): it could not be
+  // approved in time, so it would only hold.
   const dueToLock = slots.filter(s => {
     const d = daysBetween(today, s.date);
     return d >= MIN_LOCK_LEAD_DAYS && d <= LOCK_DAYS && s.state !== 'locked';
@@ -815,7 +803,7 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
     return d >= 0 && d < MIN_LOCK_LEAD_DAYS && s.state !== 'locked';
   });
   if (tooLate.length) {
-    add('I2b', `${tooLate.length} slot(s) will publish nothing - too close to fill without skipping review: ${tooLate.map(s => s.date).join(', ')}`);
+    add('I2b', `${tooLate.length} slot(s) will publish nothing - too close to fill and still leave the licensed reviewer time to approve it: ${tooLate.map(s => s.date).join(', ')}`);
   }
 
   // I3 - a locked slot must point at a real dated post.
@@ -864,6 +852,21 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
     add('I7', `"${p.slug}" (due ${p.publish_date || 'undated'}) ${why(p)} and is not publishing`);
   }
 
+  // I8 - a post due without its licensed reviewer's approval (owner decision
+  // 2026-10-02: approval is REQUIRED). The publisher holds it without an
+  // error (scripts/lib/calendar-status.js heldForApproval) and the renderer
+  // does not render it, so this is what makes the empty date loud. It keeps
+  // its date (occupiedDates), so the queue never books a second post onto it
+  // and only that one date is blocked. It clears when the reviewer approves it
+  // (it then publishes on the next run, still dated publish_date) or the
+  // content owner moves it, which needs a new approval for the new date.
+  const heldPosts = posts.filter(p => heldForApproval(p, today));
+  for (const p of heldPosts) {
+    const md = markdownFor(p.slug);
+    add('I8', `"${p.slug}" was due ${p.publish_date} but has no licensed approval (status ${p.status}, reviewer ${p.reviewer_email ? `${p.reviewer || '?'} <${p.reviewer_email}>` : 'none assigned'})`
+      + `; ${heldNextStep(p, md)}`);
+  }
+
   return {
     violations,
     stats: {
@@ -886,8 +889,7 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
         dates: horizonDates.filter(d => d <= pause.until && !taken.has(d) && !slotByDate.has(d)),
         posts: upcoming.filter(p => p.publish_date <= pause.until),
       } : null,
-      // Deliberate policy, not a violation - but it must never be invisible.
-      reviewSkipped: upcoming.filter(p => p.review_skipped),
+      heldForApproval: heldPosts,
     },
   };
 }

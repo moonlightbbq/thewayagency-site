@@ -106,6 +106,23 @@ describe('saveCalendar does not clobber a concurrent writer', () => {
     assert.equal(after.reviewer, 'Sheilia Royal');
   });
 
+  test('the final-reminder dates and an emailed approval\'s approved_via, written after our read, survive our write (owner decision 2026-10-02)', () => {
+    const mine = q.loadCalendar();
+    const theirs = read();
+    Object.assign(theirs.year1[0], {
+      status: 'approved',
+      final_reminder_dates: ['2026-09-13', '2026-09-14'],
+      approved_via: 'email',
+    });
+    write(theirs);
+    q.saveCalendar(mine);
+
+    const after = read().year1.find(p => p.slug === 'how-to-compare-insurance-quotes');
+    assert.deepEqual(after.final_reminder_dates, ['2026-09-13', '2026-09-14'], 'a lost record would resend that day\'s reminder');
+    assert.equal(after.approved_via, 'email');
+    assert.equal(after.status, 'approved');
+  });
+
   test('an approval withdrawn after our read is not brought back by our stale copy', () => {
     // Our copy has a signed approval; the review flow then withdraws it on
     // disk (status back to in-review, the record deleted). The deletion wins.

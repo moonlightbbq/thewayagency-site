@@ -12,6 +12,16 @@ on:
 permissions:
   contents: write
 
+# One group for both workflows: each reads and commits the calendar, so an
+# overlap (a delayed publish run, a manual dispatch) would send a reviewer two
+# reminders the same day and turn one run red on the refused push. GitHub
+# keeps one PENDING run per group: a third run queued while one runs and one
+# waits replaces the waiting one (shown cancelled, grey). A dropped publish run
+# leaves due posts for the next Wed/Sat run; dispatch it again by hand.
+concurrency:
+  group: blog-review-calendar
+  cancel-in-progress: false
+
 jobs:
   review-and-publish:
     runs-on: ubuntu-latest
@@ -24,15 +34,17 @@ jobs:
         with:
           node-version: '18'
 
-      # Step 1: Send review emails for posts due in ~2 weeks.
-      # Exit 0 = sent, or nothing was due. Exit 2 = a send FAILED, or
-      # BLOG_REVIEW_TOKEN_SECRET is unset or under 32 characters. The run must
-      # go red for it (the previous `if ... else ...` swallowed every exit code,
-      # so a two-month 403 outage reported green on every single run), but it
-      # must not stop today's posts: a review that cannot be requested credits
-      # no one, and the post publishes on its date as on silence. So the step
-      # continues on error, the publish below still runs, and the last step
-      # fails the run.
+      # Step 1: Send review emails: the request (~D-14), the D-7 reminder and
+      # the D-3/D-2/D-1 reminders (those also run daily, review-reminders.yml).
+      # Exit 0 = sent, or nothing was due. Exit 2 = a send FAILED or was only
+      # queued (outbound paused), a reviewer cannot be reached (the content
+      # owner was alerted), or BLOG_REVIEW_TOKEN_SECRET is unset or under 32
+      # characters. The run must go red for it (the previous `if ... else ...`
+      # swallowed every exit code, so a two-month 403 outage reported green on
+      # every single run), but it must not stop today's approved posts. A post
+      # whose review could not be requested is held until approved (owner
+      # decision 2026-10-02; I8 below). So the step continues on error, the
+      # publish below still runs, and the last step fails the run.
       - name: Send review emails
         id: review
         continue-on-error: true
@@ -69,8 +81,10 @@ jobs:
             exit "$code"
           fi
 
-      # Step 2: Publish posts that are due today.
-      # Exit 0 = ran cleanly (published, or nothing due). Exit 3 = a due post was
+      # Step 2: Publish posts that are due today and approved by their licensed
+      # reviewer. A due post without that approval is HELD (logged, unchanged,
+      # not an error): the queue check below (I8) turns the run red for it.
+      # Exit 0 = ran cleanly (published, held, or nothing due). Exit 3 = a due post was
       # put in 'error' (its changes, and every other change of the run, are
       # written): the step stays green so they are committed below, and the
       # queue check (I7) turns the run red afterwards. Anything else (2: an
@@ -141,7 +155,9 @@ jobs:
       # and I7 (an entry the publisher put in 'error': missing or unready markdown,
       # or an approval in SAGE whose bytes, byline or signature no longer match,
       # or a status neither repo knows; the publish step stays green so its
-      # changes are committed first).
+      # changes are committed first), and I8 (a post due without its licensed
+      # reviewer's approval, held: owner decision 2026-10-02; it clears when the
+      # reviewer approves, and the post then publishes on the next run).
       # I9 (BLOG-06) is fatal too: the calendar's queue_pause is malformed, has
       # no "until", or runs more than 90 days. A valid pause is quiet: I1/I2/I2b
       # skip its dates, so a deliberate pause never turns this run red.
@@ -149,7 +165,7 @@ jobs:
       # It does not run when Commit and push failed (a refused push): the run is
       # already red, and the working tree is not what main holds.
       - name: Queue health
-        run: node scripts/queue-status.js --fail-on I4,I2b,I6,I7,I9
+        run: node scripts/queue-status.js --fail-on I4,I2b,I6,I7,I8,I9
 
       # Step 5: The review step continues on error so it cannot stop a publish
       # (step 1); its failure still turns the run red, here, after everything
@@ -157,5 +173,5 @@ jobs:
       - name: Fail the run if review emails failed
         if: ${{ !cancelled() && steps.review.outcome == 'failure' }}
         run: |
-          echo "::error::Send review emails failed (see that step): a send failed, or BLOG_REVIEW_TOKEN_SECRET is unset or under 32 characters. Due posts were still published; no review was requested for the posts that step covers."
+          echo "::error::Send review emails failed (see that step): a send failed or was only queued in SAGE, a reviewer cannot be reached (the content owner was alerted), or BLOG_REVIEW_TOKEN_SECRET is unset or under 32 characters. Due approved posts were still published; a post whose reviewer was not reached is held until they approve it."
           exit 1

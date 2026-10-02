@@ -2,10 +2,12 @@
  * The "Reviewed by" byline is stamped only for an approval in SAGE whose bytes
  * are still the ones published (sage-server BL-07, scripts/lib/review-credit.js).
  *
- * The licensed review is ADVISORY for publishing (scripts/lib/calendar-
- * status.js): a post whose reviewer never acted still publishes on its date.
- * But silence is not a review, so it names no reviewer, and any review line it
- * carries is removed. An 'approved' post credits its reviewer only while the
+ * The licensed review is REQUIRED for publishing (scripts/lib/calendar-
+ * status.js, owner decision 2026-10-02): a due post whose reviewer never
+ * approved it is HELD (unchanged, not an error; the queue's I8 makes it loud).
+ * Only the frozen advisory exceptions (ADVISORY_GRANDFATHERED, exact slug and
+ * date) still publish on silence, naming no reviewer, with any review line
+ * they carry removed. An 'approved' post credits its reviewer only while the
  * sha256 of the file's raw bytes equals approved_sha256, the approval is the
  * byline reviewer's, and SAGE signed it (approval_mac, an HMAC with
  * BLOG_REVIEW_TOKEN_SECRET: typed calendar fields prove nothing); anything else
@@ -94,7 +96,7 @@ function runSite(script, { entries, files, team = TEAM, args = [], env = { BLOG_
   return { tmp, run, calendar, read, entry: (slug) => calendar.year1.find((p) => p.slug === slug) };
 }
 
-describe('publish-scheduled-posts: silence and a matching approval', () => {
+describe('publish-scheduled-posts: silence HOLDS, a matching approval publishes', () => {
   let site;
   const silentMd = post('test-silent-review');
   // A post published on silence that somehow carries a review line (an AI
@@ -118,28 +120,31 @@ describe('publish-scheduled-posts: silence and a matching approval', () => {
   });
   after(() => { fs.rmSync(site.tmp, { recursive: true, force: true }); });
 
-  test('all three publish (the review stays advisory)', () => {
+  test('only the approved one publishes; the two the reviewer never approved are HELD, unchanged, exit 0 (owner decision 2026-10-02)', () => {
     assert.equal(site.run.status, 0, site.run.stdout + site.run.stderr);
-    assert.deepEqual(site.calendar.year1.map((p) => p.status), ['published', 'published', 'published']);
+    assert.deepEqual(site.calendar.year1.map((p) => p.status), ['in-review', 'in-review', 'published']);
+    for (const slug of ['test-silent-review', 'test-smuggled-review']) {
+      assert.equal(site.entry(slug).error_reason, undefined, `${slug}: a hold is not an error`);
+      assert.match(site.run.stdout, new RegExp(`HELD \\(no licensed approval\\): .*\\(${slug}\\) due 2026-01-07, status in-review, reviewer ${REVIEWER.name} <${REVIEWER.email}>`));
+    }
+    assert.match(site.run.stdout, /2 due post\(s\) HELD/);
+    assert.match(site.run.stdout, /publishes on the next run, while it is still scheduled for that date/);
   });
 
-  test('an entry that publishes without a credit keeps no approval record (a withdrawn one included)', () => {
+  test('a held entry keeps no stray approval record (a withdrawn one included)', () => {
     for (const slug of ['test-silent-review', 'test-smuggled-review']) {
       for (const k of ['approved_by', 'approved_by_email', 'approved_sha256', 'approval_mac']) assert.equal(site.entry(slug)[k], undefined, `${slug}: ${k}`);
     }
   });
 
-  test('a post the reviewer never approved carries no review byline, and a smuggled one is removed', () => {
+  test('a held post is not touched: its file keeps its bytes, and no review byline or credit is stamped', () => {
+    assert.equal(site.read('test-silent-review'), silentMd);
+    assert.equal(site.read('test-smuggled-review'), smuggledMd, 'held, so not rewritten (it neither publishes nor renders)');
     for (const slug of ['test-silent-review', 'test-smuggled-review']) {
-      const meta = frontmatter(site.read(slug));
-      for (const k of REVIEW_KEYS) assert.equal(meta[k], undefined, `${slug}: ${k} must not be stamped without an approval in SAGE`);
-      const keys = site.read(slug).split('\n---\n')[0].split('\n').map(frontMatterKey).filter(Boolean);
-      assert.deepEqual(keys.filter(isReviewerKey), [], `${slug}: no review key in any spelling survives`);
-      assert.equal(meta.title, `SYNTHETIC ${named(slug)}`);
       assert.equal(site.entry(slug).credited_sha256, undefined);
       assert.equal(site.entry(slug).credit_mac, undefined);
     }
-    assert.match(site.run.stdout, /test-silent-review.*no reviewer credited|SYNTHETIC silent.*no reviewer credited/);
+    assert.doesNotMatch(site.run.stdout, /Published: "SYNTHETIC (silent|smuggled)"/);
   });
 
   test('an approval in SAGE whose bytes match credits the reviewer with their real title and the approval date', () => {
@@ -226,8 +231,8 @@ describe('publish-scheduled-posts: an approval that no longer matches does not p
       assert.equal(site.run.status, 2, site.run.stdout);
       assert.equal(site.entry('test-bound').status, 'approved');
       assert.equal(site.read('test-bound'), md);
-      // Silence does not need the secret: it publishes as usual.
-      assert.equal(site.entry('test-silent-ok').status, 'published');
+      // An unapproved post is held either way.
+      assert.equal(site.entry('test-silent-ok').status, 'planned');
       assert.match(site.run.stdout, /BLOG_REVIEW_TOKEN_SECRET/);
     } finally {
       fs.rmSync(site.tmp, { recursive: true, force: true });
@@ -235,15 +240,16 @@ describe('publish-scheduled-posts: an approval that no longer matches does not p
   });
 
   test('an entry in error and a clean publish in one run: both are written, exit 3', () => {
+    const okMd = post('test-ok', 'reviewer: Someone\n');
     const site = runSite('publish-scheduled-posts.js', {
-      entries: [approved('test-bound', md), { slug: 'test-silent-ok', title: 'SYNTHETIC silent', publish_date: '2026-01-07', status: 'planned' }],
-      files: { 'test-bound': `${md}\nChanged.\n`, 'test-silent-ok': post('test-silent-ok', 'reviewer: Someone\n') },
+      entries: [approved('test-bound', md), approved('test-ok', okMd)],
+      files: { 'test-bound': `${md}\nChanged.\n`, 'test-ok': okMd },
     });
     try {
       assert.equal(site.run.status, 3, site.run.stdout);
       assert.equal(site.entry('test-bound').status, 'error');
-      assert.equal(site.entry('test-silent-ok').status, 'published');
-      assert.equal(frontmatter(site.read('test-silent-ok')).reviewer, undefined);
+      assert.equal(site.entry('test-ok').status, 'published');
+      assert.equal(frontmatter(site.read('test-ok')).reviewer, REVIEWER.name, 'the typed review line is replaced by the approval\'s');
     } finally {
       fs.rmSync(site.tmp, { recursive: true, force: true });
     }
@@ -286,7 +292,9 @@ describe('a withdrawn approval does not stay on the calendar (fix round 3)', () 
     });
     try {
       assert.equal(site.run.status, 0, site.run.stdout);
-      assert.equal(site.entry('test-w-due').status, 'published');
+      // Withdrawn and due: held (it no longer has an approval), not published.
+      assert.equal(site.entry('test-w-due').status, 'in-review');
+      assert.equal(site.read('test-w-due'), md);
       for (const slug of ['test-w-due', 'test-w-future', 'test-w-held']) {
         for (const k of ['approved_by', 'approved_by_email', 'approved_date', 'approved_sha256', 'approved_publish_date', 'approval_mac']) assert.equal(site.entry(slug)[k], undefined, `${slug}: ${k}`);
       }
@@ -295,7 +303,7 @@ describe('a withdrawn approval does not stay on the calendar (fix round 3)', () 
       assert.ok(site.entry('test-w-approved').approval_mac, 'a live approval is untouched');
       assert.ok(site.entry('test-w-error').approval_mac, 'the evidence on an error entry is kept');
       assert.match(site.run.stdout, /test-w-future: removed the approval record/);
-      for (const k of REVIEW_KEYS) assert.equal(frontmatter(site.read('test-w-due'))[k], undefined);
+      assert.match(site.run.stdout, /HELD \(no licensed approval\): .*\(test-w-due\)/);
     } finally {
       fs.rmSync(site.tmp, { recursive: true, force: true });
     }
@@ -318,8 +326,9 @@ describe('front matter that breaks a deterministic rule does not publish (fix ro
   ]) {
     test(label, () => {
       const file = post('test-unsafe', extra);
+      // Approved (signed, for these bytes): the readiness check refuses it anyway.
       const site = runSite('publish-scheduled-posts.js', {
-        entries: [{ slug: 'test-unsafe', title: 'SYNTHETIC unsafe', publish_date: '2026-01-07', status: 'planned' }],
+        entries: [approved('test-unsafe', file)],
         files: { 'test-unsafe': file },
       });
       try {
@@ -336,8 +345,8 @@ describe('front matter that breaks a deterministic rule does not publish (fix ro
 
 describe('review-credit wording in a front-matter value is flagged, never refused (the scope decision after fix round 5)', () => {
   // Free text can always claim a review; each tighter rule took legitimate
-  // posts down. The post publishes as written with NO review lines and no
-  // credit record (only a signed approval in SAGE credits a reviewer), and the
+  // posts down. An approved post publishes as written, crediting its reviewer
+  // with the approval's review lines only (the wording adds none), and the
   // publisher logs the wording.
   for (const [label, extra] of [
     ['review wording in a byline field', 'author_title: Licensed Agent | Reviewed by Test Reviewer B on December 1, 2025\n'],
@@ -357,16 +366,17 @@ describe('review-credit wording in a front-matter value is flagged, never refuse
     test(label, () => {
       const file = post('test-worded', extra);
       const site = runSite('publish-scheduled-posts.js', {
-        entries: [{ slug: 'test-worded', title: 'SYNTHETIC worded', publish_date: '2026-01-07', status: 'planned', reviewer: REVIEWER.name, reviewer_slug: REVIEWER.slug, reviewer_email: REVIEWER.email }],
+        entries: [approved('test-worded', file)],
         files: { 'test-worded': file },
       });
       try {
         assert.equal(site.run.status, 0, site.run.stdout);
         const e = site.entry('test-worded');
         assert.equal(e.status, 'published');
-        assert.equal(e.credit_mac, undefined);
-        assert.equal(e.credited_sha256, undefined);
-        assert.doesNotMatch(site.read('test-worded'), /^\s*(reviewer|reviewer_slug|reviewer_title|reviewed_date)\s*:/im, 'no review lines written');
+        assert.ok(e.credit_mac, 'credited by the signed approval, not by the wording');
+        const meta = frontmatter(site.read('test-worded'));
+        assert.equal(meta.reviewer, REVIEWER.name);
+        assert.equal(meta.reviewer_title, REVIEWER.title, 'the review lines are the approval\'s');
         assert.match(site.run.stdout, /! test-worded: review-credit wording in the front-matter "[a-z_]+": .*only the signed byline is a verified credit/);
       } finally {
         fs.rmSync(site.tmp, { recursive: true, force: true });
@@ -388,7 +398,7 @@ describe('printable characters and reading_time never stop a post publishing (fi
     test(label, () => {
       const file = post('test-printable', extra);
       const site = runSite('publish-scheduled-posts.js', {
-        entries: [{ slug: 'test-printable', title: 'SYNTHETIC printable', publish_date: '2026-01-07', status: 'planned' }],
+        entries: [approved('test-printable', file)],
         files: { 'test-printable': file },
       });
       try {
@@ -396,7 +406,6 @@ describe('printable characters and reading_time never stop a post publishing (fi
         const e = site.entry('test-printable');
         assert.equal(e.status, 'published', site.run.stdout);
         assert.equal(e.error_reason, undefined);
-        assert.equal(e.credit_mac, undefined);
         assert.doesNotMatch(site.run.stdout, /review-credit wording/);
       } finally {
         fs.rmSync(site.tmp, { recursive: true, force: true });
@@ -419,7 +428,7 @@ describe('who the byline names never stops a post publishing (fix round 5)', () 
     test(label, () => {
       const file = post('test-byline-stale', extra);
       const site = runSite('publish-scheduled-posts.js', {
-        entries: [{ slug: 'test-byline-stale', title: 'SYNTHETIC byline', publish_date: '2026-01-07', status: 'planned' }],
+        entries: [approved('test-byline-stale', file)],
         files: { 'test-byline-stale': file },
       });
       try {
@@ -442,15 +451,14 @@ describe('a review credit in the article body is flagged, never refused (fix rou
     test(label, () => {
       const file = post('test-body-claim').replace('---\n\n', `---\n\n${sentence}\n\n`);
       const site = runSite('publish-scheduled-posts.js', {
-        entries: [{ slug: 'test-body-claim', title: 'SYNTHETIC body claim', publish_date: '2026-01-07', status: 'planned' }],
+        entries: [approved('test-body-claim', file)],
         files: { 'test-body-claim': file },
       });
       try {
         assert.equal(site.run.status, 0, site.run.stdout);
         assert.equal(site.entry('test-body-claim').status, 'published');
-        assert.equal(site.entry('test-body-claim').credit_mac, undefined);
         assert.match(site.run.stdout, /! test-body-claim: review-credit wording in the body: .*only the signed byline is a verified credit/);
-        assert.doesNotMatch(site.read('test-body-claim'), /^\s*(reviewer|reviewer_slug|reviewer_title|reviewed_date)\s*:/im, 'no review lines written');
+        assert.equal(frontmatter(site.read('test-body-claim')).reviewer, REVIEWER.name, 'the only review lines are the approval\'s');
       } finally {
         fs.rmSync(site.tmp, { recursive: true, force: true });
       }
@@ -460,7 +468,7 @@ describe('a review credit in the article body is flagged, never refused (fix rou
   test('contrast: advice that mentions a review publishes, with no warning', () => {
     const file = post('test-body-advice').replace('---\n\n', '---\n\nHave your policy reviewed by a licensed agent every year. Medicare Advantage plans are approved by Medicare.\n\n');
     const site = runSite('publish-scheduled-posts.js', {
-      entries: [{ slug: 'test-body-advice', title: 'SYNTHETIC advice', publish_date: '2026-01-07', status: 'planned' }],
+      entries: [approved('test-body-advice', file)],
       files: { 'test-body-advice': file },
     });
     try {
@@ -473,7 +481,7 @@ describe('a review credit in the article body is flagged, never refused (fix rou
 });
 
 describe('reconcile-calendar applies the same rule', () => {
-  test('--apply: a changed approved post goes to error; silence publishes with no review line; a matching approval is credited', () => {
+  test('--apply: a changed approved post goes to error; silence is HELD and left alone; a matching approval is credited', () => {
     const good = post('test-rc-good');
     const silent = post('test-rc-silent', `reviewer: ${REVIEWER.name}\nreviewed_date: 2025-12-01\n`);
     const site = runSite('reconcile-calendar.js', {
@@ -491,8 +499,10 @@ describe('reconcile-calendar applies the same rule', () => {
       assert.equal(site.entry('test-rc-good').credited_sha256, sha256Hex(fs.readFileSync(path.join(site.tmp, 'src', 'blog', 'test-rc-good.md'))));
       assert.ok(site.entry('test-rc-good').credit_mac);
       assert.equal(site.entry('test-rc-changed').error_reason, 'approved_bytes_changed');
-      assert.equal(site.entry('test-rc-silent').status, 'published');
-      for (const k of REVIEW_KEYS) assert.equal(frontmatter(site.read('test-rc-silent'))[k], undefined);
+      assert.equal(site.entry('test-rc-silent').status, 'in-review');
+      assert.equal(site.read('test-rc-silent'), silent, 'held: the file is not touched');
+      assert.match(site.run.stdout, /HELD \(no licensed approval\): .*\(test-rc-silent\)/);
+      assert.match(site.run.stdout, /Held \(no licensed approval\): 1 \(test-rc-silent\)/);
       assert.equal(site.entry('test-rc-good').status, 'published');
       assert.equal(frontmatter(site.read('test-rc-good')).reviewer, REVIEWER.name);
     } finally {
@@ -578,5 +588,114 @@ describe('review-credit helpers', () => {
   test('personNameKey matches sage-server\'s rule', () => {
     assert.equal(personNameKey("Test  O'Reviewer-B."), 'test o reviewer b');
     assert.equal(personNameKey(null), '');
+  });
+});
+
+describe('approval REQUIRED (owner decision 2026-10-02): unapproved due posts HOLD; email approvals pass the same checks', () => {
+  const { ADVISORY_GRANDFATHERED } = require('../scripts/lib/calendar-status');
+
+  test('planned, in-draft and in-review posts past their date are HELD: unchanged, no error, exit 0, even with no markdown or a review_skipped flag', () => {
+    const files = { 'test-h-planned': post('test-h-planned'), 'test-h-draft': post('test-h-draft'), 'test-h-review': post('test-h-review'), 'test-h-skipped': post('test-h-skipped') };
+    const entries = [
+      { slug: 'test-h-planned', title: 'SYNTHETIC hp', publish_date: '2026-01-07', status: 'planned' },
+      { slug: 'test-h-draft', title: 'SYNTHETIC hd', publish_date: '2026-01-03', status: 'in-draft' },
+      { slug: 'test-h-review', title: 'SYNTHETIC hr', publish_date: '2026-01-07', status: 'in-review', reviewer: REVIEWER.name, reviewer_slug: REVIEWER.slug, reviewer_email: REVIEWER.email },
+      // Locked by the removed --allow-review-skip: it needs an approval like any other post.
+      { slug: 'test-h-skipped', title: 'SYNTHETIC hs', publish_date: '2026-01-07', status: 'planned', review_skipped: true },
+      // No markdown: held too (I8 names the missing file), not 'error'.
+      { slug: 'test-h-nomd', title: 'SYNTHETIC hn', publish_date: '2026-01-07', status: 'planned' },
+    ];
+    const site = runSite('publish-scheduled-posts.js', { entries, files });
+    try {
+      assert.equal(site.run.status, 0, site.run.stdout);
+      assert.deepEqual(site.calendar.year1, JSON.parse(JSON.stringify(entries)), 'no entry changed');
+      for (const [slug, md] of Object.entries(files)) assert.equal(site.read(slug), md, `${slug} untouched`);
+      assert.match(site.run.stdout, /5 due post\(s\) HELD/);
+      assert.match(site.run.stdout, /HELD \(no licensed approval\): .*\(test-h-nomd\).*reviewer none assigned, and its markdown is missing/);
+      assert.match(site.run.stdout, /HELD \(no licensed approval\): .*\(test-h-draft\) due 2026-01-03, status in-draft/);
+      // The per-post next step is I8's (heldNextStep), never a local variant.
+      assert.match(site.run.stdout, /- test-h-nomd \(due 2026-01-07\): its markdown .* write it and move the entry/);
+      assert.match(site.run.stdout, /- test-h-planned \(due 2026-01-07\): no review request went out for it, so nobody can approve it/);
+      assert.match(site.run.stdout, /- test-h-review \(due 2026-01-07\): it is held and publishes on the first publish run after its assigned reviewer approves it/);
+      assert.doesNotMatch(site.run.stdout, /No posts due/);
+    } finally {
+      fs.rmSync(site.tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('an approval recorded from an emailed APPROVED (approved_via "email") publishes crediting the reviewer, through the same checks', () => {
+    const md = post('test-email-ok');
+    const site = runSite('publish-scheduled-posts.js', { entries: [{ ...approved('test-email-ok', md), approved_via: 'email' }], files: { 'test-email-ok': md } });
+    try {
+      assert.equal(site.run.status, 0, site.run.stdout);
+      const e = site.entry('test-email-ok');
+      assert.equal(e.status, 'published');
+      assert.equal(e.approved_via, 'email');
+      assert.equal(frontmatter(site.read('test-email-ok')).reviewer, REVIEWER.name);
+      assert.ok(e.credit_mac);
+      assert.match(site.run.stdout, /reviewed by Test Reviewer B \(approved by email reply\)/);
+    } finally {
+      fs.rmSync(site.tmp, { recursive: true, force: true });
+    }
+  });
+
+  for (const [label, patch, file, reason] of [
+    ['a broken signature', { approval_mac: 'x'.repeat(43) }, null, 'approval_unsigned'],
+    ['changed bytes', {}, 'changed', 'approved_bytes_changed'],
+    ['a new date after the approval', { publish_date: '2026-01-10' }, null, 'approval_rescheduled'],
+    ['an approver who is not the assigned reviewer', { approved_by_email: 'test-other-staff@example.com' }, null, 'approval_not_by_assigned_reviewer'],
+  ]) {
+    test(`an emailed approval with ${label} does not publish (${reason})`, () => {
+      const md = post('test-email-bad');
+      const entry = { ...approved('test-email-bad', md, patch), approved_via: 'email' };
+      const site = runSite('publish-scheduled-posts.js', { entries: [entry], files: { 'test-email-bad': file ? `${md}\nAn edit after the reply.\n` : md } });
+      try {
+        assert.equal(site.run.status, 3, site.run.stdout);
+        assert.equal(site.entry('test-email-bad').status, 'error');
+        assert.equal(site.entry('test-email-bad').error_reason, reason);
+      } finally {
+        fs.rmSync(site.tmp, { recursive: true, force: true });
+      }
+    });
+  }
+
+  test('a withdrawn emailed approval loses approved_via with the rest of the record', () => {
+    const md = post('test-email-wd');
+    const entry = { ...approved('test-email-wd', md), approved_via: 'email', status: 'in-review', publish_date: '2099-01-07' };
+    const site = runSite('publish-scheduled-posts.js', { entries: [entry], files: { 'test-email-wd': md } });
+    try {
+      assert.equal(site.run.status, 0, site.run.stdout);
+      assert.equal(site.entry('test-email-wd').approved_via, undefined);
+      assert.equal(site.entry('test-email-wd').approval_mac, undefined);
+    } finally {
+      fs.rmSync(site.tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('the frozen advisory exceptions publish uncredited only at their exact slug and date; anything else back-dated is held', () => {
+    const [g] = ADVISORY_GRANDFATHERED;
+    const [g2] = ADVISORY_GRANDFATHERED.slice(1);
+    const files = { [g.slug]: post(g.slug), [g2.slug]: post(g2.slug), 'test-backdated': post('test-backdated') };
+    const site = runSite('publish-scheduled-posts.js', {
+      entries: [
+        { slug: g.slug, title: 'SYNTHETIC grandfathered', publish_date: g.publish_date, status: 'planned' },
+        // Moved off its listed date: it loses the exception.
+        { slug: g2.slug, title: 'SYNTHETIC moved', publish_date: '2026-01-07', status: 'in-review' },
+        // Back-dated to before the decision, but not listed: held.
+        { slug: 'test-backdated', title: 'SYNTHETIC backdated', publish_date: '2026-08-01', status: 'planned' },
+      ],
+      files,
+    });
+    try {
+      assert.equal(site.run.status, 0, site.run.stdout);
+      assert.equal(site.entry(g.slug).status, 'published');
+      assert.equal(site.entry(g.slug).credit_mac, undefined, 'advisory: no reviewer credited');
+      assert.match(site.run.stdout, /no reviewer credited \(advisory exception\)/);
+      assert.equal(site.entry(g2.slug).status, 'in-review');
+      assert.equal(site.entry('test-backdated').status, 'planned');
+      assert.match(site.run.stdout, /2 due post\(s\) HELD/);
+    } finally {
+      fs.rmSync(site.tmp, { recursive: true, force: true });
+    }
   });
 });

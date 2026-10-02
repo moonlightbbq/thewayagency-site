@@ -7,9 +7,17 @@
  * vocabulary is shared with sage, which writes 'approved'), verifies the markdown
  * file exists, decides the review credit (scripts/lib/review-credit.js: an
  * 'approved' post publishes crediting its reviewer only while its bytes are the
- * ones approved in SAGE, else it goes to 'error'; any other post names no
- * reviewer), reconciles its frontmatter date:/modified: to the calendar
- * publish_date, and updates the status to "published".
+ * ones its reviewer approved, else it goes to 'error'), reconciles its
+ * frontmatter date:/modified: to the calendar publish_date, and updates the
+ * status to "published".
+ *
+ * Since the owner's decision of 2026-10-02 the licensed review is REQUIRED: a
+ * due post that is still planned, in-draft or in-review is HELD. It is logged
+ * ("HELD (no licensed approval)"), nothing on the entry or the file changes,
+ * and it is not an error: the queue's I8 invariant turns the workflow red
+ * while it is held. It publishes on the first run after its assigned reviewer
+ * approves it, while it is still scheduled for the date they approved it for.
+ * (The frozen advisory exceptions in calendar-status.js publish uncredited.)
  *
  * Used by the GitHub Actions workflow to auto-publish blog posts on schedule.
  *
@@ -17,7 +25,8 @@
  * calendar), so a run that dies part-way leaves nothing half-applied.
  *
  * Exit codes:
- *   0 = ran cleanly: posts published, or nothing due
+ *   0 = ran cleanly: posts published, nothing due, or due posts HELD for
+ *       their reviewer's approval (I8 reports those)
  *   3 = one or more due posts failed a check (missing or unready markdown, or an
  *       approval in SAGE whose bytes, byline or signature no longer match): each
  *       entry is marked status='error' with error_reason, and any other changes
@@ -32,7 +41,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { isPublishable, isKnownStatus } = require('./lib/calendar-status');
+const { isPublishable, isKnownStatus, isAwaitingApproval, heldNextStep } = require('./lib/calendar-status');
 const {
   approvalCheck, applyReviewCredit, readinessError, frontMatterProblem, reviewWordingWarnings, describeWordingWarning,
   reviewSecret, recordCredit, clearApprovalRecord,
@@ -62,6 +71,7 @@ const SECRET = reviewSecret(process.env);
 
 let published = 0;
 const errors = [];
+const held = [];
 const unverified = [];
 let calendarChanged = false;
 // path -> final text. Written at the end: posts first, then the calendar.
@@ -108,7 +118,19 @@ for (const post of calendar.year1) {
   // The local list is what broke: it omitted 'approved', so a reviewer
   // replying "Approved" silently stopped their own post from publishing.
   if (post.publish_date > today) continue;
-  if (!isPublishable(post.status)) {
+  if (!isPublishable(post.status, post)) {
+    // Due, but its licensed reviewer has not approved it (owner decision
+    // 2026-10-02): HELD. Nothing changes on the entry or the file, so it
+    // publishes on the first run after the approval while it is still
+    // scheduled for this date. Not an error, and not silent: the line below,
+    // the summary, and the queue's I8 invariant (red workflow).
+    if (isAwaitingApproval(post.status)) {
+      const md = fs.existsSync(path.join(BLOG_SRC, `${post.slug}.md`));
+      console.log(`  ! HELD (no licensed approval): "${post.title}" (${post.slug}) due ${post.publish_date}, status ${post.status}, `
+        + `reviewer ${post.reviewer_email ? `${post.reviewer || '?'} <${post.reviewer_email}>` : 'none assigned'}${md ? '' : ', and its markdown is missing'}`);
+      held.push({ slug: post.slug, date: post.publish_date, next: heldNextStep(post, md) });
+      continue;
+    }
     // An unknown status is a contract breach between this repo and sage, and
     // skipping it quietly is exactly the failure mode this guards. Terminal
     // states (published/error) are expected and stay silent.
@@ -158,13 +180,14 @@ for (const post of calendar.year1) {
   // and generate-blog.js renders "Written by" and "Reviewed by" from the two
   // different fields.
   //
-  // The licensed review stays ADVISORY for publishing (scripts/lib/calendar-
-  // status.js): a post whose reviewer never acted still publishes on its date.
-  // But silence is not a review, so it makes no "Reviewed by" claim, and any
-  // review line it carries is removed. Only an approval in SAGE credits the
-  // reviewer: the reviewer's click on the sha256 of the exact bytes sets
-  // status 'approved', approved_sha256 and SAGE's approval_mac (sage-server
-  // BL-07). The bytes, the byline and the signature are checked again HERE,
+  // The licensed review is REQUIRED (scripts/lib/calendar-status.js, owner
+  // decision 2026-10-02): only an 'approved' entry reaches this point, or one
+  // of the frozen advisory exceptions, which makes no "Reviewed by" claim and
+  // has any review line it carries removed. The approval credits the
+  // reviewer: their approval of the sha256 of the exact bytes (a click in
+  // SAGE, or a verified emailed APPROVED) sets status 'approved',
+  // approved_sha256 and SAGE's approval_mac (sage-server BL-07). The bytes,
+  // the byline and the signature are checked again HERE,
   // before anything below rewrites the front matter: a file changed after the
   // click, an approval that is not the byline reviewer's, or one SAGE did not
   // sign does not publish at all, it goes to 'error'.
@@ -215,7 +238,7 @@ for (const post of calendar.year1) {
   post.status = 'published';
   published++;
   calendarChanged = true;
-  console.log(`  Published: "${post.title}" (${post.publish_date}) — ${approval.credit ? `reviewed by ${post.reviewer} (approved in SAGE)` : 'no reviewer credited'}`);
+  console.log(`  Published: "${post.title}" (${post.publish_date}) — ${approval.credit ? `reviewed by ${post.reviewer} (${post.approved_via === 'email' ? 'approved by email reply' : 'approved in SAGE'})` : 'no reviewer credited (advisory exception)'}`);
   // Wording that reads as a review credit is flagged, never refused: only the
   // signed approval above credits a reviewer (sage-server BL-07).
   for (const w of reviewWordingWarnings(md, TEAM)) console.log(describeWordingWarning(post.slug, w));
@@ -241,8 +264,16 @@ if (errors.length > 0) {
   console.log('  the approval is not the byline reviewer\'s, or SAGE did not sign it. It is not published under their name (sage-server BL-07).');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 }
+if (held.length > 0) {
+  console.log('');
+  console.log(`  ${held.length} due post(s) HELD: not published, because their licensed reviewer has not approved them (owner decision 2026-10-02):`);
+  for (const h of held) console.log(`    - ${h.slug} (due ${h.date}): ${h.next}`);
+  console.log('  An in-review post is approved by its reviewer in SAGE, or by replying APPROVED to the review email if they review by email;');
+  console.log('  it then publishes on the next run, while it is still scheduled for that date. Moving a post to another date needs a new approval.');
+  console.log('  The queue check (I8) keeps the workflow red until then. Not an error: nothing was changed.');
+}
 if (published > 0) console.log(`\n  ${published} post(s) published. Calendar updated.`);
-else if (errors.length === 0 && unverified.length === 0) console.log('  No posts due for publishing today.');
+else if (errors.length === 0 && unverified.length === 0 && held.length === 0) console.log('  No posts due for publishing today.');
 
 if (unverified.length > 0) {
   console.log(`\n  ! ${unverified.length} approved post(s) not published: BLOG_REVIEW_TOKEN_SECRET is not set (or under 32 characters), so SAGE's approval cannot be verified: ${unverified.join(', ')}`);
