@@ -3659,6 +3659,9 @@ function _parsePlaceAddress(place) {
   const full = [street, city, [state, zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
   return { street, city, state, zip, full };
 }
+function _maskPlacesSuggestions() {
+  document.querySelectorAll('.pac-container').forEach((el) => el.setAttribute('data-clarity-mask', 'True'));
+}
 function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
   const input = document.getElementById(inputId);
   if (!input || !window.google?.maps?.places) return;
@@ -3667,6 +3670,13 @@ function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
     const ac = new google.maps.places.Autocomplete(input, {
       types: ['address'], componentRestrictions: { country: 'us' }
     });
+    // Google appends its suggestion list (.pac-container) to the document body, outside the
+    // masked wizard container, and its rows echo the typed address as page text.
+    // Mask it for Clarity (TRUST-12): now, and again whenever the input is used,
+    // because Google creates one list per Autocomplete and may add it late.
+    _maskPlacesSuggestions();
+    input.addEventListener('focus', _maskPlacesSuggestions);
+    input.addEventListener('input', _maskPlacesSuggestions);
     ac.addListener('place_changed', () => {
       const place = ac.getPlace();
       if (!place.address_components) return;

@@ -184,6 +184,24 @@ describe('the inline-form hand-off (clean URL plus a sessionStorage stash)', () 
 });
 
 describe('source order and masks', () => {
+  test('the Google Places suggestion list (appended to <body>) is masked, also when it appears later', async () => {
+    const w = await loadIntake('https://www.thewayagency.com/intake/?product=auto&src=inline');
+    try {
+      // A stand-in for the classic Places Autocomplete: it appends .pac-container to <body>.
+      w.google = { maps: { places: { Autocomplete: class {
+        constructor() { const d = w.document.createElement('div'); d.className = 'pac-container'; d.textContent = '1 Test St, Testville, KY'; w.document.body.appendChild(d); }
+        addListener() {}
+      } } } };
+      w._bindPlacesAutocomplete('i_address', 'i_address_street', 'i_city', 'i_state', 'i_zip');
+      const first = w.document.querySelector('.pac-container');
+      assert.equal(first.getAttribute('data-clarity-mask'), 'True');
+      assert.equal(first.closest('main'), null, 'the list sits outside the masked wizard, so it needs its own mask');
+      const late = w.document.createElement('div'); late.className = 'pac-container'; w.document.body.appendChild(late);
+      w.document.getElementById('i_address').dispatchEvent(new w.Event('focus'));
+      assert.equal(late.getAttribute('data-clarity-mask'), 'True');
+    } finally { w.close(); }
+  });
+
   test('twa-url-scrub is the first script in <head>, before every stylesheet and attribution.js', () => {
     const head = HTML.slice(0, HTML.indexOf('</head>'));
     const scrubAt = head.indexOf('twa-url-scrub');
