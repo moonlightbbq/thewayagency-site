@@ -8,7 +8,7 @@
  *
  * The model has three parts:
  *   backlog  data/content-backlog.json - undated candidates, nothing scheduled
- *   slots    content-calendar.json#slots - the rolling Wed/Sat ledger
+ *   slots    content-calendar.json#slots - the rolling Wednesday ledger
  *   posts    content-calendar.json#year1 - the dated, authoritative record
  *
  * A slot is reserved HORIZON_DAYS out so capacity is visible, then a topic is
@@ -48,12 +48,18 @@ const MIN_LOCK_LEAD_DAYS = 10;
 // just inside the review lead time so the alarm fires while there is still
 // room to act, not on publish day.
 const MARKDOWN_DUE_DAYS = 10;
-// Four weeks of approved candidates at the 2x/week cadence.
-const MIN_APPROVED_BACKLOG = 8;
+// Four weeks of approved candidates at the 1x/week cadence.
+const MIN_APPROVED_BACKLOG = 4;
 
-// Wednesday and Saturday, matching .github/workflows/publish-blog.yml's
-// `cron: '0 10 * * 3,6'`.
-const PUBLISH_WEEKDAYS = [3, 6];
+// Wednesday only (content-accuracy D10, BLOG-06: one post a week). Every one
+// of these days must be in .github/workflows/publish-blog.yml's cron
+// (`'0 10 * * 3,6'`): the workflow keeps its Saturday run for review emails
+// and the review sync, and publishes nothing extra on it. The queue ran
+// Wednesday and Saturday from 2026-08-04 to 2026-10-02; slots dated before
+// PUBLISH_WEEKDAYS_SINCE are that history, and check-data-integrity.js checks
+// the weekday only from that date on.
+const PUBLISH_WEEKDAYS = [3];
+const PUBLISH_WEEKDAYS_SINCE = '2026-10-03';
 
 const DAY_MS = 86400000;
 
@@ -74,7 +80,7 @@ function isPublishDay(ymd) {
   return PUBLISH_WEEKDAYS.includes(asDate(ymd).getUTCDay());
 }
 
-/** Every Wed/Sat date in [fromYmd, fromYmd + days], exclusive of fromYmd. */
+/** Every publish date in [fromYmd, fromYmd + days], exclusive of fromYmd. */
 function publishDatesWithin(fromYmd, days) {
   const out = [];
   const start = asDate(fromYmd);
@@ -234,6 +240,70 @@ function hasMarkdown(slug) {
 
 function approvedCandidates(backlog) {
   return (backlog.candidates || []).filter(c => c.status === 'approved');
+}
+
+// ── Explicit pause (BLOG-06) ──────────────────────────────────────────────
+//
+// The content owner stops NEW topics until a date with one top-level calendar
+// field:
+//   "queue_pause": { "until": "YYYY-MM-DD", "reason": "...", "set_by": "...", "set_on": "YYYY-MM-DD" }
+// Deleting slots is not a pause: reserveSlots() re-reserves every free date on
+// its next run, and the empty dates then turn the publish workflow red (I2b).
+// While paused (every date on or before `until`) no slot is reserved or
+// locked, an unlocked slot on a paused date is dropped, and I1/I2/I2b skip
+// paused dates. A post already dated inside the pause is left alone and still
+// publishes on its date; queue-status lists it. The pause ends by itself after
+// `until`, and I9 makes a malformed or over-long one loud. To end a pause
+// early, delete the field or set it to null: both mean "no pause", never I9.
+// SAGE's queue adapter runs this lib, so the pause applies there too.
+const MAX_PAUSE_DAYS = 90;
+
+/** A YYYY-MM-DD naming a real day. Date() rolls 2026-02-30 over to 03-02, hence the round trip. */
+function isRealYmd(s) {
+  if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false;
+  const d = asDate(s);
+  return !Number.isNaN(d.getTime()) && toYmd(d) === s;
+}
+
+/** The calendar's queue_pause when it can be honoured (its `until` is a real date), else null. */
+function queuePause(cal) {
+  const p = cal && cal.queue_pause;
+  return p && typeof p === 'object' && !Array.isArray(p) && isRealYmd(p.until) ? p : null;
+}
+
+/** Whether `ymd` falls inside the pause: on or before its `until`. */
+function isPaused(cal, ymd) {
+  const p = queuePause(cal);
+  return Boolean(p && ymd <= p.until);
+}
+
+/**
+ * Everything wrong with the calendar's queue_pause: [] when it is absent or
+ * valid. Invariant I9 and check-data-integrity.js both read this one list, so
+ * the alarm and the build check cannot disagree.
+ */
+function queuePauseProblems(cal) {
+  // Absent or null: no pause (null is how a person most likely ends one).
+  if (!cal || cal.queue_pause === undefined || cal.queue_pause === null) return [];
+  const p = cal.queue_pause;
+  if (typeof p !== 'object' || Array.isArray(p)) return ['is not an object with until, reason, set_by and set_on'];
+  const problems = [];
+  for (const k of ['until', 'set_on']) {
+    if (p[k] === undefined || p[k] === null || p[k] === '') problems.push(`has no "${k}"`);
+    else if (!isRealYmd(p[k])) problems.push(`"${k}" is ${JSON.stringify(p[k])}, not a YYYY-MM-DD date`);
+  }
+  for (const k of ['reason', 'set_by']) {
+    if (typeof p[k] !== 'string' || !p[k].trim()) problems.push(`has no "${k}"`);
+  }
+  if (isRealYmd(p.until) && isRealYmd(p.set_on)) {
+    const days = daysBetween(p.set_on, p.until);
+    if (days > MAX_PAUSE_DAYS) {
+      problems.push(`"until" ${p.until} is ${days} days after "set_on" ${p.set_on}; a pause runs at most ${MAX_PAUSE_DAYS} days`);
+    } else if (days < 0) {
+      problems.push(`"until" ${p.until} is before "set_on" ${p.set_on}`);
+    }
+  }
+  return problems;
 }
 
 
@@ -607,7 +677,7 @@ function reserveSlots(cal, today) {
   const byDate = new Map(cal.slots.map(s => [s.date, s]));
   const added = [];
   for (const date of publishDatesWithin(today, HORIZON_DAYS)) {
-    if (taken.has(date) || byDate.has(date)) continue;
+    if (taken.has(date) || byDate.has(date) || isPaused(cal, date)) continue;
     const slot = { date, state: 'reserved', locked_slug: null, locked_at: null, reserved_at: today };
     cal.slots.push(slot);
     byDate.set(date, slot);
@@ -619,6 +689,8 @@ function reserveSlots(cal, today) {
   cal.slots = cal.slots.filter(s => {
     if (taken.has(s.date) && s.state !== 'locked') return false;
     if (daysBetween(today, s.date) < 0 && s.state !== 'locked') return false;
+    // Paused (BLOG-06): capacity the owner withdrew. A locked slot keeps its post.
+    if (s.state !== 'locked' && isPaused(cal, s.date)) return false;
     return true;
   });
   cal.slots.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
@@ -643,6 +715,7 @@ function fillSlots(cal, backlog, today, windowMonths, opts = {}) {
   // candidate whose draft is ALREADY written - there is no time to write one.
   const targets = [];
   for (const slot of reserved) {
+    if (isPaused(cal, slot.date)) continue; // BLOG-06: no topic is committed to a paused date
     const d = daysBetween(today, slot.date);
     if (d < 0 || d > LOCK_DAYS) continue;
     if (d >= MIN_LOCK_LEAD_DAYS) { targets.push({ slot, reviewSkip: false, daysOut: d }); continue; }
@@ -694,7 +767,7 @@ function fillSlots(cal, backlog, today, windowMonths, opts = {}) {
 }
 
 /**
- * Evaluate the queue invariants (I1-I7). Pure: takes the data and the clock,
+ * Evaluate the queue invariants (I1-I7, I9). Pure: takes the data and the clock,
  * returns findings. `opts.hasMarkdown` is injectable so the rules can be
  * tested against fixtures rather than whatever happens to be on disk.
  *
@@ -702,10 +775,21 @@ function fillSlots(cal, backlog, today, windowMonths, opts = {}) {
  */
 function evaluateInvariants(cal, backlog, today, opts = {}) {
   const markdownFor = opts.hasMarkdown || hasMarkdown;
-  const slots = cal.slots || [];
+  // BLOG-06: an unlocked slot on a paused date is capacity the owner withdrew,
+  // not a date to fill, so I1/I2/I2b skip it. A locked slot still counts.
+  const slots = (cal.slots || []).filter(s => s.state === 'locked' || !isPaused(cal, s.date));
   const posts = cal.year1 || [];
   const violations = [];
   const add = (id, message) => violations.push({ id, message });
+
+  // I9 - the owner's pause (BLOG-06) is well formed and ends at most
+  // MAX_PAUSE_DAYS after it was set. First, because I1/I2/I2b depend on it: a
+  // pause without a real "until" is not honoured, so those fire again.
+  const pause = queuePause(cal);
+  const pauseProblems = queuePauseProblems(cal);
+  if (pauseProblems.length) {
+    add('I9', `queue_pause ${pauseProblems.join('; ')}${pause ? '' : '. The queue is NOT paused'}`);
+  }
 
   const taken = occupiedDates(cal);
   const slotByDate = new Map(slots.map(s => [s.date, s]));
@@ -717,7 +801,7 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
     .sort((a, b) => (a.publish_date < b.publish_date ? -1 : 1));
 
   // I1 - capacity reserved across the horizon.
-  const unreserved = horizonDates.filter(d => !taken.has(d) && !slotByDate.has(d));
+  const unreserved = horizonDates.filter(d => !taken.has(d) && !slotByDate.has(d) && !isPaused(cal, d));
   if (unreserved.length) {
     add('I1', `${unreserved.length} publish date(s) in the next ${HORIZON_DAYS}d neither filled nor reserved: ${unreserved.join(', ')}`);
   }
@@ -763,7 +847,8 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
   // I5 - enough approved candidates to keep filling slots.
   const approved = approvedCandidates(backlog);
   if (approved.length < MIN_APPROVED_BACKLOG) {
-    add('I5', `approved backlog is ${approved.length}, below the floor of ${MIN_APPROVED_BACKLOG} (${MIN_APPROVED_BACKLOG / 2} weeks at 2x/week)`);
+    add('I5', `approved backlog is ${approved.length}, below the floor of ${MIN_APPROVED_BACKLOG} `
+      + `(${MIN_APPROVED_BACKLOG / PUBLISH_WEEKDAYS.length} weeks at ${PUBLISH_WEEKDAYS.length}x/week)`);
   }
 
   // I6 - a post on a reviewer's change-request hold has reached its date. A
@@ -797,7 +882,19 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
       unreserved,
       upcoming,
       approvedCount: approved.length,
-      nextEmptyDate: horizonDates.find(d => !taken.has(d)) || null,
+      nextEmptyDate: horizonDates.find(d => !taken.has(d) && !isPaused(cal, d)) || null,
+      // BLOG-06: the pause being honoured (null when none is). `dates` are the
+      // horizon dates it leaves empty (neither filled nor slotted, so the
+      // horizon counts still add up); `posts` were dated inside it and still publish.
+      pause: pause ? {
+        until: pause.until,
+        reason: pause.reason,
+        set_by: pause.set_by,
+        set_on: pause.set_on,
+        active: today <= pause.until,
+        dates: horizonDates.filter(d => d <= pause.until && !taken.has(d) && !slotByDate.has(d)),
+        posts: upcoming.filter(p => p.publish_date <= pause.until),
+      } : null,
       // Deliberate policy, not a violation - but it must never be invisible.
       reviewSkipped: upcoming.filter(p => p.review_skipped),
     },
@@ -812,8 +909,10 @@ module.exports = {
   buildSchedulingContext, cannibalizationConflict, scoreCandidate,
   candidateToPost, reserveSlots, fillSlots,
   HORIZON_DAYS, LOCK_DAYS, MIN_LOCK_LEAD_DAYS, MARKDOWN_DUE_DAYS, MIN_APPROVED_BACKLOG, PUBLISH_WEEKDAYS,
+  PUBLISH_WEEKDAYS_SINCE,
   asDate, toYmd, daysBetween, isPublishDay, publishDatesWithin,
   loadAnchors, anchorForWindow, anchorRange, eligibilityOn, loadWindowMonths,
   loadCalendar, loadBacklog, saveCalendar, REVIEW_OWNED_FIELDS,
   occupiedDates, hasMarkdown, approvedCandidates, isEligibleOn,
+  queuePause, isPaused, queuePauseProblems, MAX_PAUSE_DAYS,
 };

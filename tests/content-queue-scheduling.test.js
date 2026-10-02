@@ -16,10 +16,15 @@ const q = require('../scripts/lib/content-queue');
 
 // 2026-08-01 is a Saturday. From here 08-12 (Wed) is 11d out and 08-15 (Sat)
 // is 14d, so both sit inside the [MIN_LOCK_LEAD_DAYS, LOCK_DAYS] window that
-// fillSlots is allowed to touch.
+// fillSlots is allowed to touch. Since the one-post-a-week cadence
+// (content-accuracy D10) only Wednesday is a publish day, and only one ever
+// falls inside that 5-day window, so NEXT is a slot from the Wed/Sat ledger
+// (to 2026-10-02). fillSlots locks whatever reserved slots it is handed (the
+// weekday is reserveSlots' business), so the two-slot tests below still pin
+// the one-candidate-per-run rules.
 const TODAY = '2026-08-01';
-const NEAR = '2026-08-12';   // 11d
-const NEXT = '2026-08-15';   // 14d
+const NEAR = '2026-08-12';   // 11d, Wednesday
+const NEXT = '2026-08-15';   // 14d, Saturday (legacy Wed/Sat slot)
 const WINDOWS = {
   'winter-prep': [9, 10],       // Oct-Nov
   'back-to-school': [6, 7],     // Jul-Aug

@@ -2,14 +2,15 @@
 /**
  * Read-only health view of the content queue.
  *
- * Reports the invariants in scripts/lib/content-queue.js (I1-I7). I4 is the one
+ * Reports the invariants in scripts/lib/content-queue.js (I1-I7, I9). I4 is the one
  * that matters most: it is the check that would have caught
  * college-student-auto-insurance on 2026-08-03 instead of letting the publish
- * workflow go red on 2026-08-15.
+ * workflow go red on 2026-08-15. An explicit pause (calendar queue_pause,
+ * BLOG-06) is printed first, as "PAUSED until <date>: <reason>".
  *
  * Usage: node scripts/queue-status.js [--today YYYY-MM-DD] [--strict]
  *   --strict            exit 1 if ANY invariant is violated
- *   --fail-on I4,I2b,I6,I7 exit 1 only for these invariants (for CI)
+ *   --fail-on I4,I2b,I6,I7,I9 exit 1 only for these invariants (for CI)
  *
  * CI uses --fail-on rather than --strict: an empty slot inside the markdown
  * window (I4) must break the build, but a thin backlog (I5) is a planning
@@ -32,9 +33,20 @@ const { violations, stats } = q.evaluateInvariants(cal, backlog, today);
 
 console.log(`\nContent queue as of ${today}\n${'='.repeat(46)}`);
 
+// BLOG-06: an explicit pause is the first thing a reader has to know.
+const pause = stats.pause;
+if (pause && pause.active) {
+  console.log(`\nPAUSED until ${pause.until}: ${pause.reason || '(no reason given)'}`);
+  console.log(`  Set by ${pause.set_by || '(unknown)'} on ${pause.set_on || '(unknown)'}. No new topic is reserved or locked for a date on or before ${pause.until}.`);
+  for (const p of pause.posts) console.log(`  Dated inside the pause, still publishes: ${p.publish_date} ${p.slug}`);
+} else if (!pause && q.queuePauseProblems(cal).length) {
+  console.log('\nqueue_pause is set but NOT honoured: the queue is running (see I9 below).');
+}
+
 console.log(`\nHorizon (${q.HORIZON_DAYS}d): ${stats.horizonDates.length} publish dates`);
 console.log(`  filled by a post  : ${stats.filled}`);
 console.log(`  reserved, no topic: ${stats.reserved}`);
+if (pause && pause.dates.length) console.log(`  paused            : ${pause.dates.length}`);
 console.log(`  unaccounted for   : ${stats.unreserved.length}`);
 
 const candidates = backlog.candidates || [];
