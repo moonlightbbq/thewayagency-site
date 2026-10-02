@@ -17,7 +17,8 @@
         "saturday": "Closed",
         "sunday": "Closed"
       },
-      "mailing_only": true
+      "mailing_only": true,
+      "hours_timezone": "America/New_York"
     }
   ],
   "service_areas": [
