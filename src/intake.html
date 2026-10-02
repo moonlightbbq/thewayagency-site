@@ -692,6 +692,8 @@
   <div id="step-1" class="card">
     <h2>Tell us about yourself</h2>
     <p class="card-desc">We just need your name and contact info to get started.</p>
+    <!-- Medicare/health lead disclosure (TRUST-01): filled by applyHealthDisclosure(), above the first field. -->
+    <div id="health-disclosure-step1" class="health-disclosure" role="note" hidden style="font-size:14px;line-height:1.5;color:#14532d;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:10px 14px;margin:0 0 14px;"></div>
     <div class="form-row">
       <div class="form-group">
         <label for="i_fname">First Name *</label>
@@ -762,6 +764,7 @@
       </div>
     </div>
     <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--slate);">Not sure what you need? <a href="tel:+15024135335" style="color:var(--blue);text-decoration:underline;">Call us at (502) 413-5335</a></p>
+    <div id="health-disclosure-step2" class="health-disclosure" role="note" hidden style="font-size:14px;line-height:1.5;color:#14532d;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:10px 14px;margin:14px 0 0;"></div>
     <div id="step2-error" class="error hidden" role="alert" aria-live="polite"></div>
     <div class="btn-row">
       <button class="btn btn-outline" data-action="prev-step" data-step="2">Back</button>
@@ -857,6 +860,7 @@
       <span style="color:#FBBC05;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
       <span>from 24 Google reviews</span>
     </div>
+    <div id="health-disclosure-step4" class="health-disclosure" role="note" hidden style="font-size:14px;line-height:1.5;color:#14532d;background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:10px 14px;margin:12px 0 0;"></div>
     <div id="step4-error" class="error hidden" role="alert" aria-live="polite"></div>
     <div class="btn-row">
       <button class="btn btn-outline" data-action="prev-step" data-step="4">Back</button>
@@ -912,6 +916,8 @@
   &copy; 2026 The Way Agency &middot; <a href="/privacy.html" style="color:var(--slate);">Privacy</a> &middot; <a href="/terms.html" style="color:var(--slate);">Terms</a>
 </div>
 
+<!-- data/medicare-tpmo.json, public fields: scripts/builders/assets.js replaces the null at build time (TRUST-01). -->
+<script type="application/json" id="tpmo-data">null</script>
 <script>
 const SAGE_API = 'https://sage.thewayagency.com';
 
@@ -1363,6 +1369,78 @@ const PRODUCTS = [
   // Catch-all
   { id: 'other',           icon: '\u{1F4DD}', label: 'Other',                line: 'other' },
 ];
+
+// ── Medicare/health lead disclosure (TRUST-01) ──────────────────────────────
+// Shown above the first field (step 1), above "Continue to Quote Details" and
+// the quick-lead link (step 2) and above "Submit Quote Request" (step 4) whenever
+// the visit is about Medicare or health: 806 KAR 17:570 Section 22(2)(c) and
+// 42 CFR 422.2274(g)(3) want it conspicuous before the lead is captured, and
+// step 1's Continue persists the lead (trackPartial). Inputs come from
+// data/medicare-tpmo.json, which scripts/builders/assets.js injects into
+// #tpmo-data at build time (public fields only).
+//
+// leadDisclosureText() below MIRRORS scripts/lib/medicare-disclaimer.js, the
+// only implementation (this page loads no Node modules).
+// tests/intake-health-disclosure.test.js fails if the two ever differ.
+const HEALTH_PRODUCT_IDS = PRODUCTS.filter(p => p.line === 'health').map(p => p.id);
+const TPMO_DATA = (() => {
+  try { const el = document.getElementById('tpmo-data'); return el ? JSON.parse(el.textContent) : null; } catch (e) { return null; }
+})();
+
+// MIRROR START: leadDisclosureText (scripts/lib/medicare-disclaimer.js)
+function leadDisclosureAgent(data) {
+  const ld = data && typeof data === 'object' && data.lead_disclosure && typeof data.lead_disclosure === 'object' ? data.lead_disclosure : {};
+  const names = Array.isArray(ld.contact_entities) ? ld.contact_entities.map(e => String(e).trim()).filter(Boolean) : [];
+  const joined = names.length <= 1 ? names.join('') : names.slice(0, -1).join(', ') + ' or ' + names[names.length - 1];
+  return names.length ? 'a licensed insurance agent with ' + joined : 'a licensed insurance agent';
+}
+function leadDisclosureText(data, opts) {
+  const context = (opts && opts.context) || 'health';
+  const form = opts && opts.form;
+  if (['medicare', 'health', 'health_line'].indexOf(context) === -1) throw new Error('leadDisclosureText: unknown context ' + JSON.stringify(context));
+  const ld = data && typeof data === 'object' && data.lead_disclosure && typeof data.lead_disclosure === 'object' ? data.lead_disclosure : {};
+  const agent = leadDisclosureAgent(data);
+  const medicareLabel = typeof ld.medicare_products_label === 'string' && ld.medicare_products_label.trim() ? ld.medicare_products_label.trim() : 'Medicare plans';
+  const topic = context === 'medicare' ? medicareLabel : context === 'health' ? 'health insurance' : 'Medicare or other health insurance';
+  const lead = form === 'inline'
+    ? 'This form starts a quote request. Your information will be provided to ' + agent + ', who will contact you by phone, text or email about ' + topic + '.'
+    : 'By continuing, you agree that the information you give us will be provided to ' + agent + ', who will contact you by phone, text or email about ' + topic + '.';
+  return lead + ' This is a solicitation for insurance.' + (ld.tcpa === true ? ' Consent is not a condition of purchase. Message and data rates may apply. Reply STOP to opt out of texts.' : '');
+}
+// MIRROR END
+
+// 'medicare' (Medicare tile, ?product=medicare), 'health' (another health tile),
+// 'health_line' (?line=health, which offers the Medicare tiles too), or null.
+function healthContext() {
+  if (selectedProducts.includes('medicare')) return 'medicare';
+  if (selectedProducts.some(p => HEALTH_PRODUCT_IDS.includes(p))) return 'health';
+  if (getEntryLine() === 'health') return 'health_line';
+  return null;
+}
+
+const HEALTH_SUBTITLE_TOPIC = { medicare: 'your Medicare request', health: 'your health insurance request', health_line: 'your Medicare or health insurance request' };
+
+// Fill (textContent, never innerHTML) and show or hide the three disclosure
+// slots, and name the licensed agent in the subtitle for health visits.
+function applyHealthDisclosure() {
+  const ctx = healthContext();
+  const text = ctx ? leadDisclosureText(TPMO_DATA, { context: ctx }) : '';
+  ['health-disclosure-step1', 'health-disclosure-step2', 'health-disclosure-step4'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = text;
+    el.hidden = !ctx;
+  });
+  const sub = document.getElementById('intake-subtitle');
+  if (!sub) return;
+  if (sub.dataset.baseText === undefined) sub.dataset.baseText = sub.textContent;
+  if (ctx) {
+    const agent = leadDisclosureAgent(TPMO_DATA);
+    sub.textContent = agent.charAt(0).toUpperCase() + agent.slice(1) + ' will contact you about ' + HEALTH_SUBTITLE_TOPIC[ctx] + '.';
+  } else {
+    sub.textContent = sub.dataset.baseText;
+  }
+}
 
 const MAIN_GRID_SIZE = 8;
 
@@ -1929,6 +2007,10 @@ function syncBundlePills() {
   applyEnhancers();
 })();
 
+// Medicare/health arrivals (?product=medicare, ?line=health, a health tile) see
+// the lead disclosure before the first field (TRUST-01).
+applyHealthDisclosure();
+
 // ── Pre-fill: page context (geo, industry, county) from URL params; contact ──
 // ── fields only from the sessionStorage hand-off (TRUST-08) ─────────────────
 // ── Input sanitization helpers ───────────────────────────────────────────────
@@ -2395,6 +2477,8 @@ function toggleProd(el) {
   // Sync bundle pill states + cross-sell tile enhancers
   syncBundlePills();
   applyEnhancers();
+  // A health tile shows the lead disclosure above Continue (TRUST-01).
+  applyHealthDisclosure();
 }
 
 function toggleOtherProducts() {
@@ -2500,6 +2584,7 @@ function showStep(n) {
   // Track step completion for the step we're leaving
   if (currentStep && currentStep !== n) trackStepComplete(currentStep);
   currentStep = n;
+  applyHealthDisclosure();
   if (n === 3) renderProductQuestions();
   if (n === 4) { renderReview(); initTurnstileOnReview(); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -3852,6 +3937,7 @@ function restoreDraft(draft) {
     revealOtherPanelIfSelected();
     if (typeof syncBundlePills === 'function') syncBundlePills();
     if (typeof applyEnhancers === 'function') applyEnhancers();
+    applyHealthDisclosure();
   }
   // Restore homeowners address toggle
   if (typeof draft.hoSameAddr === 'boolean') hoSameAddr = draft.hoSameAddr;
