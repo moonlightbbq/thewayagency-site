@@ -209,6 +209,31 @@ if (tpmo) {
   }
 }
 
+// health-facts.json: dated values product copy reads as {{fact:<id>}} tokens
+// (scripts/lib/health-facts.js; TRUST-04). Every token in data/content-*.json
+// must name a fact. The knowledge base never carries a token: SAGE reads that
+// file as it is (sage-server scripts/kb-seed-website.js).
+const healthFacts = loadJson('health-facts.json');
+if (healthFacts) {
+  const { factProblems, factTokens } = require('./lib/health-facts');
+  const usedIn = [];
+  const collect = (v, where) => {
+    if (typeof v === 'string') usedIn.push([where, v]);
+    else if (Array.isArray(v)) v.forEach((x, i) => collect(x, `${where}[${i}]`));
+    else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) collect(x, `${where}.${k}`);
+  };
+  for (const f of fs.readdirSync(DATA).filter((n) => /^content-.*\.json$/.test(n))) {
+    try { collect(JSON.parse(fs.readFileSync(path.join(DATA, f), 'utf8')), f); } catch { /* reported by its own check */ }
+  }
+  const { problems, warnings: factWarnings } = factProblems(healthFacts, { usedIn });
+  problems.forEach((p) => error(`health-facts.json: ${p}`));
+  factWarnings.forEach((w) => warn(`health-facts.json: ${w}`));
+  for (const e of (kb && kb.entries) || []) {
+    if (factTokens(`${e.question || ''} ${e.answer || ''}`).length) error(`knowledge-base.json: "${e.id || e.question}" carries a {{fact:...}} token; SAGE reads this file as written, so write the value out`);
+  }
+  if (problems.length === 0) pass(`health-facts.json: ${(healthFacts.facts || []).length} facts; every token in data/content-*.json resolves`);
+}
+
 // content-calendar.json
 const calendar = loadJson('content-calendar.json');
 if (calendar) {

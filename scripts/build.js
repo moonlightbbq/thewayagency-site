@@ -45,6 +45,8 @@ const knowledgeBase = loadJson(path.join(DATA, 'knowledge-base.json'));
 // CMS TPMO record and Medicare/health lead-disclosure inputs (TRUST-01;
 // scripts/lib/medicare-disclaimer.js). pending_owner: no statement renders.
 const tpmo = loadJson(path.join(DATA, 'medicare-tpmo.json'));
+// Dated facts that product copy reads as {{fact:<id>}} tokens (TRUST-04).
+const healthFacts = loadJson(path.join(DATA, 'health-facts.json'));
 const carriers = loadJson(path.join(DATA, 'carriers.json'));
 const testimonials = loadJson(path.join(DATA, 'testimonials.json'));
 const seoData = loadJson(path.join(DATA, 'seo.json'));
@@ -87,7 +89,7 @@ const entity = loadJson(path.join(DATA, 'entity.json'));
 const injectSchema = createSchemaInjector({ agency, office, entity });
 
 // ─── Shared Context ─────────────────────────────
-const ctx = { products, office, team, knowledgeBase, tpmo, carriers, testimonials, reviews: _reviews, richContent, landingData, seoData, renderNav, renderFooter, renderScripts };
+const ctx = { products, office, team, knowledgeBase, tpmo, healthFacts, carriers, testimonials, reviews: _reviews, richContent, landingData, seoData, renderNav, renderFooter, renderScripts };
 
 // ─── Build ──────────────────────────────────────
 console.log('🔨 Building The Way Agency site...\n');
