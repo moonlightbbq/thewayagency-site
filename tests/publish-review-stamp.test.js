@@ -613,6 +613,10 @@ describe('approval REQUIRED (owner decision 2026-10-02): unapproved due posts HO
       assert.match(site.run.stdout, /5 due post\(s\) HELD/);
       assert.match(site.run.stdout, /HELD \(no licensed approval\): .*\(test-h-nomd\).*reviewer none assigned, and its markdown is missing/);
       assert.match(site.run.stdout, /HELD \(no licensed approval\): .*\(test-h-draft\) due 2026-01-03, status in-draft/);
+      // The per-post next step is I8's (heldNextStep), never a local variant.
+      assert.match(site.run.stdout, /- test-h-nomd \(due 2026-01-07\): its markdown .* write it and move the entry/);
+      assert.match(site.run.stdout, /- test-h-planned \(due 2026-01-07\): no review request went out for it, so nobody can approve it/);
+      assert.match(site.run.stdout, /- test-h-review \(due 2026-01-07\): it is held and publishes on the first publish run after its assigned reviewer approves it/);
       assert.doesNotMatch(site.run.stdout, /No posts due/);
     } finally {
       fs.rmSync(site.tmp, { recursive: true, force: true });

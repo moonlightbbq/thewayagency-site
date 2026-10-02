@@ -268,8 +268,8 @@ if (held.length > 0) {
   console.log('');
   console.log(`  ${held.length} due post(s) HELD: not published, because their licensed reviewer has not approved them (owner decision 2026-10-02):`);
   for (const h of held) console.log(`    - ${h.slug} (due ${h.date}): ${h.next}`);
-  console.log('  A reviewer approves in SAGE, or by replying APPROVED to the review email if they review by email.');
-  console.log('  It then publishes on the next run, while it is still scheduled for that date. Moving it to another date needs a new approval.');
+  console.log('  An in-review post is approved by its reviewer in SAGE, or by replying APPROVED to the review email if they review by email;');
+  console.log('  it then publishes on the next run, while it is still scheduled for that date. Moving a post to another date needs a new approval.');
   console.log('  The queue check (I8) keeps the workflow red until then. Not an error: nothing was changed.');
 }
 if (published > 0) console.log(`\n  ${published} post(s) published. Calendar updated.`);
