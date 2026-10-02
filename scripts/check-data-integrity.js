@@ -295,7 +295,7 @@ if (calendar) {
 
   // queue_pause (BLOG-06): the owner's explicit pause. Its rules live in the
   // queue lib, and invariant I9 reports the same list.
-  if (Object.prototype.hasOwnProperty.call(calendar, 'queue_pause')) {
+  if (calendar.queue_pause !== undefined && calendar.queue_pause !== null) {
     const problems = queueLib
       ? queueLib.queuePauseProblems(calendar)
       : ['cannot be validated: scripts/lib/content-queue.js did not load'];

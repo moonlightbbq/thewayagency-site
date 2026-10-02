@@ -227,7 +227,7 @@ describe('I9: a malformed, open-ended or over-long pause is loud', () => {
     ['no "until"', (() => { const p = { ...PAUSE }; delete p.until; return p; })(), /has no "until"/],
     ['a malformed "until"', { ...PAUSE, until: '2026-10-xx' }, /"until" is "2026-10-xx", not a YYYY-MM-DD date/],
     ['an impossible "until"', { ...PAUSE, until: '2026-02-30', set_on: '2026-02-01' }, /"until" is "2026-02-30"/],
-    ['not an object', null, /is not an object/],
+    ['a string', 'until 2026-10-27', /is not an object/],
     ['an array', ['2026-10-27'], /is not an object/],
   ];
   for (const [label, pause, message] of NOT_HONOURED) {
@@ -260,6 +260,15 @@ describe('I9: a malformed, open-ended or over-long pause is loud', () => {
       assert.equal(i9(r).length, 1, JSON.stringify(pause));
       assert.match(i9(r)[0].message, message);
     }
+  });
+
+  test('ending a pause never turns the run red: an ended, deleted or null pause raises nothing', () => {
+    for (const [label, pause] of [['ended', { ...PAUSE, until: '2026-10-01', set_on: '2026-09-15' }], ['null', null], ['absent', undefined]]) {
+      const r = run(pause);
+      assert.deepEqual(i9(r), [], label);
+      assert.deepEqual(q.queuePauseProblems(calendar({ pause })), [], label);
+    }
+    assert.equal(q.queuePause(calendar({ pause: null })), null);
   });
 
   test('one list for I9 and the build check: queuePauseProblems', () => {

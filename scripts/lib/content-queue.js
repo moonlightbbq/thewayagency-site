@@ -253,8 +253,9 @@ function approvedCandidates(backlog) {
 // locked, an unlocked slot on a paused date is dropped, and I1/I2/I2b skip
 // paused dates. A post already dated inside the pause is left alone and still
 // publishes on its date; queue-status lists it. The pause ends by itself after
-// `until`, and I9 makes a malformed or over-long one loud. SAGE's queue
-// adapter runs this lib, so the pause applies there too.
+// `until`, and I9 makes a malformed or over-long one loud. To end a pause
+// early, delete the field or set it to null: both mean "no pause", never I9.
+// SAGE's queue adapter runs this lib, so the pause applies there too.
 const MAX_PAUSE_DAYS = 90;
 
 /** A YYYY-MM-DD naming a real day. Date() rolls 2026-02-30 over to 03-02, hence the round trip. */
@@ -282,9 +283,10 @@ function isPaused(cal, ymd) {
  * the alarm and the build check cannot disagree.
  */
 function queuePauseProblems(cal) {
-  if (!cal || !Object.prototype.hasOwnProperty.call(cal, 'queue_pause')) return [];
+  // Absent or null: no pause (null is how a person most likely ends one).
+  if (!cal || cal.queue_pause === undefined || cal.queue_pause === null) return [];
   const p = cal.queue_pause;
-  if (!p || typeof p !== 'object' || Array.isArray(p)) return ['is not an object with until, reason, set_by and set_on'];
+  if (typeof p !== 'object' || Array.isArray(p)) return ['is not an object with until, reason, set_by and set_on'];
   const problems = [];
   for (const k of ['until', 'set_on']) {
     if (p[k] === undefined || p[k] === null || p[k] === '') problems.push(`has no "${k}"`);
