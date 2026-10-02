@@ -2,6 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- TRUST-08 (pii-and-privacy decision D1, option A). This URL carries a bearer token.
+     strict-origin sends only the origin as the referrer, also on same-origin
+     clicks such as the logo link, so the next page and its tags never see the
+     token. It still sends the origin cross-origin (Maps key restrictions and
+     Turnstile keep working): do not use no-referrer. The meta tag, not
+     _headers, because Pages joins repeated header values in no documented
+     order. scripts/validate-build.js checks it. -->
+<meta name="referrer" content="strict-origin">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1a6fb5">
