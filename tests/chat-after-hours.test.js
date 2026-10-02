@@ -101,6 +101,17 @@ describe('after-hours chat', () => {
     } finally { w.close(); }
   });
 
+  test('interacting elsewhere after it appears withdraws the teaser', async () => {
+    const w = await loadApp();
+    try {
+      await sleep(700);
+      assert.equal(teaser(w), true);
+      w.document.body.dispatchEvent(new w.Event('pointerdown', { bubbles: true }));
+      assert.equal(teaser(w), false);
+      assert.equal(panelOpen(w), false);
+    } finally { w.close(); }
+  });
+
   test('inside business hours: no teaser', async () => {
     const w = await loadApp({ now: IN_HOURS });
     try {
@@ -120,11 +131,14 @@ describe('after-hours chat', () => {
     } finally { w.close(); }
   });
 
-  test('a teaser click opens the chat with focus', async () => {
+  test('a teaser tap (pointerdown, then click) opens the chat with focus', async () => {
     const w = await loadApp();
     try {
       await sleep(700);
-      w.document.querySelector('.twa-cb-teaser').click();
+      const t = w.document.querySelector('.twa-cb-teaser');
+      t.dispatchEvent(new w.Event('pointerdown', { bubbles: true }));
+      assert.ok(t.isConnected, 'the teaser was withdrawn by the tap meant for it');
+      t.click();
       assert.equal(panelOpen(w), true);
       assert.equal(w.document.activeElement, chatInput(w));
     } finally { w.close(); }

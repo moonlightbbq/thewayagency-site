@@ -1562,14 +1562,19 @@
     if (afterHours && chatMessages.length === 0 && !hasForm) {
       var interacted = false, dot = null, toast = null;
       var teaserTimers = [];
-      var onInteract = function() {
+      var interactTypes = ['pointerdown', 'keydown', 'scroll', 'focusin'];
+      var onInteract = function(e) {
+        // A tap on the teaser or the bubble is the visitor accepting it, not a
+        // reason to withdraw it before its click lands.
+        var t = e && e.target;
+        if (t && t.nodeType === 1 && ((toast && toast.contains(t)) || bubble.contains(t))) return;
         interacted = true;
         teaserTimers.forEach(clearTimeout);
         if (toast) { toast.remove(); toast = null; }
-        ['pointerdown', 'keydown', 'scroll', 'focusin'].forEach(function(t) { window.removeEventListener(t, onInteract, true); });
+        interactTypes.forEach(function(type) { window.removeEventListener(type, onInteract, true); });
       };
-      ['pointerdown', 'keydown', 'scroll', 'focusin'].forEach(function(t) {
-        window.addEventListener(t, onInteract, { once: true, capture: true, passive: true });
+      interactTypes.forEach(function(type) {
+        window.addEventListener(type, onInteract, { capture: true, passive: true });
       });
       teaserTimers.push(setTimeout(function() {
         if (interacted || isOpen) return;
