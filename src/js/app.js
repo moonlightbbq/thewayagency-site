@@ -94,16 +94,10 @@
   // A/B TESTING FRAMEWORK
   // ═══════════════════════════════════════════════
   const AB_EXPERIMENTS = {
-    'hero-cta': {
-      variants: {
-        control: { '[data-ab-test="hero-cta"]': null },
-        'free-quote': { '[data-ab-test="hero-cta"]': 'Get a Free Quote' },
-        'compare': { '[data-ab-test="hero-cta"]': 'Compare Rates Now' },
-      },
-      // Uniform 1/3 split — hashAssign has never read weights; a weighted
-      // rollout must launch as a NEW test name (re-bucketing mid-test
-      // contaminates returning-visitor assignment).
-    },
+    // 'hero-cta' ended (owner decision D1): its exposures reached neither GA4 nor
+    // SAGE, and once the hero fade was removed its label swap showed after first
+    // paint. The homepage keeps the control label, "Get a Quote". A future homepage
+    // test must be assigned before first paint, not here (initABTests runs after).
     // 'dob-required' and 'intake-call-or-text' moved INLINE to src/intake.html
     // (registered via TWA.assignVariant/pushExposure): app.js never loads on
     // /intake/, so both tests were permanently inert here while still pushing

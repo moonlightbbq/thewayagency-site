@@ -85,12 +85,6 @@ body.nav-open{position:fixed;top:calc(var(--scroll-y,0) * -1);left:0;right:0;ove
 .hero__title{color:var(--white);max-width:700px;margin-bottom:var(--space-lg)}
 .hero__subtitle{font-size:var(--text-lg);font-weight:300;line-height:1.8;max-width:560px;color:rgba(255,255,255,.8);margin-bottom:var(--space-2xl)}
 .hero__actions{display:flex;gap:var(--space-md);flex-wrap:wrap}
-/* TEMPORARY, waits on owner decision D1 (end the homepage hero-cta test). That test
-   swaps the hero button label when app.js runs, after first paint; the old fade hid the
-   swap. Only the actions that contain the test's button keep the old 0.8 s fade, in
-   both motion modes (see the reduced-motion block at the end of this file). Remove both
-   rules together with the 'hero-cta' entry in src/js/app.js. */
-.hero__actions:has([data-ab-test="hero-cta"]){opacity:0;animation:fadeUp .6s ease .8s forwards}
 .hero__accent{position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--blue) 0%,var(--cyan) 40%,var(--green) 100%);z-index:2}
 .hero__title-accent{color:var(--cyan)}
 .hero--compact .hero__content{padding:var(--space-3xl) var(--space-xl)}
@@ -279,7 +273,5 @@ body.nav-open{position:fixed;top:calc(var(--scroll-y,0) * -1);left:0;right:0;ove
 
 /* animation-delay:0s: a delayed entrance must not keep content hidden from reduced-motion
    users. Never animation:none here: anything with a base opacity:0 would stay hidden. */
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;animation-delay:0s !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}
-  /* TEMPORARY with the D1 rule above: keep the homepage hero-cta hold in this mode too. */
-  .hero__actions:has([data-ab-test="hero-cta"]){animation-delay:.8s !important}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:0.01ms !important;animation-delay:0s !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important;scroll-behavior:auto !important}}
 
