@@ -258,6 +258,32 @@ if (legalProblems.length) {
 }
 console.log('  ✓ Legal pages clean (em dashes / anchors)');
 
+// 11a. Guard: the agency's JSON-LD (scripts/lib/entity-schema-guard.js). No
+//      per-city LocalBusiness, no PO box as a street, no geo/hours/priceRange,
+//      no self-serving ratings, no undocumented foundingDate, no owner
+//      placeholder, one #organization entity. It runs here, not only in
+//      validate-build.js, because Cloudflare Pages runs this file and SAGE's
+//      publish pushes skip CI: a failure keeps the last good deploy live.
+{
+  const { entitySchemaProblems, guardOptions } = require('./lib/entity-schema-guard');
+  const opts = guardOptions(entity);
+  const entityProblems = [];
+  (function walk(dir) {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) walk(full);
+      else if (e.name.endsWith('.html')) entityProblems.push(...entitySchemaProblems(fs.readFileSync(full, 'utf8'), path.relative(BUILD, full).split(path.sep).join('/'), opts));
+    }
+  })(BUILD);
+  if (entityProblems.length) {
+    console.error('\n✗ Entity schema guard failed:');
+    entityProblems.slice(0, 50).forEach((p) => console.error('  - ' + p));
+    if (entityProblems.length > 50) console.error(`  ... and ${entityProblems.length - 50} more`);
+    throw new Error(`Entity schema guard failed (${entityProblems.length} issue(s)).`);
+  }
+  console.log('  ✓ Entity schema: one #organization entity, no invented locations, no review markup');
+}
+
 // 11b. Guard: the out-of-area decline must stay warm, silent about commercial,
 //      and gated on a state we actually collect before paging a producer.
 //

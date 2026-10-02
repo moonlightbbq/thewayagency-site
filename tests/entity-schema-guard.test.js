@@ -133,3 +133,23 @@ describe('the guard passes the intended shapes', () => {
     assert.deepEqual(guardOptions({ founding: { date: '2022-11-11', evidence: null } }), { baseLocality: null, foundingDate: null }, 'no evidence, no founding date');
   });
 });
+
+describe('the guard is wired where a deploy is decided', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const src = (f) => fs.readFileSync(path.join(__dirname, '..', 'scripts', f), 'utf8');
+  test('build.js (Cloudflare Pages runs it; SAGE publish pushes skip CI) throws on any problem, after the legal-page guard', () => {
+    const build = src('build.js');
+    assert.ok(build.includes("entityProblems.push(...entitySchemaProblems(fs.readFileSync(full, 'utf8')"));
+    assert.match(build, /\}\)\(BUILD\);/);
+    assert.match(build, /guardOptions\(entity\)/);
+    assert.match(build, /throw new Error\(`Entity schema guard failed/);
+    assert.ok(build.indexOf('Entity schema guard failed') > build.indexOf('Legal page guard failed'));
+  });
+  test('validate-build.js (CI) reports every problem as an error, with no package dependency', () => {
+    const vb = src('validate-build.js');
+    assert.match(vb, /for \(const p of entitySchemaProblems\(fs\.readFileSync\(file, 'utf8'\), rel, opts\)\) \{ error\(/);
+    const guard = src('lib/entity-schema-guard.js');
+    assert.deepEqual(guard.match(/require\(['"][^'"]+['"]\)/g), null, 'the guard requires nothing (CI safe-build runs without npm ci)');
+  });
+});
