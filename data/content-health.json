@@ -1,7 +1,7 @@
 {
   "medicare": {
     "direct_answer": "Medicare is the federal health insurance program for Americans 65 and older, as well as certain younger people with disabilities or end-stage renal disease. It consists of Part A (hospital insurance, premium-free for most people), Part B (medical insurance; the standard premium is $202.90 a month in 2026), Part C (Medicare Advantage plans offered by private insurers), and Part D (prescription drug coverage). Original Medicare covers about 80% of approved costs, leaving significant gaps that supplemental coverage can fill.",
-    "who_needs_it": "If you are approaching 65 or already enrolled, Medicare is your primary health insurance. The Initial Enrollment Period starts three months before your 65th birthday month and ends three months after. Many retirees transition from employer coverage or marketplace plans to Medicare, and the choice between Original Medicare with a Medigap supplement and a Medicare Advantage plan affects both your costs and which doctors you can see. Chronic conditions like diabetes and heart disease make comprehensive Medicare coverage especially important. The Way Agency helps clients compare all available plans during Annual Enrollment (October 15 through December 7) and advises on Special Enrollment Periods for qualifying life events.",
+    "who_needs_it": "If you are approaching 65 or already enrolled, Medicare is your primary health insurance. The Initial Enrollment Period starts three months before your 65th birthday month and ends three months after. Many retirees transition from employer coverage or marketplace plans to Medicare, and the choice between Original Medicare with a Medigap supplement and a Medicare Advantage plan affects both your costs and which doctors you can see. Chronic conditions like diabetes and heart disease make comprehensive Medicare coverage especially important. During the Annual Enrollment Period (October 15 through December 7), a licensed agent can review your current coverage with you and explain when a Special Enrollment Period may apply.",
     "what_it_covers": [
       "Part A: Inpatient hospital stays, skilled nursing facility care (up to 100 days), hospice care, some home health services",
       "Part B: Doctor visits, outpatient surgery, preventive screenings, durable medical equipment, mental health services",
@@ -17,7 +17,7 @@
       "Concierge or private-duty nursing",
       "Most prescription drugs under Original Medicare alone (requires Part D or Advantage plan)"
     ],
-    "cost_narrative": "Medicare Part A is premium-free for most people who paid Medicare taxes for at least 10 years. In 2026 the standard Part B premium is $202.90 a month, with higher earners paying more through Income-Related Monthly Adjustment Amounts (IRMAA). Original Medicare also has a Part A hospital deductible of $1,736 per benefit period and a Part B deductible of $283 a year in 2026 (CMS, November 14, 2025). CMS publishes the 2027 amounts in the fall, and we update this page when it does. After the deductible, you typically pay 20% of approved costs with no out-of-pocket maximum, which is why most Medicare enrollees add a Medigap supplement or choose a Medicare Advantage plan. The Way Agency can walk you through the actual cost comparison based on your medications and doctors.",
+    "cost_narrative": "Medicare Part A is premium-free for most people who paid Medicare taxes for at least 10 years. In 2026 the standard Part B premium is $202.90 a month, with higher earners paying more through Income-Related Monthly Adjustment Amounts (IRMAA). Original Medicare also has a Part A hospital deductible of $1,736 per benefit period and a Part B deductible of $283 a year in 2026 (CMS, November 14, 2025). CMS publishes the 2027 amounts in the fall, and we update this page when it does. After the deductible, you typically pay 20% of approved costs with no out-of-pocket maximum, which is why most Medicare enrollees add a Medigap supplement or choose a Medicare Advantage plan. A licensed agent can walk you through total costs, not just premiums.",
     "faqs": [
       {
         "question": "When should I enroll in Medicare?",
@@ -285,7 +285,7 @@
     "faqs": [
       {
         "question": "Does Medicare cover dental, vision, or hearing?",
-        "answer": "Original Medicare (Parts A and B) generally does not cover routine dental, vision, or hearing services. However, many Medicare Advantage (Part C) plans include these benefits at no extra premium. Standalone dental, vision, and hearing plans are also available for Medicare-age adults. The Way Agency can compare Advantage plan benefits against standalone coverage costs to determine the best approach for your situation."
+        "answer": "Original Medicare (Parts A and B) generally does not cover routine dental, vision, or hearing services. However, many Medicare Advantage (Part C) plans include these benefits at no extra premium. Standalone dental, vision, and hearing plans are also available for Medicare-age adults. A licensed agent can review your Medicare options with you."
       },
       {
         "question": "Are there waiting periods before I can use dental insurance?",

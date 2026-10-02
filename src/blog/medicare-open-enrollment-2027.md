@@ -92,7 +92,7 @@ Before you make any changes, take stock of what you have now:
 
 ## How we help with Medicare in Kentucky
 
-Medicare is complicated. There are dozens of plans available in most Kentucky counties, and the differences between them are not always obvious. As an independent agency, we are not tied to one insurance company. We can help you compare Medicare Supplement, Medicare Advantage, and Part D plans across multiple carriers.
+Medicare is complicated. There are dozens of plans available in most Kentucky counties, and the differences between them are not always obvious. A licensed agent can review your Medicare options with you.
 
 We also help with:
 
@@ -100,7 +100,7 @@ We also help with:
 - Understanding how Medicare coordinates with employer coverage or retiree benefits
 - Enrollment assistance so you do not miss deadlines or make costly mistakes
 
-If you want help reviewing your Medicare options for 2027, [contact us for a consultation](/health/medicare.html). There is no pressure and no cost to sit down and compare your options.
+If you want help reviewing your Medicare options for 2027, [contact us for a consultation](/health/medicare.html). There is no pressure and no cost to talk through your options with a licensed agent.
 
 ### FAQ: When is Medicare open enrollment for 2027?
 
@@ -116,4 +116,4 @@ Use the Medicare Plan Finder at medicare.gov/plan-compare. Enter your specific m
 
 ### FAQ: Is there free help available for Medicare enrollment in Kentucky?
 
-Yes. Kentucky's State Health Insurance Assistance Program (SHIP) gives free, unbiased Medicare counseling; call (877) 293-7447. You can also compare plans yourself at Medicare.gov/plan-compare. And independent agents like us can help you compare plans at no cost to you — we are compensated by the carriers, not by you.
+Yes. Kentucky's State Health Insurance Assistance Program (SHIP) gives free, unbiased Medicare counseling; call (877) 293-7447. You can also compare plans yourself at Medicare.gov/plan-compare.

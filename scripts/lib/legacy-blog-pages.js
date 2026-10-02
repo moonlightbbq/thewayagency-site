@@ -34,7 +34,7 @@ const LEGACY_BLOG_PAGES = Object.freeze({
   'home-vs-landlord-insurance.html': '233da1a93ac892d2e286c8838dee97d946e2b5d7e381709ef563329dedf3524c',
   'index.html': 'afe0b2f81a6fdee5eeacd2ef9c377bf16ffb5cef2226c4538d83c8b893cdf180',
   'landlord-insurance.html': 'dc19ed2b5f1de6d41599828680029360a65164a7e6600cc78644c53ffb1433fb',
-  'medicare-enrollment-guide.html': 'c6553352e178cdfd577f6df923b37e9451cf3cc9ee3ddbd554b190e6935c2076',
+  'medicare-enrollment-guide.html': '9ae6b66ba3f9f721a50dad53205859165ebfc8aa9fe0a42dce374499d38ee427',
   'pet-insurance-guide.html': '77cf6cbb7ec8722e3625e380021af154f016059ed5db3717a66d20bc7716f874',
   'tornado-season.html': '4adec184232f1ac0e91c4608136afb4f51446a1ac25dc9066d5fcfd161f92434',
   'understanding-deductibles.html': '92131d45d970d377515caa79b8c295e94cc5423511002a22f7597540b745d680',

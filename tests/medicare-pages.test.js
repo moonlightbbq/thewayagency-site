@@ -223,3 +223,65 @@ describe('legacy Medicare guide', () => {
     }
   });
 });
+
+// ─── No agency Medicare Advantage / Part D comparison claims (TRUST-01) ──────
+// Owner decision 3 (2026-10-02): every Medicare lead goes to the partner agency
+// (Branch B), so no page says the agency compares Medicare Advantage or Part D
+// plans; the spec's neutral texts replace each such sentence.
+
+const CLAIM_RES = [
+  /\b(?:we|us|our|The Way Agency)\b[^.]{0,100}\bcompar\w*\b[^.]{0,80}\b(?:Medicare Advantage|Advantage plan|Part D)\b/i,
+  /\b(?:Medicare Advantage|Part D)\b[^.]{0,80}\bside by side\b/i,
+  /all available plans/i,
+  /Medicare plan comparisons?\b/i,
+];
+const claimIn = (text) => CLAIM_RES.find((re) => re.test(text));
+
+describe('no agency Medicare Advantage or Part D comparison claim (owner decision 3)', () => {
+  test('city and county hubs: the neutral sentence replaces all 24 claims, and the Mt Washington FAQ is neutral', () => {
+    const ctx = buildCtx();
+    let neutral = 0;
+    for (const city of ctx.landingData.cities) {
+      const text = visibleText(pages.generateCityPage(city, ctx));
+      assert.equal(claimIn(text), undefined, city.slug);
+      if (/When we help seniors review Medicare options|We help seniors review Medicare options/.test(text)) neutral++;
+    }
+    assert.equal(neutral, 24);
+    for (const county of ctx.landingData.counties || []) assert.equal(claimIn(visibleText(pages.generateCountyPage(county, ctx))), undefined, county.slug);
+    const mtw = ctx.landingData.cities.find((c) => c.slug === 'mt-washington-ky');
+    const faq = mtw.faqs.find((f) => /Medicare/.test(f.question));
+    assert.ok(faq.answer.startsWith('Yes. A licensed agent can review Medicare options with Mt Washington and Bullitt County clients during Annual Enrollment'));
+  });
+
+  test('health product pages: no "all available plans" and no comparison claim', () => {
+    const ctx = buildCtx();
+    for (const p of ctx.products.health) {
+      const text = visibleText(pages.generateProductPage(p, 'Health Insurance', 'health', 'health', ctx));
+      assert.equal(claimIn(text), undefined, p.id);
+    }
+    assert.ok(visibleText(productPage('medicare')).includes('a licensed agent can review your current coverage with you and explain when a Special Enrollment Period may apply'));
+  });
+
+  test('llms.txt and llms-full.txt list "Medicare" with no Medicare Advantage claim', () => {
+    const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'medicare-llms-'));
+    try {
+      const ctx = buildCtx();
+      const locations = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'locations.json'), 'utf8'));
+      const log = console.log; console.log = () => {};
+      try { require('../scripts/builders/llms').generate(tmp, { agency: locations.agency, office: ctx.office, landingData: ctx.landingData }); } finally { console.log = log; }
+      const txt = fs.readFileSync(path.join(tmp, 'llms.txt'), 'utf8');
+      const full = fs.readFileSync(path.join(tmp, 'llms-full.txt'), 'utf8');
+      assert.ok(txt.includes('- Life and health: Medicare, individual and group health'));
+      assert.ok(!/Medicare Advantage and Medicare Supplement/.test(txt));
+      assert.equal(claimIn(full), undefined);
+    } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
+  });
+
+  test('the three Medicare posts carry the neutral sentence and no comparison claim', () => {
+    for (const f of ['src/blog/medicare-open-enrollment-2027.md', 'src/blog/medicare-enrollment-guide-louisville-2026.md', 'src/pages/blog/medicare-enrollment-guide.html']) {
+      const text = visibleText(fs.readFileSync(path.join(ROOT, f), 'utf8'));
+      assert.equal(claimIn(text), undefined, f);
+      assert.ok(text.includes('A licensed agent can review your Medicare options with you.'), f);
+    }
+  });
+});

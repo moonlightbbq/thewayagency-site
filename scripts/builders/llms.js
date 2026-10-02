@@ -31,7 +31,7 @@ The Way Agency is an independent insurance agency${founded}, headquartered in Ow
 
 - Personal insurance: home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, pet
 - Commercial insurance: general liability, commercial property, commercial auto, workers compensation, cyber, bonds, builders risk, special event, professional liability
-- Life and health: Medicare Advantage and Medicare Supplement, individual and group health, term and whole life, disability, final expense
+- Life and health: Medicare, individual and group health, term and whole life, disability, final expense
 - Farm insurance for Daviess County and Western Kentucky operations
 - Distillery and craft beverage commercial coverage
 
