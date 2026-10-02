@@ -6,7 +6,7 @@ author: Kelly McCallister
 author_slug: kelly-mccallister
 author_title: Client Care Specialist
 date: 2026-03-27
-modified: 2026-03-27
+modified: 2026-05-15
 category: commercial
 tags: [bourbon, distillery, commercial-insurance, kentucky, craft-spirits]
 status: published

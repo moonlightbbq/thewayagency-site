@@ -1,0 +1,20 @@
+{
+  "_note": "Owner-verified entity facts for the one JSON-LD agency node (scripts/lib/entity.js agencyNode, homepage only). Not in SAGE's data-edit allowlist (sage-server hive/lib/parse-data-edits.js ALLOWED_FILES); keep it that way. Changes need Sheilia Royal's sign-off. base_locality (entity-schema D1), founding.date (D4, with founding.evidence) and mailing_contact_point (D2) require verified_by and verified_on (YYYY-MM-DD). null means not confirmed, and nothing is published for it. same_as lists only profiles the owner keeps live (D3); pending_same_as is tracked, never emitted.",
+  "verified_by": null,
+  "verified_on": null,
+  "base_locality": null,
+  "licensed_states": ["KY", "IN", "TN"],
+  "slogan": "The Way Insurance Gets Done",
+  "description": "Independent insurance agency licensed in Kentucky, Indiana, and Tennessee.",
+  "same_as": [
+    "https://www.facebook.com/TheWayAgency/",
+    "https://www.linkedin.com/company/the-way-agency-insurance",
+    "https://maps.google.com/?cid=5675986275124625953"
+  ],
+  "pending_same_as": {
+    "trusted_choice_owensboro": "pending Luke claim at trustedchoice.com",
+    "wikidata": "pending Wikidata item creation (docs/wikidata-draft.md)"
+  },
+  "founding": { "date": null, "evidence": null },
+  "mailing_contact_point": null
+}

@@ -123,7 +123,7 @@ async function writeJsonAtomic(p, obj) {
 // Propagate the Google review count from locations.json to hardcoded references in
 // hand-crafted source files. The handcrafted pages (src/pages/**.html, src/intake.html,
 // src/portal.html, src/partner.html, src/js/app.js) carry the count
-// inline as visible text "(N reviews)" and inline JSON-LD "reviewCount": "N". Generated
+// inline as visible text "(N reviews)". Generated
 // pages already pull from locations.json via the build context, but these handcrafted
 // files do not, and the count was drifting against the live Google rating.
 async function propagateReviewCountToSource(prevCount, newCount) {
@@ -142,15 +142,15 @@ async function propagateReviewCountToSource(prevCount, newCount) {
     }
   }
   walk(SRC);
+  // Visible "(N reviews)" text only: the agency's own rating is never JSON-LD
+  // (SCHEMA-03; scripts/lib/entity-schema-guard.js fails the build on it).
   const visibleNeedle = `(${prevCount} reviews)`;
   const visibleReplace = `(${newCount} reviews)`;
-  const schemaNeedle = `"reviewCount": "${prevCount}"`;
-  const schemaReplace = `"reviewCount": "${newCount}"`;
   const updated = [];
   for (const file of targets) {
     const content = fs.readFileSync(file, 'utf8');
-    if (!content.includes(visibleNeedle) && !content.includes(schemaNeedle)) continue;
-    const next = content.split(visibleNeedle).join(visibleReplace).split(schemaNeedle).join(schemaReplace);
+    if (!content.includes(visibleNeedle)) continue;
+    const next = content.split(visibleNeedle).join(visibleReplace);
     fs.writeFileSync(file, next);
     updated.push(path.relative(ROOT, file));
   }

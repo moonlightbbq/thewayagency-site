@@ -1,15 +1,13 @@
 {
   "offices": [
     {
-      "name": "Owensboro Office",
+      "name": "Mailing address",
       "street": "PO Box 187",
       "city": "Owensboro",
       "state": "KY",
       "zip": "42302",
       "phone": "(502) 413-5335",
       "email": "hello@thewayagency.com",
-      "latitude": 37.751,
-      "longitude": -87.1133,
       "hours": {
         "monday": "9:00 AM – 5:00 PM",
         "tuesday": "9:00 AM – 5:00 PM",
@@ -18,7 +16,8 @@
         "friday": "9:00 AM – 5:00 PM",
         "saturday": "Closed",
         "sunday": "Closed"
-      }
+      },
+      "mailing_only": true
     }
   ],
   "service_areas": [
@@ -62,28 +61,12 @@
   "agency": {
     "legal_name": "Way Associates, Inc",
     "dba": "The Way Agency",
-    "founded": "1998",
     "type": "Independent Insurance Agency",
     "affiliations": [],
     "google_business_url": "https://share.google/IpUe4zZyXkxcwK95Z",
     "google_review_url": "https://g.page/r/CSHCy85xJ8VOEBM/review",
     "google_rating": "5.0",
     "google_review_count": "31",
-    "bbb_url": "https://www.bbb.org/us/ky/mt-washington/profile/insurance-agency/way-insurance-llc-0402-159158212",
-    "social": {
-      "facebook": "https://www.facebook.com/TheWayAgency/",
-      "instagram": "https://www.instagram.com/thewayagencyins/",
-      "linkedin": "https://www.linkedin.com/company/the-way-agency-insurance",
-      "twitter": "https://twitter.com/TheWayAgency",
-      "youtube": "https://www.youtube.com/channel/UCrgPhp55Ss_DmUNfUT394eQ",
-      "bbb": "https://www.bbb.org/us/ky/mt-washington/profile/insurance-agency/way-insurance-llc-0402-159158212",
-      "google_business": "https://share.google/IpUe4zZyXkxcwK95Z"
-    },
-    "pending_sameAs": {
-      "_note": "Tracked but not emitted in JSON-LD until live. Move to social when claimed/created.",
-      "trusted_choice_owensboro": "pending Luke claim at trustedchoice.com",
-      "wikidata": "pending Wikidata item creation"
-    },
     "google_reviews_last_updated": "2026-09-30T10:08:07.138Z"
   }
 }

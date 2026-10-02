@@ -411,13 +411,11 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
   console.log('\n[Review Data]');
   let reviewErrors = 0;
 
-  // Extract all "(N reviews)" patterns
+  // Extract all visible "(N reviews)" patterns. The rating is never JSON-LD
+  // (SCHEMA-03: self-serving review markup; scripts/lib/entity-schema-guard.js).
   const countPattern = /\((\d+\+?) reviews?\)/g;
-  // Extract all ratingValue patterns in JSON-LD
-  const ratingPattern = /"ratingValue":\s*"([\d.]+)"/g;
 
   const allCounts = new Map();
-  const allRatings = new Map();
 
   for (const file of publicPages) {
     const html = fs.readFileSync(file, 'utf8');
@@ -426,7 +424,6 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
 
     // Reset lastIndex
     countPattern.lastIndex = 0;
-    ratingPattern.lastIndex = 0;
 
     const countsInPage = new Set();
     while ((m = countPattern.exec(html)) !== null) {
@@ -436,15 +433,6 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
       if (!allCounts.has(c)) allCounts.set(c, []);
       allCounts.get(c).push(r);
     }
-
-    const ratingsInPage = new Set();
-    while ((m = ratingPattern.exec(html)) !== null) {
-      ratingsInPage.add(m[1]);
-    }
-    for (const rv of ratingsInPage) {
-      if (!allRatings.has(rv)) allRatings.set(rv, []);
-      allRatings.get(rv).push(r);
-    }
   }
 
   if (allCounts.size > 1) {
@@ -452,15 +440,9 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
     reviewErrors++;
   }
 
-  if (allRatings.size > 1) {
-    error(`Inconsistent rating values across pages: ${[...allRatings.keys()].join(', ')}`);
-    reviewErrors++;
-  }
-
   if (reviewErrors === 0) {
     const count = allCounts.size === 1 ? [...allCounts.keys()][0] : 'N/A';
-    const rating = allRatings.size === 1 ? [...allRatings.keys()][0] : 'N/A';
-    console.log(`  ✓ Review data consistent (${count} reviews, ${rating} stars)`);
+    console.log(`  ✓ Review data consistent (${count} reviews)`);
   } else {
     console.log(`  ✗ ${reviewErrors} review data inconsistency(ies)`);
     for (const msg of errorList.filter(m => m.includes('review'))) console.log(`    ${msg}`);

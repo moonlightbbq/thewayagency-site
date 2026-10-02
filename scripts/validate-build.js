@@ -199,6 +199,20 @@ for (const file of htmlFiles) {
 }
 if (jsonLdUrlIssues === 0) pass('JSON-LD URLs reference valid paths');
 
+// 7d. Entity schema guard (SCHEMA-01..04): no invented locations, no self-serving
+// ratings, one agency entity (#organization). Rules: scripts/lib/entity-schema-guard.js
+// (dependency-free; build.js step 11a runs the same guard).
+{
+  const { entitySchemaProblems, guardOptions } = require('./lib/entity-schema-guard');
+  const opts = guardOptions(JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'entity.json'), 'utf8')));
+  let entityProblems = 0;
+  for (const file of htmlFiles) {
+    const rel = path.relative(BUILD, file).split(path.sep).join('/');
+    for (const p of entitySchemaProblems(fs.readFileSync(file, 'utf8'), rel, opts)) { error(`Entity schema: ${p}`); entityProblems++; }
+  }
+  if (entityProblems === 0) pass('Entity schema: one #organization entity, no invented locations, no review markup');
+}
+
 // 7c. Carrier pages check
 const carrierDir = path.join(BUILD, 'carriers');
 if (fs.existsSync(carrierDir)) {

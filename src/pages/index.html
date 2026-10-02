@@ -42,60 +42,7 @@
   <link rel="stylesheet" href="/src/css/components.css">
   <link rel="stylesheet" href="/src/css/leadgen.css">
 
-  <!-- Schema.org JSON-LD: InsuranceAgency + LocalBusiness -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": ["InsuranceAgency", "LocalBusiness"],
-    "@id": "https://www.thewayagency.com/#organization",
-    "name": "The Way Agency",
-    "legalName": "Way Associates, Inc",
-    "url": "https://www.thewayagency.com",
-    "telephone": "(502) 413-5335",
-    "email": "hello@thewayagency.com",
-    "foundingDate": "1998",
-    "description": "Independent insurance agency serving Kentucky, Indiana, and Tennessee. Personal, commercial, life, and health insurance from top-rated carriers.",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Owensboro",
-      "addressRegion": "KY",
-      "postalCode": "42302",
-      "addressCountry": "US"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": 37.7510,
-      "longitude": -87.1133
-    },
-    "openingHoursSpecification": [
-      {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"],
-        "opens": "09:00",
-        "closes": "17:00"
-      }
-    ],
-    "areaServed": [
-      { "@type": "State", "name": "Kentucky" },
-      { "@type": "State", "name": "Indiana" },
-      { "@type": "State", "name": "Tennessee" }
-    ],
-    "sameAs": [
-      "https://www.facebook.com/TheWayAgency/",
-      "https://www.instagram.com/thewayagencyins/",
-      "https://www.linkedin.com/company/the-way-agency-insurance",
-      "https://twitter.com/TheWayAgency",
-      "https://www.youtube.com/channel/UCrgPhp55Ss_DmUNfUT394eQ"
-    ],
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "5.0",
-      "reviewCount": "30",
-      "bestRating": "5",
-      "worstRating": "1"
-    }
-  }
-  </script>
+  <!-- Schema.org: the agency node (#organization) is injected at build from data/entity.json (scripts/lib/entity.js agencyNode) -->
 
   <!-- Schema.org: FAQPage -->
   <script type="application/ld+json">
@@ -110,7 +57,7 @@
         "name": "What is an independent insurance agent?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "An independent agent works with multiple insurance carriers instead of just one company. This means we can compare coverage and pricing across top-rated carriers to find the best fit for your situation, rather than selling you one company's products."
+          "text": "An independent agent works with multiple insurance carriers instead of just one company. This means we can compare coverage and pricing across top-rated carriers to find the best fit for your situation, rather than selling you one company's products. You get more options, and we do the shopping for you."
         }
       },
       {
@@ -118,7 +65,7 @@
         "name": "What states does The Way Agency serve?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "The Way Agency is licensed in Kentucky, Indiana, and Tennessee. We serve clients across all three states with personal, commercial, and life and health insurance."
+          "text": "We are licensed in Kentucky, Indiana, and Tennessee. We serve clients across all three states with personal, commercial, and life and health insurance."
         }
       },
       {
@@ -134,7 +81,7 @@
         "name": "Does it cost more to use an independent agent?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "No. Insurance rates are set by the carriers, not the agent. You pay the same premium whether you buy direct or through us. The difference is that we shop multiple carriers and help you understand your coverage, at no extra cost."
+          "text": "No. Insurance rates are set by the carriers, not the agent. You pay the same premium whether you buy direct or through us. The difference is that we shop multiple carriers and help you understand your coverage  -  at no extra cost to you."
         }
       }
     ]
@@ -148,7 +95,6 @@
     "@type": "WebSite",
     "@id": "https://www.thewayagency.com/#website",
     "name": "The Way Agency",
-    "alternateName": "Way Associates, Inc",
     "url": "https://www.thewayagency.com/",
     "inLanguage": "en-US",
     "publisher": { "@id": "https://www.thewayagency.com/#organization" },

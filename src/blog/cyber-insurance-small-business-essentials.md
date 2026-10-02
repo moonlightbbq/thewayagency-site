@@ -6,7 +6,7 @@ author: Kelly McCallister
 author_slug: kelly-mccallister
 author_title: Client Care Specialist
 date: 2026-03-27
-modified: 2026-03-27
+modified: 2026-05-16
 category: commercial
 tags: [cyber-insurance, small-business, kentucky, data-breach, commercial-insurance]
 status: published

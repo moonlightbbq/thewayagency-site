@@ -51,4 +51,4 @@ The Way Agency
 
 ## After confirmation
 
-Once the BBB profile is updated, verify that `data/locations.json` `agency.social.bbb` URL still resolves correctly. If the URL slug changes due to the renaming, update locations.json. Schema-generator will pick up the new URL on next build.
+Once the BBB profile is updated and names this agency, and the owner confirms it is official and maintained, add its URL to `data/entity.json` `same_as` (the homepage's agency node emits `sameAs` from there). Until then it stays out of the markup.

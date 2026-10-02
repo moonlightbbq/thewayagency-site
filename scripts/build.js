@@ -79,11 +79,9 @@ if (fs.existsSync(criticalCssPath)) {
 const injectVersion = createInjectVersion({ buildVersion, gitInfo, buildDate, reviews: _reviews, renderHead_GTM, renderBody_GTM, criticalCss: criticalCssMinified });
 
 // ─── Schema Markup ──────────────────────────────
-const testimonialsForSchema = loadJson(path.join(DATA, 'testimonials.json'));
-const testimonialsBlocklist = fs.existsSync(path.join(DATA, 'testimonials-blocklist.json'))
-  ? loadJson(path.join(DATA, 'testimonials-blocklist.json'))
-  : { blocked: [] };
-const injectSchema = createSchemaInjector({ agency, office, reviews: _reviews, testimonials: testimonialsForSchema, blocklist: testimonialsBlocklist });
+// Owner-verified entity facts (base locality, sameAs, founding date): data/entity.json.
+const entity = loadJson(path.join(DATA, 'entity.json'));
+const injectSchema = createSchemaInjector({ agency, office, entity });
 
 // ─── Shared Context ─────────────────────────────
 const ctx = { products, office, team, knowledgeBase, carriers, testimonials, reviews: _reviews, richContent, landingData, seoData, renderNav, renderFooter, renderScripts };
@@ -218,16 +216,16 @@ const carriersIndexHtml = generateCarriersIndex(carriers, ctx);
 fs.writeFileSync(path.join(BUILD, 'carriers', 'index.html'), injectVersion(carriersIndexHtml));
 console.log(`  ✓ Generated ${carrierCount} carrier pages + index`);
 
-// 6e. Inject homepage schema (no-op for case 'homepage' currently; reserved for Phase 6
-// Review nodes from testimonials.json. Homepage schema is hand-crafted in
-// src/pages/index.html: InsuranceAgency + LocalBusiness combo, FAQPage, WebSite.)
+// 6e. Inject the homepage's agency node: the one fully described #organization
+// node on the site (scripts/lib/entity.js agencyNode, from data/entity.json).
+// The FAQPage and WebSite blocks are hand-crafted in src/pages/index.html.
 {
   const homePath = path.join(BUILD, 'index.html');
   if (fs.existsSync(homePath)) {
     let homeHtml = fs.readFileSync(homePath, 'utf8');
     homeHtml = injectSchema(homeHtml, 'homepage');
     fs.writeFileSync(homePath, homeHtml);
-    console.log('  ✓ Homepage schema (handcrafted in src/pages/index.html)');
+    console.log('  ✓ Homepage schema (agency node from data/entity.json)');
   }
 }
 
@@ -238,7 +236,7 @@ assets.copyRootFiles(ROOT, BUILD);
 const portalPages = assets.copyPortalPages(SRC, BUILD, injectVersion);
 
 // 8b. Generate llms.txt and llms-full.txt for LLM grounding
-require('./builders/llms').generate(BUILD, { agency: locations.agency, office, landingData });
+require('./builders/llms').generate(BUILD, { agency: locations.agency, office, landingData, entity });
 
 // 9. Generate sitemap
 const sitemapUrls = generateSitemap(BUILD, { products, landingData, seoData, portalPages, SRC, carriers });
@@ -259,6 +257,32 @@ if (legalProblems.length) {
   throw new Error(`Legal page guard failed (${legalProblems.length} issue(s)).`);
 }
 console.log('  ✓ Legal pages clean (em dashes / anchors)');
+
+// 11a. Guard: the agency's JSON-LD (scripts/lib/entity-schema-guard.js). No
+//      per-city LocalBusiness, no PO box as a street, no geo/hours/priceRange,
+//      no self-serving ratings, no undocumented foundingDate, no owner
+//      placeholder, one #organization entity. It runs here, not only in
+//      validate-build.js, because Cloudflare Pages runs this file and SAGE's
+//      publish pushes skip CI: a failure keeps the last good deploy live.
+{
+  const { entitySchemaProblems, guardOptions } = require('./lib/entity-schema-guard');
+  const opts = guardOptions(entity);
+  const entityProblems = [];
+  (function walk(dir) {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) walk(full);
+      else if (e.name.endsWith('.html')) entityProblems.push(...entitySchemaProblems(fs.readFileSync(full, 'utf8'), path.relative(BUILD, full).split(path.sep).join('/'), opts));
+    }
+  })(BUILD);
+  if (entityProblems.length) {
+    console.error('\n✗ Entity schema guard failed:');
+    entityProblems.slice(0, 50).forEach((p) => console.error('  - ' + p));
+    if (entityProblems.length > 50) console.error(`  ... and ${entityProblems.length - 50} more`);
+    throw new Error(`Entity schema guard failed (${entityProblems.length} issue(s)).`);
+  }
+  console.log('  ✓ Entity schema: one #organization entity, no invented locations, no review markup');
+}
 
 // 11b. Guard: the out-of-area decline must stay warm, silent about commercial,
 //      and gated on a state we actually collect before paging a producer.

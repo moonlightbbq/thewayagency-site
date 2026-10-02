@@ -41,8 +41,7 @@ function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, render
     html = html.replace(/from \d+ Google reviews/g, `from ${reviews.count} Google reviews`);
     html = html.replace(/\(\d+ reviews\)/g, `(${reviews.count} reviews)`);
     html = html.replace(/\(\d+ Google reviews\)/g, `(${reviews.count} Google reviews)`);
-    html = html.replace(/"reviewCount":\s*"\d+"/g, `"reviewCount": "${reviews.count}"`);
-    html = html.replace(/"ratingValue":\s*"[\d.]+"/g, `"ratingValue": "${reviews.rating}"`);
+    // Visible text only: the agency's own rating is never JSON-LD (SCHEMA-03).
     // Inject critical CSS into hand-crafted pages that have standard CSS links
     if (criticalCss && html.includes('<link rel="stylesheet" href="/src/css/base.css">') && !html.includes('<style>')) {
       const cssLinks = '  <link rel="stylesheet" href="/src/css/base.css">\n  <link rel="stylesheet" href="/src/css/components.css">\n  <link rel="stylesheet" href="/src/css/leadgen.css">';

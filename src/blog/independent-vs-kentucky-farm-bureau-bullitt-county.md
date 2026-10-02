@@ -6,7 +6,7 @@ author: Jill Boone
 author_slug: jill-boone
 author_title: Licensed Agent
 date: 2026-05-15
-modified: 2026-05-15
+modified: 2026-05-16
 category: personal
 tags: [kentucky-farm-bureau, independent-agent, mt-washington, bullitt-county, kentucky, insurance-shopping]
 status: published

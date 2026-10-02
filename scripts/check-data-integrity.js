@@ -123,6 +123,40 @@ if (locations) {
   else pass('locations.json: valid');
 }
 
+// entity.json: owner-verified facts for the one JSON-LD agency node
+// (scripts/lib/entity.js). A fact only the owner can confirm needs her sign-off.
+const entity = loadJson('entity.json');
+if (entity) {
+  let entityErrors = 0;
+  const bad = (msg) => { error(`entity.json: ${msg}`); entityErrors++; };
+  const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
+  const states = entity.licensed_states;
+  if (!Array.isArray(states) || states.length === 0) bad('licensed_states must list the licensed states');
+  else for (const s of states) if (!['KY', 'IN', 'TN'].includes(s)) bad(`licensed_states: "${s}" is not KY, IN or TN`);
+  const base = entity.base_locality;
+  if (base !== null && base !== undefined) {
+    const ok = base && typeof base === 'object' && typeof base.addressLocality === 'string' && typeof base.addressRegion === 'string'
+      && Object.keys(base).every((k) => k === 'addressLocality' || k === 'addressRegion');
+    if (!ok) bad('base_locality must be null or exactly { addressLocality, addressRegion } (a city, never a street or ZIP)');
+    else if (/\d|\bbox\b/i.test(`${base.addressLocality} ${base.addressRegion}`)) bad('base_locality must not hold digits or a PO box: it is a city, never a mailing address');
+  }
+  const f = entity.founding || {};
+  if (f.date && !f.evidence) bad('founding.date needs founding.evidence (a document reference)');
+  if (f.date && !/^\d{4}(-\d{2}-\d{2})?$/.test(String(f.date))) bad(`founding.date "${f.date}" must be YYYY or YYYY-MM-DD`);
+  const sameAs = entity.same_as || [];
+  if (!Array.isArray(sameAs)) bad('same_as must be a list of URLs');
+  else {
+    for (const u of sameAs) if (!/^https:\/\/\S+$/.test(String(u))) bad(`same_as: "${u}" is not an https:// URL`);
+    if (new Set(sameAs).size !== sameAs.length) bad('same_as lists a URL twice');
+  }
+  const mcp = entity.mailing_contact_point;
+  if (mcp !== null && mcp !== undefined && !(mcp && /^\d+$/.test(String(mcp.post_office_box_number)))) bad('mailing_contact_point must be null or { "post_office_box_number": "<digits>" }');
+  const ownerOnly = (base ? ['base_locality'] : []).concat(f.date ? ['founding.date'] : [], mcp ? ['mailing_contact_point'] : []);
+  if (ownerOnly.length && (!entity.verified_by || !ISO_DAY.test(String(entity.verified_on)))) bad(`${ownerOnly.join(', ')} need the owner's sign-off: verified_by and verified_on (YYYY-MM-DD)`);
+  if (entity.verified_on && !ISO_DAY.test(String(entity.verified_on))) bad(`verified_on "${entity.verified_on}" must be YYYY-MM-DD`);
+  if (entityErrors === 0) pass(`entity.json: valid (${ownerOnly.length ? `owner facts: ${ownerOnly.join(', ')}` : 'no owner-only facts published'})`);
+}
+
 // testimonials.json
 const testimonials = loadJson('testimonials.json');
 if (testimonials) {

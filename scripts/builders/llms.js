@@ -14,15 +14,18 @@ const path = require('path');
 const SITE = 'https://www.thewayagency.com';
 
 function renderManifest(ctx) {
-  const { agency, office } = ctx;
-  const founded = agency.founded || '1998';
+  const { office } = ctx;
+  // A founding year only when the owner documented one (data/entity.json
+  // founding.date with founding.evidence); never a default (TRUST-02).
+  const f = (ctx.entity && ctx.entity.founding) || {};
+  const founded = f.date && f.evidence ? `, founded ${String(f.date).slice(0, 4)}` : '';
   const phone = office.phone;
   const email = office.email;
   const mailing = `${office.street}, ${office.city}, ${office.state} ${office.zip}`;
 
   return `# The Way Agency
 
-The Way Agency is an independent insurance agency, founded ${founded}, headquartered in Owensboro, Kentucky. Licensed in Kentucky, Indiana, and Tennessee.
+The Way Agency is an independent insurance agency${founded}, headquartered in Owensboro, Kentucky. Licensed in Kentucky, Indiana, and Tennessee.
 
 ## What we do
 
