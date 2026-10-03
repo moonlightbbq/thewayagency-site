@@ -349,6 +349,24 @@ if (turnstileIssues === 0) pass('Turnstile only on widget pages (async); app.js 
   } else pass('Intake: Google Maps loads only after step 1');
 }
 
+// 7h. Nav logo is the right-sized asset with dimensions (PERF-08): the 1979x390
+// original (35 KB) was displayed at 203x40 and unsized on handcrafted pages.
+{
+  let logoProblems = 0;
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, 'utf8');
+    if (!html.includes('id="navLinks"')) continue;
+    const rel = path.relative(BUILD, file).split(path.sep).join('/');
+    const nav = html.slice(html.indexOf('<nav'), html.indexOf('</nav>'));
+    const img = (nav.match(/<img\b[^>]*logo-horizontal[^>]*>/) || [])[0] || '';
+    if (!/logo-horizontal-2x\.png/.test(img) || !/\swidth="203"/.test(img) || !/\sheight="40"/.test(img)) {
+      error(`Nav logo in ${rel} is not logo-horizontal-2x.png with width="203" height="40"`); logoProblems++;
+    }
+    if (/logo-horizontal\.(png|webp)/.test(html)) { error(`${rel} still references the full-size logo-horizontal.(png|webp)`); logoProblems++; }
+  }
+  if (logoProblems === 0) pass('Nav logo: 2x asset with width/height on every page with the site nav');
+}
+
 // 8. Image size check (warn on images >500KB)
 let largeImages = 0;
 const assetsDir = path.join(BUILD, 'src', 'assets');

@@ -198,7 +198,7 @@ function renderHead({ title, description, canonical, ogTitle, ogDescription, ogU
   <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
   <link rel="icon" href="/src/assets/images/favicon.png">
   <link rel="apple-touch-icon" href="/src/assets/images/apple-touch-icon.png">
-  <link rel="preload" as="image" type="image/webp" href="/src/assets/images/logo-horizontal.webp">
+  <link rel="preload" as="image" type="image/png" href="/src/assets/images/logo-horizontal-2x.png" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
