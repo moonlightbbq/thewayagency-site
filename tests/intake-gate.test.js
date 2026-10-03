@@ -198,12 +198,21 @@ describe('the applicant actually reads the decline on submit', () => {
     assert.doesNotMatch(oosText(w), /commercial/i, 'and it must never pitch commercial');
   });
 
-  test('an ordinary server error still reports as an error', () => {
+  test('an ordinary server error still reports as an error, with call and text (CONV-10)', () => {
     w.showStep(4);
     const err = stepErr(w, 4);
     w.renderSubmitError(err, 500, { error: 'Something broke' });
-    assert.equal(err.textContent, 'Something broke');
+    assert.match(err.textContent, /didn't accept the request/);
+    assert.doesNotMatch(err.textContent, /Network error/);
+    assert.ok(err.querySelector('a[href="tel:+15024135335"]') && err.querySelector('a[href="sms:+15024135335"]'));
     assert.equal(err.classList.contains('hidden'), false);
+  });
+
+  test('a 400 field message is still the server\'s own words', () => {
+    w.showStep(4);
+    const err = stepErr(w, 4);
+    w.renderSubmitError(err, 400, { error: 'Please enter a valid email.' });
+    assert.equal(err.textContent, 'Please enter a valid email.');
   });
 });
 

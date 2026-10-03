@@ -48,6 +48,7 @@
   }
   </script>
 
+  <style>#contact-error a{color:inherit;font-weight:600;text-decoration:underline;white-space:nowrap}</style>
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -276,6 +277,7 @@
     var TURNSTILE_KEY = '0x4AAAAAACuOvP2DfWPQJz9W';
     var turnstileToken = null;
     var turnstileWidgetId = null;
+    var turnstileErrorFamily = null;
     function initTurnstile() {
       if (turnstileWidgetId != null || !window.turnstile) return;
       try {
@@ -283,7 +285,12 @@
           sitekey: TURNSTILE_KEY,
           callback: function(token) { turnstileToken = token; },
           'expired-callback': function() { turnstileToken = null; },
-          'error-callback': function() { turnstileToken = null; }
+          'error-callback': function(code) {
+            turnstileToken = null;
+            // Keep the error family (first 3 digits) for lead_submit_error; never the full code.
+            var fam = String(code || '').replace(/\D/g, '').slice(0, 3);
+            if (fam) turnstileErrorFamily = fam;
+          }
         });
       } catch(e) { console.error('[Turnstile]', e); }
     }
@@ -326,15 +333,26 @@
         var stamps = JSON.parse(localStorage.getItem('twa_contact_ts') || '[]');
         var hourAgo = Date.now() - 3600000;
         stamps = stamps.filter(function(t) { return t > hourAgo; });
-        if (stamps.length >= 3) { showErr('You\'ve sent multiple messages recently. Please wait a bit or call us at (502) 413-5335.'); return; }
+        if (stamps.length >= 3) { showFallback('You\'ve sent multiple messages recently. Please wait a bit, or reach us directly:'); return; }
       } catch(e) {}
 
       // Ensure a Turnstile token (render/reset if it isn't ready yet), polling up to ~5s.
+      // The lead API refuses a submission without one, so with no Turnstile at all
+      // (blocked script, old browser) say so at once and offer call and text.
       if (!turnstileToken) {
-        if (window.turnstile && turnstileWidgetId != null) turnstile.reset(turnstileWidgetId);
+        if (!window.turnstile) {
+          showFallback('We couldn\'t run the security check in this browser, so your message wasn\'t sent.');
+          pushSubmitError('turnstile_unavailable');
+          return;
+        }
+        if (turnstileWidgetId != null) turnstile.reset(turnstileWidgetId);
         else initTurnstile();
         for (var _i = 0; _i < 25 && !turnstileToken; _i++) { await new Promise(function(r) { setTimeout(r, 200); }); }
-        if (!turnstileToken) { showErr('Security check is still loading. Please wait a moment and try again.'); return; }
+        if (!turnstileToken) {
+          showFallback('The security check didn\'t finish, so your message wasn\'t sent. Please try again in a moment, or reach us directly:');
+          pushSubmitError(turnstileErrorFamily ? 'turnstile_' + turnstileErrorFamily : 'turnstile_timeout');
+          return;
+        }
       }
 
       btn.disabled = true; btn.textContent = 'Sending...';
@@ -360,52 +378,84 @@
         payload.message = (cbTime ? 'Preferred callback time: ' + cbTime + '. ' : '') + (msg || '');
       }
 
-      fetch('https://sage.thewayagency.com/api/intake/lead', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).then(function(r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
-      }).then(function(d) {
+      function resetAfterFailure() {
         clearTimeout(reenableTimer);
-        if (d.ok) {
-          // Record the slot only now that the send actually succeeded.
-          try {
-            var okStamps = JSON.parse(localStorage.getItem('twa_contact_ts') || '[]');
-            okStamps.push(Date.now());
-            localStorage.setItem('twa_contact_ts', JSON.stringify(okStamps));
-          } catch(e) {}
-          // Conversion events fire here, once, on server accept — not pre-flight,
-          // and not from app.js (its handler is disabled via data-own-submit).
-          try {
-            window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({ event: 'lead_contact_submitted', category: 'conversion', source: payload.source, page_path: window.location.pathname });
-            window.dataLayer.push({ event: 'conversion', conversion_type: 'contact_form', conversion_reference: d.reference || '', conversion_source: payload.source });
-            if (window.fbq) fbq('track', 'Contact', { content_name: 'contact_form' });
-            if (window.TWA) TWA.pushEnhancedConversion({ email: email, phone: phone, firstName: fname, lastName: lname });
-          } catch(e) {}
-          form.style.display = 'none';
-          successEl.style.display = 'block';
-          var successMsg = subject === 'callback'
-            ? 'Thanks, ' + fname + '! We\'ll call you back soon.'
-            : 'Thanks, ' + fname + '! We\'ll get back to you within one business day.';
-          document.getElementById('contact-success-msg').textContent = successMsg + (d.reference ? ' Ref: #' + d.reference : '');
-        } else {
-          showErr(d.error || 'Submission failed. Please try again.');
-          btn.disabled = false; btn.textContent = 'Send Message';
-          if (window.turnstile && turnstileWidgetId != null) turnstile.reset(turnstileWidgetId);
-          turnstileToken = null;
-        }
-      }).catch(function() {
-        clearTimeout(reenableTimer);
-        showErr('Connection error. Please try emailing us at hello@thewayagency.com or call (502) 413-5335.');
         btn.disabled = false; btn.textContent = 'Send Message';
         if (window.turnstile && turnstileWidgetId != null) turnstile.reset(turnstileWidgetId);
         turnstileToken = null;
-      });
+      }
+      var r;
+      try {
+        r = await fetch('https://sage.thewayagency.com/api/intake/lead', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (netErr) {
+        // Only a request that never got an answer is a connection problem.
+        resetAfterFailure();
+        showFallback('We couldn\'t reach our server. Check your connection and try again, or reach us directly:', { email: true });
+        pushSubmitError('network');
+        return;
+      }
+      var d = {};
+      try { d = await r.json(); } catch (parseErr) { d = {}; }
+      if (!r.ok) {
+        // The server answered: say what happened, never "Connection error".
+        resetAfterFailure();
+        if (r.status === 400) { showErr(d.error || 'Please check the form and try again.'); return; }
+        if (r.status === 403) { showFallback('We couldn\'t verify this submission, so it wasn\'t sent.'); pushSubmitError('http_403'); return; }
+        if (r.status === 429) { showFallback('We\'ve had several messages from this connection recently. Please try again later.'); pushSubmitError('http_429'); return; }
+        showFallback('Our system didn\'t accept the message just now, so it wasn\'t sent.');
+        pushSubmitError(r.status >= 500 ? 'http_5xx' : 'http_4xx');
+        return;
+      }
+      clearTimeout(reenableTimer);
+      if (d.ok) {
+        // Record the slot only now that the send actually succeeded.
+        try {
+          var okStamps = JSON.parse(localStorage.getItem('twa_contact_ts') || '[]');
+          okStamps.push(Date.now());
+          localStorage.setItem('twa_contact_ts', JSON.stringify(okStamps));
+        } catch(e) {}
+        // Conversion events fire here, once, on server accept — not pre-flight,
+        // and not from app.js (its handler is disabled via data-own-submit).
+        try {
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({ event: 'lead_contact_submitted', category: 'conversion', source: payload.source, page_path: window.location.pathname });
+          window.dataLayer.push({ event: 'conversion', conversion_type: 'contact_form', conversion_reference: d.reference || '', conversion_source: payload.source });
+          if (window.fbq) fbq('track', 'Contact', { content_name: 'contact_form' });
+          if (window.TWA) TWA.pushEnhancedConversion({ email: email, phone: phone, firstName: fname, lastName: lname });
+        } catch(e) {}
+        form.style.display = 'none';
+        successEl.style.display = 'block';
+        var successMsg = subject === 'callback'
+          ? 'Thanks, ' + fname + '! We\'ll call you back soon.'
+          : 'Thanks, ' + fname + '! We\'ll get back to you within one business day.';
+        document.getElementById('contact-success-msg').textContent = successMsg + (d.reference ? ' Ref: #' + d.reference : '');
+      } else {
+        showErr(d.error || 'Submission failed. Please try again.');
+        btn.disabled = false; btn.textContent = 'Send Message';
+        if (window.turnstile && turnstileWidgetId != null) turnstile.reset(turnstileWidgetId);
+        turnstileToken = null;
+      }
     });
 
     function showErr(msg) { errEl.textContent = msg; errEl.style.display = 'block'; }
+    // Failure states always offer a working way to reach us (CONV-10): tappable
+    // call and text links to the one agency number, built as nodes. Never a
+    // prefilled text body (GTM's text_click sends the link URL to GA4).
+    function showFallback(lead, opts) {
+      var a = function(href, txt) { var x = document.createElement('a'); x.href = href; x.textContent = txt; return x; };
+      errEl.textContent = lead + ' ';
+      errEl.append(a('tel:+15024135335', 'Call (502) 413-5335'), ' or ', a('sms:+15024135335', 'Text (502) 413-5335'));
+      if (opts && opts.email) errEl.append(', or email ', a('mailto:hello@thewayagency.com', 'hello@thewayagency.com'));
+      errEl.append('.');
+      errEl.style.display = 'block';
+    }
+    // One event per failure: a code only, no message text and no form values.
+    function pushSubmitError(code) {
+      try { (window.dataLayer = window.dataLayer || []).push({ event: 'lead_submit_error', form_type: 'contact', error_code: code }); } catch (e) {}
+    }
   })();
   </script>
 

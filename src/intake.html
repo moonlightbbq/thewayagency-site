@@ -295,6 +295,7 @@
 
   .hidden { display: none !important }
   .error { color: #ef4444; font-size: 13px; margin-top: 12px; text-align: center; padding: 10px 16px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px }
+  .error a { color: inherit; font-weight: 600; text-decoration: underline; white-space: nowrap; }
 
   /* ─── Section headers (product questions) ─── */
   .section-header {
@@ -2094,7 +2095,7 @@ function initTurnstileOnReview() {
       sitekey: _turnstileSiteKey,
       callback: (token) => { turnstileToken = token; },
       'expired-callback': () => { turnstileToken = null; },
-      'error-callback': () => { turnstileToken = null; },
+      'error-callback': (code) => { turnstileToken = null; noteTurnstileError(code); },
       theme: 'light',
     });
   } catch (e) { console.warn('[Turnstile] Render failed:', e); }
@@ -3373,20 +3374,35 @@ async function submitQuickLead() {
   link.textContent = 'Submitting...';
   link.style.pointerEvents = 'none';
 
-  // Initialize Turnstile if not already loaded (normally deferred to step 4)
-  if (!turnstileToken && _turnstileSiteKey && window.turnstile) {
+  // The intake API refuses a submission without a Turnstile token, so never post
+  // without one: with no Turnstile at all, say so and offer call and text.
+  const restoreLink = () => { link.textContent = origText; link.style.pointerEvents = ''; };
+  if (!turnstileToken) {
+    if (!window.turnstile || !_turnstileSiteKey) {
+      showContactFallback(err, 'We couldn\'t run the security check in this browser, so your request wasn\'t sent.');
+      pushSubmitError('intake_quick', 'turnstile_unavailable');
+      restoreLink();
+      return;
+    }
+    // Initialize Turnstile if not already loaded (normally deferred to step 4)
     try {
       turnstile.render('#turnstile-quick', {
         sitekey: _turnstileSiteKey,
         callback: (token) => { turnstileToken = token; },
         'expired-callback': () => { turnstileToken = null; },
-        'error-callback': () => { turnstileToken = null; },
+        'error-callback': (code) => { turnstileToken = null; noteTurnstileError(code); },
         theme: 'light',
       });
     } catch (e) { /* Turnstile may already be rendered */ }
     // Wait for token (up to 5 seconds)
     for (let i = 0; i < 25 && !turnstileToken; i++) {
       await new Promise(r => setTimeout(r, 200));
+    }
+    if (!turnstileToken) {
+      showContactFallback(err, 'The security check didn\'t finish, so your request wasn\'t sent. Please try again in a moment, or reach us directly:');
+      pushSubmitError('intake_quick', turnstileErrorCode());
+      restoreLink();
+      return;
     }
   }
 
@@ -3441,7 +3457,7 @@ async function submitQuickLead() {
       // Do NOT throw: the catch below reports a network error, and a decline is not
       // a network error. Render the server's own words.
       const d = await res.json().catch(() => ({}));
-      renderSubmitError(err, res.status, d);
+      renderSubmitError(err, res.status, d, 'intake_quick');
       link.textContent = origText;
       link.style.pointerEvents = '';
       return;
@@ -3474,11 +3490,11 @@ async function submitQuickLead() {
       }
       if (window.fbq && sendMetaLead()) fbq('track', 'Lead', { content_category: 'quick_lead', currency: 'USD' }, { eventID: data.reference });
     } else {
-      renderSubmitError(err, res.status, data);
+      renderSubmitError(err, res.status, data, 'intake_quick');
     }
   } catch (e) {
-    err.textContent = 'Network error. Please check your connection and try again.';
-    err.classList.remove('hidden');
+    showContactFallback(err, 'Network error. Please check your connection and try again, or reach us directly:', { email: true });
+    pushSubmitError('intake_quick', 'network');
   }
 
   link.textContent = origText;
@@ -3495,16 +3511,53 @@ async function submitQuickLead() {
 // deliver reached the applicant either as "Submission failed" or as a lie about
 // their wifi. Render what the server actually said, where the decline already
 // lives, and never dress it up as a broken connection.
-function renderSubmitError(errEl, status, data) {
+function renderSubmitError(errEl, status, data, formType) {
   if (data && data.code === 'OUT_OF_AREA' && data.error) {
     if (errEl) errEl.classList.add('hidden');   // the decline speaks for itself
     showOutOfArea(null, data.error);
     return;
   }
   if (!errEl) return;
+  // A refusal the visitor cannot fix by editing the form gets an accurate message
+  // and a working way to reach us (CONV-10). 400 field messages stay as they are.
+  const refusal = status === 403 ? ['http_403', 'We couldn\'t verify this submission, so it wasn\'t sent.']
+    : status === 429 ? ['http_429', 'We\'ve had several requests from this connection recently. Please try again later.']
+    : status >= 500 ? ['http_5xx', 'Our system didn\'t accept the request just now, so it wasn\'t sent.']
+    : (status > 400 && status < 500) ? ['http_4xx', 'Our system didn\'t accept the request just now, so it wasn\'t sent.']
+    : null;
+  if (refusal) {
+    showContactFallback(errEl, refusal[1]);
+    if (formType) pushSubmitError(formType, refusal[0]);
+    return;
+  }
   errEl.textContent = (data && data.error) || ('Submission failed (HTTP ' + status + '). Please try again.');
   errEl.classList.remove('hidden');
 }
+
+// Call and text fallback for failure states (CONV-10), built as nodes. Both links
+// go to the one agency number; never a prefilled text body (GTM's text_click
+// sends the link URL to GA4). The field values stay as they are.
+function showContactFallback(el, lead, opts) {
+  if (!el) return;
+  const a = (href, txt) => { const x = document.createElement('a'); x.href = href; x.textContent = txt; return x; };
+  el.textContent = lead + ' ';
+  el.append(a('tel:+15024135335', 'Call (502) 413-5335'), ' or ', a('sms:+15024135335', 'Text (502) 413-5335'));
+  if (opts && opts.email) el.append(', or email ', a('mailto:hello@thewayagency.com', 'hello@thewayagency.com'));
+  el.append('.');
+  el.classList.remove('hidden');
+}
+// One lead_submit_error per failure: form and code only, no text and no PII.
+function pushSubmitError(formType, code) {
+  try { (window.dataLayer = window.dataLayer || []).push({ event: 'lead_submit_error', form_type: formType, error_code: code }); } catch (e) {}
+}
+// Turnstile error family (first 3 digits of the error-callback code), kept for
+// the timeout event; never the full code.
+let _turnstileErrorFamily = null;
+function noteTurnstileError(code) {
+  const fam = String(code || '').replace(/\D/g, '').slice(0, 3);
+  if (fam) _turnstileErrorFamily = fam;
+}
+function turnstileErrorCode() { return _turnstileErrorFamily ? 'turnstile_' + _turnstileErrorFamily : 'turnstile_timeout'; }
 
 // ── Submit ───────────────────────────────────────────────────────────────────
 async function submitIntake() {
@@ -3524,6 +3577,15 @@ async function submitIntake() {
   btn.textContent = 'Submitting...';
   btn.disabled = true;
 
+  // The intake API refuses a submission without a Turnstile token: with no
+  // Turnstile at all, say so and offer call and text instead of posting.
+  if (!turnstileToken && (!window.turnstile || !_turnstileSiteKey)) {
+    showContactFallback(err, 'We couldn\'t run the security check in this browser, so your request wasn\'t sent.');
+    pushSubmitError('intake_final', 'turnstile_unavailable');
+    btn.textContent = 'Submit Quote Request';
+    btn.disabled = false;
+    return;
+  }
   // If Turnstile token expired or never loaded, try to refresh and wait
   if (!turnstileToken && window.turnstile) {
     if (turnstileWidgetId != null) {
@@ -3536,8 +3598,8 @@ async function submitIntake() {
       await new Promise(r => setTimeout(r, 200));
     }
     if (!turnstileToken) {
-      err.textContent = 'Security verification is still loading. Please wait a moment and try again.';
-      err.classList.remove('hidden');
+      showContactFallback(err, 'The security check didn\'t finish, so your request wasn\'t sent. Please try again in a moment, or reach us directly:');
+      pushSubmitError('intake_final', turnstileErrorCode());
       btn.textContent = 'Submit Quote Request';
       btn.disabled = false;
       return;
@@ -3621,7 +3683,7 @@ async function submitIntake() {
       // not "Submission failed (HTTP 400)", which is what validate() flattening
       // the message into a VALIDATION_ERROR envelope used to leave them with.
       const d = await res.json().catch(() => ({}));
-      renderSubmitError(err, res.status, d);
+      renderSubmitError(err, res.status, d, 'intake_final');
       btn.textContent = 'Submit Quote Request';
       btn.disabled = false;
       if (window.turnstile && turnstileWidgetId != null) { turnstile.reset(turnstileWidgetId); turnstileToken = null; }
@@ -3658,7 +3720,7 @@ async function submitIntake() {
         });
       }
     } else {
-      renderSubmitError(err, res.status, data);
+      renderSubmitError(err, res.status, data, 'intake_final');
       trackValidationError(4, 'submit_failed_server');
     }
   } catch (e) {
@@ -3677,9 +3739,9 @@ async function submitIntake() {
       offline_replay: true, queued_at: Date.now(),
     };
     try { localStorage.setItem('twa_intake_queue', JSON.stringify({ payload, ref: queueRef, ts: Date.now() })); } catch(qe) {}
-    err.textContent = 'Saved! We\'ll submit when you\'re back online. Ref: ' + queueRef;
+    showContactFallback(err, 'Saved! We\'ll submit when you\'re back online. Ref: ' + queueRef + '. If it\'s urgent:', { email: true });
     err.style.color = '#d97706';
-    err.classList.remove('hidden');
+    pushSubmitError('intake_final', 'network');
     trackValidationError(4, 'submit_queued_offline');
   } finally {
     btn.textContent = 'Submit Quote Request';
