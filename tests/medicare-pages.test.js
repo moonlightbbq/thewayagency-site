@@ -60,7 +60,7 @@ describe('blog template: Medicare posts (spec 3.7)', () => {
     assert.ok(!html.includes('We shop top-rated carriers for you.'));
     assert.ok(html.includes('href="/intake/?product=medicare"'), 'no related_page: the Medicare intake');
     const other = generateBlogPost(otherMeta(), BODY, [], { tpmo: SITE_TPMO });
-    assert.ok(other.includes('We shop top-rated carriers for you.'), 'other posts keep their CTA');
+    assert.ok(other.includes('We compare the insurance companies we represent for you.'), 'other posts keep the carrier-comparison line (no "top-rated", TRUST-05)');
     assert.ok(other.includes('href="/intake/?product=flood"'));
   });
 });

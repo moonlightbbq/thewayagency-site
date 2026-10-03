@@ -70,6 +70,8 @@ if (fs.existsSync(blogDir)) {
       const slug = file.replace('.html', '');
       const keywords = slug.split('-').filter(w => w.length > 3);
       const html = fs.readFileSync(path.join(blogDir, file), 'utf8');
+      // A noindexed post (BLOG-08, `noindex: true`) is not suggested.
+      if (/<meta name="robots" content="[^"]*noindex/i.test(html)) continue;
       const titleMatch = html.match(/<title>([^|<]+)/);
       const title = titleMatch ? decodeHtmlText(titleMatch[1].trim()) : slug.replace(/-/g, ' ');
       suggestions.push({ url: `/blog/${file}`, title, keywords });

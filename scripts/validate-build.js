@@ -104,6 +104,33 @@ if (fs.existsSync(sitemapPath)) {
   error('sitemap.xml not found');
 }
 
+// 3b. Noindexed blog posts (BLOG-08, `noindex: true`): listed nowhere. Not in
+// the sitemap, the feed, the 404 suggestions, and linked from no other built
+// page (the /blog/ index, Related Articles). Plain regex: no dependencies.
+{
+  const blogDir = path.join(BUILD, 'blog');
+  const NOINDEX = /<meta name="robots" content="[^"]*noindex/i;
+  const noindexed = fs.existsSync(blogDir)
+    ? fs.readdirSync(blogDir).filter((f) => f.endsWith('.html') && f !== 'index.html'
+      && NOINDEX.test(fs.readFileSync(path.join(blogDir, f), 'utf8'))).map((f) => f.slice(0, -'.html'.length))
+    : [];
+  let niErrors = 0;
+  const lists = ['sitemap.xml', 'blog/feed.xml', '404-suggestions.json']
+    .map((rel) => [rel, fs.existsSync(path.join(BUILD, rel)) ? fs.readFileSync(path.join(BUILD, rel), 'utf8') : '']);
+  for (const slug of noindexed) {
+    const ref = new RegExp(`/blog/${slug}(?:\\.html)?(?=[<"'#?\\s]|$)`);
+    for (const [rel, text] of lists) {
+      if (ref.test(text)) { error(`Noindexed blog/${slug}.html is listed in ${rel}`); niErrors++; }
+    }
+    const href = new RegExp(`href="(?:https://www\\.thewayagency\\.com)?/blog/${slug}(?:\\.html)?[#?"]`);
+    for (const file of htmlFiles) {
+      if (path.basename(file) === `${slug}.html` && path.dirname(file) === blogDir) continue;
+      if (href.test(fs.readFileSync(file, 'utf8'))) { error(`Noindexed blog/${slug}.html is linked from ${path.relative(BUILD, file)}`); niErrors++; }
+    }
+  }
+  if (niErrors === 0) pass(`Noindexed blog posts: ${noindexed.length}, none in the sitemap, feed, 404 suggestions or any list`);
+}
+
 // 4. No duplicate titles
 const titles = {};
 for (const file of htmlFiles) {
@@ -265,6 +292,40 @@ if (fs.existsSync(redirectsPath)) {
   if (conflicts === 0) pass(`${redirectSources.length} redirects, no conflicts`);
 }
 
+// 9b. Retired blog posts (BLOG-05; calendar status 'retired' with retired_to):
+// /blog/<slug> and /blog/<slug>.html each have exactly one 301, straight to
+// /blog/<keeper>; the keeper is built (a 200) and is not itself redirected
+// (single hop); the retired page is not built and is in no sitemap, feed or
+// index. Plain parsing: no dependencies.
+{
+  let retErrors = 0, retired = 0;
+  const rerr = (msg) => { error(msg); retErrors++; };
+  let cal = null;
+  try { cal = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content-calendar.json'), 'utf8')); } catch { cal = null; }
+  const rules = fs.existsSync(redirectsPath)
+    ? fs.readFileSync(redirectsPath, 'utf8').split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#')).map((l) => l.split(/\s+/))
+    : [];
+  const read = (rel) => (fs.existsSync(path.join(BUILD, rel)) ? fs.readFileSync(path.join(BUILD, rel), 'utf8') : '');
+  const lists = [['sitemap.xml', read('sitemap.xml')], ['blog/feed.xml', read('blog/feed.xml')], ['blog/index.html', read('blog/index.html')]];
+  for (const e of cal ? [...(cal.existing_posts || []), ...(cal.year1 || [])] : []) {
+    if (!e || e.status !== 'retired' || !e.retired_to) continue;
+    retired++;
+    const slug = String(e.slug), keeper = `/blog/${e.retired_to}`;
+    for (const from of [`/blog/${slug}`, `/blog/${slug}.html`]) {
+      const hits = rules.filter((r) => r[0] === from);
+      if (hits.length !== 1) { rerr(`Retired ${slug}: ${hits.length} redirect rules for ${from} (expected 1)`); continue; }
+      const [, to, code] = hits[0];
+      if (code !== '301' || to !== keeper) rerr(`Retired ${slug}: ${from} -> ${to} ${code} (expected ${keeper} 301)`);
+    }
+    if (rules.some((r) => r[0] === keeper || r[0] === `${keeper}.html`)) rerr(`Retired ${slug}: keeper ${keeper} is itself redirected (two hops)`);
+    if (!fs.existsSync(path.join(BUILD, 'blog', `${e.retired_to}.html`))) rerr(`Retired ${slug}: keeper ${keeper} is not built (no 200)`);
+    if (fs.existsSync(path.join(BUILD, 'blog', `${slug}.html`))) rerr(`Retired ${slug}: build/blog/${slug}.html still exists`);
+    const ref = new RegExp(`/blog/${slug}(?:\\.html)?(?=[<"'#?\\s]|$)`);
+    for (const [rel, text] of lists) if (ref.test(text)) rerr(`Retired ${slug}: still listed in ${rel}`);
+  }
+  if (retErrors === 0) pass(`Retired blog posts: ${retired}, each one 301 to a built keeper, none built or listed`);
+}
+
 // 10. Privacy guards (TRUST-08 / TRUST-12). Plain string and regex checks on the
 // built files: CI runs this on Node 18 without `npm ci`, so no dependencies.
 {
@@ -363,6 +424,26 @@ if (fs.existsSync(redirectsPath)) {
   // guard has stopped seeing them, which must fail, not pass quietly.
   if (inlineForms === 0) perr('Privacy: no inline quote forms found (expected on product, hub and industry pages)');
   if (privacyErrors === 0) pass(`Privacy guards: hand-off, intake URL scrub, Meta payload, Clarity masks and ${inlineForms} inline forms checked`);
+}
+
+// 11. Mid-post CTA placement (AEO-04): on every rendered blog post the quote
+// CTA (generate-blog.js injectMidPostCTA) sits below a section, never directly
+// after an </h2>, and appears at most once. Plain regex: no dependencies.
+{
+  const blogDir = path.join(BUILD, 'blog');
+  const CTA = '<div style="background:linear-gradient(135deg,var(--navy-dark),var(--navy))';
+  const AFTER_H2 = /<\/h2>\s*<div style="background:linear-gradient\(135deg,var\(--navy-dark\),var\(--navy\)\)/;
+  let ctaErrors = 0, withCta = 0;
+  if (fs.existsSync(blogDir)) {
+    for (const file of fs.readdirSync(blogDir).filter((f) => f.endsWith('.html') && f !== 'index.html')) {
+      const html = fs.readFileSync(path.join(blogDir, file), 'utf8');
+      const n = html.split(CTA).length - 1;
+      if (n > 0) withCta++;
+      if (n > 1) { error(`Mid-post CTA: blog/${file} has ${n} (expected at most 1)`); ctaErrors++; }
+      if (AFTER_H2.test(html)) { error(`Mid-post CTA: blog/${file} has the CTA directly after an </h2> (AEO-04)`); ctaErrors++; }
+    }
+  }
+  if (ctaErrors === 0) pass(`Mid-post CTA: ${withCta} posts carry one, none directly after a heading`);
 }
 
 // Summary

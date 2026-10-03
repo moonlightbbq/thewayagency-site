@@ -28,10 +28,7 @@ const crypto = require('crypto');
 
 const LEGACY_BLOG_PAGES = Object.freeze({
   'after-car-accident-kentucky.html': '4ececcc3cde45dffaa148022c12298d6a70547af17c33433844cb2c67b01b617',
-  'bundling-home-auto.html': '26457e541ff6faa7dbf374bcd8716120c9a40836a38db3a3d8b5eabcd76ece29',
-  'cyber-safety.html': '23f74a688aa757b9af4f29a793d74d68a0076f116aa13deb7367f96ec382af35',
   'earthquake-insurance.html': '807b405ae01df85893a2af6f505c9b690622320809f965e1eea5cf37bfa9a59a',
-  'home-vs-landlord-insurance.html': '233da1a93ac892d2e286c8838dee97d946e2b5d7e381709ef563329dedf3524c',
   'index.html': 'afe0b2f81a6fdee5eeacd2ef9c377bf16ffb5cef2226c4538d83c8b893cdf180',
   'landlord-insurance.html': 'dc19ed2b5f1de6d41599828680029360a65164a7e6600cc78644c53ffb1433fb',
   'medicare-enrollment-guide.html': '9ae6b66ba3f9f721a50dad53205859165ebfc8aa9fe0a42dce374499d38ee427',

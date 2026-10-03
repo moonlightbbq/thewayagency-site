@@ -88,7 +88,7 @@ https://thewayagency.com/* https://www.thewayagency.com/:splat 301!
 /quotes /intake/?agent=audrey-lillpop 301
 
 # Blog (individual posts — add as discovered)
-/post/cyber-safety-for-small-businesses-prevention-checklist /blog/cyber-safety.html 301
+/post/cyber-safety-for-small-businesses-prevention-checklist /blog/cyber-insurance-small-business-essentials 301
 /post/kentucky-tornado-season-prep-safety-insurance-checklist /blog/tornado-season.html 301
 /post/kentucky-winter-storm-preparedness-safety-frozen-pipes /blog/winter-storm.html 301
 /post/landlord-insurance-made-simple /blog/landlord-insurance.html 301
@@ -99,6 +99,30 @@ https://thewayagency.com/* https://www.thewayagency.com/:splat 301!
 # Row 1 (owner D4 row 1): the legacy workers' comp page merged into the 2026 keeper.
 /blog/workers-comp-kentucky /blog/workers-comp-requirements-kentucky-2026 301
 /blog/workers-comp-kentucky.html /blog/workers-comp-requirements-kentucky-2026 301
+# Rows 2-7 and 9-12 (owner D4, merge map; row 12 also D14): duplicate-topic posts merged into their keepers.
+/blog/how-to-read-declarations-page /blog/understanding-your-insurance-declarations-page 301
+/blog/how-to-read-declarations-page.html /blog/understanding-your-insurance-declarations-page 301
+/blog/what-is-liability-insurance /blog/liability-limits-how-much-enough 301
+/blog/what-is-liability-insurance.html /blog/liability-limits-how-much-enough 301
+/blog/bundling-home-auto /blog/bundling-home-auto-insurance-savings 301
+/blog/bundling-home-auto.html /blog/bundling-home-auto-insurance-savings 301
+/blog/home-vs-landlord-insurance /blog/landlord-insurance 301
+/blog/home-vs-landlord-insurance.html /blog/landlord-insurance 301
+/blog/cyber-safety /blog/cyber-insurance-small-business-essentials 301
+/blog/cyber-safety.html /blog/cyber-insurance-small-business-essentials 301
+/blog/mt-washington-auto-insurance /blog/best-auto-insurance-rates-mt-washington-ky 301
+/blog/mt-washington-auto-insurance.html /blog/best-auto-insurance-rates-mt-washington-ky 301
+/blog/ohio-river-flood-risk-henderson-owensboro /blog/owensboro-flood-risk-neighborhood-fema-zones-2026 301
+/blog/ohio-river-flood-risk-henderson-owensboro.html /blog/owensboro-flood-risk-neighborhood-fema-zones-2026 301
+/blog/flood-insurance-ohio-river-valley-2026 /blog/owensboro-flood-risk-neighborhood-fema-zones-2026 301
+/blog/flood-insurance-ohio-river-valley-2026.html /blog/owensboro-flood-risk-neighborhood-fema-zones-2026 301
+/blog/bowling-green-tornado-lessons-coverage /blog/tornado-season 301
+/blog/bowling-green-tornado-lessons-coverage.html /blog/tornado-season 301
+/blog/how-independent-agents-use-data-better-rates /blog/how-independent-agents-save-money 301
+/blog/how-independent-agents-use-data-better-rates.html /blog/how-independent-agents-save-money 301
+# Gated (row 8): uncomment after 2026-12-07 (Medicare AEP closes), in the PR that migrates the keeper to Markdown (roadmap C3):
+# /blog/medicare-enrollment-guide-louisville-2026 /blog/medicare-enrollment-guide 301
+# /blog/medicare-enrollment-guide-louisville-2026.html /blog/medicare-enrollment-guide 301
 
 # ─── Legacy URL cleanup (from GSC 404 audit, 2026-04) ───
 

@@ -75,7 +75,7 @@ General ranges for Kentucky homeowners:
 
 Private flood insurance has become more competitive and may offer lower rates for some properties, especially newer homes with good elevation. An independent agent can compare NFIP and private options.
 
-For homeowners in [Owensboro and Henderson along the Ohio River](/blog/ohio-river-flood-risk-henderson-owensboro.html), flood insurance is especially important given the area's flood history.
+For homeowners in [Owensboro and Henderson along the Ohio River](/blog/owensboro-flood-risk-neighborhood-fema-zones-2026), flood insurance is especially important given the area's flood history.
 
 ## The 30-day waiting period
 

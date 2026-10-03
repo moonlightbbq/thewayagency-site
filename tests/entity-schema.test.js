@@ -295,7 +295,7 @@ describe('blog Article markup (SCHEMA-04)', () => {
   test('the frozen hand-made posts: @id, url and mainEntityOfPage are the canonical URL, publisher by @id, one person as author, full dates', () => {
     const dir = path.join(ROOT, 'src', 'pages', 'blog');
     const posts = fs.readdirSync(dir).filter((x) => x.endsWith('.html') && x !== 'index.html');
-    assert.equal(posts.length, 11); // 12 until workers-comp-kentucky was retired into the 2026 keeper (BLOG-05 row 1)
+    assert.equal(posts.length, 8); // 12 until BLOG-05 retired workers-comp-kentucky (row 1), bundling-home-auto, home-vs-landlord-insurance and cyber-safety (rows 4-6)
     for (const f of posts) {
       const html = fs.readFileSync(path.join(dir, f), 'utf8');
       const url = `https://www.thewayagency.com/blog/${f.replace(/\.html$/, '')}`;

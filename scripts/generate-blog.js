@@ -50,6 +50,8 @@ const contentGuard = require('./lib/blog-content-guard');
 const { orgRef, teamMemberUrl, blogPostUrl, SITE_URL } = require('./lib/entity');
 const { isMedicarePost, renderTpmoForAreas } = require('./lib/medicare-disclaimer');
 const { legalClaimWarnings } = require('./lib/legal-claims-lint');
+// Mid-post CTA copy by line: no "free" on life, health or Medicare (CONT-03, D8).
+const { ctaCopy } = require('./lib/blog-cta-copy');
 
 const ROOT = path.resolve(__dirname, '..');
 const BLOG_SRC = path.join(ROOT, 'src', 'blog');
@@ -337,6 +339,9 @@ function intakeHref(relatedPage, { medicare = false } = {}) {
   return medicare ? '/intake/?product=medicare' : '/intake/';
 }
 
+// Below section 3, never between a heading and its answer (AEO-04).
+const { midPostCtaOffset } = require('./lib/blog-cta-placement');
+
 // ─── Mid-Post CTA Injection ─────────────────
 // On a Medicare post the CTA makes no "we shop carriers" claim: whether the
 // agency sells Medicare Advantage or Part D for several companies is the
@@ -345,24 +350,19 @@ function injectMidPostCTA(html, category, relatedPage, { medicare = false } = {}
   const categoryLabels = { personal: 'personal insurance', commercial: 'business insurance', life: 'life insurance', health: 'health insurance', life_health: 'life and health insurance' };
   const label = categoryLabels[category] || 'insurance';
   const href = intakeHref(relatedPage, { medicare });
-  const ctaText = medicare
-    ? 'Talk with a licensed agent about your Medicare options.'
-    : 'Get a free quote from an independent agent. We shop top-rated carriers for you.';
+  const copy = ctaCopy(category, relatedPage, { medicare });
+  const ctaText = copy.text;
   const ctaHtml = `
       <div style="background:linear-gradient(135deg,var(--navy-dark),var(--navy));border-radius:var(--border-radius-lg);padding:var(--space-2xl);margin:var(--space-2xl) 0;text-align:center;">
         <p style="color:var(--white);font-size:var(--text-xl);font-weight:600;margin-bottom:var(--space-sm);">Need help with ${label}?</p>
         <p style="color:rgba(255,255,255,0.75);font-size:var(--text-sm);font-weight:300;margin-bottom:var(--space-lg);">${ctaText}</p>
-        <a href="${href}" style="display:inline-block;padding:10px 24px;background:var(--cyan);color:var(--navy-dark);border-radius:var(--border-radius);font-size:var(--text-sm);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;text-decoration:none;">Get a Free Quote</a>
+        <a href="${href}" style="display:inline-block;padding:10px 24px;background:var(--cyan);color:var(--navy-dark);border-radius:var(--border-radius);font-size:var(--text-sm);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;text-decoration:none;">${copy.button}</a>
       </div>`;
 
-  // Insert after the 3rd H2 if possible
-  let count = 0;
-  const result = html.replace(/<\/h2>/g, (match) => {
-    count++;
-    if (count === 3) return match + ctaHtml;
-    return match;
-  });
-  return count >= 3 ? result : html;
+  // Below section 3 (scripts/lib/blog-cta-placement.js); no CTA with fewer
+  // than 3 H2s.
+  const at = midPostCtaOffset(html);
+  return at < 0 ? html : html.slice(0, at) + ctaHtml + html.slice(at);
 }
 
 // ─── Sources (BLOG-02) ───────────────────────
@@ -410,6 +410,9 @@ const BLOG_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
  *   tpmo: the data/medicare-tpmo.json record (a test passes a fixture); a
  *   Medicare post prints its statement under the byline when it is active.
  */
+// `noindex: true` (BLOG-08): robots meta here; left out of every list below.
+const { isNoindex, NOINDEX_META } = require('./lib/blog-noindex');
+
 function generateBlogPost(meta, bodyHtml, faqs, { team = [], tpmo = TPMO_DATA } = {}) {
   // Every front-matter value below is encoded where it lands (esc / ldJson);
   // see "Output encoding" above. Slugs and paths are validated, not escaped:
@@ -577,7 +580,8 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [], tpmo = TPMO_DATA } 
   <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
   <link rel="icon" href="/src/assets/images/favicon.png">
   <link rel="apple-touch-icon" href="/src/assets/images/apple-touch-icon.png">
-  <link rel="canonical" href="https://www.thewayagency.com/blog/${slug}">
+  <link rel="canonical" href="https://www.thewayagency.com/blog/${slug}">${isNoindex(meta) ? `
+  ${NOINDEX_META}` : ''}
   <meta property="og:title" content="${esc(meta.title)} | The Way Agency">
   <meta property="og:description" content="${esc(meta.description)}">
   <meta property="og:type" content="article">
@@ -1020,6 +1024,8 @@ const posts = [];
 // of that name is not kept), and why a post was not rendered.
 const renderedSlugs = new Set();
 const claimedSlugs = new Set();
+// Rendered with `noindex: true`: kept out of every list, the feed and the sitemap.
+const noindexSlugs = new Set();
 const notRendered = new Map();
 
 if (fs.existsSync(BLOG_SRC)) {
@@ -1126,6 +1132,7 @@ if (fs.existsSync(BLOG_SRC)) {
 
       fs.writeFileSync(path.join(BLOG_BUILD, `${meta.slug}.html`), html);
       renderedSlugs.add(meta.slug);
+      if (isNoindex(meta)) noindexSlugs.add(meta.slug);
       posts.push(meta);
       console.log(`  ✓ ${meta.slug}.html  -  "${meta.title}"`);
     }
@@ -1196,12 +1203,14 @@ const calendar = calendarEntries.calendar;
     return fs.existsSync(path.join(BLOG_BUILD, `${p.slug}.html`));
   });
   readyToPublish.sort((a, b) => new Date(b.publish_date) - new Date(a.publish_date));
-  const allPublishedFiltered = readyToPublish;
+  // Noindexed posts (BLOG-08) stay out of the index and Related Articles.
+  const allPublishedFiltered = readyToPublish.filter(p => !noindexSlugs.has(p.slug));
+  if (noindexSlugs.size) console.log(`  ~ noindex, left out of the index, Related Articles and the feed: ${[...noindexSlugs].sort().join(', ')}`);
 
   if (allPublishedFiltered.length > 0) {
     const indexHtml = generateBlogIndex(allPublishedFiltered, posts);
     fs.writeFileSync(path.join(BLOG_BUILD, 'index.html'), indexHtml);
-    console.log(`  ✓ blog/index.html (${allPublishedFiltered.length} posts, ${allPublished.length - allPublishedFiltered.length} scheduled)`);
+    console.log(`  ✓ blog/index.html (${allPublishedFiltered.length} posts, ${allPublished.length - allPublishedFiltered.length} scheduled or noindexed)`);
 
     // Inject "Related Articles" into each generated blog post (prefer same category)
     const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
@@ -1248,7 +1257,7 @@ const rssItems = [];
 // The rendered posts, with their own front matter (wording logged above).
 // This always was the feed: it read a block-scoped list from step 2 through
 // `typeof`, which is undefined out here, so calendar titles never reached it.
-const rssPosts = posts.map(m => ({ slug: m.slug, title: m.title, description: m.description || '', publish_date: m.date })).slice(0, 20);
+const rssPosts = posts.filter(m => !noindexSlugs.has(m.slug)).map(m => ({ slug: m.slug, title: m.title, description: m.description || '', publish_date: m.date })).slice(0, 20);
 // Build author/category map from posts metadata
 const postMetaMap = {};
 for (const m of posts) postMetaMap[m.slug] = m;

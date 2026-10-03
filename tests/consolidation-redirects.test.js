@@ -3,8 +3,9 @@
  * hop to its keeper, from both its extensionless and its .html URL, and is gone
  * from every place that would list or link it. Reads the repo, never build/.
  *
- * RETIRED grows as merge-map rows ship (Deploy 1 ships row 1 only; rows 2-12
- * wait for owner decision D4).
+ * RETIRED grows as merge-map rows ship: row 1 in Deploy 1, rows 2-7 and 9-12
+ * in Deploy 2 (owner decision D4; row 12 also D14). Row 8 (the Louisville
+ * Medicare guide) stays live until Medicare AEP closes on 2026-12-07.
  */
 const { test, describe } = require('node:test');
 const assert = require('node:assert/strict');
@@ -17,8 +18,21 @@ const ROOT = path.join(__dirname, '..');
 
 /** slug -> keeper slug */
 const RETIRED = Object.freeze({
-  'workers-comp-kentucky': 'workers-comp-requirements-kentucky-2026',
+  'workers-comp-kentucky': 'workers-comp-requirements-kentucky-2026', // row 1
+  'how-to-read-declarations-page': 'understanding-your-insurance-declarations-page', // row 2
+  'what-is-liability-insurance': 'liability-limits-how-much-enough', // row 3
+  'bundling-home-auto': 'bundling-home-auto-insurance-savings', // row 4 (legacy page)
+  'home-vs-landlord-insurance': 'landlord-insurance', // row 5 (legacy page into a frozen keeper)
+  'cyber-safety': 'cyber-insurance-small-business-essentials', // row 6 (legacy page)
+  'mt-washington-auto-insurance': 'best-auto-insurance-rates-mt-washington-ky', // row 7
+  'ohio-river-flood-risk-henderson-owensboro': 'owensboro-flood-risk-neighborhood-fema-zones-2026', // row 9
+  'flood-insurance-ohio-river-valley-2026': 'owensboro-flood-risk-neighborhood-fema-zones-2026', // row 10
+  'bowling-green-tornado-lessons-coverage': 'tornado-season', // row 11 (frozen keeper)
+  'how-independent-agents-use-data-better-rates': 'how-independent-agents-save-money', // row 12
 });
+
+/** Merge-map row 8: gated until AEP closes (2026-12-07) and its keeper moves to Markdown. */
+const GATED = Object.freeze({ 'medicare-enrollment-guide-louisville-2026': 'medicare-enrollment-guide' });
 
 function rules() {
   const lines = fs.readFileSync(path.join(ROOT, '_redirects'), 'utf8').split('\n');
@@ -85,4 +99,27 @@ describe('consolidation redirects (BLOG-05)', () => {
     ];
     for (const f of files) assert.doesNotMatch(fs.readFileSync(path.join(ROOT, f), 'utf8'), re, f);
   });
+
+  test('the /post/ cyber-safety rule goes straight to the cyber keeper (one hop)', () => {
+    const r = all.find((x) => x.from === '/post/cyber-safety-for-small-businesses-prevention-checklist');
+    assert.equal(r.to, '/blog/cyber-insurance-small-business-essentials');
+  });
+
+  test('every calendar entry marked retired with a keeper is in RETIRED, so nothing is retired without its 301', () => {
+    const cal = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'content-calendar.json'), 'utf8'));
+    for (const e of [...(cal.existing_posts || []), ...(cal.year1 || [])]) {
+      if (e && e.status === 'retired' && e.retired_to) assert.equal(RETIRED[e.slug], e.retired_to, e.slug);
+    }
+  });
+
+  for (const [slug, keeper] of Object.entries(GATED)) {
+    test(`${slug} (row 8, gated): still live and published, no active redirect, keeper untouched`, () => {
+      assert.ok(fs.existsSync(path.join(ROOT, 'src', 'blog', `${slug}.md`)));
+      assert.ok(!all.some((r) => r.from === `/blog/${slug}` || r.from === `/blog/${slug}.html`), 'no active rule before 2026-12-07');
+      const cal = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'content-calendar.json'), 'utf8'));
+      const e = [...(cal.existing_posts || []), ...(cal.year1 || [])].find((p) => p && p.slug === slug);
+      assert.equal(e.status, 'published');
+      assert.ok(Object.prototype.hasOwnProperty.call(LEGACY_BLOG_PAGES, `${keeper}.html`), 'the keeper is still the frozen page');
+    });
+  }
 });
