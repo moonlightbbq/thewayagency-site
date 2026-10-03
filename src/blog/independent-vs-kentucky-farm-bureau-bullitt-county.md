@@ -102,6 +102,6 @@ A practical way to decide:
 
 We serve Mt Washington and Bullitt County as an independent agency. We carry many top-rated carriers and we shop the renewal cycle when it makes sense. For Bullitt County families weighing the captive versus independent question, we are happy to run the comparison side by side with no obligation. The point is for you to see the structural difference for yourself, not to talk anyone out of an existing relationship that works.
 
-If you want to compare, [get a quote](/intake/?city=Mt%20Washington&state=KY) or [call or text us at (502) 413-5335](tel:+15024135335).
+If you want to compare, [get a quote](/intake/?city=Mt%20Washington&state=KY) or [call](tel:+15024135335) or [text](sms:+15024135335) us at (502) 413-5335.
 
 For the deeper view of insurance in Mt Washington, see our [Mt Washington insurance overview](/insurance/mt-washington-ky.html). For background on the auto-insurance considerations specific to I-65 commuters, see [Auto Insurance for Mt. Washington Commuters](/blog/mt-washington-auto-insurance.html).
