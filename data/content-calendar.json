@@ -80,7 +80,7 @@
       "topic_type": "deep-dive",
       "search_intent": "informational",
       "funnel_stage": "middle",
-      "primary_keyword": "workers comp kentucky contractors",
+      "primary_keyword": "kentucky workers comp requirements",
       "secondary_keywords": [
         "KY workers compensation requirements",
         "do I need workers comp in kentucky"
@@ -95,6 +95,7 @@
       "evergreen_or_seasonal": "evergreen",
       "seasonality_window": null,
       "refresh_cycle": "annual",
+      "next_review": "2027-07-15",
       "page_role": "supporting",
       "is_link_target": true,
       "receives_future_links": true,

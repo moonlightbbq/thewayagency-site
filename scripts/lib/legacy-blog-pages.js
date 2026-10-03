@@ -27,7 +27,7 @@
 const crypto = require('crypto');
 
 const LEGACY_BLOG_PAGES = Object.freeze({
-  'after-car-accident-kentucky.html': '6152347644bee1e8e6162fba277a666c3f271c015eee3aaadffb1b66b7861f65',
+  'after-car-accident-kentucky.html': '4ececcc3cde45dffaa148022c12298d6a70547af17c33433844cb2c67b01b617',
   'bundling-home-auto.html': '26457e541ff6faa7dbf374bcd8716120c9a40836a38db3a3d8b5eabcd76ece29',
   'cyber-safety.html': '23f74a688aa757b9af4f29a793d74d68a0076f116aa13deb7367f96ec382af35',
   'earthquake-insurance.html': '807b405ae01df85893a2af6f505c9b690622320809f965e1eea5cf37bfa9a59a',

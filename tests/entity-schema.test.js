@@ -310,7 +310,15 @@ describe('blog Article markup (SCHEMA-04)', () => {
       assert.ok(teamHtml.includes(`id="${a.author.url.slice(TEAM_URL.length)}"`), `${f}: the author fragment names a team card`);
       assert.match(a.datePublished, /^\d{4}-\d{2}-\d{2}$/, f);
       // No real date of the last body edit is known (entity-schema D5): dateModified = datePublished, no visible "Last updated".
-      assert.equal(a.dateModified, a.datePublished, f);
+      // A page corrected since (BLOG-02/BLOG-07) carries the correction date: a later full date that the
+      // byline prints as "Updated <time datetime>", so the visible and structured dates agree.
+      if (a.dateModified !== a.datePublished) {
+        assert.match(a.dateModified, /^\d{4}-\d{2}-\d{2}$/, f);
+        assert.ok(a.dateModified > a.datePublished, `${f}: dateModified after datePublished`);
+        assert.ok(html.includes(`<span>Updated <time datetime="${a.dateModified}">`), `${f}: the byline shows the same Updated date`);
+      } else {
+        assert.ok(!/>Updated </.test(html), `${f}: no visible Updated without a dateModified`);
+      }
       assert.ok(!/Last updated: March 2026/.test(html), f);
       assert.equal(a.image, undefined, f);
     }
