@@ -247,8 +247,9 @@ strong{font-weight:600}
 .footer{background:var(--navy-dark);color:rgba(255,255,255,.75);padding:var(--space-3xl) 0 var(--space-xl)}
 .footer a{color:rgba(255,255,255,.75)}
 .footer a:hover{color:var(--cyan)}
-.footer__grid{max-width:var(--max-width);margin:0 auto;padding:0 var(--space-xl);display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:var(--space-2xl)}
+.footer__grid{max-width:var(--max-width);margin:0 auto;padding:0 var(--space-xl);display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:var(--space-2xl)}
 .footer__brand{max-width:320px}
+@media(min-width:769px) and (max-width:1024px){.footer__grid{grid-template-columns:repeat(3,1fr)}.footer__brand{grid-column:1/-1;max-width:none}}
 .footer__logo{height:36px;margin-bottom:var(--space-lg)}
 .footer__address{font-size:var(--text-sm);font-weight:300;line-height:1.8;margin-bottom:var(--space-md);font-style:normal}
 .footer__heading{font-size:var(--text-xs);font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--white);margin-bottom:var(--space-lg)}
@@ -934,6 +935,14 @@ strong{font-weight:600}
           <a href="/commercial/commercial-auto.html">Auto</a>
           <a href="/commercial/workers-compensation.html">Workers Comp</a>
           <a href="/commercial/cyber.html">Cyber</a>
+        </div>
+      </div>
+      <div data-footer-group="service-areas">
+        <h4 class="footer__heading">Service Areas</h4>
+        <div class="footer__link-list">
+          <a href="/insurance/owensboro-ky">Owensboro &amp; Daviess County</a>
+          <a href="/insurance/mt-washington-ky">Mt Washington &amp; Bullitt County</a>
+          <a href="/about/locations">All service areas</a>
         </div>
       </div>
       <div>

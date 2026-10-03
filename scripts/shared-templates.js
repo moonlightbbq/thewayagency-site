@@ -86,6 +86,24 @@ function renderNav() {
   </nav>`;
 }
 
+// The footer's service-area group (LOCAL-01): the two priority-market hubs and
+// the full list, extensionless. The 34 hand-made pages under src/ carry the same
+// block as text (tests/priority-hubs.test.js keeps every copy identical to this).
+const SERVICE_AREA_LINKS = [
+  ['/insurance/owensboro-ky', 'Owensboro &amp; Daviess County'],
+  ['/insurance/mt-washington-ky', 'Mt Washington &amp; Bullitt County'],
+  ['/about/locations', 'All service areas'],
+];
+
+function renderServiceAreasColumn() {
+  return `      <div data-footer-group="service-areas">
+        <h4 class="footer__heading">Service Areas</h4>
+        <div class="footer__link-list">
+${SERVICE_AREA_LINKS.map(([href, text]) => `          <a href="${href}">${text}</a>`).join('\n')}
+        </div>
+      </div>`;
+}
+
 function renderFooter(office, reviews) {
   const reviewRating = (reviews && reviews.rating) || '5.0';
   const reviewCount = (reviews && reviews.count) || '20+';
@@ -147,6 +165,7 @@ function renderFooter(office, reviews) {
           <a href="/commercial/cyber.html">Cyber</a>
         </div>
       </div>
+${renderServiceAreasColumn()}
       <div>
         <h4 class="footer__heading">Company</h4>
         <div class="footer__link-list">
@@ -198,4 +217,4 @@ function renderScripts() {
   <script src="/src/js/app.js" defer></script>`;
 }
 
-module.exports = { renderNav, renderFooter, renderScripts, renderHead_GTM, renderBody_GTM };
+module.exports = { renderNav, renderFooter, renderScripts, renderHead_GTM, renderBody_GTM, renderServiceAreasColumn, SERVICE_AREA_LINKS };
