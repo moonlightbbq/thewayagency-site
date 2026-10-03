@@ -72,3 +72,11 @@
 .blog-filter__pill:hover{border-color:var(--cyan);color:var(--navy);background:rgba(41,182,246,.05)}
 .blog-filter__pill--active{background:var(--navy);border-color:var(--navy);color:var(--white)}
 .blog-filter__pill--active:hover{background:var(--blue);border-color:var(--blue)}
+
+/* ── Tables (BLOG-01: markdown pipe tables, scripts/lib/markdown-tables.js) ── */
+.blog-content .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:var(--space-xl) 0;border:1px solid var(--border);border-radius:var(--border-radius)}
+.blog-content table{border-collapse:collapse;width:100%;min-width:460px;font-size:var(--text-sm);line-height:1.5}
+.blog-content th,.blog-content td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;vertical-align:top}
+.blog-content thead th,.blog-content thead td{background:var(--light-bg);font-weight:600;color:var(--navy)}
+.blog-content tbody tr:last-child td{border-bottom:none}
+.blog-content .ta-c{text-align:center}.blog-content .ta-r{text-align:right}

@@ -1,85 +1,90 @@
 ---
-title: What Every Kentucky Driver Should Know About Auto Insurance
+title: "Kentucky Auto Insurance Requirements: Minimums, PIP and No-Fault"
+seo_title: "Kentucky Auto Insurance Requirements: Minimums, PIP and No-Fault"
 slug: kentucky-auto-insurance-guide
-description: Kentucky is a choice no-fault state with unique auto insurance requirements. Learn about minimum coverage, PIP, and how to get the right protection without overpaying.
+description: "Kentucky requires 25/50/25 liability (or a $60,000 single limit) plus $10,000 in PIP. How the 2026 PIP wage cap changed, no-fault rules and what to add."
 author: The Way Agency
 date: 2026-04-01
-modified: 2026-04-01
+modified: 2026-10-03
 reading_time: 7 min read
 related_page: /personal/auto.html
 tags: auto insurance, kentucky, no-fault, PIP, car insurance
+sources: [KRS 304.39-080 (security required) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30032, KRS 304.39-110 (minimum liability) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758, KRS 304.39-020 (basic reparation benefits) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57854, KRS 304.39-030 (right to benefits) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30026, KRS 304.39-130 (weekly limit) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57855, 2026 Ky. Acts ch. 149 (HB 627) | https://apps.legislature.ky.gov/law/acts/26RS/documents/0149.pdf, KRS 304.39-060 (tort limitation) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030, KRS 304.39-320 (underinsured motorist) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=54466]
 ---
 
-Kentucky has some of the most unique auto insurance rules in the country. It is one of only a handful of "choice no-fault" states, which means you get to decide how your claims are handled before an accident ever happens.
+Kentucky requires security, usually an auto insurance policy, for liability and personal injury protection (for motorcycles, liability only: [KRS 304.39-110(3)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758)) on every vehicle registered in Kentucky or driven here with the owner's permission ([KRS 304.39-080(5)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30032)). Liability must be at least 25/50/25 ($25,000 for one person's injuries, $50,000 for all injuries in one accident and $25,000 for property damage) or a $60,000 single limit ([KRS 304.39-110(1)(a)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758)). Personal injury protection (PIP), which the statutes call basic reparation benefits, pays up to $10,000 per person per accident ([KRS 304.39-110(1)(c)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758), [KRS 304.39-020(2)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57854)).
 
-If you drive in Kentucky, here is what you need to know about your coverage, your legal requirements, and how to make sure you are not overpaying.
+## Kentucky's auto insurance requirements at a glance
 
-## Kentucky's minimum auto insurance requirements
+| Requirement | Rule | Statute |
+|---|---|---|
+| Liability | 25/50/25 split limits, or a $60,000 single limit | [KRS 304.39-110(1)(a)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758) |
+| Basic reparation benefits (PIP) | Part of the required security; up to $10,000 per person per accident | [KRS 304.39-110(1)(c)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758), [KRS 304.39-020(2)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57854) |
+| PIP weekly limit for lost wages and similar losses | $500 a week for benefits issued or renewed on or after July 15, 2026; $200 a week before that | [KRS 304.39-130](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57855), [2026 Ky. Acts ch. 149](https://apps.legislature.ky.gov/law/acts/26RS/documents/0149.pdf) |
+| Right to sue for pain and suffering (unless you filed a rejection) | Only if medical expense benefits exceed $1,000, or for a fracture, permanent disfigurement, permanent injury and the other injuries the statute lists | [KRS 304.39-060(2)(b)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030) |
+| Rejecting the tort limitation | A written or electronic rejection on the Department of Insurance's form, filed with the department before an accident | [KRS 304.39-060(4)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030) |
+| Underinsured motorist coverage | Every insurer must make it available on request | [KRS 304.39-320(2)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=54466) |
+| Motorcycles | Liability is required; PIP is not part of the motorcycle requirement | [KRS 304.39-110(3)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758) |
 
-Kentucky law requires every registered vehicle to carry at least:
+These are the legal minimums, not a recommendation. If you cause an accident and the damages are more than your limits, the amount above your limits can become your responsibility.
 
-- **$25,000** per person for bodily injury
-- **$50,000** per accident for bodily injury
-- **$25,000** per accident for property damage
-- **$10,000** in Personal Injury Protection (PIP)
+## What PIP pays in Kentucky
 
-These are the legal minimums. They are often not enough. A single trip to the emergency room can exceed $25,000, and a serious accident involving multiple vehicles can blow past $50,000 quickly.
+PIP pays for economic loss from an injury in a motor vehicle accident in Kentucky, whoever caused it, unless you have rejected the tort limitation ([KRS 304.39-030(1)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30026)): medical expense, work loss, replacement services, and survivors' losses if the injury causes death. Medical expense includes up to $5,000 per person for funeral, cremation and burial ([KRS 304.39-020(5)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57854)). The total for one person from one accident is capped at $10,000 ([KRS 304.39-020(2)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57854)).
 
-Most independent agents recommend carrying at least 100/300/100 limits if your budget allows it. The premium difference between minimum and higher limits is often smaller than people expect.
+Lost wages and the other weekly losses have their own cap. For benefits issued or renewed on or after July 15, 2026, PIP pays up to $500 a week for those losses ([KRS 304.39-130](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57855)). The 2026 change raised the limit from $200 a week and applies only to benefits issued or renewed on or after that date ([2026 Ky. Acts ch. 149, sections 2 and 7](https://apps.legislature.ky.gov/law/acts/26RS/documents/0149.pdf)). If your policy was issued or last renewed before July 15, 2026, the $200 limit applies until it renews.
 
 ## What makes Kentucky a "choice no-fault" state
 
-In most states, you are either in a no-fault system or a tort (at-fault) system. Kentucky lets you choose.
+Kentucky's no-fault law limits the right to sue, and to be sued, for injuries from a motor vehicle accident. Anyone who registers, operates or uses a vehicle on Kentucky roads is deemed to accept those limits ([KRS 304.39-060(1)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)). You can keep your full tort rights instead by filing a rejection.
 
-**No-fault (the default):** Your own PIP coverage pays your medical bills and lost wages after an accident, regardless of who caused it. You can only sue the other driver if your injuries meet a certain threshold (typically $1,000 in medical bills or a broken bone, disfigurement, or permanent injury).
+**No-fault (the default):** PIP pays your economic loss after an accident, whoever caused it. You can sue another driver for pain and suffering only if your medical expense benefits exceed $1,000, or the injury includes a fracture, permanent disfigurement, permanent injury within reasonable medical probability, permanent loss of bodily function, loss of a body member, or death ([KRS 304.39-060(2)(b)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)).
 
-**Tort (you opt out of no-fault):** You reject PIP and rely entirely on the at-fault driver's liability coverage. This gives you the right to sue for any injury, but you lose the guaranteed medical payment that PIP provides.
+**Rejecting the tort limitation:** You can refuse the limits on your tort rights by completing the Department of Insurance's rejection form, in writing or electronically, and filing it with the department before any accident it is to apply to ([KRS 304.39-060(4)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)). The rejection takes effect when it is filed and stays in effect until you revoke it in writing ([KRS 304.39-060(5)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)). With a rejection on file you keep your full tort rights and tort liabilities ([KRS 304.39-060(7)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)), and, except as the statutes provide, you cannot collect basic reparation benefits ([KRS 304.39-060(8)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)).
 
-Most Kentucky drivers stay with the no-fault default. PIP pays your medical bills faster since you do not have to wait for a liability determination. But if you have strong health insurance and want lower premiums, rejecting PIP is an option worth discussing with your agent.
+A rejection changes both what you can recover and what others can recover from you. Talk with your agent before you file one.
 
 ## Coverage beyond the minimums
 
-The state minimum gets you legal, but it does not get you protected. Here are the coverages most Kentucky drivers should seriously consider:
+The required coverages pay for injuries and for damage you cause to others. They do not repair your own car. The statutes above do not require the coverages below, though a lender may require some of them:
 
-**Collision coverage** pays to repair or replace your car after an accident, regardless of fault. If you have a car loan or lease, your lender almost certainly requires it.
+**Collision coverage** pays to repair or replace your car after an accident, regardless of fault. If you have a car loan or lease, check the agreement: lenders and lessors often require it.
 
-**Comprehensive coverage** covers damage from things other than collisions: hail, theft, deer strikes, falling trees, vandalism. Kentucky sees plenty of severe weather, and [deer collisions are common in rural areas](/personal/auto.html).
+**Comprehensive coverage** pays for damage from causes other than a collision, such as hail, theft, hitting a deer, falling trees and vandalism.
 
-**Uninsured/underinsured motorist coverage (UM/UIM)** protects you when the other driver has no insurance or not enough. Kentucky's uninsured driver rate is around 12 percent. If one of them hits you, UM/UIM is the only thing standing between you and paying out of pocket.
+**Uninsured and underinsured motorist coverage (UM/UIM)** pays you when the driver who hurt you has no insurance or too little. Kentucky law requires every insurer to offer underinsured motorist coverage when you ask for it ([KRS 304.39-320(2)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=54466)). Ask your agent what your policy includes before you decide.
 
-**[Umbrella insurance](/personal/umbrella.html)** adds an extra layer of liability protection above your auto and home policy limits. A $1 million umbrella policy typically costs $200 to $400 per year and is worth considering for anyone with assets to protect.
+**[Umbrella insurance](/personal/umbrella.html)** adds liability protection above your auto and home policy limits. For help choosing limits, see [how much liability insurance you need](/blog/liability-limits-how-much-enough).
 
-## How Kentucky auto insurance costs compare
+## What affects your Kentucky auto insurance rate
 
-Auto insurance in Kentucky typically runs between $1,000 and $2,800 per year, depending on your driving record, vehicle, coverage level, and where you live. Louisville and Lexington tend to have higher rates than rural areas due to traffic density and theft risk.
+Each insurer sets its own rates. Common factors include:
 
-The biggest factors that affect your rate:
-
-- **Driving record** is the single biggest factor. A clean record saves you the most.
-- **Credit score** is used by most carriers in Kentucky. A good credit score can save hundreds per year.
-- **Vehicle type** matters. A new truck costs more to insure than a five-year-old sedan.
-- **Coverage limits and deductible** are the levers you control. Higher deductibles lower your premium, but make sure you can actually pay the deductible if you need to.
-- **Annual mileage** affects your rate. If you work from home or drive less than average, ask about low-mileage discounts.
+- **Driving record.** Accidents and violations raise rates.
+- **Vehicle type.** The cost to repair or replace the vehicle matters.
+- **Where the car is kept.** Rates vary by location within Kentucky.
+- **Coverage limits and deductibles.** These are the levers you control. A higher deductible lowers your premium, but make sure you can pay it if you need to.
+- **Annual mileage.** If you drive less than you used to, tell your agent.
 
 ## Common mistakes Kentucky drivers make
 
-**Carrying only minimum coverage.** The legal minimum exists to keep you driving, not to protect your finances. If you cause an accident with injuries exceeding your limits, you are personally responsible for the difference.
+**Treating the minimum as a plan.** The legal minimum keeps you legal. If you cause an accident with damages above your limits, you can be personally responsible for the difference.
 
-**Skipping uninsured motorist coverage.** With roughly 1 in 8 Kentucky drivers uninsured, this coverage is not optional in any practical sense. It is inexpensive and could save you tens of thousands of dollars.
+**Not asking about uninsured and underinsured motorist coverage.** These coverages protect you and your passengers when the other driver cannot pay. Ask what they cost on your policy before you decide.
 
-**Not reviewing coverage after life changes.** A new car, a teen driver, a move to a different county, or a change in commute all affect your insurance. Review your policy at least once a year. [Here is how to read your declarations page](/blog/understanding-your-insurance-declarations-page.html) to check what you actually have.
+**Not reviewing coverage after life changes.** A new car, a teen driver, a move or a new commute can all change what you need. Review your policy at least once a year. [Here is how to read your declarations page](/blog/understanding-your-insurance-declarations-page.html) to check what you actually have.
 
-**Choosing the cheapest quote without comparing coverage.** Two quotes at different prices may have very different coverage. Always compare limits, deductibles, and exclusions, not just the bottom-line number.
+**Choosing the cheapest quote without comparing coverage.** Two quotes at different prices may have very different coverage. Compare limits, deductibles and exclusions, not just the price.
 
 ## What to do after an accident in Kentucky
 
-If you are involved in an accident, your first steps matter. Document the scene, exchange information, and report it to your insurance company as soon as possible. Kentucky has a two-year statute of limitations for personal injury claims, but filing quickly protects your rights and speeds up the claims process.
+Document the scene, exchange information, and report the accident to your insurance company as soon as you can. Legal deadlines apply to injury claims, so ask an attorney about your situation if you are hurt.
 
 We wrote a full step-by-step guide: [What to Do After a Car Accident in KY](/blog/after-car-accident-kentucky.html).
 
 ## How an independent agent helps
 
-An independent agent is not tied to one insurance company. We compare rates from top-rated carriers to find the best combination of price and coverage for your specific situation.
+An independent agent is not tied to one insurance company. We compare the insurance companies we represent to find the right combination of price and coverage for your situation.
 
 Sometimes that means [bundling your home and auto](/blog/bundling-home-auto.html) with one carrier for a multi-policy discount. Sometimes it means splitting them across two carriers because one has better auto rates and another has better home rates. An independent agent can do both.
 
@@ -87,16 +92,16 @@ If you are in [Owensboro](/insurance/owensboro-ky.html), [Louisville](/insurance
 
 ### FAQ: What is the minimum auto insurance required in Kentucky?
 
-Kentucky requires 25/50/25 liability coverage ($25,000 per person, $50,000 per accident for bodily injury, $25,000 for property damage) plus $10,000 in Personal Injury Protection (PIP). These are minimums and often not sufficient for real-world accidents.
+Kentucky requires liability coverage of at least 25/50/25 ($25,000 for bodily injury to one person, $50,000 for bodily injury per accident and $25,000 for property damage) or a $60,000 single limit, plus basic reparation benefits (PIP) of up to $10,000 per person per accident ([KRS 304.39-110](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758), [KRS 304.39-020(2)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57854)).
 
 ### FAQ: What does PIP cover in Kentucky?
 
-PIP (Personal Injury Protection) covers your medical expenses, lost wages, and funeral costs after an accident, regardless of who was at fault. Kentucky's default PIP limit is $10,000, and it applies to you and your passengers.
+PIP pays economic loss from a motor vehicle injury, regardless of fault: medical expense (including up to $5,000 for funeral, cremation and burial), work loss, replacement services and survivors' losses, up to $10,000 per person per accident ([KRS 304.39-020](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57854)). Lost wages and similar losses are limited to $500 a week for benefits issued or renewed on or after July 15, 2026, and $200 a week for benefits issued or renewed before that date ([KRS 304.39-130](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57855), [2026 Ky. Acts ch. 149](https://apps.legislature.ky.gov/law/acts/26RS/documents/0149.pdf)).
 
-### FAQ: Can I reject PIP in Kentucky?
+### FAQ: Can I opt out of no-fault in Kentucky?
 
-Yes. Kentucky is a "choice no-fault" state, which means you can reject PIP coverage and opt into the tort system instead. This may lower your premium, but you lose the guaranteed medical payment benefit. Talk to your agent before making this decision.
+Yes. You can reject the no-fault limits on your tort rights by filing the Department of Insurance's rejection form with the department before an accident ([KRS 304.39-060(4)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)). You then keep your full right to sue and to be sued, and, except as the statutes provide, you cannot collect basic reparation benefits ([KRS 304.39-060(7), (8)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)). Talk to your agent before making this decision.
 
 ### FAQ: How much does auto insurance cost in Kentucky?
 
-Most Kentucky drivers pay between $1,000 and $2,800 per year. Your rate depends on your driving record, vehicle, coverage limits, deductible, credit score, and where you live. Louisville and Lexington are typically more expensive than rural areas.
+It depends on your driving record, vehicle, where the car is kept, the limits and deductibles you choose and each insurer's own rating. The only way to know your price is to compare quotes for the same coverage.

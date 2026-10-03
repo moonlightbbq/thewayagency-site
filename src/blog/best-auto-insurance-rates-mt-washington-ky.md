@@ -32,6 +32,8 @@ Kentucky is a choice no-fault state, and every registered vehicle must carry at 
 - **Property damage liability**: $25,000 per accident
 - **Personal Injury Protection (PIP)**: $10,000
 
+For the statutes behind these numbers, see our guide to [Kentucky auto insurance requirements](/blog/kentucky-auto-insurance-guide).
+
 That 25/50/25 liability plus $10,000 in PIP is the legal floor. You cannot register a vehicle or drive legally in Kentucky without it. But here is the thing — those minimums were set a long time ago, and they have not kept up with the cost of medical care or vehicle repairs. A single ER visit after a highway accident can eat through $25,000 before you even see a specialist.
 
 If you are commuting on I-65 every day, the state minimum is a starting point, not a plan. We typically recommend at least 100/300/100 for anyone who has assets worth protecting, and the monthly difference is usually less than you would expect.

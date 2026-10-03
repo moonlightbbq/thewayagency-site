@@ -50,6 +50,8 @@ const contentGuard = require('./lib/blog-content-guard');
 const { orgRef, teamMemberUrl, blogPostUrl, SITE_URL } = require('./lib/entity');
 // The one internal URL form, extensionless (TECH-02 helper; BLOG-03, LOCAL-01).
 const { canonicalHref } = require('./lib/site-urls');
+// Pipe tables (BLOG-01, content-accuracy WP-A2): site-only, never the shared guard.
+const { BLOCK_RE: TABLE_BLOCK_RE, pipeTableBlock } = require('./lib/markdown-tables');
 
 const ROOT = path.resolve(__dirname, '..');
 const BLOG_SRC = path.join(ROOT, 'src', 'blog');
@@ -166,6 +168,8 @@ function markdownToHtml(md) {
     // Links. Site-relative targets print extensionless (/x.html 308s to /x);
     // the markdown itself is not edited (its bytes bind a review credit).
     .replace(/\[(.+?)\]\((.+?)\)/g, (_m, text, url) => `<a href="${safeHref(canonicalHref(url))}">${text}</a>`)
+    // Pipe tables (BLOG-01): after the inline passes, so cells keep bold, italic and links
+    .replace(TABLE_BLOCK_RE, (block) => pipeTableBlock(block))
     // Unordered lists
     .replace(/^- (.+)$/gm, '<li>$1</li>')
     .replace(/(<li>.*<\/li>\n?)+/g, (match) => `<ul>\n${match}</ul>\n`)
@@ -213,14 +217,46 @@ function parseFrontMatter(content) {
 }
 
 // ─── Extract FAQ items from content ─────────
+//
+// An answer is written in markdown and may carry inline links (a statute
+// citation) and bold or italic text. The page prints it as HTML with those
+// links live (answerHtml); the FAQPage JSON-LD and the review-wording check
+// read the same answer as plain text (answer): a link becomes its label and
+// emphasis markers drop. Printing the raw markdown showed readers and search
+// engines "([KRS 304.39-110](https://...))" as literal text (BLOG-01 review F1).
+const FAQ_LINK_RE = /\[(.+?)\]\((.+?)\)/g;
+
+/** An FAQ answer's markdown as plain text: links become their labels, emphasis markers drop. */
+function faqAnswerText(md) {
+  return String(md === undefined || md === null ? '' : md)
+    .replace(FAQ_LINK_RE, (_m, text) => text)
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1');
+}
+
+/** An FAQ answer's markdown as inline HTML: escaped, with bold, italic and links (as markdownToHtml prints them). */
+function faqAnswerHtml(md) {
+  return String(md === undefined || md === null ? '' : md)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(FAQ_LINK_RE, (_m, text, url) => `<a href="${safeHref(canonicalHref(url))}">${text}</a>`);
+}
+
 function extractFAQs(body) {
   const faqs = [];
   const faqRegex = /### FAQ: (.+?)\n\n([\s\S]*?)(?=\n###|\n## |$)/g;
   let match;
   while ((match = faqRegex.exec(body)) !== null) {
+    const md = match[2].trim().replace(/\n/g, ' ');
     faqs.push({
       question: match[1].trim(),
-      answer: match[2].trim().replace(/\n/g, ' ')
+      answer: faqAnswerText(md),
+      answerHtml: faqAnswerHtml(md)
     });
   }
   return faqs;
@@ -359,7 +395,7 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;transition:transform 0.2s;pointer-events:none;"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <div class="faq-item__answer">
-            <p>${esc(f.answer)}</p>
+            <p>${f.answerHtml === undefined ? esc(f.answer) : f.answerHtml}</p>
           </div>
         </div>`).join('')}
       </section>` : '';
@@ -465,6 +501,10 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
     "dateModified": String(meta.modified || meta.date || ''),
     "description": String(meta.description || ''),
   };
+  // BLOG-01 (content-accuracy WP-A4): an optional seo_title front-matter value is
+  // the whole <title>, og:title and twitter:title (no brand suffix added). The H1
+  // and the Article headline keep `title`.
+  const docTitle = meta.seo_title ? String(meta.seo_title) : `${meta.title} | The Way Agency`;
   const tags = (Array.isArray(meta.tags) ? meta.tags : String(meta.tags || '').replace(/[\[\]]/g, '').split(','))
     .map(t => String(t).trim()).filter(Boolean);
 
@@ -473,14 +513,14 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${esc(meta.title)} | The Way Agency</title>
+  <title>${esc(docTitle)}</title>
   <meta name="description" content="${esc(meta.description)}">
   <meta name="theme-color" content="#173358">
   <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
   <link rel="icon" href="/src/assets/images/favicon.png">
   <link rel="apple-touch-icon" href="/src/assets/images/apple-touch-icon.png">
   <link rel="canonical" href="https://www.thewayagency.com/blog/${slug}">
-  <meta property="og:title" content="${esc(meta.title)} | The Way Agency">
+  <meta property="og:title" content="${esc(docTitle)}">
   <meta property="og:description" content="${esc(meta.description)}">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.thewayagency.com/blog/${slug}">
@@ -495,7 +535,7 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
   <meta property="article:section" content="${esc(meta.category || 'insurance')}">
   ${tags.map(t => `<meta property="article:tag" content="${esc(t)}">`).join('\n  ')}
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${esc(meta.title)}">
+  <meta name="twitter:title" content="${esc(meta.seo_title || meta.title)}">
   <meta name="twitter:description" content="${esc(meta.description)}">
   <meta name="twitter:image" content="${esc(ogImage)}">
   <link rel="alternate" type="application/rss+xml" title="The Way Agency Blog" href="/blog/feed.xml">
@@ -800,7 +840,7 @@ ${renderScripts()}
 // when this file is the program: `node scripts/generate-blog.js`, as
 // scripts/builders/blog-helpers.js runs it. (A top-level return is legal in a
 // CommonJS module.)
-module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, printedText, markdownToHtml, parseFrontMatter, extractFAQs, generateBlogPost, productSlugFromRelatedPage, intakeHref };
+module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, printedText, markdownToHtml, parseFrontMatter, extractFAQs, faqAnswerText, faqAnswerHtml, generateBlogPost, productSlugFromRelatedPage, intakeHref };
 if (require.main !== module) return;
 
 // ─── Build ──────────────────────────────────

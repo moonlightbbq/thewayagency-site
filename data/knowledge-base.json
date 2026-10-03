@@ -1655,7 +1655,7 @@
     {
       "id": "final-expense-vs-whole-life",
       "question": "What is the difference between final expense and traditional whole life insurance?",
-      "answer": "Final expense is a type of whole life insurance with smaller face amounts ($5,000-$25,000) and simplified underwriting  -  usually just health questions, no medical exam. Traditional whole life offers higher coverage amounts ($50,000+) but requires full medical underwriting. Final expense is designed specifically to cover funeral costs ($7,000-$12,000 on average), outstanding medical bills, and small debts, making it accessible for seniors or those with health issues.",
+      "answer": "Final expense is a type of whole life insurance with smaller face amounts ($5,000-$25,000) and simplified underwriting  -  usually just health questions, no medical exam. Traditional whole life offers higher coverage amounts but usually requires fuller underwriting. Final expense is designed specifically to cover funeral costs, outstanding medical bills, and small debts, making it accessible for seniors or those with health issues.",
       "category": "life",
       "product": "final-expense",
       "related_products": [

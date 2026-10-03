@@ -532,6 +532,16 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
       <p class="text-lg" style="font-size:var(--text-lg);line-height:1.8;margin-bottom:var(--space-xl);">${rc.direct_answer}</p>` : `
       <p class="text-lg" style="font-size:var(--text-lg);line-height:1.8;margin-bottom:var(--space-xl);">${product.summary}</p>`;
 
+  // CONT-03 (content-accuracy WP-F2): optional visible answer sections right
+  // after the direct answer, for questions too important to sit in the
+  // collapsed FAQ (which shows at most five). heading is escaped; html is
+  // reviewed data, like the other rc fields.
+  const answerSections = (Array.isArray(rc.answer_sections) ? rc.answer_sections : [])
+    .filter((sec) => sec && sec.heading && sec.html)
+    .map((sec) => `
+      <h2>${esc(sec.heading)}</h2>
+      ${sec.html}`).join('');
+
   const whoNeedsSection = rc.who_needs_it ? `
       <h2>Who needs ${product.name.toLowerCase()}?</h2>
       <p>${rc.who_needs_it}</p>` : (product.requirement ? `
@@ -696,7 +706,7 @@ ${renderHero({
 ${breadcrumbs.html}
   <main id="main">
     <article class="product-content">
-      ${directAnswerSection}
+      ${directAnswerSection}${answerSections}
       <p style="color:var(--slate);font-weight:300;font-style:italic;margin-bottom:var(--space-2xl);">We're not just selling insurance. We're here to make sure you understand your options, feel confident in your coverage, and have someone in your corner when it matters most.</p>
       ${whoNeedsSection}
       ${coversSection}
