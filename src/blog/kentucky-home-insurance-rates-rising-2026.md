@@ -34,7 +34,7 @@ Nationally, the pressure has not let up. In late 2025, real estate analytics fir
 
 ### Storms keep producing claims
 
-Nationally, wind and hail accounted for the largest share of homeowners claims from 2018 to 2022, according to the [Insurance Information Institute](https://www.iii.org/fact-statistic/facts-statistics-homeowners-and-renters-insurance). Kentucky's recent storm seasons have added to that. The National Weather Service office in Paducah, whose four-state forecast area includes Daviess County, counted 61 tornadoes in 2025, second only to the 79 it recorded in 2011, and its April 2, 2025 outbreak of 23 tornadoes was the largest single event in the office's history ([NWS Paducah](https://www.weather.gov/pah/2025YearInReview)). The Louisville office, which covers Bullitt County, reported ten tornadoes in its region on April 2, 2024 alone ([NWS Louisville](https://www.weather.gov/media/lmk/climate/summaryPDFs/2024_Annual.pdf)). When claim costs climb across a region, rates tend to follow.
+Nationally, wind and hail accounted for the largest share of homeowners claims from 2018 to 2022, according to the [Insurance Information Institute](https://www.iii.org/fact-statistic/facts-statistics-homeowners-and-renters-insurance). Kentucky's recent storm seasons have added to that. The National Weather Service office in Paducah, whose four-state forecast area includes Daviess County, counted 61 tornadoes in 2025, second only to the 79 it recorded in 2011, and its April 2, 2025 outbreak produced 23 tornadoes, the most in a single event in the office's history ([NWS Paducah](https://www.weather.gov/pah/2025YearInReview)). A year earlier, the Louisville office, which covers Bullitt County, reported ten tornadoes in its region on April 2, 2024 alone ([NWS Louisville](https://www.weather.gov/media/lmk/climate/summaryPDFs/2024_Annual.pdf)). When claim costs climb across a region, rates tend to follow.
 
 ### Repairs and rebuilding cost more
 
@@ -60,12 +60,12 @@ Under Kentucky law, most insurers licensed in the state must file the rates they
 
 ## A stronger roof under Kentucky's FORTIFIED law
 
-Kentucky's Strengthen Kentucky Homes Act ties two insurance rules to the FORTIFIED Home roof standards published by the Insurance Institute for Business & Home Safety. Both apply to policies issued or renewed on or after March 1, 2026:
+Kentucky's Strengthen Kentucky Homes Act ties two insurance rules to the FORTIFIED Home standards published by the Insurance Institute for Business & Home Safety. Both apply to policies issued or renewed on or after March 1, 2026:
 
 - **An optional roof-upgrade rider.** Companies insuring a single-family home whose roof does not meet the FORTIFIED standard must offer an optional rider, endorsement or policy provision. When a covered claim requires replacing the roof, it pays the cost to upgrade the roof structure to the FORTIFIED standard ([KRS 304.13-346](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57338)). Ask whether your policy includes it and what it adds to your premium.
-- **A discount for a certified FORTIFIED home.** Companies must give a premium discount or rate reduction on wind and hail coverage for a home certified to the FORTIFIED standard when the discount is actuarially justified and there is credible evidence of cost savings ([KRS 304.13-342](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=54978)). If your roof has a FORTIFIED certificate, ask how your company applies it.
+- **A discount for a certified FORTIFIED home.** Companies must give a premium discount or rate reduction on wind or hail coverage for a home certified to the FORTIFIED standard when the discount is actuarially justified and there is sufficient and credible evidence of cost savings from the FORTIFIED standards ([KRS 304.13-342](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=54978)). If your roof has a FORTIFIED certificate, ask how your company applies it.
 
-The state's Strengthen Kentucky Homes grant program offered up to $10,000 toward upgrading a roof to the FORTIFIED standard. As of October 1, 2026 it is no longer accepting new Round 1 applications, and applicants already on its waitlist get first priority for future funding rounds ([Strengthen Kentucky Homes](https://skh.ky.gov)).
+The state's Strengthen Kentucky Homes grant program offers grants of up to $10,000 toward upgrading a roof to the FORTIFIED standard. As of October 1, 2026 it is no longer accepting new Round 1 applications, and applicants already on its waitlist get first priority for future funding rounds ([Strengthen Kentucky Homes](https://skh.ky.gov)).
 
 ## If no standard company will insure your home
 
