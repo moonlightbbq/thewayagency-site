@@ -59,6 +59,13 @@
       ]
     }
   ],
+  "hub_tiers": {
+    "_doc": "The one service-area tier field (priority-hubs R1-5, LOCAL-04 criterion (c)). Keys are /insurance/<slug> hub slugs; values are priority, secondary or tertiary. A hub not listed is unset until the owner decides (priority-hubs D12). Nothing is removed or noindexed by this field.",
+    "owensboro-ky": "priority",
+    "daviess-county-ky": "priority",
+    "mt-washington-ky": "priority",
+    "shepherdsville-ky": "priority"
+  },
   "agency": {
     "legal_name": "Way Associates, Inc",
     "dba": "The Way Agency",

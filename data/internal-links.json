@@ -1,0 +1,150 @@
+{
+  "_doc": "Internal links rendered from data (priority-hubs R1-6, R1-8; BLOG-03, TECH-01, LOCAL-01, MKT-04). guides: page route -> up to 3 blog posts (slug + descriptive anchor), only entries the guides map (priority-hubs D10) marks ready; a guide renders only when its post is built in this build. related_industries: product id -> /industries/<slug> pages. nearby: hub slug -> other hub slugs. hub_labels: link text for a priority hub when a blog post links it (only hubs with tier priority in data/locations.json hub_tiers render). blocked_guides: posts that must not be linked from a money page yet, with the reason; scripts/check-data-integrity.js fails when a guides entry names one. Remove a blocked entry only when its gate has shipped.",
+  "guides": {
+    "/insurance/owensboro-ky": [
+      { "slug": "owensboro-flood-risk-neighborhood-fema-zones-2026", "anchor": "Owensboro flood risk by neighborhood" },
+      { "slug": "boating-safety-insurance-ohio-river", "anchor": "Boating and insurance on the Ohio River" }
+    ],
+    "/insurance/daviess-county-ky": [
+      { "slug": "owensboro-flood-risk-neighborhood-fema-zones-2026", "anchor": "Owensboro and Daviess County flood risk" },
+      { "slug": "insurance-for-kentucky-bourbon-distilleries", "anchor": "Insurance for Kentucky bourbon distilleries" }
+    ],
+    "/insurance/mt-washington-ky": [
+      { "slug": "independent-vs-kentucky-farm-bureau-bullitt-county", "anchor": "Independent agent or Kentucky Farm Bureau in Bullitt County" },
+      { "slug": "best-auto-insurance-rates-mt-washington-ky", "anchor": "Auto insurance rates in Mt Washington" }
+    ],
+    "/insurance/shepherdsville-ky": [
+      { "slug": "independent-vs-kentucky-farm-bureau-bullitt-county", "anchor": "Independent agent or Kentucky Farm Bureau in Bullitt County" }
+    ],
+    "/personal/": [
+      { "slug": "homeowners-wont-cover-flooding", "anchor": "Why homeowners insurance does not cover flooding" },
+      { "slug": "umbrella-insurance-worth-it", "anchor": "When umbrella insurance is worth it" },
+      { "slug": "liability-limits-how-much-enough", "anchor": "How much liability coverage you need" }
+    ],
+    "/commercial/": [
+      { "slug": "general-liability-foundation-business-coverage", "anchor": "General liability: the foundation of business coverage" }
+    ],
+    "/life/": [
+      { "slug": "how-much-life-insurance-do-you-need", "anchor": "How much life insurance you need" },
+      { "slug": "term-life-vs-whole-life", "anchor": "Term life or whole life" },
+      { "slug": "final-expense-insurance-guide", "anchor": "A practical guide to final expense insurance" }
+    ],
+    "/health/": [
+      { "slug": "group-health-insurance-small-business-kentucky", "anchor": "Group health insurance for small businesses in Kentucky" }
+    ],
+    "/personal/auto": [
+      { "slug": "liability-limits-how-much-enough", "anchor": "How much liability coverage you need" },
+      { "slug": "understanding-auto-insurance-coverage-options", "anchor": "Understanding your auto insurance coverage options" }
+    ],
+    "/personal/umbrella": [
+      { "slug": "umbrella-insurance-worth-it", "anchor": "When umbrella insurance is worth it" },
+      { "slug": "liability-limits-how-much-enough", "anchor": "How much liability coverage you need" }
+    ],
+    "/personal/home": [
+      { "slug": "homeowners-wont-cover-flooding", "anchor": "Why homeowners insurance does not cover flooding" },
+      { "slug": "replacement-cost-vs-actual-cash-value", "anchor": "Replacement cost vs. actual cash value" },
+      { "slug": "insurance-first-time-homebuyers-kentucky", "anchor": "Insurance for first-time homebuyers in Kentucky" }
+    ],
+    "/personal/flood": [
+      { "slug": "owensboro-flood-risk-neighborhood-fema-zones-2026", "anchor": "Owensboro flood risk by neighborhood" },
+      { "slug": "homeowners-wont-cover-flooding", "anchor": "Why homeowners insurance does not cover flooding" }
+    ],
+    "/personal/earthquake": [
+      { "slug": "earthquake-insurance", "anchor": "Is earthquake insurance necessary in Kentucky?" }
+    ],
+    "/personal/boat": [
+      { "slug": "boating-safety-insurance-ohio-river", "anchor": "Boating and insurance on the Ohio River" }
+    ],
+    "/personal/renters": [
+      { "slug": "renters-insurance-landlord-policy-gaps", "anchor": "What your landlord's policy does not cover" }
+    ],
+    "/commercial/general-liability": [
+      { "slug": "general-liability-foundation-business-coverage", "anchor": "General liability: the foundation of business coverage" },
+      { "slug": "understanding-certificates-of-insurance", "anchor": "Understanding certificates of insurance" }
+    ],
+    "/commercial/commercial-property": [
+      { "slug": "commercial-property-insurance-guide", "anchor": "Protecting your business property" }
+    ],
+    "/commercial/commercial-auto": [
+      { "slug": "personal-auto-wont-cover-work-driving", "anchor": "When a personal auto policy will not cover work driving" }
+    ],
+    "/commercial/cyber": [
+      { "slug": "cyber-insurance-small-business-essentials", "anchor": "Cyber insurance for small businesses" }
+    ],
+    "/commercial/bonds": [
+      { "slug": "surety-bonds-explained", "anchor": "Surety bonds explained" }
+    ],
+    "/commercial/professional-liability": [
+      { "slug": "professional-liability-who-needs-eo", "anchor": "Who needs E&O coverage" }
+    ],
+    "/life/term-life": [
+      { "slug": "how-much-life-insurance-do-you-need", "anchor": "How much life insurance you need" },
+      { "slug": "term-life-vs-whole-life", "anchor": "Term life or whole life" }
+    ],
+    "/life/whole-life": [
+      { "slug": "term-life-vs-whole-life", "anchor": "Term life or whole life" }
+    ],
+    "/life/disability": [
+      { "slug": "disability-insurance-protecting-income", "anchor": "Disability insurance and your income" }
+    ],
+    "/life/final-expense": [
+      { "slug": "final-expense-insurance-guide", "anchor": "A practical guide to final expense insurance" }
+    ],
+    "/health/group-health": [
+      { "slug": "group-health-insurance-small-business-kentucky", "anchor": "Group health insurance for small businesses in Kentucky" }
+    ],
+    "/industries/roofing-contractors": [
+      { "slug": "insurance-guide-roofing-contractors", "anchor": "Insurance guide for roofing contractors in Kentucky" }
+    ]
+  },
+  "related_industries": {
+    "general-liability": ["general-contractors", "roofing-contractors", "electrical-contractors", "plumbing-contractors", "hvac-contractors", "restaurants"],
+    "workers-compensation": ["general-contractors", "roofing-contractors", "electrical-contractors", "plumbing-contractors", "hvac-contractors", "restaurants", "manufacturing"],
+    "commercial-auto": ["general-contractors", "roofing-contractors"],
+    "builders-risk": ["general-contractors"],
+    "commercial-property": ["restaurants", "manufacturing"],
+    "professional-liability": ["professional-services"],
+    "cyber": ["professional-services"]
+  },
+  "nearby": {
+    "owensboro-ky": ["daviess-county-ky", "henderson-ky", "evansville-in"],
+    "daviess-county-ky": ["owensboro-ky", "henderson-ky"],
+    "mt-washington-ky": ["shepherdsville-ky", "louisville-ky", "elizabethtown-ky"],
+    "shepherdsville-ky": ["mt-washington-ky", "louisville-ky"],
+    "henderson-ky": ["owensboro-ky", "daviess-county-ky", "evansville-in"],
+    "louisville-ky": ["mt-washington-ky", "shepherdsville-ky"]
+  },
+  "hub_labels": {
+    "owensboro-ky": "Owensboro and Daviess County",
+    "daviess-county-ky": "rural Daviess County",
+    "mt-washington-ky": "Mt Washington and Bullitt County",
+    "shepherdsville-ky": "Shepherdsville and Bullitt County"
+  },
+  "blocked_guides": {
+    "workers-comp-requirements-kentucky-2026": "BLOG-02: Kentucky workers' comp statute corrections not yet live",
+    "workers-comp-kentucky": "BLOG-02 and BLOG-05: corrections, then retired into workers-comp-requirements-kentucky-2026",
+    "insurance-checklist-hvac-contractors": "BLOG-02: KRS 198B.668 correction not yet live",
+    "insurance-guide-electrical-contractors": "BLOG-02 correction; folds into /industries/electrical-contractors (CONT-04)",
+    "after-car-accident-kentucky": "BLOG-02: PIP wage-cap correction not yet live",
+    "kentucky-auto-insurance-guide": "PIP and tort-rejection statements to be confirmed against KRS 304.39 as amended 2026-07-15 (priority-hubs D10; content-accuracy D3)",
+    "commercial-insurance-checklist-new-business": "content-accuracy B6: KRS 342.402 stop-work correction not yet live",
+    "mt-washington-business-insurance": "unsourced price table; content-accuracy B6 correction not yet live",
+    "mt-washington-home-insurance": "unsourced $1,100 to $2,200 range",
+    "insurance-restaurants-food-service-kentucky": "content-accuracy D5 default: 301 into /industries/restaurants",
+    "how-to-read-declarations-page": "BLOG-05: retired into understanding-your-insurance-declarations-page",
+    "what-is-liability-insurance": "BLOG-05: retired into liability-limits-how-much-enough",
+    "bundling-home-auto": "BLOG-05: retired into bundling-home-auto-insurance-savings",
+    "home-vs-landlord-insurance": "BLOG-05: retired into landlord-insurance",
+    "cyber-safety": "BLOG-05: retired into cyber-insurance-small-business-essentials",
+    "mt-washington-auto-insurance": "BLOG-05: retired into best-auto-insurance-rates-mt-washington-ky",
+    "ohio-river-flood-risk-henderson-owensboro": "BLOG-05: retired into owensboro-flood-risk-neighborhood-fema-zones-2026",
+    "flood-insurance-ohio-river-valley-2026": "BLOG-05: retired into owensboro-flood-risk-neighborhood-fema-zones-2026",
+    "bowling-green-tornado-lessons-coverage": "BLOG-05: retired into tornado-season",
+    "how-independent-agents-use-data-better-rates": "BLOG-05: retired into how-independent-agents-save-money",
+    "what-is-ivans-insurance-data": "BLOG-05: noindexed agency-operations post",
+    "insurance-tips-louisville-homeowners": "MKT-04 hub-to-post link held: the post says 'top-rated carriers' (TRUST-05) and 'save 10-15%' (TRUST-10, no numeric savings)",
+    "medicare-open-enrollment-2027": "D16: no Medicare links until the TRUST-01 TPMO statement is live",
+    "medicare-enrollment-guide": "D16: no Medicare links until the TRUST-01 TPMO statement is live",
+    "medicare-enrollment-guide-louisville-2026": "D16 and BLOG-05: Medicare; retires into medicare-enrollment-guide after AEP"
+  }
+}

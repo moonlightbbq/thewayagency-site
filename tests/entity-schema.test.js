@@ -115,7 +115,9 @@ describe('injectSchema writes JSON-LD byte for byte', () => {
   });
   test('a value cannot close the script element', () => {
     const html = injectSchema('<html><head></head><body></body></html>', 'industry', { name: 'X</script><script>alert(1)</script>', slug: 'x' });
-    assert.equal(ldBlocks(html).length, 2);
+    // One block: the Service. The industry page's one breadcrumb trail comes
+    // from pages.js renderBreadcrumbs, not the injector (TECH-01).
+    assert.equal(ldBlocks(html).length, 1);
     assert.equal(tops(html).find((j) => j['@type'] === 'Service').name, 'Insurance for X</script><script>alert(1)</script>');
   });
 });
