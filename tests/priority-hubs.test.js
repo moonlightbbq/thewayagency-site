@@ -160,6 +160,15 @@ describe('hubs (LOCAL-01, TECH-01, MKT-04)', () => {
       for (const id of ['homeowners', 'auto', 'commercial', 'medicare']) assert.ok(ids.has(id), `${slug}#${id}`);
     }
   });
+  test('titles and H1s from rewrites.md; Mt Washington is "Serving", never "in" (RW-D3)', () => {
+    const o = pages.generateCityPage(city('owensboro-ky'), ctx);
+    const m = pages.generateCityPage(city('mt-washington-ky'), ctx);
+    assert.match(o, /<title>Insurance Agency in Owensboro, KY \| The Way Agency<\/title>/);
+    assert.match(o, /<h1 class="hero__title">Independent insurance agency in <span class="hero__title-accent">Owensboro<\/span>, KY<\/h1>/);
+    assert.match(m, /<title>Insurance Agency Serving Mt Washington, KY \| The Way Agency<\/title>/);
+    assert.match(m, /<h1 class="hero__title">Independent insurance agency serving <span class="hero__title-accent">Mt\. Washington<\/span>, KY<\/h1>/);
+    assert.doesNotMatch(m, /<title>[^<]*\bin Mt\.? Washington/i);
+  });
   test('one BreadcrumbList on a city and a county hub, parent /about/locations; the injector adds none', () => {
     for (const [html, type, context] of [
       [pages.generateCityPage(city('owensboro-ky'), ctx), 'city', { city: city('owensboro-ky') }],
