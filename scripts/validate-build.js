@@ -324,6 +324,13 @@ if (turnstileIssues === 0) pass('Turnstile only on widget pages (async); app.js 
       error(`Call/text pairing: ${rel} needs exactly one .nav__contact with the tel: and sms: links (found ${blocks.length})`);
       pairingProblems++;
     }
+    // The pair is mobile-menu only: a page that does not load components.css
+    // (the compliance pages carry inline CSS) must hide it on desktop itself,
+    // or it shows unstyled in the header and squeezes the logo.
+    if (blocks.length && !/href="[^"]*\/src\/css\/components\.css/.test(html) && !/\.nav__contact\{display:none\}/.test(html)) {
+      error(`Call/text pairing: ${rel} has the menu pair but neither links components.css nor carries .nav__contact{display:none}`);
+      pairingProblems++;
+    }
   }
   if (navPages === 0) { error('Call/text pairing: no page with #navLinks found (the nav check stopped seeing them)'); pairingProblems++; }
   if (pairingProblems === 0) pass(`Call/text pairing: every tel: link has an sms: peer to +15024135335 (${used.size} listed exemptions in use); ${navPages} menus carry the pair`);
