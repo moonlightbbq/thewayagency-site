@@ -30,7 +30,8 @@ describe('CSP (TECH-08)', () => {
     'style-src': ['https://tagmanager.google.com'],
     'font-src': ['data:'],
     'connect-src': ['https://*.g.doubleclick.net', 'https://*.google-analytics.com', 'https://www.googletagmanager.com'],
-    'img-src': ['https://*.g.doubleclick.net', 'https://*.google-analytics.com'],
+    // https://c.bing.com: Clarity's Bing sync, allowed by owner decision D10 (OA-29).
+    'img-src': ['https://*.g.doubleclick.net', 'https://*.google-analytics.com', 'https://c.bing.com'],
   };
   for (const [dir, tokens] of Object.entries(want)) {
     test(`${dir} allows ${tokens.join(', ')}`, () => {
