@@ -60,14 +60,14 @@ Service-area business. No public storefront. We meet clients by phone, video, em
 ## Canonical pages
 
 - ${SITE}/
-- ${SITE}/insurance/owensboro-ky.html
-- ${SITE}/insurance/mt-washington-ky.html
+- ${SITE}/insurance/owensboro-ky
+- ${SITE}/insurance/mt-washington-ky
 - ${SITE}/personal/
 - ${SITE}/commercial/
 - ${SITE}/life/
 - ${SITE}/health/
 - ${SITE}/about/
-- ${SITE}/about/team.html
+- ${SITE}/about/team
 - ${SITE}/blog/
 `;
 }

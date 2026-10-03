@@ -10,6 +10,8 @@
 
 const fs = require('fs');
 const path = require('path');
+// Every URL here is the extensionless page URL Pages serves (TECH-02): /x.html 308s to /x.
+const { canonicalHref } = require('./lib/site-urls');
 
 const ROOT = path.resolve(__dirname, '..');
 const DATA = path.join(ROOT, 'data');
@@ -39,7 +41,7 @@ for (const [line, prods] of Object.entries(products)) {
   for (const p of prods) {
     const keywords = [p.name.toLowerCase(), p.slug.replace(/-/g, ' '), p.id];
     if (p.common_exclusions) keywords.push(...p.common_exclusions.map(e => e.toLowerCase().split(' ')[0]));
-    suggestions.push({ url: p.url, title: p.name, keywords: [...new Set(keywords)] });
+    suggestions.push({ url: canonicalHref(p.url), title: p.name, keywords: [...new Set(keywords)] });
   }
 }
 
@@ -47,7 +49,7 @@ for (const [line, prods] of Object.entries(products)) {
 const landingData = JSON.parse(fs.readFileSync(path.join(DATA, 'landing-pages.json'), 'utf8'));
 for (const city of (landingData.cities || [])) {
   suggestions.push({
-    url: `/insurance/${city.slug}.html`,
+    url: `/insurance/${city.slug}`,
     title: `Insurance in ${city.city}, ${city.state}`,
     keywords: [city.city.toLowerCase(), city.slug.replace(/-/g, ' '), city.county.toLowerCase()]
   });
@@ -56,7 +58,7 @@ for (const city of (landingData.cities || [])) {
 // Industries
 for (const ind of (landingData.industries || [])) {
   suggestions.push({
-    url: `/industries/${ind.slug}.html`,
+    url: `/industries/${ind.slug}`,
     title: `Insurance for ${ind.name}`,
     keywords: [ind.name.toLowerCase(), ind.slug.replace(/-/g, ' ')]
   });
@@ -67,12 +69,12 @@ const blogDir = path.join(BUILD, 'blog');
 if (fs.existsSync(blogDir)) {
   for (const file of fs.readdirSync(blogDir)) {
     if (file.endsWith('.html') && file !== 'index.html') {
-      const slug = file.replace('.html', '');
+      const slug = file.slice(0, -'.html'.length);
       const keywords = slug.split('-').filter(w => w.length > 3);
       const html = fs.readFileSync(path.join(blogDir, file), 'utf8');
       const titleMatch = html.match(/<title>([^|<]+)/);
       const title = titleMatch ? decodeHtmlText(titleMatch[1].trim()) : slug.replace(/-/g, ' ');
-      suggestions.push({ url: `/blog/${file}`, title, keywords });
+      suggestions.push({ url: `/blog/${slug}`, title, keywords });
     }
   }
 }
@@ -86,7 +88,7 @@ suggestions.push({ url: '/carriers/', title: 'Our Carriers', keywords: ['carrier
 suggestions.push({ url: '/about/', title: 'About Us', keywords: ['about', 'team', 'agency'] });
 suggestions.push({ url: '/blog/', title: 'Insurance Blog', keywords: ['blog', 'articles', 'tips'] });
 suggestions.push({ url: '/intake/', title: 'Get a Quote', keywords: ['quote', 'apply', 'start'] });
-suggestions.push({ url: '/contact.html', title: 'Contact Us', keywords: ['contact', 'phone', 'email', 'call'] });
+suggestions.push({ url: '/contact', title: 'Contact Us', keywords: ['contact', 'phone', 'email', 'call'] });
 
 // Write output
 if (!fs.existsSync(BUILD)) fs.mkdirSync(BUILD, { recursive: true });

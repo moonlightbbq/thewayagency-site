@@ -17,8 +17,9 @@ const REPO = path.join(__dirname, '..');
 test('titles scraped from built blog pages are decoded back to text', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'gen-404-'));
   try {
-    for (const dir of ['scripts', 'data', 'build/blog']) fs.mkdirSync(path.join(tmp, dir), { recursive: true });
+    for (const dir of ['scripts/lib', 'data', 'build/blog']) fs.mkdirSync(path.join(tmp, dir), { recursive: true });
     fs.copyFileSync(path.join(REPO, 'scripts', 'generate-404-data.js'), path.join(tmp, 'scripts', 'generate-404-data.js'));
+    fs.copyFileSync(path.join(REPO, 'scripts', 'lib', 'site-urls.js'), path.join(tmp, 'scripts', 'lib', 'site-urls.js'));
     fs.writeFileSync(path.join(tmp, 'data', 'products.json'), JSON.stringify({ personal: [] }));
     fs.writeFileSync(path.join(tmp, 'data', 'landing-pages.json'), JSON.stringify({ cities: [], industries: [] }));
     const page = (title) => `<!DOCTYPE html><html><head><title>${title} | The Way Agency</title></head><body></body></html>`;
@@ -27,7 +28,7 @@ test('titles scraped from built blog pages are decoded back to text', () => {
     const run = spawnSync(process.execPath, [path.join(tmp, 'scripts', 'generate-404-data.js')], { encoding: 'utf8' });
     assert.equal(run.status, 0, run.stdout + run.stderr);
     const out = JSON.parse(fs.readFileSync(path.join(tmp, 'build', '404-suggestions.json'), 'utf8'));
-    const title = (slug) => out.find((s) => s.url === `/blog/${slug}.html`).title;
+    const title = (slug) => out.find((s) => s.url === `/blog/${slug}`).title;
     assert.equal(title('test-apostrophe'), "Giving Back: The Way Agency's Year");
     assert.equal(title('test-entities'), 'Home & Auto: "Bundling" <101> &lt;', '&amp; is decoded last, once');
   } finally {

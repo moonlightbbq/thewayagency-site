@@ -17,7 +17,7 @@
  *   date: 2026-03-15
  *   modified: 2026-03-20
  *   reading_time: 5 min
- *   related_page: /personal/home.html
+ *   related_page: /personal/home   (the older /personal/home.html form is accepted too)
  *   tags: home insurance, kentucky, weather
  *   ---
  *
@@ -382,7 +382,7 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
   const fmtDate = (d) => new Date(String(d).slice(0, 10) + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const dateFormatted = fmtDate(meta.date);
   const writtenBy = byline
-    ? `Written by <a href="/about/team.html#${authorSlug}" style="color:var(--cyan);text-decoration:none;">${esc(byline.name)}</a>${byline.title ? `, ${esc(byline.title)}` : ''}, ${esc(contentGuard.AGENCY_AUTHOR)}`
+    ? `Written by <a href="/about/team#${authorSlug}" style="color:var(--cyan);text-decoration:none;">${esc(byline.name)}</a>${byline.title ? `, ${esc(byline.title)}` : ''}, ${esc(contentGuard.AGENCY_AUTHOR)}`
     : `Written by ${esc(contentGuard.AGENCY_AUTHOR)}`;
 
   // Byline honesty rule. "Written by" is a fact we always know. "Reviewed by"
@@ -395,7 +395,7 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
   const reviewerName = meta.reviewer || meta.reviewed_by || '';
   const reviewerSlug = safeSlug(meta.reviewer_slug);
   const reviewerLink = reviewerSlug
-    ? `<a href="/about/team.html#${reviewerSlug}" style="color:var(--cyan);text-decoration:none;">${esc(reviewerName)}</a>`
+    ? `<a href="/about/team#${reviewerSlug}" style="color:var(--cyan);text-decoration:none;">${esc(reviewerName)}</a>`
     : esc(reviewerName);
   const hasReview = Boolean(reviewerName && meta.reviewed_date);
 
@@ -408,7 +408,8 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
   const { tocHtml, anchoredBody } = generateTOC(bodyHtml);
 
   // Mid-post CTA
-  const relatedPage = sitePath(meta.related_page);
+  // Printed extensionless (/x.html 308s to /x); the front matter is not edited.
+  const relatedPage = canonicalHref(sitePath(meta.related_page));
   const enhancedBody = injectMidPostCTA(anchoredBody, meta.category || '', relatedPage);
 
   // Featured image (optional front matter: image + image_alt). Site-relative
@@ -539,19 +540,19 @@ ${renderNav()}
         <span>${esc(readingTime)}</span>
       </div>
       <div class="blog-share" style="display:flex;gap:8px;margin-bottom:var(--space-lg);flex-wrap:wrap;">
-        <a href="https://twitter.com/intent/tweet?text=${esc(encodeURIComponent(String(meta.title || '')))}&url=https://www.thewayagency.com/blog/${slug}.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on Twitter">
+        <a href="https://twitter.com/intent/tweet?text=${esc(encodeURIComponent(String(meta.title || '')))}&url=${blogPostUrl(slug)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on Twitter">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           Share
         </a>
-        <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.thewayagency.com/blog/${slug}.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on Facebook">
+        <a href="https://www.facebook.com/sharer/sharer.php?u=${blogPostUrl(slug)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on Facebook">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
           Share
         </a>
-        <a href="https://www.linkedin.com/sharing/share-offsite/?url=https://www.thewayagency.com/blog/${slug}.html" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on LinkedIn">
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url=${blogPostUrl(slug)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);text-decoration:none;font-weight:500;" aria-label="Share on LinkedIn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
           Share
         </a>
-        <button onclick="navigator.clipboard.writeText('https://www.thewayagency.com/blog/${slug}.html').then(function(){this.textContent='Copied!';setTimeout(function(){this.textContent='Copy Link'}.bind(this),2000)}.bind(this))" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);background:var(--white);cursor:pointer;font-family:var(--font-body);font-weight:500;" aria-label="Copy link">
+        <button onclick="navigator.clipboard.writeText('${blogPostUrl(slug)}').then(function(){this.textContent='Copied!';setTimeout(function(){this.textContent='Copy Link'}.bind(this),2000)}.bind(this))" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);background:var(--white);cursor:pointer;font-family:var(--font-body);font-weight:500;" aria-label="Copy link">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           Copy Link
         </button>
@@ -577,7 +578,7 @@ ${relatedPage ? `
         <p class="cta-banner__text">${esc(meta.cta_text || "We're here to help. Get a quote or request a coverage review.")}</p>
         <div class="cta-banner__actions">
           <a href="${intakeHref(relatedPage)}" class="btn btn--primary btn--lg">Get a Quote</a>
-          <a href="/contact.html" class="btn btn--outline-white btn--lg">Contact Us</a>
+          <a href="/contact" class="btn btn--outline-white btn--lg">Contact Us</a>
         </div>
       </div>
     </section>
@@ -616,7 +617,7 @@ function generateBlogIndex(allPosts, postsMeta) {
     // Titles and descriptions come from the calendar and from front matter:
     // data, encoded (see "Output encoding").
     return `
-          <a href="/blog/${esc(p.slug)}.html" class="card blog-card" data-category="${esc(cat)}" data-title="${esc(String(p.title || '').toLowerCase())}" data-desc="${esc(String(p.description || '').toLowerCase())}" style="text-decoration:none;">
+          <a href="/blog/${esc(p.slug)}" class="card blog-card" data-category="${esc(cat)}" data-title="${esc(String(p.title || '').toLowerCase())}" data-desc="${esc(String(p.description || '').toLowerCase())}" style="text-decoration:none;">
             <p style="font-size:var(--text-xs);color:var(--slate);font-weight:600;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:var(--space-sm);">${esc(dateLabel)}${cat ? ` · ${esc(categoryLabels[cat] || cat)}` : ''}</p>
             <h3 class="card__title" style="font-size:var(--text-xl);">${esc(p.title)}</h3>
             <p class="card__text">${esc(p.description)}</p>
@@ -781,7 +782,7 @@ ${renderNav()}
         <p class="cta-banner__text">We're happy to answer questions about your coverage, even if you're not a client yet.</p>
         <div class="cta-banner__actions">
           <a href="/intake/" class="btn btn--primary btn--lg">Get a Quote</a>
-          <a href="/contact.html" class="btn btn--outline-white btn--lg">Ask a Question</a>
+          <a href="/contact" class="btn btn--outline-white btn--lg">Ask a Question</a>
         </div>
       </div>
     </section>
