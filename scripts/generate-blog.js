@@ -139,6 +139,34 @@ function printedText(html) {
     .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 }
 
+// ─── Ordered lists (BLOG-04) ────────────────
+// Consecutive "N. " lines become ONE <ol> (a single blank line between items is
+// allowed: loose lists), with start="N" when the first item is not 1. A blank
+// line is kept on both sides of the list so the paragraph pass never folds the
+// text around it into the list block, and never wraps the list in a <p>.
+function wrapOrderedLists(text) {
+  const lines = String(text).split('\n');
+  const out = [];
+  for (let i = 0; i < lines.length; i++) {
+    const m = /^(\d+)\. (.+)$/.exec(lines[i]);
+    if (!m) { out.push(lines[i]); continue; }
+    const items = [m[2]];
+    let j = i + 1;
+    while (j < lines.length) {
+      const n = /^\d+\. (.+)$/.exec(lines[j]);
+      if (n) { items.push(n[1]); j++; continue; }
+      if (lines[j] === '' && /^\d+\. /.test(lines[j + 1] || '')) { j++; continue; }
+      break;
+    }
+    const start = Number(m[1]);
+    if (out.length && out[out.length - 1] !== '') out.push('');
+    out.push(`<ol${start !== 1 ? ` start="${start}"` : ''}>\n${items.map((t) => `<li>${t}</li>`).join('\n')}\n</ol>`);
+    if (j < lines.length && lines[j] !== '') out.push('');
+    i = j - 1;
+  }
+  return out.join('\n');
+}
+
 // ─── Simple Markdown to HTML converter ──────
 function markdownToHtml(md) {
   let html = md
@@ -174,9 +202,9 @@ function markdownToHtml(md) {
     .replace(/\[(.+?)\]\((.+?)\)/g, (_m, text, url) => `<a href="${safeHref(url)}">${text}</a>`)
     // Unordered lists
     .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>\n?)+/g, (match) => `<ul>\n${match}</ul>\n`)
-    // Ordered lists
-    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, (match) => `<ul>\n${match}</ul>\n`);
+  // Ordered lists (BLOG-04): one <ol> per run of "N. " lines, never bare <li>.
+  html = wrapOrderedLists(html)
     // Paragraphs (lines not already wrapped in tags)
     .split('\n\n')
     .map(block => {
@@ -861,7 +889,7 @@ ${renderScripts()}
 // when this file is the program: `node scripts/generate-blog.js`, as
 // scripts/builders/blog-helpers.js runs it. (A top-level return is legal in a
 // CommonJS module.)
-module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, printedText, markdownToHtml, parseFrontMatter, extractFAQs, generateBlogPost, postSources, intakeHref, injectMidPostCTA };
+module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, printedText, markdownToHtml, wrapOrderedLists, parseFrontMatter, extractFAQs, generateBlogPost, postSources, intakeHref, injectMidPostCTA };
 if (require.main !== module) return;
 
 // ─── Build ──────────────────────────────────

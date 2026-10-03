@@ -5,6 +5,7 @@
 .blog-content h3{margin-top:var(--space-xl);margin-bottom:var(--space-sm)}
 .blog-content p{margin-bottom:var(--space-md);line-height:1.8}
 .blog-content ul,.blog-content ol{margin-bottom:var(--space-lg);padding-left:var(--space-xl)}
+.blog-content ol{list-style:decimal}
 .blog-content li{margin-bottom:var(--space-sm);line-height:1.7}
 .blog-content li::marker{color:var(--cyan)}
 .blog-content a:not([class]){text-decoration:underline;text-decoration-color:var(--cyan);text-underline-offset:3px;transition:text-decoration-color var(--transition-fast)}
