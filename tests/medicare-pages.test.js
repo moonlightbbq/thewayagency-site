@@ -57,7 +57,7 @@ describe('blog template: Medicare posts (spec 3.7)', () => {
   test('the Medicare CTA makes no carrier-shopping claim and sends readers to the Medicare intake', () => {
     const html = generateBlogPost(medicareMeta({ category: 'health' }), BODY, [], { tpmo: SITE_TPMO });
     assert.ok(html.includes('Talk with a licensed agent about your Medicare options.'));
-    assert.ok(!html.includes('We shop top-rated carriers for you.'));
+    assert.ok(!html.includes('We compare the insurance companies we represent for you.'));
     assert.ok(html.includes('href="/intake/?product=medicare"'), 'no related_page: the Medicare intake');
     const other = generateBlogPost(otherMeta(), BODY, [], { tpmo: SITE_TPMO });
     assert.ok(other.includes('We compare the insurance companies we represent for you.'), 'other posts keep their CTA');
