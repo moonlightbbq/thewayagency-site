@@ -97,6 +97,394 @@
       "approved_by": null,
       "status": "proposed",
       "notes": "Returned to the backlog 2026-09-21. The smart-calendar adapter had dated it 2026-09-09, outside its own medicare-enrollment window (2026-09-15..2026-12-07), so check-data-integrity failed on it and it never got markdown or published. Undated here so fill-slots places it against the real eligibility filter."
+    },
+    {
+      "slug": "kentucky-home-insurance-rates-rising-2026",
+      "title": "Why Kentucky Home Insurance Rates Are Rising and What to Do Now",
+      "description": "A plain-language breakdown of why Kentucky homeowners are paying more in 2026 and the concrete steps an independent agent can take to reduce your premium without cutting coverage.",
+      "primary_keyword": "kentucky home insurance rates rising",
+      "secondary_keywords": [
+        "why is my home insurance going up kentucky",
+        "home insurance increase kentucky 2026",
+        "how to lower home insurance kentucky",
+        "kentucky homeowners insurance cost 2026"
+      ],
+      "pillar": "local",
+      "topic_type": "guide",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "conversion_goal": "coverage-review",
+      "related_cluster": "personal-home",
+      "seasonality_window": "winter-prep",
+      "target_month": "2026-11",
+      "target_product_page": "/personal/home.html",
+      "target_location_pages": [
+        "/insurance/mt-washington-ky.html",
+        "/insurance/shepherdsville-ky.html",
+        "/insurance/owensboro-ky.html"
+      ],
+      "secondary_internal_links": [
+        "/personal/home.html",
+        "/insurance/mt-washington-ky.html",
+        "/insurance/shepherdsville-ky.html",
+        "/blog/bundling-home-auto-insurance-savings",
+        "/blog/replacement-cost-vs-actual-cash-value"
+      ],
+      "page_role": "seasonal",
+      "refresh_cycle": "annual",
+      "source": "topic-research",
+      "research_task_id": "604dcd9f-1acf-4e11-b37d-e2661ee4a50c",
+      "priority_score": 83,
+      "score_breakdown": {
+        "demand": 21,
+        "winnability": 21,
+        "business_value": 18,
+        "aeo": 12,
+        "timing": 11
+      },
+      "research_brief": {
+        "demand_evidence": "Live search confirms intense media coverage: Insurance.com data shows Kentucky had a 10.6% single-year increase and an average premium of $4,471, placing it eighth-highest in the nation. Newsbreak (Sep 17, 2026) reports Kentucky saw a 33% year-over-year jump, ranking it among the steepest increases nationally. Ramsey Solutions puts the 2026 Kentucky average at $3,795. Spectrum News 1 (May 14, 2026) ran a dedicated story on rising premiums hitting Kentucky families. This is live news driving active searches.",
+        "serp_landscape": "Page 1 is dominated by LendingTree, ValuePenguin, Bankrate, NerdWallet, MoneyGeek, and Insurify. Every result is a national aggregator presenting statewide averages with no Bullitt County or Daviess County detail, no independent agent voice, and no actionable local guidance. One competitor post from Boswell Insurance Agency (Murray, KY) ranks with a detailed 2026 cost report but covers western Kentucky. No post addresses Bullitt County or the Louisville-suburb market specifically.",
+        "differentiation_angle": "A post anchored in the I-65 corridor and Bullitt County growth story, citing local factors (new construction in Shepherdsville and Mt. Washington, wind and hail deductible shifts specific to the region, the KFB-vs-independent comparison context) beats aggregators on local relevance. The agency can cite real renewal patterns it sees from clients, which no aggregator or out-of-market agency can replicate.",
+        "direct_answer_target": "Kentucky home insurance premiums rose 10.6% in 2026, pushing the state average to roughly $4,471 per year, one of the highest in the nation. The main drivers are severe weather losses, rising rebuild costs, and roof-age surcharges. An independent agent who shops multiple carriers can often reduce that increase by 10 to 25 percent at renewal.",
+        "questions_to_answer": [
+          "Why did my Kentucky home insurance go up so much this year?",
+          "What is the average cost of home insurance in Kentucky in 2026?",
+          "How do I lower my home insurance rate in Kentucky?",
+          "Does credit score affect home insurance rates in Kentucky?",
+          "What is a wind and hail deductible and how does it affect me?",
+          "Is Kentucky Farm Bureau the cheapest option for Bullitt County homeowners?",
+          "Should I file a claim or pay out of pocket to avoid a rate increase?"
+        ],
+        "entities_to_cover": [
+          "Kentucky Department of Insurance",
+          "Kentucky FAIR Plan",
+          "wind and hail percentage deductibles",
+          "credit-based insurance scoring (legal in Kentucky)",
+          "roof age surcharges and ACV settlement shift",
+          "replacement cost vs actual cash value",
+          "Bullitt County new construction growth",
+          "Cotality rate projections (8% in 2026 and 8% in 2027)",
+          "bundle discount",
+          "independent agent vs captive agent advantage"
+        ],
+        "local_angle": "Bullitt County is experiencing active new construction (Mallard Lake, Wildwoods, Wray Estates subdivisions in Shepherdsville and Mt. Washington), meaning many homeowners are insuring brand-new homes and may not realize their policy limit needs to reflect current rebuild costs, not purchase price. The I-65 corridor also sees higher commuter traffic and weather exposure than rural Kentucky, which affects underwriting. The Way Agency can speak to what carriers are actually writing in the Shepherdsville ZIP code right now.",
+        "recommended_schema": [
+          "FAQPage",
+          "Article"
+        ],
+        "internal_links": [
+          "/personal/home.html",
+          "/insurance/mt-washington-ky.html",
+          "/insurance/shepherdsville-ky.html",
+          "/blog/bundling-home-auto-insurance-savings",
+          "/blog/replacement-cost-vs-actual-cash-value"
+        ],
+        "sources": [
+          "https://www.lendingtree.com/home-insurance/homeowners-insurance-kentucky/",
+          "https://www.newsbreak.com/the-financial-wire-382710013/4891925573487-home-insurance-is-climbing-a-fifth-straight-year-with-the-steepest-2026-jumps-in-louisiana-michigan-virginia-kentucky-and-minnesota",
+          "https://spectrumnews1.com/ky/louisville/news/2026/05/14/home-insurance-costs",
+          "https://www.theboswellagency.com/resources/2026-kentucky-home-insurance-cost-report",
+          "https://www.foxbusiness.com/real-estate/homeowners-insurance-costs-could-spike-over-next-2-years",
+          "https://www.eliteriskagent.com/blog/average-cost-homeowners-insurance-kentucky"
+        ]
+      },
+      "proposed_at": "2026-10-03",
+      "approved_at": "2026-10-03",
+      "approved_by": "partner@thewayagency.com",
+      "status": "approved",
+      "notes": "From topic research task 604dcd9f-1acf-4e11-b37d-e2661ee4a50c (2026-10-02). Its automated quality check failed on a judge input cap, so the topics never reached the backlog; the owner reviewed the six proposals and approved this one directly on 2026-10-03."
+    },
+    {
+      "slug": "plumbing-contractor-insurance-kentucky-guide",
+      "title": "Insurance for Plumbing Contractors in Kentucky: A Complete 2026 Guide",
+      "description": "A Kentucky-specific guide covering every coverage type plumbing contractors need to license, bid jobs, and protect against water damage claims, with the actual state minimums from DHBC regulations.",
+      "primary_keyword": "plumbing contractor insurance kentucky",
+      "secondary_keywords": [
+        "kentucky plumber insurance requirements",
+        "insurance for plumbers kentucky",
+        "kentucky plumbing license insurance",
+        "plumber general liability kentucky"
+      ],
+      "pillar": "product",
+      "topic_type": "guide",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "conversion_goal": "quote-request",
+      "related_cluster": "industry-trades",
+      "seasonality_window": null,
+      "target_month": "2026-11",
+      "target_product_page": "/commercial/general-liability.html",
+      "target_location_pages": [
+        "/industries/plumbing-contractors.html"
+      ],
+      "secondary_internal_links": [
+        "/industries/plumbing-contractors.html",
+        "/commercial/general-liability.html",
+        "/commercial/workers-compensation.html",
+        "/commercial/bonds.html",
+        "/blog/insurance-checklist-hvac-contractors",
+        "/blog/workers-comp-requirements-kentucky-2026"
+      ],
+      "page_role": "supporting",
+      "refresh_cycle": "annual",
+      "source": "topic-research",
+      "research_task_id": "604dcd9f-1acf-4e11-b37d-e2661ee4a50c",
+      "priority_score": 80,
+      "score_breakdown": {
+        "demand": 17,
+        "winnability": 20,
+        "business_value": 19,
+        "aeo": 14,
+        "timing": 10
+      },
+      "research_brief": {
+        "demand_evidence": "The agency already has a plumbing contractors industry page (/industries/plumbing-contractors.html) and the published HVAC and roofing contractor insurance guides have performed well as a cluster. The plumbing guide is the missing sibling. Live SERP shows ContractorNerd, MoneyGeek, and allenthomasgroup.com rank for 'plumbing contractor insurance Kentucky', while rbisomerset.com (a Kentucky independent agency in Somerset) has a targeted post. The agency's existing product page and industry page give it entity authority to rank for a dedicated blog post targeting this query family.",
+        "serp_landscape": "Page 1 is mixed: ContractorNerd (national, data-heavy, cost-focused), MoneyGeek (aggregator), allenthomasgroup.com (out-of-state independent agency with a Kentucky-specific page), rbisomerset.com (Kentucky independent agency, thin post), and ServiceTitan (trade software). No post combines the Kentucky DHBC licensing insurance minimums (the $250,000 GL minimum from 815 KAR 20:080 for master plumbers), completed operations coverage detail, water damage liability, and a working Kentucky agent's perspective. The allenthomasgroup page is the strongest competitor but is a generic agency not located in Bullitt or Daviess County.",
+        "differentiation_angle": "A post grounded in Kentucky Revised Statute KRS Chapter 318 and 815 KAR 20:080, explaining the $250,000 GL minimum for master plumber licensing, the surety bond considerations for plumbing contractors, the specific water damage and completed operations exposure Kentucky plumbers face in the cold-weather months (freeze-thaw burst pipes along the Ohio River valley), and The Way Agency's real access to specialty carriers that restrict plumbing work will beat every generic national guide.",
+        "direct_answer_target": "Kentucky plumbing contractors must carry at least $250,000 in general liability insurance to hold a master plumber or plumbing contractor license under 815 KAR 20:080. Most working contractors carry $1 million per occurrence to meet GC contract requirements. Workers compensation is also required for any employee under KRS 342.630. Completed operations and water damage liability are the two coverage gaps that cause the most denied claims.",
+        "questions_to_answer": [
+          "How much general liability insurance does a Kentucky plumber need?",
+          "Is workers comp required for plumbing contractors in Kentucky?",
+          "What is completed operations coverage and why do plumbers need it?",
+          "Does standard GL cover water damage from plumbing work?",
+          "What is inland marine and do plumbers need it?",
+          "How does plumbing contractor insurance affect my DHBC license?",
+          "What does a surety bond cover that insurance does not?"
+        ],
+        "entities_to_cover": [
+          "Kentucky Department of Housing, Buildings and Construction (DHBC)",
+          "815 KAR 20:080 (minimum insurance thresholds for plumbing contractors)",
+          "KRS Chapter 318 (plumbing permit and license statute)",
+          "KRS 342.630 (workers comp requirement)",
+          "general liability with water damage endorsement",
+          "completed operations coverage",
+          "inland marine (tools and equipment)",
+          "commercial auto",
+          "surety bond",
+          "master plumber license vs plumbing contractor license distinction"
+        ],
+        "local_angle": "Kentucky plumbers face a freeze-thaw exposure unique to the Ohio River valley and Bullitt County climate, where burst pipe emergencies spike from November through February. New construction in Shepherdsville and Mt. Washington means more residential plumbing jobs on freshly built subdivisions, where a botched connection caught months later triggers a completed operations claim. The Way Agency knows which carriers will write plumbing in Kentucky without a plumbing exclusion, which is the most common coverage gap this agency sees in contractor policies written elsewhere.",
+        "recommended_schema": [
+          "FAQPage",
+          "HowTo",
+          "Article"
+        ],
+        "internal_links": [
+          "/industries/plumbing-contractors.html",
+          "/commercial/general-liability.html",
+          "/commercial/workers-compensation.html",
+          "/commercial/bonds.html",
+          "/blog/insurance-checklist-hvac-contractors",
+          "/blog/workers-comp-requirements-kentucky-2026"
+        ],
+        "sources": [
+          "https://contractornerd.com/plumber-insurance/kentucky",
+          "https://www.servicetitan.com/licensing/plumbing/kentucky",
+          "https://contractorrequirements.com/plumber/kentucky/",
+          "https://coipulse.com/trades/plumbers/kentucky",
+          "https://adaptdigitalsolutions.com/articles/kentucky-contractor-license-requirements/",
+          "https://rbisomerset.com/blog/kentucky-plumber-insurance/"
+        ]
+      },
+      "proposed_at": "2026-10-03",
+      "approved_at": "2026-10-03",
+      "approved_by": "partner@thewayagency.com",
+      "status": "approved",
+      "notes": "From topic research task 604dcd9f-1acf-4e11-b37d-e2661ee4a50c (2026-10-02). Its automated quality check failed on a judge input cap, so the topics never reached the backlog; the owner reviewed the six proposals and approved this one directly on 2026-10-03. A licensed agent must verify the 815 KAR 20:080 licensing and $250k liability figures."
+    },
+    {
+      "slug": "small-business-health-insurance-kentucky-under-10-employees",
+      "title": "Small Business Health Insurance in Kentucky: Options for Fewer Than 10 Employees",
+      "description": "A practical breakdown of every health coverage option available to Kentucky businesses with fewer than 10 employees, including SHOP marketplace access, QSEHRA, ICHRA, and the Small Business Health Care Tax Credit.",
+      "primary_keyword": "health insurance small business less than 10 employees kentucky",
+      "secondary_keywords": [
+        "small group health insurance kentucky",
+        "QSEHRA kentucky small business",
+        "ICHRA kentucky employer",
+        "kynect SHOP small business",
+        "small business health care tax credit kentucky"
+      ],
+      "pillar": "product",
+      "topic_type": "guide",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "conversion_goal": "consultation",
+      "related_cluster": "commercial-workforce",
+      "seasonality_window": null,
+      "target_month": "2026-11",
+      "target_product_page": "/health/group-health.html",
+      "target_location_pages": [
+        "/insurance/mt-washington-ky.html",
+        "/insurance/owensboro-ky.html"
+      ],
+      "secondary_internal_links": [
+        "/health/group-health.html",
+        "/commercial/workers-compensation.html",
+        "/blog/group-health-insurance-small-business-kentucky",
+        "/insurance/mt-washington-ky.html",
+        "/insurance/owensboro-ky.html"
+      ],
+      "page_role": "supporting",
+      "refresh_cycle": "annual",
+      "source": "topic-research",
+      "research_task_id": "604dcd9f-1acf-4e11-b37d-e2661ee4a50c",
+      "priority_score": 79,
+      "score_breakdown": {
+        "demand": 18,
+        "winnability": 18,
+        "business_value": 19,
+        "aeo": 14,
+        "timing": 10
+      },
+      "research_brief": {
+        "demand_evidence": "The query 'health insurance for small business with less than 10 employees' appears in the dossier's top performers section at position 1.0 with a 100% CTR, indicating the site has already served this intent. This is a strong signal to expand the cluster with a dedicated, long-form guide. The planned 'group-health-insurance-small-business-kentucky' post targets the general 'group health insurance small business kentucky' keyword but does not specifically address the sub-10-employee context, which has distinct product eligibility rules (QSEHRA maximum benefit caps, SHOP tax credit threshold at fewer than 25 FTE, and the full-credit threshold at fewer than 10 FTE). These are different enough to justify a separate post.",
+        "serp_landscape": "Page 1 is owned by PeopleKeep, forhealthinsurance.com, eHealthInsurance, Anthem, and Kentuckiana Insurance Group. National platforms dominate. The kynect SHOP marketplace angle and Kentucky-specific carrier availability (Anthem Blue Cross Blue Shield as the primary 2026 SHOP carrier per forhealthinsurance.com) are present in national guides but the nuanced under-10-employee tax credit rules (full credit at fewer than 10 FTE averaging under $27,000 per year) are either missing or buried. No local Kentucky agent page ranks on page 1 for this query family.",
+        "differentiation_angle": "A post that leads with the SPECIFIC answer that businesses with fewer than 10 employees and average wages under $27,000 per year may qualify for the FULL Small Business Health Care Tax Credit (worth up to 50% of premiums paid through kynect SHOP), then walks through the QSEHRA and ICHRA alternatives for businesses that do not meet SHOP minimums, with Kentucky carrier details (Anthem, WellCare), will be the only result that directly answers the sub-10-employee question with Kentucky-specific program names, thresholds, and local agent guidance.",
+        "direct_answer_target": "Kentucky businesses with fewer than 10 employees are not required to offer health insurance, but several affordable options exist. The kynect SHOP marketplace lets businesses with 1 to 50 employees access Anthem Blue Cross Blue Shield group plans, and businesses with fewer than 25 employees averaging under roughly $65,000 in wages may qualify for a federal tax credit worth up to 50 percent of premiums paid. Businesses too small for group coverage can use a QSEHRA or ICHRA to reimburse employees for individual plans tax-free.",
+        "questions_to_answer": [
+          "Does a small business with fewer than 10 employees have to offer health insurance in Kentucky?",
+          "What is the SHOP marketplace and how does my business qualify in Kentucky?",
+          "What is a QSEHRA and how is it different from a group health plan?",
+          "How much is the Small Business Health Care Tax Credit worth in Kentucky?",
+          "Can I reimburse employees for their own health insurance instead of buying a group plan?",
+          "Which health insurance carriers serve small businesses in Kentucky in 2026?",
+          "What is the average cost of group health insurance per employee in Kentucky?"
+        ],
+        "entities_to_cover": [
+          "kynect SHOP marketplace",
+          "Small Business Health Care Tax Credit (ACA)",
+          "QSEHRA (Qualified Small Employer Health Reimbursement Arrangement)",
+          "ICHRA (Individual Coverage Health Reimbursement Arrangement)",
+          "Anthem Blue Cross Blue Shield (primary 2026 SHOP carrier in KY)",
+          "WellCare (secondary carrier)",
+          "Kentucky employer mandate (none below 50 FTE)",
+          "ACA employer mandate (50+ FTE only)",
+          "minimum essential coverage (MEC)",
+          "Kentucky Department of Insurance"
+        ],
+        "local_angle": "Small businesses along the I-65 corridor in Bullitt County and in Owensboro compete with Louisville and Evansville employers for workers. Offering even a modest health benefit through a QSEHRA or SHOP plan is a competitive advantage in the Shepherdsville and Mt. Washington labor market, where new businesses are forming alongside the residential construction boom. The Way Agency can act as a licensed navigator for kynect SHOP and help owners compare group and HRA options without steering them to a single carrier.",
+        "recommended_schema": [
+          "FAQPage",
+          "Article"
+        ],
+        "internal_links": [
+          "/health/group-health.html",
+          "/commercial/workers-compensation.html",
+          "/blog/group-health-insurance-small-business-kentucky",
+          "/insurance/mt-washington-ky.html",
+          "/insurance/owensboro-ky.html"
+        ],
+        "sources": [
+          "https://www.forhealthinsurance.com/kentucky-small-business-health-insurance/",
+          "https://trustedquotes.org/small-business-health-insurance-kentucky.html",
+          "https://www.peoplekeep.com/resources/small-business-health-insurance-in-kentucky",
+          "https://www.ehealthinsurance.com/kentucky-employer-health-insurance",
+          "https://www.forhealthinsurance.com/small-business-health-insurance/"
+        ]
+      },
+      "proposed_at": "2026-10-03",
+      "approved_at": "2026-10-03",
+      "approved_by": "partner@thewayagency.com",
+      "status": "approved",
+      "notes": "From topic research task 604dcd9f-1acf-4e11-b37d-e2661ee4a50c (2026-10-02). Its automated quality check failed on a judge input cap, so the topics never reached the backlog; the owner reviewed the six proposals and approved this one directly on 2026-10-03. Seasonality set to year-round (research tagged it medicare-enrollment, which does not fit a small-group health topic). Overlaps the live group-health-insurance-small-business-kentucky post in subject; keep this one focused on groups under 10 employees."
+    },
+    {
+      "slug": "home-insurance-shepherdsville-ky-bullitt-county",
+      "title": "Home Insurance for Shepherdsville Homeowners: A Bullitt County Rate Guide",
+      "description": "A Shepherdsville-specific home insurance guide covering what homeowners in Bullitt County pay in 2026, what new construction neighborhoods need to know, and how an independent agent shops more carriers than Farm Bureau or State Farm alone.",
+      "primary_keyword": "home insurance shepherdsville ky",
+      "secondary_keywords": [
+        "shepherdsville ky homeowners insurance",
+        "bullitt county home insurance rates",
+        "home insurance shepherdsville kentucky 2026",
+        "insurance agents shepherdsville ky"
+      ],
+      "pillar": "local",
+      "topic_type": "local-guide",
+      "search_intent": "transactional",
+      "funnel_stage": "bottom",
+      "conversion_goal": "quote-request",
+      "related_cluster": "kentucky-local",
+      "seasonality_window": "winter-prep",
+      "target_month": "2026-11",
+      "target_product_page": "/personal/home.html",
+      "target_location_pages": [
+        "/insurance/shepherdsville-ky.html",
+        "/insurance/mt-washington-ky.html"
+      ],
+      "secondary_internal_links": [
+        "/insurance/shepherdsville-ky.html",
+        "/personal/home.html",
+        "/insurance/mt-washington-ky.html",
+        "/blog/mt-washington-home-insurance",
+        "/blog/replacement-cost-vs-actual-cash-value",
+        "/blog/independent-vs-kentucky-farm-bureau-bullitt-county"
+      ],
+      "page_role": "seasonal",
+      "refresh_cycle": "annual",
+      "source": "topic-research",
+      "research_task_id": "604dcd9f-1acf-4e11-b37d-e2661ee4a50c",
+      "priority_score": 77,
+      "score_breakdown": {
+        "demand": 16,
+        "winnability": 20,
+        "business_value": 20,
+        "aeo": 11,
+        "timing": 10
+      },
+      "research_brief": {
+        "demand_evidence": "The dossier shows the zipcode '40165' (Shepherdsville's primary ZIP) at position 8.0 with 100% CTR, signaling the site already gets found for this geographic intent. Live SERP for Shepherdsville home insurance is dominated by lead-generation tools (vhomeinsurance.com, gethomeinsurancequotes.com with outdated rate data), Kentucky Farm Bureau agent pages (Cheryl Day, North Agency), and a State Farm agent page. One local independent agency, Kentucky Bred Insurance, has a Shepherdsville home insurance post but is not in Bullitt County and presents thin content. The site's existing Shepherdsville location page gives domain authority for a supporting blog post.",
+        "serp_landscape": "Page 1 features: vhomeinsurance.com (stale rate data, no agent voice), gethomeinsurancequotes.com (quote aggregator, outdated $998 average), Kentucky Farm Bureau's Cheryl Day agent page (captive, biased toward one carrier), a State Farm agent page, kybredinsurance.com (thin, out-of-area agency), and Yellow Pages. No comprehensive, updated, independent-agent-authored Shepherdsville home insurance guide exists on page 1. This is an open door for a local agency with the existing Shepherdsville location page to anchor a blog post.",
+        "differentiation_angle": "A post that cites current 2026 rate benchmarks (the statewide average is $4,471 per year per Insurance.com, compared to what an independent agent can often find for Shepherdsville's ZIP code), addresses the specific new construction considerations in Mallard Lake, Wray Estates, and Wildwoods subdivisions (replacement cost accuracy on new builds), explains wind and hail percentage deductibles that have replaced the traditional flat $1,000 deductible across most Kentucky carriers, and positions The Way Agency's multi-carrier access against the captive KFB and State Farm agents on page 1 will win on both relevance and local trust.",
+        "direct_answer_target": "Home insurance in Shepherdsville, KY costs roughly $800 to $1,300 per year for an average home, though 2026 statewide rate increases mean older homes and those with aging roofs may pay significantly more. Bullitt County homeowners can often lower their premium by shopping across multiple carriers, a task independent agents handle without charging extra. New construction in Shepherdsville requires special attention to replacement cost accuracy and percentage wind and hail deductibles.",
+        "questions_to_answer": [
+          "How much is home insurance in Shepherdsville, KY?",
+          "Is Kentucky Farm Bureau the best option for Bullitt County homeowners?",
+          "What does a wind and hail deductible mean for a Shepherdsville homeowner?",
+          "Does new construction in Shepherdsville need a different type of home insurance?",
+          "Can I shop multiple carriers for home insurance in Shepherdsville?",
+          "How does my Bullitt County ZIP code affect my home insurance rate?",
+          "What local agents offer home insurance in Shepherdsville?"
+        ],
+        "entities_to_cover": [
+          "Bullitt County new construction neighborhoods (Mallard Lake, Wray Estates, Wildwoods)",
+          "Kentucky Farm Bureau (captive comparison)",
+          "State Farm (captive comparison)",
+          "wind and hail percentage deductible (replacing flat $1,000 deductible)",
+          "replacement cost vs actual cash value (critical for new construction)",
+          "roof age surcharge (15 to 20 year old roofs)",
+          "The Way Agency location page /insurance/shepherdsville-ky.html",
+          "40165 ZIP code",
+          "independent agent multi-carrier advantage",
+          "Kentucky FAIR Plan (last resort for uninsurable homes)"
+        ],
+        "local_angle": "Shepherdsville is Bullitt County's county seat and one of the fastest-growing communities in the Louisville metro area. Active subdivisions (Mallard Lake, Wray Estates, River Crest) mean many first-time Shepherdsville homeowners are setting up insurance on brand-new builds in 2026, often without understanding that the builder's risk policy expires at closing. The Way Agency, based in neighboring Mt. Washington, is the closest independent agency to this market and can serve as a genuine neighbor-expert rather than a call center.",
+        "recommended_schema": [
+          "FAQPage",
+          "Article"
+        ],
+        "internal_links": [
+          "/insurance/shepherdsville-ky.html",
+          "/personal/home.html",
+          "/insurance/mt-washington-ky.html",
+          "/blog/mt-washington-home-insurance",
+          "/blog/replacement-cost-vs-actual-cash-value",
+          "/blog/independent-vs-kentucky-farm-bureau-bullitt-county"
+        ],
+        "sources": [
+          "https://vhomeinsurance.com/shepherdsville-ky-home-insurance-hi18182/",
+          "https://www.louisvillehomesfast.com/louisville-ky-new-construction/area-11-shepherdsville-bullitt-county/",
+          "https://kybredinsurance.com/shepherdsville/home-insurance-in-shepherdsville-ky/",
+          "https://www.eliteriskagent.com/blog/average-cost-homeowners-insurance-kentucky",
+          "https://www.lendingtree.com/home-insurance/homeowners-insurance-kentucky/"
+        ]
+      },
+      "proposed_at": "2026-10-03",
+      "approved_at": "2026-10-03",
+      "approved_by": "partner@thewayagency.com",
+      "status": "approved",
+      "notes": "From topic research task 604dcd9f-1acf-4e11-b37d-e2661ee4a50c (2026-10-02). Its automated quality check failed on a judge input cap, so the topics never reached the backlog; the owner reviewed the six proposals and approved this one directly on 2026-10-03. Overlaps kentucky-home-insurance-rates-rising-2026 in subject; its local rate figures in the research are dated, so use 2026 statewide figures."
     }
   ]
 }
