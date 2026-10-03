@@ -313,7 +313,7 @@ describe('the live team: the four licensed reviewers, two of them by email', () 
 
   test('review_via is "email" for Sheilia and Jill only (owner decision Q3); Audrey and Kelly review in SAGE', () => {
     const channels = Object.fromEntries(team.map((m) => [m.slug, sre.reviewChannel(m)]));
-    assert.deepEqual(channels, { 'sheilia-royal': 'email', 'audrey-lillpop': 'sage', 'kelly-mccallister': 'sage', 'jill-boone': 'email', 'allison-sommers': null });
+    assert.deepEqual(channels, { 'sheilia-royal': 'email', 'audrey-lillpop': 'sage', 'kelly-mccallister': 'sage', 'jill-boone': 'email' });
     assert.deepEqual(team.filter((m) => m.review_via !== undefined).map((m) => [m.slug, m.review_via]), [['sheilia-royal', 'email'], ['jill-boone', 'email']]);
   });
 
