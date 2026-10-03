@@ -394,6 +394,9 @@ function postSources(meta) {
   return out;
 }
 
+// A YYYY-MM-DD date (the guard's DATE_RE is not exported).
+const BLOG_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
 // ─── Blog post HTML template ────────────────
 /**
  * @param {object} meta     the post's front matter (parseFrontMatter)
@@ -452,6 +455,13 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [], tpmo = TPMO_DATA } 
 
   const fmtDate = (d) => new Date(String(d).slice(0, 10) + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const dateFormatted = fmtDate(meta.date);
+  // BLOG-07: one modified date for the byline, Article dateModified and
+  // article:modified_time. It counts only when it is a real YYYY-MM-DD later
+  // than the publish date; otherwise all three carry the publish date and the
+  // byline prints no "Updated". Date-only, never an invented time.
+  const published = String(meta.date || '');
+  const modified = BLOG_DATE_RE.test(String(meta.modified || '')) && String(meta.modified) > published
+    ? String(meta.modified) : published;
   const writtenBy = byline
     ? `Written by <a href="/about/team.html#${authorSlug}" style="color:var(--cyan);text-decoration:none;">${esc(byline.name)}</a>${byline.title ? `, ${esc(byline.title)}` : ''}, ${esc(contentGuard.AGENCY_AUTHOR)}`
     : `Written by ${esc(contentGuard.AGENCY_AUTHOR)}`;
@@ -547,8 +557,8 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [], tpmo = TPMO_DATA } 
     "publisher": orgRef(),
     // Only an image the post itself carries (front matter), never the logo.
     ...(featuredImage ? { "image": [`${SITE_URL}${featuredImage}`] } : {}),
-    "datePublished": String(meta.date || ''),
-    "dateModified": String(meta.modified || meta.date || ''),
+    "datePublished": published,
+    "dateModified": modified,
     "description": String(meta.description || ''),
     ...(sources.length ? { "citation": sources.map((s) => s.url) } : {}),
   };
@@ -576,8 +586,8 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [], tpmo = TPMO_DATA } 
   <meta property="og:image:width" content="${ogImageW}">
   <meta property="og:image:height" content="${ogImageH}">
   <meta property="og:image:type" content="image/jpeg">
-  <meta property="article:published_time" content="${esc(meta.date)}">
-  <meta property="article:modified_time" content="${esc(meta.modified || meta.date)}">
+  <meta property="article:published_time" content="${esc(published)}">
+  <meta property="article:modified_time" content="${esc(modified)}">
   <meta property="article:author" content="${esc(byline ? byline.name : contentGuard.AGENCY_AUTHOR)}">
   <meta property="article:section" content="${esc(meta.category || 'insurance')}">
   ${tags.map(t => `<meta property="article:tag" content="${esc(t)}">`).join('\n  ')}
@@ -623,7 +633,9 @@ ${renderNav()}
         <span>|</span>${hasReview ? `
         <span>Reviewed by ${reviewerLink}${meta.reviewer_title ? `, ${esc(meta.reviewer_title)}` : ''} on ${esc(fmtDate(meta.reviewed_date))}</span>
         <span>|</span>` : ''}
-        <span>Published ${esc(dateFormatted)}</span>
+        <span>Published <time datetime="${esc(published)}">${esc(dateFormatted)}</time></span>${modified !== published ? `
+        <span>|</span>
+        <span>Updated <time datetime="${esc(modified)}">${esc(fmtDate(modified))}</time></span>` : ''}
         <span>|</span>
         <span>${esc(readingTime)}</span>
       </div>${tpmoHtml ? `

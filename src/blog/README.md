@@ -43,6 +43,16 @@ URLs without spaces, quotes or angle brackets are kept. Items are split on
 commas, so no label or URL may contain a comma. Keep linking each statute
 inline in the body as well.
 
+`modified` is the date of the post's last substantive change (BLOG-07). When
+it is later than `date`, the byline prints "Updated <date>" beside
+"Published", and the Article `dateModified` and `article:modified_time` carry
+the same date; otherwise all three show the publish date. Bump it only for a
+substantive change: a fact, figure, statute, deadline or penalty, or a section
+added or removed. Do not bump it for link rewrites, typo fixes, byline, image
+or CTA-parameter changes. Never auto-bump it (no script or workflow sets it on
+an edit), and keep it date-only (YYYY-MM-DD, no time). The publisher sets
+`date` and `modified` only when it first publishes a scheduled post.
+
 ## Who the byline names
 
 The byline says who wrote the post and, only when it is true, who reviewed it.
