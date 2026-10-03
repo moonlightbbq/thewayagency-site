@@ -308,6 +308,17 @@ if (turnstileIssues === 0) pass('Turnstile only on widget pages (async); app.js 
   if (pairingProblems === 0) pass(`Call/text pairing: every tel: link has an sms: peer to +15024135335 (${used.size} listed exemptions in use); ${navPages} menus carry the pair`);
 }
 
+// 7f. CTA article (CONV-04): "Get a Auto Insurance Quote" and the like.
+{
+  let articleProblems = 0;
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, 'utf8');
+    const m = html.match(/\bGet a [AEIO][a-z]+[^<]*Quote/);
+    if (m) { error(`CTA article: "${m[0]}" in ${path.relative(BUILD, file)}`); articleProblems++; }
+  }
+  if (articleProblems === 0) pass('CTA labels: no "Get a" before a vowel sound');
+}
+
 // 8. Image size check (warn on images >500KB)
 let largeImages = 0;
 const assetsDir = path.join(BUILD, 'src', 'assets');
