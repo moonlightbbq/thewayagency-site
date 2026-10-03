@@ -1,0 +1,18 @@
+{
+  "_doc": "Dated facts that product copy in data/content-*.json reads as {{fact:<id>}} tokens. scripts/builders/pages.js generateProductPage() resolves them in the visible text and the FAQPage JSON-LD (scripts/lib/health-facts.js); the build guard fails on a token left unresolved, and check-data-integrity.js fails on a token naming no fact and warns once a fact's review_by date has passed. One place to change a date or a figure. Values are plain text: no '<', '>', '&', quotes or braces. The knowledge base (data/knowledge-base.json) is also read by SAGE, so it never carries tokens.",
+  "facts": [
+    {
+      "id": "marketplace_oe_py2027",
+      "label": "Marketplace open enrollment for plan year 2027 (HealthCare.gov for Indiana and Tennessee; kynect for Kentucky)",
+      "value": "As of October 2026, open enrollment for 2027 coverage runs November 1, 2026 to January 15, 2027 on HealthCare.gov (Indiana and Tennessee) and on kynect (Kentucky). On HealthCare.gov, enroll by December 15, 2026 for coverage that starts January 1, 2027.",
+      "year": 2027,
+      "sources": [
+        { "title": "HealthCare.gov, Dates and deadlines", "url": "https://www.healthcare.gov/quick-guide/dates-and-deadlines/" },
+        { "title": "Kentucky Health Benefit Exchange (kynect)", "url": "https://khbe.ky.gov/Pages/index.aspx" }
+      ],
+      "retrieved_on": "2026-10-02",
+      "review_by": "2026-10-31",
+      "note": "The shortened open enrollment in 45 CFR 155.410(e)(5) (end by December 31) was vacated in City of Columbus v. Kennedy, D. Md. No. 25-2114 (orders of 2026-06-12 and 2026-06-16). The government's appeal (4th Cir. No. 26-1938) is argued 2026-10-30 with no stay. Re-check HealthCare.gov, kynect and the appeal before 2026-11-01 and again before 2026-12-15."
+    }
+  ]
+}

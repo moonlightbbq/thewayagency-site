@@ -165,7 +165,18 @@ function copyRootFiles(ROOT, BUILD) {
   }
 }
 
-function copyPortalPages(SRC, BUILD, injectVersion) {
+// The intake reads the public part of data/medicare-tpmo.json from this
+// element (its Medicare/health lead disclosure and, from Phase 2, the TPMO
+// statement; TRUST-01). '<' is written as \u003c so no value can close the
+// script element.
+const TPMO_DATA_ELEMENT = '<script type="application/json" id="tpmo-data">null</script>';
+function tpmoDataElement(tpmo) {
+  const { publicTpmoData } = require('../lib/medicare-disclaimer');
+  const json = JSON.stringify(publicTpmoData(tpmo)).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+  return `<script type="application/json" id="tpmo-data">${json}</script>`;
+}
+
+function copyPortalPages(SRC, BUILD, injectVersion, tpmo = null) {
   const portalPages = [
     { src: 'intake.html', dest: 'intake/index.html', sitemap: null }, // noindexed — exclude from sitemap
     { src: 'portal.html', dest: 'portal/index.html', sitemap: null },
@@ -176,7 +187,8 @@ function copyPortalPages(SRC, BUILD, injectVersion) {
     if (fs.existsSync(srcFile)) {
       const destDir = path.join(BUILD, path.dirname(page.dest));
       ensureDir(destDir);
-      const pageContent = fs.readFileSync(srcFile, 'utf8');
+      let pageContent = fs.readFileSync(srcFile, 'utf8');
+      if (page.src === 'intake.html' && tpmo) pageContent = pageContent.split(TPMO_DATA_ELEMENT).join(tpmoDataElement(tpmo));
       fs.writeFileSync(path.join(BUILD, page.dest), injectVersion(pageContent, '/' + page.dest));
       console.log(`  ✓ ${page.dest}`);
     }
@@ -205,5 +217,7 @@ module.exports = {
   copySubPages,
   copyRootFiles,
   copyPortalPages,
+  tpmoDataElement,
+  TPMO_DATA_ELEMENT,
   minifyCss,
 };

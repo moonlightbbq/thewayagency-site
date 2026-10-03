@@ -7,6 +7,8 @@ const fs = require('fs');
 const path = require('path');
 // The agency reference for every JSON-LD block here (never a full agency node: SCHEMA-01, SCHEMA-02).
 const { orgRef } = require('../lib/entity');
+const { resolveFacts } = require('../lib/health-facts');
+const { leadDisclosureText } = require('../lib/medicare-disclaimer');
 
 // ─── HTML Escape Helper ────────────────────────
 
@@ -259,7 +261,14 @@ ${buttons.map(b => `          <a href="${b.href}" class="${b.className || 'btn b
 //   handler (app.js is deferred) to /intake/ with page context only, instead
 //   of a GET to this page's own URL carrying the typed values.
 // - data-ab-arm is inert until the CONV-06 A/B test exists.
-function renderInlineForm(formId, hiddenFields) {
+// opts.disclosureHtml (TRUST-01): an escaped disclosure printed inside the
+// form directly above the button, at 14px. Health product pages pass the
+// leadDisclosureText() output (scripts/lib/medicare-disclaimer.js), the
+// only implementation; it ships to every visitor and every A/B arm.
+function renderInlineForm(formId, hiddenFields, opts = {}) {
+  const disclosureHtml = opts.disclosureHtml
+    ? `\n            <p class="form-disclosure" style="font-size:14px;line-height:1.5;font-weight:400;color:#1e293b;margin:8px 0 10px;text-align:left;">${opts.disclosureHtml}</p>`
+    : '';
   const hiddenHtml = Object.entries(hiddenFields).map(([k, v]) =>
     `          <input type="hidden" name="${esc(k)}" value="${esc(v)}">`
   ).join('\n');
@@ -281,7 +290,7 @@ ${hiddenHtml}
                  checkHoneypot). The data-* attrs are belt-and-braces, matching
                  intake.html / contact.html / apply.html / forrest-frank-2026.html. -->
             <input type="text" name="_hp_company" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true"
-                   data-1p-ignore data-lpignore="true" data-form-type="other">
+                   data-1p-ignore data-lpignore="true" data-form-type="other">${disclosureHtml}
             <button type="submit">Get Quote</button>
           </form>
           <p style="font-size:11px;color:var(--slate,#64748b);margin-top:8px;text-align:center;">We never sell your data. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
@@ -511,7 +520,10 @@ ${renderScripts()}
 
 function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
   const { products, office, knowledgeBase, carriers, testimonials, testimonialsBlocklist, reviews, richContent, seoData, renderNav, renderFooter, renderScripts } = ctx;
-  const rc = richContent[product.id] || {};
+  // {{fact:<id>}} tokens read dated values from data/health-facts.json, in the
+  // visible copy and the FAQPage JSON-LD alike (TRUST-04). An unknown token is
+  // left in place and fails the build guard.
+  const rc = resolveFacts(richContent[product.id] || {}, ctx.healthFacts);
   const faqs = rc.faqs || [];
   const kbFaqs = getFAQsForProduct(knowledgeBase, product.id);
   const allFaqs = [...faqs];
@@ -649,7 +661,12 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
   }, null, 2).replace(/</g, '\\u003c')}
   </script>${faqSchema}`;
 
-  const formHtml = renderInlineForm(product.id, { product: product.id, line: lineSlug })
+  // Health pages: the Medicare/health lead disclosure beside the button
+  // (TRUST-01, 806 KAR 17:570 Section 22(2)(c)), from the one helper.
+  const formOpts = lineKey === 'health'
+    ? { disclosureHtml: esc(leadDisclosureText(ctx.tpmo, { context: product.id === 'medicare' ? 'medicare' : 'health', form: 'inline' })) }
+    : {};
+  const formHtml = renderInlineForm(product.id, { product: product.id, line: lineSlug }, formOpts)
     .replace('%%FORM_HEADING%%', `Let's find the right ${product.name.toLowerCase()} for you`)
     .replace('%%FORM_SUBTEXT%%', 'Tell us a little about yourself and we\'ll come back with the best options for your situation. No pressure, no jargon, just clear answers.');
 

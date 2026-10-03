@@ -192,6 +192,71 @@ if (kb) {
   if (kbErrors === 0) pass(`knowledge-base.json: ${(kb.entries || []).length} entries, all valid`);
 }
 
+// medicare-tpmo.json: the CMS TPMO statement inputs and the lead-disclosure
+// wording (scripts/lib/medicare-disclaimer.js; TRUST-01). Every problem is an
+// error once the record is "active" (the statement then renders with these
+// counts); while it waits for the owner's signed record it is a warning.
+const tpmo = loadJson('medicare-tpmo.json');
+if (tpmo) {
+  const { tpmoProblems } = require('./lib/medicare-disclaimer');
+  const problems = tpmoProblems(tpmo);
+  const report = tpmo.status === 'active' ? error : warn;
+  for (const p of problems) report(`medicare-tpmo.json: ${p}`);
+  if (tpmo.status === 'pending_owner') {
+    warn('medicare-tpmo.json: status pending_owner, so no TPMO statement renders (owner inputs D-1 to D-4 missing); health forms show the default lead disclosure');
+  } else if (problems.length === 0) {
+    pass(`medicare-tpmo.json: status ${tpmo.status}, branch ${tpmo.branch}, valid`);
+  }
+}
+
+// health-facts.json: dated values product copy reads as {{fact:<id>}} tokens
+// (scripts/lib/health-facts.js; TRUST-04). Every token in data/content-*.json
+// must name a fact. The knowledge base never carries a token: SAGE reads that
+// file as it is (sage-server scripts/kb-seed-website.js).
+const healthFacts = loadJson('health-facts.json');
+if (healthFacts) {
+  const { factProblems, factTokens } = require('./lib/health-facts');
+  const usedIn = [];
+  const collect = (v, where) => {
+    if (typeof v === 'string') usedIn.push([where, v]);
+    else if (Array.isArray(v)) v.forEach((x, i) => collect(x, `${where}[${i}]`));
+    else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) collect(x, `${where}.${k}`);
+  };
+  for (const f of fs.readdirSync(DATA).filter((n) => /^content-.*\.json$/.test(n))) {
+    try { collect(JSON.parse(fs.readFileSync(path.join(DATA, f), 'utf8')), f); } catch { /* reported by its own check */ }
+  }
+  const { problems, warnings: factWarnings } = factProblems(healthFacts, { usedIn });
+  problems.forEach((p) => error(`health-facts.json: ${p}`));
+  factWarnings.forEach((w) => warn(`health-facts.json: ${w}`));
+  for (const e of (kb && kb.entries) || []) {
+    if (factTokens(`${e.question || ''} ${e.answer || ''}`).length) error(`knowledge-base.json: "${e.id || e.question}" carries a {{fact:...}} token; SAGE reads this file as written, so write the value out`);
+  }
+  if (problems.length === 0) pass(`health-facts.json: ${(healthFacts.facts || []).length} facts; every token in data/content-*.json resolves`);
+}
+
+// The health compliance guard's copy rules over the data the pages are built
+// from (scripts/check-health-compliance.js scanText), so copy that no page
+// renders today (knowledge-base entries beyond the five FAQs a page shows) is
+// covered too.
+{
+  const { scanText } = require('./lib/health-compliance');
+  let scanned = 0;
+  let found = 0;
+  const visit = (v, file, where) => {
+    if (typeof v === 'string') {
+      scanned++;
+      const { problems: ps, warnings: ws } = scanText(v, { file: `${file} ${where}`, tpmo });
+      ps.forEach((p) => { error(p); found++; });
+      ws.forEach((w) => warn(w));
+    } else if (Array.isArray(v)) v.forEach((x, i) => visit(x, file, `${where}[${i}]`));
+    else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) visit(x, file, where ? `${where}.${k}` : k);
+  };
+  for (const f of fs.readdirSync(DATA).filter((n) => /^content-.*\.json$/.test(n) || n === 'knowledge-base.json')) {
+    try { visit(JSON.parse(fs.readFileSync(path.join(DATA, f), 'utf8')), `data/${f}`, ''); } catch { /* reported by its own check */ }
+  }
+  if (found === 0) pass(`Health compliance copy rules: ${scanned} strings in data/content-*.json and knowledge-base.json clean`);
+}
+
 // content-calendar.json
 const calendar = loadJson('content-calendar.json');
 if (calendar) {

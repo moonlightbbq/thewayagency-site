@@ -1,17 +1,18 @@
 ---
 title: "Medicare Open Enrollment 2027: What's Changing in Kentucky"
 slug: medicare-open-enrollment-2027
-description: Medicare open enrollment runs October 15 through December 7. Here's what's new for 2027 and how Kentucky Medicare beneficiaries should prepare.
+description: Medicare Open Enrollment for 2027 coverage runs Oct 15–Dec 7, 2026. In 2027 the Part D deductible can be up to $700 and the drug out-of-pocket cap is $2,400.
 author: The Way Agency
 author_title: Independent Insurance Agency
 date: 2026-07-22
-modified: 2026-07-22
+modified: 2026-10-02
 reading_time: 6 min read
 related_page: /health/medicare.html
 tags: medicare, open enrollment, kentucky, medicare advantage, 2027
+sources: [Medicare.gov Open Enrollment | https://www.medicare.gov/health-drug-plans/open-enrollment, CMS CY2027 Rate Announcement | https://www.cms.gov/files/document/2027-announcement.pdf, CMS 2026 Medicare Parts A and B premiums and deductibles | https://www.cms.gov/newsroom/fact-sheets/2026-medicare-parts-b-premiums-deductibles, Kentucky SHIP (CHFS DAIL) | https://www.chfs.ky.gov/agencies/dail/Pages/ship.aspx, SSA Extra Help | https://www.ssa.gov/medicare/part-d-extra-help, Kentucky Medicare Savings Program (DMS) | https://www.chfs.ky.gov/agencies/dms/dpo/epb/Pages/msp.aspx, Medicare Plan Finder | https://www.medicare.gov/plan-compare]
 ---
 
-Medicare open enrollment runs from October 15 through December 7 every year. During this window, you can switch between Original Medicare and Medicare Advantage, change your Part D prescription drug plan, or adjust your coverage in ways that are not available during the rest of the year.
+Medicare's Open Enrollment Period for 2027 coverage runs October 15 through December 7, 2026, and changes take effect January 1, 2027; if you're in a Medicare Advantage plan, you get one more chance to switch plans or return to Original Medicare from January 1 to March 31, 2027. For 2027, the standard Part D deductible can be as high as $700 (up from $615 in 2026), and once your out-of-pocket drug costs reach $2,400 (up from $2,100 in 2026) you pay nothing more for covered drugs that year. Read your plan's Annual Notice of Change, then compare plans on Medicare.gov or with Kentucky's State Health Insurance Assistance Program (SHIP) at (877) 293-7447.
 
 If you are a Kentucky Medicare beneficiary, this is the one time each year you should sit down and review what you have. Plans change. Costs change. The medications on your formulary may shift. What worked in 2026 may not be the best fit for 2027.
 
@@ -25,11 +26,19 @@ Here is what you need to know heading into this enrollment period.
 
 If you miss the December 7 deadline, you are generally locked into your current plan until the next open enrollment period, with limited exceptions.
 
+## What CMS has announced for 2027
+
+CMS published the 2027 Part D values in its CY2027 Rate Announcement (April 6, 2026, Table V-2):
+
+- **Part D deductible:** the standard deductible can be up to $700 in 2027 (it is $615 in 2026). Some plans charge less, and some have no deductible.
+- **Part D out-of-pocket threshold:** $2,400 in 2027 (it is $2,100 in 2026). Once your out-of-pocket costs for covered Part D drugs reach it, you pay nothing more for covered Part D drugs that year.
+- **Part A and Part B:** CMS had not announced the 2027 Part B premium or the 2027 Part A and Part B deductibles as of October 2, 2026. For 2026 they are $202.90 a month, $1,736 per benefit period and $283 a year (CMS, November 14, 2025). We will add the 2027 amounts when CMS publishes them.
+
 ## What typically changes each year
 
 Every year, Medicare plans adjust their costs and coverage. Here is what to review for 2027:
 
-**Part B premiums.** The standard Part B premium changes annually. Higher-income beneficiaries pay more through Income-Related Monthly Adjustment Amounts (IRMAA). Check your latest Social Security statement or Medicare notice to see your 2027 premium.
+**Part B premiums.** The standard Part B premium changes annually (the 2026 standard premium is $202.90 a month). Higher-income beneficiaries pay more through Income-Related Monthly Adjustment Amounts (IRMAA). Check your latest Social Security statement or Medicare notice to see your 2027 premium.
 
 **Part D prescription drug coverage.** Formularies change every year. A medication that was covered at a lower tier in 2026 could move to a higher tier in 2027, meaning you pay more out of pocket. Review your plan's drug list before the enrollment deadline.
 
@@ -53,9 +62,9 @@ Neither option is universally better. It depends on your health needs, your doct
 
 **Prescription drug costs.** Kentucky has a higher-than-average rate of chronic conditions that require ongoing medication. If you take multiple prescriptions, compare Part D plans carefully. The Medicare Plan Finder tool at medicare.gov lets you enter your specific medications and see which plans offer the best coverage.
 
-**kynect resources.** Kentucky's kynect program offers free assistance to Medicare beneficiaries. State Health Insurance Assistance Program (SHIP) counselors can help you compare plans, understand your options, and enroll. This service is free and unbiased.
+**Free Medicare counseling (SHIP).** Kentucky's State Health Insurance Assistance Program, run by the Cabinet for Health and Family Services' Department for Aging and Independent Living, gives free, unbiased Medicare counseling, and its counselors do not sell insurance. Call (877) 293-7447 (option 2) or visit the [Kentucky SHIP page](https://www.chfs.ky.gov/agencies/dail/Pages/ship.aspx).
 
-**Income-based assistance.** If you have limited income, you may qualify for Medicare Savings Programs or Extra Help with Part D costs. Kentucky's Department for Medicaid Services administers these programs. Do not assume you do not qualify — the income thresholds are higher than many people expect.
+**Income-based help.** If your income and resources are limited, you may qualify for Extra Help with Part D costs, which you can apply for through Social Security ([ssa.gov](https://www.ssa.gov/medicare/part-d-extra-help)) or Kentucky Medicaid, and for a Medicare Savings Program, which Kentucky Medicaid runs (apply through kynect or your local DCBS office). Do not assume you do not qualify: the income limits are higher than many people expect.
 
 ## How to review your current coverage
 
@@ -79,11 +88,11 @@ Before you make any changes, take stock of what you have now:
 
 **Ignoring the formulary.** If your medication is no longer covered or moved to a higher tier, you could face significantly higher out-of-pocket costs. Check the formulary before you commit.
 
-**Missing the deadline.** December 7 is a hard deadline. If you miss it, you are stuck with your current plan until next fall. Mark it on your calendar and do not wait until the last week.
+**Missing the deadline.** December 7 is a hard deadline. If you miss it, you generally keep your current plan for 2027, unless you are in a Medicare Advantage plan (one change is allowed January 1 to March 31) or you qualify for a Special Enrollment Period. Mark it on your calendar and do not wait until the last week.
 
 ## How we help with Medicare in Kentucky
 
-Medicare is complicated. There are dozens of plans available in most Kentucky counties, and the differences between them are not always obvious. As an independent agency, we are not tied to one insurance company. We can help you compare Medicare Supplement, Medicare Advantage, and Part D plans across multiple carriers.
+Medicare is complicated. There are dozens of plans available in most Kentucky counties, and the differences between them are not always obvious. A licensed agent can review your Medicare options with you.
 
 We also help with:
 
@@ -91,7 +100,7 @@ We also help with:
 - Understanding how Medicare coordinates with employer coverage or retiree benefits
 - Enrollment assistance so you do not miss deadlines or make costly mistakes
 
-If you want help reviewing your Medicare options for 2027, [contact us for a consultation](/health/medicare.html). There is no pressure and no cost to sit down and compare your options.
+If you want help reviewing your Medicare options for 2027, [contact us for a consultation](/health/medicare.html). There is no pressure and no cost to talk through your options with a licensed agent.
 
 ### FAQ: When is Medicare open enrollment for 2027?
 
@@ -107,4 +116,4 @@ Use the Medicare Plan Finder at medicare.gov/plan-compare. Enter your specific m
 
 ### FAQ: Is there free help available for Medicare enrollment in Kentucky?
 
-Yes. Kentucky's State Health Insurance Assistance Program (SHIP) provides free, unbiased counseling to Medicare beneficiaries. You can also contact kynect for assistance. And independent agents like us can help you compare plans at no cost to you — we are compensated by the carriers, not by you.
+Yes. Kentucky's State Health Insurance Assistance Program (SHIP) gives free, unbiased Medicare counseling; call (877) 293-7447. You can also compare plans yourself at Medicare.gov/plan-compare.

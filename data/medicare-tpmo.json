@@ -1,0 +1,27 @@
+{
+  "_doc": "CMS TPMO disclaimer inputs, 42 CFR 422.2267(e)(41) and 423.2267(e)(41), CY2027 wording (FR Doc 2026-06600: 91 FR 17583 for 422.2267, 91 FR 17592 for 423.2267). Filled from a dated record signed by a licensed agent. Re-confirm every October 1. Never edit counts without a new signed record. Branch B (all health leads, Medicare included, referred to the partner agency) was recorded by the owner on 2026-10-02; the partner's legal name, its Indiana and Tennessee coverage, the FMO website rules (D-3) and the consent text (D-4) are still open, so status stays pending_owner: no TPMO statement renders and every Medicare and health form shows the default disclosure from scripts/lib/medicare-disclaimer.js leadDisclosureText(), which names no agency.",
+  "status": "pending_owner",
+  "branch": "B",
+  "variant": null,
+  "plan_year": 2027,
+  "as_of": null,
+  "signed_record": null,
+  "display": { "product_page": true, "medicare_posts": true, "legacy_guide": true, "hubs": true, "intake": true, "health_hub": false, "footer": false },
+  "areas": {
+    "KY": { "uniform_statewide": false, "statewide": null, "counties": {
+      "Daviess County": null, "Henderson County": null, "Jefferson County": null, "Fayette County": null,
+      "Warren County": null, "Hardin County": null, "Bullitt County": null, "Franklin County": null } },
+    "IN": { "uniform_statewide": false, "statewide": null, "counties": {
+      "Vanderburgh County": null, "Marion County": null, "Allen County": null, "Hamilton County": null,
+      "St. Joseph County": null, "Monroe County": null, "Tippecanoe County": null } },
+    "TN": { "uniform_statewide": false, "statewide": null, "counties": {
+      "Davidson County": null, "Shelby County": null, "Knox County": null, "Hamilton County": null,
+      "Montgomery County": null, "Rutherford County": null, "Williamson County": null, "Washington County": null } }
+  },
+  "lead_disclosure": {
+    "contact_entities": [],
+    "medicare_products_label": "Medicare plans",
+    "tcpa": false,
+    "partner_consent": null
+  }
+}
