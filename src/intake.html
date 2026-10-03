@@ -33,11 +33,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1a6fb5">
 <title>Get an Insurance Quote | The Way Agency</title>
-<meta name="description" content="Get an insurance quote from The Way Agency. We represent top-rated carriers to find the right coverage at the right price in KY, IN, and TN.">
+<meta name="description" content="Get an insurance quote from The Way Agency. We compare the insurance companies we're appointed with to find the right coverage at the right price in KY, IN, and TN.">
 <link rel="canonical" href="https://www.thewayagency.com/intake/">
 <meta name="robots" content="noindex, nofollow">
 <meta property="og:title" content="Get an Insurance Quote | The Way Agency">
-<meta property="og:description" content="Get an insurance quote from The Way Agency. We represent top-rated carriers to find the right coverage at the right price.">
+<meta property="og:description" content="Get an insurance quote from The Way Agency. We compare the insurance companies we're appointed with to find the right coverage at the right price.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://www.thewayagency.com/intake/">
 <meta property="og:site_name" content="The Way Agency">
@@ -204,12 +204,14 @@
   .product-opt.xsell-required .xsell-badge { color: #92400e; background: #fef3c7; border: 1px solid #fcd34d; }
   .product-opt.xsell-risk     .xsell-badge { color: #1e40af; background: #dbeafe; border: 1px solid #93c5fd; }
   .product-opt.xsell-upsell   .xsell-badge { color: #0e7490; background: #cffafe; border: 1px solid #67e8f9; }
+  .product-opt.xsell-info     .xsell-badge { color: #334155; background: #f1f5f9; border: 1px solid #cbd5e1; }
 
   .product-opt.selected .xsell-badge { display: none; }
   .product-opt.selected.xsell-discount,
   .product-opt.selected.xsell-required,
   .product-opt.selected.xsell-risk,
-  .product-opt.selected.xsell-upsell {
+  .product-opt.selected.xsell-upsell,
+  .product-opt.selected.xsell-info {
     border-color: var(--blue);
     background: linear-gradient(135deg, rgba(26,111,181,.06), rgba(41,182,246,.08));
   }
@@ -683,7 +685,6 @@
   </div>
   <div class="intake-trust-bar">
     <span>&#128274; Secure &amp; Encrypted</span>
-    <span>&#128737;&#65039; Top-Rated Carriers</span>
     <span>&#9201;&#65039; Response in 1 business day</span>
   </div>
   <div class="time-estimate" id="time-estimate">About 3 minutes left</div>
@@ -1068,10 +1069,10 @@ function showIntakeBanner(color, msg) {
     if (subtitle) subtitle.textContent = 'Get a personalized ' + PROD_NAMES[product].toLowerCase() + ' quote from a licensed agent.';
   } else if (city) {
     headline.textContent = 'Insurance Quote for ' + city + (state ? ', ' + state : '');
-    if (subtitle) subtitle.textContent = 'A local agent serving ' + city + ' will follow up within one business day.';
+    if (subtitle) subtitle.textContent = 'A licensed agent will follow up within one business day.';
   } else if (line === 'commercial') {
     headline.textContent = 'Commercial Insurance Quote';
-    if (subtitle) subtitle.textContent = 'Protect your business with coverage from top-rated carriers.';
+    if (subtitle) subtitle.textContent = 'Protect your business with coverage from the insurance companies we\'re appointed with.';
   } else if (line === 'life') {
     headline.textContent = 'Life Insurance Quote';
     if (subtitle) subtitle.textContent = 'Get personalized life and income-protection coverage options.';
@@ -1737,55 +1738,62 @@ function syncStateFromAutocomplete(state) {
 })();
 
 // ── Bundle suggestion map ────────────────────────────────────────────────────
+// No savings figures (TRUST-10): the percentage and savings messages had no
+// source. Entries without a msg show BUNDLE_COPY below; flood and life make
+// no discount claim at all (NFIP flood is federally rated). The messages kept
+// are informational, not savings claims.
 const BUNDLE_MAP = {
-  homeowners:      { products: ['auto', 'umbrella'],        msg: "Customers who add auto and umbrella coverage typically save 15-25% with multi-policy discounts." },
-  auto:            { products: ['homeowners', 'umbrella'],  msg: "Customers who bundle home and umbrella with auto typically save 15-25%." },
-  renters:         { products: ['auto', 'umbrella'],        msg: "Bundle with auto and umbrella for multi-policy savings of 10-20%." },
-  motorcycle:      { products: ['auto', 'homeowners'],      msg: "Bundle with auto and home for multi-policy savings of 10-15%." },
-  boat:            { products: ['homeowners', 'auto'],      msg: "Bundle with home and auto for multi-policy savings." },
-  flood:           { products: ['homeowners'],              msg: "Most carriers offer a discount when flood is paired with homeowners." },
+  homeowners:      { products: ['auto', 'umbrella'] },
+  auto:            { products: ['homeowners', 'umbrella'] },
+  renters:         { products: ['auto', 'umbrella'] },
+  motorcycle:      { products: ['auto', 'homeowners'] },
+  boat:            { products: ['homeowners', 'auto'] },
+  flood:           { products: ['homeowners'], noDiscountClaim: true },
   umbrella:        { products: ['homeowners', 'auto'],      msg: "Umbrella requires underlying home and auto policies \u2014 we\u2019ll bundle all three." },
-  life:            { products: ['homeowners', 'auto'],      msg: "Some carriers discount life when bundled with home and auto." },
+  life:            { products: ['homeowners', 'auto'], noDiscountClaim: true },
   bop:             { products: ['commercial_auto', 'workers_comp'], msg: "Bundle with commercial auto and workers comp for a full business package." },
-  cgl:             { products: ['bop', 'commercial_auto'],  msg: "A BOP bundles GL + property at 10-20% less than standalone policies." },
+  cgl:             { products: ['bop', 'commercial_auto'], noDiscountClaim: true },
   commercial_auto: { products: ['cgl', 'workers_comp'],     msg: "Bundle with general liability and workers comp for fleet coverage." },
   workers_comp:    { products: ['cgl', 'commercial_auto'],  msg: "Bundle with general liability and commercial auto for a complete package." },
   cyber:           { products: ['bop', 'eo'],               msg: "Bundle with BOP and professional liability for full digital protection." },
 };
 
 // ── Cross-sell tile enhancer map ────────────────────────────────────────────
+// Personal-lines discount badges say "Multi-policy discount" with no figure
+// (TRUST-10). Flood, life and every commercial combination get an info badge:
+// no discount is claimed for them (a BOP is itself one package policy).
 const CROSS_SELL_ENHANCERS = {
-  homeowners:      [{ target: 'auto',     badge: 'Add & Save 25%',  type: 'discount' },
-                    { target: 'umbrella', badge: 'Bundle & Save',    type: 'discount' },
+  homeowners:      [{ target: 'auto',     badge: 'Multi-policy discount',  type: 'discount' },
+                    { target: 'umbrella', badge: 'Multi-policy discount',    type: 'discount' },
                     { target: 'flood',    badge: 'Protect your home', type: 'risk' }],
-  auto:            [{ target: 'homeowners', badge: 'Add & Save 25%', type: 'discount' },
-                    { target: 'umbrella',   badge: 'Bundle & Save',  type: 'discount' }],
-  renters:         [{ target: 'auto',     badge: 'Add & Save 15%',   type: 'discount' },
-                    { target: 'umbrella', badge: 'Bundle & Save',     type: 'discount' }],
+  auto:            [{ target: 'homeowners', badge: 'Multi-policy discount', type: 'discount' },
+                    { target: 'umbrella',   badge: 'Multi-policy discount',  type: 'discount' }],
+  renters:         [{ target: 'auto',     badge: 'Multi-policy discount',   type: 'discount' },
+                    { target: 'umbrella', badge: 'Multi-policy discount',     type: 'discount' }],
   umbrella:        [{ target: 'homeowners', badge: 'Required for umbrella', type: 'required' },
                     { target: 'auto',       badge: 'Required for umbrella', type: 'required' }],
-  flood:           [{ target: 'homeowners', badge: 'Discount when bundled', type: 'discount' }],
-  life:            [{ target: 'homeowners', badge: 'Save when bundled', type: 'discount' },
-                    { target: 'auto',       badge: 'Save when bundled', type: 'discount' }],
-  motorcycle:      [{ target: 'auto',       badge: 'Add & Save 15%', type: 'discount' },
-                    { target: 'homeowners', badge: 'Bundle & Save',   type: 'discount' }],
-  boat:            [{ target: 'homeowners', badge: 'Bundle & Save',   type: 'discount' }],
+  flood:           [{ target: 'homeowners', badge: 'Ask about bundling', type: 'info' }],
+  life:            [{ target: 'homeowners', badge: 'Ask about bundling', type: 'info' },
+                    { target: 'auto',       badge: 'Ask about bundling', type: 'info' }],
+  motorcycle:      [{ target: 'auto',       badge: 'Multi-policy discount', type: 'discount' },
+                    { target: 'homeowners', badge: 'Multi-policy discount',   type: 'discount' }],
+  boat:            [{ target: 'homeowners', badge: 'Multi-policy discount',   type: 'discount' }],
   bop:             [{ target: 'cyber',           badge: 'Add cyber protection', type: 'upsell' },
-                    { target: 'commercial_auto', badge: 'Bundle & Save 15%',    type: 'discount' },
+                    { target: 'commercial_auto', badge: 'Ask about bundling',    type: 'info' },
                     { target: 'workers_comp',    badge: 'Complete your package', type: 'upsell' }],
-  cgl:             [{ target: 'bop',             badge: 'Save 10-20% vs standalone', type: 'discount' },
-                    { target: 'commercial_auto', badge: 'Bundle & Save',             type: 'discount' }],
-  commercial_auto: [{ target: 'cgl',          badge: 'Bundle & Save',        type: 'discount' },
+  cgl:             [{ target: 'bop',             badge: 'Ask about bundling', type: 'info' },
+                    { target: 'commercial_auto', badge: 'Ask about bundling',             type: 'info' }],
+  commercial_auto: [{ target: 'cgl',          badge: 'Ask about bundling',        type: 'info' },
                     { target: 'workers_comp', badge: 'Complete your package', type: 'upsell' }],
-  workers_comp:    [{ target: 'cgl',             badge: 'Bundle & Save',        type: 'discount' },
-                    { target: 'commercial_auto', badge: 'Bundle & Save',        type: 'discount' }],
-  cyber:           [{ target: 'bop', badge: 'Bundle & Save',     type: 'discount' },
+  workers_comp:    [{ target: 'cgl',             badge: 'Ask about bundling',        type: 'info' },
+                    { target: 'commercial_auto', badge: 'Ask about bundling',        type: 'info' }],
+  cyber:           [{ target: 'bop', badge: 'Ask about bundling',     type: 'info' },
                     { target: 'eo',  badge: 'Full digital shield', type: 'upsell' }],
 };
 
 function clearEnhancers() {
   document.querySelectorAll('.product-opt[data-xsell-source]').forEach(tile => {
-    tile.classList.remove('xsell-discount', 'xsell-required', 'xsell-risk', 'xsell-upsell');
+    tile.classList.remove('xsell-discount', 'xsell-required', 'xsell-risk', 'xsell-upsell', 'xsell-info');
     tile.removeAttribute('data-xsell-source');
     tile.removeAttribute('data-xsell-fresh');
     const badge = tile.querySelector('.xsell-badge');
@@ -1863,6 +1871,28 @@ const PRODUCT_NAMES = {
 
 let bundleSourceProduct = null; // The product that triggered the bundle banner
 
+// Bundle banner copy when a BUNDLE_MAP entry has no message of its own. It
+// names no figure: the amount varies by insurance company and state
+// (TRUST-10; the "qualified" text of claims spec PR-6, shown to every
+// visitor). Flood and life make no discount claim.
+const BUNDLE_COPY = {
+  title: 'Bundling options',
+  qualified: (names) => `Many insurance companies discount ${names} when you buy them together. The amount varies by company and by state.`,
+  compare: (names) => `We can quote ${names} together and separately, so you can see whether bundling saves you money.`,
+};
+
+function bundleProductList(pid, products) {
+  const names = [pid, ...products].map(p => (PRODUCT_NAMES[p] || p).toLowerCase());
+  if (names.length <= 2) return names.join(' and ');
+  return names.slice(0, -1).join(', ') + ', and ' + names[names.length - 1];
+}
+
+function bundleMessage(pid, bundle) {
+  if (bundle.msg) return bundle.msg;
+  const names = bundleProductList(pid, bundle.products);
+  return bundle.noDiscountClaim ? BUNDLE_COPY.compare(names) : BUNDLE_COPY.qualified(names);
+}
+
 function renderBundleBanner(pid) {
   const bundle = BUNDLE_MAP[pid];
   const banner = document.getElementById('bundle-banner');
@@ -1874,8 +1904,8 @@ function renderBundleBanner(pid) {
   const msg = document.getElementById('bundle-msg');
   const pills = document.getElementById('bundle-pills');
 
-  title.textContent = 'Save more by bundling';
-  msg.textContent = bundle.msg;
+  title.textContent = BUNDLE_COPY.title;
+  msg.textContent = bundleMessage(pid, bundle);
 
   pills.innerHTML = bundle.products.map(p =>
     `<button type="button" class="bundle-pill" data-bpid="${p}" data-action="toggle-bundle-pill" data-pid="${p}">+ ${PRODUCT_NAMES[p] || p}</button>`
@@ -1910,12 +1940,12 @@ function syncBundlePills() {
     if (!isSelected) allAdded = false;
   });
 
-  // If all bundle products selected, show success message
+  // If all bundle products are selected, confirm it (no savings promise, TRUST-10)
   const msg = document.getElementById('bundle-msg');
   if (allAdded && bundle.products.length > 0) {
-    msg.innerHTML = '<span class="bundle-done">\u2713 Great \u2014 you\'re bundling for maximum savings!</span>';
+    msg.innerHTML = '<span class="bundle-done">\u2713 Great, we\u2019ll quote them together.</span>';
   } else {
-    msg.textContent = bundle.msg;
+    msg.textContent = bundleMessage(bundleSourceProduct, bundle);
   }
 }
 

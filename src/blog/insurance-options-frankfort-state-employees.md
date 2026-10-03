@@ -2,9 +2,7 @@
 title: Insurance Options for Frankfort State Employees
 slug: insurance-options-frankfort-state-employees
 description: "Kentucky state employees in Frankfort have group benefits, but they may still need personal policies to fill gaps. Here's what to consider beyond your state plan."
-author: Kelly McCallister
-author_title: Client Care Specialist
-author_slug: kelly-mccallister
+author: The Way Agency
 date: 2026-08-15
 modified: 2026-08-15
 reading_time: 6 min read

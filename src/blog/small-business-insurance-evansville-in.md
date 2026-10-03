@@ -1,7 +1,7 @@
 ---
 title: Small Business Insurance Guide for Evansville, IN
 slug: small-business-insurance-evansville-in
-description: Evansville is just across the river from our Owensboro office. Here's what Vanderburgh County small business owners need to know about commercial insurance in Indiana.
+description: Evansville sits just across the Ohio River from Owensboro, Kentucky. What Vanderburgh County small business owners should know about commercial insurance.
 author: The Way Agency
 author_title: Independent Insurance Agency
 date: 2026-06-17
@@ -11,7 +11,7 @@ related_page: /commercial/general-liability.html
 tags: business insurance, evansville, indiana, commercial insurance, small business
 ---
 
-Evansville is the third-largest city in Indiana and the economic hub of the Tri-State area. It is also just across the Ohio River from our office in Owensboro, Kentucky. We work with small business owners in [Evansville and Vanderburgh County](/insurance/evansville-in.html) regularly, and we understand the local market.
+Evansville is the third-largest city in Indiana and the economic hub of the Tri-State area. It is also just across the Ohio River from Owensboro, Kentucky. We work with small business owners in [Evansville and Vanderburgh County](/insurance/evansville-in.html) regularly, and we understand the local market.
 
 Whether you are opening a restaurant on Franklin Street, running a construction crew in Vanderburgh County, or starting a service business in the greater Evansville area, you need insurance that meets Indiana requirements and actually protects your business. Here is what you need to know.
 

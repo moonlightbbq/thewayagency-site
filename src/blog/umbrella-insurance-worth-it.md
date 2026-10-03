@@ -2,18 +2,12 @@
 title: "Umbrella Insurance: When $1 Million in Coverage Costs Less Than Your Phone Bill"
 slug: umbrella-insurance-worth-it
 description: Umbrella insurance adds $1M+ in liability protection for $200-500 per year. Learn who needs it, what it covers, and why it's one of the best values in insurance.
-author: Kelly McCallister
-author_title: Client Care Specialist
-author_slug: kelly-mccallister
+author: The Way Agency
 date: 2026-05-27
 modified: 2026-05-27
 reading_time: 6 min read
 related_page: /personal/umbrella.html
 tags: umbrella insurance, liability, personal insurance, asset protection
-reviewer: Kelly McCallister
-reviewer_slug: kelly-mccallister
-reviewer_title: Client Care Specialist
-reviewed_date: 2026-05-02
 ---
 
 A personal umbrella policy adds $1 million or more in liability protection on top of your existing [auto](/personal/auto.html) and [homeowners](/personal/home.html) insurance. The typical cost is $200 to $500 per year.

@@ -44,6 +44,10 @@ const team = loadJson(path.join(DATA, 'team.json'));
 const knowledgeBase = loadJson(path.join(DATA, 'knowledge-base.json'));
 const carriers = loadJson(path.join(DATA, 'carriers.json'));
 const testimonials = loadJson(path.join(DATA, 'testimonials.json'));
+// Testimonial ids kept off the pages (product pages skip them; update-reviews.js never re-imports them).
+const testimonialsBlocklist = fs.existsSync(path.join(DATA, 'testimonials-blocklist.json'))
+  ? loadJson(path.join(DATA, 'testimonials-blocklist.json'))
+  : { blocked: [] };
 const seoData = loadJson(path.join(DATA, 'seo.json'));
 const landingData = loadJson(path.join(DATA, 'landing-pages.json'));
 const agency = locations.agency;
@@ -84,7 +88,7 @@ const entity = loadJson(path.join(DATA, 'entity.json'));
 const injectSchema = createSchemaInjector({ agency, office, entity });
 
 // ─── Shared Context ─────────────────────────────
-const ctx = { products, office, team, knowledgeBase, carriers, testimonials, reviews: _reviews, richContent, landingData, seoData, renderNav, renderFooter, renderScripts };
+const ctx = { products, office, team, knowledgeBase, carriers, testimonials, testimonialsBlocklist, reviews: _reviews, richContent, landingData, seoData, renderNav, renderFooter, renderScripts };
 
 // ─── Build ──────────────────────────────────────
 console.log('🔨 Building The Way Agency site...\n');
