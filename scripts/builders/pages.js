@@ -14,6 +14,8 @@ const { renderGuides, renderLocalHelp, renderNearby, renderRelatedIndustries, re
 const { renderHubTeam, renderHubCarriers, renderRatingLine } = require('./hub-proof');
 // The Google rating badge: "<rating> on Google" linking to the listing, or nothing (TRUST-14).
 const { renderReviewBadge } = require('../lib/review-badge');
+// Kentucky blocks, titles and line-hub intros; each renders only once signed (CONT-01, CONT-02).
+const kyBlocks = require('../lib/ky-blocks');
 
 // ─── HTML Escape Helper ────────────────────────
 
@@ -365,6 +367,8 @@ const hubConfig = {
 function generateHubPage(lineKey, ctx) {
   const { products, office, seoData, renderNav, renderFooter, renderScripts } = ctx;
   const config = hubConfig[lineKey];
+  // Signed H1, subtitle and intro for this hub, or null (CONT-02; renders only once signed).
+  const hubKy = kyBlocks.forHub(ctx.kyBlocks || kyBlocks.load(), config.canonical);
   // line key === slug now that life/health are separate top-level keys
   const lineSlug = lineKey;
   const lineProducts = products[lineKey] || [];
@@ -468,15 +472,20 @@ ${renderNav()}
 
 ${renderHero({
     eyebrow: config.hero.eyebrow,
-    title: config.hero.title,
-    subtitle: config.hero.subtitle,
+    title: hubKy ? esc(hubKy.h1) : config.hero.title,
+    subtitle: hubKy ? esc(hubKy.subtitle) : config.hero.subtitle,
     buttons: [{ href: `/intake/?line=${lineSlug}`, text: quoteCtaLabel(config.hero.eyebrow), className: 'btn btn--primary btn--lg' }],
     minHeight: '38vh',
     variant: 'compact',
   })}
 
 ${hubBreadcrumbs.html}
-  <main id="main">
+  <main id="main">${hubKy ? `
+    <section class="section">
+      <div class="container container--narrow">
+        <p class="hub-intro" style="font-size:var(--text-lg);line-height:1.8;">${hubKy.introHtml}</p>
+      </div>
+    </section>` : ''}
 ${productSections}
 ${lineKey === 'commercial' ? renderIndustriesSection(ctx) : ''}
     <section class="section">
@@ -518,6 +527,9 @@ ${renderScripts()}
 function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
   const { products, office, knowledgeBase, carriers, testimonials, testimonialsBlocklist, reviews, richContent, seoData, renderNav, renderFooter, renderScripts } = ctx;
   const rc = richContent[product.id] || {};
+  // Signed Kentucky statements, title and H1 for this page, or nothing (CONT-01).
+  const ky = kyBlocks.forProduct(ctx.kyBlocks || kyBlocks.load(), product.url);
+  const titleTag = ky.title ? esc(ky.title) : product.title_tag;
   const faqs = rc.faqs || [];
   const kbFaqs = getFAQsForProduct(knowledgeBase, product.id);
   const allFaqs = [...faqs];
@@ -668,10 +680,10 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
   return `<!DOCTYPE html>
 <html lang="en">
 ${renderHead({
-    title: product.title_tag,
+    title: titleTag,
     description: product.meta_description || product.summary,
     canonical: pageUrl(product.url),
-    ogTitle: product.title_tag,
+    ogTitle: titleTag,
     ogDescription: product.summary,
     ogUrl: pageUrl(product.url),
     schema: serviceSchema + `
@@ -685,7 +697,7 @@ ${renderNav()}
 
 ${renderHero({
     eyebrow: lineName,
-    title: product.h1 || product.name,
+    title: ky.h1 ? esc(ky.h1) : (product.h1 || product.name),
     buttons: [{ href: `/intake/?product=${product.id}`, text: quoteCtaLabel(product.name), className: 'btn btn--primary btn--lg' }],
     minHeight: '38vh',
     variant: 'compact',
@@ -696,7 +708,7 @@ ${renderHero({
 ${breadcrumbs.html}
   <main id="main">
     <article class="product-content">
-      ${directAnswerSection}
+      ${directAnswerSection}${ky.html}
       <p style="color:var(--slate);font-weight:300;font-style:italic;margin-bottom:var(--space-2xl);">We're not just selling insurance. We're here to make sure you understand your options, feel confident in your coverage, and have someone in your corner when it matters most.</p>
       ${whoNeedsSection}
       ${coversSection}
