@@ -225,7 +225,7 @@ body.nav-open{position:fixed;top:calc(var(--scroll-y,0) * -1);left:0;right:0;ove
 }
 
 /* ── Internal-link blocks and hub proof (LOCAL-01, BLOG-03, LOCAL-05) ── */
-.link-block{margin-top:var(--space-2xl)}
+.link-block{margin-top:var(--space-2xl);margin-bottom:var(--space-2xl)}
 .link-block .link-list{list-style:none;padding:0;margin:var(--space-md) 0 0;display:flex;flex-wrap:wrap;gap:var(--space-sm) var(--space-lg)}
 .link-block .link-list li{margin:0}
 .hub-rating{font-weight:500;margin-bottom:var(--space-lg)}
