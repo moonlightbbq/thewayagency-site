@@ -1111,7 +1111,7 @@ function generateIndustriesIndex(industries, ctx) {
   const { office, renderNav, renderFooter, renderScripts } = ctx;
   const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
   const title = 'Business Insurance by Industry in Kentucky | The Way Agency';
-  const description = 'Coverage checklists for Kentucky contractors, restaurants, manufacturers and professional firms, plus state rules we know apply. Call or text (502) 413-5335.';
+  const description = 'Coverage checklists for Kentucky contractors, restaurants, manufacturers and professional firms. Call or text (502) 413-5335.';
   const url = 'https://www.thewayagency.com/industries/';
   const crumbs = renderBreadcrumbs([
     { name: 'Home', url: '/' },
@@ -1153,7 +1153,7 @@ ${renderNav()}
 ${renderHero({
     eyebrow: 'Commercial Insurance',
     title: 'Business insurance by industry',
-    subtitle: 'Each page lists the coverage a business in that industry usually needs and the Kentucky rules we know apply. Pick your industry to see its checklist.',
+    subtitle: 'Each page lists the coverage a business in that industry usually needs. Pick your industry to see its checklist.',
     buttons: [{ href: '/intake/?line=commercial', text: 'Get a Quote', className: 'btn btn--primary btn--lg' }],
     minHeight: '38vh',
     variant: 'compact',
