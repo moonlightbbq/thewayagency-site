@@ -2003,46 +2003,6 @@
       "reviewer_slug": "jill-boone"
     },
     {
-      "slug": "college-student-auto-insurance",
-      "title": "Auto Insurance Tips for College Students in Kentucky",
-      "description": "Sending a student off to college changes your auto insurance. When to keep them on your policy, which discounts apply, and what happens when the car stays home.",
-      "publish_date": "2026-08-26",
-      "pillar": "seasonal",
-      "topic_type": "guide",
-      "search_intent": "informational",
-      "funnel_stage": "top",
-      "primary_keyword": "college student auto insurance",
-      "secondary_keywords": [
-        "student driver discount kentucky",
-        "college student car insurance rates",
-        "keeping student on parents auto policy"
-      ],
-      "target_product_page": "/personal/auto.html",
-      "target_location_pages": [
-        "/insurance/owensboro-ky.html",
-        "/insurance/mt-washington-ky.html"
-      ],
-      "secondary_internal_links": [
-        "/blog/kentucky-auto-insurance-guide.html",
-        "/blog/understanding-auto-insurance-coverage-options.html",
-        "/blog/liability-limits-how-much-enough.html"
-      ],
-      "related_cluster": "personal-auto",
-      "conversion_goal": "coverage-review",
-      "evergreen_or_seasonal": "seasonal",
-      "seasonality_window": "college-move-in",
-      "refresh_cycle": "annual",
-      "page_role": "seasonal",
-      "is_link_target": false,
-      "receives_future_links": true,
-      "source": "seasonal-auto-enriched",
-      "author": "The Way Agency",
-      "author_slug": null,
-      "status": "planned",
-      "canonical_priority": "tertiary",
-      "notes": "Auto-scheduled by smart-calendar-adapter with no metadata and landed on a Thursday (UTC weekday bug). Re-dated onto the Wed/Sat cadence inside BlogPlannerAdapter's 18-25d drafting window and brought up to the metadata bar 2026-08-04. Re-tagged 2026-08-05: back-to-school is now anchored to the K-12 first day (2026-08-06). This is college content and Kentucky universities start ~3 weeks later, so it should not be governed by the school-district bell."
-    },
-    {
       "week": 36,
       "publish_date": "2026-12-02",
       "title": "Winter Driving Safety and Auto Insurance Tips for Kentucky",
@@ -2082,44 +2042,6 @@
       "reviewer": "Audrey Lillpop",
       "reviewer_email": "audrey@thewayagency.com",
       "reviewer_slug": "audrey-lillpop"
-    },
-    {
-      "slug": "renters-insurance-college-students",
-      "title": "Why Your College Student Needs Renters Insurance",
-      "description": "A dorm room or first apartment is not covered by your homeowners policy the way most parents assume. What renters insurance costs a student and what it actually protects.",
-      "publish_date": "2026-08-29",
-      "pillar": "seasonal",
-      "topic_type": "guide",
-      "search_intent": "informational",
-      "funnel_stage": "top",
-      "primary_keyword": "renters insurance college students",
-      "secondary_keywords": [
-        "dorm room insurance kentucky",
-        "off campus apartment renters insurance",
-        "student personal property coverage"
-      ],
-      "target_product_page": "/personal/renters.html",
-      "target_location_pages": [
-        "/insurance/owensboro-ky.html"
-      ],
-      "secondary_internal_links": [
-        "/blog/renters-insurance-landlord-policy-gaps.html",
-        "/blog/home-vs-landlord-insurance.html"
-      ],
-      "related_cluster": "personal-home",
-      "conversion_goal": "quote-request",
-      "evergreen_or_seasonal": "seasonal",
-      "seasonality_window": "college-move-in",
-      "refresh_cycle": "annual",
-      "page_role": "seasonal",
-      "is_link_target": false,
-      "receives_future_links": true,
-      "source": "seasonal-auto-enriched",
-      "author": "The Way Agency",
-      "author_slug": null,
-      "status": "planned",
-      "canonical_priority": "tertiary",
-      "notes": "Auto-scheduled by smart-calendar-adapter with no metadata and landed on a Thursday (UTC weekday bug). Re-dated onto the Wed/Sat cadence inside BlogPlannerAdapter's 18-25d drafting window and brought up to the metadata bar 2026-08-04. Re-tagged 2026-08-05: back-to-school is now anchored to the K-12 first day (2026-08-06). This is college content and Kentucky universities start ~3 weeks later, so it should not be governed by the school-district bell."
     },
     {
       "week": 38,
@@ -2815,60 +2737,6 @@
       "locked_at": "2026-09-12",
       "notes": "Written 2026-03-27 and previously dated 2027-03-17 by the restored 1x/week schedule. Evergreen, so the date carried no meaning while 2026-08-05 to 2026-11-03 sat empty. Draft is already on disk.",
       "research_brief": null
-    },
-    {
-      "slug": "winter-home-insurance-claims",
-      "title": "Preventing Winter Home Insurance Claims in Kentucky",
-      "description": "Seasonal content for winter-prep — auto-scheduled by smart calendar adapter.",
-      "publish_date": "2026-09-23",
-      "pillar": "seasonal",
-      "topic_type": "deep-dive",
-      "search_intent": "informational",
-      "funnel_stage": "top",
-      "primary_keyword": "winter home insurance claims",
-      "secondary_keywords": [],
-      "target_product_page": null,
-      "target_location_pages": [],
-      "secondary_internal_links": [],
-      "related_cluster": "personal-home",
-      "conversion_goal": "quote-request",
-      "evergreen_or_seasonal": "seasonal",
-      "seasonality_window": "winter-prep",
-      "refresh_cycle": "annual",
-      "page_role": "seasonal",
-      "is_link_target": false,
-      "receives_future_links": true,
-      "source": "seasonal-auto",
-      "author": "The Way Agency",
-      "author_slug": null,
-      "status": "planned"
-    },
-    {
-      "slug": "ice-storm-damage-insurance",
-      "title": "Does Insurance Cover Ice Storm Damage? A Kentucky Guide",
-      "description": "Seasonal content for winter-prep — auto-scheduled by smart calendar adapter.",
-      "publish_date": "2026-09-30",
-      "pillar": "seasonal",
-      "topic_type": "deep-dive",
-      "search_intent": "informational",
-      "funnel_stage": "top",
-      "primary_keyword": "ice storm damage insurance",
-      "secondary_keywords": [],
-      "target_product_page": null,
-      "target_location_pages": [],
-      "secondary_internal_links": [],
-      "related_cluster": "personal-home",
-      "conversion_goal": "quote-request",
-      "evergreen_or_seasonal": "seasonal",
-      "seasonality_window": "winter-prep",
-      "refresh_cycle": "annual",
-      "page_role": "seasonal",
-      "is_link_target": false,
-      "receives_future_links": true,
-      "source": "seasonal-auto",
-      "author": "The Way Agency",
-      "author_slug": null,
-      "status": "planned"
     }
   ],
   "slots": [
