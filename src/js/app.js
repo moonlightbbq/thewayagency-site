@@ -93,16 +93,10 @@
   // A/B TESTING FRAMEWORK
   // ═══════════════════════════════════════════════
   const AB_EXPERIMENTS = {
-    'hero-cta': {
-      variants: {
-        control: { '[data-ab-test="hero-cta"]': null },
-        'free-quote': { '[data-ab-test="hero-cta"]': 'Get a Free Quote' },
-        'compare': { '[data-ab-test="hero-cta"]': 'Compare Rates Now' },
-      },
-      // Uniform 1/3 split — hashAssign has never read weights; a weighted
-      // rollout must launch as a NEW test name (re-bucketing mid-test
-      // contaminates returning-visitor assignment).
-    },
+    // 'hero-cta' ended (owner decision D1): its exposures reached neither GA4 nor
+    // SAGE, and once the hero fade was removed its label swap showed after first
+    // paint. The homepage keeps the control label, "Get a Quote". A future homepage
+    // test must be assigned before first paint, not here (initABTests runs after).
     // 'dob-required' and 'intake-call-or-text' moved INLINE to src/intake.html
     // (registered via TWA.assignVariant/pushExposure): app.js never loads on
     // /intake/, so both tests were permanently inert here while still pushing
@@ -911,19 +905,22 @@
   // 12. SCROLL ANIMATIONS
   // ═══════════════════════════════════════════════
   function initScrollAnimations() {
-    if (FEATURES.intersectionObserver) {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) { entry.target.classList.add('animate-in'); observer.unobserve(entry.target); }
-        });
-      }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-      $$('.card, .step, .testimonial-card, .section-header, .lob-card').forEach(el => {
-        // Skip cards inside blog/product article content — they break grid layout
-        if (el.closest('.product-content, .blog-content')) return;
-        el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        observer.observe(el);
+    if (!FEATURES.intersectionObserver) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) { entry.target.classList.add('animate-in'); observer.unobserve(entry.target); }
       });
-    }
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    $$('.card, .step, .testimonial-card, .section-header, .lob-card').forEach(el => {
+      // Skip cards inside blog/product article content — they break grid layout
+      if (el.closest('.product-content, .blog-content')) return;
+      // Already on screen (or scrolled past): never hide what the visitor can see (PERF-04)
+      if (el.getBoundingClientRect().top < vh) return;
+      el.style.opacity = '0'; el.style.transform = 'translateY(20px)'; el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      observer.observe(el);
+    });
   }
 
   const animStyle = document.createElement('style');

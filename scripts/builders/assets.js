@@ -184,13 +184,17 @@ function copyPortalPages(SRC, BUILD, injectVersion) {
   return portalPages;
 }
 
+// '+' and '-' are deliberately NOT in the symbol class: calc() requires whitespace
+// around a binary + or -, and Chrome drops a declaration such as
+// `top:calc(100%+8px)`. Every other run of whitespace (newlines included) becomes a
+// single space rather than being deleted, so a calc() split across lines keeps its
+// spaces too. tests/css-minify.test.js holds both rules.
 function minifyCss(css) {
   return css
     .replace(/\/\*[\s\S]*?\*\//g, '')      // remove comments
-    .replace(/\s*([{}:;,>~+])\s*/g, '$1')  // collapse whitespace around symbols
+    .replace(/\s*([{}:;,>~])\s*/g, '$1')   // collapse whitespace around symbols
     .replace(/;\}/g, '}')                   // remove trailing semicolons
-    .replace(/\n+/g, '')                    // remove newlines
-    .replace(/\s{2,}/g, ' ')               // collapse remaining whitespace
+    .replace(/\s+/g, ' ')                   // collapse remaining whitespace
     .trim();
 }
 
