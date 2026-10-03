@@ -128,7 +128,7 @@ function renderFooter(office, reviews) {
         </div>
       </div>
       <div>
-        <h4 class="footer__heading">Personal</h4>
+        <h2 class="footer__heading">Personal</h2>
         <div class="footer__link-list">
           <a href="/personal/home.html">Home</a>
           <a href="/personal/auto.html">Auto</a>
@@ -138,7 +138,7 @@ function renderFooter(office, reviews) {
         </div>
       </div>
       <div>
-        <h4 class="footer__heading">Commercial</h4>
+        <h2 class="footer__heading">Commercial</h2>
         <div class="footer__link-list">
           <a href="/commercial/general-liability.html">General Liability</a>
           <a href="/commercial/commercial-property.html">Property</a>
@@ -148,7 +148,7 @@ function renderFooter(office, reviews) {
         </div>
       </div>
       <div>
-        <h4 class="footer__heading">Company</h4>
+        <h2 class="footer__heading">Company</h2>
         <div class="footer__link-list">
           <a href="/about/">About Us</a>
           <a href="/about/team.html">Our Team</a>

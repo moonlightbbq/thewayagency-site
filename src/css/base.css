@@ -53,6 +53,8 @@
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+/* In-page anchors (team bios, blog contents) land below the fixed nav (PERF-07). */
+html{scroll-padding-top:calc(var(--nav-height) + 16px)}
 body{font-family:var(--font-body);font-weight:300;font-size:var(--text-base);line-height:1.7;color:var(--charcoal);background:var(--white);overflow-x:hidden}
 img,video{max-width:100%;height:auto;display:block}
 a{color:var(--blue);text-decoration:none;transition:color var(--transition-fast)}

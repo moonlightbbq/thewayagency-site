@@ -699,6 +699,7 @@ ${renderNav()}
             ${filterPills}
           </div>
         </div>
+        <h2 class="sr-only">All articles</h2>
         <div class="grid grid--3" id="blogGrid">${cards}
         </div>
         <p id="blogNoResults" style="display:none;text-align:center;color:var(--slate);padding:var(--space-2xl) 0;">No articles found. Try a different search or category.</p>

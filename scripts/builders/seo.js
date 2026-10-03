@@ -89,6 +89,14 @@ function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, render
       }
     }
     html = injectNavContact(html, outputPath);
+    // The menu toggle names the panel it controls and starts collapsed (PERF-07);
+    // app.js keeps aria-expanded in step.
+    html = html.replace(/<button class="nav__toggle" id="navToggle"([^>]*)>/g, (tag, rest) => {
+      let extra = '';
+      if (!/\saria-controls=/.test(rest)) extra += ' aria-controls="navLinks"';
+      if (!/\saria-expanded=/.test(rest)) extra += ' aria-expanded="false"';
+      return `<button class="nav__toggle" id="navToggle"${extra}${rest}>`;
+    });
     // Cache-bust JS and CSS with build version
     html = html.replace(/src="\/src\/js\/([\w-]+)\.js"/g, `src="/src/js/$1.js?v=${buildVersion}"`);
     html = html.replace(/href="\/src\/css\/(\w+)\.css"/g, `href="/src/css/$1.css?v=${buildVersion}"`);
