@@ -1,9 +1,10 @@
 /**
  * SEO & Version Injection
- * Handles git info, build versioning, GTM injection, and review data injection.
+ * Handles git info, build versioning, GTM injection, and the review badge markers.
  */
 
 const { execSync } = require('child_process');
+const { renderReviewBadgeMarkers } = require('../lib/review-badge');
 
 function getGitInfo(ROOT) {
   try {
@@ -67,11 +68,10 @@ function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, render
       /(<div class="footer__legal-links">[\s\S]*?<\/div>\s*<\/div>)/,
       `$1\n      ${versionFooter}`
     );
-    // Inject live Google review data (replaces any hardcoded count/rating in all formats)
-    html = html.replace(/from \d+ Google reviews/g, `from ${reviews.count} Google reviews`);
-    html = html.replace(/\(\d+ reviews\)/g, `(${reviews.count} reviews)`);
-    html = html.replace(/\(\d+ Google reviews\)/g, `(${reviews.count} Google reviews)`);
-    // Visible text only: the agency's own rating is never JSON-LD (SCHEMA-03).
+    // Handcrafted pages mark where the Google rating badge goes; fill it from
+    // the current data, or with nothing when the rating is missing or stale
+    // (TRUST-14). Visible text only: the agency's own rating is never JSON-LD (SCHEMA-03).
+    html = renderReviewBadgeMarkers(html, reviews, outputPath || 'a page');
     // Add hreflang if not already present
     if (!html.includes('hreflang')) {
       const canonicalMatch = html.match(/<link rel="canonical" href="([^"]+)">/);

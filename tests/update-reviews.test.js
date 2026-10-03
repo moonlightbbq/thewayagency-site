@@ -204,6 +204,9 @@ describe('manual --rating/--count override', () => {
     assert.equal(a.google_review_count, '33');
     assert.equal(a.google_reviews_last_updated, SYNCED, 'a hand override goes stale 30 days after the last real sync');
     assert.equal(readRaw(dir, 'google-reviews-status.json'), beforeStatus);
+    const { googleRating } = require('../scripts/lib/review-badge');
+    assert.ok(googleRating(a, new Date('2026-10-20T00:00:00Z')));
+    assert.equal(googleRating(a, new Date('2026-10-27T00:00:00Z')), null, 'hidden 30 days after the last sync');
     assert.doesNotMatch(fs.readFileSync(require.resolve('../scripts/update-reviews'), 'utf8'), /propagateReviewCountToSource|writeFileSync\(file/, 'the sync no longer edits src/ pages');
   });
 });

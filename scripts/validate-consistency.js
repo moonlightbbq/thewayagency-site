@@ -411,9 +411,10 @@ const canonicalFooterHrefs = extractFooterHrefs(canonicalFooter);
   console.log('\n[Review Data]');
   let reviewErrors = 0;
 
-  // Extract all visible "(N reviews)" patterns. The rating is never JSON-LD
+  // Extract every review count the badge shows ("· N reviews", TRUST-14) and
+  // any leftover "(N reviews)". The rating is never JSON-LD
   // (SCHEMA-03: self-serving review markup; scripts/lib/entity-schema-guard.js).
-  const countPattern = /\((\d+\+?) reviews?\)/g;
+  const countPattern = /(?:\(|&middot; |· )(\d+\+?) reviews?\)?/g;
 
   const allCounts = new Map();
 

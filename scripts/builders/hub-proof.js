@@ -15,17 +15,18 @@
  *   no logos, no counts, no wholesalers or MGAs, no health or Medicare group (D16).
  * - rating: data/locations.json agency.google_rating and google_review_count,
  *   only when agency.google_maps_url (the listing, not the review form) is set
- *   and the sync is at most 30 days old (D5, TRUST-14). No JSON-LD (SCHEMA-03).
+ *   and the sync is at most 30 days old (D5, TRUST-14), read through
+ *   scripts/lib/review-badge.js googleRating. Off until the owner approves D5
+ *   (HUB_RATING_LINE_APPROVED). No JSON-LD (SCHEMA-03).
  */
 'use strict';
 
 const fs = require('fs');
 const path = require('path');
+const { googleRating, RATING_MAX_AGE_DAYS } = require('../lib/review-badge');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 const STATE_NAMES = { KY: 'Kentucky', IN: 'Indiana', TN: 'Tennessee' };
-const DAY_MS = 24 * 60 * 60 * 1000;
-const RATING_MAX_AGE_DAYS = 30;
 
 // Official licence searches (RW-D7). Indiana: the owner supplies the IDOI URL.
 const LICENSE_LOOKUP = {
@@ -140,17 +141,18 @@ ${groups.map(([title, names]) => `          <h3>${esc(title)}</h3>\n          <p
         </section>`;
 }
 
-function renderRatingLine(ctx, now = new Date()) {
-  const agency = (ctx && ctx.agency) || {};
-  const rating = String(agency.google_rating || '');
-  const count = String(agency.google_review_count || '');
-  const url = String(agency.google_maps_url || '');
-  if (!/^\d(?:\.\d)?$/.test(rating) || !/^\d+$/.test(count)) return '';
-  if (!/^https:\/\//.test(url) || /\/review\b/.test(url)) return '';
-  const synced = Date.parse(String(agency.google_reviews_last_updated || ''));
-  if (!Number.isFinite(synced) || now.getTime() - synced > RATING_MAX_AGE_DAYS * DAY_MS || synced > now.getTime() + DAY_MS) return '';
+// priority-hubs D5 (owner-actions OA-28): the owner approves the hub rating
+// line's wording before it renders. The listing URL it needs now exists
+// (TRUST-14), so this switch, not the data, keeps the line off until then.
+const HUB_RATING_LINE_APPROVED = false;
+
+function renderRatingLine(ctx, now = new Date(), approved = HUB_RATING_LINE_APPROVED) {
+  if (!approved) return '';
+  // One reader of the rating, its listing URL and its 30-day freshness (TRUST-14).
+  const g = googleRating(ctx && ctx.agency, now);
+  if (!g) return '';
   return `
-        <p class="hub-rating">Rated ${esc(rating)} on Google from ${esc(count)} reviews · <a href="${esc(url)}" rel="noopener">Read the reviews on Google</a></p>`;
+        <p class="hub-rating">Rated ${esc(g.rating)} on Google from ${esc(g.count)} reviews · <a href="${esc(g.listingUrl)}" rel="noopener">Read the reviews on Google</a></p>`;
 }
 
-module.exports = { staffForPlace, usableLicense, placesForHub, renderHubTeam, renderHubCarriers, renderRatingLine, qualifyingCarriers, LICENSE_LOOKUP, RATING_MAX_AGE_DAYS };
+module.exports = { staffForPlace, usableLicense, placesForHub, renderHubTeam, renderHubCarriers, renderRatingLine, qualifyingCarriers, LICENSE_LOOKUP, RATING_MAX_AGE_DAYS, HUB_RATING_LINE_APPROVED };

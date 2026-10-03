@@ -336,6 +336,26 @@ if (turnstileIssues === 0) pass('Turnstile only on widget pages (async); app.js 
   if (pairingProblems === 0) pass(`Call/text pairing: every tel: link has an sms: peer to +15024135335 (${used.size} listed exemptions in use); ${navPages} menus carry the pair`);
 }
 
+// 7e2. Google rating badge (TRUST-14): every badge names Google and links to the
+// listing, never the write-a-review form; the old "(N reviews)" badge text and
+// any unfilled badge marker are gone. Dependency-free (CI runs this on Node 18).
+{
+  let badgeProblems = 0;
+  let badges = 0;
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, 'utf8');
+    const rel = path.relative(BUILD, file).split(path.sep).join('/');
+    if (/\(\d+\+? reviews?\)/.test(html)) { error(`Review badge: ${rel} still shows "(N reviews)" without naming Google`); badgeProblems++; }
+    if (html.includes('render:review-badge')) { error(`Review badge: ${rel} has an unfilled review-badge marker`); badgeProblems++; }
+    for (const m of html.matchAll(/<a class="review-badge__listing" href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)) {
+      badges++;
+      if (/\/review\/?$/.test(m[1])) { error(`Review badge: ${rel} links the badge to the review form (${m[1]}), not the listing`); badgeProblems++; }
+      if (!/\d\.\d on Google/.test(m[2])) { error(`Review badge: ${rel} has a badge that does not say "<rating> on Google"`); badgeProblems++; }
+    }
+  }
+  if (badgeProblems === 0) pass(`Review badge: ${badges} badges say "on Google" and link to the listing; no "(N reviews)" text`);
+}
+
 // 7f. CTA article (CONV-04): "Get a Auto Insurance Quote" and the like.
 {
   let articleProblems = 0;

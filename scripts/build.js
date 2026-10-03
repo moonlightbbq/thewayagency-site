@@ -66,7 +66,10 @@ for (const file of ['content-personal.json', 'content-commercial.json', 'content
 
 // ─── Shared Templates ───────────────────────────
 const { renderNav, renderFooter: _renderFooter, renderScripts, renderHead_GTM, renderBody_GTM } = require('./shared-templates');
-const _reviews = { rating: agency.google_rating || '5.0', count: agency.google_review_count || '20+' };
+const { googleRating } = require('./lib/review-badge');
+// The Google rating, or null when it is missing, has no listing URL or is more
+// than 30 days old: then no badge renders anywhere (TRUST-14).
+const _reviews = googleRating(agency);
 function renderFooter() {
   return _renderFooter(office, _reviews);
 }
@@ -294,6 +297,9 @@ console.log('  ✓ Legal pages clean (em dashes / anchors)');
   }
   console.log('  ✓ Entity schema: one #organization entity, no invented locations, no review markup');
 }
+// The Google rating badge renders only from a fresh sync with a listing URL (TRUST-14).
+if (_reviews) console.log(`  ✓ Review badge: "${_reviews.rating} on Google", ${_reviews.count} reviews, synced ${_reviews.syncedAt.slice(0, 10)}`);
+else console.warn('  ⚠ Review badge hidden: the Google rating is missing, has no listing URL (agency.google_maps_url) or was last synced more than 30 days ago');
 
 // 11b. Guard: the out-of-area decline must stay warm, silent about commercial,
 //      and gated on a state we actually collect before paging a producer.

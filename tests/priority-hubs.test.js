@@ -23,7 +23,7 @@ const read = (rel) => fs.readFileSync(path.join(ROOT, rel), 'utf8');
 const pages = require('../scripts/builders/pages');
 const shared = require('../scripts/shared-templates');
 const { createSchemaInjector } = require('../scripts/builders/schema-generator');
-const { renderHubTeam, renderHubCarriers, renderRatingLine, staffForPlace } = require('../scripts/builders/hub-proof');
+const { renderHubTeam, renderHubCarriers, renderRatingLine, staffForPlace, HUB_RATING_LINE_APPROVED } = require('../scripts/builders/hub-proof');
 const { guidesFor } = require('../scripts/builders/internal-links');
 const { jsonLdNodes } = require('../scripts/lib/link-structure-check');
 
@@ -287,11 +287,18 @@ describe('local proof renders nothing until verified data exists (LOCAL-05; clai
   test('rating line: names Google, matches the data, links the listing; hidden when stale or without a listing URL', () => {
     const fresh = { google_rating: '5.0', google_review_count: '31', google_reviews_last_updated: '2026-09-30T10:08:07.138Z', google_maps_url: 'https://g.page/r/listing-id' };
     const now = new Date('2026-10-03T12:00:00Z');
-    assert.equal(renderRatingLine({ agency: fresh }, now).trim(), '<p class="hub-rating">Rated 5.0 on Google from 31 reviews · <a href="https://g.page/r/listing-id" rel="noopener">Read the reviews on Google</a></p>');
-    assert.equal(renderRatingLine({ agency: { ...fresh, google_reviews_last_updated: '2026-08-01T00:00:00Z' } }, now), '');
-    assert.equal(renderRatingLine({ agency: { ...fresh, google_maps_url: undefined } }, now), '');
-    assert.equal(renderRatingLine({ agency: { ...fresh, google_maps_url: 'https://g.page/r/listing-id/review' } }, now), '');
-    assert.equal(renderRatingLine({ agency }, now), '', 'locations.json has no google_maps_url yet');
+    const approved = (a) => renderRatingLine({ agency: a }, now, true);
+    assert.equal(approved(fresh).trim(), '<p class="hub-rating">Rated 5.0 on Google from 31 reviews · <a href="https://g.page/r/listing-id" rel="noopener">Read the reviews on Google</a></p>');
+    assert.equal(approved({ ...fresh, google_reviews_last_updated: '2026-08-01T00:00:00Z' }), '');
+    assert.equal(approved({ ...fresh, google_maps_url: undefined }), '');
+    assert.equal(approved({ ...fresh, google_maps_url: 'https://g.page/r/listing-id/review' }), '');
+  });
+  test('rating line stays off until the owner approves priority-hubs D5, even with the listing URL in locations.json', () => {
+    assert.equal(HUB_RATING_LINE_APPROVED, false);
+    const now = new Date(Date.parse(agency.google_reviews_last_updated) + 24 * 60 * 60 * 1000);
+    assert.ok(agency.google_maps_url, 'TRUST-14 added agency.google_maps_url');
+    assert.equal(renderRatingLine({ agency }, now), '');
+    assert.match(renderRatingLine({ agency }, now, true), /Rated \d\.\d on Google from \d+ reviews/);
   });
 });
 
