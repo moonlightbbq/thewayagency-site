@@ -15,8 +15,12 @@ const { orgRef } = require('../lib/entity');
  * first word (CONV-04 grammar defect: five heroes read "Get a Auto ..."). "U"
  * takes "an" except before a "yoo" sound (Universal, Usage-based, Utility).
  */
+// Plural product names read better singular in the CTA (above-the-fold D13,
+// awaiting the owner's yes in OA-18): "Get an Annuity Quote", "Get a Surety Bond
+// Quote". Revert this map alone if the owner declines.
+const CTA_NAME_OVERRIDES = { 'Annuities': 'Annuity', 'Surety Bonds': 'Surety Bond' };
 function quoteCtaLabel(name) {
-  const n = String(name);
+  const n = CTA_NAME_OVERRIDES[String(name)] || String(name);
   return `Get ${/^(?:[aeio]|u(?!ni|s[aeu]|ti))/i.test(n) ? 'an' : 'a'} ${n} Quote`;
 }
 

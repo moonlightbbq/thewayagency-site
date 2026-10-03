@@ -41,3 +41,8 @@ test('consonant and "yoo" sounds keep "a"', () => {
   assert.equal(quoteCtaLabel('Universal Life'), 'Get a Universal Life Quote');
   assert.equal(quoteCtaLabel('Usage-Based Auto'), 'Get a Usage-Based Auto Quote');
 });
+
+test('D13 (awaits OA-18): plural names read singular', () => {
+  assert.equal(quoteCtaLabel('Annuities'), 'Get an Annuity Quote');
+  assert.equal(quoteCtaLabel('Surety Bonds'), 'Get a Surety Bond Quote');
+});
