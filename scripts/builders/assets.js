@@ -158,7 +158,9 @@ function copySubPages(SRC, BUILD, injectVersion) {
 }
 
 function copyRootFiles(ROOT, BUILD) {
-  for (const file of ['_redirects', '_headers', 'robots.txt', 'favicon.ico']) {
+  // The IndexNow key file (<32 hex>.txt) must be served from the host root (AEO-02).
+  const indexNowKeyFiles = fs.readdirSync(ROOT).filter((f) => /^[0-9a-f]{32}\.txt$/.test(f));
+  for (const file of ['_redirects', '_headers', 'robots.txt', 'favicon.ico', ...indexNowKeyFiles]) {
     const src = path.join(ROOT, file);
     if (fs.existsSync(src)) {
       fs.copyFileSync(src, path.join(BUILD, file));
