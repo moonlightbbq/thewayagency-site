@@ -337,6 +337,9 @@ function intakeHref(relatedPage, { medicare = false } = {}) {
   return medicare ? '/intake/?product=medicare' : '/intake/';
 }
 
+// Below section 3, never between a heading and its answer (AEO-04).
+const { midPostCtaOffset } = require('./lib/blog-cta-placement');
+
 // ─── Mid-Post CTA Injection ─────────────────
 // On a Medicare post the CTA makes no "we shop carriers" claim: whether the
 // agency sells Medicare Advantage or Part D for several companies is the
@@ -355,14 +358,10 @@ function injectMidPostCTA(html, category, relatedPage, { medicare = false } = {}
         <a href="${href}" style="display:inline-block;padding:10px 24px;background:var(--cyan);color:var(--navy-dark);border-radius:var(--border-radius);font-size:var(--text-sm);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;text-decoration:none;">Get a Free Quote</a>
       </div>`;
 
-  // Insert after the 3rd H2 if possible
-  let count = 0;
-  const result = html.replace(/<\/h2>/g, (match) => {
-    count++;
-    if (count === 3) return match + ctaHtml;
-    return match;
-  });
-  return count >= 3 ? result : html;
+  // Below section 3 (scripts/lib/blog-cta-placement.js); no CTA with fewer
+  // than 3 H2s.
+  const at = midPostCtaOffset(html);
+  return at < 0 ? html : html.slice(0, at) + ctaHtml + html.slice(at);
 }
 
 // ─── Sources (BLOG-02) ───────────────────────

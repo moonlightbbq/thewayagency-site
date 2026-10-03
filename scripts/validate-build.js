@@ -365,6 +365,26 @@ if (fs.existsSync(redirectsPath)) {
   if (privacyErrors === 0) pass(`Privacy guards: hand-off, intake URL scrub, Meta payload, Clarity masks and ${inlineForms} inline forms checked`);
 }
 
+// 11. Mid-post CTA placement (AEO-04): on every rendered blog post the quote
+// CTA (generate-blog.js injectMidPostCTA) sits below a section, never directly
+// after an </h2>, and appears at most once. Plain regex: no dependencies.
+{
+  const blogDir = path.join(BUILD, 'blog');
+  const CTA = '<div style="background:linear-gradient(135deg,var(--navy-dark),var(--navy))';
+  const AFTER_H2 = /<\/h2>\s*<div style="background:linear-gradient\(135deg,var\(--navy-dark\),var\(--navy\)\)/;
+  let ctaErrors = 0, withCta = 0;
+  if (fs.existsSync(blogDir)) {
+    for (const file of fs.readdirSync(blogDir).filter((f) => f.endsWith('.html') && f !== 'index.html')) {
+      const html = fs.readFileSync(path.join(blogDir, file), 'utf8');
+      const n = html.split(CTA).length - 1;
+      if (n > 0) withCta++;
+      if (n > 1) { error(`Mid-post CTA: blog/${file} has ${n} (expected at most 1)`); ctaErrors++; }
+      if (AFTER_H2.test(html)) { error(`Mid-post CTA: blog/${file} has the CTA directly after an </h2> (AEO-04)`); ctaErrors++; }
+    }
+  }
+  if (ctaErrors === 0) pass(`Mid-post CTA: ${withCta} posts carry one, none directly after a heading`);
+}
+
 // Summary
 console.log(`\n${errors === 0 ? '✅' : '❌'} Validation complete: ${errors} errors, ${warnings} warnings, ${htmlFiles.length} pages checked`);
 process.exit(errors > 0 ? 1 : 0);
