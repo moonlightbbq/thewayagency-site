@@ -604,6 +604,58 @@ if (fs.existsSync(redirectsPath)) {
   if (relatedBlocked.length === 0) pass(`Related Articles link no blocked_guides post (${blockedGuides.length} held)`);
 }
 
+// 14. llms.txt and llms-full.txt (AEO-05; url-hygiene spec 3.9 section 11, Option B):
+// generated from data by scripts/builders/llms.js. Neither file prints a
+// forbidden claim (scripts/lib/llms-check.js: founding year, "40+",
+// "top-rated", HQ, office wording, a base city, "local agents", Medicare
+// comparison, the unbacked specialty lines, plus claims-scan.js hard rules).
+// Every URL is a built page that answers 200 (not .html, not a _redirects
+// source; any #fragment is an id on that page). The service-area list is
+// exactly the hubs in landing-pages.json and the coverage list exactly
+// products.json.
+{
+  const { claimProblems, urlProblems, siteUrls, htmlIds, redirectMatcher } = require('./lib/llms-check');
+  const { SITE_ORIGIN: ORIGIN, canonicalHref } = require('./lib/site-urls');
+  const DATA_DIR = path.join(__dirname, '..', 'data');
+  const readData = (f) => JSON.parse(fs.readFileSync(path.join(DATA_DIR, f), 'utf8'));
+  const products = readData('products.json');
+  const landing = readData('landing-pages.json');
+  const productNames = Object.values(products).flat().map((p) => p.name);
+  const isRedirected = redirectMatcher(fs.existsSync(redirectsPath) ? fs.readFileSync(redirectsPath, 'utf8') : '');
+  const idCache = new Map();
+  const idsOf = (route) => {
+    if (!idCache.has(route)) {
+      const rel = route.endsWith('/') ? `${route}index.html` : `${route}.html`;
+      const file = path.join(BUILD, rel.replace(/^\//, ''));
+      idCache.set(route, fs.existsSync(file) ? htmlIds(fs.readFileSync(file, 'utf8')) : new Set());
+    }
+    return idCache.get(route);
+  };
+  let llmsProblems = 0;
+  const texts = {};
+  for (const name of ['llms.txt', 'llms-full.txt']) {
+    const file = path.join(BUILD, name);
+    if (!fs.existsSync(file)) { error(`${name} not found in build/ (AEO-05 Option B generates it)`); llmsProblems++; continue; }
+    const text = fs.readFileSync(file, 'utf8');
+    texts[name] = text;
+    for (const p of claimProblems(text, { productNames })) { error(`${name}: forbidden claim "${p.match}" (${p.rule}: ${p.why})`); llmsProblems++; }
+    for (const p of urlProblems(text, { routes, isRedirected, idsOf })) { error(`${name}: ${p}`); llmsProblems++; }
+  }
+  if (texts['llms.txt']) {
+    const t = texts['llms.txt'];
+    const section = (h) => { const m = t.match(new RegExp(`^## ${h}\\n([\\s\\S]*?)(?=^## |(?![\\s\\S]))`, 'm')); return m ? m[1] : ''; };
+    const asSet = (s) => new Set(siteUrls(s));
+    const same = (a, b) => a.size === b.size && [...a].every((x) => b.has(x));
+    const hubWant = new Set([...(landing.cities || []), ...(landing.counties || [])].map((h) => ORIGIN + canonicalHref(`/insurance/${h.slug}`)));
+    const hubGot = asSet(section('Service-area pages'));
+    if (!same(hubWant, hubGot)) { error(`llms.txt: "Service-area pages" lists ${hubGot.size} hubs; landing-pages.json has ${hubWant.size} (missing: ${[...hubWant].filter((u) => !hubGot.has(u)).slice(0, 3).join(' ')}; extra: ${[...hubGot].filter((u) => !hubWant.has(u)).slice(0, 3).join(' ')})`); llmsProblems++; }
+    const covWant = new Set(Object.values(products).flat().map((p) => ORIGIN + canonicalHref(p.url)));
+    const covGot = asSet(section('Coverage'));
+    if (!same(covWant, covGot)) { error(`llms.txt: "Coverage" lists ${covGot.size} pages; products.json has ${covWant.size}`); llmsProblems++; }
+    if (llmsProblems === 0) pass(`llms.txt and llms-full.txt: no forbidden claim; ${new Set([...siteUrls(t), ...siteUrls(texts['llms-full.txt'] || '')]).size} URLs, all built pages; ${hubWant.size} hubs and ${covWant.size} coverage pages match the data`);
+  }
+}
+
 // Summary
 console.log(`\n${errors === 0 ? '✅' : '❌'} Validation complete: ${errors} errors, ${warnings} warnings, ${htmlFiles.length} pages checked`);
 process.exit(errors > 0 ? 1 : 0);
