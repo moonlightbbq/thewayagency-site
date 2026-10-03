@@ -2,7 +2,7 @@
 title: "How Much Liability Insurance Do You Actually Need? A Kentucky Guide"
 seo_title: "How Much Liability Insurance Do You Need? Kentucky Limits Table"
 slug: liability-limits-how-much-enough
-description: "Kentucky's auto minimum is 25/50/25 or a $60,000 single limit. How to size your auto, home and umbrella liability limits to what a lawsuit could reach."
+description: "Kentucky's auto minimum is 25/50/25 or a $60,000 single limit. See the auto, home and umbrella liability limits we suggest, based on what a lawsuit could take."
 author: Sheilia Royal
 author_slug: sheilia-royal
 author_title: Agency Principal / Licensed Agent
@@ -14,14 +14,14 @@ status: published
 sources: [KRS 304.39-110 (minimum liability) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758]
 ---
 
-Kentucky's legal minimum for auto liability is 25/50/25: $25,000 for bodily injury to one person, $50,000 for bodily injury per accident and $25,000 for property damage, or a $60,000 single limit ([KRS 304.39-110](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758)). Our guide to [Kentucky auto insurance requirements](/blog/kentucky-auto-insurance-guide) covers PIP and the rest. No Kentucky statute sets a minimum for home or renters liability. The right limits depend on what a lawsuit could reach: your savings, home equity and future income.
+Kentucky's legal minimum for auto liability is 25/50/25: $25,000 for bodily injury to one person, $50,000 for bodily injury per accident and $25,000 for property damage, or a $60,000 single limit ([KRS 304.39-110](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758)). Our guide to [Kentucky auto insurance requirements](/blog/kentucky-auto-insurance-guide) covers PIP and the rest. For most households we suggest at least 100/300/100 on auto, $300,000 to $500,000 of personal liability on a home or renters policy, and an umbrella once your savings, home equity or future income exceed those limits.
 
-| Coverage | Kentucky legal minimum | Consider higher limits if |
-|---|---|---|
-| Auto bodily injury liability | $25,000 per person and $50,000 per accident, or a $60,000 single limit ([KRS 304.39-110(1)(a)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758)) | You own a home, have savings or investments, or have a teen driver on the policy |
-| Auto property damage liability | $25,000 per accident, or within the $60,000 single limit | One accident could damage several vehicles or a building |
-| Home or renters personal liability | No statutory minimum; the policy sets the limit | You host guests, have a pool, trampoline or dog, or have assets to protect |
-| Umbrella liability | No statutory minimum | Your assets and future income are more than your auto and home limits would pay |
+| Coverage | Kentucky legal minimum | Starting point we suggest | Consider more if |
+|---|---|---|---|
+| Auto bodily injury liability | $25,000 per person and $50,000 per accident, or a $60,000 single limit ([KRS 304.39-110(1)(a)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758)) | $100,000 per person and $300,000 per accident | You own a home, have savings or investments, or have a teen driver on the policy |
+| Auto property damage liability | $25,000 per accident, or within the $60,000 single limit | $100,000 per accident | One accident could damage several vehicles or a building |
+| Home or renters personal liability | No statutory minimum; the policy sets the limit | $300,000 to $500,000 | You host guests, have a pool, trampoline or dog, or have assets to protect |
+| Umbrella liability | No statutory minimum | $1 million once your assets approach $500,000 | Your assets and future income are more than your auto and home limits would pay |
 
 ## Kentucky liability minimums: what the law requires
 
@@ -51,7 +51,7 @@ A common way to start is to compare your total liability limits, including any u
 
 ## Auto liability: choosing your limits
 
-Insurers offer auto liability limits well above the Kentucky minimum, on your [auto policy](/personal/auto.html) as split limits or a single limit. Ask for quotes at two or three levels so you can see the price difference for your own vehicles and driving record.
+We suggest at least 100/300/100 on your [auto policy](/personal/auto.html): $100,000 per person for bodily injury, $300,000 per accident and $100,000 for property damage. Insurers offer higher limits too. Ask for quotes at two or three levels so you can see the price difference for your own vehicles and driving record.
 
 If you plan to add an umbrella policy, ask what underlying auto and home limits the umbrella insurer requires before you choose. Requirements vary by insurer.
 
@@ -59,13 +59,13 @@ If you plan to add an umbrella policy, ask what underlying auto and home limits 
 
 Personal liability on a [homeowners](/personal/home.html) or renters policy usually covers more than incidents at your house. Depending on the policy wording, it can respond when you or a household member accidentally injures someone or damages someone else's property away from home.
 
-Ask your agent to quote higher personal liability limits. The price difference depends on the insurer and your home.
+We suggest carrying at least $300,000 to $500,000 in personal liability. Ask your agent to quote both; the price difference depends on the insurer and your home.
 
 ## Umbrella insurance: protection above your other policies
 
 An [umbrella policy](/personal/umbrella.html) sits on top of your auto and homeowners policies and adds coverage once their limits are used up. Depending on the policy, an umbrella can also cover some claims your other policies exclude, such as certain claims of defamation or invasion of privacy.
 
-Consider an umbrella when your assets or future income are more than your auto and home limits would pay, or when you have risk factors such as a pool, rental property or a teen driver.
+Once your assets approach $500,000, we suggest at least a $1 million umbrella. Consider one sooner when your future income is more than your auto and home limits would pay, or when you have risk factors such as a pool, rental property or a teen driver.
 
 ## The bottom line
 
