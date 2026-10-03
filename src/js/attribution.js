@@ -5,7 +5,8 @@
  * <head> script tag WITHOUT defer (intake's giant inline script runs at parse
  * time and needs TWA to exist already).
  *
- * Owns: first/last-touch cookies (twa_ft / twa_lt), visitor id (twa_vid),
+ * Owns: first/last-touch cookies (twa_ft / twa_lt), the latest external
+ * referral cookie (twa_rl, CONV-05), visitor id (twa_vid),
  * ad-platform cookie ids (_fbp/_fbc/_ga), the A/B assignment hash, sha256, and
  * enhanced-conversion pushes. Functions are moved verbatim from app.js — keep
  * behavior identical; app.js keeps thin wrappers for its internal call sites.
@@ -20,8 +21,11 @@
   }
 
   // ─── Cookie helpers ───────────────────────────
+  // Secure on https (the live site is https-only behind HSTS); a plain-http
+  // local build would otherwise drop the cookie.
   function setCookie(name, value, days) {
-    document.cookie = name + '=' + encodeURIComponent(JSON.stringify(value)) + ';path=/;max-age=' + (days * 86400) + ';SameSite=Lax';
+    document.cookie = name + '=' + encodeURIComponent(JSON.stringify(value)) + ';path=/;max-age=' + (days * 86400) + ';SameSite=Lax'
+      + (window.location.protocol === 'https:' ? ';Secure' : '');
   }
   function getCookie(name) {
     var match = document.cookie.match(new RegExp(name + '=([^;]+)'));
@@ -56,6 +60,87 @@
     };
   }
 
+  // ─── External referral (CONV-05) ──────────────
+  // AI assistants by referrer domain. This is SAGE's AI_HOSTS map
+  // (sage-server src/services/attribution.js), copied exactly: SAGE files a
+  // lead as ai_assistant from the same list. Change the two together.
+  var AI_HOSTS = {
+    'chatgpt.com': 'chatgpt',
+    'chat.openai.com': 'chatgpt',
+    'perplexity.ai': 'perplexity',
+    'claude.ai': 'claude',
+    'gemini.google.com': 'gemini',
+    'copilot.microsoft.com': 'copilot',
+    'chat.deepseek.com': 'deepseek',
+    'grok.com': 'grok',
+  };
+  var REFERRAL_COOKIE = 'twa_rl';
+  var REFERRAL_DAYS = 30; // the twa_lt lifetime: this is a last touch
+
+  function onDomain(host, domain) {
+    return host === domain || host.slice(-(domain.length + 1)) === '.' + domain;
+  }
+  // Lower-case host of a URL or a host-like value, without 'www.'; '' if none.
+  function hostOf(value) {
+    var v = String(value || '').trim().toLowerCase();
+    if (!v) return '';
+    try {
+      return new URL(v.indexOf('://') !== -1 ? v : 'https://' + v).hostname.replace(/^www\./, '').replace(/\.$/, '');
+    } catch (e) { return ''; }
+  }
+  // The AI assistant a DOMAIN names ('chatgpt.com', a referrer URL on www.perplexity.ai),
+  // else ''. A bare name ('perplexity', 'copilot') is never enough: as a
+  // utm_source it may be any campaign's label (same rule as SAGE's aiHostOf).
+  function aiSourceOfDomain(value) {
+    var v = String(value || '').trim().toLowerCase();
+    if (v.indexOf('.') === -1) return '';
+    var host = hostOf(v);
+    if (!host) return '';
+    for (var domain in AI_HOSTS) {
+      if (Object.prototype.hasOwnProperty.call(AI_HOSTS, domain) && onDomain(host, domain)) return AI_HOSTS[domain];
+    }
+    return '';
+  }
+  // Our own pages (any host on the agency's domain, a Pages preview, or the
+  // host serving this page) are navigation, not an acquisition source.
+  function isInternalHost(host) {
+    var self = String(window.location.hostname || '').toLowerCase().replace(/^www\./, '');
+    return host === self || onDomain(host, 'thewayagency.com') || onDomain(host, 'thewayagency-site.pages.dev');
+  }
+
+  // Writes twa_rl when this landing came from another site (ref_host) or a
+  // domain-style utm_source names an AI assistant (ai_source). A landing with
+  // neither (direct, internal navigation, a stripped referrer) leaves the
+  // stored referral alone, so clicking through to /intake/ never overwrites
+  // it. Only the host is kept: the site's Referrer-Policy sends other sites
+  // an origin at most, and no prospect data ever goes in the cookie.
+  // Campaign UTMs and click ids stay in twa_ft/twa_lt exactly as before, and
+  // SAGE's deriveChannel() ranks them above this referral.
+  function captureReferral(params) {
+    var refHost = hostOf(document.referrer);
+    var external = !!refHost && !isInternalHost(refHost);
+    var ai = (external ? aiSourceOfDomain(refHost) : '') || aiSourceOfDomain(params.get('utm_source'));
+    if (!external && !ai) return null;
+    var rt = {};
+    if (external) rt.ref_host = refHost.slice(0, 100);
+    if (ai) rt.ai_source = ai;
+    setCookie(REFERRAL_COOKIE, rt, REFERRAL_DAYS);
+    _log('referral_set', rt);
+    return rt;
+  }
+
+  // The stored referral as clean strings ({} when none or malformed).
+  function getReferral() {
+    var c = getCookie(REFERRAL_COOKIE);
+    var out = {};
+    if (!c || typeof c !== 'object') return out;
+    var host = typeof c.ref_host === 'string' ? hostOf(c.ref_host).slice(0, 100) : '';
+    var ai = typeof c.ai_source === 'string' && /^[a-z]{1,32}$/.test(c.ai_source) ? c.ai_source : '';
+    if (host) out.ref_host = host;
+    if (ai) out.ai_source = ai;
+    return out;
+  }
+
   // ─── Capture attribution from URL ─────────────
   function captureAttribution() {
     var params = new URLSearchParams(window.location.search);
@@ -80,7 +165,8 @@
 
     // The first/last-touch cookies keep this for 365/30 days and ride every
     // SAGE submission: never store identity or a token in them (TRUST-08).
-    touchData.landing_page = window.location.pathname + stripSensitive(window.location.search);
+    // Capped at 300 characters: a touch value over 500 is cut by SAGE (CONV-05).
+    touchData.landing_page = (window.location.pathname + stripSensitive(window.location.search)).slice(0, 300);
     touchData.date = new Date().toISOString().split('T')[0];
 
     // First-touch: set once, never overwrite (365-day expiry)
@@ -93,6 +179,10 @@
       setCookie('twa_lt', touchData, 30);
       _log('last_touch_set', touchData);
     }
+    // Latest external referral: its own cookie, so the touches above resolve
+    // exactly as before (CONV-05).
+    captureReferral(params);
+
     // Session landing page (set once per session via sessionStorage)
     try {
       if (!sessionStorage.getItem('twa_lp')) {
@@ -106,12 +196,27 @@
   // ─── Full attribution for form submission ─────
   // Shape matches sage's attributionSchema (docs/TECHNICAL-REFERENCE.md):
   // flat last-touch-wins fields + the raw first/last touch objects.
+  //
+  // ref_host / ai_source (CONV-05): the latest external referral (twa_rl), sent
+  // where SAGE's deriveChannel() reads it, as the top-level pair and inside
+  // last_touch. It is a last touch only, so first_touch is left as stored.
+  // Keys are omitted when there is no referral; the flat fields are unchanged.
   function getAttribution() {
     var ft = getCookie('twa_ft') || {};
     var lt = getCookie('twa_lt') || {};
+    var rf = getReferral();
+    if (rf.ref_host || rf.ai_source) {
+      var ltOut = {};
+      for (var k in lt) {
+        if (Object.prototype.hasOwnProperty.call(lt, k) && k !== 'ref_host' && k !== 'ai_source') ltOut[k] = lt[k];
+      }
+      if (rf.ref_host) ltOut.ref_host = rf.ref_host;
+      if (rf.ai_source) ltOut.ai_source = rf.ai_source;
+      lt = ltOut;
+    }
     var lp = window.location.pathname;
     try { lp = sessionStorage.getItem('twa_lp') || lp; } catch (e) { /* private browsing */ }
-    return {
+    var out = {
       first_touch: ft,
       last_touch: lt,
       landing_page: lp,
@@ -126,6 +231,9 @@
       src: lt.src || ft.src || '',
       agent: lt.agent || ft.agent || '',
     };
+    if (rf.ref_host) out.ref_host = rf.ref_host;
+    if (rf.ai_source) out.ai_source = rf.ai_source;
+    return out;
   }
 
   // ─── Privacy guard: identity never rides a URL (TRUST-08) ──────────────
@@ -258,6 +366,9 @@
     getTrackingIds: getTrackingIds,
     captureAttribution: captureAttribution,
     getAttribution: getAttribution,
+    getReferral: getReferral,
+    aiSourceOfDomain: aiSourceOfDomain,
+    AI_HOSTS: Object.freeze(Object.assign({}, AI_HOSTS)),
     hashAssign: hashAssign,
     assignVariant: assignVariant,
     pushExposure: pushExposure,
