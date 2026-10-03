@@ -1409,6 +1409,7 @@ ${renderScripts()}
 
 module.exports = {
   quoteCtaLabel,
+  getTestimonialsForLine,
   hubConfig,
   generateHubPage,
   generateProductPage,
