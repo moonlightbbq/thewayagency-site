@@ -165,7 +165,8 @@
 
     // The first/last-touch cookies keep this for 365/30 days and ride every
     // SAGE submission: never store identity or a token in them (TRUST-08).
-    touchData.landing_page = window.location.pathname + stripSensitive(window.location.search);
+    // Capped at 300 characters: a touch value over 500 is cut by SAGE (CONV-05).
+    touchData.landing_page = (window.location.pathname + stripSensitive(window.location.search)).slice(0, 300);
     touchData.date = new Date().toISOString().split('T')[0];
 
     // First-touch: set once, never overwrite (365-day expiry)
