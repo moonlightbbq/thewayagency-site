@@ -7,6 +7,10 @@ const fs = require('fs');
 const path = require('path');
 // The agency reference for every JSON-LD block here (never a full agency node: SCHEMA-01, SCHEMA-02).
 const { orgRef } = require('../lib/entity');
+// Navigation blocks rendered from data/internal-links.json (LOCAL-01, BLOG-03, TECH-01, MKT-04).
+const { renderGuides, renderLocalHelp, renderNearby, renderRelatedIndustries, renderIndustriesSection } = require('./internal-links');
+// Local proof modules; each renders nothing until verified data exists (LOCAL-05).
+const { renderHubTeam, renderHubCarriers, renderRatingLine } = require('./hub-proof');
 
 // ─── HTML Escape Helper ────────────────────────
 
@@ -468,6 +472,11 @@ ${renderHero({
 ${hubBreadcrumbs.html}
   <main id="main">
 ${productSections}
+${lineKey === 'commercial' ? renderIndustriesSection(ctx) : ''}
+    <section class="section">
+      <div class="container container--narrow">${renderGuides(config.canonical, ctx, 'Guides')}${renderLocalHelp()}
+      </div>
+    </section>
 
     <!-- Cross-sell -->
     <section class="section section--light">
@@ -692,11 +701,10 @@ ${breadcrumbs.html}
 ${formHtml}
 
       ${relatedSection}
+${renderGuides(product.url, ctx, 'Guides')}${renderLocalHelp()}${renderRelatedIndustries(product.id, ctx)}
     </article>
 
     ${crossSellSection}
-
-    <!-- City-specific links handled by dedicated landing pages -->
 
     ${generateTestimonials(testimonials, reviews, lineKey, (testimonialsBlocklist && testimonialsBlocklist.blocked) || [])}
 
@@ -718,6 +726,16 @@ ${renderScripts()}
 }
 
 // ─── City Landing Page ──────────────────────────
+
+// A hub's H1 from data (landing-pages.json `h1`, copy of record rewrites.md
+// sections 2-3), with the place name in the accent span; '' when unset.
+function hubH1(h1, place) {
+  if (!h1) return '';
+  const text = esc(h1);
+  const name = esc(place);
+  const i = text.indexOf(name);
+  return i < 0 ? text : `${text.slice(0, i)}<span class="hero__title-accent">${name}</span>${text.slice(i + name.length)}`;
+}
 
 function generateCityPage(city, ctx) {
   const { office, landingData, renderNav, renderFooter, renderScripts } = ctx;
@@ -760,6 +778,14 @@ ${faqs.map(f => `      {
     .replace('%%FORM_HEADING%%', `Get an insurance quote in ${city.city}`)
     .replace('%%FORM_SUBTEXT%%', 'Tell us your name and email and a licensed agent will follow up with options.');
 
+  // One breadcrumb trail, printed and in JSON-LD (TECH-01). The parent is
+  // /about/locations, whose H1 is "Where we serve" (/insurance/ has no page).
+  const crumbs = renderBreadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'Where we serve', url: '/about/locations' },
+    { name: `${city.city}, ${city.state}` },
+  ]);
+
   const defaultTitle = `Insurance in ${city.city}, ${city.state} | The Way Agency`;
   const defaultDescription = `Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance. Get a quote today.`;
   const defaultOgDescription = `Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance.`;
@@ -772,7 +798,8 @@ ${renderHead({
     ogTitle: city.title || defaultTitle,
     ogDescription: city.meta_description || defaultOgDescription,
     ogUrl: `https://www.thewayagency.com/insurance/${city.slug}`,
-    schema: faqSchema,
+    schema: `${faqSchema}
+  <script type="application/ld+json">${crumbs.schema}</script>`,
   })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -780,7 +807,7 @@ ${renderNav()}
 
 ${renderHero({
     eyebrow: `Independent agency · Licensed in ${STATE_NAMES[city.state] || city.state}`,
-    title: `Insurance in <span class="hero__title-accent">${city.city}</span>, ${city.state}`,
+    title: hubH1(city.h1, city.city) || `Insurance in <span class="hero__title-accent">${city.city}</span>, ${city.state}`,
     subtitle: `Personal, commercial, and life insurance for ${city.city} families and businesses.`,
     buttons: [
       { href: `/intake/?city=${encodeURIComponent(city.city)}&state=${encodeURIComponent(city.state)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
@@ -791,18 +818,19 @@ ${renderHero({
     variant: 'compact',
   })}
 
+${crumbs.html}
   <main id="main">
 ${renderHubTrustBar(STATE_NAMES[city.state] || city.state)}
 
     <section class="section">
-      <div class="container container--narrow">
+      <div class="container container--narrow">${renderRatingLine(ctx)}${renderHubTeam(city, ctx)}
         <h2>Why ${city.city} families and businesses choose The Way Agency</h2>
 ${city.context.split(/\n\n+/).map(p => `        <p>${p.trim()}</p>`).join('\n')}
 ${(city.context_sections || []).map(s => {
           const sectionId = (s.slug || s.heading.split(/\s+/)[0]).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
           return `        <h3 id="${sectionId}">${s.heading}</h3>\n        <p>${s.body}</p>`;
         }).join('\n')}
-${city.context_closing ? `        <p>${city.context_closing}</p>` : ''}
+${city.context_closing ? `        <p>${city.context_closing}</p>` : ''}${renderHubCarriers(city, ctx)}
 
         <h2>Insurance options in ${city.city}</h2>
         ${(() => {
@@ -816,7 +844,7 @@ ${city.context_closing ? `        <p>${city.context_closing}</p>` : ''}
         })()}
 
 ${cityFormHtml}
-${faqAccordion}
+${faqAccordion}${renderGuides(`/insurance/${city.slug}`, ctx, 'Local guides')}${renderNearby(city.slug, ctx)}
 
         <h2>How it works</h2>
         <p><strong>1. Tell us what you need.</strong> Request a quote online or call ${office.phone}. We just need basic info to get started.</p>
@@ -888,6 +916,12 @@ ${faqs.map(f => `      {
   }
   </script>` : '';
 
+  const crumbs = renderBreadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'Where we serve', url: '/about/locations' },
+    { name: `${countyName}, ${stateAbbr}` },
+  ]);
+
   const defaultTitle = `Insurance in ${countyName}, ${stateAbbr} | The Way Agency`;
   const defaultDescription = `Insurance agency serving ${countyName}, ${stateAbbr}. Home, auto, commercial, farm, and life insurance.`;
 
@@ -904,7 +938,8 @@ ${renderHead({
     ogTitle: county.title || defaultTitle,
     ogDescription: county.meta_description || defaultDescription,
     ogUrl: `https://www.thewayagency.com/insurance/${county.slug}`,
-    schema: faqSchema,
+    schema: `${faqSchema}
+  <script type="application/ld+json">${crumbs.schema}</script>`,
   })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -912,7 +947,7 @@ ${renderNav()}
 
 ${renderHero({
     eyebrow: `Independent agency · Licensed in ${stateFull}`,
-    title: `Insurance in <span class="hero__title-accent">${countyName}</span>, ${stateAbbr}`,
+    title: hubH1(county.h1, countyName) || `Insurance in <span class="hero__title-accent">${countyName}</span>, ${stateAbbr}`,
     subtitle: `Personal, commercial, farm, and life insurance for ${countyName} families and businesses.`,
     buttons: [
       { href: `/intake/?county=${encodeURIComponent(countyName)}&state=${encodeURIComponent(stateAbbr)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
@@ -923,18 +958,19 @@ ${renderHero({
     variant: 'compact',
   })}
 
+${crumbs.html}
   <main id="main">
 ${renderHubTrustBar(stateFull)}
 
     <section class="section">
-      <div class="container container--narrow">
+      <div class="container container--narrow">${renderRatingLine(ctx)}${renderHubTeam(county, ctx)}
         <h2>Why ${countyName} families and businesses choose The Way Agency</h2>
 ${county.context.split(/\n\n+/).map(p => `        <p>${p.trim()}</p>`).join('\n')}
 ${(county.context_sections || []).map(s => {
           const sectionId = (s.slug || s.heading.split(/\s+/)[0]).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
           return `        <h3 id="${sectionId}">${s.heading}</h3>\n        <p>${s.body}</p>`;
         }).join('\n')}
-${county.context_closing ? `        <p>${county.context_closing}</p>` : ''}
+${county.context_closing ? `        <p>${county.context_closing}</p>` : ''}${renderHubCarriers(county, ctx)}
 
         <h2>Insurance options in ${countyName}</h2>
         ${(() => {
@@ -948,7 +984,7 @@ ${county.context_closing ? `        <p>${county.context_closing}</p>` : ''}
         })()}
 
 ${countyFormHtml}
-${faqAccordion}
+${faqAccordion}${renderGuides(`/insurance/${county.slug}`, ctx, 'Local guides')}${renderNearby(county.slug, ctx)}
 
         <h2>How it works</h2>
         <p><strong>1. Tell us what you need.</strong> Request a quote online or call ${office.phone}. We just need basic info to get started.</p>
@@ -986,6 +1022,14 @@ function generateIndustryPage(ind, ctx) {
     .replace('%%FORM_HEADING%%', `Get a quote for your ${ind.name.toLowerCase().replace(/s$/, '')} business`)
     .replace('%%FORM_SUBTEXT%%', 'Tell us about your business and we\'ll come back with coverage options from carriers that specialize in your industry.');
 
+  // One breadcrumb trail, printed and in JSON-LD (TECH-01).
+  const crumbs = renderBreadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'Commercial Insurance', url: '/commercial/' },
+    { name: 'Industries', url: '/industries/' },
+    { name: ind.name },
+  ]);
+
   return `<!DOCTYPE html>
 <html lang="en">
 ${renderHead({
@@ -996,7 +1040,7 @@ ${renderHead({
     ogDescription: `Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. Get a quote.`,
     ogUrl: `https://www.thewayagency.com/industries/${ind.slug}`,
     // The page's Service JSON-LD comes from schema-generator.js _buildIndustryService.
-    schema: '',
+    schema: `<script type="application/ld+json">${crumbs.schema}</script>`,
   })}
 <body>
   <a href="#main" class="skip-link">Skip to main content</a>
@@ -1016,6 +1060,7 @@ ${renderHero({
     variant: 'compact',
   })}
 
+${crumbs.html}
   <main id="main">
     <section class="section">
       <div class="container container--narrow">
@@ -1030,6 +1075,8 @@ ${renderHero({
         <p>We represent carriers including specialty markets for ${ind.name.toLowerCase()}, which means we can often find coverage that generalist agencies cannot. We also handle certificates of insurance, additional insured endorsements, and audit support.</p>
 
 ${indFormHtml}
+${renderGuides(`/industries/${ind.slug}`, ctx, 'Guides')}
+        <p><a href="/industries/">All industries we insure</a></p>
 
         <h2>Why choose The Way Agency for ${ind.name.toLowerCase()} insurance?</h2>
         <p><strong>Industry experience.</strong> We understand the specific risks, contract requirements, and coverage gaps that ${ind.name.toLowerCase()} face. We don't sell generic policies  -  we build programs that match real-world operations.</p>
@@ -1045,6 +1092,89 @@ ${renderCTA({
       buttons: [
         { href: `/intake/?line=commercial&industry=${ind.slug}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
         { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
+      ],
+      contactMethods: true,
+    }, office)}
+  </main>
+
+${renderFooter()}
+${renderScripts()}
+</body>
+</html>`;
+}
+
+// ─── Industries Index (TECH-01) ─────────────────
+// /industries/ lists every industry page. Built once (audit "build these once");
+// content-accuracy WP-G1 links here. No counts and no superlatives.
+
+function generateIndustriesIndex(industries, ctx) {
+  const { office, renderNav, renderFooter, renderScripts } = ctx;
+  const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+  const title = 'Business Insurance by Industry in Kentucky | The Way Agency';
+  const description = 'Coverage checklists for Kentucky contractors, restaurants, manufacturers and professional firms. Call or text (502) 413-5335.';
+  const url = 'https://www.thewayagency.com/industries/';
+  const crumbs = renderBreadcrumbs([
+    { name: 'Home', url: '/' },
+    { name: 'Commercial Insurance', url: '/commercial/' },
+    { name: 'Industries' },
+  ]);
+  const cards = (industries || []).map((ind) => `          <a href="/industries/${esc(ind.slug)}" class="card" style="text-decoration:none;">
+            <h2 class="card__title" style="font-size:var(--text-xl);">${esc(ind.name)}</h2>
+            <p class="card__text">${esc(firstSentence(ind.description))}</p>
+            <span class="card__link">${esc(ind.name)} insurance ${arrowSvg}</span>
+          </a>`).join('\n');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+${renderHead({
+    title,
+    description,
+    canonical: url,
+    ogTitle: title,
+    ogDescription: description,
+    ogUrl: url,
+    schema: `<script type="application/ld+json">
+  ${JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      '@id': `${url}#webpage`,
+      url,
+      name: 'Business insurance by industry',
+      publisher: orgRef(),
+      hasPart: (industries || []).map((ind) => ({ '@type': 'WebPage', name: `Insurance for ${ind.name}`, url: `https://www.thewayagency.com/industries/${ind.slug}` })),
+    }, null, 2).replace(/</g, '\\u003c')}
+  </script>
+  <script type="application/ld+json">${crumbs.schema}</script>`,
+  })}
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+${renderNav()}
+
+${renderHero({
+    eyebrow: 'Commercial Insurance',
+    title: 'Business insurance by industry',
+    subtitle: 'Each page lists the coverage a business in that industry usually needs. Pick your industry to see its checklist.',
+    buttons: [{ href: '/intake/?line=commercial', text: 'Get a Quote', className: 'btn btn--primary btn--lg' }],
+    minHeight: '38vh',
+    variant: 'compact',
+  })}
+
+${crumbs.html}
+  <main id="main">
+    <section class="section">
+      <div class="container">
+        <div class="grid grid--3">
+${cards}
+        </div>
+        <p style="text-align:center;margin-top:var(--space-xl);"><a href="/commercial/">All commercial insurance coverages</a></p>
+      </div>
+    </section>
+
+${renderCTA({
+      title: 'Tell us about your business',
+      text: "We'll go through your operations and contracts and come back with coverage options.",
+      buttons: [
+        { href: '/intake/?line=commercial', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
       ],
       contactMethods: true,
     }, office)}
@@ -1276,6 +1406,7 @@ module.exports = {
   generateIndustryPage,
   generateCarrierPage,
   generateCarriersIndex,
+  generateIndustriesIndex,
   renderHead,
   renderHero,
   renderCTA,

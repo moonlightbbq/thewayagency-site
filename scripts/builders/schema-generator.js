@@ -11,8 +11,8 @@
  *   from the rendered page itself (its <title>, H1 and card headings), so the
  *   markup follows the copy.
  * - Service for industry pages
- * - BreadcrumbList for city, county, blog, carrier and industry pages (product
- *   pages get theirs from pages.js)
+ * - BreadcrumbList for blog and carrier pages (product, city, county and
+ *   industry pages get their one trail from pages.js renderBreadcrumbs)
  * No AggregateRating or Review: the agency's own Google rating is self-serving
  * review markup (SCHEMA-03). scripts/lib/entity-schema-guard.js fails the
  * build if any of this comes back.
@@ -163,19 +163,14 @@ function _buildBreadcrumbs(pageType, context) {
 
   switch (pageType) {
     case 'product':
-      return null; // pages.js renderBreadcrumbs emits the one (extensionless) product trail
     case 'city':
-      items.push({ name: 'Insurance', url: `${SITE_URL}/insurance/` });
-      if (context.city?.city) {
-        items.push({ name: `${context.city.city}, ${context.city.state}`, url: `${SITE_URL}/insurance/${context.city.slug}` });
-      }
-      break;
     case 'county':
-      items.push({ name: 'Insurance', url: `${SITE_URL}/insurance/` });
-      if (context.county?.county_name) {
-        items.push({ name: `${context.county.county_name}, ${context.county.state}`, url: `${SITE_URL}/insurance/${context.county.slug}` });
-      }
-      break;
+    case 'industry':
+      // One trail per page (TECH-01). These pages print a visible breadcrumb
+      // with its own BreadcrumbList (scripts/builders/pages.js
+      // renderBreadcrumbs). A second trail here duplicated it, with dead
+      // /insurance/ and /industries/ parents.
+      return null;
     case 'blog':
       items.push({ name: 'Blog', url: `${SITE_URL}/blog/` });
       if (context.title) {
@@ -184,12 +179,6 @@ function _buildBreadcrumbs(pageType, context) {
       break;
     case 'carrier':
       items.push({ name: 'Carriers', url: `${SITE_URL}/carriers/` });
-      if (context.name) {
-        items.push({ name: context.name });
-      }
-      break;
-    case 'industry':
-      items.push({ name: 'Industries', url: `${SITE_URL}/industries/` });
       if (context.name) {
         items.push({ name: context.name });
       }

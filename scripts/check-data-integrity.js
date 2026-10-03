@@ -461,6 +461,17 @@ if (products && kb) {
   else pass(`Cross-ref: ${lowFaqProducts} products have fewer than 3 FAQs`);
 }
 
+// Internal-link data (LOCAL-01, TECH-01, BLOG-03; priority-hubs R1-13): tiers in
+// one field, no .html hub or industry links, unique hub section ids, fragment
+// links that resolve, guides that are live and not blocked or retired, real
+// nearby hubs and related industries. Rules: scripts/lib/internal-links-check.js.
+{
+  const { internalLinkProblems } = require('./lib/internal-links-check');
+  const linkProblems = internalLinkProblems(ROOT);
+  for (const p of linkProblems) error(`Cross-ref: ${p}`);
+  if (linkProblems.length === 0) pass('Cross-ref: internal-link data (tiers, hub links, section ids, guides, nearby, industries)');
+}
+
 // Verify sage-api-docs.json if it exists (optional — created in Task 29)
 if (fs.existsSync(path.join(DATA, 'sage-api-docs.json'))) {
   const apiDocs = loadJson('sage-api-docs.json');

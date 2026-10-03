@@ -1007,9 +1007,9 @@ describe('fix round 5: calendar titles and descriptions on the cards get the wor
     const legacySlug = legacy.slice(0, -'.html'.length);
     const site = makeSite({
       existing: [
-        { slug: 'test-card', title: `Reviewed by ${REVIEWER.name}: SYNTHETIC card`, description: `Every answer here was checked by ${REVIEWER.name}.`, publish_date: '2026-01-07', status: 'published' },
+        { slug: 'test-card', title: `Reviewed by ${REVIEWER.name}: SYNTHETIC card`, description: `Every answer here was checked by ${REVIEWER.name}.`, publish_date: '2026-01-07', status: 'published', related_cluster: 'synthetic-cluster' },
         { slug: legacySlug, title: `Approved by ${REVIEWER.name}, Licensed Test Agent`, description: 'SYNTHETIC frozen', publish_date: '2026-01-06', status: 'published' },
-        { slug: 'test-card-ok', title: 'SYNTHETIC plain card', description: 'SYNTHETIC plain description', publish_date: '2026-01-05', status: 'published' },
+        { slug: 'test-card-ok', title: 'SYNTHETIC plain card', description: 'SYNTHETIC plain description', publish_date: '2026-01-05', status: 'published', related_cluster: 'synthetic-cluster' },
       ],
       files: { 'test-card': post('test-card'), 'test-card-ok': post('test-card-ok') },
     });
@@ -1025,6 +1025,8 @@ describe('fix round 5: calendar titles and descriptions on the cards get the wor
       assert.match(gen.stdout, new RegExp(`! test-card: review-credit wording in the calendar description: "Every answer here was checked by ${REVIEWER.name}\\."`));
       assert.match(gen.stdout, new RegExp(`! ${legacySlug}: review-credit wording in the calendar title`));
       assert.doesNotMatch(gen.stdout, /! test-card-ok: review-credit wording/);
+      // Related Articles are ranked by relevance (BLOG-03): the shared
+      // related_cluster puts test-card in test-card-ok's Related section.
       const related = site.page('test-card-ok');
       assert.ok(!structuredCredit(related), 'a card title is text, not a credit');
       assert.match(related, new RegExp(`Related Articles[\\s\\S]*>Reviewed by ${REVIEWER.name}: SYNTHETIC card<`));

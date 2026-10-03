@@ -29,7 +29,7 @@ function loadJson(filepath) {
 const { createVersionInfo, createInjectVersion } = require('./builders/seo');
 const assets = require('./builders/assets');
 const { copyBlogPages, runBlogGenerator } = require('./builders/blog-helpers');
-const { hubConfig, generateHubPage, generateProductPage, generateCityPage, generateCountyPage, generateIndustryPage, generateCarrierPage, generateCarriersIndex } = require('./builders/pages');
+const { hubConfig, generateHubPage, generateProductPage, generateCityPage, generateCountyPage, generateIndustryPage, generateCarrierPage, generateCarriersIndex, generateIndustriesIndex } = require('./builders/pages');
 const { generateSitemap } = require('./builders/sitemap');
 const { createSchemaInjector } = require('./builders/schema-generator');
 
@@ -50,6 +50,8 @@ const testimonialsBlocklist = fs.existsSync(path.join(DATA, 'testimonials-blockl
   : { blocked: [] };
 const seoData = loadJson(path.join(DATA, 'seo.json'));
 const landingData = loadJson(path.join(DATA, 'landing-pages.json'));
+// Guides, related industries and nearby hubs (LOCAL-01, BLOG-03, TECH-01, MKT-04).
+const internalLinks = loadJson(path.join(DATA, 'internal-links.json'));
 const agency = locations.agency;
 const office = locations.offices[0];
 
@@ -81,7 +83,7 @@ const entity = loadJson(path.join(DATA, 'entity.json'));
 const injectSchema = createSchemaInjector({ agency, office, entity });
 
 // ─── Shared Context ─────────────────────────────
-const ctx = { products, office, team, knowledgeBase, carriers, testimonials, testimonialsBlocklist, reviews: _reviews, richContent, landingData, seoData, renderNav, renderFooter, renderScripts };
+const ctx = { products, office, agency, team, knowledgeBase, carriers, testimonials, testimonialsBlocklist, reviews: _reviews, richContent, landingData, internalLinks, seoData, renderNav, renderFooter, renderScripts };
 
 // ─── Build ──────────────────────────────────────
 console.log('🔨 Building The Way Agency site...\n');
@@ -104,15 +106,8 @@ assets.copyAssets(SRC, BUILD);
 const rootPages = assets.copyRootPages(SRC, BUILD, injectVersion);
 const subPages = assets.copySubPages(SRC, BUILD, injectVersion);
 
-// 4. Generate hub pages
-for (const [lineKey, config] of Object.entries(hubConfig)) {
-  // line key === slug now that life/health are separate top-level keys
-  const lineSlug = lineKey;
-  assets.ensureDir(path.join(BUILD, lineSlug));
-  const hubHtml = generateHubPage(lineKey, ctx);
-  fs.writeFileSync(path.join(BUILD, lineSlug, 'index.html'), injectVersion(hubHtml));
-  console.log(`  ✓ ${lineSlug}/index.html (generated from products.json)`);
-}
+// 4. Line hub pages are generated after the blog (step 5d), so their Guides
+//    blocks link only posts this build rendered.
 
 // 5. Copy hand-crafted subdirectory pages (about, etc.) - already done in step 3
 
@@ -137,6 +132,22 @@ runBlogGenerator(ROOT);
     }
     if (versioned > 0) console.log(`  ✓ Injected version params into ${versioned} generated blog posts`);
   }
+}
+
+// 5d. The posts this build rendered: Guides blocks link only these (a post that
+//     is held, future-dated or retired is never linked from a money page).
+ctx.publishedBlog = new Set(fs.existsSync(path.join(BUILD, 'blog'))
+  ? fs.readdirSync(path.join(BUILD, 'blog')).filter(f => f.endsWith('.html') && f !== 'index.html').map(f => f.slice(0, -'.html'.length))
+  : []);
+
+// 5e. Generate line hub pages
+for (const [lineKey] of Object.entries(hubConfig)) {
+  // line key === slug now that life/health are separate top-level keys
+  const lineSlug = lineKey;
+  assets.ensureDir(path.join(BUILD, lineSlug));
+  const hubHtml = generateHubPage(lineKey, ctx);
+  fs.writeFileSync(path.join(BUILD, lineSlug, 'index.html'), injectVersion(hubHtml));
+  console.log(`  ✓ ${lineSlug}/index.html (generated from products.json)`);
 }
 
 // 6. Generate product pages
@@ -193,6 +204,9 @@ for (const ind of landingData.industries) {
   indCount++;
 }
 console.log(`  ✓ Generated ${indCount} industry landing pages`);
+// Industries index (TECH-01): the parent in every industry page's breadcrumb.
+fs.writeFileSync(path.join(BUILD, 'industries', 'index.html'), injectVersion(generateIndustriesIndex(landingData.industries, ctx)));
+console.log('  ✓ industries/index.html');
 
 // 6d. Generate carrier pages
 assets.ensureDir(path.join(BUILD, 'carriers'));

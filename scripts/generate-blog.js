@@ -48,6 +48,8 @@ const path = require('path');
 const contentGuard = require('./lib/blog-content-guard');
 // The agency reference and the canonical page and person IRIs (SCHEMA-02, SCHEMA-04).
 const { orgRef, teamMemberUrl, blogPostUrl, SITE_URL } = require('./lib/entity');
+// The one internal URL form, extensionless (TECH-02 helper; BLOG-03, LOCAL-01).
+const { canonicalHref } = require('./lib/site-urls');
 
 const ROOT = path.resolve(__dirname, '..');
 const BLOG_SRC = path.join(ROOT, 'src', 'blog');
@@ -161,8 +163,9 @@ function markdownToHtml(md) {
     // Bold and italic
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    // Links
-    .replace(/\[(.+?)\]\((.+?)\)/g, (_m, text, url) => `<a href="${safeHref(url)}">${text}</a>`)
+    // Links. Site-relative targets print extensionless (/x.html 308s to /x);
+    // the markdown itself is not edited (its bytes bind a review credit).
+    .replace(/\[(.+?)\]\((.+?)\)/g, (_m, text, url) => `<a href="${safeHref(canonicalHref(url))}">${text}</a>`)
     // Unordered lists
     .replace(/^- (.+)$/gm, '<li>$1</li>')
     .replace(/(<li>.*<\/li>\n?)+/g, (match) => `<ul>\n${match}</ul>\n`)
@@ -852,6 +855,7 @@ const {
   renderDecision, reviewSecret, isReviewerKey, reviewWordingWarnings, describeWordingWarning,
 } = require('./lib/review-credit');
 const { LEGACY_BLOG_PAGES } = require('./lib/legacy-blog-pages');
+const { rankRelated } = require('./lib/related-posts');
 
 const RENDER_TODAY = new Date().toISOString().split('T')[0]; // YYYY-MM-DD, as the publisher
 // Cloudflare Pages builds every pushed branch (Preview) with that branch's own
@@ -1089,43 +1093,74 @@ const calendar = calendarEntries.calendar;
     fs.writeFileSync(path.join(BLOG_BUILD, 'index.html'), indexHtml);
     console.log(`  ✓ blog/index.html (${allPublishedFiltered.length} posts, ${allPublished.length - allPublishedFiltered.length} scheduled)`);
 
-    // Inject "Related Articles" into each generated blog post (prefer same category)
+    // "Related Articles" ranked by relevance (BLOG-03; scripts/lib/related-posts.js):
+    // shared cluster, target product page, tags, priority hub, then category,
+    // recency only as the tie-break, at most 15 Related links into any one post.
+    // A post with no candidate scoring 20 or more gets no Related section.
+    // Below it, a post whose calendar entry targets a priority-market hub links
+    // that hub (no contact link). Post bodies are not edited.
     const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    const metaBySlug = new Map(posts.map(m => [m.slug, m]));
+    const merged = (slug, base) => {
+      const cal = calendarEntries.bySlug.get(slug) || {};
+      const fm = metaBySlug.get(slug) || {};
+      return {
+        slug,
+        publish_date: String(base.publish_date || fm.date || cal.publish_date || ''),
+        category: fm.category || cal.category || '',
+        related_cluster: cal.related_cluster || fm.related_cluster || '',
+        target_product_page: cal.target_product_page || '',
+        related_page: fm.related_page || '',
+        target_location_pages: Array.isArray(cal.target_location_pages) ? cal.target_location_pages : [],
+        tags: fm.tags || [],
+      };
+    };
+    const priorityHubs = new Set(Object.entries(locations.hub_tiers || {})
+      .filter(([slug, tier]) => tier === 'priority' && /^[a-z0-9-]+$/.test(slug)).map(([slug]) => `/insurance/${slug}`));
+    const internalLinks = (() => {
+      try { return JSON.parse(fs.readFileSync(path.join(DATA, 'internal-links.json'), 'utf8')) || {}; } catch { return {}; }
+    })();
+    const hubLabels = internalLinks.hub_labels || {};
+    // A post the money pages may not link yet (blocked_guides: legal
+    // corrections, BLOG-05 retirements, Medicare until TRUST-01) is not offered
+    // as a Related Article either. Its own page still gets Related links.
+    const blockedGuides = new Set(Object.keys(internalLinks.blocked_guides || {}));
+    const titleBySlug = new Map(allPublishedFiltered.map(p => [p.slug, p.title]));
+    const relatedBySlug = rankRelated(
+      posts.map(m => merged(m.slug, { publish_date: m.date })),
+      allPublishedFiltered.filter(p => !blockedGuides.has(p.slug)).map(p => merged(p.slug, p)),
+      { priorityHubs },
+    );
+    let noRelated = 0;
     for (const meta of posts) {
       const filePath = path.join(BLOG_BUILD, `${meta.slug}.html`);
       if (!fs.existsSync(filePath)) continue;
       let html = fs.readFileSync(filePath, 'utf8');
+      const related = (relatedBySlug.get(meta.slug) || []).filter(s => titleBySlug.has(s));
+      if (!related.length) noRelated++;
 
-      // Find related posts: prefer same category, then fill with recent posts
-      const others = allPublishedFiltered.filter(p => p.slug !== meta.slug);
-      const sameCategory = meta.category ? others.filter(p => {
-        // Check if calendar entry has matching category
-        const calEntry = [...(calendar.existing_posts || []), ...(calendar.year1 || [])].find(c => c.slug === p.slug);
-        return calEntry && calEntry.category === meta.category;
-      }) : [];
-      // Also check generated posts for category match
-      const sameCategoryFromPosts = posts.filter(p => p.slug !== meta.slug && p.category === meta.category);
-      const sameCategorySlugs = new Set([...sameCategory.map(p => p.slug), ...sameCategoryFromPosts.map(p => p.slug)]);
-      const relatedFromCategory = others.filter(p => sameCategorySlugs.has(p.slug)).slice(0, 3);
-      const remaining = relatedFromCategory.length < 3 ? others.filter(p => !sameCategorySlugs.has(p.slug)).slice(0, 3 - relatedFromCategory.length) : [];
-      const related = [...relatedFromCategory, ...remaining].slice(0, 3);
+      const localHubs = [...new Set(merged(meta.slug, {}).target_location_pages.map(h => canonicalHref(String(h))))]
+        .filter(h => priorityHubs.has(h) && hubLabels[h.slice('/insurance/'.length)]);
+      const localHtml = localHubs.length ? `
+      <p class="post-local-help">Working with us in Kentucky: we serve ${localHubs.map(h => `<a href="${esc(h)}">${esc(hubLabels[h.slice('/insurance/'.length)])}</a>`).join(' and ')}.</p>` : '';
 
-      if (related.length > 0) {
-        const relatedHtml = `
+      const relatedHtml = related.length ? `
       <section style="margin-top:var(--space-2xl);padding-top:var(--space-2xl);border-top:1px solid var(--border);">
         <h2 style="font-size:var(--text-2xl);">Related Articles</h2>
         <div class="grid grid--3" style="margin-top:var(--space-lg);">
-${related.map(p => `          <a href="/blog/${esc(p.slug)}.html" class="card" style="text-decoration:none;">
-            <h3 class="card__title" style="font-size:var(--text-lg);">${esc(p.title)}</h3>
+${related.map(slug => `          <a href="/blog/${esc(slug)}" class="card" style="text-decoration:none;">
+            <h3 class="card__title" style="font-size:var(--text-lg);">${esc(titleBySlug.get(slug))}</h3>
             <span class="card__link">Read article ${arrowSvg}</span>
           </a>`).join('\n')}
         </div>
-      </section>`;
+      </section>` : '';
+      if (localHtml || relatedHtml) {
         // A function replacement: '$&' or "$'" in a title is text, not a pattern.
-        html = html.replace('</article>', () => relatedHtml + '\n    </article>');
+        html = html.replace('</article>', () => localHtml + relatedHtml + '\n    </article>');
         fs.writeFileSync(filePath, html);
       }
     }
+    if (noRelated) console.log(`  ! ${noRelated} post(s) have no related post scoring 20 or more: no Related Articles section (BLOG-03; fill related_cluster, target_product_page or tags)`);
   }
 }
 
