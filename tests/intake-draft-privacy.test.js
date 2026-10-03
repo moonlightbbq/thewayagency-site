@@ -48,6 +48,8 @@ async function loadIntake({ url = 'https://www.thewayagency.com/intake/?product=
       w.matchMedia = () => ({ matches: false, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {} });
       w.scrollTo = () => {};
       Object.defineProperty(w.HTMLElement.prototype, 'scrollIntoView', { value: () => {} });
+      // A loaded Turnstile with a token: the page never posts without one (CONV-10).
+      w.turnstile = { render() { return 'w1'; }, reset() {} };
     },
   });
   const w = dom.window;
@@ -55,6 +57,7 @@ async function loadIntake({ url = 'https://www.thewayagency.com/intake/?product=
     await new Promise((r) => setTimeout(r, 5));
     if (w.serviceStateNames && w.serviceStateNames()) break;
   }
+  w.eval("_turnstileSiteKey = 'test-key-test-key-test-key'; turnstileToken = 'test-token-test-token-test-token-test-token'");
   w.__calls = calls;
   return w;
 }

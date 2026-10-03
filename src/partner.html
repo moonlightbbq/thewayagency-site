@@ -798,7 +798,7 @@
         </div>
 
         <p style="margin-top:20px;font-size:var(--text-xs);color:var(--slate)">
-          Need help? <a href="mailto:hello@thewayagency.com">hello@thewayagency.com</a> &middot; <a href="tel:+15024135335">(502) 413-5335</a>
+          Need help? <a href="mailto:hello@thewayagency.com">hello@thewayagency.com</a> &middot; <a href="tel:+15024135335">Call</a> or <a href="sms:+15024135335">text</a> (502) 413-5335
         </p>
       </div>
     </div>
@@ -815,7 +815,7 @@
         <p id="auth-fail-message">We couldn't connect to our system right now. This could be a temporary issue — try refreshing the page. If the problem continues, give us a call.</p>
         <p style="margin-top:16px">
           <button onclick="location.reload()" style="padding:8px 20px;border:1.5px solid var(--border);border-radius:var(--border-radius);background:var(--white);color:var(--navy);font-size:var(--text-sm);font-weight:600;font-family:var(--font-body);cursor:pointer;margin-right:8px">Try Again</button>
-          <a href="tel:+15024135335" style="color:var(--blue);font-weight:500">(502) 413-5335</a>
+          <a href="tel:+15024135335" style="color:var(--blue);font-weight:500">Call</a> or <a href="sms:+15024135335" style="color:var(--blue);font-weight:500">text</a> (502) 413-5335
         </p>
       </div>
     </div>
@@ -825,7 +825,7 @@
 
 <footer class="portal-footer">
   <a href="https://www.thewayagency.com">www.thewayagency.com</a> &middot;
-  <a href="tel:+15024135335">(502) 413-5335</a> &middot;
+  <a href="tel:+15024135335">Call</a> or <a href="sms:+15024135335">text</a> (502) 413-5335 &middot;
   <a href="mailto:hello@thewayagency.com">hello@thewayagency.com</a>
 </footer>
 
@@ -1019,6 +1019,8 @@ function personalizeUI() {
     var phoneDigits = cardPhone.replace(/\D/g, '');
     var phoneDisplay = phoneDigits.length === 10 ? '(' + phoneDigits.slice(0,3) + ') ' + phoneDigits.slice(3,6) + '-' + phoneDigits.slice(6) : cardPhone;
     contactHtml += '<li class="producer-card__contact-item"><a href="tel:+1' + phoneDigits + '"><span class="producer-card__contact-icon">&#128222;</span> ' + esc(phoneDisplay) + '</a></li>';
+    // Text goes to the agency line (above-the-fold D11); never a prefilled body.
+    contactHtml += '<li class="producer-card__contact-item"><a href="sms:+15024135335">Text (502) 413-5335</a></li>';
   }
   if (cardEmail) contactHtml += '<li class="producer-card__contact-item"><a href="mailto:' + esc(cardEmail) + '"><span class="producer-card__contact-icon">&#9993;</span> ' + esc(cardEmail) + '</a></li>';
   document.getElementById('producer-contact').innerHTML = contactHtml;
@@ -1629,7 +1631,7 @@ async function loadReferralCard() {
 
   // Footer
   html += '<div class="ref-card__footer">';
-  html += '<a href="https://www.thewayagency.com">www.thewayagency.com</a> &middot; <a href="tel:+15024135335">(502) 413-5335</a>';
+  html += '<a href="https://www.thewayagency.com">www.thewayagency.com</a> &middot; <a href="tel:+15024135335">Call</a> or <a href="sms:+15024135335">text</a> (502) 413-5335';
   html += '</div>';
   html += '</div>';
 

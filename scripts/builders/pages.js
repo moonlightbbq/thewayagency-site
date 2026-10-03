@@ -10,6 +10,20 @@ const { orgRef } = require('../lib/entity');
 
 // ─── HTML Escape Helper ────────────────────────
 
+/**
+ * Hero CTA label for a product or line name: "a" or "an" by the sound of the
+ * first word (CONV-04 grammar defect: five heroes read "Get a Auto ..."). "U"
+ * takes "an" except before a "yoo" sound (Universal, Usage-based, Utility).
+ */
+// Plural product names read better singular in the CTA (above-the-fold D13,
+// awaiting the owner's yes in OA-18): "Get an Annuity Quote", "Get a Surety Bond
+// Quote". Revert this map alone if the owner declines.
+const CTA_NAME_OVERRIDES = { 'Annuities': 'Annuity', 'Surety Bonds': 'Surety Bond' };
+function quoteCtaLabel(name) {
+  const n = CTA_NAME_OVERRIDES[String(name)] || String(name);
+  return `Get ${/^(?:[aeio]|u(?!ni|s[aeu]|ti))/i.test(n) ? 'an' : 'a'} ${n} Quote`;
+}
+
 function esc(str) {
   if (!str) return '';
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -79,21 +93,22 @@ function getCarriersForLine(carriers, lineKey) {
   return rows.filter(c => c.type !== 'intermediary');
 }
 
+// A static, wrapped list that names each carrier once (PERF-09). It used to be a
+// marquee: the list was emitted twice for a seamless loop, so screen readers read
+// every name twice, it scrolled forever with a hover-only pause, and the names
+// rendered at 45% opacity (about 1.8:1). The name is kept for its callers.
 function generateCarrierMarquee(carriers, lineKey) {
   const lineCarriers = getCarriersForLine(carriers, lineKey);
   if (!lineCarriers.length) return '';
   const carrierItems = lineCarriers.map(c =>
-    `<span class="carriers__logo">${c.name}</span>`
-  ).join('\n          ');
+    `<li class="carriers__logo">${c.name}</li>`
+  ).join('\n        ');
   return `
-    <section class="carriers">
-      <p class="carriers__label">Insurance companies we're appointed with</p>
-      <div style="overflow:hidden;">
-        <div class="carriers__track">
-          ${carrierItems}
-          ${carrierItems}
-        </div>
-      </div>
+    <section class="carriers" aria-labelledby="carriers-label">
+      <p class="carriers__label" id="carriers-label">Insurance companies we're appointed with</p>
+      <ul class="carriers__list">
+        ${carrierItems}
+      </ul>
     </section>`;
 }
 
@@ -184,7 +199,7 @@ function renderHead({ title, description, canonical, ogTitle, ogDescription, ogU
   <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
   <link rel="icon" href="/src/assets/images/favicon.png">
   <link rel="apple-touch-icon" href="/src/assets/images/apple-touch-icon.png">
-  <link rel="preload" as="image" type="image/webp" href="/src/assets/images/logo-horizontal.webp">
+  <link rel="preload" as="image" type="image/png" href="/src/assets/images/logo-horizontal-2x.png" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
@@ -460,7 +475,7 @@ ${renderHero({
     eyebrow: config.hero.eyebrow,
     title: config.hero.title,
     subtitle: config.hero.subtitle,
-    buttons: [{ href: `/intake/?line=${lineSlug}`, text: `Get a ${config.hero.eyebrow} Quote`, className: 'btn btn--primary btn--lg' }],
+    buttons: [{ href: `/intake/?line=${lineSlug}`, text: quoteCtaLabel(config.hero.eyebrow), className: 'btn btn--primary btn--lg' }],
     minHeight: '38vh',
     variant: 'compact',
   })}
@@ -671,7 +686,7 @@ ${renderNav()}
 ${renderHero({
     eyebrow: lineName,
     title: product.h1 || product.name,
-    buttons: [{ href: `/intake/?product=${product.id}`, text: `Get a ${product.name} Quote`, className: 'btn btn--primary btn--lg' }],
+    buttons: [{ href: `/intake/?product=${product.id}`, text: quoteCtaLabel(product.name), className: 'btn btn--primary btn--lg' }],
     minHeight: '38vh',
     variant: 'compact',
   })}
@@ -1268,6 +1283,7 @@ ${renderScripts()}
 }
 
 module.exports = {
+  quoteCtaLabel,
   hubConfig,
   generateHubPage,
   generateProductPage,

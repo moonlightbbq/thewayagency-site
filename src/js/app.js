@@ -202,7 +202,7 @@
     if (path.startsWith('/insurance/')) return 'geo_landing';
     if (path.startsWith('/industries/')) return 'industry_landing';
     if (path.startsWith('/about')) return 'about';
-    if (path === '/contact.html') return 'contact';
+    if (path === '/contact' || path === '/contact.html') return 'contact';
     return 'other';
   }
 
@@ -349,9 +349,31 @@
       window.scrollTo(0, scrollY);
     }
 
+    // Keyboard and screen-reader state (PERF-07). At mobile widths the closed
+    // panel is only moved off screen, so its ~44 links stayed in the tab order
+    // ahead of the toggle; collapsed sub-menus were invisible tab stops too.
+    // `inert` takes both out (visibility cannot: the sub-menus force
+    // visibility:visible !important). Desktop menus are never inert.
+    const isMobileNav = () => window.innerWidth <= 968;
+    const menuOpen = () => links.classList.contains('nav__links--open');
+    if (!links.id) links.id = 'navLinks';
+    toggle.setAttribute('aria-controls', links.id);
+    toggle.setAttribute('aria-expanded', 'false');
+    function syncNavInert() {
+      const mobile = isMobileNav();
+      if (mobile && !menuOpen()) links.setAttribute('inert', ''); else links.removeAttribute('inert');
+      $$('.nav__dropdown').forEach(d => {
+        const menu = d.querySelector('.nav__dropdown-menu');
+        if (!menu) return;
+        if (mobile && !d.classList.contains('nav__dropdown--open')) menu.setAttribute('inert', ''); else menu.removeAttribute('inert');
+      });
+    }
+    const menuFocusables = () => $$('a[href], button:not([disabled])', links).filter(el => !el.closest('[inert]'));
+
     function closeAllDropdowns() {
       $$('.nav__dropdown').forEach(d => d.classList.remove('nav__dropdown--open'));
       $$('.nav__dropdown > .nav__link').forEach(l => l.setAttribute('aria-expanded', 'false'));
+      syncNavInert();
     }
 
     function closeMenu() {
@@ -361,6 +383,7 @@
       toggle.setAttribute('aria-expanded', 'false');
       closeAllDropdowns();
       unlockScroll();
+      syncNavInert();
     }
 
     toggle.addEventListener('click', () => {
@@ -371,10 +394,39 @@
         toggle.classList.add('nav__toggle--open');
         backdrop.classList.add('nav__backdrop--visible');
         toggle.setAttribute('aria-expanded', 'true');
+        syncNavInert();
+        // Move focus into the panel (it covers the page behind it).
+        const first = menuFocusables()[0];
+        if (first) first.focus({ preventScroll: true });
       } else {
         closeMenu();
       }
     });
+
+    // While the panel is open, Tab cycles between the toggle and the panel's links
+    // instead of moving to page content hidden behind it (WCAG F85).
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab' || !menuOpen() || !isMobileNav()) return;
+      const items = menuFocusables();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (!e.shiftKey && (active === last || active === toggle)) {
+        e.preventDefault();
+        (active === last ? toggle : first).focus();
+      } else if (e.shiftKey && (active === first || active === toggle)) {
+        e.preventDefault();
+        (active === first ? toggle : last).focus();
+      }
+    });
+
+    let navResizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(navResizeTimer);
+      navResizeTimer = setTimeout(syncNavInert, 100);
+    }, { passive: true });
+    syncNavInert();
 
     backdrop.addEventListener('click', closeMenu);
 
@@ -408,6 +460,7 @@
           if (!wasOpen) {
             dropdown.classList.add('nav__dropdown--open');
             link.setAttribute('aria-expanded', 'true');
+            syncNavInert();
             // Inject "View All" link if not already present
             const menu = dropdown.querySelector('.nav__dropdown-menu');
             if (menu && !menu.querySelector('.nav__dropdown-item--viewall')) {
@@ -473,17 +526,8 @@
       });
     });
 
-    // Inject phone number in mobile nav
-    if (window.innerWidth <= 968) {
-      const cta = links.querySelector('.btn--primary');
-      if (cta && !links.querySelector('.nav__phone')) {
-        const phone = document.createElement('a');
-        phone.href = 'tel:+15024135335';
-        phone.className = 'nav__phone';
-        phone.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> (502) 413-5335';
-        links.insertBefore(phone, cta);
-      }
-    }
+    // The mobile menu's call + text pair (.nav__contact) is in the HTML now
+    // (scripts/builders/seo.js injectNavContact), not injected here.
 
     // Active page indicator
     const path = window.location.pathname;
@@ -606,7 +650,7 @@
   // ═══════════════════════════════════════════════
   function getIntakeUrl() {
     const path = window.location.pathname;
-    const productMatch = path.match(/\/(personal|commercial|life|health)\/([^/]+)\.html$/);
+    const productMatch = path.match(/^\/(personal|commercial|life|health)\/([^/.]+)(?:\.html)?\/?$/);
     if (productMatch && productMatch[2] !== 'index') {
       const slug = productMatch[2];
       const slugMap = { 'home': 'homeowners', 'general-liability': 'cgl', 'commercial-auto': 'commercial_auto',
@@ -628,53 +672,67 @@
     if (path.match(/\/commercial\/?$/)) return '/intake/?line=commercial';
     if (path.match(/\/life\/?$/))       return '/intake/?line=life';
     if (path.match(/\/health\/?$/))     return '/intake/?line=health';
-    const geoMatch = path.match(/\/insurance\/([^/]+)\.html$/);
+    const geoMatch = path.match(/^\/insurance\/([^/.]+)(?:\.html)?\/?$/);
     if (geoMatch) {
       const parts = geoMatch[1].split('-');
       const state = parts.pop().toUpperCase();
-      const city = parts.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-      return '/intake/?city=' + encodeURIComponent(city) + '&state=' + encodeURIComponent(state);
+      const title = (ws) => ws.map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      // County hubs (daviess-county-ky) carry county=, not city= (the intake reads both).
+      if (parts.length > 1 && parts[parts.length - 1] === 'county') {
+        return '/intake/?county=' + encodeURIComponent(title(parts.slice(0, -1))) + '&state=' + encodeURIComponent(state);
+      }
+      return '/intake/?city=' + encodeURIComponent(title(parts)) + '&state=' + encodeURIComponent(state);
     }
-    const indMatch = path.match(/\/industries\/([^/]+)\.html$/);
+    const indMatch = path.match(/^\/industries\/([^/.]+)(?:\.html)?\/?$/);
     if (indMatch) return '/intake/?line=commercial&industry=' + encodeURIComponent(indMatch[1]);
     return '/intake/';
   }
 
+  // The sticky quote link keeps the page's own context: the hero's /intake/ link
+  // already carries ?product= / ?city= / ?industry=, so reuse it, and mark the
+  // source. getIntakeUrl() is only the fallback for pages without a hero link.
+  function stickyQuoteHref() {
+    const hero = document.querySelector('.hero__actions a[href^="/intake/"], .hero a.btn[href^="/intake/"]');
+    const u = new URL(hero ? hero.getAttribute('href') : getIntakeUrl(), window.location.origin);
+    u.searchParams.set('src', 'sticky');
+    return u.pathname + u.search;
+  }
+
+  // Mobile sticky bar: Call + Text (CONTENT_RULES rule 3, both to the one agency
+  // number, never a prefilled text body) + Get a Quote. Built from nodes, no
+  // innerHTML. app.js never loads on /intake/, so there is no intake branch.
   function initStickyMobileCTA() {
     if (window.innerWidth > 768) return;
-    const isIntake = window.location.pathname.startsWith('/intake');
-
-    if (isIntake) {
-      // On intake page: floating "Call for Help" button
-      const style = document.createElement('style');
-      style.textContent = '.intake-call-fab{display:flex;align-items:center;gap:6px;position:fixed;bottom:20px;right:16px;z-index:900;background:var(--blue);color:#fff;padding:12px 18px;border-radius:28px;font-size:13px;font-weight:600;text-decoration:none;box-shadow:0 4px 16px rgba(26,111,181,.35);transition:background .2s,transform .2s}.intake-call-fab:hover{background:var(--navy);transform:scale(1.04)}.intake-call-fab svg{flex-shrink:0}';
-      document.head.appendChild(style);
-      const fab = createElement('a', {
-        href: 'tel:' + CONFIG.phoneRaw,
-        id: 'intakeCallFab',
-        class: 'intake-call-fab',
-      }, `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        Call for Help
-      `);
-      document.body.appendChild(fab);
-      fab.addEventListener('click', () => {
-        track('intake_call_fab_click', { category: 'conversion', page_path: window.location.pathname });
-      });
-      return;
-    }
-
-    // Non-intake pages: sticky bottom bar with Call Now + Get a Quote
-    const intakeUrl = getIntakeUrl();
-    const bar = createElement('div', { id: 'stickyMobileCTA', class: 'sticky-cta' }, `
-      <a href="tel:${CONFIG.phoneRaw}" class="sticky-cta__link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        Call Now
-      </a>
-      <a href="${intakeUrl}" class="sticky-cta__link sticky-cta__link--primary">
-        Get a Quote
-      </a>
-    `);
+    const svg = (d) => {
+      const NS = 'http://www.w3.org/2000/svg';
+      const el = document.createElementNS(NS, 'svg');
+      [['width', '16'], ['height', '16'], ['viewBox', '0 0 24 24'], ['fill', 'none'], ['stroke', 'currentColor'], ['stroke-width', '2'],
+        ['stroke-linecap', 'round'], ['stroke-linejoin', 'round'], ['aria-hidden', 'true']].forEach(([k, v]) => el.setAttribute(k, v));
+      const path = document.createElementNS(NS, 'path');
+      path.setAttribute('d', d);
+      el.appendChild(path);
+      return el;
+    };
+    const link = (href, cls, icon, label) => {
+      const a = document.createElement('a');
+      a.href = href;
+      a.className = cls;
+      if (icon) a.appendChild(svg(icon));
+      a.appendChild(document.createTextNode(label));
+      return a;
+    };
+    const PHONE_D = 'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z';
+    const CHAT_D = 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z';
+    const bar = document.createElement('div');
+    bar.id = 'stickyMobileCTA';
+    bar.className = 'sticky-cta';
+    bar.setAttribute('aria-label', 'Contact and quote');
+    bar.setAttribute('role', 'region');
+    bar.append(
+      link('tel:' + CONFIG.phoneRaw, 'sticky-cta__link', PHONE_D, 'Call'),
+      link('sms:' + CONFIG.phoneRaw, 'sticky-cta__link', CHAT_D, 'Text'),
+      link(stickyQuoteHref(), 'sticky-cta__link sticky-cta__link--primary', null, 'Get a Quote'),
+    );
     document.body.appendChild(bar);
     let shown = false;
     window.addEventListener('scroll', () => {
@@ -1730,11 +1788,41 @@
   // FOOTER ACCORDION (mobile)
   // ═══════════════════════════════════════════════
   function initFooterAccordion() {
-    $$('.footer__heading').forEach(function(heading) {
-      heading.addEventListener('click', function() {
+    // Mobile: each footer heading is a disclosure button for its link list, and a
+    // collapsed list leaves the tab order (PERF-07; max-height:0 alone left its
+    // links focusable). Desktop: plain headings, lists always open.
+    const headings = $$('.footer__heading');
+    if (!headings.length) return;
+    headings.forEach(function(heading, i) {
+      const list = heading.nextElementSibling;
+      if (!list || !list.classList.contains('footer__link-list')) return;
+      if (!list.id) list.id = 'footer-list-' + (i + 1);
+      function sync() {
+        const mobile = window.innerWidth <= 768;
+        const open = heading.classList.contains('footer__heading--open');
+        if (mobile) {
+          heading.setAttribute('role', 'button');
+          heading.setAttribute('tabindex', '0');
+          heading.setAttribute('aria-expanded', open ? 'true' : 'false');
+          heading.setAttribute('aria-controls', list.id);
+          if (open) list.removeAttribute('inert'); else list.setAttribute('inert', '');
+        } else {
+          ['role', 'tabindex', 'aria-expanded', 'aria-controls'].forEach(function(a) { heading.removeAttribute(a); });
+          list.removeAttribute('inert');
+        }
+      }
+      function toggleList() {
         if (window.innerWidth > 768) return;
         heading.classList.toggle('footer__heading--open');
+        sync();
+      }
+      heading.addEventListener('click', toggleList);
+      heading.addEventListener('keydown', function(e) {
+        if (window.innerWidth > 768) return;
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleList(); }
       });
+      window.addEventListener('resize', sync, { passive: true });
+      sync();
     });
   }
 

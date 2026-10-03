@@ -268,6 +268,109 @@ for (const file of htmlFiles) {
 }
 if (turnstileIssues === 0) pass('Turnstile only on widget pages (async); app.js deferred everywhere');
 
+// 7e. Call-and-text pairing (CONV-04; CONTENT_RULES rule 3). Every tel: link has
+// an sms: peer in its parent or grandparent, both go to +15024135335 (third-party
+// numbers are plain text), and no sms: link prefills a body. Dependency-free
+// tokenizer (CI runs this on Node 18 without npm ci). Links that JavaScript adds
+// at runtime (sticky bar, mobile menu, ?agent= swaps) are covered by
+// tests/sticky-cta.test.js and the Playwright check, not here. Exemptions:
+// scripts/lib/contact-pairing-config.js (the D10 entries await the owner, OA-18).
+{
+  const { findContactLinkProblems } = require('./lib/contact-pairing');
+  const { DEFAULT_EXEMPTIONS } = require('./lib/contact-pairing-config');
+  const used = new Set();
+  let pairingProblems = 0;
+  for (const file of htmlFiles) {
+    const rel = path.relative(BUILD, file).split(path.sep).join('/');
+    for (const p of findContactLinkProblems(fs.readFileSync(file, 'utf8'), { file: rel, exemptions: DEFAULT_EXEMPTIONS, usedExemptions: used })) {
+      error(`Call/text pairing: ${rel}:${p.line} ${p.message}`);
+      pairingProblems++;
+    }
+  }
+  for (const ex of DEFAULT_EXEMPTIONS) {
+    if (!used.has(ex)) warn(`Call/text pairing: exemption no longer needed, delete it from contact-pairing-config.js: ${ex.page} (${ex.decision})`);
+  }
+  // The mobile menu's pair is server-rendered (scripts/builders/seo.js); every page
+  // with the site nav must carry exactly one, with both links.
+  let navPages = 0;
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, 'utf8');
+    if (!html.includes('id="navLinks"')) continue;
+    navPages++;
+    const rel = path.relative(BUILD, file).split(path.sep).join('/');
+    const blocks = html.match(/<div class="nav__contact">[\s\S]*?<\/div>/g) || [];
+    if (blocks.length !== 1 || !blocks[0].includes('href="tel:+15024135335"') || !blocks[0].includes('href="sms:+15024135335"')) {
+      error(`Call/text pairing: ${rel} needs exactly one .nav__contact with the tel: and sms: links (found ${blocks.length})`);
+      pairingProblems++;
+    }
+    // The pair is mobile-menu only: a page that does not load components.css
+    // (the compliance pages carry inline CSS) must hide it on desktop itself,
+    // or it shows unstyled in the header and squeezes the logo.
+    if (blocks.length && !/href="[^"]*\/src\/css\/components\.css/.test(html) && !/\.nav__contact\{display:none\}/.test(html)) {
+      error(`Call/text pairing: ${rel} has the menu pair but neither links components.css nor carries .nav__contact{display:none}`);
+      pairingProblems++;
+    }
+  }
+  if (navPages === 0) { error('Call/text pairing: no page with #navLinks found (the nav check stopped seeing them)'); pairingProblems++; }
+  if (pairingProblems === 0) pass(`Call/text pairing: every tel: link has an sms: peer to +15024135335 (${used.size} listed exemptions in use); ${navPages} menus carry the pair`);
+}
+
+// 7f. CTA article (CONV-04): "Get a Auto Insurance Quote" and the like.
+{
+  let articleProblems = 0;
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, 'utf8');
+    const m = html.match(/\bGet a [AEIO][a-z]+[^<]*Quote/);
+    if (m) { error(`CTA article: "${m[0]}" in ${path.relative(BUILD, file)}`); articleProblems++; }
+  }
+  if (articleProblems === 0) pass('CTA labels: no "Get a" before a vowel sound');
+}
+
+// 7g. /intake/ loads Google Maps on demand (PERF-06): no parse-time loader.
+{
+  const p = path.join(BUILD, 'intake', 'index.html');
+  const intake = fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '';
+  if (!intake.includes('function ensureIntakeMaps(') || /\(async function loadIntakeGoogleMaps\(/.test(intake) || /<script[^>]+src="https:\/\/maps\.googleapis\.com/.test(intake)) {
+    error('Intake: Google Maps must load on demand from showStep() (ensureIntakeMaps), not at page load');
+  } else pass('Intake: Google Maps loads only after step 1');
+}
+
+// 7h. Nav logo is the right-sized asset with dimensions (PERF-08): the 1979x390
+// original (35 KB) was displayed at 203x40 and unsized on handcrafted pages.
+{
+  let logoProblems = 0;
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, 'utf8');
+    if (!html.includes('id="navLinks"')) continue;
+    const rel = path.relative(BUILD, file).split(path.sep).join('/');
+    const nav = html.slice(html.indexOf('<nav'), html.indexOf('</nav>'));
+    const img = (nav.match(/<img\b[^>]*logo-horizontal[^>]*>/) || [])[0] || '';
+    if (!/logo-horizontal-2x\.png/.test(img) || !/\swidth="203"/.test(img) || !/\sheight="40"/.test(img)) {
+      error(`Nav logo in ${rel} is not logo-horizontal-2x.png with width="203" height="40"`); logoProblems++;
+    }
+    if (/logo-horizontal\.(png|webp)/.test(html)) { error(`${rel} still references the full-size logo-horizontal.(png|webp)`); logoProblems++; }
+  }
+  if (logoProblems === 0) pass('Nav logo: 2x asset with width/height on every page with the site nav');
+}
+
+// 7i. Carrier strip is a static list, each name once (PERF-09).
+{
+  let carrierProblems = 0;
+  let strips = 0;
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, 'utf8');
+    const at = html.indexOf('<section class="carriers"');
+    if (at < 0) continue;
+    strips++;
+    const rel = path.relative(BUILD, file);
+    const block = html.slice(at, html.indexOf('</section>', at));
+    const list = [...block.matchAll(/class="carriers__logo"[^>]*>([^<]+)</g)].map((m) => m[1].trim());
+    if (/carriers__track/.test(block)) { error(`Carrier strip in ${rel} is still a marquee track`); carrierProblems++; }
+    if (new Set(list).size !== list.length) { error(`Carrier strip in ${rel} names a carrier twice`); carrierProblems++; }
+  }
+  if (carrierProblems === 0) pass(`Carrier strips: ${strips} static lists, each carrier named once`);
+}
+
 // 8. Image size check (warn on images >500KB)
 let largeImages = 0;
 const assetsDir = path.join(BUILD, 'src', 'assets');

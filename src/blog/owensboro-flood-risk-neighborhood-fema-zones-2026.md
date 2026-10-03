@@ -121,6 +121,6 @@ A practical checklist for Owensboro homeowners whose property is in Zone X:
 
 As an [independent insurance agency](/insurance/owensboro-ky.html) serving Owensboro and Daviess County, we quote NFIP and private flood policies side by side, look up the FEMA zone for the specific property, and review the homeowners policy for the sewer backup endorsement that often gets missed. The goal is not to sell you flood insurance you do not need. It is to make sure you know what your zone says, what the policy would cover if something happened, and what the gap is between what you have and what you would want.
 
-If you would like a flood-zone lookup and an NFIP and private flood comparison for your Owensboro property, [request a quote](/intake/?city=Owensboro&state=KY) or [call or text us at (502) 413-5335](tel:+15024135335).
+If you would like a flood-zone lookup and an NFIP and private flood comparison for your Owensboro property, [request a quote](/intake/?city=Owensboro&state=KY) or [call](tel:+15024135335) or [text](sms:+15024135335) us at (502) 413-5335.
 
 For background on Ohio River flooding generally and the regional history, see our earlier post on [Ohio River flood risk for Henderson and Owensboro homeowners](/blog/flood-insurance-ohio-river-valley-2026.html).

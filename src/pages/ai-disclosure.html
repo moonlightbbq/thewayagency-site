@@ -67,6 +67,7 @@
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+html{scroll-padding-top:calc(var(--nav-height) + 16px)}
 body{font-family:var(--font-body);font-weight:300;font-size:var(--text-base);line-height:1.7;color:var(--charcoal);background:var(--white);overflow-x:hidden}
 img,video{max-width:100%;height:auto;display:block}
 a{color:var(--blue);text-decoration:none;transition:color var(--transition-fast)}
@@ -133,6 +134,8 @@ strong{font-weight:600}
 
 .nav__toggle{display:none;background:none;border:none;cursor:pointer;padding:var(--space-sm)}
 .nav__toggle span{display:block;width:24px;height:2px;background:var(--charcoal);margin:5px 0;transition:all var(--transition-base)}
+/* Menu call/text pair (scripts/builders/seo.js injectNavContact): mobile menu only, as in components.css */
+.nav__contact{display:none}
 
 @media(max-width:968px){
   .nav__toggle{display:block}
@@ -140,6 +143,10 @@ strong{font-weight:600}
   .nav__links--open{transform:translateX(0)}
   .nav__dropdown-menu{position:static;transform:none;opacity:1;visibility:visible;box-shadow:none;border:none;padding:0 0 0 var(--space-md);min-width:auto;display:none;grid-template-columns:1fr}
   .nav__dropdown--open .nav__dropdown-menu{display:grid}
+  .nav__contact{display:flex;gap:var(--space-sm);width:100%;margin-top:var(--space-sm)}
+  .nav__phone{display:flex;align-items:center;justify-content:center;gap:var(--space-sm);flex:1 1 auto;padding:12px 8px;font-size:var(--text-sm);font-weight:600;color:var(--navy);border:2px solid var(--border);border-radius:var(--border-radius);text-decoration:none;min-height:48px;white-space:nowrap}
+  .nav__phone:active{border-color:var(--navy);background:var(--light-bg)}
+  .nav__phone svg{flex-shrink:0}
 }
 
 /* ── Hero ── */
@@ -736,7 +743,7 @@ strong{font-weight:600}
   <nav class="nav" id="nav">
     <div class="nav__inner">
       <a href="/" class="nav__logo" aria-label="Home">
-        <picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></picture>
+        <img src="/src/assets/images/logo-horizontal-2x.png" alt="The Way Agency" width="203" height="40" fetchpriority="high" style="height:40px;width:auto;">
       </a>
       <div class="nav__links" id="navLinks">
         <div class="nav__dropdown">
@@ -848,7 +855,7 @@ strong{font-weight:600}
   <footer class="footer">
     <div class="footer__grid">
       <div class="footer__brand">
-        <picture><source srcset="/src/assets/images/logo-horizontal-white.webp" type="image/webp"><img class="footer__logo" src="/src/assets/images/logo-horizontal-white.png" alt="The Way Agency" style="height:36px;width:auto;" loading="lazy"></picture>
+        <img class="footer__logo" src="/src/assets/images/logo-horizontal-white-2x.png" alt="The Way Agency" width="183" height="36" style="height:36px;width:auto;" loading="lazy">
         <address class="footer__address" style="font-style:normal;">PO Box 187<br>Owensboro, KY 42302</address>
         <div class="footer__contact-link">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
@@ -884,7 +891,7 @@ strong{font-weight:600}
         </div>
       </div>
       <div>
-        <h4 class="footer__heading">Personal</h4>
+        <h2 class="footer__heading">Personal</h2>
         <div class="footer__link-list">
           <a href="/personal/home.html">Home</a>
           <a href="/personal/auto.html">Auto</a>
@@ -894,7 +901,7 @@ strong{font-weight:600}
         </div>
       </div>
       <div>
-        <h4 class="footer__heading">Commercial</h4>
+        <h2 class="footer__heading">Commercial</h2>
         <div class="footer__link-list">
           <a href="/commercial/general-liability.html">General Liability</a>
           <a href="/commercial/commercial-property.html">Property</a>
@@ -904,7 +911,7 @@ strong{font-weight:600}
         </div>
       </div>
       <div>
-        <h4 class="footer__heading">Company</h4>
+        <h2 class="footer__heading">Company</h2>
         <div class="footer__link-list">
           <a href="/about/">About Us</a>
           <a href="/about/team.html">Our Team</a>
