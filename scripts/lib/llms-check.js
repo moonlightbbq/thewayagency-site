@@ -37,6 +37,14 @@ const PROSE_RULES = Object.freeze([
   { id: 'medicare-prose', why: 'Medicare appears only as a product link until the TRUST-01 copy is live', re: /\bMedicare\b|\bMedigap\b/i },
   { id: 'meeting-modes', why: 'meeting modes beyond the /contact wording are not confirmed (OA-21 item 7)', re: /\bvideo\b/i },
   { id: 'html-link', why: 'hub prose is printed without its markup', re: /<a\b/i },
+  // priority-hubs spec R3-1 "Verify-or-fix before any expansion" (MKT-02 step 0):
+  // these hub claims stay out of the AI-facing file until #71 sources or rewrites them.
+  { id: 'uninsured-rate', why: 'uninsured-driver rate claim has no primary source (priority-hubs verify-or-fix)', re: /uninsured[- ]drivers?\s+rates?|rates?\s+of\s+uninsured\s+drivers?/i },
+  { id: 'savings-range', why: 'unsubstantiated savings range (TRUST-10; rewrites.md row 141)', re: /\b\d+\s*(?:to|-|\u2013)\s*\d+\s*(?:percent|%)/i },
+  { id: 'flood-area', why: 'Daviess flood-area and NFIP CRS claims are not yet cited (priority-hubs verify-or-fix)', re: /square miles|Community Rating System/i },
+  { id: 'commute', why: 'commuting and corridor claims are not checked against Census ACS (priority-hubs verify-or-fix)', re: /\bMost\b[^.]{0,40}\bresidents\s+drive\b|I-65 corridor/i },
+  { id: 'construction-area', why: 'new-construction locality claim is not checked (priority-hubs verify-or-fix)', re: /new construction[^.]{0,80}\bKY-(?:44|480)\b/i },
+  { id: 'carrier-capability', why: 'carrier-capability sentences stay only for D4-verified lines (priority-hubs verify-or-fix)', re: /\bWe represent\b[^.]{0,60}\bcarriers\b/i },
 ]);
 
 function firstMatch(re, text) {

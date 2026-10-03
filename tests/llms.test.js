@@ -150,6 +150,12 @@ describe('llms-check rules', () => {
     'medicare-prose': 'Medicare questions? Ask us.',
     'meeting-modes': 'We meet by video.',
     'html-link': 'See <a href="/x">x</a>.',
+    'uninsured-rate': 'Zz County has one of the higher uninsured-driver rates in the region.',
+    'savings-range': 'Discounts typically range from 5 to 25 percent.',
+    'flood-area': 'More than 15 square miles of Zz County are flood-prone.',
+    'commute': 'Most Zz Town residents drive to Zz City daily.',
+    'construction-area': 'New construction off KY-44 and KY-480 keeps growing.',
+    'carrier-capability': 'We represent specialty commercial carriers that understand Zz operations.',
   };
   test('every rule has a positive case', () => {
     assert.deepEqual([...FILE_RULES, ...PROSE_RULES].map((r) => r.id).filter((id) => !(id in positives)), []);
