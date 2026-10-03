@@ -1054,7 +1054,7 @@ ${renderHead({
 ${renderNav()}
 
 ${renderHero({
-    eyebrow: 'Industry Specialty',
+    eyebrow: 'Industries',
     title: `Insurance for<br>${ind.name}`,
     subtitle: ind.description,
     buttons: [
@@ -1085,7 +1085,7 @@ ${renderGuides(`/industries/${ind.slug}`, ctx, 'Guides')}
 
 ${renderCTA({
       title: `Get coverage for your ${ind.name.toLowerCase().replace(/s$/, '')} business`,
-      text: "We'll build a program that matches your operations, contracts, and budget.",
+      text: "Tell us about your operations and contracts and we'll come back with coverage options.",
       buttons: [
         { href: `/intake/?line=commercial&industry=${ind.slug}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
         { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
@@ -1189,7 +1189,10 @@ function generateCarrierPage(carrier, line, ctx) {
   const { office, products, renderNav, renderFooter, renderScripts } = ctx;
   // Sourced facts from the carrier's own site (data/carrier-profiles.json, CONT-05).
   const profile = (ctx.carrierProfiles || {})[carrier.slug] || null;
-  const summary = (profile && profile.summary) || carrier.description || `${carrier.name} is an insurance company.`;
+  // Never fall back to carrier.description: that legacy copy carries unsourced
+  // superlatives ("largest", "competitive rates"; review H1). Without a sourced
+  // profile the hero, meta, og and JSON-LD say only what the page can support.
+  const summary = (profile && profile.summary) || `${carrier.name} is an insurance company.`;
 
   // "Coverage lines we place with <carrier>" is an appointment claim: it prints
   // only once the owner has verified the appointment (D6; appointment_verified_on).
@@ -1219,7 +1222,7 @@ ${linkedProducts.map(p => `          <a href="${canonicalHref(p.url)}" class="ca
 <html lang="en">
 ${renderHead({
     title: `${carrier.name} Insurance | The Way Agency`,
-    description: profile && profile.summary ? summary : `${carrier.name}: ${summary}`,
+    description: summary,
     canonical: `https://www.thewayagency.com/carriers/${carrier.slug}`,
     ogTitle: `${carrier.name} Insurance | The Way Agency`,
     ogDescription: summary,
@@ -1249,7 +1252,7 @@ ${breadcrumbs.html}
       <div class="container container--narrow">
 ${renderCarrierProfile(carrier, profile)}
         ${productCards}
-        <p>We compare the insurance companies we're appointed with for your state and coverage; ${carrier.name}'s own policy terms and underwriting decide what it offers. <a href="/carriers/">See all carriers</a>.</p>
+        <p>This page describes ${carrier.name} from its own published information; it does not mean we can place your coverage with it. Ask us which companies we can quote for you. <a href="/carriers/">See all carriers</a>.</p>
       </div>
     </section>
 
@@ -1303,7 +1306,7 @@ function generateCarriersIndex(carriers, ctx) {
   const featured = allCarriers.filter(c => c.standalone_page === true);
   const featuredCards = featured.map(c => `          <a href="/carriers/${c.slug}" class="card" style="text-decoration:none;">
             <h3 class="card__title" style="font-size:var(--text-xl);">${c.name}</h3>
-            <p class="card__text">${esc((profiles[c.slug] && profiles[c.slug].summary) || firstSentence(c.description))}</p>
+            <p class="card__text">${esc((profiles[c.slug] && profiles[c.slug].summary) || `${c.name} is an insurance company.`)}</p>
             <span class="card__link">Learn more ${arrowSvg}</span>
           </a>`).join('\n');
 
@@ -1369,7 +1372,7 @@ ${featuredCards}
 
 ${renderCTA({
       title: 'Let us shop the market for you',
-      text: 'Tell us what you need and we\'ll compare options from our full carrier lineup.',
+      text: 'Tell us what you need to insure and ask us which companies we can quote for you.',
       buttons: [
         { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
         { href: '/contact', text: 'Contact Us', className: 'btn btn--outline-white btn--lg' },

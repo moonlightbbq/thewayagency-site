@@ -117,7 +117,9 @@ function renderCarrierProfile(carrier, profile) {
     .filter((l) => l && l.label && safeUrl(l.url))
     .map((l) => `          <li><a href="${esc(l.url)}">${esc(l.label)}</a></li>`)
     .join('\n');
-  const productLinks = (Array.isArray(profile.product_links) ? profile.product_links : [])
+  // Our product links next to a named carrier read as a placement claim, so they
+  // print only once the owner has verified the appointment (OA-25; review M1).
+  const productLinks = (carrier.appointment_verified_on && Array.isArray(profile.product_links) ? profile.product_links : [])
     .filter((p) => p && p.url && p.name)
     .map((p) => `<a href="${esc(canonicalHref(p.url))}">${esc(p.name)}</a>`);
   const checked = facts.map((f) => f.as_of).sort()[0];
@@ -144,7 +146,28 @@ ${links}
  */
 function isSigned(section) {
   const s = section && section.signoff;
-  return Boolean(s && s.reviewer && s.license_line && ISO_DATE.test(String(s.date || '')));
+  if (!(s && s.reviewer && s.license_line && ISO_DATE.test(String(s.date || '')))) return false;
+  return gatesCleared(section);
+}
+
+/**
+ * Extra owner gates on a section (e.g. the life sections wait on TRUST-01 and
+ * on OA-25 confirming a life appointment; review M4). Each named gate needs the
+ * ISO date it cleared; a section without `gates` has none.
+ */
+function gatesCleared(section) {
+  const g = section && section.gates;
+  if (g === undefined || g === null) return true;
+  if (typeof g !== 'object' || Array.isArray(g)) return false;
+  return Object.values(g).every((d) => ISO_DATE.test(String(d || '')));
+}
+
+/** A recorded sign-off is either absent (null) or complete. */
+function signoffIsWellFormed(signoff) {
+  if (signoff === null || signoff === undefined) return true;
+  return Boolean(signoff && typeof signoff.reviewer === 'string' && signoff.reviewer.trim()
+    && typeof signoff.license_line === 'string' && signoff.license_line.trim()
+    && ISO_DATE.test(String(signoff.date || '')));
 }
 
 function sectionId(slug) {
@@ -191,6 +214,8 @@ module.exports = {
   renderCarrierProfile,
   ratingLine,
   isSigned,
+  gatesCleared,
+  signoffIsWellFormed,
   hubSectionBlocks,
   renderHubSection,
 };

@@ -1728,7 +1728,7 @@
           "as_of": "2026-10-03"
         },
         {
-          "text": "An HVAC company with one or more employees in Kentucky is an employer subject to the workers' compensation law, and it must insure its liability for compensation or qualify to pay it directly.",
+          "text": "An HVAC company with one or more employees in Kentucky is an employer subject to the workers' compensation law, and it must insure its liability for compensation with a company authorized to write workers' compensation in Kentucky, or furnish the commissioner satisfactory proof of its financial ability to pay compensation directly.",
           "cites": [
             {
               "label": "KRS 342.630(1)",
@@ -1986,7 +1986,7 @@
       ],
       "ky_requirements": [
         {
-          "text": "A roofing company that has one or more employees in Kentucky must comply with the workers' compensation law, by insuring its liability for compensation or qualifying to pay it directly.",
+          "text": "A roofing company that has one or more employees in Kentucky must comply with the workers' compensation law, by insuring its liability for compensation with a company authorized to write workers' compensation in Kentucky, or furnishing the commissioner satisfactory proof of its financial ability to pay compensation directly.",
           "cites": [
             {
               "label": "KRS 342.630(1)",
@@ -2010,11 +2010,19 @@
           "as_of": "2026-10-03"
         },
         {
-          "text": "A business owner, and qualified partners or LLC members, are included under workers' compensation only if they elect coverage, through an endorsement to a workers' compensation policy.",
+          "text": "A sole proprietor, and qualified partners or qualified LLC members, are included under workers' compensation only if they elect coverage, through an endorsement to a workers' compensation policy. If the business is a corporation, its executive officers count as employees, unless an officer formally elects not to be covered.",
           "cites": [
             {
               "label": "KRS 342.012(1) and (2)",
               "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=44523"
+            },
+            {
+              "label": "KRS 342.640(2)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43049"
+            },
+            {
+              "label": "KRS 342.650(6)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=51336"
             }
           ],
           "as_of": "2026-10-03"
@@ -2046,12 +2054,12 @@
           "html": "Bid, performance and payment bonds guarantee your obligations to a project owner. A surety underwrites your finances and track record, and you agree to repay it if it pays a claim. See <a href=\"/commercial/bonds\">bonds</a>."
         }
       ],
-      "contracts_html": "Commercial roofing and insurance restoration contracts usually ask for a certificate with general liability, auto and workers' comp, sometimes umbrella limits, and additional insured status. A general contractor that hires you can become liable for your employees' injuries if you have no workers' comp (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623\">KRS 342.610(2)</a>), so expect to show proof before you start.",
+      "contracts_html": "Commercial roofing and insurance restoration contracts usually ask for a certificate with general liability, auto and workers' comp, sometimes umbrella limits, and additional insured status. A general contractor that hires you can become liable for your employees' workers' compensation if you have no workers' comp (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623\">KRS 342.610(2)</a>), so expect to show proof before you start.",
       "scenario": "A roofing crew tears off a residential roof and covers it with tarps overnight. A storm lifts a tarp and rain damages ceilings and furniture inside. The homeowner looks to the roofer, and the roofer's general liability policy would be asked to respond, subject to its terms and any exclusion for work in progress.",
       "faqs": [
         {
           "question": "Do I need workers' comp if I roof by myself?",
-          "answer_html": "Kentucky's workers' compensation law applies to employers with one or more employees (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32533\">KRS 342.630</a>). An owner is covered only by electing coverage through an endorsement (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=44523\">KRS 342.012</a>). If a job needs a building permit and you are exempt, you certify that to the building official on the commissioner's form (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623\">KRS 342.610(6)</a>)."
+          "answer_html": "Kentucky's workers' compensation law applies to employers with one or more employees (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32533\">KRS 342.630</a>). A sole proprietor, or a qualified partner or LLC member, is covered only by electing coverage through an endorsement (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=44523\">KRS 342.012</a>). If your business is a corporation, its executive officers count as employees (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43049\">KRS 342.640(2)</a>), so a one-person roofing corporation has an employee unless the officer formally elects not to be covered (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=51336\">KRS 342.650(6)</a>). If a job needs a building permit and you are exempt, you certify that to the building official on the commissioner's form (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623\">KRS 342.610(6)</a>)."
         },
         {
           "question": "Why do property owners ask to be additional insured?",
@@ -2142,7 +2150,7 @@
         },
         {
           "coverage": "Surety bonds (bid, performance, payment)",
-          "html": "Required on Commonwealth construction contracts above the thresholds listed above, and commonly on other public and private work. See <a href=\"/commercial/bonds\">bonds</a>."
+          "html": "Bid security (a bond or cash) and performance and payment bonds are required on Commonwealth construction contracts above the thresholds listed above, and bonds are common on other public and private work. See <a href=\"/commercial/bonds\">bonds</a>."
         },
         {
           "coverage": "Subcontractor default insurance",
@@ -2182,7 +2190,7 @@
       ],
       "ky_requirements": [
         {
-          "text": "A restaurant, bar, caterer or food truck with one or more employees in Kentucky is subject to the workers' compensation law and must insure its liability for compensation or qualify to pay it directly.",
+          "text": "A restaurant, bar, caterer or food truck with one or more employees in Kentucky is subject to the workers' compensation law and must insure its liability for compensation with a company authorized to write workers' compensation in Kentucky, or furnish the commissioner satisfactory proof of its financial ability to pay compensation directly.",
           "cites": [
             {
               "label": "KRS 342.630(1)",
@@ -2255,7 +2263,7 @@
       "faqs": [
         {
           "question": "Do part-time restaurant staff count for workers' comp?",
-          "answer_html": "Kentucky counts every person in an employer's service under a contract of hire as an employee (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43049\">KRS 342.640(1)</a>), subject to the exemptions in <a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=51336\">KRS 342.650</a>. Part-time servers and kitchen staff are not among those exemptions."
+          "answer_html": "Kentucky counts every person in an employer's service under a contract of hire as an employee (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43049\">KRS 342.640(1)</a>), subject to the exemptions in <a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=51336\">KRS 342.650</a>. Part-time servers and kitchen staff are not among those exemptions, unless an employee has formally elected not to be covered (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=51336\">KRS 342.650(6)</a>)."
         },
         {
           "question": "Does general liability cover a claim from serving alcohol?",
@@ -2271,7 +2279,7 @@
       "name": "Professional Services",
       "slug": "professional-services",
       "icon": "briefcase",
-      "description": "Consultants, accountants, IT firms, real estate agents, and other professional service providers face errors and omissions exposure  -  a client claims your advice or work product caused them financial harm.",
+      "description": "Consultants, accountants, IT firms, real estate agents, and other professional service providers face errors and omissions exposure: a client claims your advice or work product caused them financial harm.",
       "typical_coverage": [
         "Professional liability (E&O)",
         "General liability",
@@ -2375,7 +2383,7 @@
       ],
       "ky_requirements": [
         {
-          "text": "A manufacturer with one or more employees in Kentucky is subject to the workers' compensation law and must insure its liability for compensation or furnish proof that it can pay compensation directly.",
+          "text": "A manufacturer with one or more employees in Kentucky is subject to the workers' compensation law and must insure its liability for compensation with a company authorized to write workers' compensation in Kentucky, or furnish the commissioner satisfactory proof of its financial ability to pay compensation directly.",
           "cites": [
             {
               "label": "KRS 342.630(1)",

@@ -179,6 +179,30 @@ describe('carrier pages (CONT-05)', () => {
     assert.match(main(pages.generateCarrierPage(verified, 'commercial', ctx)), /Coverage lines we place with The Hartford/);
   });
 
+  test('without a sourced profile, hero, meta, og and JSON-LD never print the legacy description (review H1)', () => {
+    for (const c of all) {
+      if (!carrierHasPage(c) || carrierProfiles[c.slug]) continue;
+      const html = pages.generateCarrierPage(c, 'personal', ctx);
+      if (c.description) assert.ok(!html.includes(c.description) && !html.includes(shared.esc ? shared.esc(c.description) : c.description), `${c.slug}: legacy description printed`);
+      assert.doesNotMatch(html, /largest|competitive rates|white-glove|Fortune 500|oldest insurers/i, c.slug);
+      assert.match(html, new RegExp(`"description":"${c.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')} is an insurance company\\."`), c.slug);
+      assert.doesNotMatch(html, /s's\b/, `${c.slug}: possessive`);
+    }
+  });
+
+  test('carrier pages make no placement implication: neutral note, product links only when verified (review M1)', () => {
+    for (const c of all) {
+      if (!carrierHasPage(c)) continue;
+      const body = text(main(pages.generateCarrierPage(c, 'personal', ctx)));
+      assert.match(body, /from its own published information; it does not mean we can place your coverage with it\./, c.slug);
+      assert.doesNotMatch(body, /we're appointed with|Related coverage on our site/, c.slug);
+    }
+    const verified = { ...byslug('hartford'), appointment_verified_on: '2026-10-03' };
+    assert.match(text(main(pages.generateCarrierPage(verified, 'commercial', ctx))), /Related coverage on our site/);
+    const index = text(main(pages.generateCarriersIndex(carriers, ctx)));
+    assert.doesNotMatch(index, /full carrier lineup/);
+  });
+
   test('GUARD page says we are not GUARD, links its official pages and prints no carrier phone number', () => {
     const guard = main(pages.generateCarrierPage(byslug('berkshire-guard'), 'commercial', ctx));
     assert.match(guard, /We're an independent agency, not Berkshire Hathaway GUARD\./);
@@ -214,7 +238,9 @@ describe('priority-hub line sections (MKT-02)', () => {
         assert.ok(s.product_links.length >= 1, label);
         const html = s.paragraphs_html.join(' ');
         for (const l of s.product_links) assert.ok(html.includes(`href="${l}"`), `${label}: product link ${l} not in the copy`);
-        assert.equal(s.signoff, null, `${label}: sign-off is recorded by the licensed reviewer, never by this PR`);
+        // A reviewer may record a sign-off later (OA-09); it must then be complete.
+        assert.ok(sourced.signoffIsWellFormed(s.signoff), `${label}: sign-off must be null or {reviewer, license_line, ISO date}`);
+        if (s.slug === 'life') assert.deepEqual(Object.keys(s.gates || {}).sort(), ['OA-25 life appointment', 'TRUST-01'], `${label}: life waits on TRUST-01 and OA-25`);
         if (s.replaces) assert.ok(cityOf(hub).context_sections.some((e) => e.heading === s.replaces), `${label}: replaces an existing heading`);
         assertCopyRules(label, s.heading + ' ' + text(html));
         assertStatuteLinks(label, html);
@@ -223,7 +249,18 @@ describe('priority-hub line sections (MKT-02)', () => {
   });
 
   test('unsigned drafts render nothing: both hubs are unchanged', () => {
+    const unsigned = JSON.parse(JSON.stringify(hubSections));
+    for (const list of Object.values(unsigned.hubs)) for (const s of list) s.signoff = null;
     for (const slug of Object.keys(hubs)) {
+      const blank = pages.generateCityPage(cityOf(slug), makeCtx({ hubSections: unsigned }));
+      const none = pages.generateCityPage(cityOf(slug), makeCtx({ hubSections: { hubs: {} } }));
+      assert.equal(blank, none, `${slug}: unsigned`);
+    }
+  });
+
+  test('committed drafts render only the sections whose sign-off and gates are complete', () => {
+    for (const slug of Object.keys(hubs)) {
+      if (hubs[slug].some((s) => sourced.isSigned(s))) continue;
       const withDrafts = pages.generateCityPage(cityOf(slug), ctx);
       const without = pages.generateCityPage(cityOf(slug), makeCtx({ hubSections: { hubs: {} } }));
       assert.equal(withDrafts, without, slug);
@@ -233,14 +270,26 @@ describe('priority-hub line sections (MKT-02)', () => {
   test('a signed section replaces its heading in place, new ones follow, and sources render', () => {
     const signed = JSON.parse(JSON.stringify(hubSections));
     for (const s of signed.hubs['owensboro-ky']) s.signoff = { reviewer: 'Zz Privacycheck', license_line: 'Property and casualty', date: '2026-10-03' };
+    // Signed but gated: the life section stays out until TRUST-01 and OA-25 clear.
+    const gatedBody = main(pages.generateCityPage(cityOf('owensboro-ky'), makeCtx({ hubSections: signed })));
+    assert.ok(!gatedBody.includes('id="life"'), 'life section waits on its gates');
+    for (const s of signed.hubs['owensboro-ky']) if (s.gates) for (const k of Object.keys(s.gates)) s.gates[k] = '2026-10-03';
     const body = main(pages.generateCityPage(cityOf('owensboro-ky'), makeCtx({ hubSections: signed })));
     assert.ok(!body.includes('<h3 id="auto">Auto insurance in Owensboro</h3>\n        <p>Daviess County drivers'), 'old auto section replaced');
     assert.match(body, /<h3 id="workers-comp">Workers&#39; compensation for Daviess County employers<\/h3>/);
     assert.ok(body.indexOf('id="life"') < body.indexOf('id="medicare"'), 'new sections sit before the Medicare section');
     assert.match(body, /Sources: <a href="https:\/\/www\.census\.gov\/quickfacts\//);
     assert.doesNotMatch(body, /one of the higher uninsured-driver rates in the region/);
+    // Mt Washington: the contractors section replaces the carrier-claim section (review M3).
+    for (const s of signed.hubs['mt-washington-ky']) s.signoff = { reviewer: 'Zz Privacycheck', license_line: 'Property and casualty', date: '2026-10-03' };
+    const mtw = text(main(pages.generateCityPage(cityOf('mt-washington-ky'), makeCtx({ hubSections: signed }))));
+    assert.doesNotMatch(mtw, /specialty commercial carriers/i);
+    assert.match(mtw, /Insurance for Bullitt County contractors/);
     // A sign-off missing the license line or the date does not count.
     assert.equal(sourced.isSigned({ signoff: { reviewer: 'Zz Privacycheck', date: '2026-10-03' } }), false);
     assert.equal(sourced.isSigned({ signoff: { reviewer: 'Zz Privacycheck', license_line: 'P&C', date: 'soon' } }), false);
+    assert.equal(sourced.isSigned({ gates: { 'TRUST-01': null }, signoff: { reviewer: 'Zz Privacycheck', license_line: 'P&C', date: '2026-10-03' } }), false);
+    assert.equal(sourced.signoffIsWellFormed({ reviewer: 'Zz Privacycheck', license_line: 'Life', date: '2026-10-03' }), true);
+    assert.equal(sourced.signoffIsWellFormed({ reviewer: 'Zz Privacycheck', date: '2026-10-03' }), false);
   });
 });
