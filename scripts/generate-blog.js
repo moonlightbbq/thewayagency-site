@@ -50,6 +50,8 @@ const contentGuard = require('./lib/blog-content-guard');
 const { orgRef, teamMemberUrl, blogPostUrl, SITE_URL } = require('./lib/entity');
 // The one internal URL form, extensionless (TECH-02 helper; BLOG-03, LOCAL-01).
 const { canonicalHref } = require('./lib/site-urls');
+// Pipe tables (BLOG-01, content-accuracy WP-A2): site-only, never the shared guard.
+const { BLOCK_RE: TABLE_BLOCK_RE, pipeTableBlock } = require('./lib/markdown-tables');
 
 const ROOT = path.resolve(__dirname, '..');
 const BLOG_SRC = path.join(ROOT, 'src', 'blog');
@@ -166,6 +168,8 @@ function markdownToHtml(md) {
     // Links. Site-relative targets print extensionless (/x.html 308s to /x);
     // the markdown itself is not edited (its bytes bind a review credit).
     .replace(/\[(.+?)\]\((.+?)\)/g, (_m, text, url) => `<a href="${safeHref(canonicalHref(url))}">${text}</a>`)
+    // Pipe tables (BLOG-01): after the inline passes, so cells keep bold, italic and links
+    .replace(TABLE_BLOCK_RE, (block) => pipeTableBlock(block))
     // Unordered lists
     .replace(/^- (.+)$/gm, '<li>$1</li>')
     .replace(/(<li>.*<\/li>\n?)+/g, (match) => `<ul>\n${match}</ul>\n`)
@@ -465,6 +469,10 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
     "dateModified": String(meta.modified || meta.date || ''),
     "description": String(meta.description || ''),
   };
+  // BLOG-01 (content-accuracy WP-A4): an optional seo_title front-matter value is
+  // the whole <title>, og:title and twitter:title (no brand suffix added). The H1
+  // and the Article headline keep `title`.
+  const docTitle = meta.seo_title ? String(meta.seo_title) : `${meta.title} | The Way Agency`;
   const tags = (Array.isArray(meta.tags) ? meta.tags : String(meta.tags || '').replace(/[\[\]]/g, '').split(','))
     .map(t => String(t).trim()).filter(Boolean);
 
@@ -473,14 +481,14 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${esc(meta.title)} | The Way Agency</title>
+  <title>${esc(docTitle)}</title>
   <meta name="description" content="${esc(meta.description)}">
   <meta name="theme-color" content="#173358">
   <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
   <link rel="icon" href="/src/assets/images/favicon.png">
   <link rel="apple-touch-icon" href="/src/assets/images/apple-touch-icon.png">
   <link rel="canonical" href="https://www.thewayagency.com/blog/${slug}">
-  <meta property="og:title" content="${esc(meta.title)} | The Way Agency">
+  <meta property="og:title" content="${esc(docTitle)}">
   <meta property="og:description" content="${esc(meta.description)}">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://www.thewayagency.com/blog/${slug}">
@@ -495,7 +503,7 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
   <meta property="article:section" content="${esc(meta.category || 'insurance')}">
   ${tags.map(t => `<meta property="article:tag" content="${esc(t)}">`).join('\n  ')}
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="${esc(meta.title)}">
+  <meta name="twitter:title" content="${esc(meta.seo_title || meta.title)}">
   <meta name="twitter:description" content="${esc(meta.description)}">
   <meta name="twitter:image" content="${esc(ogImage)}">
   <link rel="alternate" type="application/rss+xml" title="The Way Agency Blog" href="/blog/feed.xml">
