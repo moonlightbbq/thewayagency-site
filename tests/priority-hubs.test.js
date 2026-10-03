@@ -124,7 +124,11 @@ describe('homepage (LOCAL-01 rec 1; RW-D1; D7)', () => {
     assert.ok(m);
     assert.ok(html.indexOf(m[0]) > html.indexOf('hero__title'));
     assert.doesNotMatch(m[0], /office|visit|stop by|headquarter|based in|tel:|sms:|medicare|since 19|top-rated/i);
-    assert.match(m[0], /We do not operate a public storefront\. We meet clients by phone, video, email, text, or in person at the client's location\./);
+    // Spec R1-3 / rewrites.md: video and in-person wait on owner D1 (OA-21 item 7).
+    assert.match(m[0], /We do not operate a public storefront\. We work with clients by phone, text and email\./);
+    assert.doesNotMatch(m[0], /video|in person/i);
+    // TRUST-05: only lines with confirmed appointments; no life carriers are verified yet.
+    assert.doesNotMatch(m[0], /\blife coverage\b/i);
   });
 });
 
