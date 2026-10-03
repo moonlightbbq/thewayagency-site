@@ -56,7 +56,7 @@ try {
 }
 
 // 4. Verify builder modules exist
-const requiredModules = ['builders/seo.js', 'builders/assets.js', 'builders/pages.js', 'builders/blog-helpers.js', 'builders/sitemap.js', 'shared-templates.js', 'generate-blog.js'];
+const requiredModules = ['builders/seo.js', 'builders/assets.js', 'builders/pages.js', 'builders/blog-helpers.js', 'builders/sitemap.js', 'shared-templates.js', 'generate-blog.js', 'lib/site-urls.js', 'lib/url-hygiene.js', 'lib/robots-txt.js'];
 let missingModules = 0;
 for (const mod of requiredModules) {
   if (!fs.existsSync(path.join(ROOT, 'scripts', mod))) {
