@@ -346,6 +346,24 @@ if (turnstileIssues === 0) pass('Turnstile only on widget pages (async); app.js 
   if (logoProblems === 0) pass('Nav logo: 2x asset with width/height on every page with the site nav');
 }
 
+// 7i. Carrier strip is a static list, each name once (PERF-09).
+{
+  let carrierProblems = 0;
+  let strips = 0;
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, 'utf8');
+    const at = html.indexOf('<section class="carriers"');
+    if (at < 0) continue;
+    strips++;
+    const rel = path.relative(BUILD, file);
+    const block = html.slice(at, html.indexOf('</section>', at));
+    const list = [...block.matchAll(/class="carriers__logo"[^>]*>([^<]+)</g)].map((m) => m[1].trim());
+    if (/carriers__track/.test(block)) { error(`Carrier strip in ${rel} is still a marquee track`); carrierProblems++; }
+    if (new Set(list).size !== list.length) { error(`Carrier strip in ${rel} names a carrier twice`); carrierProblems++; }
+  }
+  if (carrierProblems === 0) pass(`Carrier strips: ${strips} static lists, each carrier named once`);
+}
+
 // 8. Image size check (warn on images >500KB)
 let largeImages = 0;
 const assetsDir = path.join(BUILD, 'src', 'assets');

@@ -89,21 +89,22 @@ function getCarriersForLine(carriers, lineKey) {
   return rows.filter(c => c.type !== 'intermediary');
 }
 
+// A static, wrapped list that names each carrier once (PERF-09). It used to be a
+// marquee: the list was emitted twice for a seamless loop, so screen readers read
+// every name twice, it scrolled forever with a hover-only pause, and the names
+// rendered at 45% opacity (about 1.8:1). The name is kept for its callers.
 function generateCarrierMarquee(carriers, lineKey) {
   const lineCarriers = getCarriersForLine(carriers, lineKey);
   if (!lineCarriers.length) return '';
   const carrierItems = lineCarriers.map(c =>
-    `<span class="carriers__logo">${c.name}</span>`
-  ).join('\n          ');
+    `<li class="carriers__logo">${c.name}</li>`
+  ).join('\n        ');
   return `
-    <section class="carriers">
-      <p class="carriers__label">Insurance companies we're appointed with</p>
-      <div style="overflow:hidden;">
-        <div class="carriers__track">
-          ${carrierItems}
-          ${carrierItems}
-        </div>
-      </div>
+    <section class="carriers" aria-labelledby="carriers-label">
+      <p class="carriers__label" id="carriers-label">Insurance companies we're appointed with</p>
+      <ul class="carriers__list">
+        ${carrierItems}
+      </ul>
     </section>`;
 }
 
