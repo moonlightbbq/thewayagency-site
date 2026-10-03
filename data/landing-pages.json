@@ -1696,7 +1696,94 @@
         "Professional liability (for design work)",
         "Completed operations coverage"
       ],
-      "ky_notes": "Kentucky requires workers comp for HVAC companies with 1+ employees. Most general contractors require subcontractors to carry at least $1M in GL coverage."
+      "ky_requirements": [
+        {
+          "text": "No person, firm or corporation may practice heating, ventilation and air conditioning contracting in Kentucky without general liability insurance of at least $500,000 and property damage insurance of at least $300,000, written by an insurance carrier licensed and approved by the Kentucky Department of Insurance.",
+          "cites": [
+            {
+              "label": "KRS 198B.668(1)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46948"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "Proof of that insurance goes to the licensing department before a license is issued or renewed. No license is valid without it, and the insurance carrier must notify the department if the policy is canceled.",
+          "cites": [
+            {
+              "label": "KRS 198B.668(2) and (4)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46948"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "Proof of the state-required insurance exempts a licensee from obtaining separate insurance under local licensing laws.",
+          "cites": [
+            {
+              "label": "KRS 198B.668(3)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46948"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "An HVAC company with one or more employees in Kentucky is an employer subject to the workers' compensation law, and it must insure its liability for compensation or qualify to pay it directly.",
+          "cites": [
+            {
+              "label": "KRS 342.630(1)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32533"
+            },
+            {
+              "label": "KRS 342.340(1)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43318"
+            }
+          ],
+          "as_of": "2026-10-03"
+        }
+      ],
+      "coverage_notes": [
+        {
+          "coverage": "General liability",
+          "html": "Answers claims that your work injured someone or damaged property you do not own, such as water from a condensate line soaking a ceiling. The state sets the floor for your license; a contract can ask for more."
+        },
+        {
+          "coverage": "Commercial auto",
+          "html": "Covers service vans and trucks the business owns or uses. A personal auto policy may not cover a vehicle used mainly for work."
+        },
+        {
+          "coverage": "Workers compensation",
+          "html": "Pays medical care and lost wages, as Kentucky law provides, when a technician is hurt on the job, for example falling from a ladder or a roof."
+        },
+        {
+          "coverage": "Tools and equipment coverage",
+          "html": "Inland marine coverage for gauges, recovery machines and hand tools carried on trucks and left at job sites, where a policy on your shop may not reach."
+        },
+        {
+          "coverage": "Professional liability (for design work)",
+          "html": "If you design systems or prepare load calculations for a fee, this addresses claims that the design itself was wrong, which a general liability policy may exclude."
+        },
+        {
+          "coverage": "Completed operations coverage",
+          "html": "Covers injury or damage that shows up after a job is finished, such as a furnace that later starts a fire. Confirm your general liability policy includes it at the limit your contracts require."
+        }
+      ],
+      "contracts_html": "Property managers, builders and commercial tenants often ask for a certificate of insurance before an HVAC crew starts, and some ask to be named as additional insured or for a waiver of subrogation. Those requests need endorsements on the policy; a certificate only describes it. Send us the insurance section of a service agreement or subcontract before you sign it.",
+      "scenario": "A technician replaces a rooftop unit on a small retail building. Two weeks later a drain line backs up and water damages a tenant's inventory below. The tenant's insurer pays the tenant and then seeks to recover from the contractor. This is the kind of claim the contractor's general liability policy, including completed operations, is meant to answer, subject to its terms and exclusions.",
+      "faqs": [
+        {
+          "question": "How much liability insurance does a Kentucky HVAC license require?",
+          "answer_html": "At least $500,000 of general liability and $300,000 of property damage insurance (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46948\">KRS 198B.668(1)</a>). Those are license minimums; a contract can require higher limits."
+        },
+        {
+          "question": "Does my state HVAC insurance satisfy a city or county license?",
+          "answer_html": "Proof of the state-required insurance exempts a licensee from separate insurance requirements under local licensing laws (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46948\">KRS 198B.668(3)</a>). A customer's contract can still set its own insurance terms."
+        },
+        {
+          "question": "What happens to my HVAC license if my policy is canceled?",
+          "answer_html": "No license is valid without the required insurance, and the insurance carrier must notify the licensing department when a licensee's policy is canceled (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46948\">KRS 198B.668(4)</a>). Replace coverage before a cancellation takes effect."
+        }
+      ]
     },
     {
       "name": "Electrical Contractors",
@@ -1711,13 +1798,86 @@
         "Umbrella liability",
         "Professional liability for design-build"
       ],
-      "ky_notes": "Kentucky electrical contractors must carry workers comp. Most project owners and GCs require $1M/$2M GL limits and additional insured status."
+      "ky_requirements": [
+        {
+          "text": "To be licensed as an electrical contractor in Kentucky, an applicant must submit proof of a general liability insurance policy of not less than $1,000,000.",
+          "cites": [
+            {
+              "label": "KRS 227A.060(1)(c)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=55092"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "The same application requires proof that the applicant has complied with Kentucky's workers' compensation and unemployment insurance laws and administrative regulations.",
+          "cites": [
+            {
+              "label": "KRS 227A.060(1)(c)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=55092"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "If an electrical contractor subcontracts work and the subcontractor has not secured workers' compensation for its employees, the contractor and its insurance carrier are liable for those employees' compensation and may recover it from the subcontractor.",
+          "cites": [
+            {
+              "label": "KRS 342.610(2)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623"
+            }
+          ],
+          "as_of": "2026-10-03"
+        }
+      ],
+      "coverage_notes": [
+        {
+          "coverage": "General liability with completed operations",
+          "html": "Answers claims that wiring you installed caused a fire, an injury or damage to a customer's property, including claims made after the job is closed. The $1,000,000 policy your license requires is the starting point, not a ceiling."
+        },
+        {
+          "coverage": "Workers compensation",
+          "html": "Covers electricians and apprentices hurt on the job, including shocks, burns and falls. Proof of compliance with the workers' compensation law is part of the license application."
+        },
+        {
+          "coverage": "Commercial auto",
+          "html": "Covers bucket trucks, vans and pickups the business owns or uses, and the liability that comes with driving them between jobs."
+        },
+        {
+          "coverage": "Tools and equipment",
+          "html": "Covers meters, benders, wire pullers and other tools on the truck or at a job site."
+        },
+        {
+          "coverage": "Umbrella liability",
+          "html": "Adds limits above general liability, auto and employer's liability when a contract or a large job calls for more than those policies carry."
+        },
+        {
+          "coverage": "Professional liability for design-build",
+          "html": "If you design electrical systems as well as install them, this addresses claims that the design was faulty."
+        }
+      ],
+      "contracts_html": "General contractors and facility owners commonly ask electrical subcontractors for a certificate listing general liability, auto, workers' comp and umbrella limits, additional insured status for ongoing and completed work, and primary and noncontributory wording. Read those lines before you bid, because the endorsements have to be on the policy when the job starts.",
+      "scenario": "An electrical contractor wires a kitchen remodel. Months later a circuit overheats and starts a fire that damages the home. The homeowner's insurer pays the claim and then pursues the contractor. Completed operations coverage under the contractor's general liability policy is what would be asked to respond, subject to its terms.",
+      "faqs": [
+        {
+          "question": "How much general liability insurance does a Kentucky electrical contractor license require?",
+          "answer_html": "A policy of not less than $1,000,000, together with proof of compliance with workers' compensation and unemployment insurance laws (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=55092\">KRS 227A.060(1)(c)</a>)."
+        },
+        {
+          "question": "Do the master electrician and electrician licenses have the same insurance rule?",
+          "answer_html": "The insurance proof in <a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=55092\">KRS 227A.060(1)(c)</a> is listed for the electrical contractor license. Subsections (2) and (3), for master electricians and electricians, list experience and examination requirements. Ask the licensing department which license your work needs."
+        },
+        {
+          "question": "Am I responsible if my subcontractor has no workers' comp?",
+          "answer_html": "Yes, for its employees' compensation. A contractor and its insurance carrier are liable when the subcontractor has not secured coverage, and may recover the cost from the subcontractor (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623\">KRS 342.610(2)</a>). Collect a current certificate from every subcontractor before work starts."
+        }
+      ]
     },
     {
       "name": "Plumbing Contractors",
       "slug": "plumbing-contractors",
       "icon": "droplets",
-      "description": "Plumbing work creates water damage exposure that can far exceed the cost of the job itself. One burst pipe during a remodel can generate a six-figure claim.",
+      "description": "Plumbing work creates water damage exposure that can reach far beyond the cost of the job itself. A leak from a single fitting can damage floors, walls and contents before anyone sees it.",
       "typical_coverage": [
         "General liability",
         "Workers compensation",
@@ -1726,22 +1886,182 @@
         "Completed operations",
         "Water damage liability"
       ],
-      "ky_notes": "Plumbing contractors in Kentucky need GL coverage that specifically includes water damage and completed operations. Many carriers restrict or exclude plumbing  -  we know which ones don't."
+      "ky_requirements": [
+        {
+          "text": "No person may engage in plumbing in Kentucky without a valid master plumber's or journeyman plumber's license.",
+          "cites": [
+            {
+              "label": "KRS 318.030(1)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=31186"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "No person, firm or corporation may engage in plumbing without general liability insurance of not less than $250,000 and proof of compliance with Kentucky's workers' compensation and unemployment insurance laws.",
+          "cites": [
+            {
+              "label": "KRS 318.030(2)(a)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=31186"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "Proof of insurance is submitted before an active master plumber license is issued or renewed. No license is valid without it, and insurance carriers must notify the department if the insurance is canceled.",
+          "cites": [
+            {
+              "label": "KRS 318.030(2)(b) and (c)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=31186"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "The insurance requirement does not apply to an employee of a person, firm or corporation engaged in plumbing.",
+          "cites": [
+            {
+              "label": "KRS 318.030(2)(d)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=31186"
+            }
+          ],
+          "as_of": "2026-10-03"
+        }
+      ],
+      "coverage_notes": [
+        {
+          "coverage": "General liability",
+          "html": "The policy called on after water damage from a failed fitting, a cut supply line or a fixture you installed. Read how it treats water damage and completed work, because some policies limit both."
+        },
+        {
+          "coverage": "Workers compensation",
+          "html": "Covers plumbers hurt in trenches, crawl spaces or while lifting fixtures. Proof of compliance comes before your master plumber license is issued or renewed."
+        },
+        {
+          "coverage": "Commercial auto",
+          "html": "Covers service trucks and vans used for the business. Tools and parts carried in them need their own coverage."
+        },
+        {
+          "coverage": "Tools and equipment",
+          "html": "Covers drain machines, inspection cameras, pipe threaders and other tools, on the truck or at a job."
+        },
+        {
+          "coverage": "Completed operations",
+          "html": "Responds to claims that appear after you finish, such as a slow leak behind a wall found months later."
+        },
+        {
+          "coverage": "Water damage liability",
+          "html": "Ask us to check how your general liability policy treats water damage you cause, including any exclusion or lower sublimit."
+        }
+      ],
+      "contracts_html": "Builders and property managers usually want a certificate before a plumber starts, plus additional insured status for ongoing and completed operations on new construction. Remodel customers sometimes ask too. A certificate only describes the policy; the additional insured endorsement is what extends coverage to them.",
+      "scenario": "A plumbing company replaces a water heater in a two-story home. A supply connection loosens over the following weeks and water soaks the ceiling and floors below before anyone notices. The homeowner's insurer pays for repairs and pursues the plumbing company. The plumber's general liability policy, including completed operations, would be the policy asked to respond, subject to its terms.",
+      "faqs": [
+        {
+          "question": "How much liability insurance does a Kentucky plumbing business need?",
+          "answer_html": "General liability of not less than $250,000, plus proof of compliance with workers' compensation and unemployment insurance laws (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=31186\">KRS 318.030(2)(a)</a>). Contracts can set higher limits."
+        },
+        {
+          "question": "Does the insurance rule apply to journeyman plumbers who work for a company?",
+          "answer_html": "No. The insurance requirement does not apply to an employee of a person, firm or corporation engaged in plumbing (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=31186\">KRS 318.030(2)(d)</a>). The company that employs them carries it."
+        },
+        {
+          "question": "When is proof of insurance due?",
+          "answer_html": "Before the active master plumber license is issued or renewed (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=31186\">KRS 318.030(2)(b)</a>)."
+        }
+      ]
     },
     {
       "name": "Roofing Contractors",
       "slug": "roofing-contractors",
       "icon": "home",
-      "description": "Roofing is one of the highest-risk trades in insurance due to fall hazards, property damage exposure, and storm-chasing competition that drives up claims.",
+      "description": "Roofing combines fall hazards, weather exposure on open roofs and the risk of damaging the building and contents underneath, which shapes both workers' comp and liability coverage.",
       "typical_coverage": [
         "General liability",
-        "Workers compensation (high rates)",
+        "Workers compensation",
         "Commercial auto",
         "Tools and equipment",
         "Umbrella liability",
         "Surety bonds for larger projects"
       ],
-      "ky_notes": "Workers comp rates for roofing in Kentucky are among the highest of any trade. We shop across specialty carriers to find competitive rates. Most roofing companies need $1M/$2M GL minimums."
+      "ky_requirements": [
+        {
+          "text": "A roofing company that has one or more employees in Kentucky must comply with the workers' compensation law, by insuring its liability for compensation or qualifying to pay it directly.",
+          "cites": [
+            {
+              "label": "KRS 342.630(1)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32533"
+            },
+            {
+              "label": "KRS 342.340(1)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43318"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "Before a local building official issues a building permit, the builder must show proof of workers' compensation coverage. A person exempt from the law certifies that in writing, on a form prescribed by the commissioner, instead.",
+          "cites": [
+            {
+              "label": "KRS 342.610(6)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "A business owner, and qualified partners or LLC members, are included under workers' compensation only if they elect coverage, through an endorsement to a workers' compensation policy.",
+          "cites": [
+            {
+              "label": "KRS 342.012(1) and (2)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=44523"
+            }
+          ],
+          "as_of": "2026-10-03"
+        }
+      ],
+      "coverage_notes": [
+        {
+          "coverage": "General liability",
+          "html": "Covers damage to the building or its contents from your work, such as rain entering a home through a roof left open, and injuries to people on or near the site, subject to the policy's terms."
+        },
+        {
+          "coverage": "Workers compensation",
+          "html": "Covers crew members hurt on the job, such as falls from roofs and ladders, as Kentucky law provides."
+        },
+        {
+          "coverage": "Commercial auto",
+          "html": "Covers trucks and trailers hauling shingles, tear-off debris and equipment."
+        },
+        {
+          "coverage": "Tools and equipment",
+          "html": "Covers nail guns, compressors, ladders and lifts on the truck or at the job."
+        },
+        {
+          "coverage": "Umbrella liability",
+          "html": "Adds limits above general liability, auto and employer's liability when a commercial job or a property manager asks for more."
+        },
+        {
+          "coverage": "Surety bonds for larger projects",
+          "html": "Bid, performance and payment bonds guarantee your obligations to a project owner. A surety underwrites your finances and track record, and you agree to repay it if it pays a claim. See <a href=\"/commercial/bonds\">bonds</a>."
+        }
+      ],
+      "contracts_html": "Commercial roofing and insurance restoration contracts usually ask for a certificate with general liability, auto and workers' comp, sometimes umbrella limits, and additional insured status. A general contractor that hires you can become liable for your employees' injuries if you have no workers' comp (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623\">KRS 342.610(2)</a>), so expect to show proof before you start.",
+      "scenario": "A roofing crew tears off a residential roof and covers it with tarps overnight. A storm lifts a tarp and rain damages ceilings and furniture inside. The homeowner looks to the roofer, and the roofer's general liability policy would be asked to respond, subject to its terms and any exclusion for work in progress.",
+      "faqs": [
+        {
+          "question": "Do I need workers' comp if I roof by myself?",
+          "answer_html": "Kentucky's workers' compensation law applies to employers with one or more employees (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32533\">KRS 342.630</a>). An owner is covered only by electing coverage through an endorsement (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=44523\">KRS 342.012</a>). If a job needs a building permit and you are exempt, you certify that to the building official on the commissioner's form (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623\">KRS 342.610(6)</a>)."
+        },
+        {
+          "question": "Why do property owners ask to be additional insured?",
+          "answer_html": "Being named as additional insured lets the property owner or general contractor claim under your general liability policy for liability arising from your work, within the endorsement's terms. A certificate alone does not do that."
+        },
+        {
+          "question": "Is a surety bond insurance for my company?",
+          "answer_html": "No. A bond guarantees your performance or payment to the project owner. If the surety pays a claim, you are expected to repay it under the indemnity agreement you sign."
+        }
+      ]
     },
     {
       "name": "General Contractors",
@@ -1757,7 +2077,94 @@
         "Surety bonds (bid, performance, payment)",
         "Subcontractor default insurance"
       ],
-      "ky_notes": "Kentucky GCs bidding on public projects need surety bonds. Most commercial projects require $1M/$2M GL, $1M auto, and statutory workers comp."
+      "ky_requirements": [
+        {
+          "text": "A contractor that subcontracts work, and its insurance carrier, are liable for workers' compensation to a subcontractor's employees unless the subcontractor has secured that compensation. The contractor may recover what it pays, and necessary expenses, from the subcontractor.",
+          "cites": [
+            {
+              "label": "KRS 342.610(2)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "Before a local building official issues a building permit, the builder must provide proof of workers' compensation coverage, or an exempt contractor must certify the exemption in writing on the commissioner's form.",
+          "cites": [
+            {
+              "label": "KRS 342.610(6)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "On Commonwealth construction contracts let by competitive sealed bidding and estimated above $40,000, bidders must provide bid security of at least 5 percent of the bid: a bond from a surety authorized in Kentucky, or the cash equivalent.",
+          "cites": [
+            {
+              "label": "KRS 45A.185(1) and (2)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=22367"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "When a Commonwealth construction contract is awarded above $100,000, the contractor furnishes a performance bond equal to 100 percent of the contract price and a payment bond equal to 100 percent of the original contract price.",
+          "cites": [
+            {
+              "label": "KRS 45A.190(2)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=54631"
+            }
+          ],
+          "as_of": "2026-10-03"
+        }
+      ],
+      "coverage_notes": [
+        {
+          "coverage": "General liability",
+          "html": "Covers bodily injury and property damage claims from your operations and your subcontractors' work. If an owner requires it, ask for the aggregate limit to apply per project. See <a href=\"/commercial/general-liability\">general liability</a>."
+        },
+        {
+          "coverage": "Workers compensation",
+          "html": "Covers your own employees, and can end up covering an uninsured subcontractor's employees, which is why a premium audit asks for subcontractor certificates. See <a href=\"/commercial/workers-compensation\">workers' compensation</a>."
+        },
+        {
+          "coverage": "Commercial auto",
+          "html": "Covers pickups, dump trucks and trailers, and hired or non-owned vehicles used on the business's behalf."
+        },
+        {
+          "coverage": "Builders risk",
+          "html": "Covers the structure while it is under construction, along with materials on site or in transit, until the owner takes it over. See <a href=\"/commercial/builders-risk\">builders risk</a>."
+        },
+        {
+          "coverage": "Umbrella liability",
+          "html": "Adds limits above general liability, auto and employer's liability, often required by owners and lenders on larger jobs."
+        },
+        {
+          "coverage": "Surety bonds (bid, performance, payment)",
+          "html": "Required on Commonwealth construction contracts above the thresholds listed above, and commonly on other public and private work. See <a href=\"/commercial/bonds\">bonds</a>."
+        },
+        {
+          "coverage": "Subcontractor default insurance",
+          "html": "An alternative to bonding each subcontractor on some larger programs; it reimburses the general contractor when an enrolled subcontractor defaults."
+        }
+      ],
+      "contracts_html": "Owners and lenders set insurance and bond terms in the prime contract, and you pass matching terms down to every subcontractor. Collect a current certificate and the additional insured endorsement from each sub before they start, and keep them for the premium audit and for any claim.",
+      "scenario": "A general contractor's framing subcontractor lets its workers' comp policy lapse midway through a job, and one of the sub's carpenters is injured in a fall. The general contractor and its insurance carrier become liable for that worker's compensation and can try to recover the cost from the subcontractor.",
+      "faqs": [
+        {
+          "question": "Is a Kentucky general contractor liable for a subcontractor's injured workers?",
+          "answer_html": "Yes, if the subcontractor has not secured workers' compensation. The contractor and its insurance carrier are liable and may recover the cost from the subcontractor (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623\">KRS 342.610(2)</a>)."
+        },
+        {
+          "question": "What bonds does a Commonwealth construction job require?",
+          "answer_html": "Bid security of at least 5 percent of the bid when the contract is let by competitive sealed bidding and estimated above $40,000 (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=22367\">KRS 45A.185</a>), and performance and payment bonds when the contract is awarded above $100,000 (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=54631\">KRS 45A.190</a>). Read each local invitation to bid for its own bond terms."
+        },
+        {
+          "question": "Do I need proof of workers' comp to get a building permit?",
+          "answer_html": "Yes. The local building official must see proof of coverage before issuing the permit, or an exemption certification on the commissioner's form (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623\">KRS 342.610(6)</a>)."
+        }
+      ]
     },
     {
       "name": "Restaurants & Food Service",
@@ -1773,7 +2180,92 @@
         "Business income coverage",
         "Hired and non-owned auto"
       ],
-      "ky_notes": "Kentucky restaurants serving alcohol need separate liquor liability coverage. Food trucks need commercial auto plus GL. Workers comp is required."
+      "ky_requirements": [
+        {
+          "text": "A restaurant, bar, caterer or food truck with one or more employees in Kentucky is subject to the workers' compensation law and must insure its liability for compensation or qualify to pay it directly.",
+          "cites": [
+            {
+              "label": "KRS 342.630(1)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32533"
+            },
+            {
+              "label": "KRS 342.340(1)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43318"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "The law counts every person in an employer's service under a contract of hire as an employee, subject to the exemptions listed in KRS 342.650.",
+          "cites": [
+            {
+              "label": "KRS 342.640(1)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43049"
+            },
+            {
+              "label": "KRS 342.650",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=51336"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "Every employer subject to the law must post a notice naming its workers' compensation insurance carrier and policy number and explaining how to get medical care for a work injury, at its principal office and wherever employees customarily report for payroll and personnel matters.",
+          "cites": [
+            {
+              "label": "KRS 342.610(7)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623"
+            }
+          ],
+          "as_of": "2026-10-03"
+        }
+      ],
+      "coverage_notes": [
+        {
+          "coverage": "General liability",
+          "html": "Covers a guest who slips on a wet floor or becomes ill from food you served, and damage your staff cause to someone else's property."
+        },
+        {
+          "coverage": "Commercial property",
+          "html": "Covers kitchen equipment, hood and suppression systems, furniture, and the building or your improvements to a leased space, for causes such as a grease fire. See <a href=\"/commercial/commercial-property\">commercial property</a>."
+        },
+        {
+          "coverage": "Workers compensation",
+          "html": "Covers cooks, servers and dishwashers hurt at work, from burns and knife cuts to slips in the kitchen."
+        },
+        {
+          "coverage": "Liquor liability",
+          "html": "Standard general liability forms exclude liquor liability for businesses that sell or serve alcohol, so it is bought as separate coverage when you do."
+        },
+        {
+          "coverage": "Food contamination/spoilage",
+          "html": "Pays for food lost when a cooler fails or the power goes out, and some forms add coverage when a health authority closes you over contamination."
+        },
+        {
+          "coverage": "Business income coverage",
+          "html": "Replaces lost income and pays continuing expenses, such as payroll, while a covered loss keeps you closed."
+        },
+        {
+          "coverage": "Hired and non-owned auto",
+          "html": "Covers the restaurant's liability when an employee drives a personal or rented car for catering runs, deliveries or supply pickups."
+        }
+      ],
+      "contracts_html": "Landlords commonly require restaurant tenants to carry general liability and property insurance on their improvements and to name the landlord as additional insured. Festivals and event venues ask food trucks and caterers for a certificate before load-in. Send us the lease or vendor packet's insurance page.",
+      "scenario": "A grease fire starts on the line during a Friday dinner rush. The suppression system activates, but smoke damages the dining room and the restaurant closes for repairs. Commercial property coverage pays for covered repairs and equipment, and business income coverage replaces lost income and continuing payroll for the covered period, subject to the waiting period and limits.",
+      "faqs": [
+        {
+          "question": "Do part-time restaurant staff count for workers' comp?",
+          "answer_html": "Kentucky counts every person in an employer's service under a contract of hire as an employee (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43049\">KRS 342.640(1)</a>), subject to the exemptions in <a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=51336\">KRS 342.650</a>. Part-time servers and kitchen staff are not among those exemptions."
+        },
+        {
+          "question": "Does general liability cover a claim from serving alcohol?",
+          "answer_html": "Usually not for a business that sells or serves alcohol: standard general liability forms exclude liquor liability for those businesses. Liquor liability coverage is bought separately."
+        },
+        {
+          "question": "What does the workers' comp notice have to say?",
+          "answer_html": "It names your workers' compensation insurance carrier and policy number, explains how to get medical care for a work injury and the employee's duty to report accidents, and covers other matters the commissioner requires (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623\">KRS 342.610(7)</a>). Your insurance carrier provides copies."
+        }
+      ]
     },
     {
       "name": "Professional Services",
@@ -1788,7 +2280,84 @@
         "Business owner's policy (BOP)",
         "Directors and officers (for firms)"
       ],
-      "ky_notes": "Many professional licenses in Kentucky require E&O coverage. Client contracts frequently require $1M professional liability limits."
+      "ky_requirements": [
+        {
+          "text": "All Kentucky real estate licensees, except those whose licenses are in inactive status, must carry errors and omissions insurance covering their licensed activities. A licensee moving to inactive status first obtains one year of extended reporting period coverage.",
+          "cites": [
+            {
+              "label": "KRS 324.395(1)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=49034"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "The Kentucky Real Estate Commission makes a group policy available to licensees, and a licensee may buy the required insurance independently if the coverage and the insurance company meet the commission's minimum requirements.",
+          "cites": [
+            {
+              "label": "KRS 324.395(2) and (4)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=49034"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "A firm with one or more employees in Kentucky is subject to the workers' compensation law, and every executive officer of a corporation counts as an employee under it.",
+          "cites": [
+            {
+              "label": "KRS 342.630(1)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32533"
+            },
+            {
+              "label": "KRS 342.640(2)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43049"
+            }
+          ],
+          "as_of": "2026-10-03"
+        }
+      ],
+      "coverage_notes": [
+        {
+          "coverage": "Professional liability (E&O)",
+          "html": "Covers claims that your advice, service or work product caused a client a financial loss, including the cost of defending a claim you believe is groundless. See <a href=\"/commercial/professional-liability\">professional liability</a>."
+        },
+        {
+          "coverage": "General liability",
+          "html": "Covers bodily injury and property damage claims, such as a client who trips at your place of business, which professional liability does not."
+        },
+        {
+          "coverage": "Cyber liability",
+          "html": "Covers breach response, notification and liability when client data you hold is exposed, and some forms cover funds lost to fraudulent payment instructions. See <a href=\"/commercial/cyber\">cyber</a>."
+        },
+        {
+          "coverage": "Workers compensation",
+          "html": "Required once the firm has an employee, and corporate officers count. It covers work injuries from repetitive strain to a fall on the stairs."
+        },
+        {
+          "coverage": "Business owner's policy (BOP)",
+          "html": "Packages general liability and property coverage, often with business income, for smaller firms. It does not include professional liability."
+        },
+        {
+          "coverage": "Directors and officers (for firms)",
+          "html": "Covers the personal liability of a firm's directors and officers for management decisions, which E&O does not address."
+        }
+      ],
+      "contracts_html": "Client contracts and vendor onboarding forms often set a professional liability limit, ask for cyber coverage when you handle their data, and require notice if your policy is canceled. Professional liability is usually written on a claims-made basis, so keep it continuous and ask about prior acts coverage before you switch insurers.",
+      "scenario": "A bookkeeping firm misses a client's payroll tax deposit deadline, and the client is assessed penalties and interest. The client demands reimbursement. A professional liability policy is designed for claims like this, subject to its terms, its retention and any exclusion for fines and penalties.",
+      "faqs": [
+        {
+          "question": "Do Kentucky real estate agents have to carry E&O insurance?",
+          "answer_html": "Yes, while their license is active (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=49034\">KRS 324.395(1)</a>). They can join the commission's group policy or buy qualifying coverage on their own (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=49034\">KRS 324.395(2) and (4)</a>)."
+        },
+        {
+          "question": "What does claims-made mean?",
+          "answer_html": "A claims-made policy covers claims first made while the policy is in force, for work done after its retroactive date. A gap in coverage, or a new policy without prior acts coverage, can leave older work uninsured."
+        },
+        {
+          "question": "Does a business owner's policy include professional liability?",
+          "answer_html": "No. A BOP combines general liability and property coverage; professional liability is a separate policy."
+        }
+      ]
     },
     {
       "name": "Manufacturing",
@@ -1804,7 +2373,88 @@
         "Business income and extra expense",
         "Inland marine (goods in transit)"
       ],
-      "ky_notes": "Kentucky manufacturers with distribution outside the state need product liability coverage that matches their distribution footprint. Workers comp rates vary significantly by manufacturing type."
+      "ky_requirements": [
+        {
+          "text": "A manufacturer with one or more employees in Kentucky is subject to the workers' compensation law and must insure its liability for compensation or furnish proof that it can pay compensation directly.",
+          "cites": [
+            {
+              "label": "KRS 342.630(1)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32533"
+            },
+            {
+              "label": "KRS 342.340(1)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43318"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "Every executive officer of a corporation counts as an employee under the workers' compensation law.",
+          "cites": [
+            {
+              "label": "KRS 342.640(2)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43049"
+            }
+          ],
+          "as_of": "2026-10-03"
+        },
+        {
+          "text": "Every employer subject to the law posts a notice, at its principal office and wherever employees report for payroll, naming its workers' compensation carrier and policy number and explaining how to get medical care for a work injury.",
+          "cites": [
+            {
+              "label": "KRS 342.610(7)",
+              "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623"
+            }
+          ],
+          "as_of": "2026-10-03"
+        }
+      ],
+      "coverage_notes": [
+        {
+          "coverage": "Product liability",
+          "html": "Covers claims that a product you made or sold caused injury or property damage after it left your plant. It is usually part of a general liability policy as products-completed operations coverage."
+        },
+        {
+          "coverage": "General liability",
+          "html": "Covers injuries to visitors, drivers picking up freight and others on your premises, and damage your operations cause to others' property."
+        },
+        {
+          "coverage": "Commercial property",
+          "html": "Covers the building, machinery, raw materials and finished stock against fire, wind and other covered causes. See <a href=\"/commercial/commercial-property\">commercial property</a>."
+        },
+        {
+          "coverage": "Equipment breakdown",
+          "html": "Covers sudden mechanical or electrical breakdown of boilers, compressors, motors and production machinery, which property policies commonly exclude."
+        },
+        {
+          "coverage": "Workers compensation",
+          "html": "Covers machine, lifting and repetitive motion injuries on the floor and in the warehouse."
+        },
+        {
+          "coverage": "Business income and extra expense",
+          "html": "Replaces lost income and pays the extra cost of keeping orders moving while a covered loss stops production."
+        },
+        {
+          "coverage": "Inland marine (goods in transit)",
+          "html": "Covers raw materials and finished goods while they travel between suppliers, your plant and customers."
+        }
+      ],
+      "contracts_html": "Retailers, distributors and equipment makers often require suppliers to name them as additional insured under a vendors endorsement, carry a minimum products limit and accept an indemnity clause. Read the indemnity language closely, because a promise in a contract can go beyond what your policy covers.",
+      "scenario": "A small fabricator ships brackets to an equipment maker. A batch with a weld defect fails in the field and damages a customer's machine. The equipment maker tenders the claim to the fabricator under the supply agreement. The fabricator's products-completed operations coverage would be asked to respond, subject to its terms and any exclusion for replacing the defective product itself.",
+      "faqs": [
+        {
+          "question": "Are corporate officers covered by workers' comp in Kentucky?",
+          "answer_html": "Every executive officer of a corporation counts as an employee under the workers' compensation law (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43049\">KRS 342.640(2)</a>)."
+        },
+        {
+          "question": "What workers' comp notice must a Kentucky manufacturer post?",
+          "answer_html": "A notice naming the carrier and policy number, how to get medical care for an injury and the duty to report accidents, posted at the principal office and wherever employees report for payroll (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623\">KRS 342.610(7)</a>). Your insurance carrier supplies copies."
+        },
+        {
+          "question": "Does product liability cover a recall?",
+          "answer_html": "No. Product liability responds to injury or damage a product causes to others. The cost of pulling a product from the market is a recall exposure that standard liability forms generally exclude."
+        }
+      ]
     }
   ]
 }

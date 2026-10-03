@@ -43,6 +43,11 @@ const locations = loadJson(path.join(DATA, 'locations.json'));
 const team = loadJson(path.join(DATA, 'team.json'));
 const knowledgeBase = loadJson(path.join(DATA, 'knowledge-base.json'));
 const carriers = loadJson(path.join(DATA, 'carriers.json'));
+// Sourced carrier facts for the standalone pages (CONT-05) and the priority-hub
+// line sections that render only once signed (MKT-02).
+const carrierProfiles = fs.existsSync(path.join(DATA, 'carrier-profiles.json')) ? loadJson(path.join(DATA, 'carrier-profiles.json')) : {};
+const hubSections = fs.existsSync(path.join(DATA, 'hub-sections.json')) ? loadJson(path.join(DATA, 'hub-sections.json')) : { hubs: {} };
+const { carrierHasPage } = require('./lib/carrier-pages');
 const testimonials = loadJson(path.join(DATA, 'testimonials.json'));
 // Testimonial ids kept off the pages (product pages skip them; update-reviews.js never re-imports them).
 const testimonialsBlocklist = fs.existsSync(path.join(DATA, 'testimonials-blocklist.json'))
@@ -86,7 +91,7 @@ const entity = loadJson(path.join(DATA, 'entity.json'));
 const injectSchema = createSchemaInjector({ agency, office, entity });
 
 // ─── Shared Context ─────────────────────────────
-const ctx = { products, office, agency, team, knowledgeBase, carriers, testimonials, testimonialsBlocklist, reviews: _reviews, richContent, landingData, internalLinks, seoData, renderNav, renderFooter, renderScripts };
+const ctx = { products, office, agency, team, knowledgeBase, carriers, carrierProfiles, hubSections, testimonials, testimonialsBlocklist, reviews: _reviews, richContent, landingData, internalLinks, seoData, renderNav, renderFooter, renderScripts };
 
 // ─── Build ──────────────────────────────────────
 console.log('🔨 Building The Way Agency site...\n');
@@ -217,7 +222,7 @@ let carrierCount = 0;
 const seenCarrierSlugs = new Set();
 for (const line of ['personal', 'commercial']) {
   for (const carrier of (carriers[line] || [])) {
-    if (!carrier.description || seenCarrierSlugs.has(carrier.slug)) continue;
+    if (!carrierHasPage(carrier) || seenCarrierSlugs.has(carrier.slug)) continue;
     seenCarrierSlugs.add(carrier.slug);
     let html = generateCarrierPage(carrier, line, ctx);
     html = injectSchema(injectVersion(html), 'carrier', carrier);
