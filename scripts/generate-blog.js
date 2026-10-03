@@ -49,6 +49,7 @@ const contentGuard = require('./lib/blog-content-guard');
 // The agency reference and the canonical page and person IRIs (SCHEMA-02, SCHEMA-04).
 const { orgRef, teamMemberUrl, blogPostUrl, SITE_URL } = require('./lib/entity');
 const { isMedicarePost, renderTpmoForAreas } = require('./lib/medicare-disclaimer');
+const { legalClaimWarnings } = require('./lib/legal-claims-lint');
 
 const ROOT = path.resolve(__dirname, '..');
 const BLOG_SRC = path.join(ROOT, 'src', 'blog');
@@ -1104,6 +1105,9 @@ if (fs.existsSync(BLOG_SRC)) {
         }
       }
       for (const w of wording) console.log(describeWordingWarning(meta.slug, w));
+      // Statute and penalty statements without a primary source (BLOG-02):
+      // flagged, never refused.
+      for (const w of legalClaimWarnings(decision.markdown)) console.log(`  ! ${meta.slug}: ${w}`);
       // author and author_title are never printed; say so when they disagree
       // with data/team.json (a new title, a member who left), so the front
       // matter can be brought in line. The post renders either way.
