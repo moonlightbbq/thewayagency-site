@@ -2775,7 +2775,7 @@
       "page_role": "seasonal",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "in-review",
       "source": "queue-lock",
       "locked_at": "2026-10-03",
       "notes": "From topic research task 604dcd9f-1acf-4e11-b37d-e2661ee4a50c (2026-10-02). Its automated quality check failed on a judge input cap, so the topics never reached the backlog; the owner reviewed the six proposals and approved this one directly on 2026-10-03. Fast-tracked by owner decision 2026-10-03 for the 2026-10-10 slot: locked by hand at D-7, inside the D-10 floor fillSlots keeps, with the markdown already drafted; it publishes only with the assigned licensed reviewer's approval.",
@@ -2825,7 +2825,11 @@
           "https://www.foxbusiness.com/real-estate/homeowners-insurance-costs-could-spike-over-next-2-years",
           "https://www.eliteriskagent.com/blog/average-cost-homeowners-insurance-kentucky"
         ]
-      }
+      },
+      "reviewer": "Audrey Lillpop",
+      "reviewer_email": "audrey@thewayagency.com",
+      "reviewer_slug": "audrey-lillpop",
+      "review_sent_date": "2026-10-03"
     }
   ],
   "slots": [
