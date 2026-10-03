@@ -1,5 +1,5 @@
 {
-  "_readme": "CONT-01 / CONT-02 drafts. Nothing in this file renders until its owner gate is approved AND the entry has a licensed reviewer (data/team.json slug) and reviewed_on date. Every statement must match its cited Kentucky statute text; as_of is the date the statute text was last read. See scripts/lib/ky-blocks.js.",
+  "_readme": "CONT-01 / CONT-02 drafts. Nothing in this file renders until its owner gate is approved AND the entry has a licensed reviewer (data/team.json slug), reviewed_on date and signoff_ref (PR comment URL or email date of the written approval), AND that reviewer is in `reviewers` with the entry's licence line (P&C for /personal/ and /commercial/, Life for /life/, Health for /health/) verified on the Kentucky DOI lookup and valid on reviewed_on. The /health/ hub also needs owner_gates.health_hub and may be signed only by sheilia-royal or jill-boone. Every statement must match its cited Kentucky statute text; as_of is the date the statute text was last read. See scripts/lib/ky-blocks.js.",
   "owner_gates": {
     "product_blocks": {
       "decision": "priority-hubs D15 (OA-28): partly reverse commit 258cc65 with signed Kentucky blocks and wave-1 titles",
@@ -10,7 +10,15 @@
       "decision": "CONT-02 (OA-28): line-hub H1s and intros",
       "approved_by": null,
       "approved_on": null
+    },
+    "health_hub": {
+      "decision": "/health/ hub only: TRUST-01 live (priority-hubs CONT-02 row: Health Kentucky essentials wait for TRUST-01) and the Branch B referral copy approved (owner decision 3, OA-08, D-4)",
+      "approved_by": null,
+      "approved_on": null
     }
+  },
+  "reviewers": {
+    "_readme": "Filled at signing by the main session from the Kentucky DOI license lookup, never from data/team.json. One entry per reviewer: {\"lines\": [\"P&C\"|\"Life\"|\"Health\"], \"license_verified_on\": \"YYYY-MM-DD\", \"license_valid_until\": \"YYYY-MM-DD\", \"verified_by\": \"<who checked>\"}. An entry signed by anyone not listed here, or outside the line or validity window, does not render."
   },
   "statements": [
     {
@@ -302,13 +310,17 @@
     {
       "id": "term-1",
       "page": "/life/term-life",
-      "statement": "An individual life insurance policy delivered in Kentucky, other than credit life or a policy under a tax-qualified pension plan, must let the policyowner return it to the company or the agent within at least 10 days after receiving it; the policy is then void from the start and any premium paid is returned promptly.",
+      "statement": "An individual life insurance policy delivered in Kentucky, other than credit life or a policy under a tax-qualified pension plan, must give the policyowner at least 10 days after receiving it to return it to the company or the agent; the policy is then void from the start and any premium paid is returned promptly.",
       "cite": "KRS 304.15-050(2)",
       "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=17200",
       "more_sources": [
         {
           "cite": "KRS 304.15-040",
           "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=17198"
+        },
+        {
+          "cite": "KRS 304.15-010",
+          "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=17194"
         }
       ],
       "as_of": "2026-10-03",
@@ -544,14 +556,14 @@
           "reviewed_on": null
         },
         {
-          "text": "Kentucky's health insurance exchange, kynect, is where Kentuckians can shop for and enroll in individual and family health plans and apply for Medicaid and KCHIP, which people who qualify can join at any time of year.",
+          "text": "The Kentucky Health Benefit Exchange (kynect) helps Kentuckians enroll in Qualified Health Plans or Medicaid, and people who qualify can enroll in Medicaid or KCHIP at any time of year.",
           "cite": "Kentucky Health Benefit Exchange (kynect)",
           "source_url": "https://khbe.ky.gov/Pages/index.aspx",
           "reviewer": null,
           "reviewed_on": null
         },
         {
-          "text": "Tell us what you need and a licensed agent will contact you about your options.",
+          "text": "Request a quote and tell us what you need.",
           "reviewer": null,
           "reviewed_on": null
         }

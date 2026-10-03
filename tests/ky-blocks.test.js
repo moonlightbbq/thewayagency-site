@@ -62,7 +62,15 @@ const product = (url, kyData) => {
 };
 const titleOf = (html) => /<title>([^<]*)<\/title>/.exec(html)[1];
 const h1Of = (html) => /<h1[^>]*>([\s\S]*?)<\/h1>/.exec(html)[1].trim();
-const sign = (e) => Object.assign(e, { reviewer: 'audrey-lillpop', reviewed_on: '2026-10-03' });
+const SIGNOFF = 'https://github.com/moonlightbbq/thewayagency-site/pull/84#issuecomment-1';
+const sign = (e, reviewer = 'audrey-lillpop') => Object.assign(e, { reviewer, reviewed_on: '2026-10-03', signoff_ref: SIGNOFF });
+// Synthetic registry rows for tests only; the committed registry is empty until signing.
+const register = (d, slug, lines, until = '2027-09-30') => {
+  d.reviewers = d.reviewers || {};
+  d.reviewers[slug] = { lines, license_verified_on: '2026-10-03', license_valid_until: until, verified_by: 'Zz Privacycheck' };
+  return d;
+};
+const registered = (o) => register(register(clone(o), 'audrey-lillpop', ['P&C', 'Life']), 'jill-boone', ['P&C', 'Life', 'Health']);
 const approve = (d, gate) => Object.assign(d.owner_gates[gate], { approved_by: 'Zz Privacycheck', approved_on: '2026-10-03' });
 
 describe('data/ky-blocks.json', () => {
@@ -70,12 +78,22 @@ describe('data/ky-blocks.json', () => {
     assert.deepEqual(ky.validate(data, vctx), []);
   });
 
-  test('is entirely unsigned: no owner approval, no reviewer, no date', () => {
-    for (const g of Object.values(data.owner_gates)) assert.equal(g.approved_by, null);
-    for (const e of [...data.statements, ...data.titles, ...data.hubs, ...data.hubs.flatMap((h) => h.intro || [])]) {
-      assert.equal(e.reviewer, null);
-      assert.equal(e.reviewed_on, null);
+  test('every committed signature is complete and by a registered reviewer licensed for its line (no test edit needed to sign)', () => {
+    const entries = [
+      ...data.statements.map((e) => [e, e.page]), ...data.titles.map((e) => [e, e.page]),
+      ...data.hubs.flatMap((h) => [[h, h.hub], ...(h.intro || []).map((e) => [e, h.hub])]),
+    ];
+    for (const [e, where] of entries) {
+      if (!e.reviewer) { assert.equal(e.reviewed_on, null, where); continue; }
+      assert.ok(ky.signed(e, data, where, ky.HUB_ALLOWED_REVIEWERS[where]), `${where}: signature is not by a registered, licensed reviewer with a signoff_ref`);
     }
+  });
+
+  test('the /health/ hub needs the health_hub owner gate (TRUST-01, Branch B) and is pinned to sheilia-royal or jill-boone', () => {
+    assert.ok(data.owner_gates.health_hub, 'owner_gates.health_hub exists');
+    assert.match(data.owner_gates.health_hub.decision, /TRUST-01/);
+    assert.deepEqual(ky.HUB_EXTRA_GATES['/health/'], ['health_hub']);
+    assert.deepEqual(ky.HUB_ALLOWED_REVIEWERS['/health/'], ['sheilia-royal', 'jill-boone']);
   });
 
   test('drafts a Kentucky title for each of the 13 wave-1 pages', () => {
@@ -96,8 +114,9 @@ describe('data/ky-blocks.json', () => {
 });
 
 describe('render gate', () => {
-  test('today nothing renders: no Kentucky block, titles and H1s unchanged on every wave-1 page', () => {
+  test('pages with no signed entry render nothing: no Kentucky block, titles and H1s unchanged', () => {
     for (const url of WAVE1) {
+      if (ky.signedStatements(data, url).length || data.titles.some((t) => t.page === url && t.reviewer)) continue;
       const html = product(url, data);
       const p = byUrl(url);
       assert.doesNotMatch(html, /If you live in Kentucky/, url);
@@ -107,16 +126,16 @@ describe('render gate', () => {
   });
 
   test('a signed statement does not render while the owner gate is closed', () => {
-    const d = clone(data);
-    d.statements.filter((s) => s.page === '/personal/auto').forEach(sign);
-    d.titles.filter((t) => t.page === '/personal/auto').forEach(sign);
+    const d = registered(data);
+    d.statements.filter((s) => s.page === '/personal/auto').forEach((e) => sign(e));
+    d.titles.filter((t) => t.page === '/personal/auto').forEach((e) => sign(e));
     const html = product('/personal/auto', d);
     assert.doesNotMatch(html, /If you live in Kentucky/);
     assert.equal(titleOf(html), byUrl('/personal/auto').title_tag);
   });
 
   test('an approved gate renders nothing unsigned', () => {
-    const d = clone(data);
+    const d = registered(data);
     approve(d, 'product_blocks');
     const html = product('/personal/auto', d);
     assert.doesNotMatch(html, /If you live in Kentucky/);
@@ -124,7 +143,7 @@ describe('render gate', () => {
   });
 
   test('approved gate plus signatures render only the signed statements, with link and as-of date', () => {
-    const d = clone(data);
+    const d = registered(data);
     approve(d, 'product_blocks');
     sign(d.statements.find((s) => s.id === 'auto-2'));
     sign(d.titles.find((t) => t.page === '/personal/auto'));
@@ -142,12 +161,48 @@ describe('render gate', () => {
   });
 
   test('a signed Kentucky H1 waits for at least one signed statement on the page', () => {
-    const d = clone(data);
+    const d = registered(data);
     approve(d, 'product_blocks');
     sign(d.titles.find((t) => t.page === '/personal/auto'));
     const html = product('/personal/auto', d);
     assert.equal(titleOf(html), 'Kentucky Auto Insurance Quotes &amp; Coverage | The Way Agency');
     assert.equal(h1Of(html), byUrl('/personal/auto').h1);
+  });
+});
+
+describe('reviewer licence gate (review M3)', () => {
+  const autoSigned = (d) => { approve(d, 'product_blocks'); return d; };
+  test('a reviewer not in the registry, without the line, past licence validity, or with no signoff_ref renders nothing', () => {
+    let d = autoSigned(clone(data));
+    sign(d.statements.find((s) => s.id === 'auto-2'));
+    assert.doesNotMatch(product('/personal/auto', d), /If you live in Kentucky/, 'unregistered reviewer');
+    d = autoSigned(register(clone(data), 'audrey-lillpop', ['Life']));
+    sign(d.statements.find((s) => s.id === 'auto-2'));
+    assert.doesNotMatch(product('/personal/auto', d), /If you live in Kentucky/, 'no P&C line');
+    d = autoSigned(register(clone(data), 'audrey-lillpop', ['P&C'], '2026-10-01'));
+    sign(d.statements.find((s) => s.id === 'auto-2'));
+    assert.doesNotMatch(product('/personal/auto', d), /If you live in Kentucky/, 'licence expired before review');
+    d = autoSigned(registered(data));
+    sign(d.statements.find((s) => s.id === 'auto-2')).signoff_ref = null;
+    assert.doesNotMatch(product('/personal/auto', d), /If you live in Kentucky/, 'no signoff_ref');
+    d = autoSigned(registered(data));
+    sign(d.statements.find((s) => s.id === 'auto-2'));
+    assert.match(product('/personal/auto', d), /If you live in Kentucky/, 'control: qualified reviewer renders');
+  });
+  test('validation names each problem', () => {
+    const v = (d) => ky.validate(d, vctx).join('\n');
+    let d = clone(data); sign(d.statements[0]);
+    assert.match(v(d), /not in reviewers with a verified P&C licence/);
+    d = registered(data); sign(d.statements[0]).signoff_ref = null;
+    assert.match(v(d), /needs signoff_ref/);
+    d = registered(data); d.reviewers['audrey-lillpop'].license_verified_on = null;
+    assert.match(v(d), /license_verified_on/);
+    d = registered(data); d.reviewers.nobody = d.reviewers['jill-boone'];
+    assert.match(v(d), /reviewers\.nobody: not a data\/team\.json slug/);
+    d = registered(data); delete d.owner_gates.health_hub;
+    assert.match(v(d), /owner_gates\.health_hub: missing/);
+    d = registered(data); sign(d.hubs.find((h) => h.hub === '/health/'), 'audrey-lillpop');
+    assert.match(v(d), /\/health\/ may be signed only by sheilia-royal or jill-boone/);
   });
 });
 
@@ -171,7 +226,7 @@ describe('validation catches', () => {
 
 describe('line hubs (CONT-02)', () => {
   const hub = (key, kyData) => pages.generateHubPage(key, makeCtx(kyData));
-  const signHub = (d, canonical) => { const h = d.hubs.find((x) => x.hub === canonical); sign(h); h.intro.forEach(sign); return h; };
+  const signHub = (d, canonical) => { const h = d.hubs.find((x) => x.hub === canonical); sign(h); h.intro.forEach((s) => sign(s)); return h; };
 
   test('drafts an H1 and intro for each of the four line hubs', () => {
     assert.deepEqual(data.hubs.map((h) => h.hub).sort(), ['/commercial/', '/health/', '/life/', '/personal/']);
@@ -189,15 +244,29 @@ describe('line hubs (CONT-02)', () => {
   test('the /health/ intro names kynect for marketplace plans, Medicaid and KCHIP only, and says nothing about Medicare', () => {
     const h = data.hubs.find((x) => x.hub === '/health/');
     const text = h.intro.map((s) => s.text).join(' ');
-    assert.match(text, /kynect, is where Kentuckians can shop for and enroll in individual and family health plans and apply for Medicaid and KCHIP/);
+    assert.match(text, /The Kentucky Health Benefit Exchange \(kynect\) helps Kentuckians enroll in Qualified Health Plans or Medicaid, and people who qualify can enroll in Medicaid or KCHIP at any time of year\./);
+    assert.doesNotMatch(text, /licensed agent will contact you/i, 'no unattributed contact promise (review M6)');
     assert.doesNotMatch(JSON.stringify(h), /medicare/i);
     assert.doesNotMatch(text, /\bfree\b|we compare/i);
   });
 
-  test('signed and approved, a hub renders the Kentucky H1, the tagline as subtitle and the intro with its source link', () => {
-    const d = clone(data);
+  test('/health/ stays hidden until the health_hub gate opens, and refuses a reviewer outside the pin', () => {
+    const d = registered(data);
     approve(d, 'line_hubs');
     signHub(d, '/health/');
+    assert.doesNotMatch(hub('health', d), /class="hub-intro"/, 'health_hub gate closed');
+    const e = registered(data);
+    approve(e, 'line_hubs'); approve(e, 'health_hub');
+    register(e, 'audrey-lillpop', ['P&C', 'Life', 'Health']);
+    const h = e.hubs.find((x) => x.hub === '/health/'); sign(h); h.intro.forEach((s) => sign(s));
+    assert.doesNotMatch(hub('health', e), /class="hub-intro"/, 'reviewer outside the /health/ pin');
+  });
+
+  test('signed and approved, a hub renders the Kentucky H1, the tagline as subtitle and the intro with its source link', () => {
+    const d = registered(data);
+    approve(d, 'line_hubs');
+    approve(d, 'health_hub');
+    const hh = d.hubs.find((x) => x.hub === '/health/'); sign(hh, 'jill-boone'); hh.intro.forEach((s) => sign(s, 'jill-boone'));
     const html = hub('health', d);
     assert.equal(h1Of(html), 'Health insurance in Kentucky');
     assert.match(html, /Coverage built around your care/);
@@ -207,14 +276,18 @@ describe('line hubs (CONT-02)', () => {
   });
 
   test('one unsigned intro sentence, or a closed owner gate, keeps the whole hub draft hidden', () => {
-    const d = clone(data);
+    const d = registered(data);
     approve(d, 'line_hubs');
     signHub(d, '/personal/').intro[2].reviewer = null;
     d.hubs.find((x) => x.hub === '/personal/').intro[2].reviewed_on = null;
     assert.doesNotMatch(hub('personal', d), /class="hub-intro"/);
-    const e = clone(data);
+    const e = registered(data);
     signHub(e, '/personal/');
     assert.doesNotMatch(hub('personal', e), /class="hub-intro"/);
+    const f = registered(data);
+    approve(f, 'line_hubs');
+    signHub(f, '/personal/');
+    assert.match(hub('personal', f), /class="hub-intro"/, 'control: fully signed /personal/ renders');
   });
 
   test('validation keeps kynect off the non-health hubs', () => {
