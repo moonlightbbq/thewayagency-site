@@ -268,6 +268,31 @@ for (const file of htmlFiles) {
 }
 if (turnstileIssues === 0) pass('Turnstile only on widget pages (async); app.js deferred everywhere');
 
+// 7e. Call-and-text pairing (CONV-04; CONTENT_RULES rule 3). Every tel: link has
+// an sms: peer in its parent or grandparent, both go to +15024135335 (third-party
+// numbers are plain text), and no sms: link prefills a body. Dependency-free
+// tokenizer (CI runs this on Node 18 without npm ci). Links that JavaScript adds
+// at runtime (sticky bar, mobile menu, ?agent= swaps) are covered by
+// tests/sticky-cta.test.js and the Playwright check, not here. Exemptions:
+// scripts/lib/contact-pairing-config.js (the D10 entries await the owner, OA-18).
+{
+  const { findContactLinkProblems } = require('./lib/contact-pairing');
+  const { DEFAULT_EXEMPTIONS } = require('./lib/contact-pairing-config');
+  const used = new Set();
+  let pairingProblems = 0;
+  for (const file of htmlFiles) {
+    const rel = path.relative(BUILD, file).split(path.sep).join('/');
+    for (const p of findContactLinkProblems(fs.readFileSync(file, 'utf8'), { file: rel, exemptions: DEFAULT_EXEMPTIONS, usedExemptions: used })) {
+      error(`Call/text pairing: ${rel}:${p.line} ${p.message}`);
+      pairingProblems++;
+    }
+  }
+  for (const ex of DEFAULT_EXEMPTIONS) {
+    if (!used.has(ex)) warn(`Call/text pairing: exemption no longer needed, delete it from contact-pairing-config.js: ${ex.page} (${ex.decision})`);
+  }
+  if (pairingProblems === 0) pass(`Call/text pairing: every tel: link has an sms: peer to +15024135335 (${used.size} listed exemptions in use)`);
+}
+
 // 8. Image size check (warn on images >500KB)
 let largeImages = 0;
 const assetsDir = path.join(BUILD, 'src', 'assets');
