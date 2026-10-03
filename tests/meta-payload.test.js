@@ -73,9 +73,12 @@ async function loadIntake() {
       w.matchMedia = () => ({ matches: false, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {} });
       w.scrollTo = () => {};
       Object.defineProperty(w.HTMLElement.prototype, 'scrollIntoView', { value: () => {} });
+      // A loaded Turnstile: the page never posts without a token (CONV-10).
+      w.turnstile = { render() { return 'w1'; }, reset() {} };
     },
   });
   await new Promise((r) => setTimeout(r, 20));
+  dom.window.eval("_turnstileSiteKey = 'test-key-test-key-test-key'; turnstileToken = 'test-token-test-token-test-token-test-token'");
   return { w: dom.window, calls };
 }
 
