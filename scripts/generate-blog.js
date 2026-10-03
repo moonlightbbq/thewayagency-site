@@ -217,14 +217,46 @@ function parseFrontMatter(content) {
 }
 
 // ─── Extract FAQ items from content ─────────
+//
+// An answer is written in markdown and may carry inline links (a statute
+// citation) and bold or italic text. The page prints it as HTML with those
+// links live (answerHtml); the FAQPage JSON-LD and the review-wording check
+// read the same answer as plain text (answer): a link becomes its label and
+// emphasis markers drop. Printing the raw markdown showed readers and search
+// engines "([KRS 304.39-110](https://...))" as literal text (BLOG-01 review F1).
+const FAQ_LINK_RE = /\[(.+?)\]\((.+?)\)/g;
+
+/** An FAQ answer's markdown as plain text: links become their labels, emphasis markers drop. */
+function faqAnswerText(md) {
+  return String(md === undefined || md === null ? '' : md)
+    .replace(FAQ_LINK_RE, (_m, text) => text)
+    .replace(/\*\*(.+?)\*\*/g, '$1')
+    .replace(/\*(.+?)\*/g, '$1');
+}
+
+/** An FAQ answer's markdown as inline HTML: escaped, with bold, italic and links (as markdownToHtml prints them). */
+function faqAnswerHtml(md) {
+  return String(md === undefined || md === null ? '' : md)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(FAQ_LINK_RE, (_m, text, url) => `<a href="${safeHref(canonicalHref(url))}">${text}</a>`);
+}
+
 function extractFAQs(body) {
   const faqs = [];
   const faqRegex = /### FAQ: (.+?)\n\n([\s\S]*?)(?=\n###|\n## |$)/g;
   let match;
   while ((match = faqRegex.exec(body)) !== null) {
+    const md = match[2].trim().replace(/\n/g, ' ');
     faqs.push({
       question: match[1].trim(),
-      answer: match[2].trim().replace(/\n/g, ' ')
+      answer: faqAnswerText(md),
+      answerHtml: faqAnswerHtml(md)
     });
   }
   return faqs;
@@ -363,7 +395,7 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [] } = {}) {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;transition:transform 0.2s;pointer-events:none;"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <div class="faq-item__answer">
-            <p>${esc(f.answer)}</p>
+            <p>${f.answerHtml === undefined ? esc(f.answer) : f.answerHtml}</p>
           </div>
         </div>`).join('')}
       </section>` : '';
@@ -808,7 +840,7 @@ ${renderScripts()}
 // when this file is the program: `node scripts/generate-blog.js`, as
 // scripts/builders/blog-helpers.js runs it. (A top-level return is legal in a
 // CommonJS module.)
-module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, printedText, markdownToHtml, parseFrontMatter, extractFAQs, generateBlogPost, productSlugFromRelatedPage, intakeHref };
+module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, printedText, markdownToHtml, parseFrontMatter, extractFAQs, faqAnswerText, faqAnswerHtml, generateBlogPost, productSlugFromRelatedPage, intakeHref };
 if (require.main !== module) return;
 
 // ─── Build ──────────────────────────────────
