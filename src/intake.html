@@ -950,12 +950,14 @@ window.addEventListener('online', function () {
   updateDot();
 })();
 
-// beforeunload warning for unsaved data
-window.addEventListener('beforeunload', function(e) {
+// beforeunload warning for unsaved data. Named so markSubmitted() can remove it:
+// after a successful submit there is nothing unsaved to warn about (CONV-08).
+function onBeforeUnload(e) {
   if (_submitted) return;
   const hasData = v('i_fname') || v('i_email') || selectedProducts.length;
   if (hasData) { e.preventDefault(); e.returnValue = ''; }
-});
+}
+window.addEventListener('beforeunload', onBeforeUnload);
 
 // ── System status banner ────────────────────────────────────────────────────
 (function() {
@@ -1113,6 +1115,7 @@ const _funnelData = {
   agent: new URLSearchParams(window.location.search).get('agent') || '',
 };
 let _submitted = false;
+let _abandonSent = false;   // intake_abandoned goes out at most once per page load
 
 // ─── Core intake event dispatcher ───────────────────────────────────────────
 function trackIntake(eventName, params) {
@@ -1169,8 +1172,12 @@ function trackValidationError(step, message) {
 }
 
 // ─── Abandonment tracking ───────────────────────────────────────────────────
+// Both listeners below stay: visibilitychange to hidden is the reliable signal on
+// mobile, pagehide the fallback (MDN; Chrome Page Lifecycle). Every tab switch
+// used to fire another event, so one visitor counted as several abandonments.
 function trackAbandonment() {
-  if (_submitted) return;
+  if (_submitted || _abandonSent) return;
+  _abandonSent = true;
   trackIntake('intake_abandoned', {
     abandoned_at_step: currentStep,
     abandoned_at_name: STEP_NAMES[currentStep],
@@ -1204,6 +1211,18 @@ function trackSubmitSuccess(reference, productCount) {
 // health tiles in PRODUCTS.
 function sendMetaLead() {
   return !selectedProducts.some((p) => getProductLine(p) === 'health');
+}
+
+// Ends the page's "unsaved form" life after a successful submit (CONV-08): no
+// Leave-site prompt, no abandonment event, no exit flush, no draft re-created.
+// Both success paths (quick lead and full submit) call it. The quick lead never
+// reached trackSubmitSuccess(), so a visitor who had just been told "we'll reach
+// out" was then asked whether to leave without saving.
+function markSubmitted() {
+  _submitted = true;
+  _fieldsDirtySinceTrack = false;
+  window.removeEventListener('beforeunload', onBeforeUnload);
+  clearDraft();
 }
 
 // ─── Form field focus tracking (Phase 2: friction detection) ────────────────
@@ -2253,7 +2272,7 @@ function scheduleTrack() {
 let _fieldsDirtySinceTrack = false;
 document.addEventListener('input', () => { _fieldsDirtySinceTrack = true; }, true);
 function _flushTrackOnExit() {
-  if (!_fieldsDirtySinceTrack || !sessionId) return;
+  if (_submitted || !_fieldsDirtySinceTrack || !sessionId) return;
   const firstName = v('i_fname'), lastName = v('i_lname');
   const email = v('i_email'), phone = v('i_phone');
   if (!firstName || !lastName || (!email && !phone) || mustDecline()) return;
@@ -3392,7 +3411,7 @@ async function submitQuickLead() {
       } else {
         msg.textContent = 'Thank you! A licensed agent will reach out to discuss your coverage options shortly.';
       }
-      clearDraft();
+      markSubmitted();
       // Tracking
       if (window.gtag) gtag('event', 'intake_quick_lead', { products: selectedProducts.join(','), product_count: selectedProducts.length });
       if (window.dataLayer) {
@@ -3570,7 +3589,7 @@ async function submitIntake() {
         const msg = document.getElementById('confirm-message');
         if (msg) msg.textContent = 'Thank you for choosing The Way Agency. ' + a.name.split(' ')[0] + ' will review your information and reach out with your personalized quote within one business day.';
       }
-      clearDraft();
+      markSubmitted();
       trackStepComplete(4);
       trackSubmitSuccess(data.reference, selectedProducts.length);
       // Google Ads conversion (configured in GTM)
@@ -3863,15 +3882,12 @@ function restoreDraft(draft) {
   // Navigate to the step the user was on (but cap at step 2 — step 3/4 have dynamic content)
   const targetStep = Math.min(draft.step || 1, 2);
   if (targetStep > 1) showStep(targetStep);
-  // A resumed draft carries both a state and a cart, so re-run the decision: this
-  // is another door into trackPartial(true) below (the producer page), and it must
-  // not be the one that slips an out-of-area lead through.
+  // A resumed draft carries both a state and a cart, so re-run the decision.
   evaluateStateEligibility();
-  // If resuming with contact info already filled, fire notify so agent gets assigned
-  if (draft.fields.i_email && draft.fields.i_phone && draft.fields.i_fname && draft.fields.i_lname) {
-    contactValidated = true; // skip re-validation on resume
-    setTimeout(() => trackPartial(true), 500);
-  }
+  // A resumed draft never pages a producer by itself (CONV-08). It used to fire
+  // trackPartial(true) here, which re-paged a producer about a lead SAGE already
+  // had, or, on a shared device, about the previous person. Only the visitor's
+  // own Continue on step 1 (or a submit) notifies.
 }
 
 // Debounced auto-save on any input change
@@ -3892,13 +3908,13 @@ document.addEventListener('change', scheduleDraftSave);
   const toast = document.getElementById('draft-toast');
   const detail = document.getElementById('draft-toast-detail');
   if (!toast) return;
-  // Build description
-  const name = [draft.fields.i_fname, draft.fields.i_lname].filter(Boolean).join(' ');
+  // Build description. No name: on a shared device the toast greeted the next
+  // person with the previous visitor's full name (CONV-08).
   const ago = Math.round((Date.now() - draft.savedAt) / (1000 * 60));
   let agoText = ago < 60 ? `${ago} minute${ago !== 1 ? 's' : ''} ago` :
                 ago < 1440 ? `${Math.round(ago/60)} hour${Math.round(ago/60) !== 1 ? 's' : ''} ago` :
                 `${Math.round(ago/1440)} day${Math.round(ago/1440) !== 1 ? 's' : ''} ago`;
-  detail.textContent = (name ? `For ${name} — ` : '') + `saved ${agoText}`;
+  detail.textContent = 'Saved ' + agoText + '.';
   // Show toast with slight delay for smooth entrance
   setTimeout(() => toast.classList.add('visible'), 300);
   // Resume button
