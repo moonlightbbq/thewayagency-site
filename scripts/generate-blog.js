@@ -230,7 +230,8 @@ function extractFAQs(body) {
 const locations = JSON.parse(fs.readFileSync(path.join(DATA, 'locations.json'), 'utf8'));
 const office = locations.offices[0];
 const agency = locations.agency;
-const _reviews = { rating: agency.google_rating || '5.0', count: agency.google_review_count || '20+' };
+// The Google rating or null (stale, missing or no listing URL): TRUST-14.
+const _reviews = require('./lib/review-badge').googleRating(agency);
 const { renderNav, renderFooter: _renderFooter, renderScripts, renderHead_GTM, renderBody_GTM } = require('./shared-templates');
 function renderFooter() { return _renderFooter(office, _reviews); }
 
