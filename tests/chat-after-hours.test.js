@@ -144,3 +144,9 @@ describe('after-hours chat', () => {
     } finally { w.close(); }
   });
 });
+
+// Review F1 (2026-10-03): the teaser must never take the chat bubble out of its fixed position.
+test('after-hours teaser does not override the bubble position', () => {
+  const src = require('fs').readFileSync(require('path').join(__dirname, '..', 'src', 'js', 'app.js'), 'utf8');
+  assert.ok(!/bubble\.style\.position\s*=/.test(src), 'app.js must not set bubble.style.position');
+});

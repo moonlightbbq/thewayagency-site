@@ -1580,7 +1580,8 @@
         if (interacted || isOpen) return;
         dot = document.createElement('span');
         dot.style.cssText = 'position:absolute;top:2px;right:2px;width:12px;height:12px;background:#ef4444;border-radius:50%;border:2px solid #173358;animation:twaCbPulse 1.5s ease infinite;';
-        bubble.style.position = 'relative';
+        // The bubble is position:fixed (components CSS) and already the containing block for the absolute dot;
+        // forcing 'relative' here dropped it into normal flow at the end of <body>, off screen (review F1).
         bubble.appendChild(dot);
         var style = document.createElement('style');
         style.textContent = '@keyframes twaCbPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.7}}';
