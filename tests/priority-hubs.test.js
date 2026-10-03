@@ -65,7 +65,7 @@ const HANDMADE = (() => {
       if (e.isDirectory()) walk(rel); else if (e.name.endsWith('.html')) out.push(rel);
     }
   })('src/pages');
-  return out.filter((rel) => read(rel).includes('<h4 class="footer__heading">Company</h4>'));
+  return out.filter((rel) => /<h[24] class="footer__heading">Company<\/h[24]>/.test(read(rel)));
 })();
 
 describe('no internal link to the .html form of a hub or industry page (LOCAL-01, TECH-01)', () => {

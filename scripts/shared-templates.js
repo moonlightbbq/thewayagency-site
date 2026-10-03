@@ -97,7 +97,7 @@ const SERVICE_AREA_LINKS = [
 
 function renderServiceAreasColumn() {
   return `      <div data-footer-group="service-areas">
-        <h4 class="footer__heading">Service Areas</h4>
+        <h2 class="footer__heading">Service Areas</h2>
         <div class="footer__link-list">
 ${SERVICE_AREA_LINKS.map(([href, text]) => `          <a href="${href}">${text}</a>`).join('\n')}
         </div>
