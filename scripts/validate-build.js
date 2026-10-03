@@ -249,7 +249,7 @@ if (fs.existsSync(carrierDir)) {
 // 7d. Turnstile loads only where a widget renders, async; app.js is deferred (PERF-02).
 // A deferred Turnstile loader on every page held DOMContentLoaded, and with it all of
 // app.js's set-up, on 179 pages that never render a widget.
-const TURNSTILE_PAGES = new Set(['contact.html', 'about/careers/apply.html', 'forrest-frank-2026.html', 'intake/index.html']);
+const TURNSTILE_PAGES = new Set(['contact.html', 'about/careers/apply.html', 'intake/index.html']);
 let turnstileIssues = 0;
 for (const file of htmlFiles) {
   const html = fs.readFileSync(file, 'utf8');

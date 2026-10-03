@@ -18,7 +18,7 @@ const { JSDOM } = require('jsdom');
 const ROOT = path.join(__dirname, '..');
 const read = (rel) => fs.readFileSync(path.join(ROOT, rel), 'utf8');
 const APP = read('src/js/attribution.js') + '\n;\n' + read('src/js/app.js');
-const WIDGET_PAGES = ['src/pages/contact.html', 'src/pages/about/careers/apply.html', 'src/pages/forrest-frank-2026.html'];
+const WIDGET_PAGES = ['src/pages/contact.html', 'src/pages/about/careers/apply.html'];
 
 function makeDom() {
   const requests = [];
