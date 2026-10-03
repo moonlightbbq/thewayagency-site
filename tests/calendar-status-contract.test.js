@@ -33,7 +33,7 @@ const path = require('path');
 const {
   PUBLISHABLE_STATUSES, AWAITING_APPROVAL_STATUSES, TERMINAL_STATUSES, HOLD_STATUSES, ADVISORY_GRANDFATHERED,
   isPublishable, isKnownStatus, isHeld, isAwaitingApproval, heldForApproval, isGrandfathered,
-  heldNextStep,
+  heldNextStep, isDone,
 } = require('../scripts/lib/calendar-status');
 
 const ROOT = path.resolve(__dirname, '..');
@@ -119,6 +119,45 @@ describe('publishable statuses', () => {
   test('publishable and terminal sets do not overlap', () => {
     for (const s of PUBLISHABLE_STATUSES) {
       assert.equal(TERMINAL_STATUSES.has(s), false, `"${s}" is in both sets`);
+    }
+  });
+});
+
+describe("'retired' (BLOG-05: merged into a keeper and 301-redirected)", () => {
+  test('known, terminal, done, never publishable, never awaiting or held', () => {
+    assert.equal(isKnownStatus('retired'), true);
+    assert.equal(TERMINAL_STATUSES.has('retired'), true);
+    assert.equal(isDone('retired'), true);
+    assert.equal(isPublishable('retired'), false);
+    assert.equal(isPublishable('retired', { slug: 'test-retired', publish_date: '2026-01-20', status: 'retired' }), false);
+    assert.equal(isAwaitingApproval('retired'), false);
+    assert.equal(isHeld('retired'), false);
+    assert.equal(heldForApproval({ slug: 'test-retired', publish_date: '2026-01-20', status: 'retired' }, '2026-10-03'), false);
+  });
+
+  test('isDone: published and retired only ("error" is terminal but needs a person)', () => {
+    assert.equal(isDone('published'), true);
+    for (const s of ['error', 'approved', 'planned', 'in-draft', 'in-review', 'changes-requested', undefined, 'rejected-by-legal']) {
+      assert.equal(isDone(s), false, String(s));
+    }
+  });
+
+  test('a retired markdown entry never renders (review-credit.js renderDecision)', () => {
+    const { renderDecision } = require('../scripts/lib/review-credit');
+    const md = Buffer.from('---\ntitle: SYNTHETIC retired\nslug: test-retired\ndescription: d\ndate: 2026-01-20\n---\n\nbody\n');
+    const d = renderDecision({ slug: 'test-retired', publish_date: '2026-01-20', status: 'retired' }, md, [], {
+      today: '2026-10-03', isKnownStatus, isPublishable, isHeld,
+    });
+    assert.equal(d.render, false);
+    assert.match(d.why, /does not publish/);
+  });
+
+  test('every retired entry on the live calendar says where it went and when, and keeps its keyword', () => {
+    const cal = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'content-calendar.json'), 'utf8'));
+    for (const p of [...(cal.year1 || []), ...(cal.existing_posts || [])].filter((x) => x && x.status === 'retired')) {
+      assert.ok(p.retired_to === null || /^[a-z0-9-]+$/.test(p.retired_to), `${p.slug}: retired_to is a keeper slug or null`);
+      assert.match(String(p.retired_on), /^\d{4}-\d{2}-\d{2}$/, `${p.slug}: retired_on`);
+      assert.ok(p.primary_keyword, `${p.slug}: keeps a primary_keyword so the cannibalization guard still blocks the topic`);
     }
   });
 });

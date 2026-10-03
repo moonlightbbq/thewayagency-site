@@ -6,10 +6,11 @@ author: Audrey Lillpop
 author_title: Licensed Agent
 author_slug: audrey-lillpop
 date: 2026-05-27
-modified: 2026-05-27
+modified: 2026-10-03
 reading_time: 7 min read
 related_page: /commercial/general-liability.html
 tags: HVAC insurance, contractor insurance, commercial insurance, kentucky, workers comp
+sources: [KRS 198B.668 (HVAC contractor insurance) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46948, KRS 342.630 (workers' comp: who must be covered) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32533, KRS 304.39-080 (security required on registered vehicles) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30032]
 reviewer: Audrey Lillpop
 reviewer_slug: audrey-lillpop
 reviewer_title: Licensed Agent
@@ -29,6 +30,8 @@ The right insurance protects your business, your employees, and your ability to 
 - **Completed operations:** A furnace you installed six months ago malfunctions and causes a fire. Completed operations coverage handles claims that arise after you have finished a job and left the property.
 
 Most HVAC contractors need at least $1 million per occurrence and $2 million aggregate in general liability coverage. If you work as a subcontractor, the general contractor will almost certainly require proof of general liability insurance before you set foot on their job site.
+
+Kentucky also requires it for the license. No one may practice HVAC contracting without general liability insurance of at least $500,000 and property damage insurance of at least $300,000, proof of that insurance goes to the state before a license is issued or renewed, and no HVAC license is valid without it ([KRS 198B.668](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46948)).
 
 ## Workers compensation insurance
 
@@ -120,7 +123,6 @@ Many Kentucky municipalities and general contractors require HVAC contractors to
 
 Common bond types for HVAC contractors:
 
-- **License bond:** Required to obtain or maintain your HVAC license in many Kentucky jurisdictions
 - **Bid bond:** Guarantees you will enter into a contract if awarded a bid
 - **Performance bond:** Guarantees you will complete the work as specified
 - **Payment bond:** Guarantees you will pay subcontractors and suppliers
@@ -160,11 +162,11 @@ As an independent agency, we work with carriers that specialize in contractor in
 
 ### FAQ: Does Kentucky require HVAC contractors to carry insurance?
 
-Kentucky requires workers compensation for any employer with one or more employees. General liability and commercial auto are not legally required by the state, but most general contractors, commercial clients, and many residential customers require proof of insurance before you can work on their projects. In practice, you cannot operate a competitive HVAC business without it.
+Yes. Kentucky bars anyone from HVAC contracting without general liability insurance of at least $500,000 and property damage insurance of at least $300,000, and no HVAC license is valid without it (KRS 198B.668). Workers' comp is required once you have one employee (KRS 342.630), and every registered vehicle, including a service van, must carry auto liability security (KRS 304.39-080). General contractors and commercial clients often require higher limits by contract.
 
 ### FAQ: How much does HVAC contractor insurance cost in Kentucky?
 
-Costs vary based on your revenue, number of employees, types of work, and claims history. A small residential HVAC shop might pay $5,000 to $10,000 per year for a basic insurance package (general liability, workers comp, commercial auto). Larger operations with more employees and commercial work will pay more. An independent agent can help you get competitive quotes from multiple carriers.
+Costs vary based on your revenue, number of employees, types of work, and claims history. Larger operations with more employees and commercial work will pay more. An independent agent can help you get competitive quotes from multiple carriers.
 
 ### FAQ: Do I need insurance if I am a one-person HVAC operation?
 

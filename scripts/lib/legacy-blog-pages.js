@@ -27,7 +27,7 @@
 const crypto = require('crypto');
 
 const LEGACY_BLOG_PAGES = Object.freeze({
-  'after-car-accident-kentucky.html': '6152347644bee1e8e6162fba277a666c3f271c015eee3aaadffb1b66b7861f65',
+  'after-car-accident-kentucky.html': '4ececcc3cde45dffaa148022c12298d6a70547af17c33433844cb2c67b01b617',
   'bundling-home-auto.html': '26457e541ff6faa7dbf374bcd8716120c9a40836a38db3a3d8b5eabcd76ece29',
   'cyber-safety.html': '23f74a688aa757b9af4f29a793d74d68a0076f116aa13deb7367f96ec382af35',
   'earthquake-insurance.html': '807b405ae01df85893a2af6f505c9b690622320809f965e1eea5cf37bfa9a59a',
@@ -39,7 +39,6 @@ const LEGACY_BLOG_PAGES = Object.freeze({
   'tornado-season.html': '4adec184232f1ac0e91c4608136afb4f51446a1ac25dc9066d5fcfd161f92434',
   'understanding-deductibles.html': '92131d45d970d377515caa79b8c295e94cc5423511002a22f7597540b745d680',
   'winter-storm.html': '6479db09b299e3536d19a571a2afdc861d6aa389694c87f58fdbddeb88dc6657',
-  'workers-comp-kentucky.html': '89d964e382b3de92c06caa440fe5ad5fe0f2cfb487abfd6b62fc7e7a3ffa2207',
 });
 
 /** sha256 hex of a page's text, CRLF read as LF. */

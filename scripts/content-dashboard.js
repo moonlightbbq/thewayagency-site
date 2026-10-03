@@ -8,6 +8,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { isDone } = require('./lib/calendar-status');
 
 const ROOT = path.resolve(__dirname, '..');
 const CALENDAR_PATH = path.join(ROOT, 'data', 'content-calendar.json');
@@ -47,11 +48,11 @@ console.log('╚═════════════════════�
 
 // Status summary
 console.log('── Status Summary ──────────────────────────────\n');
-const statusOrder = ['published', 'planned', 'in-review', 'draft', 'unknown'];
+const statusOrder = ['published', 'retired', 'planned', 'in-review', 'draft', 'unknown'];
 for (const status of statusOrder) {
   const posts = byStatus[status];
   if (!posts) continue;
-  const icon = status === 'published' ? '✓' : status === 'planned' ? '○' : status === 'in-review' ? '◐' : '·';
+  const icon = status === 'published' ? '✓' : status === 'retired' ? '↪' : status === 'planned' ? '○' : status === 'in-review' ? '◐' : '·';
   console.log(`  ${icon} ${status.padEnd(12)} ${String(posts.length).padStart(3)} posts`);
 }
 console.log(`${''.padEnd(22)}${String(allPosts.length).padStart(3)} total\n`);
@@ -67,9 +68,9 @@ for (const month of months) {
   console.log(`  ${month}  ${String(posts.length).padStart(2)} posts (${published} published, ${planned} planned)${flag}`);
 }
 
-// Overdue posts (past date, not published)
+// Overdue posts (past date, neither published nor retired)
 console.log('\n── Overdue Posts ───────────────────────────────\n');
-const overdue = allPosts.filter(p => p.publish_date <= today && p.status !== 'published');
+const overdue = allPosts.filter(p => p.publish_date <= today && !isDone(p.status));
 if (overdue.length === 0) {
   console.log('  None — all due posts are published.\n');
 } else {

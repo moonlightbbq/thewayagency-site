@@ -1,19 +1,20 @@
 ---
 title: Insurance Guide for Electrical Contractors in Kentucky
 slug: insurance-guide-electrical-contractors
-description: "Electrical work carries inherent fire and injury risk. Here's the insurance Kentucky electrical contractors need, what it costs, and how to meet GC requirements."
+description: "Electrical work carries inherent fire and injury risk. Here's the insurance Kentucky electrical contractors need, how it is priced, and how to meet GC requirements."
 author: The Way Agency
 author_title: Independent Insurance Agency
 date: 2026-09-05
-modified: 2026-09-05
+modified: 2026-10-03
 reading_time: 7 min read
 related_page: /commercial/general-liability.html
 tags: electrical contractor insurance kentucky, electrician insurance cost, electrical contractor insurance requirements, electrician business insurance
+sources: [KRS 227A.060 (electrical contractor license requirements) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=55092, KRS 342.012 (owners electing workers' comp coverage) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=44523]
 ---
 
 Electrical work is one of the highest-risk trades in construction. Faulty wiring can cause fires years after the work is done. Arc flashes can injure workers on the job. A miswired panel in a commercial building can create liability that follows you for decades.
 
-Insurance carriers know this, which is why electrical contractor insurance costs more than many other trades and why getting the right coverage in place is critical. If you are running an electrical contracting business in Kentucky, here is what you need, what it costs, and how to set it up so you can focus on the work.
+Insurance carriers know this, which is why electrical contractor insurance costs more than many other trades and why getting the right coverage in place is critical. If you are running an electrical contracting business in Kentucky, here is what you need, how it is priced, and how to set it up so you can focus on the work.
 
 ## Required coverage for Kentucky electrical contractors
 
@@ -25,7 +26,7 @@ For electricians, the "completed operations" piece is especially important. If w
 
 Most general contractors require electrical subs to carry at least $1 million per occurrence and $2 million aggregate in general liability. Many commercial projects and larger GCs require $2 million per occurrence. Your policy limits need to match the contracts you are bidding on.
 
-Typical cost for an electrical contractor: $2,500 to $6,000 per year for a small operation, depending on your revenue, payroll, and claims history.
+The license itself requires insurance. To be licensed as an electrical contractor in Kentucky you must show proof of a general liability policy of at least $1,000,000 and proof that you comply with workers' compensation and unemployment insurance laws ([KRS 227A.060(1)(c)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=55092)).
 
 ### Workers compensation insurance
 
@@ -35,13 +36,9 @@ Kentucky requires workers compensation insurance for most employers with one or 
 
 Your workers comp premium is based on your payroll and your experience modification rate (mod rate). A clean safety record brings your mod rate below 1.0 and reduces your premium. Claims drive it up.
 
-Typical cost for electrical contractors: $8 to $15 per $100 of payroll, depending on your classification code, mod rate, and state. Kentucky's workers comp rates for electricians are moderate compared to some states, but the cost is still significant for labor-intensive operations.
-
 ### Commercial auto insurance
 
 If your business owns vehicles, commercial auto insurance is required. This covers your trucks, vans, and any vehicles titled to the business. If your employees drive personal vehicles for work (picking up materials, traveling to job sites), you also need hired and non-owned auto coverage to fill the gap when personal auto policies exclude business use.
-
-Typical cost: $1,500 to $4,000 per vehicle per year, depending on the vehicle type, driver records, and coverage limits.
 
 ## Coverage you should carry
 
@@ -51,13 +48,11 @@ Your tools are your livelihood. Wire pullers, benders, meters, testing equipment
 
 Inland marine insurance (sometimes called a contractors equipment floater) covers your tools and equipment for theft, damage, and loss wherever they are. A standard commercial property policy only covers items at your business location. Inland marine follows your equipment to the job.
 
-Typical cost: $300 to $1,000 per year, depending on the total value of covered equipment.
-
 ### Umbrella or excess liability
 
 An umbrella policy adds an additional layer of liability coverage above your general liability, auto, and workers comp limits. For electrical contractors, this is worth serious consideration.
 
-Electrical work has long-tail liability. A wiring defect can cause a fire years after installation. If the resulting damage exceeds your general liability limits, an umbrella policy picks up the excess. A $1 million umbrella policy for an electrical contractor typically costs $500 to $1,500 per year.
+Electrical work has long-tail liability. A wiring defect can cause a fire years after installation. If the resulting damage exceeds your general liability limits, an umbrella policy picks up the excess.
 
 ### Professional liability (errors and omissions)
 
@@ -108,11 +103,11 @@ There is no trick to cheap electrical contractor insurance, but there are legiti
 
 ### FAQ: How much does insurance cost for an electrical contractor in Kentucky?
 
-Total insurance costs for a small electrical contracting business in Kentucky typically range from $8,000 to $20,000 per year, depending on payroll, revenue, number of employees, type of work, and claims history. Workers compensation is usually the largest expense, followed by general liability.
+Total insurance costs for an electrical contracting business in Kentucky depend on payroll, revenue, number of employees, type of work, and claims history. Workers compensation is usually the largest expense, followed by general liability.
 
 ### FAQ: Do I need workers comp insurance as a sole proprietor electrician in Kentucky?
 
-Kentucky allows sole proprietors with no employees to exempt themselves from workers comp requirements. However, many general contractors require all subcontractors to carry workers comp regardless of exemption status. Without workers comp, a job-site injury comes out of your own pocket.
+Kentucky doesn't require a sole proprietor with no employees to cover themselves. Owners are covered only if they elect coverage by endorsement (KRS 342.012). The electrical contractor license still asks for proof that you comply with workers' comp law (KRS 227A.060(1)(c)), and many GCs require subcontractors to carry it regardless. Without workers comp, a job-site injury comes out of your own pocket.
 
 ### FAQ: What insurance do general contractors require from electrical subcontractors?
 

@@ -2,7 +2,7 @@
 title: "Business Insurance in Bullitt County: A Guide for Mt. Washington Companies"
 slug: mt-washington-business-insurance
 date: 2026-03-26
-modified: 2026-03-26
+modified: 2026-10-03
 author: Sheilia Royal
 author_slug: sheilia-royal
 author_title: Agency Principal / Licensed Agent
@@ -10,6 +10,7 @@ description: "Business insurance guide for Mt. Washington and Bullitt County com
 category: commercial
 tags: [commercial-insurance, mt-washington, bullitt-county, kentucky, contractors]
 status: published
+sources: [KRS 342.990 (workers' comp penalties) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=52607, KRS 342.402 (court order to stop operating) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32497]
 ---
 
 Bullitt County's economy has grown alongside its population. From contractors working the residential building boom to service businesses along US-31E and retail in the Mt. Washington town center, local businesses need insurance that matches their actual operations and risks.
@@ -30,7 +31,7 @@ In Mt. Washington, most general liability policies cost between $500 and $3,000 
 
 **Kentucky requires workers compensation for any business with one or more employees.** This is not optional. Workers comp covers medical expenses and lost wages when an employee is injured on the job.
 
-Penalties for operating without workers comp in Kentucky include fines, stop-work orders, and personal liability for employee injuries. If you have employees, even part-time, you need this coverage.
+Penalties include civil and criminal fines ([KRS 342.990](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=52607)), a court order to stop operating ([KRS 342.402](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32497)) and personal liability for employee injuries. If you have employees, even part-time, you need this coverage.
 
 For contractors in Bullitt County, workers comp classification codes matter. The rate you pay is based on your trade. An electrician pays a different rate than a roofer. Making sure your employees are classified correctly can save thousands of dollars per year without reducing coverage.
 

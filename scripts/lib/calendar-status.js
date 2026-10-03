@@ -111,7 +111,17 @@ const AWAITING_APPROVAL_STATUSES = Object.freeze(new Set([
 const TERMINAL_STATUSES = Object.freeze(new Set([
   'published',  // already shipped
   'error',      // a readiness or approval check failed; carries error_reason + red workflow (I7)
+  'retired',    // merged into a keeper and 301-redirected (BLOG-05): never renders, never publishes; carries retired_to + retired_on
 ]));
+
+/**
+ * Whether a post's lifecycle is over: shipped ('published') or merged away
+ * ('retired'). A done post holds no future date and needs no review. 'error'
+ * is terminal but not done: it is a failure someone must look at.
+ */
+function isDone(status) {
+  return status === 'published' || status === 'retired';
+}
 
 /**
  * States that HOLD a post: known, not publishable, not terminal. SAGE writes
@@ -230,4 +240,5 @@ module.exports = {
   heldNextStep,
   isKnownStatus,
   isHeld,
+  isDone,
 };

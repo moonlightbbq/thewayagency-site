@@ -49,6 +49,7 @@ const contentGuard = require('./lib/blog-content-guard');
 // The agency reference and the canonical page and person IRIs (SCHEMA-02, SCHEMA-04).
 const { orgRef, teamMemberUrl, blogPostUrl, SITE_URL } = require('./lib/entity');
 const { isMedicarePost, renderTpmoForAreas } = require('./lib/medicare-disclaimer');
+const { legalClaimWarnings } = require('./lib/legal-claims-lint');
 
 const ROOT = path.resolve(__dirname, '..');
 const BLOG_SRC = path.join(ROOT, 'src', 'blog');
@@ -139,6 +140,34 @@ function printedText(html) {
     .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
 }
 
+// ─── Ordered lists (BLOG-04) ────────────────
+// Consecutive "N. " lines become ONE <ol> (a single blank line between items is
+// allowed: loose lists), with start="N" when the first item is not 1. A blank
+// line is kept on both sides of the list so the paragraph pass never folds the
+// text around it into the list block, and never wraps the list in a <p>.
+function wrapOrderedLists(text) {
+  const lines = String(text).split('\n');
+  const out = [];
+  for (let i = 0; i < lines.length; i++) {
+    const m = /^(\d+)\. (.+)$/.exec(lines[i]);
+    if (!m) { out.push(lines[i]); continue; }
+    const items = [m[2]];
+    let j = i + 1;
+    while (j < lines.length) {
+      const n = /^\d+\. (.+)$/.exec(lines[j]);
+      if (n) { items.push(n[1]); j++; continue; }
+      if (lines[j] === '' && /^\d+\. /.test(lines[j + 1] || '')) { j++; continue; }
+      break;
+    }
+    const start = Number(m[1]);
+    if (out.length && out[out.length - 1] !== '') out.push('');
+    out.push(`<ol${start !== 1 ? ` start="${start}"` : ''}>\n${items.map((t) => `<li>${t}</li>`).join('\n')}\n</ol>`);
+    if (j < lines.length && lines[j] !== '') out.push('');
+    i = j - 1;
+  }
+  return out.join('\n');
+}
+
 // ─── Simple Markdown to HTML converter ──────
 function markdownToHtml(md) {
   let html = md
@@ -174,9 +203,9 @@ function markdownToHtml(md) {
     .replace(/\[(.+?)\]\((.+?)\)/g, (_m, text, url) => `<a href="${safeHref(url)}">${text}</a>`)
     // Unordered lists
     .replace(/^- (.+)$/gm, '<li>$1</li>')
-    .replace(/(<li>.*<\/li>\n?)+/g, (match) => `<ul>\n${match}</ul>\n`)
-    // Ordered lists
-    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, (match) => `<ul>\n${match}</ul>\n`);
+  // Ordered lists (BLOG-04): one <ol> per run of "N. " lines, never bare <li>.
+  html = wrapOrderedLists(html)
     // Paragraphs (lines not already wrapped in tags)
     .split('\n\n')
     .map(block => {
@@ -366,6 +395,9 @@ function postSources(meta) {
   return out;
 }
 
+// A YYYY-MM-DD date (the guard's DATE_RE is not exported).
+const BLOG_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
 // ─── Blog post HTML template ────────────────
 /**
  * @param {object} meta     the post's front matter (parseFrontMatter)
@@ -424,6 +456,13 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [], tpmo = TPMO_DATA } 
 
   const fmtDate = (d) => new Date(String(d).slice(0, 10) + 'T12:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   const dateFormatted = fmtDate(meta.date);
+  // BLOG-07: one modified date for the byline, Article dateModified and
+  // article:modified_time. It counts only when it is a real YYYY-MM-DD later
+  // than the publish date; otherwise all three carry the publish date and the
+  // byline prints no "Updated". Date-only, never an invented time.
+  const published = String(meta.date || '');
+  const modified = BLOG_DATE_RE.test(String(meta.modified || '')) && String(meta.modified) > published
+    ? String(meta.modified) : published;
   const writtenBy = byline
     ? `Written by <a href="/about/team.html#${authorSlug}" style="color:var(--cyan);text-decoration:none;">${esc(byline.name)}</a>${byline.title ? `, ${esc(byline.title)}` : ''}, ${esc(contentGuard.AGENCY_AUTHOR)}`
     : `Written by ${esc(contentGuard.AGENCY_AUTHOR)}`;
@@ -519,8 +558,8 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [], tpmo = TPMO_DATA } 
     "publisher": orgRef(),
     // Only an image the post itself carries (front matter), never the logo.
     ...(featuredImage ? { "image": [`${SITE_URL}${featuredImage}`] } : {}),
-    "datePublished": String(meta.date || ''),
-    "dateModified": String(meta.modified || meta.date || ''),
+    "datePublished": published,
+    "dateModified": modified,
     "description": String(meta.description || ''),
     ...(sources.length ? { "citation": sources.map((s) => s.url) } : {}),
   };
@@ -548,8 +587,8 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [], tpmo = TPMO_DATA } 
   <meta property="og:image:width" content="${ogImageW}">
   <meta property="og:image:height" content="${ogImageH}">
   <meta property="og:image:type" content="image/jpeg">
-  <meta property="article:published_time" content="${esc(meta.date)}">
-  <meta property="article:modified_time" content="${esc(meta.modified || meta.date)}">
+  <meta property="article:published_time" content="${esc(published)}">
+  <meta property="article:modified_time" content="${esc(modified)}">
   <meta property="article:author" content="${esc(byline ? byline.name : contentGuard.AGENCY_AUTHOR)}">
   <meta property="article:section" content="${esc(meta.category || 'insurance')}">
   ${tags.map(t => `<meta property="article:tag" content="${esc(t)}">`).join('\n  ')}
@@ -595,7 +634,9 @@ ${renderNav()}
         <span>|</span>${hasReview ? `
         <span>Reviewed by ${reviewerLink}${meta.reviewer_title ? `, ${esc(meta.reviewer_title)}` : ''} on ${esc(fmtDate(meta.reviewed_date))}</span>
         <span>|</span>` : ''}
-        <span>Published ${esc(dateFormatted)}</span>
+        <span>Published <time datetime="${esc(published)}">${esc(dateFormatted)}</time></span>${modified !== published ? `
+        <span>|</span>
+        <span>Updated <time datetime="${esc(modified)}">${esc(fmtDate(modified))}</time></span>` : ''}
         <span>|</span>
         <span>${esc(readingTime)}</span>
       </div>${tpmoHtml ? `
@@ -861,7 +902,7 @@ ${renderScripts()}
 // when this file is the program: `node scripts/generate-blog.js`, as
 // scripts/builders/blog-helpers.js runs it. (A top-level return is legal in a
 // CommonJS module.)
-module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, printedText, markdownToHtml, parseFrontMatter, extractFAQs, generateBlogPost, postSources, intakeHref, injectMidPostCTA };
+module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, printedText, markdownToHtml, wrapOrderedLists, parseFrontMatter, extractFAQs, generateBlogPost, postSources, intakeHref, injectMidPostCTA };
 if (require.main !== module) return;
 
 // ─── Build ──────────────────────────────────
@@ -1064,6 +1105,9 @@ if (fs.existsSync(BLOG_SRC)) {
         }
       }
       for (const w of wording) console.log(describeWordingWarning(meta.slug, w));
+      // Statute and penalty statements without a primary source (BLOG-02):
+      // flagged, never refused.
+      for (const w of legalClaimWarnings(decision.markdown)) console.log(`  ! ${meta.slug}: ${w}`);
       // author and author_title are never printed; say so when they disagree
       // with data/team.json (a new title, a member who left), so the front
       // matter can be brought in line. The post renders either way.

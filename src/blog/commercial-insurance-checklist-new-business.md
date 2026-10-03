@@ -6,10 +6,11 @@ author: Kelly McCallister
 author_slug: kelly-mccallister
 author_title: Client Care Specialist
 date: 2026-03-27
-modified: 2026-03-27
+modified: 2026-10-03
 category: commercial
 tags: [commercial-insurance, new-business, kentucky, checklist, small-business]
 status: published
+sources: [KRS 342.402 (court order to stop operating) | https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32497]
 ---
 
 You filed your LLC paperwork, opened a business bank account, and maybe even landed your first client. But have you thought about what happens if someone gets hurt on your property, an employee files a claim, or a client sues over a mistake?
@@ -48,7 +49,7 @@ This is where Kentucky law draws a hard line. If you have even a single employee
 
 Workers comp covers medical expenses and lost wages when an employee is injured on the job. It also protects you from lawsuits related to workplace injuries.
 
-Penalties for operating without workers comp in Kentucky are serious. The state can issue stop-work orders, and business owners can face personal liability for injury costs plus fines.
+Penalties for operating without workers comp in Kentucky are serious. The commissioner can ask a court to order the business to stop operating ([KRS 342.402](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32497)), and business owners can face personal liability for injury costs plus fines.
 
 Rates vary by industry. An office-based business might pay $0.20 per $100 of payroll, while a roofing contractor could pay $15 or more per $100. Your claims history and safety record also affect your premium.
 
