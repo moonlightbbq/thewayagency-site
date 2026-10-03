@@ -134,6 +134,8 @@ strong{font-weight:600}
 
 .nav__toggle{display:none;background:none;border:none;cursor:pointer;padding:var(--space-sm)}
 .nav__toggle span{display:block;width:24px;height:2px;background:var(--charcoal);margin:5px 0;transition:all var(--transition-base)}
+/* Menu call/text pair (scripts/builders/seo.js injectNavContact): mobile menu only, as in components.css */
+.nav__contact{display:none}
 
 @media(max-width:968px){
   .nav__toggle{display:block}
@@ -141,6 +143,10 @@ strong{font-weight:600}
   .nav__links--open{transform:translateX(0)}
   .nav__dropdown-menu{position:static;transform:none;opacity:1;visibility:visible;box-shadow:none;border:none;padding:0 0 0 var(--space-md);min-width:auto;display:none;grid-template-columns:1fr}
   .nav__dropdown--open .nav__dropdown-menu{display:grid}
+  .nav__contact{display:flex;gap:var(--space-sm);width:100%;margin-top:var(--space-sm)}
+  .nav__phone{display:flex;align-items:center;justify-content:center;gap:var(--space-sm);flex:1 1 auto;padding:12px 8px;font-size:var(--text-sm);font-weight:600;color:var(--navy);border:2px solid var(--border);border-radius:var(--border-radius);text-decoration:none;min-height:48px;white-space:nowrap}
+  .nav__phone:active{border-color:var(--navy);background:var(--light-bg)}
+  .nav__phone svg{flex-shrink:0}
 }
 
 /* ── Hero ── */
