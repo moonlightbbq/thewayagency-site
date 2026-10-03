@@ -224,6 +224,18 @@ body.nav-open{position:fixed;top:calc(var(--scroll-y,0) * -1);left:0;right:0;ove
   .footer > p:last-of-type{text-align:center;padding-left:var(--space-md);padding-right:var(--space-md)}
 }
 
+/* ── Internal-link blocks and hub proof (LOCAL-01, BLOG-03, LOCAL-05) ── */
+.link-block{margin-top:var(--space-2xl)}
+.link-block .link-list{list-style:none;padding:0;margin:var(--space-md) 0 0;display:flex;flex-wrap:wrap;gap:var(--space-sm) var(--space-lg)}
+.link-block .link-list li{margin:0}
+.hub-rating{font-weight:500;margin-bottom:var(--space-lg)}
+.hub-team{margin-bottom:var(--space-2xl)}
+.hub-team__list{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--space-lg);list-style:none;padding:0}
+.hub-team__person{display:flex;gap:var(--space-md);align-items:flex-start}
+.hub-team__photo{width:64px;height:64px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.hub-team__name,.hub-team__title,.hub-team__license{margin:0}
+.hub-team__license{font-size:var(--text-sm);color:var(--slate)}
+
 /* ── Product pages ── */
 .product-content{max-width:var(--max-width-narrow);margin:0 auto;padding:var(--space-section) var(--space-xl)}
 .product-content h2{margin-top:var(--space-2xl)}
