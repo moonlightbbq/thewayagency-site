@@ -31,13 +31,10 @@ const D10_EXEMPTIONS = [
   { page: 'privacy-notice.html', rule: 'unpaired', before: COMPLIANCE_PHONE_LINE, decision: 'D10 (awaits OA-18)', reason: 'compliance page <main> contact line; pairing needs a Version bump' },
 ];
 
-const TEMPORARY_EXEMPTIONS = [
-  // The giveaway page's <noscript> contact line. PR #66 (TRUST-09, giveaway
-  // ended) replaces that block with a paired "Call ... or Text ..." line, so this
-  // stream does not edit the page. Delete this entry once #66 is on main (the
-  // lint reports it as unused from then on).
-  { page: 'forrest-frank-2026.html', rule: 'unpaired', before: COMPLIANCE_PHONE_LINE, decision: 'PR #66', reason: 'replaced by the TRUST-09 giveaway-ended PR' },
-];
+// Entries for links another open PR already fixes; empty now that #66 (the
+// giveaway page's paired contact line) is on main. validate-build.js warns when
+// an entry stops matching, so stale ones get removed.
+const TEMPORARY_EXEMPTIONS = [];
 
 const DEFAULT_EXEMPTIONS = Object.freeze([...D10_EXEMPTIONS, ...TEMPORARY_EXEMPTIONS]);
 
