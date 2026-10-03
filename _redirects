@@ -95,6 +95,11 @@ https://thewayagency.com/* https://www.thewayagency.com/:splat 301!
 /post/fur-real-dont-let-vet-bills-bite-you /blog/pet-insurance-guide.html 301
 /post/is-earthquake-insurance-necessary /blog/earthquake-insurance.html 301
 
+# ─── Content consolidation 2026-10 (BLOG-05; single hop, extensionless targets; keep >= 1 year) ───
+# Row 1 (owner D4 row 1): the legacy workers' comp page merged into the 2026 keeper.
+/blog/workers-comp-kentucky /blog/workers-comp-requirements-kentucky-2026 301
+/blog/workers-comp-kentucky.html /blog/workers-comp-requirements-kentucky-2026 301
+
 # ─── Legacy URL cleanup (from GSC 404 audit, 2026-04) ───
 
 # Old Mount Washington micro-site → city hub

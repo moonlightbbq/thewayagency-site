@@ -39,7 +39,6 @@ const LEGACY_BLOG_PAGES = Object.freeze({
   'tornado-season.html': '4adec184232f1ac0e91c4608136afb4f51446a1ac25dc9066d5fcfd161f92434',
   'understanding-deductibles.html': '92131d45d970d377515caa79b8c295e94cc5423511002a22f7597540b745d680',
   'winter-storm.html': '6479db09b299e3536d19a571a2afdc861d6aa389694c87f58fdbddeb88dc6657',
-  'workers-comp-kentucky.html': '89d964e382b3de92c06caa440fe5ad5fe0f2cfb487abfd6b62fc7e7a3ffa2207',
 });
 
 /** sha256 hex of a page's text, CRLF read as LF. */
