@@ -10,8 +10,7 @@
       { "slug": "insurance-for-kentucky-bourbon-distilleries", "anchor": "Insurance for Kentucky bourbon distilleries" }
     ],
     "/insurance/mt-washington-ky": [
-      { "slug": "independent-vs-kentucky-farm-bureau-bullitt-county", "anchor": "Independent agent or Kentucky Farm Bureau in Bullitt County" },
-      { "slug": "best-auto-insurance-rates-mt-washington-ky", "anchor": "Auto insurance rates in Mt Washington" }
+      { "slug": "independent-vs-kentucky-farm-bureau-bullitt-county", "anchor": "Independent agent or Kentucky Farm Bureau in Bullitt County" }
     ],
     "/insurance/shepherdsville-ky": [
       { "slug": "independent-vs-kentucky-farm-bureau-bullitt-county", "anchor": "Independent agent or Kentucky Farm Bureau in Bullitt County" }
@@ -42,8 +41,7 @@
     ],
     "/personal/home": [
       { "slug": "homeowners-wont-cover-flooding", "anchor": "Why homeowners insurance does not cover flooding" },
-      { "slug": "replacement-cost-vs-actual-cash-value", "anchor": "Replacement cost vs. actual cash value" },
-      { "slug": "insurance-first-time-homebuyers-kentucky", "anchor": "Insurance for first-time homebuyers in Kentucky" }
+      { "slug": "replacement-cost-vs-actual-cash-value", "anchor": "Replacement cost vs. actual cash value" }
     ],
     "/personal/flood": [
       { "slug": "owensboro-flood-risk-neighborhood-fema-zones-2026", "anchor": "Owensboro flood risk by neighborhood" },
@@ -143,6 +141,8 @@
     "how-independent-agents-use-data-better-rates": "BLOG-05: retired into how-independent-agents-save-money",
     "what-is-ivans-insurance-data": "BLOG-05: noindexed agency-operations post",
     "insurance-tips-louisville-homeowners": "MKT-04 hub-to-post link held: the post says 'top-rated carriers' (TRUST-05) and 'save 10-15%' (TRUST-10, no numeric savings)",
+    "best-auto-insurance-rates-mt-washington-ky": "TRUST-10: the post says a discount 'can knock 10 to 20 percent off your auto premium' (no numeric savings) until the claims stream removes it",
+    "insurance-first-time-homebuyers-kentucky": "TRUST-10 and TRUST-05: the post says 'can save 5 to 25 percent' and 'top-rated insurance companies' until the claims stream removes them",
     "medicare-open-enrollment-2027": "D16: no Medicare links until the TRUST-01 TPMO statement is live",
     "medicare-enrollment-guide": "D16: no Medicare links until the TRUST-01 TPMO statement is live",
     "medicare-enrollment-guide-louisville-2026": "D16 and BLOG-05: Medicare; retires into medicare-enrollment-guide after AEP"
