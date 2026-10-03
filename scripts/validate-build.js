@@ -292,6 +292,40 @@ if (fs.existsSync(redirectsPath)) {
   if (conflicts === 0) pass(`${redirectSources.length} redirects, no conflicts`);
 }
 
+// 9b. Retired blog posts (BLOG-05; calendar status 'retired' with retired_to):
+// /blog/<slug> and /blog/<slug>.html each have exactly one 301, straight to
+// /blog/<keeper>; the keeper is built (a 200) and is not itself redirected
+// (single hop); the retired page is not built and is in no sitemap, feed or
+// index. Plain parsing: no dependencies.
+{
+  let retErrors = 0, retired = 0;
+  const rerr = (msg) => { error(msg); retErrors++; };
+  let cal = null;
+  try { cal = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content-calendar.json'), 'utf8')); } catch { cal = null; }
+  const rules = fs.existsSync(redirectsPath)
+    ? fs.readFileSync(redirectsPath, 'utf8').split('\n').map((l) => l.trim()).filter((l) => l && !l.startsWith('#')).map((l) => l.split(/\s+/))
+    : [];
+  const read = (rel) => (fs.existsSync(path.join(BUILD, rel)) ? fs.readFileSync(path.join(BUILD, rel), 'utf8') : '');
+  const lists = [['sitemap.xml', read('sitemap.xml')], ['blog/feed.xml', read('blog/feed.xml')], ['blog/index.html', read('blog/index.html')]];
+  for (const e of cal ? [...(cal.existing_posts || []), ...(cal.year1 || [])] : []) {
+    if (!e || e.status !== 'retired' || !e.retired_to) continue;
+    retired++;
+    const slug = String(e.slug), keeper = `/blog/${e.retired_to}`;
+    for (const from of [`/blog/${slug}`, `/blog/${slug}.html`]) {
+      const hits = rules.filter((r) => r[0] === from);
+      if (hits.length !== 1) { rerr(`Retired ${slug}: ${hits.length} redirect rules for ${from} (expected 1)`); continue; }
+      const [, to, code] = hits[0];
+      if (code !== '301' || to !== keeper) rerr(`Retired ${slug}: ${from} -> ${to} ${code} (expected ${keeper} 301)`);
+    }
+    if (rules.some((r) => r[0] === keeper || r[0] === `${keeper}.html`)) rerr(`Retired ${slug}: keeper ${keeper} is itself redirected (two hops)`);
+    if (!fs.existsSync(path.join(BUILD, 'blog', `${e.retired_to}.html`))) rerr(`Retired ${slug}: keeper ${keeper} is not built (no 200)`);
+    if (fs.existsSync(path.join(BUILD, 'blog', `${slug}.html`))) rerr(`Retired ${slug}: build/blog/${slug}.html still exists`);
+    const ref = new RegExp(`/blog/${slug}(?:\\.html)?(?=[<"'#?\\s]|$)`);
+    for (const [rel, text] of lists) if (ref.test(text)) rerr(`Retired ${slug}: still listed in ${rel}`);
+  }
+  if (retErrors === 0) pass(`Retired blog posts: ${retired}, each one 301 to a built keeper, none built or listed`);
+}
+
 // 10. Privacy guards (TRUST-08 / TRUST-12). Plain string and regex checks on the
 // built files: CI runs this on Node 18 without `npm ci`, so no dependencies.
 {

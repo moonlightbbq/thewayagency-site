@@ -64,7 +64,7 @@ An umbrella policy is broad, but it has limits:
 - **Contractual liability.** Obligations you assume under a contract are generally excluded.
 - **Workers compensation claims.** If you have household employees, your umbrella does not replace workers comp.
 
-To understand [how liability insurance works](/blog/what-is-liability-insurance.html) at a foundational level, read our guide on the topic.
+To understand [how much liability coverage you need](/blog/liability-limits-how-much-enough), read our guide on the topic.
 
 ## How much does umbrella insurance cost?
 

@@ -63,7 +63,7 @@ Understanding the boundaries is just as important as understanding the coverage:
 
 **Employee claims.** If an employee sues you for discrimination, harassment, or wrongful termination, that is an employment practices liability (EPLI) claim, which requires separate coverage.
 
-For a broader look at what liability insurance means and how it works, our [liability insurance explainer](/blog/what-is-liability-insurance.html) covers the basics.
+For a broader look at what liability insurance means and how it works, our guide to [how much liability coverage you need](/blog/liability-limits-how-much-enough) covers the basics.
 
 ## How general liability is structured
 

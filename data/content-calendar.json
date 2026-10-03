@@ -69,7 +69,9 @@
       "source": "html",
       "author": "Sheilia Royal",
       "author_slug": "sheilia-royal",
-      "status": "published"
+      "status": "retired",
+      "retired_to": "landlord-insurance",
+      "retired_on": "2026-10-03"
     },
     {
       "slug": "workers-comp-requirements-kentucky-2026",
@@ -222,7 +224,7 @@
       "target_product_page": "/personal/home.html",
       "target_location_pages": [],
       "secondary_internal_links": [
-        "/blog/home-vs-landlord-insurance.html",
+        "/blog/landlord-insurance",
         "/personal/umbrella.html"
       ],
       "related_cluster": "personal-home",
@@ -405,10 +407,13 @@
       "title": "How Independent Agents Use Data to Find You Better Insurance Rates",
       "description": "Independent agents don't just shop carriers — they use data analytics to match you with the right one.",
       "publish_date": "2026-03-28",
-      "status": "published",
+      "status": "retired",
+      "retired_to": "how-independent-agents-save-money",
+      "retired_on": "2026-10-03",
       "category": "general",
       "reviewer": "Sheilia Royal",
-      "reviewer_slug": "sheilia-royal"
+      "reviewer_slug": "sheilia-royal",
+      "primary_keyword": "how independent agents find better insurance rates"
     },
     {
       "slug": "what-is-ivans-insurance-data",
@@ -480,9 +485,11 @@
       "title": "Should You Bundle Home and Auto Insurance in Kentucky?",
       "description": "Bundling home and auto insurance can save 5-25% in Kentucky. Learn when bundling makes sense, when it doesn't, and how independent agents can mix carriers for the best deal.",
       "publish_date": "2026-03-01",
-      "status": "published",
+      "status": "retired",
+      "retired_to": "bundling-home-auto-insurance-savings",
+      "retired_on": "2026-10-03",
       "source": "html",
-      "primary_keyword": null,
+      "primary_keyword": "bundle home and auto insurance kentucky",
       "secondary_keywords": [],
       "target_product_page": null,
       "target_location_pages": [],
@@ -516,9 +523,11 @@
       "title": "Cyber Safety for Small Businesses: A Prevention Checklist",
       "description": "Small businesses are the #1 target for cyber attacks. Use this prevention checklist to protect your business from phishing, ransomware, and data breaches  -  and learn how cyber insurance fills the gaps.",
       "publish_date": "2024-09-15",
-      "status": "published",
+      "status": "retired",
+      "retired_to": "cyber-insurance-small-business-essentials",
+      "retired_on": "2026-10-03",
       "source": "html",
-      "primary_keyword": null,
+      "primary_keyword": "small business cyber safety checklist",
       "secondary_keywords": [],
       "target_product_page": null,
       "target_location_pages": [],
@@ -534,9 +543,11 @@
       "title": "Flood Insurance in the Ohio River Valley: What Homeowners Need to Know in 2026",
       "description": "Flood risk is real along the Ohio River from Louisville to Henderson. Learn about NFIP vs private flood insurance, flood zones, and what homeowners insurance won't cover.",
       "publish_date": "2026-03-27",
-      "status": "published",
+      "status": "retired",
+      "retired_to": "owensboro-flood-risk-neighborhood-fema-zones-2026",
+      "retired_on": "2026-10-03",
       "source": "markdown",
-      "primary_keyword": null,
+      "primary_keyword": "flood insurance ohio river valley",
       "secondary_keywords": [],
       "target_product_page": null,
       "target_location_pages": [],
@@ -627,9 +638,11 @@
       "title": "Auto Insurance for Mt. Washington Commuters: What I-65 Drivers Should Know",
       "description": "Auto insurance tips for Mt. Washington, KY drivers. I-65 commute risks, Kentucky minimum requirements, uninsured motorist coverage, and how to save on car insurance in Bullitt County.",
       "publish_date": "2026-03-26",
-      "status": "published",
+      "status": "retired",
+      "retired_to": "best-auto-insurance-rates-mt-washington-ky",
+      "retired_on": "2026-10-03",
       "source": "markdown",
-      "primary_keyword": null,
+      "primary_keyword": "mt washington commuter auto insurance",
       "secondary_keywords": [],
       "target_product_page": null,
       "target_location_pages": [
@@ -721,8 +734,7 @@
       "seasonality_window": null,
       "evergreen_or_seasonal": "evergreen",
       "refresh_cycle": "annual",
-      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed. DUPLICATE 2026-08-05: near-identical to its pair (\"How to Read Your Insurance Declarations Page\" -- A Complete Guide vs A Plain-Language Guide). Both are live and competing for the same query. Needs a canonical or a consolidation+redirect; not resolved automatically because redirecting a live URL is an SEO decision. Pair: how-to-read-declarations-page.",
-      "known_duplicate_of": "how-to-read-declarations-page"
+      "notes": "Backfilled 2026-08-05: published but absent from the calendar, so invisible to the queue scheduler's cannibalization and coverage scoring. Metadata read from the file; primary_keyword left null rather than guessed. DUPLICATE 2026-08-05: near-identical to its pair (\"How to Read Your Insurance Declarations Page\" -- A Complete Guide vs A Plain-Language Guide). Both are live and competing for the same query. Needs a canonical or a consolidation+redirect; not resolved automatically because redirecting a live URL is an SEO decision. Pair: how-to-read-declarations-page."
     },
     {
       "slug": "workers-comp-kentucky",
@@ -770,7 +782,7 @@
       ],
       "secondary_internal_links": [
         "/blog/after-car-accident-kentucky.html",
-        "/blog/bundling-home-auto.html",
+        "/blog/bundling-home-auto-insurance-savings",
         "/personal/umbrella.html"
       ],
       "related_cluster": "personal-auto",
@@ -874,10 +886,11 @@
       "canonical_priority": "secondary",
       "is_link_target": true,
       "receives_future_links": true,
-      "status": "published",
+      "status": "retired",
+      "retired_to": "understanding-your-insurance-declarations-page",
+      "retired_on": "2026-10-03",
       "source": "markdown",
-      "notes": "High link target — many future posts can reference this. DUPLICATE 2026-08-05: near-identical to its pair (\"How to Read Your Insurance Declarations Page\" -- A Complete Guide vs A Plain-Language Guide). Both are live and competing for the same query. Needs a canonical or a consolidation+redirect; not resolved automatically because redirecting a live URL is an SEO decision. Pair: understanding-your-insurance-declarations-page.",
-      "known_duplicate_of": "understanding-your-insurance-declarations-page"
+      "notes": "High link target — many future posts can reference this. DUPLICATE 2026-08-05: near-identical to its pair (\"How to Read Your Insurance Declarations Page\" -- A Complete Guide vs A Plain-Language Guide). Both are live and competing for the same query. Needs a canonical or a consolidation+redirect; not resolved automatically because redirecting a live URL is an SEO decision. Pair: understanding-your-insurance-declarations-page."
     },
     {
       "week": 4,
@@ -1034,7 +1047,9 @@
       "canonical_priority": "secondary",
       "is_link_target": true,
       "receives_future_links": true,
-      "status": "published",
+      "status": "retired",
+      "retired_to": "liability-limits-how-much-enough",
+      "retired_on": "2026-10-03",
       "source": "markdown",
       "notes": "Foundational educational post. Many future posts will link to this."
     },
@@ -1097,7 +1112,7 @@
       "secondary_internal_links": [
         "/personal/home.html",
         "/personal/auto.html",
-        "/blog/what-is-liability-insurance.html"
+        "/blog/liability-limits-how-much-enough"
       ],
       "related_cluster": "personal-protection",
       "related_future_posts": [],
@@ -1153,7 +1168,9 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "published",
+      "status": "retired",
+      "retired_to": "owensboro-flood-risk-neighborhood-fema-zones-2026",
+      "retired_on": "2026-10-03",
       "source": "markdown",
       "notes": "Supports both flood product page AND two geo pages. Careful not to compete with flood product page primary keyword.",
       "reviewer": "Jill Boone",
@@ -1267,7 +1284,7 @@
       "target_location_pages": [],
       "secondary_internal_links": [
         "/personal/home.html",
-        "/blog/ohio-river-flood-risk-henderson-owensboro.html"
+        "/blog/owensboro-flood-risk-neighborhood-fema-zones-2026"
       ],
       "related_cluster": "personal-protection",
       "related_future_posts": [],
@@ -1318,7 +1335,9 @@
       "canonical_priority": "tertiary",
       "is_link_target": true,
       "receives_future_links": true,
-      "status": "published",
+      "status": "retired",
+      "retired_to": "tornado-season",
+      "retired_on": "2026-10-03",
       "source": "markdown",
       "notes": "Strong trust/authority piece. Real-world example."
     },
@@ -1564,7 +1583,7 @@
       "secondary_internal_links": [
         "/commercial/commercial-property.html",
         "/commercial/professional-liability.html",
-        "/blog/what-is-liability-insurance.html"
+        "/blog/liability-limits-how-much-enough"
       ],
       "related_cluster": "commercial-core",
       "related_future_posts": [],
@@ -1787,7 +1806,7 @@
       "target_product_page": "/personal/home.html",
       "target_location_pages": [],
       "secondary_internal_links": [
-        "/blog/how-to-read-declarations-page.html",
+        "/blog/understanding-your-insurance-declarations-page",
         "/blog/understanding-deductibles.html",
         "/personal/flood.html"
       ],
@@ -2107,7 +2126,7 @@
       ],
       "secondary_internal_links": [
         "/blog/renters-insurance-landlord-policy-gaps.html",
-        "/blog/home-vs-landlord-insurance.html"
+        "/blog/landlord-insurance"
       ],
       "related_cluster": "personal-home",
       "conversion_goal": "quote-request",
@@ -2143,7 +2162,7 @@
       "target_product_page": null,
       "target_location_pages": [],
       "secondary_internal_links": [
-        "/blog/how-to-read-declarations-page.html",
+        "/blog/understanding-your-insurance-declarations-page",
         "/blog/how-to-compare-insurance-quotes.html",
         "/intake/"
       ],
@@ -2695,7 +2714,7 @@
       "target_location_pages": [],
       "secondary_internal_links": [
         "/blog/how-independent-agents-save-money.html",
-        "/blog/how-to-read-declarations-page.html",
+        "/blog/understanding-your-insurance-declarations-page",
         "/blog/understanding-deductibles.html"
       ],
       "related_cluster": "insurance-basics",
@@ -2731,7 +2750,7 @@
       "target_location_pages": [],
       "secondary_internal_links": [
         "/blog/understanding-deductibles.html",
-        "/blog/how-to-read-declarations-page.html",
+        "/blog/understanding-your-insurance-declarations-page",
         "/personal/home.html"
       ],
       "related_cluster": "insurance-basics",
@@ -2801,7 +2820,7 @@
       "target_product_page": null,
       "target_location_pages": [],
       "secondary_internal_links": [
-        "/blog/how-to-read-declarations-page.html",
+        "/blog/understanding-your-insurance-declarations-page",
         "/blog/understanding-deductibles.html",
         "/blog/replacement-cost-vs-actual-cash-value.html"
       ],
