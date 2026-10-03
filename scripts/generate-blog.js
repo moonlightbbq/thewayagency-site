@@ -304,7 +304,7 @@ function injectMidPostCTA(html, category, relatedPage) {
   const ctaHtml = `
       <div style="background:linear-gradient(135deg,var(--navy-dark),var(--navy));border-radius:var(--border-radius-lg);padding:var(--space-2xl);margin:var(--space-2xl) 0;text-align:center;">
         <p style="color:var(--white);font-size:var(--text-xl);font-weight:600;margin-bottom:var(--space-sm);">Need help with ${label}?</p>
-        <p style="color:rgba(255,255,255,0.75);font-size:var(--text-sm);font-weight:300;margin-bottom:var(--space-lg);">Get a free quote from an independent agent. We shop top-rated carriers for you.</p>
+        <p style="color:rgba(255,255,255,0.75);font-size:var(--text-sm);font-weight:300;margin-bottom:var(--space-lg);">Get a free quote from an independent agent. We compare the insurance companies we represent for you.</p>
         <a href="${href}" style="display:inline-block;padding:10px 24px;background:var(--cyan);color:var(--navy-dark);border-radius:var(--border-radius);font-size:var(--text-sm);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;text-decoration:none;">Get a Free Quote</a>
       </div>`;
 
