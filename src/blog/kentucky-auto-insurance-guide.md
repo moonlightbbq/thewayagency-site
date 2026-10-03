@@ -22,6 +22,7 @@ Kentucky requires security, usually an auto insurance policy, for liability and 
 | Basic reparation benefits (PIP) | Part of the required security; up to $10,000 per person per accident | [KRS 304.39-110(1)(c)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758), [KRS 304.39-020(2)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57854) |
 | PIP weekly limit for lost wages and similar losses | $500 a week for benefits issued or renewed on or after July 15, 2026; $200 a week before that | [KRS 304.39-130](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57855), [2026 Ky. Acts ch. 149](https://apps.legislature.ky.gov/law/acts/26RS/documents/0149.pdf) |
 | Right to sue for pain and suffering (unless you filed a rejection) | Only if medical expense benefits exceed $1,000, or for a fracture, permanent disfigurement, permanent injury and the other injuries the statute lists | [KRS 304.39-060(2)(b)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030) |
+| Rejecting the tort limitation | A written or electronic rejection on the Department of Insurance's form, filed with the department before an accident | [KRS 304.39-060(4)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030) |
 | Underinsured motorist coverage | Every insurer must make it available on request | [KRS 304.39-320(2)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=54466) |
 | Motorcycles | Liability is required; PIP is not part of the motorcycle requirement | [KRS 304.39-110(3)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758) |
 
@@ -35,13 +36,13 @@ Lost wages and the other weekly losses have their own cap. For benefits issued o
 
 ## What makes Kentucky a "choice no-fault" state
 
-In most states, you are either in a no-fault system or a tort (at-fault) system. Kentucky lets you choose.
+Kentucky's no-fault law limits the right to sue, and to be sued, for injuries from a motor vehicle accident. Anyone who registers, operates or uses a vehicle on Kentucky roads is deemed to accept those limits ([KRS 304.39-060(1)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)). You can keep your full tort rights instead by filing a rejection.
 
-**No-fault (the default):** Your own PIP coverage pays your medical bills and lost wages after an accident, regardless of who caused it. You can sue another driver for pain and suffering only if your medical expense benefits exceed $1,000, or the injury includes a fracture, permanent disfigurement, permanent injury within reasonable medical probability, permanent loss of bodily function, loss of a body member, or death ([KRS 304.39-060(2)(b)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)).
+**No-fault (the default):** PIP pays your economic loss after an accident, whoever caused it. You can sue another driver for pain and suffering only if your medical expense benefits exceed $1,000, or the injury includes a fracture, permanent disfigurement, permanent injury within reasonable medical probability, permanent loss of bodily function, loss of a body member, or death ([KRS 304.39-060(2)(b)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)).
 
-**Tort (you opt out of no-fault):** You reject PIP and rely entirely on the at-fault driver's liability coverage. This gives you the right to sue for any injury, but you lose the medical payment that PIP provides.
+**Rejecting the tort limitation:** You can refuse the limits on your tort rights by completing the Department of Insurance's rejection form, in writing or electronically, and filing it with the department before any accident it is to apply to ([KRS 304.39-060(4)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)). The rejection takes effect when it is filed and stays in effect until you revoke it in writing ([KRS 304.39-060(5)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)). With a rejection on file you keep your full tort rights and tort liabilities ([KRS 304.39-060(7)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)), and, except as the statutes provide, you cannot collect basic reparation benefits ([KRS 304.39-060(8)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)).
 
-Rejecting PIP changes both what you can recover and what others can recover from you. Talk with your agent before you decide.
+A rejection changes both what you can recover and what others can recover from you. Talk with your agent before you file one.
 
 ## Coverage beyond the minimums
 
@@ -97,9 +98,9 @@ Kentucky requires liability coverage of at least 25/50/25 ($25,000 for bodily in
 
 PIP pays economic loss from a motor vehicle injury, regardless of fault: medical expense (including up to $5,000 for funeral, cremation and burial), work loss, replacement services and survivors' losses, up to $10,000 per person per accident ([KRS 304.39-020](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57854)). Lost wages and similar losses are limited to $500 a week for benefits issued or renewed on or after July 15, 2026, and $200 a week for benefits issued or renewed before that date ([KRS 304.39-130](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57855), [2026 Ky. Acts ch. 149](https://apps.legislature.ky.gov/law/acts/26RS/documents/0149.pdf)).
 
-### FAQ: Can I reject PIP in Kentucky?
+### FAQ: Can I opt out of no-fault in Kentucky?
 
-Yes. Kentucky is a "choice no-fault" state, which means you can reject PIP coverage and opt into the tort system instead. You then lose the medical payment benefit PIP provides. Talk to your agent before making this decision.
+Yes. You can reject the no-fault limits on your tort rights by filing the Department of Insurance's rejection form with the department before an accident ([KRS 304.39-060(4)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)). You then keep your full right to sue and to be sued, and, except as the statutes provide, you cannot collect basic reparation benefits ([KRS 304.39-060(7), (8)](https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30030)). Talk to your agent before making this decision.
 
 ### FAQ: How much does auto insurance cost in Kentucky?
 
