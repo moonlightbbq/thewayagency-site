@@ -286,12 +286,15 @@ function generateTOC(html) {
 }
 
 // Extract the marketing product slug from a related_page path so the intake
-// pre-select fires on click. /personal/home.html → "home" → intake aliases
-// to "homeowners". Returns null when related_page is absent/general so the
-// CTA stays bare (no misleading pre-selection on multi-product posts).
+// pre-select fires on click. /personal/home (or the older /personal/home.html)
+// → "home" → intake aliases to "homeowners". Both forms are accepted: the page
+// prints the extensionless form (TECH-02) while post front matter and SAGE's
+// writer may still carry .html. Returns null when related_page is
+// absent/general so the CTA stays bare (no misleading pre-selection on
+// multi-product posts).
 function productSlugFromRelatedPage(relatedPage) {
   if (!relatedPage || relatedPage === 'null') return null;
-  const m = /\/(?:personal|commercial|life|health)\/([a-z0-9-]+)\.html$/i.exec(relatedPage);
+  const m = /\/(?:personal|commercial|life|health)\/([a-z0-9-]+)(?:\.html)?$/i.exec(relatedPage);
   return m ? m[1] : null;
 }
 
@@ -796,7 +799,7 @@ ${renderScripts()}
 // when this file is the program: `node scripts/generate-blog.js`, as
 // scripts/builders/blog-helpers.js runs it. (A top-level return is legal in a
 // CommonJS module.)
-module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, printedText, markdownToHtml, parseFrontMatter, extractFAQs, generateBlogPost };
+module.exports = { esc, ldJson, cdata, safeSlug, sitePath, safeHref, printedText, markdownToHtml, parseFrontMatter, extractFAQs, generateBlogPost, productSlugFromRelatedPage, intakeHref };
 if (require.main !== module) return;
 
 // ─── Build ──────────────────────────────────
