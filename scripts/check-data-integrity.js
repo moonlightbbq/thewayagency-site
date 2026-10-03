@@ -239,7 +239,7 @@ if (healthFacts) {
 // renders today (knowledge-base entries beyond the five FAQs a page shows) is
 // covered too.
 {
-  const { scanText } = require('./check-health-compliance');
+  const { scanText } = require('./lib/health-compliance');
   let scanned = 0;
   let found = 0;
   const visit = (v, file, where) => {

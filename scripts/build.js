@@ -294,7 +294,7 @@ console.log('  ✓ Legal pages clean (em dashes / anchors)');
 //      comparison claims, guaranty-association and undated annuity rates,
 //      1-800-MEDICARE as a tel: link, unresolved {{fact:...}} tokens.
 //      scripts/check-health-compliance.js lists every rule.
-const { checkHealthCompliance } = require('./check-health-compliance');
+const { checkHealthCompliance } = require('./lib/health-compliance');
 const healthGuard = checkHealthCompliance(BUILD, { tpmo });
 healthGuard.warnings.forEach((w) => console.log('  ! ' + w));
 if (healthGuard.problems.length) {
