@@ -7,6 +7,7 @@ const fs = require('fs');
 const path = require('path');
 // The agency reference for every JSON-LD block here (never a full agency node: SCHEMA-01, SCHEMA-02).
 const { orgRef } = require('../lib/entity');
+const { canonicalHref, pageUrl } = require('../lib/site-urls');
 // Navigation blocks rendered from data/internal-links.json (LOCAL-01, BLOG-03, TECH-01, MKT-04).
 const { renderGuides, renderLocalHelp, renderNearby, renderRelatedIndustries, renderIndustriesSection } = require('./internal-links');
 // Local proof modules; each renders nothing until verified data exists (LOCAL-05).
@@ -57,7 +58,7 @@ function renderBreadcrumbs(items) {
   // items: [{ name, url }] — last item has no url (current page)
   const htmlItems = items.map((item, i) => {
     if (i < items.length - 1) {
-      return `<a href="${item.url}">${item.name}</a>`;
+      return `<a href="${canonicalHref(item.url)}">${item.name}</a>`;
     }
     return `<span>${item.name}</span>`;
   }).join(' <span style="color:var(--gray);margin:0 4px;">›</span> ');
@@ -73,7 +74,7 @@ function renderBreadcrumbs(items) {
       "@type": "ListItem",
       "position": i + 1,
       "name": item.name,
-      ...(item.url ? { "item": `https://www.thewayagency.com${item.url}` } : {})
+      ...(item.url ? { "item": pageUrl(item.url) } : {})
     }))
   });
 
@@ -284,7 +285,7 @@ ${hiddenHtml}
                    data-1p-ignore data-lpignore="true" data-form-type="other">
             <button type="submit">Get Quote</button>
           </form>
-          <p style="font-size:11px;color:var(--slate,#64748b);margin-top:8px;text-align:center;">We never sell your data. <a href="/privacy.html" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
+          <p style="font-size:11px;color:var(--slate,#64748b);margin-top:8px;text-align:center;">We never sell your data. <a href="/privacy" style="color:inherit;text-decoration:underline;">Privacy Policy</a></p>
         </div>`;
 }
 
@@ -371,7 +372,7 @@ function generateHubPage(lineKey, ctx) {
   const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
 
   function productCard(p) {
-    return `          <a href="${p.url}" class="card" style="text-decoration:none;">
+    return `          <a href="${canonicalHref(p.url)}" class="card" style="text-decoration:none;">
             <h3 class="card__title">${p.name}</h3>
             <p class="card__text">${p.summary.split('.').slice(0, 2).join('.') + '.'}</p>
             <span class="card__link">Learn more ${arrowSvg}</span>
@@ -453,7 +454,7 @@ ${renderHead({
         "@type": "ListItem",
         "position": i + 1,
         "name": p.name,
-        "url": `https://www.thewayagency.com${p.url}`
+        "url": pageUrl(p.url)
       }))
     }, null, 2)}
   </script>
@@ -501,7 +502,7 @@ ${renderCTA({
     text: config.ctaText,
     buttons: [
       { href: `/intake/?line=${lineSlug}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
-      { href: '/contact.html', text: 'Request a Coverage Review', className: 'btn btn--outline-white btn--lg' },
+      { href: '/contact', text: 'Request a Coverage Review', className: 'btn btn--outline-white btn--lg' },
     ],
   }, office)}
   </main>
@@ -600,7 +601,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
   const relatedLinks = (product.related_products || []).map(rId => {
     const rp = allProducts.find(p => p.id === rId);
     if (!rp) return '';
-    return `<li><a href="${rp.url}"><strong>${rp.name}</strong></a>  -  ${rp.summary ? rp.summary.split('.')[0] + '.' : ''}</li>`;
+    return `<li><a href="${canonicalHref(rp.url)}"><strong>${rp.name}</strong></a>  -  ${rp.summary ? rp.summary.split('.')[0] + '.' : ''}</li>`;
   }).filter(Boolean).join('\n        ');
 
   const allLines = {
@@ -635,7 +636,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
         </div>
       </section>`;
 
-  const productUrl = `https://www.thewayagency.com${product.url.replace(/\.html$/, '')}`;
+  const productUrl = pageUrl(product.url);
   const serviceSchema = `<script type="application/ld+json">
   ${JSON.stringify({
     "@context": "https://schema.org",
@@ -669,10 +670,10 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
 ${renderHead({
     title: product.title_tag,
     description: product.meta_description || product.summary,
-    canonical: `https://www.thewayagency.com${product.url.replace(/\.html$/, '')}`,
+    canonical: pageUrl(product.url),
     ogTitle: product.title_tag,
     ogDescription: product.summary,
-    ogUrl: `https://www.thewayagency.com${product.url.replace(/\.html$/, '')}`,
+    ogUrl: pageUrl(product.url),
     schema: serviceSchema + `
   <script type="application/ld+json">
   ${breadcrumbs.schema}
@@ -718,7 +719,7 @@ ${renderCTA({
       text: "We'll listen, find the right carriers for your situation, and come back with clear options. No pressure.",
       buttons: [
         { href: `/intake/?product=${product.id}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
-        { href: '/contact.html', text: 'Request a Review', className: 'btn btn--outline-white btn--lg' },
+        { href: '/contact', text: 'Request a Review', className: 'btn btn--outline-white btn--lg' },
       ],
       contactMethods: true,
     }, office)}
@@ -1207,7 +1208,7 @@ function generateCarrierPage(carrier, line, ctx) {
   const productCards = linkedProducts.length > 0 ? `
         <h2>Coverage lines we place with ${carrier.name}</h2>
         <div class="grid grid--3" style="margin:var(--space-lg) 0 var(--space-2xl);">
-${linkedProducts.map(p => `          <a href="${p.url}" class="card" style="text-decoration:none;">
+${linkedProducts.map(p => `          <a href="${canonicalHref(p.url)}" class="card" style="text-decoration:none;">
             <h3 class="card__title" style="font-size:var(--text-lg);">${p.name}</h3>
             <span class="card__link">Learn more ${arrowSvg}</span>
           </a>`).join('\n')}
@@ -1275,7 +1276,7 @@ ${renderCTA({
       text: "Request a quote and we'll compare options from multiple carriers, including " + carrier.name + ".",
       buttons: [
         { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
-        { href: '/contact.html', text: 'Contact Us', className: 'btn btn--outline-white btn--lg' },
+        { href: '/contact', text: 'Contact Us', className: 'btn btn--outline-white btn--lg' },
       ],
       contactMethods: true,
     }, office)}
@@ -1319,7 +1320,7 @@ function generateCarriersIndex(carriers, ctx) {
 
   // Ratings are not printed (see generateCarrierPage); the card text is the
   // description's first sentence without cutting "U.S." short.
-  const featuredCards = featured.map(c => `          <a href="/carriers/${c.slug}.html" class="card" style="text-decoration:none;">
+  const featuredCards = featured.map(c => `          <a href="/carriers/${c.slug}" class="card" style="text-decoration:none;">
             <h3 class="card__title" style="font-size:var(--text-xl);">${c.name}</h3>
             <p class="card__text">${firstSentence(c.description)}</p>
             <span class="card__link">Learn more ${arrowSvg}</span>
@@ -1390,7 +1391,7 @@ ${renderCTA({
       text: 'Tell us what you need and we\'ll compare options from our full carrier lineup.',
       buttons: [
         { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
-        { href: '/contact.html', text: 'Contact Us', className: 'btn btn--outline-white btn--lg' },
+        { href: '/contact', text: 'Contact Us', className: 'btn btn--outline-white btn--lg' },
       ],
       contactMethods: true,
     }, office)}

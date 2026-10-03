@@ -10,6 +10,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { canonicalHref } = require('./lib/site-urls');
 
 const ROOT = path.resolve(__dirname, '..');
 const MONTH_NAMES = ['january', 'february', 'march', 'april', 'may', 'june',
@@ -389,11 +390,13 @@ if (seoData && products) {
   let xrefErrors = 0;
   const productSlugs = new Set();
   for (const [line, prods] of Object.entries(products)) {
-    for (const p of prods) { if (p.url) productSlugs.add(p.url); }
+    for (const p of prods) { if (p.url) productSlugs.add(canonicalHref(p.url)); }
   }
+  // seo.json keys keep their .html form (lookup keys SAGE reads); products.json
+  // urls are extensionless (TECH-02). Compare the served form of both.
   for (const urlPath of Object.keys(seoData.pages || {})) {
-    if (urlPath.match(/^\/(personal|commercial|life|health)\/[^/]+\.html$/)) {
-      if (!productSlugs.has(urlPath)) {
+    if (urlPath.match(/^\/(personal|commercial|life|health)\/[^/]+(?:\.html)?$/)) {
+      if (!productSlugs.has(canonicalHref(urlPath))) {
         warn(`seo.json references ${urlPath} but no matching product found`);
         xrefErrors++;
       }

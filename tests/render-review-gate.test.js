@@ -190,7 +190,7 @@ describe('generate-blog renders no review claim without a signed approval', () =
   test('an approval SAGE signed, for the bytes on disk, credits the reviewer before the publisher runs', () => {
     const html = site.page('test-approved-due');
     assert.ok(html, gen.stdout);
-    assert.match(html, new RegExp(`Reviewed by <a href="/about/team.html#${REVIEWER.slug}"[^>]*>${REVIEWER.name}</a>, ${REVIEWER.title} on December 23, 2025`));
+    assert.match(html, new RegExp(`Reviewed by <a href="/about/team#${REVIEWER.slug}"[^>]*>${REVIEWER.name}</a>, ${REVIEWER.title} on December 23, 2025`));
     assert.match(html, /"reviewedBy"/);
   });
 
@@ -505,7 +505,7 @@ describe('the page template encodes every front-matter value (generateBlogPost, 
     ]) {
       const html = render(meta);
       assert.doesNotMatch(html, /<span>Reviewed by/, JSON.stringify(meta));
-      assert.ok(!html.includes(`href="/about/team.html#${LICENSED_SLUG}"`), 'no link to the reviewer');
+      for (const form of ['/about/team.html#', '/about/team#']) assert.ok(!html.includes(`href="${form}${LICENSED_SLUG}"`), `no link to the reviewer (${form})`);
       assert.ok(!ldBlocks(html).some((b) => hasKeyDeep(b, 'reviewedBy')));
     }
   });
@@ -518,7 +518,7 @@ describe('the page template encodes every front-matter value (generateBlogPost, 
 
   test('contrast: a credit (what renderDecision passes only for a signed approval) prints the byline and reviewedBy', () => {
     const html = render({ ...base, reviewer: 'Test Reviewer C', reviewer_slug: LICENSED_SLUG, reviewer_title: 'Licensed Test Agent', reviewed_date: '2025-12-23' });
-    assert.match(bylineOf(html), new RegExp(`<span>Reviewed by <a href="/about/team.html#${LICENSED_SLUG}"[^>]*>Test Reviewer C</a>, Licensed Test Agent on December 23, 2025</span>`));
+    assert.match(bylineOf(html), new RegExp(`<span>Reviewed by <a href="/about/team#${LICENSED_SLUG}"[^>]*>Test Reviewer C</a>, Licensed Test Agent on December 23, 2025</span>`));
     // reviewedBy is a WebPage property (schema.org): it sits on the Article's mainEntityOfPage, never on the Article.
     assert.equal(ldBlocks(html)[0].reviewedBy, undefined);
     assert.deepEqual(ldBlocks(html)[0].mainEntityOfPage.reviewedBy, { '@type': 'Person', name: 'Test Reviewer C', '@id': `https://www.thewayagency.com/about/team#${LICENSED_SLUG}`, url: `https://www.thewayagency.com/about/team#${LICENSED_SLUG}` });
@@ -702,7 +702,7 @@ describe('fix round 4: no forged credit through the byline, any printed value or
       const gen = site.run('generate-blog.js');
       const html = site.page('test-r4-title');
       assert.ok(html, gen.stdout);
-      assert.match(bylineOf(html), new RegExp(`Reviewed by <a href="/about/team.html#${REVIEWER.slug}"[^>]*>${REVIEWER.name}</a>, ${REVIEWER.title} on December 23, 2025`));
+      assert.match(bylineOf(html), new RegExp(`Reviewed by <a href="/about/team#${REVIEWER.slug}"[^>]*>${REVIEWER.name}</a>, ${REVIEWER.title} on December 23, 2025`));
       assert.ok(warned(gen.stdout, 'test-r4-title'));
     } finally {
       site.done();
@@ -715,7 +715,7 @@ describe('fix round 4: no forged credit through the byline, any printed value or
       const gen = site.run('generate-blog.js');
       const html = site.page('test-r4-plain');
       assert.ok(html, gen.stdout);
-      assert.match(bylineOf(html), new RegExp(`Written by <a href="/about/team.html#${AUTHOR.slug}"[^>]*>${AUTHOR.name}</a>, ${AUTHOR.title}, The Way Agency`));
+      assert.match(bylineOf(html), new RegExp(`Written by <a href="/about/team#${AUTHOR.slug}"[^>]*>${AUTHOR.name}</a>, ${AUTHOR.title}, The Way Agency`));
       assert.match(bylineOf(html), /<span>6 min read<\/span>/);
       assert.doesNotMatch(bylineOf(html), /Reviewed by/);
       const feed = fs.readFileSync(path.join(site.tmp, 'build', 'blog', 'feed.xml'), 'utf8');
@@ -944,7 +944,7 @@ describe('fix round 5: a data/team.json edit never takes a post off the site', (
       assert.match(gen.stdout, /test-team-pub: the front-matter author_slug "test-author-q" names no data\/team\.json member; the byline prints The Way Agency/);
       assert.match(gen.stdout, /test-team-rev: the front-matter author_title is not the title data\/team\.json gives test-reviewer-c/);
       const index = fs.readFileSync(path.join(site.tmp, 'build', 'blog', 'index.html'), 'utf8');
-      for (const slug of ['test-team-pub', 'test-team-rev']) assert.ok(index.includes(`/blog/${slug}.html`), slug);
+      for (const slug of ['test-team-pub', 'test-team-rev']) assert.ok(index.includes(`href="/blog/${slug}"`), slug);
     } finally {
       site.done();
     }
@@ -1019,7 +1019,7 @@ describe('fix round 5: calendar titles and descriptions on the cards get the wor
       assert.equal(gen.status, 0, gen.stderr);
       const index = fs.readFileSync(path.join(site.tmp, 'build', 'blog', 'index.html'), 'utf8');
       assert.match(index, new RegExp(`>Reviewed by ${REVIEWER.name}: SYNTHETIC card<`), 'the calendar title, as written');
-      assert.ok(index.includes(`/blog/${legacySlug}.html`), 'the frozen page keeps its card');
+      assert.ok(index.includes(`href="/blog/${legacySlug}"`), 'the frozen page keeps its card');
       assert.match(index, />SYNTHETIC plain card</);
       assert.match(gen.stdout, new RegExp(`! test-card: review-credit wording in the calendar title: "Reviewed by ${REVIEWER.name}: SYNTHETIC card"`));
       assert.match(gen.stdout, new RegExp(`! test-card: review-credit wording in the calendar description: "Every answer here was checked by ${REVIEWER.name}\\."`));
