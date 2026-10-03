@@ -6,7 +6,7 @@ author: Sheilia Royal
 author_slug: sheilia-royal
 author_title: Agency Principal / Licensed Agent
 date: 2026-03-28
-modified: 2026-03-28
+modified: 2026-10-03
 category: general
 tags: [independent-agent, data-analytics, insurance-rates, technology, kentucky]
 status: published
@@ -47,16 +47,6 @@ Finding you a low price is not the same as finding you the right carrier. The ri
 Here is an example. Say you own a home in Bullitt County and you are shopping [homeowners insurance](/personal/home.html). Three carriers quote you within fifty dollars of each other. On price alone, it looks like a toss-up. But the data tells a different story: Carrier A recently increased rates in your zip code by eight percent at renewal. Carrier B has a strong appetite for homes in your area and has held rates flat for two years. Carrier C offers a slightly lower initial premium but has a high loss ratio in Kentucky, which means a rate hike is likely coming.
 
 We would recommend Carrier B. Not the absolute cheapest on day one, but the best fit over the life of the policy. That kind of recommendation only comes from looking at the data, not just the quote.
-
-## Real examples: how data found better coverage
-
-Data does not just save money. It uncovers opportunities that would be easy to miss.
-
-One example involves young homeowners. A couple in their late twenties buying their first home often gets quoted high premiums because they have thin insurance history. But we identified a carrier that launched a program for first-time homebuyers with credits for new roofs, updated electrical, and smart home devices. Because we were tracking new program rollouts, we placed several [first-time buyers](/personal/home.html) into that program at rates fifteen to twenty percent lower than other carriers were quoting.
-
-Another example involves [commercial general liability](/commercial/general-liability.html). A contractor came to us after getting a renewal with a thirty percent increase. The data showed his current carrier had experienced heavy losses in the contractor space and was raising rates across the board. We moved him to a carrier actively expanding their contractor book in Kentucky and got him better coverage at a lower premium than what he was paying before the increase.
-
-These are not unusual situations. They happen every week. The difference is whether your agent has the information to spot them.
 
 ## What this means for renewals
 

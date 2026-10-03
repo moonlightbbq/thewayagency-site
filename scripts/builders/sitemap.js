@@ -5,6 +5,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { NOINDEX_META_RE } = require('../lib/blog-noindex');
 
 function generateSitemap(BUILD, ctx) {
   const { products, landingData, seoData, portalPages, SRC, carriers } = ctx;
@@ -97,6 +98,8 @@ function generateSitemap(BUILD, ctx) {
   if (fs.existsSync(blogDir)) {
     for (const file of fs.readdirSync(blogDir)) {
       if (file.endsWith('.html') && file !== 'index.html') {
+        // A noindexed post (BLOG-08, `noindex: true`) is not listed.
+        if (NOINDEX_META_RE.test(fs.readFileSync(path.join(blogDir, file), 'utf8'))) continue;
         sitemapUrls.push({ url: `/blog/${file}`, priority: '0.5', freq: 'monthly' });
       }
     }

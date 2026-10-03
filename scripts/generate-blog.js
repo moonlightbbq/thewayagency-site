@@ -410,6 +410,9 @@ const BLOG_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
  *   tpmo: the data/medicare-tpmo.json record (a test passes a fixture); a
  *   Medicare post prints its statement under the byline when it is active.
  */
+// `noindex: true` (BLOG-08): robots meta here; left out of every list below.
+const { isNoindex, NOINDEX_META } = require('./lib/blog-noindex');
+
 function generateBlogPost(meta, bodyHtml, faqs, { team = [], tpmo = TPMO_DATA } = {}) {
   // Every front-matter value below is encoded where it lands (esc / ldJson);
   // see "Output encoding" above. Slugs and paths are validated, not escaped:
@@ -577,7 +580,8 @@ function generateBlogPost(meta, bodyHtml, faqs, { team = [], tpmo = TPMO_DATA } 
   <meta name="google-site-verification" content="UR_730X-tkdo6fvlzh_yGux9csokDdBhdEJANQAYlEo">
   <link rel="icon" href="/src/assets/images/favicon.png">
   <link rel="apple-touch-icon" href="/src/assets/images/apple-touch-icon.png">
-  <link rel="canonical" href="https://www.thewayagency.com/blog/${slug}">
+  <link rel="canonical" href="https://www.thewayagency.com/blog/${slug}">${isNoindex(meta) ? `
+  ${NOINDEX_META}` : ''}
   <meta property="og:title" content="${esc(meta.title)} | The Way Agency">
   <meta property="og:description" content="${esc(meta.description)}">
   <meta property="og:type" content="article">
@@ -1020,6 +1024,8 @@ const posts = [];
 // of that name is not kept), and why a post was not rendered.
 const renderedSlugs = new Set();
 const claimedSlugs = new Set();
+// Rendered with `noindex: true`: kept out of every list, the feed and the sitemap.
+const noindexSlugs = new Set();
 const notRendered = new Map();
 
 if (fs.existsSync(BLOG_SRC)) {
@@ -1126,6 +1132,7 @@ if (fs.existsSync(BLOG_SRC)) {
 
       fs.writeFileSync(path.join(BLOG_BUILD, `${meta.slug}.html`), html);
       renderedSlugs.add(meta.slug);
+      if (isNoindex(meta)) noindexSlugs.add(meta.slug);
       posts.push(meta);
       console.log(`  ✓ ${meta.slug}.html  -  "${meta.title}"`);
     }
@@ -1196,12 +1203,14 @@ const calendar = calendarEntries.calendar;
     return fs.existsSync(path.join(BLOG_BUILD, `${p.slug}.html`));
   });
   readyToPublish.sort((a, b) => new Date(b.publish_date) - new Date(a.publish_date));
-  const allPublishedFiltered = readyToPublish;
+  // Noindexed posts (BLOG-08) stay out of the index and Related Articles.
+  const allPublishedFiltered = readyToPublish.filter(p => !noindexSlugs.has(p.slug));
+  if (noindexSlugs.size) console.log(`  ~ noindex, left out of the index, Related Articles and the feed: ${[...noindexSlugs].sort().join(', ')}`);
 
   if (allPublishedFiltered.length > 0) {
     const indexHtml = generateBlogIndex(allPublishedFiltered, posts);
     fs.writeFileSync(path.join(BLOG_BUILD, 'index.html'), indexHtml);
-    console.log(`  ✓ blog/index.html (${allPublishedFiltered.length} posts, ${allPublished.length - allPublishedFiltered.length} scheduled)`);
+    console.log(`  ✓ blog/index.html (${allPublishedFiltered.length} posts, ${allPublished.length - allPublishedFiltered.length} scheduled or noindexed)`);
 
     // Inject "Related Articles" into each generated blog post (prefer same category)
     const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
@@ -1248,7 +1257,7 @@ const rssItems = [];
 // The rendered posts, with their own front matter (wording logged above).
 // This always was the feed: it read a block-scoped list from step 2 through
 // `typeof`, which is undefined out here, so calendar titles never reached it.
-const rssPosts = posts.map(m => ({ slug: m.slug, title: m.title, description: m.description || '', publish_date: m.date })).slice(0, 20);
+const rssPosts = posts.filter(m => !noindexSlugs.has(m.slug)).map(m => ({ slug: m.slug, title: m.title, description: m.description || '', publish_date: m.date })).slice(0, 20);
 // Build author/category map from posts metadata
 const postMetaMap = {};
 for (const m of posts) postMetaMap[m.slug] = m;

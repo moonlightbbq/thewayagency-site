@@ -104,6 +104,33 @@ if (fs.existsSync(sitemapPath)) {
   error('sitemap.xml not found');
 }
 
+// 3b. Noindexed blog posts (BLOG-08, `noindex: true`): listed nowhere. Not in
+// the sitemap, the feed, the 404 suggestions, and linked from no other built
+// page (the /blog/ index, Related Articles). Plain regex: no dependencies.
+{
+  const blogDir = path.join(BUILD, 'blog');
+  const NOINDEX = /<meta name="robots" content="[^"]*noindex/i;
+  const noindexed = fs.existsSync(blogDir)
+    ? fs.readdirSync(blogDir).filter((f) => f.endsWith('.html') && f !== 'index.html'
+      && NOINDEX.test(fs.readFileSync(path.join(blogDir, f), 'utf8'))).map((f) => f.slice(0, -'.html'.length))
+    : [];
+  let niErrors = 0;
+  const lists = ['sitemap.xml', 'blog/feed.xml', '404-suggestions.json']
+    .map((rel) => [rel, fs.existsSync(path.join(BUILD, rel)) ? fs.readFileSync(path.join(BUILD, rel), 'utf8') : '']);
+  for (const slug of noindexed) {
+    const ref = new RegExp(`/blog/${slug}(?:\\.html)?(?=[<"'#?\\s]|$)`);
+    for (const [rel, text] of lists) {
+      if (ref.test(text)) { error(`Noindexed blog/${slug}.html is listed in ${rel}`); niErrors++; }
+    }
+    const href = new RegExp(`href="(?:https://www\\.thewayagency\\.com)?/blog/${slug}(?:\\.html)?[#?"]`);
+    for (const file of htmlFiles) {
+      if (path.basename(file) === `${slug}.html` && path.dirname(file) === blogDir) continue;
+      if (href.test(fs.readFileSync(file, 'utf8'))) { error(`Noindexed blog/${slug}.html is linked from ${path.relative(BUILD, file)}`); niErrors++; }
+    }
+  }
+  if (niErrors === 0) pass(`Noindexed blog posts: ${noindexed.length}, none in the sitemap, feed, 404 suggestions or any list`);
+}
+
 // 4. No duplicate titles
 const titles = {};
 for (const file of htmlFiles) {
