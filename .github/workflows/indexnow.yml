@@ -1,0 +1,98 @@
+name: IndexNow (changed URLs after production deploy)
+
+# AEO-02. Tells Bing and the other IndexNow engines which URLs changed, once
+# Cloudflare Pages production serves them. Never runs from scripts/build.js
+# (that runs on every local, CI and preview build, before anything is live).
+#
+# How a run decides what to submit:
+#   1. Wait until https://www.thewayagency.com/version.json reports this commit
+#      (or a later one). Scheduled runs skip the wait and use whatever is live.
+#   2. Read the last commit a previous successful run recorded (artifact
+#      "indexnow-state"). No record yet = record the live commit as the baseline
+#      and submit nothing (IndexNow asks sites not to submit pre-setup changes).
+#   3. If the range touched build inputs, build both commits and list the
+#      sitemap URLs whose built page differs, plus URLs dropped from the sitemap.
+#   4. Submit them, only when the repository variable INDEXNOW_ENABLED is 'true'
+#      (owner switch, set after Bing Webmaster Tools verification). Otherwise the
+#      URLs are logged as a dry run.
+#   5. Record the live commit for the next run.
+#
+# Blog publishes are pushed by publish-blog.yml with GITHUB_TOKEN, which starts
+# no push-triggered workflow, so this also runs when that workflow completes and
+# once a day as a catch-up. A missed or failed run loses nothing: the next run's
+# range starts at the last recorded commit.
+
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ['Publish Scheduled Blog Posts']
+    types: [completed]
+  schedule:
+    - cron: '30 12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: indexnow
+  cancel-in-progress: false
+
+jobs:
+  indexnow:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Wait for production to serve this commit
+        if: github.event_name != 'schedule'
+        run: node scripts/indexnow.js wait --sha "$(git rev-parse HEAD)" --timeout-s 1800
+
+      - name: Last recorded commit
+        id: state
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          run_id=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow indexnow.yml --status success --limit 1 \
+            --json databaseId --jq '.[0].databaseId // empty')
+          base=""
+          if [ -n "$run_id" ] && gh run download "$run_id" --repo "$GITHUB_REPOSITORY" -n indexnow-state -D "$RUNNER_TEMP/prev"; then
+            base=$(tr -cd '0-9a-f' < "$RUNNER_TEMP/prev/last-sha")
+          fi
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "last recorded commit: ${base:-none}"
+
+      - name: Live commit
+        id: live
+        run: |
+          set -o pipefail
+          echo "sha=$(node scripts/indexnow.js live)" >> "$GITHUB_OUTPUT"
+
+      - name: Changed URLs
+        run: |
+          node scripts/indexnow.js changed --base "${{ steps.state.outputs.base }}" \
+            --head "${{ steps.live.outputs.sha }}" --out "$RUNNER_TEMP/indexnow-urls.txt"
+
+      - name: Submit to IndexNow
+        run: node scripts/indexnow.js submit --file "$RUNNER_TEMP/indexnow-urls.txt" ${{ vars.INDEXNOW_ENABLED == 'true' && ' ' || '--dry-run' }}
+
+      - name: Record the live commit
+        run: |
+          mkdir -p "$RUNNER_TEMP/state"
+          echo "${{ steps.live.outputs.sha }}" > "$RUNNER_TEMP/state/last-sha"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: indexnow-state
+          path: ${{ runner.temp }}/state/last-sha
+          retention-days: 90
