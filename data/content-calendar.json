@@ -2830,6 +2830,183 @@
       "reviewer_email": "audrey@thewayagency.com",
       "reviewer_slug": "audrey-lillpop",
       "review_sent_date": "2026-10-03"
+    },
+    {
+      "publish_date": "2026-10-14",
+      "title": "Small Business Health Insurance in Kentucky: Options for Fewer Than 10 Employees",
+      "slug": "small-business-health-insurance-kentucky-under-10-employees",
+      "description": "A practical breakdown of every health coverage option available to Kentucky businesses with fewer than 10 employees, including SHOP marketplace access, QSEHRA, ICHRA, and the Small Business Health Care Tax Credit.",
+      "pillar": "product",
+      "topic_type": "guide",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "primary_keyword": "health insurance small business less than 10 employees kentucky",
+      "secondary_keywords": [
+        "small group health insurance kentucky",
+        "QSEHRA kentucky small business",
+        "ICHRA kentucky employer",
+        "kynect SHOP small business",
+        "small business health care tax credit kentucky"
+      ],
+      "target_product_page": "/health/group-health.html",
+      "target_location_pages": [
+        "/insurance/mt-washington-ky.html",
+        "/insurance/owensboro-ky.html"
+      ],
+      "secondary_internal_links": [
+        "/health/group-health.html",
+        "/commercial/workers-compensation.html",
+        "/blog/group-health-insurance-small-business-kentucky",
+        "/insurance/mt-washington-ky.html",
+        "/insurance/owensboro-ky.html"
+      ],
+      "related_cluster": "commercial-workforce",
+      "conversion_goal": "consultation",
+      "evergreen_or_seasonal": "evergreen",
+      "seasonality_window": null,
+      "refresh_cycle": "annual",
+      "page_role": "supporting",
+      "is_link_target": false,
+      "receives_future_links": true,
+      "status": "planned",
+      "source": "queue-lock",
+      "locked_at": "2026-10-03",
+      "notes": "From topic research task 604dcd9f-1acf-4e11-b37d-e2661ee4a50c (2026-10-02). Its automated quality check failed on a judge input cap, so the topics never reached the backlog; the owner reviewed the six proposals and approved this one directly on 2026-10-03. Seasonality set to year-round (research tagged it medicare-enrollment, which does not fit a small-group health topic). Overlaps the live group-health-insurance-small-business-kentucky post in subject; keep this one focused on groups under 10 employees.",
+      "research_brief": {
+        "demand_evidence": "The query 'health insurance for small business with less than 10 employees' appears in the dossier's top performers section at position 1.0 with a 100% CTR, indicating the site has already served this intent. This is a strong signal to expand the cluster with a dedicated, long-form guide. The planned 'group-health-insurance-small-business-kentucky' post targets the general 'group health insurance small business kentucky' keyword but does not specifically address the sub-10-employee context, which has distinct product eligibility rules (QSEHRA maximum benefit caps, SHOP tax credit threshold at fewer than 25 FTE, and the full-credit threshold at fewer than 10 FTE). These are different enough to justify a separate post.",
+        "serp_landscape": "Page 1 is owned by PeopleKeep, forhealthinsurance.com, eHealthInsurance, Anthem, and Kentuckiana Insurance Group. National platforms dominate. The kynect SHOP marketplace angle and Kentucky-specific carrier availability (Anthem Blue Cross Blue Shield as the primary 2026 SHOP carrier per forhealthinsurance.com) are present in national guides but the nuanced under-10-employee tax credit rules (full credit at fewer than 10 FTE averaging under $27,000 per year) are either missing or buried. No local Kentucky agent page ranks on page 1 for this query family.",
+        "differentiation_angle": "A post that leads with the SPECIFIC answer that businesses with fewer than 10 employees and average wages under $27,000 per year may qualify for the FULL Small Business Health Care Tax Credit (worth up to 50% of premiums paid through kynect SHOP), then walks through the QSEHRA and ICHRA alternatives for businesses that do not meet SHOP minimums, with Kentucky carrier details (Anthem, WellCare), will be the only result that directly answers the sub-10-employee question with Kentucky-specific program names, thresholds, and local agent guidance.",
+        "direct_answer_target": "Kentucky businesses with fewer than 10 employees are not required to offer health insurance, but several affordable options exist. The kynect SHOP marketplace lets businesses with 1 to 50 employees access Anthem Blue Cross Blue Shield group plans, and businesses with fewer than 25 employees averaging under roughly $65,000 in wages may qualify for a federal tax credit worth up to 50 percent of premiums paid. Businesses too small for group coverage can use a QSEHRA or ICHRA to reimburse employees for individual plans tax-free.",
+        "questions_to_answer": [
+          "Does a small business with fewer than 10 employees have to offer health insurance in Kentucky?",
+          "What is the SHOP marketplace and how does my business qualify in Kentucky?",
+          "What is a QSEHRA and how is it different from a group health plan?",
+          "How much is the Small Business Health Care Tax Credit worth in Kentucky?",
+          "Can I reimburse employees for their own health insurance instead of buying a group plan?",
+          "Which health insurance carriers serve small businesses in Kentucky in 2026?",
+          "What is the average cost of group health insurance per employee in Kentucky?"
+        ],
+        "entities_to_cover": [
+          "kynect SHOP marketplace",
+          "Small Business Health Care Tax Credit (ACA)",
+          "QSEHRA (Qualified Small Employer Health Reimbursement Arrangement)",
+          "ICHRA (Individual Coverage Health Reimbursement Arrangement)",
+          "Anthem Blue Cross Blue Shield (primary 2026 SHOP carrier in KY)",
+          "WellCare (secondary carrier)",
+          "Kentucky employer mandate (none below 50 FTE)",
+          "ACA employer mandate (50+ FTE only)",
+          "minimum essential coverage (MEC)",
+          "Kentucky Department of Insurance"
+        ],
+        "local_angle": "Small businesses along the I-65 corridor in Bullitt County and in Owensboro compete with Louisville and Evansville employers for workers. Offering even a modest health benefit through a QSEHRA or SHOP plan is a competitive advantage in the Shepherdsville and Mt. Washington labor market, where new businesses are forming alongside the residential construction boom. The Way Agency can act as a licensed navigator for kynect SHOP and help owners compare group and HRA options without steering them to a single carrier.",
+        "recommended_schema": [
+          "FAQPage",
+          "Article"
+        ],
+        "internal_links": [
+          "/health/group-health.html",
+          "/commercial/workers-compensation.html",
+          "/blog/group-health-insurance-small-business-kentucky",
+          "/insurance/mt-washington-ky.html",
+          "/insurance/owensboro-ky.html"
+        ],
+        "sources": [
+          "https://www.forhealthinsurance.com/kentucky-small-business-health-insurance/",
+          "https://trustedquotes.org/small-business-health-insurance-kentucky.html",
+          "https://www.peoplekeep.com/resources/small-business-health-insurance-in-kentucky",
+          "https://www.ehealthinsurance.com/kentucky-employer-health-insurance",
+          "https://www.forhealthinsurance.com/small-business-health-insurance/"
+        ]
+      }
+    },
+    {
+      "publish_date": "2026-10-17",
+      "title": "Home Insurance for Shepherdsville Homeowners: A Bullitt County Rate Guide",
+      "slug": "home-insurance-shepherdsville-ky-bullitt-county",
+      "description": "A Shepherdsville-specific home insurance guide covering what homeowners in Bullitt County pay in 2026, what new construction neighborhoods need to know, and how an independent agent shops more carriers than Farm Bureau or State Farm alone.",
+      "pillar": "local",
+      "topic_type": "local-guide",
+      "search_intent": "transactional",
+      "funnel_stage": "bottom",
+      "primary_keyword": "home insurance shepherdsville ky",
+      "secondary_keywords": [
+        "shepherdsville ky homeowners insurance",
+        "bullitt county home insurance rates",
+        "home insurance shepherdsville kentucky 2026",
+        "insurance agents shepherdsville ky"
+      ],
+      "target_product_page": "/personal/home.html",
+      "target_location_pages": [
+        "/insurance/shepherdsville-ky.html",
+        "/insurance/mt-washington-ky.html"
+      ],
+      "secondary_internal_links": [
+        "/insurance/shepherdsville-ky.html",
+        "/personal/home.html",
+        "/insurance/mt-washington-ky.html",
+        "/blog/mt-washington-home-insurance",
+        "/blog/replacement-cost-vs-actual-cash-value",
+        "/blog/independent-vs-kentucky-farm-bureau-bullitt-county"
+      ],
+      "related_cluster": "kentucky-local",
+      "conversion_goal": "quote-request",
+      "evergreen_or_seasonal": "seasonal",
+      "seasonality_window": "winter-prep",
+      "refresh_cycle": "annual",
+      "page_role": "seasonal",
+      "is_link_target": false,
+      "receives_future_links": true,
+      "status": "planned",
+      "source": "queue-lock",
+      "locked_at": "2026-10-03",
+      "notes": "From topic research task 604dcd9f-1acf-4e11-b37d-e2661ee4a50c (2026-10-02). Its automated quality check failed on a judge input cap, so the topics never reached the backlog; the owner reviewed the six proposals and approved this one directly on 2026-10-03. Overlaps kentucky-home-insurance-rates-rising-2026 in subject; its local rate figures in the research are dated, so use 2026 statewide figures.",
+      "research_brief": {
+        "demand_evidence": "The dossier shows the zipcode '40165' (Shepherdsville's primary ZIP) at position 8.0 with 100% CTR, signaling the site already gets found for this geographic intent. Live SERP for Shepherdsville home insurance is dominated by lead-generation tools (vhomeinsurance.com, gethomeinsurancequotes.com with outdated rate data), Kentucky Farm Bureau agent pages (Cheryl Day, North Agency), and a State Farm agent page. One local independent agency, Kentucky Bred Insurance, has a Shepherdsville home insurance post but is not in Bullitt County and presents thin content. The site's existing Shepherdsville location page gives domain authority for a supporting blog post.",
+        "serp_landscape": "Page 1 features: vhomeinsurance.com (stale rate data, no agent voice), gethomeinsurancequotes.com (quote aggregator, outdated $998 average), Kentucky Farm Bureau's Cheryl Day agent page (captive, biased toward one carrier), a State Farm agent page, kybredinsurance.com (thin, out-of-area agency), and Yellow Pages. No comprehensive, updated, independent-agent-authored Shepherdsville home insurance guide exists on page 1. This is an open door for a local agency with the existing Shepherdsville location page to anchor a blog post.",
+        "differentiation_angle": "A post that cites current 2026 rate benchmarks (the statewide average is $4,471 per year per Insurance.com, compared to what an independent agent can often find for Shepherdsville's ZIP code), addresses the specific new construction considerations in Mallard Lake, Wray Estates, and Wildwoods subdivisions (replacement cost accuracy on new builds), explains wind and hail percentage deductibles that have replaced the traditional flat $1,000 deductible across most Kentucky carriers, and positions The Way Agency's multi-carrier access against the captive KFB and State Farm agents on page 1 will win on both relevance and local trust.",
+        "direct_answer_target": "Home insurance in Shepherdsville, KY costs roughly $800 to $1,300 per year for an average home, though 2026 statewide rate increases mean older homes and those with aging roofs may pay significantly more. Bullitt County homeowners can often lower their premium by shopping across multiple carriers, a task independent agents handle without charging extra. New construction in Shepherdsville requires special attention to replacement cost accuracy and percentage wind and hail deductibles.",
+        "questions_to_answer": [
+          "How much is home insurance in Shepherdsville, KY?",
+          "Is Kentucky Farm Bureau the best option for Bullitt County homeowners?",
+          "What does a wind and hail deductible mean for a Shepherdsville homeowner?",
+          "Does new construction in Shepherdsville need a different type of home insurance?",
+          "Can I shop multiple carriers for home insurance in Shepherdsville?",
+          "How does my Bullitt County ZIP code affect my home insurance rate?",
+          "What local agents offer home insurance in Shepherdsville?"
+        ],
+        "entities_to_cover": [
+          "Bullitt County new construction neighborhoods (Mallard Lake, Wray Estates, Wildwoods)",
+          "Kentucky Farm Bureau (captive comparison)",
+          "State Farm (captive comparison)",
+          "wind and hail percentage deductible (replacing flat $1,000 deductible)",
+          "replacement cost vs actual cash value (critical for new construction)",
+          "roof age surcharge (15 to 20 year old roofs)",
+          "The Way Agency location page /insurance/shepherdsville-ky.html",
+          "40165 ZIP code",
+          "independent agent multi-carrier advantage",
+          "Kentucky FAIR Plan (last resort for uninsurable homes)"
+        ],
+        "local_angle": "Shepherdsville is Bullitt County's county seat and one of the fastest-growing communities in the Louisville metro area. Active subdivisions (Mallard Lake, Wray Estates, River Crest) mean many first-time Shepherdsville homeowners are setting up insurance on brand-new builds in 2026, often without understanding that the builder's risk policy expires at closing. The Way Agency, based in neighboring Mt. Washington, is the closest independent agency to this market and can serve as a genuine neighbor-expert rather than a call center.",
+        "recommended_schema": [
+          "FAQPage",
+          "Article"
+        ],
+        "internal_links": [
+          "/insurance/shepherdsville-ky.html",
+          "/personal/home.html",
+          "/insurance/mt-washington-ky.html",
+          "/blog/mt-washington-home-insurance",
+          "/blog/replacement-cost-vs-actual-cash-value",
+          "/blog/independent-vs-kentucky-farm-bureau-bullitt-county"
+        ],
+        "sources": [
+          "https://vhomeinsurance.com/shepherdsville-ky-home-insurance-hi18182/",
+          "https://www.louisvillehomesfast.com/louisville-ky-new-construction/area-11-shepherdsville-bullitt-county/",
+          "https://kybredinsurance.com/shepherdsville/home-insurance-in-shepherdsville-ky/",
+          "https://www.eliteriskagent.com/blog/average-cost-homeowners-insurance-kentucky",
+          "https://www.lendingtree.com/home-insurance/homeowners-insurance-kentucky/"
+        ]
+      }
     }
   ],
   "slots": [
@@ -2957,16 +3134,16 @@
     },
     {
       "date": "2026-10-14",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
+      "state": "locked",
+      "locked_slug": "small-business-health-insurance-kentucky-under-10-employees",
+      "locked_at": "2026-10-03",
       "reserved_at": "2026-09-16"
     },
     {
       "date": "2026-10-17",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
+      "state": "locked",
+      "locked_slug": "home-insurance-shepherdsville-ky-bullitt-county",
+      "locked_at": "2026-10-03",
       "reserved_at": "2026-09-19"
     },
     {
@@ -2989,6 +3166,13 @@
       "locked_slug": null,
       "locked_at": null,
       "reserved_at": "2026-09-30"
+    },
+    {
+      "date": "2026-10-31",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-10-03"
     }
   ],
   "coverage_targets": {
