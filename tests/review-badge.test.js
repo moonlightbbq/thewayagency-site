@@ -86,6 +86,15 @@ describe('renderReviewBadge', () => {
       assert.match(html, new RegExp(`review-badge--${variant}`));
     });
   }
+  test('inline: a compact "<rating> on Google" line linking to the listing, with no "Leave a review"', () => {
+    const html = renderReviewBadge('inline', googleRating(FRESH, NOW));
+    const a = listingAnchor(html);
+    assert.equal(a.href, LISTING);
+    assert.match(a.text, /^5\.0 on Google (&#9733;){5} &middot; 31 reviews$/);
+    assert.match(html, /review-badge--inline/);
+    assert.doesNotMatch(html, /review-badge__write|Leave a review|\/review"/);
+    assert.equal(renderReviewBadge('inline', null), '');
+  });
   test('stars follow the rating', () => {
     const stars = (rating) => (renderReviewBadge('footer', googleRating({ ...FRESH, google_rating: rating }, NOW)).match(/aria-hidden="true" style="color:#FBBC05;">([^<]*)</) || [])[1];
     assert.equal(stars('5.0'), '&#9733;'.repeat(5));
@@ -122,6 +131,18 @@ describe('renderFooter and the handcrafted-page markers', () => {
     assert.throws(() => renderReviewBadgeMarkers('<!--render:review-badge:footer--><!--/render:review-badge:section-->', g), /opens "footer" but closes "section"/);
     assert.throws(() => renderReviewBadgeMarkers('<!--render:review-badge:aside--><!--/render:review-badge:aside-->', g), /unknown variant/);
     assert.throws(() => renderReviewBadgeMarkers('<!--render:review-badge:footer-->', g), /unpaired/);
+  });
+  test('/intake/ step 4: the rating line follows the data (live count, on Google, listing link) and is gone when stale', () => {
+    const src = read('src/intake.html');
+    const step4 = (html) => html.slice(html.indexOf('<div id="step-4"'), html.indexOf('<!-- Confirmation -->'));
+    assert.equal((step4(src).match(/<!--render:review-badge:inline--><!--\/render:review-badge:inline-->/g) || []).length, 1, 'step 4 marks the inline badge');
+    assert.doesNotMatch(step4(src), /Google reviews|&#9733;|\b\d+ reviews/, 'no hand-typed rating left in step 4');
+    const fresh = step4(renderReviewBadgeMarkers(src, googleRating(FRESH, NOW)));
+    assert.equal(listingAnchor(fresh).href, LISTING);
+    assert.match(fresh, /5\.0 on Google[\s\S]*&middot; 31 reviews/);
+    assert.doesNotMatch(fresh, /Leave a review/);
+    const stale = step4(renderReviewBadgeMarkers(src, googleRating({ ...FRESH, google_reviews_last_updated: '2026-08-01T00:00:00Z' }, NOW)));
+    assert.doesNotMatch(stale, /&#9733;|on Google|reviews|review-badge/);
   });
   test('injectVersion fills the markers of a handcrafted page', () => {
     const inject = createInjectVersion({ buildVersion: 't', gitInfo: { branch: 'b' }, buildDate: 'd', reviews: googleRating(FRESH, NOW), renderHead_GTM: () => '', renderBody_GTM: () => '' });

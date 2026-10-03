@@ -20,7 +20,9 @@
  *
  * Handcrafted pages carry the empty marker pair
  *   <!--render:review-badge:footer--><!--/render:review-badge:footer-->
- * (or :section) where the badge goes; renderReviewBadgeMarkers() fills it at
+ * (or :section, or :inline for a compact line inside a form, such as the
+ * /intake/ step-4 rating, which links to the listing but carries no "Leave a
+ * review" link) where the badge goes; renderReviewBadgeMarkers() fills it at
  * build time, so a data change never edits a page's source (the six compliance
  * pages keep their bytes inside and outside <main>).
  */
@@ -28,7 +30,7 @@
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const RATING_MAX_AGE_DAYS = 30;
-const VARIANTS = Object.freeze(['footer', 'section']);
+const VARIANTS = Object.freeze(['footer', 'section', 'inline']);
 
 function esc(str) {
   if (str === undefined || str === null) return '';
@@ -95,10 +97,20 @@ const STYLE = {
     write: 'color:var(--navy);text-decoration:underline;',
     icon: 18,
   },
+  // A compact line inside a form (the /intake/ step-4 rating): no pill, no
+  // "Leave a review" link in the middle of the quote form.
+  inline: {
+    wrap: 'display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;margin:16px 0 4px;font-size:12px;',
+    listing: 'display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--slate);',
+    strong: 'color:var(--navy);',
+    count: 'color:var(--slate);',
+    write: '',
+    icon: 14,
+  },
 };
 
 /**
- * @param {'footer'|'section'} variant
+ * @param {'footer'|'section'|'inline'} variant
  * @param {ReturnType<typeof googleRating>} g
  * @returns {string} the badge, or '' when there is no usable rating
  */
@@ -111,7 +123,7 @@ function renderReviewBadge(variant, g) {
   const st = STYLE[variant];
   const n = Math.min(5, Math.max(0, Math.round(Number(rating))));
   const icon = GOOGLE_G_SVG.replace('width="16" height="16"', `width="${st.icon}" height="${st.icon}"`);
-  const write = g.reviewUrl && /^https:\/\/\S+$/.test(g.reviewUrl)
+  const write = variant !== 'inline' && g.reviewUrl && /^https:\/\/\S+$/.test(g.reviewUrl)
     ? `\n          <a class="review-badge__write" href="${esc(g.reviewUrl)}" target="_blank" rel="noopener" style="${st.write}">Leave a review</a>`
     : '';
   return `<div class="review-badge review-badge--${variant}" style="${st.wrap}">

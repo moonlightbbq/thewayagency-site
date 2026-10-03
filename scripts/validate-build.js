@@ -338,8 +338,16 @@ if (turnstileIssues === 0) pass('Turnstile only on widget pages (async); app.js 
 
 // 7e2. Google rating badge (TRUST-14): every badge names Google and links to the
 // listing, never the write-a-review form; the old "(N reviews)" badge text and
-// any unfilled badge marker are gone. Dependency-free (CI runs this on Node 18).
+// any unfilled badge marker are gone. The rating is read the way the build reads
+// it (googleRating): when it is null (missing or stale data) no rating text may
+// survive anywhere; otherwise every visible count and rating equals the data.
+// Dependency-free (CI runs this on Node 18): review-badge.js has no requires.
 {
+  const { googleRating } = require('./lib/review-badge');
+  let rating = null;
+  try {
+    rating = googleRating(JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'locations.json'), 'utf8')).agency);
+  } catch (e) { error(`Review badge: cannot read data/locations.json (${e.message})`); }
   let badgeProblems = 0;
   let badges = 0;
   for (const file of htmlFiles) {
@@ -347,13 +355,31 @@ if (turnstileIssues === 0) pass('Turnstile only on widget pages (async); app.js 
     const rel = path.relative(BUILD, file).split(path.sep).join('/');
     if (/\(\d+\+? reviews?\)/.test(html)) { error(`Review badge: ${rel} still shows "(N reviews)" without naming Google`); badgeProblems++; }
     if (html.includes('render:review-badge')) { error(`Review badge: ${rel} has an unfilled review-badge marker`); badgeProblems++; }
+    const counts = [...html.matchAll(/\b(\d[\d,]*)(\+?)\s+(?:Google\s+)?reviews?\b/gi)];
+    const ratings = [...html.matchAll(/\b(\d\.\d)\s+on Google\b/g)];
+    if (rating === null) {
+      if (counts.length || ratings.length || html.includes('review-badge__') || /\d\.\d\s*<\/strong>\s*<span[^>]*>\s*(?:&#9733;|\u2605)/.test(html)) {
+        error(`Review badge: the rating is missing or stale (googleRating() is null) but ${rel} still shows rating text`); badgeProblems++;
+      }
+    } else {
+      for (const c of counts) {
+        if (c[2] || Number(c[1].replace(/,/g, '')) !== rating.count) { error(`Review badge: ${rel} shows "${c[0]}" but the data says ${rating.count} reviews`); badgeProblems++; }
+      }
+      for (const r of ratings) {
+        if (r[1] !== rating.rating) { error(`Review badge: ${rel} shows "${r[0]}" but the data says ${rating.rating}`); badgeProblems++; }
+      }
+    }
     for (const m of html.matchAll(/<a class="review-badge__listing" href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)) {
       badges++;
       if (/\/review\/?$/.test(m[1])) { error(`Review badge: ${rel} links the badge to the review form (${m[1]}), not the listing`); badgeProblems++; }
       if (!/\d\.\d on Google/.test(m[2])) { error(`Review badge: ${rel} has a badge that does not say "<rating> on Google"`); badgeProblems++; }
     }
   }
-  if (badgeProblems === 0) pass(`Review badge: ${badges} badges say "on Google" and link to the listing; no "(N reviews)" text`);
+  if (badgeProblems === 0) {
+    pass(rating === null
+      ? 'Review badge: rating missing or stale, and no page shows rating or review-count text'
+      : `Review badge: ${badges} badges say "on Google" and link to the listing; every visible count is ${rating.count} and every rating ${rating.rating}; no "(N reviews)" text`);
+  }
 }
 
 // 7f. CTA article (CONV-04): "Get a Auto Insurance Quote" and the like.
