@@ -462,16 +462,20 @@
   align-items: center;
   box-shadow: 0 -2px 12px rgba(0,0,0,0.15);
   transform: translateY(100%);
-  transition: transform 0.3s ease;
+  /* Hidden bar leaves the tab order too (visibility flips after the slide-out). */
+  visibility: hidden;
+  transition: transform 0.3s ease, visibility 0s linear 0.3s;
 }
-.sticky-cta--visible { transform: translateY(0) }
+.sticky-cta--visible { transform: translateY(0); visibility: visible; transition: transform 0.3s ease, visibility 0s }
 .sticky-cta__link {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 10px;
+  min-height: 44px;
+  min-width: 0;
+  padding: 10px 8px;
   background: transparent;
   border: 1.5px solid rgba(255,255,255,0.3);
   border-radius: var(--border-radius);
@@ -483,7 +487,7 @@
   letter-spacing: 0.04em;
 }
 .sticky-cta__link--primary {
-  flex: 1.5;
+  flex: 1.4;
   background: var(--cyan);
   border-color: var(--cyan);
   color: var(--navy-dark);

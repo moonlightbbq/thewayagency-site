@@ -290,7 +290,22 @@ if (turnstileIssues === 0) pass('Turnstile only on widget pages (async); app.js 
   for (const ex of DEFAULT_EXEMPTIONS) {
     if (!used.has(ex)) warn(`Call/text pairing: exemption no longer needed, delete it from contact-pairing-config.js: ${ex.page} (${ex.decision})`);
   }
-  if (pairingProblems === 0) pass(`Call/text pairing: every tel: link has an sms: peer to +15024135335 (${used.size} listed exemptions in use)`);
+  // The mobile menu's pair is server-rendered (scripts/builders/seo.js); every page
+  // with the site nav must carry exactly one, with both links.
+  let navPages = 0;
+  for (const file of htmlFiles) {
+    const html = fs.readFileSync(file, 'utf8');
+    if (!html.includes('id="navLinks"')) continue;
+    navPages++;
+    const rel = path.relative(BUILD, file).split(path.sep).join('/');
+    const blocks = html.match(/<div class="nav__contact">[\s\S]*?<\/div>/g) || [];
+    if (blocks.length !== 1 || !blocks[0].includes('href="tel:+15024135335"') || !blocks[0].includes('href="sms:+15024135335"')) {
+      error(`Call/text pairing: ${rel} needs exactly one .nav__contact with the tel: and sms: links (found ${blocks.length})`);
+      pairingProblems++;
+    }
+  }
+  if (navPages === 0) { error('Call/text pairing: no page with #navLinks found (the nav check stopped seeing them)'); pairingProblems++; }
+  if (pairingProblems === 0) pass(`Call/text pairing: every tel: link has an sms: peer to +15024135335 (${used.size} listed exemptions in use); ${navPages} menus carry the pair`);
 }
 
 // 8. Image size check (warn on images >500KB)
