@@ -168,3 +168,58 @@ describe('validation catches', () => {
     assert.match(bad((d) => { d.statements[0].statement += ' Medicare too.'; }), /Medicare/);
   });
 });
+
+describe('line hubs (CONT-02)', () => {
+  const hub = (key, kyData) => pages.generateHubPage(key, makeCtx(kyData));
+  const signHub = (d, canonical) => { const h = d.hubs.find((x) => x.hub === canonical); sign(h); h.intro.forEach(sign); return h; };
+
+  test('drafts an H1 and intro for each of the four line hubs', () => {
+    assert.deepEqual(data.hubs.map((h) => h.hub).sort(), ['/commercial/', '/health/', '/life/', '/personal/']);
+    for (const h of data.hubs) assert.match(h.h1, /^(Personal|Business|Life|Health) insurance in Kentucky$/);
+  });
+
+  test('today the hubs keep their tagline H1s and show no intro', () => {
+    for (const key of ['personal', 'commercial', 'life', 'health']) {
+      const html = hub(key, data);
+      assert.doesNotMatch(html, /class="hub-intro"/, key);
+      assert.equal(h1Of(html), pages.hubConfig[key].hero.title, key);
+    }
+  });
+
+  test('the /health/ intro names kynect for marketplace plans, Medicaid and KCHIP only, and says nothing about Medicare', () => {
+    const h = data.hubs.find((x) => x.hub === '/health/');
+    const text = h.intro.map((s) => s.text).join(' ');
+    assert.match(text, /kynect, is where Kentuckians can shop for and enroll in individual and family health plans and apply for Medicaid and KCHIP/);
+    assert.doesNotMatch(JSON.stringify(h), /medicare/i);
+    assert.doesNotMatch(text, /\bfree\b|we compare/i);
+  });
+
+  test('signed and approved, a hub renders the Kentucky H1, the tagline as subtitle and the intro with its source link', () => {
+    const d = clone(data);
+    approve(d, 'line_hubs');
+    signHub(d, '/health/');
+    const html = hub('health', d);
+    assert.equal(h1Of(html), 'Health insurance in Kentucky');
+    assert.match(html, /Coverage built around your care/);
+    assert.match(html, /class="hub-intro"[^>]*>Health insurance helps pay/);
+    assert.match(html, /href="https:\/\/khbe\.ky\.gov\/Pages\/index\.aspx" rel="noopener">Kentucky Health Benefit Exchange \(kynect\)<\/a>/);
+    assert.ok(html.indexOf('hub-intro') < html.indexOf('Health insurance options'), 'intro sits above the cards');
+  });
+
+  test('one unsigned intro sentence, or a closed owner gate, keeps the whole hub draft hidden', () => {
+    const d = clone(data);
+    approve(d, 'line_hubs');
+    signHub(d, '/personal/').intro[2].reviewer = null;
+    d.hubs.find((x) => x.hub === '/personal/').intro[2].reviewed_on = null;
+    assert.doesNotMatch(hub('personal', d), /class="hub-intro"/);
+    const e = clone(data);
+    signHub(e, '/personal/');
+    assert.doesNotMatch(hub('personal', e), /class="hub-intro"/);
+  });
+
+  test('validation keeps kynect off the non-health hubs', () => {
+    const d = clone(data);
+    d.hubs.find((x) => x.hub === '/personal/').intro[0].text = 'Use kynect for this.';
+    assert.match(ky.validate(d, vctx).join('\n'), /kynect belongs on \/health\/ only/);
+  });
+});

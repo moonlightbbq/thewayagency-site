@@ -367,6 +367,8 @@ const hubConfig = {
 function generateHubPage(lineKey, ctx) {
   const { products, office, seoData, renderNav, renderFooter, renderScripts } = ctx;
   const config = hubConfig[lineKey];
+  // Signed H1, subtitle and intro for this hub, or null (CONT-02; renders only once signed).
+  const hubKy = kyBlocks.forHub(ctx.kyBlocks || kyBlocks.load(), config.canonical);
   // line key === slug now that life/health are separate top-level keys
   const lineSlug = lineKey;
   const lineProducts = products[lineKey] || [];
@@ -470,15 +472,20 @@ ${renderNav()}
 
 ${renderHero({
     eyebrow: config.hero.eyebrow,
-    title: config.hero.title,
-    subtitle: config.hero.subtitle,
+    title: hubKy ? esc(hubKy.h1) : config.hero.title,
+    subtitle: hubKy ? esc(hubKy.subtitle) : config.hero.subtitle,
     buttons: [{ href: `/intake/?line=${lineSlug}`, text: quoteCtaLabel(config.hero.eyebrow), className: 'btn btn--primary btn--lg' }],
     minHeight: '38vh',
     variant: 'compact',
   })}
 
 ${hubBreadcrumbs.html}
-  <main id="main">
+  <main id="main">${hubKy ? `
+    <section class="section">
+      <div class="container container--narrow">
+        <p class="hub-intro" style="font-size:var(--text-lg);line-height:1.8;">${hubKy.introHtml}</p>
+      </div>
+    </section>` : ''}
 ${productSections}
 ${lineKey === 'commercial' ? renderIndustriesSection(ctx) : ''}
     <section class="section">

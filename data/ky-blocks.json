@@ -419,5 +419,145 @@
       "reviewed_on": null
     }
   ],
-  "hubs": []
+  "hubs": [
+    {
+      "hub": "/personal/",
+      "h1": "Personal insurance in Kentucky",
+      "subtitle": "Protection for you and your family",
+      "intro": [
+        {
+          "text": "Personal insurance protects your home, your vehicles, your belongings and your responsibility to other people if you cause an accident or someone is hurt on your property.",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "Each page below explains one coverage in plain language: what it pays for, what it leaves out, who usually needs it and what affects the price.",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "Standard home and renters policies exclude flood and earthquake damage, so those are separate policies with their own pages here.",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "An umbrella policy adds liability limits above your home and auto policies.",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "As an independent agency, we compare the insurance companies we're appointed with and help you choose coverage that fits your household.",
+          "reviewer": null,
+          "reviewed_on": null
+        }
+      ],
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "hub": "/commercial/",
+      "h1": "Business insurance in Kentucky",
+      "subtitle": "Protection that lets your business grow",
+      "intro": [
+        {
+          "text": "Business insurance protects your company against claims from customers and the public, damage to your property and vehicles, injuries to your employees and other risks of your work.",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "Each page below explains one coverage: who needs it, what it protects against, what affects the price and what it does not cover.",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "Kentucky's workers' compensation law applies to any employer, other than one engaged solely in agriculture, with one or more employees in Kentucky subject to that law.",
+          "cite": "KRS 342.630(1)",
+          "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32533",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "Some Kentucky trade licenses also require insurance: no HVAC contractor license is valid without the general liability and property damage insurance the law sets.",
+          "cite": "KRS 198B.668",
+          "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46948",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "As an independent agency, we compare the insurance companies we're appointed with to build coverage around how your business operates.",
+          "reviewer": null,
+          "reviewed_on": null
+        }
+      ],
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "hub": "/life/",
+      "h1": "Life insurance in Kentucky",
+      "subtitle": "Plan for what matters most",
+      "intro": [
+        {
+          "text": "Life insurance pays the people you name when you die, so they can cover a mortgage, debts, everyday bills or final expenses.",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "Term life covers a set number of years, whole life lasts your lifetime and builds cash value, and final expense is a small whole life policy for funeral and end-of-life costs.",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "Disability insurance replaces part of your income if illness or injury keeps you from working, and an annuity can turn savings into a stream of income.",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "In Kentucky, an individual life insurance policy, other than credit life or a policy under a tax-qualified pension plan, must give you at least 10 days after you receive it to return it, and the premium you paid is then returned.",
+          "cite": "KRS 304.15-050(2)",
+          "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=17200",
+          "reviewer": null,
+          "reviewed_on": null
+        }
+      ],
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "hub": "/health/",
+      "h1": "Health insurance in Kentucky",
+      "subtitle": "Coverage built around your care",
+      "intro": [
+        {
+          "text": "Health insurance helps pay for doctor visits, hospital care, prescriptions and preventive care.",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "Where your coverage comes from shapes your options: an employer's group plan, an individual or family plan you buy yourself, or a public program.",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "Each page below explains one option, including group health for small businesses, individual and family plans, dental and vision, and supplemental coverage.",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "Kentucky's health insurance exchange, kynect, is where Kentuckians can shop for and enroll in individual and family health plans and apply for Medicaid and KCHIP, which people who qualify can join at any time of year.",
+          "cite": "Kentucky Health Benefit Exchange (kynect)",
+          "source_url": "https://khbe.ky.gov/Pages/index.aspx",
+          "reviewer": null,
+          "reviewed_on": null
+        },
+        {
+          "text": "Tell us what you need and a licensed agent will contact you about your options.",
+          "reviewer": null,
+          "reviewed_on": null
+        }
+      ],
+      "reviewer": null,
+      "reviewed_on": null
+    }
+  ]
 }
