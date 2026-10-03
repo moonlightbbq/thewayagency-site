@@ -166,22 +166,6 @@
       "email": "jill@thewayagency.com",
       "review_via": "email",
       "phone": "(502) 413-5335 ext 4"
-    },
-    {
-      "name": "Allison Sommers",
-      "slug": "allison-sommers",
-      "title": "College Intern",
-      "photo": "/src/assets/images/team/allison-sommers.webp",
-      "license_states": [],
-      "license_numbers": {},
-      "npn": "",
-      "designations": [],
-      "specialties": [],
-      "service_areas": [],
-      "bio": "",
-      "fun_fact": "",
-      "email": "",
-      "phone": ""
     }
   ]
 }
