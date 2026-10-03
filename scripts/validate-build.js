@@ -494,6 +494,26 @@ if (fs.existsSync(redirectsPath)) {
   }
 }
 
+// 13. Link structure (TECH-01, LOCAL-01): one breadcrumb trail per page whose
+// items are built, extensionless pages; no internal link to /insurance/<x>.html
+// or /industries/<x>.html; the priority hubs and /industries/ within their
+// click-depth limits and no hub or industry page orphaned. Rules:
+// scripts/lib/link-structure-check.js (dependency-free).
+{
+  const { readSite, breadcrumbProblems, htmlHubLinkProblems, clickDepthProblems } = require('./lib/link-structure-check');
+  const site = readSite(BUILD);
+  const crumbs = breadcrumbProblems(site);
+  for (const p of crumbs) error(`Breadcrumb: ${p}`);
+  if (crumbs.length === 0) pass('Breadcrumbs: one trail per page; every item a built, extensionless page');
+  const htmlLinks = htmlHubLinkProblems(site);
+  for (const p of htmlLinks.slice(0, 50)) error(`Hub link: ${p}`);
+  if (htmlLinks.length > 50) error(`Hub link: ... and ${htmlLinks.length - 50} more`);
+  if (htmlLinks.length === 0) pass('No internal links to /insurance/*.html or /industries/*.html');
+  const depthProblems = clickDepthProblems(site);
+  for (const p of depthProblems) error(`Click depth: ${p}`);
+  if (depthProblems.length === 0) pass('Priority hubs and /industries/ within click-depth limits; no orphaned hub or industry page');
+}
+
 // Summary
 console.log(`\n${errors === 0 ? '✅' : '❌'} Validation complete: ${errors} errors, ${warnings} warnings, ${htmlFiles.length} pages checked`);
 process.exit(errors > 0 ? 1 : 0);
