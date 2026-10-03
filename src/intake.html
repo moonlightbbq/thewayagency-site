@@ -295,6 +295,7 @@
 
   .hidden { display: none !important }
   .error { color: #ef4444; font-size: 13px; margin-top: 12px; text-align: center; padding: 10px 16px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px }
+  .error a { color: inherit; font-weight: 600; text-decoration: underline; white-space: nowrap; }
 
   /* ─── Section headers (product questions) ─── */
   .section-header {
@@ -480,9 +481,19 @@
     box-shadow: 0 4px 14px rgba(0,0,0,.2);
     transition: background .2s;
   }
-  .intake-help-float:hover { background: var(--blue); color: #fff; }
+  .intake-help-float a { color: #fff; text-decoration: underline; text-underline-offset: 2px; }
+  .intake-help-float a:hover, .intake-help-float a:focus-visible { color: var(--cyan, #7dd3fc); }
   @media (max-width: 768px) {
     .intake-help-float { display: none; }
+  }
+  /* Nav call + text (CONTENT_RULES rule 3). Below 480 px the labels become
+     screen-reader text so logo + two icons fit at 360 px; each link keeps a
+     44 px target. */
+  .intake-nav-contact { display: flex; align-items: center; gap: 6px; min-height: 44px; font-size: var(--text-sm); font-weight: 600; color: var(--navy); text-decoration: none; }
+  .intake-nav-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  @media (max-width: 480px) {
+    .intake-nav-contact { justify-content: center; min-width: 44px; }
+    .intake-nav-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   }
 
   /* ─── Draft auto-save ─── */
@@ -630,12 +641,16 @@
 <nav class="nav" id="nav" style="border-bottom:1px solid var(--border);">
   <div class="nav__inner">
     <a href="/" class="nav__logo" aria-label="Home">
-      <picture><source srcset="/src/assets/images/logo-horizontal.webp" type="image/webp"><img src="/src/assets/images/logo-horizontal.png" alt="The Way Agency" style="height:40px;width:auto;"></picture>
+      <img src="/src/assets/images/logo-horizontal-2x.png" alt="The Way Agency" width="203" height="40" fetchpriority="high" style="height:40px;width:auto;">
     </a>
     <div style="display:flex;align-items:center;gap:16px;">
-      <a id="nav-phone" href="tel:+15024135335" style="display:flex;align-items:center;gap:6px;font-size:var(--text-sm);font-weight:600;color:var(--navy);text-decoration:none;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        (502) 413-5335
+      <a id="nav-phone" class="intake-nav-contact" href="tel:+15024135335">
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span class="intake-nav-label"><span class="intake-nav-sr">Call </span>(502) 413-5335</span>
+      </a>
+      <a id="nav-text" class="intake-nav-contact" href="sms:+15024135335">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        <span class="intake-nav-label">Text<span class="intake-nav-sr"> (502) 413-5335</span></span>
       </a>
     </div>
   </div>
@@ -762,7 +777,7 @@
         <div class="other-product-grid" id="other-product-grid"></div>
       </div>
     </div>
-    <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--slate);">Not sure what you need? <a href="tel:+15024135335" style="color:var(--blue);text-decoration:underline;">Call us at (502) 413-5335</a></p>
+    <p style="text-align:center;margin-top:16px;font-size:12px;color:var(--slate);">Not sure what you need? <a href="tel:+15024135335" style="color:var(--blue);text-decoration:underline;">Call</a> or <a href="sms:+15024135335" style="color:var(--blue);text-decoration:underline;">text</a> us at (502) 413-5335</p>
     <div id="step2-error" class="error hidden" role="alert" aria-live="polite"></div>
     <div class="btn-row">
       <button class="btn btn-outline" data-action="prev-step" data-step="2">Back</button>
@@ -903,10 +918,10 @@
 </main>
 
 <!-- Sticky help element -->
-<a id="intake-help-float" href="tel:+15024135335" class="intake-help-float" aria-label="Call for help">
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-  Need help? Call us
-</a>
+<div id="intake-help-float" class="intake-help-float">
+  <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+  <span>Need help? <a id="intake-help-call" href="tel:+15024135335">Call</a> or <a id="intake-help-text" href="sms:+15024135335">text</a> (502) 413-5335</span>
+</div>
 
 <div style="text-align:center;padding:24px 16px;font-size:11px;color:var(--slate);">
   <span id="intake-version" style="display:none"></span>
@@ -995,16 +1010,27 @@ function showIntakeBanner(color, msg) {
       if (agent.phone) {
         const digits = agent.phone.replace(/\D/g, '');
         const telHref = 'tel:+1' + digits;
-        const phoneSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>';
-        if (helpFloat) {
-          helpFloat.href = telHref;
-          helpFloat.innerHTML = phoneSvg + ' Call ' + agent.name.split(' ')[0];
+        const first = agent.name.split(' ')[0];
+        // The call links switch to the producer's line. A text link always goes to
+        // the agency line, and a text link beside a call link to a different number
+        // would mislead, so the agency text links are taken out here until the
+        // owner decides how ?agent= pages pair (above-the-fold D11).
+        const helpCall = document.getElementById('intake-help-call');
+        if (helpFloat && helpCall) {
+          helpCall.href = telHref;
+          helpCall.textContent = 'Call ' + first;
+          const label = helpCall.parentNode;
+          label.textContent = 'Need help? ';
+          label.appendChild(helpCall);
         }
         // Update header nav phone to show agent's number
         const navPhone = document.getElementById('nav-phone');
         if (navPhone) {
           navPhone.href = telHref;
-          navPhone.innerHTML = phoneSvg + ' ' + agent.phone;
+          const lbl = navPhone.querySelector('.intake-nav-label');
+          if (lbl) lbl.textContent = agent.phone;
+          const navText = document.getElementById('nav-text');
+          if (navText) navText.remove();
         }
       }
       // Populate floating agent card
@@ -2054,12 +2080,42 @@ function sanitizePhone(val) {
 // load, because rendering into a hidden container fails on mobile browsers.
 let _turnstileSiteKey = null;
 
+// One /api/config request per page, shared by Turnstile (now) and Google Maps
+// (when the visitor reaches step 2). A failed request is retried on the next call.
+let _intakeConfigPromise = null;
+function intakeConfig() {
+  if (!_intakeConfigPromise) {
+    _intakeConfigPromise = fetch(SAGE_API + '/api/config')
+      .then((r) => { if (!r.ok) throw new Error('config ' + r.status); return r.json(); })
+      .catch((e) => { _intakeConfigPromise = null; throw e; });
+  }
+  return _intakeConfigPromise;
+}
+// _turnstileSiteKey: null while the config is unknown; '' when SAGE reports
+// Turnstile switched off (its intake API then accepts a post with no token,
+// an ops lever); otherwise the site key.
+function noteTurnstileConfig(cfg) {
+  if (cfg && typeof cfg.turnstileSiteKey === 'string' && _turnstileSiteKey === null) _turnstileSiteKey = cfg.turnstileSiteKey;
+}
 (async function loadTurnstileConfig() {
-  try {
-    const cfg = await fetch(SAGE_API + '/api/config').then(r => r.json());
-    if (cfg.turnstileSiteKey) _turnstileSiteKey = cfg.turnstileSiteKey;
-  } catch (e) { /* config fetch failed — Turnstile will be skipped */ }
+  try { noteTurnstileConfig(await intakeConfig()); } catch (e) { /* unknown; turnstileGate() retries once at submit */ }
 })();
+
+// At submit, with no token yet: 'ready' (key and script present), 'off' (SAGE
+// has Turnstile switched off: post without a token), 'no-config' (the config
+// could not be read, even on one retry) or 'no-script' (a key but no Turnstile).
+async function turnstileGate() {
+  if (_turnstileSiteKey === null) {
+    try { noteTurnstileConfig(await intakeConfig()); } catch (e) { /* still unknown */ }
+  }
+  if (_turnstileSiteKey === '') return 'off';
+  if (_turnstileSiteKey === null) return 'no-config';
+  return window.turnstile ? 'ready' : 'no-script';
+}
+const TURNSTILE_GATE_COPY = {
+  'no-config': 'We couldn\'t reach our server to start the security check, so your request wasn\'t sent.',
+  'no-script': 'We couldn\'t run the security check in this browser, so your request wasn\'t sent.',
+};
 
 function initTurnstileOnReview() {
   if (!_turnstileSiteKey || turnstileWidgetId != null) return; // already rendered or no key
@@ -2069,7 +2125,7 @@ function initTurnstileOnReview() {
       sitekey: _turnstileSiteKey,
       callback: (token) => { turnstileToken = token; },
       'expired-callback': () => { turnstileToken = null; },
-      'error-callback': () => { turnstileToken = null; },
+      'error-callback': (code) => { turnstileToken = null; noteTurnstileError(code); },
       theme: 'light',
     });
   } catch (e) { console.warn('[Turnstile] Render failed:', e); }
@@ -2107,7 +2163,7 @@ async function flushIntakeQueue() {
   try { queued = JSON.parse(localStorage.getItem('twa_intake_queue') || 'null'); } catch (e) { return; }
   if (!queued || !queued.payload) return;
   // Wait for the config fetch that carries the sitekey (usually <1s).
-  for (let i = 0; i < 20 && !_turnstileSiteKey; i++) await new Promise(r => setTimeout(r, 250));
+  for (let i = 0; i < 20 && _turnstileSiteKey === null; i++) await new Promise(r => setTimeout(r, 250));
   const payload = queued.payload;
   payload.cfToken = await _freshReplayToken();
   payload.twa_vid = payload.twa_vid || getVisitorId();
@@ -2549,7 +2605,10 @@ function showStep(n) {
   // Track step completion for the step we're leaving
   if (currentStep && currentStep !== n) trackStepComplete(currentStep);
   currentStep = n;
-  if (n === 3) renderProductQuestions();
+  // Google Maps loads when the visitor leaves step 1 (PERF-06): step 2 prefetches it
+  // while they pick products, step 3 binds the address fields it re-renders.
+  if (n >= 2) ensureIntakeMaps();
+  if (n === 3) { renderProductQuestions(); bindIntakeAutocompletes(); }
   if (n === 4) { renderReview(); initTurnstileOnReview(); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
   // Track step enter (includes virtual pageview for GA4 funnel reports)
@@ -3348,20 +3407,37 @@ async function submitQuickLead() {
   link.textContent = 'Submitting...';
   link.style.pointerEvents = 'none';
 
-  // Initialize Turnstile if not already loaded (normally deferred to step 4)
-  if (!turnstileToken && _turnstileSiteKey && window.turnstile) {
+  // The intake API refuses a submission without a Turnstile token, so never post
+  // without one: with no Turnstile at all, say so and offer call and text.
+  // ('off': SAGE has Turnstile switched off and accepts a post with no token.)
+  const restoreLink = () => { link.textContent = origText; link.style.pointerEvents = ''; };
+  const gate = turnstileToken ? 'ready' : await turnstileGate();
+  if (gate === 'no-config' || gate === 'no-script') {
+    showContactFallback(err, TURNSTILE_GATE_COPY[gate]);
+    pushSubmitError('intake_quick', 'turnstile_unavailable');
+    restoreLink();
+    return;
+  }
+  if (!turnstileToken && gate === 'ready') {
+    // Initialize Turnstile if not already loaded (normally deferred to step 4)
     try {
       turnstile.render('#turnstile-quick', {
         sitekey: _turnstileSiteKey,
         callback: (token) => { turnstileToken = token; },
         'expired-callback': () => { turnstileToken = null; },
-        'error-callback': () => { turnstileToken = null; },
+        'error-callback': (code) => { turnstileToken = null; noteTurnstileError(code); },
         theme: 'light',
       });
     } catch (e) { /* Turnstile may already be rendered */ }
     // Wait for token (up to 5 seconds)
     for (let i = 0; i < 25 && !turnstileToken; i++) {
       await new Promise(r => setTimeout(r, 200));
+    }
+    if (!turnstileToken) {
+      showContactFallback(err, 'The security check didn\'t finish, so your request wasn\'t sent. Please try again in a moment, or reach us directly:');
+      pushSubmitError('intake_quick', turnstileErrorCode());
+      restoreLink();
+      return;
     }
   }
 
@@ -3416,7 +3492,7 @@ async function submitQuickLead() {
       // Do NOT throw: the catch below reports a network error, and a decline is not
       // a network error. Render the server's own words.
       const d = await res.json().catch(() => ({}));
-      renderSubmitError(err, res.status, d);
+      renderSubmitError(err, res.status, d, 'intake_quick');
       link.textContent = origText;
       link.style.pointerEvents = '';
       return;
@@ -3449,11 +3525,11 @@ async function submitQuickLead() {
       }
       if (window.fbq && sendMetaLead()) fbq('track', 'Lead', { content_category: 'quick_lead', currency: 'USD' }, { eventID: data.reference });
     } else {
-      renderSubmitError(err, res.status, data);
+      renderSubmitError(err, res.status, data, 'intake_quick');
     }
   } catch (e) {
-    err.textContent = 'Network error. Please check your connection and try again.';
-    err.classList.remove('hidden');
+    showContactFallback(err, 'Network error. Please check your connection and try again, or reach us directly:', { email: true });
+    pushSubmitError('intake_quick', 'network');
   }
 
   link.textContent = origText;
@@ -3470,16 +3546,53 @@ async function submitQuickLead() {
 // deliver reached the applicant either as "Submission failed" or as a lie about
 // their wifi. Render what the server actually said, where the decline already
 // lives, and never dress it up as a broken connection.
-function renderSubmitError(errEl, status, data) {
+function renderSubmitError(errEl, status, data, formType) {
   if (data && data.code === 'OUT_OF_AREA' && data.error) {
     if (errEl) errEl.classList.add('hidden');   // the decline speaks for itself
     showOutOfArea(null, data.error);
     return;
   }
   if (!errEl) return;
+  // A refusal the visitor cannot fix by editing the form gets an accurate message
+  // and a working way to reach us (CONV-10). 400 field messages stay as they are.
+  const refusal = status === 403 ? ['http_403', 'We couldn\'t verify this submission, so it wasn\'t sent.']
+    : status === 429 ? ['http_429', 'We\'ve had several requests from this connection recently. Please try again later.']
+    : status >= 500 ? ['http_5xx', 'Our system didn\'t accept the request just now, so it wasn\'t sent.']
+    : (status > 400 && status < 500) ? ['http_4xx', 'Our system didn\'t accept the request just now, so it wasn\'t sent.']
+    : null;
+  if (refusal) {
+    showContactFallback(errEl, refusal[1]);
+    if (formType) pushSubmitError(formType, refusal[0]);
+    return;
+  }
   errEl.textContent = (data && data.error) || ('Submission failed (HTTP ' + status + '). Please try again.');
   errEl.classList.remove('hidden');
 }
+
+// Call and text fallback for failure states (CONV-10), built as nodes. Both links
+// go to the one agency number; never a prefilled text body (GTM's text_click
+// sends the link URL to GA4). The field values stay as they are.
+function showContactFallback(el, lead, opts) {
+  if (!el) return;
+  const a = (href, txt) => { const x = document.createElement('a'); x.href = href; x.textContent = txt; return x; };
+  el.textContent = lead + ' ';
+  el.append(a('tel:+15024135335', 'Call (502) 413-5335'), ' or ', a('sms:+15024135335', 'Text (502) 413-5335'));
+  if (opts && opts.email) el.append(', or email ', a('mailto:hello@thewayagency.com', 'hello@thewayagency.com'));
+  el.append('.');
+  el.classList.remove('hidden');
+}
+// One lead_submit_error per failure: form and code only, no text and no PII.
+function pushSubmitError(formType, code) {
+  try { (window.dataLayer = window.dataLayer || []).push({ event: 'lead_submit_error', form_type: formType, error_code: code }); } catch (e) {}
+}
+// Turnstile error family (first 3 digits of the error-callback code), kept for
+// the timeout event; never the full code.
+let _turnstileErrorFamily = null;
+function noteTurnstileError(code) {
+  const fam = String(code || '').replace(/\D/g, '').slice(0, 3);
+  if (fam) _turnstileErrorFamily = fam;
+}
+function turnstileErrorCode() { return _turnstileErrorFamily ? 'turnstile_' + _turnstileErrorFamily : 'turnstile_timeout'; }
 
 // ── Submit ───────────────────────────────────────────────────────────────────
 async function submitIntake() {
@@ -3499,8 +3612,19 @@ async function submitIntake() {
   btn.textContent = 'Submitting...';
   btn.disabled = true;
 
+  // The intake API refuses a submission without a Turnstile token: with no
+  // Turnstile at all, say so and offer call and text instead of posting.
+  // ('off': SAGE has Turnstile switched off and accepts a post with no token.)
+  const gate = turnstileToken ? 'ready' : await turnstileGate();
+  if (gate === 'no-config' || gate === 'no-script') {
+    showContactFallback(err, TURNSTILE_GATE_COPY[gate]);
+    pushSubmitError('intake_final', 'turnstile_unavailable');
+    btn.textContent = 'Submit Quote Request';
+    btn.disabled = false;
+    return;
+  }
   // If Turnstile token expired or never loaded, try to refresh and wait
-  if (!turnstileToken && window.turnstile) {
+  if (!turnstileToken && gate === 'ready') {
     if (turnstileWidgetId != null) {
       turnstile.reset(turnstileWidgetId);
     } else {
@@ -3511,8 +3635,8 @@ async function submitIntake() {
       await new Promise(r => setTimeout(r, 200));
     }
     if (!turnstileToken) {
-      err.textContent = 'Security verification is still loading. Please wait a moment and try again.';
-      err.classList.remove('hidden');
+      showContactFallback(err, 'The security check didn\'t finish, so your request wasn\'t sent. Please try again in a moment, or reach us directly:');
+      pushSubmitError('intake_final', turnstileErrorCode());
       btn.textContent = 'Submit Quote Request';
       btn.disabled = false;
       return;
@@ -3596,7 +3720,7 @@ async function submitIntake() {
       // not "Submission failed (HTTP 400)", which is what validate() flattening
       // the message into a VALIDATION_ERROR envelope used to leave them with.
       const d = await res.json().catch(() => ({}));
-      renderSubmitError(err, res.status, d);
+      renderSubmitError(err, res.status, d, 'intake_final');
       btn.textContent = 'Submit Quote Request';
       btn.disabled = false;
       if (window.turnstile && turnstileWidgetId != null) { turnstile.reset(turnstileWidgetId); turnstileToken = null; }
@@ -3633,7 +3757,7 @@ async function submitIntake() {
         });
       }
     } else {
-      renderSubmitError(err, res.status, data);
+      renderSubmitError(err, res.status, data, 'intake_final');
       trackValidationError(4, 'submit_failed_server');
     }
   } catch (e) {
@@ -3652,9 +3776,9 @@ async function submitIntake() {
       offline_replay: true, queued_at: Date.now(),
     };
     try { localStorage.setItem('twa_intake_queue', JSON.stringify({ payload, ref: queueRef, ts: Date.now() })); } catch(qe) {}
-    err.textContent = 'Saved! We\'ll submit when you\'re back online. Ref: ' + queueRef;
+    showContactFallback(err, 'Saved! We\'ll submit when you\'re back online. Ref: ' + queueRef + '. If it\'s urgent:', { email: true });
     err.style.color = '#d97706';
-    err.classList.remove('hidden');
+    pushSubmitError('intake_final', 'network');
     trackValidationError(4, 'submit_queued_offline');
   } finally {
     btn.textContent = 'Submit Quote Request';
@@ -3746,22 +3870,40 @@ function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
 }
 
 // ── Google Maps Address Autocomplete ────────────────────────────────────────
-(async function loadIntakeGoogleMaps() {
-  try {
-    const cfg = await fetch(SAGE_API + '/api/config').then(r => r.json());
-    if (!cfg.googleMapsKey) { console.warn('[Maps] No Google Maps key'); return; }
-    window._initIntakeAutocomplete = function() {
-      _bindPlacesAutocomplete('i_address', 'i_address_street', 'i_city', 'i_state', 'i_zip');
-      _bindPlacesAutocomplete('i_ho_address', 'i_ho_address_street', 'i_ho_city', 'i_ho_state', 'i_ho_zip');
-      console.log('[Maps] Autocomplete initialized');
-    };
-    const s = document.createElement('script');
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${cfg.googleMapsKey}&libraries=places&callback=_initIntakeAutocomplete&v=weekly`;
-    s.async = true; s.defer = true;
-    s.onerror = () => console.error('[Maps] Failed to load Google Maps script');
-    document.head.appendChild(s);
-  } catch (e) { console.error('[Maps] Setup error:', e); }
-})();
+// Loaded on demand, once (PERF-06): it used to load at parse time while only
+// step 1 (name and contact) was on screen, adding Maps' main-thread work to the
+// first step. The address fields it serves are on step 3. Each input binds once;
+// #i_ho_address is re-created by every renderProductQuestions(), so it binds again
+// after each render. No field, label or order changes.
+let _mapsPromise = null;
+function ensureIntakeMaps() {
+  if (_mapsPromise) return _mapsPromise;
+  _mapsPromise = intakeConfig().then((cfg) => {
+    // A late config answer also gives Turnstile its key if the first request failed.
+    noteTurnstileConfig(cfg);
+    if (!cfg || !cfg.googleMapsKey) throw new Error('no Google Maps key');
+    return new Promise((resolve, reject) => {
+      window._initIntakeAutocomplete = () => { bindIntakeAutocompletes(); resolve(); };
+      const s = document.createElement('script');
+      s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(cfg.googleMapsKey)
+        + '&libraries=places&loading=async&callback=_initIntakeAutocomplete&v=weekly';
+      s.async = true;
+      s.onerror = () => reject(new Error('Google Maps script failed to load'));
+      document.head.appendChild(s);
+    });
+  }).catch((e) => { _mapsPromise = null; console.warn('[Maps]', e && e.message); });
+  return _mapsPromise;
+}
+function _bindAutocompleteOnce(inputId, streetId, cityId, stateId, zipId) {
+  const el = document.getElementById(inputId);
+  if (!el || el.dataset.acBound === '1' || !window.google?.maps?.places) return;
+  _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId);
+  el.dataset.acBound = '1';
+}
+function bindIntakeAutocompletes() {
+  _bindAutocompleteOnce('i_address', 'i_address_street', 'i_city', 'i_state', 'i_zip');
+  _bindAutocompleteOnce('i_ho_address', 'i_ho_address_street', 'i_ho_city', 'i_ho_state', 'i_ho_zip');
+}
 
 // ── Event delegation (replaces all inline onclick handlers) ──
 document.addEventListener('click', (e) => {

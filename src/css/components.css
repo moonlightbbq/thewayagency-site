@@ -31,6 +31,7 @@
 .nav__dropdown-item:hover{background:linear-gradient(135deg,rgba(48,151,211,.06),rgba(0,206,209,.06));color:var(--blue)}
 
 .nav__toggle{display:none;background:none;border:none;cursor:pointer;padding:var(--space-sm)}
+.nav__contact{display:none}
 .nav__toggle span{display:block;width:24px;height:2px;background:var(--charcoal);margin:5px 0;transition:all var(--transition-base)}
 
 /* iOS-safe scroll lock: position:fixed + saved scroll offset (JS sets --scroll-y) */
@@ -71,6 +72,9 @@ body.nav-open{position:fixed;top:calc(var(--scroll-y,0) * -1);left:0;right:0;ove
   .nav__phone{display:flex;align-items:center;justify-content:center;gap:var(--space-sm);margin:auto var(--space-xl) 0;padding:12px;font-size:var(--text-sm);font-weight:600;color:var(--navy);border:2px solid var(--border);border-radius:var(--border-radius);text-decoration:none;min-height:48px}
   .nav__phone:active{border-color:var(--navy);background:var(--light-bg)}
   .nav__phone svg{flex-shrink:0}
+  .nav__contact{display:flex;gap:var(--space-sm);margin:auto var(--space-xl) 0}
+  /* Content-sized, never wrapping: "Call (502) 413-5335" stays on one line at 360 px */
+  .nav__contact .nav__phone{flex:1 1 auto;margin:0;padding:12px 8px;white-space:nowrap}
   /* ── CTA button ── */
   .nav__links .btn--primary{margin:var(--space-sm) var(--space-xl) 0;width:calc(100% - var(--space-xl) * 2);text-align:center;padding:14px;font-size:var(--text-base);min-height:48px;border-radius:var(--border-radius)}
 }
