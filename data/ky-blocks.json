@@ -1,0 +1,423 @@
+{
+  "_readme": "CONT-01 / CONT-02 drafts. Nothing in this file renders until its owner gate is approved AND the entry has a licensed reviewer (data/team.json slug) and reviewed_on date. Every statement must match its cited Kentucky statute text; as_of is the date the statute text was last read. See scripts/lib/ky-blocks.js.",
+  "owner_gates": {
+    "product_blocks": {
+      "decision": "priority-hubs D15 (OA-28): partly reverse commit 258cc65 with signed Kentucky blocks and wave-1 titles",
+      "approved_by": null,
+      "approved_on": null
+    },
+    "line_hubs": {
+      "decision": "CONT-02 (OA-28): line-hub H1s and intros",
+      "approved_by": null,
+      "approved_on": null
+    }
+  },
+  "statements": [
+    {
+      "id": "auto-1",
+      "page": "/personal/auto",
+      "statement": "Kentucky requires every owner or operator of a motor vehicle registered in Kentucky, or operated in Kentucky with the owner's permission, to keep security for basic reparation benefits (personal injury protection) and for tort liability continuously in force, through an insurance contract or by qualifying as a self-insurer.",
+      "cite": "KRS 304.39-080(5)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30032",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "auto-2",
+      "page": "/personal/auto",
+      "statement": "The minimum liability security is $25,000 for bodily injury to any one person, $50,000 for bodily injury to all persons in one accident and $25,000 for property damage in one accident, or a single limit of $60,000 per accident.",
+      "cite": "KRS 304.39-110(1)(a)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "auto-3",
+      "page": "/personal/auto",
+      "statement": "The required security also includes basic reparation benefits, which pay up to $10,000 for all economic loss from injury to any one person in one accident.",
+      "cite": "KRS 304.39-110(1)(c)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758",
+      "more_sources": [
+        {
+          "cite": "KRS 304.39-020(2)",
+          "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=57854"
+        }
+      ],
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "auto-4",
+      "page": "/personal/auto",
+      "statement": "An auto liability policy for a vehicle registered or principally garaged in Kentucky must include uninsured motorist coverage at the KRS 304.39-110 bodily injury limits unless a named insured rejects that coverage in writing.",
+      "cite": "KRS 304.20-020(1)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=45815",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "home-1",
+      "page": "/personal/home",
+      "statement": "Kentucky requires an insurer that will not renew a property or casualty policy covered by KRS 304.20-300 to 304.20-350 to mail or deliver written notice to the named insured, with the specific reasons, at least 75 days before the end of the policy period.",
+      "cite": "KRS 304.20-320(3)(a)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29503",
+      "more_sources": [
+        {
+          "cite": "KRS 304.20-300",
+          "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29501"
+        }
+      ],
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "home-2",
+      "page": "/personal/home",
+      "statement": "Once such a policy has been in effect more than 60 days, the insurer's written notice of cancellation must be mailed or delivered at least 75 days before the cancellation takes effect, or at least 14 days before if the cancellation is for nonpayment of premium.",
+      "cite": "KRS 304.20-320(2)(b)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29503",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "home-3",
+      "page": "/personal/home",
+      "statement": "For a policy period longer than 30 days, the insurer must mail or deliver a notice of the renewal premium, or a bill for it, at least 30 days before the policy period ends.",
+      "cite": "KRS 304.20-035",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29476",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "renters-1",
+      "page": "/personal/renters",
+      "statement": "Kentucky requires an insurer that will not renew a property or casualty policy covered by KRS 304.20-300 to 304.20-350 to mail or deliver written notice to the named insured, with the specific reasons, at least 75 days before the end of the policy period.",
+      "cite": "KRS 304.20-320(3)(a)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29503",
+      "more_sources": [
+        {
+          "cite": "KRS 304.20-300",
+          "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29501"
+        }
+      ],
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "renters-2",
+      "page": "/personal/renters",
+      "statement": "Once such a policy has been in effect more than 60 days, the insurer's written notice of cancellation must be mailed or delivered at least 75 days before the cancellation takes effect, or at least 14 days before if the cancellation is for nonpayment of premium.",
+      "cite": "KRS 304.20-320(2)(b)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29503",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "renters-3",
+      "page": "/personal/renters",
+      "statement": "For a policy period longer than 30 days, the insurer must mail or deliver a notice of the renewal premium, or a bill for it, at least 30 days before the policy period ends.",
+      "cite": "KRS 304.20-035",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29476",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "umbrella-1",
+      "page": "/personal/umbrella",
+      "statement": "Kentucky requires an insurer that will not renew a property or casualty policy covered by KRS 304.20-300 to 304.20-350 to mail or deliver written notice to the named insured, with the specific reasons, at least 75 days before the end of the policy period.",
+      "cite": "KRS 304.20-320(3)(a)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29503",
+      "more_sources": [
+        {
+          "cite": "KRS 304.20-300",
+          "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29501"
+        }
+      ],
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "umbrella-2",
+      "page": "/personal/umbrella",
+      "statement": "Once such a policy has been in effect more than 60 days, the insurer's written notice of cancellation must be mailed or delivered at least 75 days before the cancellation takes effect, or at least 14 days before if the cancellation is for nonpayment of premium.",
+      "cite": "KRS 304.20-320(2)(b)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29503",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "boat-1",
+      "page": "/personal/boat",
+      "statement": "Kentucky requires an insurer that will not renew a property or casualty policy covered by KRS 304.20-300 to 304.20-350 to mail or deliver written notice to the named insured, with the specific reasons, at least 75 days before the end of the policy period.",
+      "cite": "KRS 304.20-320(3)(a)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29503",
+      "more_sources": [
+        {
+          "cite": "KRS 304.20-300",
+          "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29501"
+        }
+      ],
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "boat-2",
+      "page": "/personal/boat",
+      "statement": "Once such a policy has been in effect more than 60 days, the insurer's written notice of cancellation must be mailed or delivered at least 75 days before the cancellation takes effect, or at least 14 days before if the cancellation is for nonpayment of premium.",
+      "cite": "KRS 304.20-320(2)(b)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29503",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "motorcycle-1",
+      "page": "/personal/motorcycle",
+      "statement": "For a motorcycle, Kentucky's required security is fulfilled by the liability coverage alone: $25,000 for bodily injury to any one person, $50,000 for bodily injury to all persons in one accident and $25,000 for property damage, or a single limit of $60,000 per accident. Basic reparation benefits, which are part of the required security for other vehicles, are not required for a motorcycle.",
+      "cite": "KRS 304.39-110(3)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "gl-1",
+      "page": "/commercial/general-liability",
+      "statement": "A heating, ventilation and air conditioning contractor in Kentucky must maintain general liability insurance of at least $500,000 and property damage insurance of at least $300,000 from an insurer licensed and approved by the Kentucky Department of Insurance, and no HVAC license is valid without that insurance.",
+      "cite": "KRS 198B.668(1), (4)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46948",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "gl-2",
+      "page": "/commercial/general-liability",
+      "statement": "To be licensed as an electrical contractor in Kentucky, an applicant must submit proof of a general liability insurance policy of at least $1,000,000 and proof of compliance with workers' compensation and unemployment insurance laws.",
+      "cite": "KRS 227A.060(1)(c)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=55092",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "cprop-1",
+      "page": "/commercial/commercial-property",
+      "statement": "Kentucky requires an insurer that will not renew a property or casualty policy covered by KRS 304.20-300 to 304.20-350 to mail or deliver written notice to the named insured, with the specific reasons, at least 75 days before the end of the policy period.",
+      "cite": "KRS 304.20-320(3)(a)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29503",
+      "more_sources": [
+        {
+          "cite": "KRS 304.20-300",
+          "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29501"
+        }
+      ],
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "cprop-2",
+      "page": "/commercial/commercial-property",
+      "statement": "Once such a policy has been in effect more than 60 days, the insurer's written notice of cancellation must be mailed or delivered at least 75 days before the cancellation takes effect, or at least 14 days before if the cancellation is for nonpayment of premium.",
+      "cite": "KRS 304.20-320(2)(b)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29503",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "cprop-3",
+      "page": "/commercial/commercial-property",
+      "statement": "For a policy period longer than 30 days, the insurer must mail or deliver a notice of the renewal premium, or a bill for it, at least 30 days before the policy period ends.",
+      "cite": "KRS 304.20-035",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=29476",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "cauto-1",
+      "page": "/commercial/commercial-auto",
+      "statement": "Kentucky requires every owner or operator of a motor vehicle registered in Kentucky, or operated in Kentucky with the owner's permission, to keep security for basic reparation benefits (personal injury protection) and for tort liability continuously in force, through an insurance contract or by qualifying as a self-insurer.",
+      "cite": "KRS 304.39-080(5)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=30032",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "cauto-2",
+      "page": "/commercial/commercial-auto",
+      "statement": "The minimum liability security is $25,000 for bodily injury to any one person, $50,000 for bodily injury to all persons in one accident and $25,000 for property damage in one accident, or a single limit of $60,000 per accident.",
+      "cite": "KRS 304.39-110(1)(a)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "wc-1",
+      "page": "/commercial/workers-compensation",
+      "statement": "Kentucky's workers' compensation law applies to any employer, other than one engaged solely in agriculture, that has one or more employees in Kentucky subject to that law.",
+      "cite": "KRS 342.630(1)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32533",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "wc-2",
+      "page": "/commercial/workers-compensation",
+      "statement": "Each such employer must insure its liability for compensation with an insurer authorized to write workers' compensation in Kentucky, or prove to the commissioner that it can pay compensation directly and post the security the commissioner requires.",
+      "cite": "KRS 342.340(1)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43318",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "bonds-1",
+      "page": "/commercial/bonds",
+      "statement": "A Kentucky notary public must submit a $1,000 surety bond, issued by a surety or other entity licensed or authorized to do business in Kentucky, and file it with the county clerk within 30 days of receiving the commission.",
+      "cite": "KRS 423.390(4), (5)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=49507",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "term-1",
+      "page": "/life/term-life",
+      "statement": "An individual life insurance policy delivered in Kentucky, other than credit life or a policy under a tax-qualified pension plan, must let the policyowner return it to the company or the agent within at least 10 days after receiving it; the policy is then void from the start and any premium paid is returned promptly.",
+      "cite": "KRS 304.15-050(2)",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=17200",
+      "more_sources": [
+        {
+          "cite": "KRS 304.15-040",
+          "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=17198"
+        }
+      ],
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "id": "term-2",
+      "page": "/life/term-life",
+      "statement": "After the first premium, the policy must allow a grace period of 30 days, or one month of at least 30 days, during which it stays in force while a premium is paid.",
+      "cite": "KRS 304.15-060",
+      "source_url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=17201",
+      "as_of": "2026-10-03",
+      "reviewer": null,
+      "reviewed_on": null
+    }
+  ],
+  "titles": [
+    {
+      "page": "/personal/home",
+      "title": "Kentucky Home Insurance Quotes & Coverage | The Way Agency",
+      "h1": null,
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "page": "/personal/auto",
+      "title": "Kentucky Auto Insurance Quotes & Coverage | The Way Agency",
+      "h1": "What auto insurance do you need in Kentucky?",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "page": "/personal/renters",
+      "title": "Kentucky Renters Insurance Quotes | The Way Agency",
+      "h1": null,
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "page": "/personal/umbrella",
+      "title": "Kentucky Umbrella Insurance Quotes | The Way Agency",
+      "h1": null,
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "page": "/personal/motorcycle",
+      "title": "Kentucky Motorcycle Insurance Quotes | The Way Agency",
+      "h1": "What motorcycle insurance is required in Kentucky?",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "page": "/personal/boat",
+      "title": "Kentucky Boat Insurance Quotes | The Way Agency",
+      "h1": null,
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "page": "/personal/flood",
+      "title": "Kentucky Flood Insurance Quotes | The Way Agency",
+      "h1": null,
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "page": "/commercial/general-liability",
+      "title": "Kentucky General Liability Insurance & COIs | The Way Agency",
+      "h1": "What does general liability insurance cover for a Kentucky business?",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "page": "/commercial/commercial-property",
+      "title": "Kentucky Commercial Property Insurance | The Way Agency",
+      "h1": null,
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "page": "/commercial/commercial-auto",
+      "title": "Kentucky Commercial Auto Insurance | The Way Agency",
+      "h1": "When do you need commercial auto insurance in Kentucky?",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "page": "/commercial/workers-compensation",
+      "title": "Kentucky Workers' Comp Insurance | The Way Agency",
+      "h1": "Is workers compensation required in Kentucky?",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "page": "/commercial/bonds",
+      "title": "Kentucky Surety Bonds | The Way Agency",
+      "h1": "What is a surety bond and when do you need one in Kentucky?",
+      "reviewer": null,
+      "reviewed_on": null
+    },
+    {
+      "page": "/life/term-life",
+      "title": "Kentucky Term Life Insurance Quotes | The Way Agency",
+      "h1": null,
+      "reviewer": null,
+      "reviewed_on": null
+    }
+  ],
+  "hubs": []
+}

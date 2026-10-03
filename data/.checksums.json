@@ -1,5 +1,5 @@
 {
-  ".checksums.json": "c1fc83baa0e8072a201ccb20a42c139982b91ca75b991f8dfec11caf60d28e91",
+  ".checksums.json": "96f75c34e12f414cda10e60dfa6a24d3d7c734d14c52e9777779881bd0886f7b",
   "carriers.json": "807e6337ec69bfbcbca1966d8525220b48a921b670ce80ff8911d9056b67ac8f",
   "content-backlog.json": "436e0ce78d5fc4a5b01ea01fb9a08605446c9165992f6f98e28c92faacb23cb8",
   "content-calendar.json": "6ff03df84eb004fdd0873c1bade767fac199fc9351478bf0474e893417bb290c",
@@ -12,6 +12,7 @@
   "google-reviews-status.json": "46eca3a5dd43d4dd002e127b696c63533791fe2ecd44d924e5e43b4bf6bc2641",
   "internal-links.json": "b1365e27381402f365dfc2be021a6834325002b6db6904f4a82bf17a5673fb55",
   "knowledge-base.json": "a82588039fad3c52765637fd055ac45eaf22980f9bd3bd9e2c318aacd812af1f",
+  "ky-blocks.json": "7b41a44d342cc0619066ca8fb132b723dcd0a875516895c9681b809fdfd532f4",
   "landing-pages.json": "a568855d4ca9fdcff040357481e867461e15378957396030e3a41c395eb5e2c7",
   "locations.json": "f9e23e8b1e9548661bedf5b01da5e516b0b3b6fa551cf4217db9293de2446de7",
   "products.json": "8c46ae8c062a89d176835fe2413025b271127f487e5e4ea5cc31b60aca8d22d1",
