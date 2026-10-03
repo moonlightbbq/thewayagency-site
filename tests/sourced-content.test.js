@@ -293,3 +293,25 @@ describe('priority-hub line sections (MKT-02)', () => {
     assert.equal(sourced.signoffIsWellFormed({ reviewer: 'Zz Privacycheck', date: '2026-10-03' }), false);
   });
 });
+
+describe('carrier consolidation (CONT-05, WAITS ON D6)', () => {
+  const all = [...carriers.personal, ...carriers.commercial];
+  const THIN = ['adaptive', 'allstate', 'american-modern', 'chubb', 'geico', 'hiscox', 'progressive', 'travelers', 'zurich'];
+  const redirects = fs.readFileSync(path.join(ROOT, '_redirects'), 'utf8');
+
+  test('only the five standalone carriers get a page', () => {
+    const withPage = [...new Set(all.filter(carrierHasPage).map((c) => c.slug))].sort();
+    assert.deepEqual(withPage, ['berkshire-guard', 'hartford', 'liberty-mutual', 'obie', 'steadily']);
+  });
+
+  test('each retired page and its .html form 301 to its anchor on /carriers/, and the anchor exists', () => {
+    const index = main(pages.generateCarriersIndex(carriers, ctx));
+    for (const slug of THIN) {
+      for (const src of [`/carriers/${slug}`, `/carriers/${slug}.html`]) {
+        assert.match(redirects, new RegExp(`^${src.replace(/\./g, '\\.')} /carriers/#${slug} 301$`, 'm'), src);
+      }
+      assert.match(index, new RegExp(`<li id="${slug}"[^>]*>[^<]`), `${slug}: anchor without a link to a retired page`);
+      assert.ok(!index.includes(`href="/carriers/${slug}"`), `${slug}: index still links the retired page`);
+    }
+  });
+});
