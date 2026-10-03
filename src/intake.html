@@ -2085,17 +2085,37 @@ let _turnstileSiteKey = null;
 let _intakeConfigPromise = null;
 function intakeConfig() {
   if (!_intakeConfigPromise) {
-    _intakeConfigPromise = fetch(SAGE_API + '/api/config').then(r => r.json())
+    _intakeConfigPromise = fetch(SAGE_API + '/api/config')
+      .then((r) => { if (!r.ok) throw new Error('config ' + r.status); return r.json(); })
       .catch((e) => { _intakeConfigPromise = null; throw e; });
   }
   return _intakeConfigPromise;
 }
+// _turnstileSiteKey: null while the config is unknown; '' when SAGE reports
+// Turnstile switched off (its intake API then accepts a post with no token,
+// an ops lever); otherwise the site key.
+function noteTurnstileConfig(cfg) {
+  if (cfg && typeof cfg.turnstileSiteKey === 'string' && _turnstileSiteKey === null) _turnstileSiteKey = cfg.turnstileSiteKey;
+}
 (async function loadTurnstileConfig() {
-  try {
-    const cfg = await intakeConfig();
-    if (cfg.turnstileSiteKey) _turnstileSiteKey = cfg.turnstileSiteKey;
-  } catch (e) { /* config fetch failed — Turnstile will be skipped */ }
+  try { noteTurnstileConfig(await intakeConfig()); } catch (e) { /* unknown; turnstileGate() retries once at submit */ }
 })();
+
+// At submit, with no token yet: 'ready' (key and script present), 'off' (SAGE
+// has Turnstile switched off: post without a token), 'no-config' (the config
+// could not be read, even on one retry) or 'no-script' (a key but no Turnstile).
+async function turnstileGate() {
+  if (_turnstileSiteKey === null) {
+    try { noteTurnstileConfig(await intakeConfig()); } catch (e) { /* still unknown */ }
+  }
+  if (_turnstileSiteKey === '') return 'off';
+  if (_turnstileSiteKey === null) return 'no-config';
+  return window.turnstile ? 'ready' : 'no-script';
+}
+const TURNSTILE_GATE_COPY = {
+  'no-config': 'We couldn\'t reach our server to start the security check, so your request wasn\'t sent.',
+  'no-script': 'We couldn\'t run the security check in this browser, so your request wasn\'t sent.',
+};
 
 function initTurnstileOnReview() {
   if (!_turnstileSiteKey || turnstileWidgetId != null) return; // already rendered or no key
@@ -2143,7 +2163,7 @@ async function flushIntakeQueue() {
   try { queued = JSON.parse(localStorage.getItem('twa_intake_queue') || 'null'); } catch (e) { return; }
   if (!queued || !queued.payload) return;
   // Wait for the config fetch that carries the sitekey (usually <1s).
-  for (let i = 0; i < 20 && !_turnstileSiteKey; i++) await new Promise(r => setTimeout(r, 250));
+  for (let i = 0; i < 20 && _turnstileSiteKey === null; i++) await new Promise(r => setTimeout(r, 250));
   const payload = queued.payload;
   payload.cfToken = await _freshReplayToken();
   payload.twa_vid = payload.twa_vid || getVisitorId();
@@ -3389,14 +3409,16 @@ async function submitQuickLead() {
 
   // The intake API refuses a submission without a Turnstile token, so never post
   // without one: with no Turnstile at all, say so and offer call and text.
+  // ('off': SAGE has Turnstile switched off and accepts a post with no token.)
   const restoreLink = () => { link.textContent = origText; link.style.pointerEvents = ''; };
-  if (!turnstileToken) {
-    if (!window.turnstile || !_turnstileSiteKey) {
-      showContactFallback(err, 'We couldn\'t run the security check in this browser, so your request wasn\'t sent.');
-      pushSubmitError('intake_quick', 'turnstile_unavailable');
-      restoreLink();
-      return;
-    }
+  const gate = turnstileToken ? 'ready' : await turnstileGate();
+  if (gate === 'no-config' || gate === 'no-script') {
+    showContactFallback(err, TURNSTILE_GATE_COPY[gate]);
+    pushSubmitError('intake_quick', 'turnstile_unavailable');
+    restoreLink();
+    return;
+  }
+  if (!turnstileToken && gate === 'ready') {
     // Initialize Turnstile if not already loaded (normally deferred to step 4)
     try {
       turnstile.render('#turnstile-quick', {
@@ -3592,15 +3614,17 @@ async function submitIntake() {
 
   // The intake API refuses a submission without a Turnstile token: with no
   // Turnstile at all, say so and offer call and text instead of posting.
-  if (!turnstileToken && (!window.turnstile || !_turnstileSiteKey)) {
-    showContactFallback(err, 'We couldn\'t run the security check in this browser, so your request wasn\'t sent.');
+  // ('off': SAGE has Turnstile switched off and accepts a post with no token.)
+  const gate = turnstileToken ? 'ready' : await turnstileGate();
+  if (gate === 'no-config' || gate === 'no-script') {
+    showContactFallback(err, TURNSTILE_GATE_COPY[gate]);
     pushSubmitError('intake_final', 'turnstile_unavailable');
     btn.textContent = 'Submit Quote Request';
     btn.disabled = false;
     return;
   }
   // If Turnstile token expired or never loaded, try to refresh and wait
-  if (!turnstileToken && window.turnstile) {
+  if (!turnstileToken && gate === 'ready') {
     if (turnstileWidgetId != null) {
       turnstile.reset(turnstileWidgetId);
     } else {
@@ -3856,7 +3880,7 @@ function ensureIntakeMaps() {
   if (_mapsPromise) return _mapsPromise;
   _mapsPromise = intakeConfig().then((cfg) => {
     // A late config answer also gives Turnstile its key if the first request failed.
-    if (cfg && cfg.turnstileSiteKey && !_turnstileSiteKey) _turnstileSiteKey = cfg.turnstileSiteKey;
+    noteTurnstileConfig(cfg);
     if (!cfg || !cfg.googleMapsKey) throw new Error('no Google Maps key');
     return new Promise((resolve, reject) => {
       window._initIntakeAutocomplete = () => { bindIntakeAutocompletes(); resolve(); };

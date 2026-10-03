@@ -41,7 +41,11 @@ function fetchStub(w, answer, posts, extra = {}) {
       if (answer === 'reject') return Promise.reject(new TypeError('Failed to fetch'));
       return Promise.resolve({ ok: answer.status >= 200 && answer.status < 300, status: answer.status, json: () => Promise.resolve(answer.body || {}) });
     }
-    if (u.includes('/api/config')) return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(extra.config || {}) });
+    if (u.includes('/api/config')) {
+      if (extra.configCalls) extra.configCalls.push(u);
+      if (extra.config === 'reject') return Promise.reject(new TypeError('Failed to fetch'));
+      return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(extra.config || {}) });
+    }
     if (u.includes('/api/intake/rules')) return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({ serviceStates: ['KY', 'IN', 'TN'], stateNames: { KY: 'Kentucky' } }) });
     return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({}) });
   };
@@ -163,12 +167,16 @@ describe('/contact failure states', () => {
 });
 
 // ── /intake/ ────────────────────────────────────────────────────────────────
+// sitekey: true (a key), false (config without the field: unknown), '' (SAGE
+// reports Turnstile off), 'reject' (the config request fails every time)
 async function loadIntake({ turnstile = 'ok', answer = { status: 200, body: { ok: true, reference: 'R1' } }, sitekey = true } = {}) {
   const posts = [];
+  const configCalls = [];
+  const config = sitekey === true ? { turnstileSiteKey: SITEKEY } : sitekey === '' ? { turnstileSiteKey: '' } : sitekey === 'reject' ? 'reject' : {};
   const dom = new JSDOM(INTAKE, {
     runScripts: 'dangerously', url: 'https://www.thewayagency.com/intake/',
     beforeParse(w) {
-      w.fetch = fetchStub(w, answer, posts, { config: sitekey ? { turnstileSiteKey: SITEKEY } : {} });
+      w.fetch = fetchStub(w, answer, posts, { config, configCalls });
       w.turnstile = turnstileStub(turnstile);
       w.matchMedia = () => ({ matches: false, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {} });
       w.scrollTo = () => {};
@@ -184,7 +192,7 @@ async function loadIntake({ turnstile = 'ok', answer = { status: 200, body: { ok
   d.getElementById('i_phone').value = '(555) 555-0123';
   w.eval("selectedProducts = ['auto']");
   if (turnstile === 'ok') w.eval(`turnstileToken = ${JSON.stringify(TOKEN)}`);
-  return { w, d, posts };
+  return { w, d, posts, configCalls };
 }
 const intakeErrors = (w) => (w.dataLayer || []).filter((e) => e && e.event === 'lead_submit_error');
 function intakeValuesIntact(d) {
@@ -208,13 +216,38 @@ for (const [label, run, errId, formType] of [
       } finally { ctx.w.close(); }
     });
 
-    test('(a2) Turnstile loaded but no site key from /api/config: fallback, no POST', async () => {
+    test('(a2) Turnstile loaded but /api/config has no turnstileSiteKey field (unknown): fallback, no POST', async () => {
       const ctx = await loadIntake({ turnstile: 'stuck', sitekey: false });
       try {
         ctx.w.eval('turnstileToken = null');
         await run(ctx.w);
         assert.equal(ctx.posts.length, 0);
         checkFallback(ctx.w, ctx.d.getElementById(errId), intakeErrors(ctx.w), formType, 'turnstile_unavailable');
+      } finally { ctx.w.close(); }
+    });
+
+    test('(a3) SAGE reports Turnstile off (empty site key): posts with no token, no fallback', async () => {
+      const ctx = await loadIntake({ turnstile: 'none', sitekey: '', answer: { status: 200, body: { ok: true, reference: 'R1' } } });
+      try {
+        ctx.w.eval('turnstileToken = null');
+        await run(ctx.w);
+        assert.equal(ctx.posts.length, 1, 'an ops switch-off must still let leads through');
+        assert.equal(intakeErrors(ctx.w).length, 0);
+        assert.doesNotMatch(ctx.d.getElementById(errId).textContent, /security check/);
+      } finally { ctx.w.close(); }
+    });
+
+    test('(a4) /api/config unreachable: one retry at submit, then a server (not browser) message, no POST', async () => {
+      const ctx = await loadIntake({ turnstile: 'stuck', sitekey: 'reject' });
+      try {
+        ctx.w.eval('turnstileToken = null');
+        const before = ctx.configCalls.length;
+        await run(ctx.w);
+        assert.ok(ctx.configCalls.length > before, 'the config is requested again at submit');
+        assert.equal(ctx.posts.length, 0);
+        const el = ctx.d.getElementById(errId);
+        checkFallback(ctx.w, el, intakeErrors(ctx.w), formType, 'turnstile_unavailable');
+        assert.match(el.textContent, /couldn't reach our server/);
       } finally { ctx.w.close(); }
     });
 
