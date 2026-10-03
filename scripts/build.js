@@ -235,8 +235,8 @@ const portalPages = assets.copyPortalPages(SRC, BUILD, injectVersion);
 // 8b. Generate llms.txt and llms-full.txt for LLM grounding
 require('./builders/llms').generate(BUILD, { agency: locations.agency, office, landingData, entity });
 
-// 9. Generate sitemap
-const sitemapUrls = generateSitemap(BUILD, { products, landingData, seoData, portalPages, SRC, carriers });
+// 9. Generate sitemap from the built pages (indexable, self-canonical; true dates only)
+const sitemapUrls = generateSitemap(BUILD);
 
 // 10. Generate 404 suggestions data
 try {

@@ -1134,7 +1134,12 @@ const rssItems = [];
 // The rendered posts, with their own front matter (wording logged above).
 // This always was the feed: it read a block-scoped list from step 2 through
 // `typeof`, which is undefined out here, so calendar titles never reached it.
-const rssPosts = posts.map(m => ({ slug: m.slug, title: m.title, description: m.description || '', publish_date: m.date })).slice(0, 20);
+// Newest first (TECH-05): `posts` is in directory order, which is alphabetical,
+// so slicing it unsorted listed the first 20 slugs and never the newest posts.
+// Ties go by slug so two builds give the same feed.
+const rssPosts = posts.map(m => ({ slug: m.slug, title: m.title, description: m.description || '', publish_date: m.date }))
+  .sort((a, b) => (String(b.publish_date) < String(a.publish_date) ? -1 : String(b.publish_date) > String(a.publish_date) ? 1 : (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0)))
+  .slice(0, 20);
 // Build author/category map from posts metadata
 const postMetaMap = {};
 for (const m of posts) postMetaMap[m.slug] = m;
@@ -1161,8 +1166,8 @@ for (const p of rssPosts) {
 
   rssItems.push(`    <item>
       <title><![CDATA[${cdata(p.title)}]]></title>
-      <link>https://www.thewayagency.com/blog/${esc(p.slug)}.html</link>
-      <guid isPermaLink="true">https://www.thewayagency.com/blog/${esc(p.slug)}.html</guid>
+      <link>https://www.thewayagency.com/blog/${esc(p.slug)}</link>
+      <guid isPermaLink="false">https://www.thewayagency.com/blog/${esc(p.slug)}.html</guid>
       <pubDate>${new Date(p.publish_date + 'T12:00:00').toUTCString()}</pubDate>
       <dc:creator><![CDATA[${cdata(author)}]]></dc:creator>${category ? `
       <category><![CDATA[${cdata(category)}]]></category>` : ''}

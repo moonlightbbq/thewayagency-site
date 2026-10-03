@@ -81,7 +81,13 @@ for (const file of htmlFiles) {
 }
 if (brokenLinks === 0) pass('No broken internal links');
 
-// 3. Sitemap URLs resolve
+// 3. Sitemap (TECH-04): every URL resolves, and the file is exactly what
+// scripts/builders/sitemap.js renders from this build (indexable,
+// self-canonical pages; true dates only), so a stale or hand-edited sitemap fails.
+const { SITE_ORIGIN, routeOfFile } = require('./lib/site-urls');
+const routes = new Set(htmlFiles
+  .filter(f => !path.relative(BUILD, f).startsWith('src' + path.sep))
+  .map(f => routeOfFile(path.relative(BUILD, f))));
 const sitemapPath = path.join(BUILD, 'sitemap.xml');
 if (fs.existsSync(sitemapPath)) {
   const sitemap = fs.readFileSync(sitemapPath, 'utf8');
@@ -92,14 +98,29 @@ if (fs.existsSync(sitemapPath)) {
   while ((sitemapMatch = urlRegex.exec(sitemap)) !== null) {
     sitemapTotal++;
     const urlPath = sitemapMatch[1];
-    // Cloudflare Pages serves /foo from /foo.html (pretty URLs). Sitemap declares
-    // the served URL (extensionless), so accept both /foo and /foo.html on disk.
-    if (!allPaths.has(urlPath) && !allPaths.has(urlPath + '.html') && !allPaths.has(urlPath + 'index.html') && !allPaths.has(urlPath.replace(/\/$/, '/index.html'))) {
-      error(`Sitemap URL not found: ${urlPath}`);
+    // A <loc> is the served URL: /foo (from foo.html) or /dir/ (from dir/index.html).
+    if (!routes.has(urlPath)) {
+      error(`Sitemap URL is not a served page: ${urlPath}${urlPath.endsWith('.html') ? ' (.html URLs 308 to the extensionless form)' : ''}`);
       sitemapBroken++;
     }
   }
   if (sitemapBroken === 0) pass(`All ${sitemapTotal} sitemap URLs resolve`);
+  const { sitemapEntries, renderSitemap, W3C_DATE } = require('./builders/sitemap');
+  const entries = sitemapEntries(BUILD);
+  let sitemapProblems = 0;
+  if (/<changefreq>|<priority>/.test(sitemap)) { error('Sitemap prints <changefreq> or <priority> (ignored by Google and Bing)'); sitemapProblems++; }
+  for (const m of sitemap.matchAll(/<lastmod>([^<]*)<\/lastmod>/g)) {
+    if (!W3C_DATE.test(m[1])) { error(`Sitemap lastmod is not a full W3C date: ${m[1]}`); sitemapProblems++; }
+  }
+  if (sitemap !== renderSitemap(entries)) {
+    const want = new Set(entries.map(e => e.loc));
+    const got = new Set([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]));
+    const missing = [...want].filter(u => !got.has(u));
+    const extra = [...got].filter(u => !want.has(u));
+    error(`sitemap.xml differs from scripts/builders/sitemap.js over this build (missing ${missing.length}: ${missing.slice(0, 3).join(' ')}; extra ${extra.length}: ${extra.slice(0, 3).join(' ')}; else a lastmod differs)`);
+    sitemapProblems++;
+  }
+  if (sitemapProblems === 0) pass(`Sitemap matches the build: ${entries.length} indexable pages, ${entries.filter(e => e.lastmod).length} with a stated lastmod, no changefreq/priority`);
 } else {
   error('sitemap.xml not found');
 }
@@ -310,6 +331,18 @@ if (fs.existsSync(redirectsPath)) {
   if (conflicts === 0) pass(`${redirectSources.length} redirects, no conflicts`);
 }
 
+// 9b. Redirects (TECH-07): one hop to a built page. No host rules, no .html
+// or /index.html destination, no destination another rule redirects again,
+// no static rule hidden below a splat that matches it first.
+if (fs.existsSync(redirectsPath)) {
+  const { redirectProblems } = require('./lib/url-hygiene');
+  const builtFiles = new Set();
+  for (const p of allPaths) if (!p.endsWith('/')) builtFiles.add(p.replace(/^\//, ''));
+  const problems = redirectProblems(fs.readFileSync(redirectsPath, 'utf8'), routes, builtFiles);
+  for (const p of problems) error(p);
+  if (problems.length === 0) pass('Every redirect is one hop to a built page (no .html destinations, no host rules)');
+}
+
 // 10. Privacy guards (TRUST-08 / TRUST-12). Plain string and regex checks on the
 // built files: CI runs this on Node 18 without `npm ci`, so no dependencies.
 {
@@ -408,6 +441,43 @@ if (fs.existsSync(redirectsPath)) {
   // guard has stopped seeing them, which must fail, not pass quietly.
   if (inlineForms === 0) perr('Privacy: no inline quote forms found (expected on product, hub and industry pages)');
   if (privacyErrors === 0) pass(`Privacy guards: hand-off, intake URL scrub, Meta payload, Clarity masks and ${inlineForms} inline forms checked`);
+}
+
+// 11. Blog feed (TECH-05): the 20 newest rendered posts, newest first, at
+// extensionless URLs; old .html guids kept with isPermaLink="false".
+{
+  const feedPath = path.join(BUILD, 'blog', 'feed.xml');
+  if (fs.existsSync(feedPath)) {
+    const { feedProblems } = require('./lib/url-hygiene');
+    const { LEGACY_BLOG_PAGES } = require('./lib/legacy-blog-pages');
+    const posts = [];
+    for (const name of fs.readdirSync(path.join(BUILD, 'blog'))) {
+      if (!name.endsWith('.html') || name === 'index.html' || Object.prototype.hasOwnProperty.call(LEGACY_BLOG_PAGES, name)) continue;
+      const html = fs.readFileSync(path.join(BUILD, 'blog', name), 'utf8');
+      const m = /"@type":\s*"Article"[\s\S]*?"datePublished":\s*"([^"]*)"/.exec(html);
+      posts.push({ slug: name.slice(0, -'.html'.length), date: m ? m[1] : '' });
+    }
+    posts.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0)));
+    const problems = feedProblems(fs.readFileSync(feedPath, 'utf8'), { routes, expectedSlugs: posts.map(p => p.slug) });
+    for (const p of problems) error(p);
+    if (problems.length === 0) pass(`Feed lists the ${Math.min(20, posts.length)} newest posts, newest first, at extensionless URLs`);
+  } else {
+    error('blog/feed.xml not found');
+  }
+}
+
+// 12. robots.txt (AEO-03 Option A): the 16 search and answer crawlers stay
+// allowed and the 7 AI-training crawlers are disallowed.
+{
+  const robotsPath = path.join(BUILD, 'robots.txt');
+  if (fs.existsSync(robotsPath)) {
+    const { robotsPolicyProblems, SEARCH_AND_ANSWER_AGENTS, TRAINING_AGENTS } = require('./lib/robots-txt');
+    const problems = robotsPolicyProblems(fs.readFileSync(robotsPath, 'utf8'));
+    for (const p of problems) error(p);
+    if (problems.length === 0) pass(`robots.txt: ${SEARCH_AND_ANSWER_AGENTS.length} search/answer crawlers allowed, ${TRAINING_AGENTS.length} training crawlers disallowed`);
+  } else {
+    error('robots.txt not found in build/');
+  }
 }
 
 // Summary

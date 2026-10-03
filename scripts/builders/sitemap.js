@@ -1,134 +1,115 @@
 /**
- * Sitemap Generator
- * Generates sitemap.xml from all built pages.
+ * Sitemap: every page the build emits that may be indexed, at its served URL
+ * (TECH-04; url-hygiene spec 3.7 Step 1).
+ *
+ * Listed: a built .html outside build/src/, no robots noindex, and a
+ * rel=canonical to its own served URL. So a noindexed, canonicalised-elsewhere
+ * or removed page drops out with no change here.
+ *
+ * lastmod: only a full date the page itself states. Today that is a markdown
+ * blog post's Article dateModified (generate-blog.js: front matter
+ * `modified || date`), and /blog/, which takes the newest listed post's
+ * datePublished (a new card is what changes the index). Every other page has
+ * none: Google uses lastmod only if it is "consistently and verifiably
+ * accurate" (Build and submit a sitemap, updated 2026-07-08), and Bing asks
+ * sites never to use the sitemap's generation time. The 12 frozen hand-made
+ * posts (scripts/lib/legacy-blog-pages.js) get none either: their
+ * dateModified equals datePublished only because no real date of their last
+ * edit is known (entity-schema D5 default), so it is not a true lastmod.
+ * Google and Bing ignore changefreq and priority, so neither is printed.
+ *
+ * The output depends only on the built pages: two builds of one commit give
+ * byte-identical files (no build time, no file mtime, code-unit sort order).
  */
-
 const fs = require('fs');
 const path = require('path');
+const { SITE_ORIGIN, routeOfFile } = require('../lib/site-urls');
+const { LEGACY_BLOG_PAGES } = require('../lib/legacy-blog-pages');
 
-function generateSitemap(BUILD, ctx) {
-  const { products, landingData, seoData, portalPages, SRC, carriers } = ctx;
-  const baseUrl = 'https://www.thewayagency.com';
-  const today = new Date().toISOString().split('T')[0];
+const W3C_DATE = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2}))?$/;
 
-  function seoLastmod(urlPath) {
-    const entry = seoData.pages && seoData.pages[urlPath];
-    return entry && entry.last_reviewed ? entry.last_reviewed + '-01' : null;
-  }
+/**
+ * Indexable pages held out of the sitemap until the owner decides (url-hygiene
+ * D4, TRUST-09): whether /about/careers/apply stays indexable, and which job
+ * postings are open. They were never listed; this keeps them so. When the
+ * owner rules, noindex or remove the page (it then drops out by itself) or
+ * delete its line here.
+ */
+const HELD_FOR_OWNER = new Set([
+  '/about/careers/apply',
+  '/about/careers/employee-benefits-leader',
+  '/about/careers/intern',
+  '/about/careers/pc-insurance-agent',
+]);
 
-  function fileLastmod(urlPath) {
-    let rel = urlPath;
-    if (rel.endsWith('/')) rel += 'index.html';
-    const filePath = path.join(BUILD, rel.replace(/^\//, ''));
-    try {
-      return fs.statSync(filePath).mtime.toISOString().split('T')[0];
-    } catch {
-      return null;
+const byCodeUnit = (a, b) => (a < b ? -1 : a > b ? 1 : 0);
+
+function listHtml(BUILD) {
+  const out = [];
+  (function walk(dir) {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => byCodeUnit(a.name, b.name))) {
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) { if (path.relative(BUILD, full) !== 'src') walk(full); }
+      else if (e.name.endsWith('.html')) out.push(full);
     }
-  }
-
-  const lineMap = {
-    personal:   { name: 'Personal Insurance',   slug: 'personal' },
-    commercial: { name: 'Commercial Insurance', slug: 'commercial' },
-    life:       { name: 'Life Insurance',       slug: 'life' },
-    health:     { name: 'Health Insurance',     slug: 'health' },
-  };
-
-  const sitemapUrls = [
-    { url: '/', priority: '1.0', freq: 'weekly', lastmod: seoLastmod('/') },
-    { url: '/personal/',   priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/personal/') },
-    { url: '/commercial/', priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/commercial/') },
-    { url: '/life/',       priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/life/') },
-    { url: '/health/',     priority: '0.8', freq: 'monthly', lastmod: seoLastmod('/health/') },
-    { url: '/about/', priority: '0.7', freq: 'monthly', lastmod: seoLastmod('/about/') },
-    { url: '/about/team.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/about/team.html') },
-    { url: '/about/locations.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/about/locations.html') },
-    { url: '/about/claims.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/about/claims.html') },
-    { url: '/blog/', priority: '0.7', freq: 'weekly', lastmod: seoLastmod('/blog/') },
-    { url: '/contact.html', priority: '0.6', freq: 'monthly', lastmod: seoLastmod('/contact.html') },
-    { url: '/disclosures.html', priority: '0.5', freq: 'monthly', lastmod: seoLastmod('/disclosures.html') },
-    { url: '/privacy-notice.html', priority: '0.5', freq: 'monthly', lastmod: seoLastmod('/privacy-notice.html') },
-    { url: '/ai-disclosure.html', priority: '0.5', freq: 'monthly', lastmod: seoLastmod('/ai-disclosure.html') },
-    { url: '/information-security.html', priority: '0.5', freq: 'monthly', lastmod: seoLastmod('/information-security.html') },
-  ];
-
-  // Add all product pages
-  for (const [lineKey, lineInfo] of Object.entries(lineMap)) {
-    for (const product of (products[lineKey] || [])) {
-      sitemapUrls.push({ url: product.url, priority: '0.7', freq: 'monthly', lastmod: product.last_reviewed ? product.last_reviewed + '-01' : null });
-    }
-  }
-
-  // Add geo city pages
-  for (const city of landingData.cities) {
-    sitemapUrls.push({ url: `/insurance/${city.slug}.html`, priority: '0.8', freq: 'monthly' });
-  }
-
-  // Add county hub pages
-  for (const county of (landingData.counties || [])) {
-    sitemapUrls.push({ url: `/insurance/${county.slug}.html`, priority: '0.8', freq: 'monthly' });
-  }
-
-  // City+product bridge pages are intentionally omitted from the sitemap.
-  // They render with <meta name="robots" content="noindex, follow"> and serve
-  // as ad/landing destinations only — keeps Google's crawl budget on hub pages.
-
-  // Add industry pages
-  for (const ind of landingData.industries) {
-    sitemapUrls.push({ url: `/industries/${ind.slug}.html`, priority: '0.6', freq: 'monthly' });
-  }
-
-  // Add carrier pages
-  if (carriers) {
-    sitemapUrls.push({ url: '/carriers/', priority: '0.6', freq: 'monthly' });
-    const seenSlugs = new Set();
-    for (const line of ['personal', 'commercial']) {
-      for (const c of (carriers[line] || [])) {
-        if (c.description && !seenSlugs.has(c.slug)) {
-          seenSlugs.add(c.slug);
-          sitemapUrls.push({ url: `/carriers/${c.slug}.html`, priority: '0.5', freq: 'monthly' });
-        }
-      }
-    }
-  }
-
-  // Add blog posts
-  const blogDir = path.join(BUILD, 'blog');
-  if (fs.existsSync(blogDir)) {
-    for (const file of fs.readdirSync(blogDir)) {
-      if (file.endsWith('.html') && file !== 'index.html') {
-        sitemapUrls.push({ url: `/blog/${file}`, priority: '0.5', freq: 'monthly' });
-      }
-    }
-  }
-
-  // Add portal pages to sitemap
-  for (const page of portalPages) {
-    if (page.sitemap && fs.existsSync(path.join(SRC, page.src))) {
-      sitemapUrls.push({ url: page.sitemap, priority: '0.8', freq: 'monthly' });
-    }
-  }
-
-  // Cloudflare Pages serves /foo from /foo.html (pretty URLs) and 308-redirects
-  // requests with the .html extension to the extensionless form. Sitemap entries
-  // must declare the served URL (extensionless) so Google does not crawl through
-  // the redirect chain. fileLastmod still resolves the .html file on disk.
-  const stripHtml = (u) => u.replace(/\.html$/, '');
-
-  const sitemapXml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${sitemapUrls.map(u => `  <url>
-    <loc>${baseUrl}${stripHtml(u.url)}</loc>
-    <lastmod>${u.lastmod || fileLastmod(u.url) || today}</lastmod>
-    <changefreq>${u.freq}</changefreq>
-    <priority>${u.priority}</priority>
-  </url>`).join('\n')}
-</urlset>`;
-
-  fs.writeFileSync(path.join(BUILD, 'sitemap.xml'), sitemapXml);
-  console.log(`  ✓ sitemap.xml (${sitemapUrls.length} URLs)`);
-
-  return sitemapUrls;
+  })(BUILD);
+  return out;
 }
 
-module.exports = { generateSitemap };
+/** robots, canonical and the Article dates a page states. */
+function pageFacts(html) {
+  const robots = /<meta\s+name="robots"\s+content="([^"]*)"/i.exec(html);
+  const canonical = /<link\s+rel="canonical"\s+href="([^"]*)"/i.exec(html);
+  let dateModified = null;
+  let datePublished = null;
+  for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+    let data;
+    try { data = JSON.parse(m[1]); } catch { continue; }
+    for (const n of [].concat(data && data['@graph'] ? data['@graph'] : data)) {
+      if (n && ['Article', 'BlogPosting'].includes(n['@type']) && W3C_DATE.test(String(n.dateModified || ''))) {
+        dateModified = String(n.dateModified);
+        datePublished = W3C_DATE.test(String(n.datePublished || '')) ? String(n.datePublished) : null;
+      }
+    }
+  }
+  return { noindex: Boolean(robots && /\bnoindex\b/i.test(robots[1])), canonical: canonical ? canonical[1] : null, dateModified, datePublished };
+}
+
+const isLegacyPost = (route) => route.startsWith('/blog/') && Object.prototype.hasOwnProperty.call(LEGACY_BLOG_PAGES, route.slice('/blog/'.length) + '.html');
+
+function sitemapEntries(BUILD) {
+  const entries = [];
+  for (const file of listHtml(BUILD)) {
+    const route = routeOfFile(path.relative(BUILD, file));
+    if (route === '/404' || HELD_FOR_OWNER.has(route)) continue;
+    const facts = pageFacts(fs.readFileSync(file, 'utf8'));
+    if (facts.noindex || facts.canonical !== SITE_ORIGIN + route) continue;
+    const dated = !isLegacyPost(route);
+    entries.push({
+      route,
+      loc: SITE_ORIGIN + route,
+      lastmod: dated ? facts.dateModified : null,
+      datePublished: dated ? facts.datePublished : null,
+    });
+  }
+  // /blog/ changes when a post is added: its lastmod is the newest listed post's datePublished.
+  const newest = entries.map((e) => e.datePublished).filter(Boolean).sort().pop();
+  const index = entries.find((e) => e.route === '/blog/');
+  if (index && newest) index.lastmod = newest;
+  return entries.sort((a, b) => (a.route === '/' ? -1 : b.route === '/' ? 1 : byCodeUnit(a.route, b.route)));
+}
+
+function renderSitemap(entries) {
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    + entries.map((e) => `  <url>\n    <loc>${e.loc}</loc>\n${e.lastmod ? `    <lastmod>${e.lastmod}</lastmod>\n` : ''}  </url>`).join('\n')
+    + '\n</urlset>\n';
+}
+
+function generateSitemap(BUILD) {
+  const entries = sitemapEntries(BUILD);
+  fs.writeFileSync(path.join(BUILD, 'sitemap.xml'), renderSitemap(entries));
+  console.log(`  ✓ sitemap.xml (${entries.length} URLs, ${entries.filter((e) => e.lastmod).length} with lastmod)`);
+  return entries;
+}
+
+module.exports = { generateSitemap, sitemapEntries, renderSitemap, pageFacts, HELD_FOR_OWNER, W3C_DATE };
