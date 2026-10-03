@@ -27,19 +27,19 @@
 const crypto = require('crypto');
 
 const LEGACY_BLOG_PAGES = Object.freeze({
-  'after-car-accident-kentucky.html': '123f3800c48c6f6fd9510640be8db323e85e2dfb5d8d2ba821fe013841782f28',
-  'bundling-home-auto.html': 'caf2601007f60210b5f4bc9077933c4728eb2140f3d40ba6b9ad3d62e359e2a1',
-  'cyber-safety.html': 'b2815d5efda02988fdbd5f209e788a1e58fe746942f6bb4b24586b1eaf14be90',
-  'earthquake-insurance.html': '2e1fae31547546a177ee12e09e4ffdc5921cb31f5d1b3dd236dfde625d6adf79',
-  'home-vs-landlord-insurance.html': 'f96fec8ec1bb152a725de320c562d4706b503590f8c1750fc2f2127be1a44938',
-  'index.html': 'c20d7b20b2be28b3a103dc130b085abf24431d656057dbdcf349ef5655c02cbe',
-  'landlord-insurance.html': 'c66defab1ecae64e7aafc0b6376c9605b4888f2ac93f681c80761b0d51e036c3',
-  'medicare-enrollment-guide.html': '406c8425d1b6ee9f43cefd630d16996bbec37d7fee294571ac307a8982e9d774',
-  'pet-insurance-guide.html': 'c2304f9c7a103eb8e7e69d9aecc647041e022051f9627853a14c1d815591cc06',
-  'tornado-season.html': 'ffccc953b16c11c1e3aea10a51966d93a2e2c30c0e19fccd12d282f1b0c2ea32',
-  'understanding-deductibles.html': 'e4700e0adc4f18ce8e41cc8285efe933c64f8271246c03e276484c9040050a54',
-  'winter-storm.html': '0d2078c5696c8256236a7f1a7249370c956abb652496a749b282bbb2c4b4a52a',
-  'workers-comp-kentucky.html': '1766fd6f789e14642b8ff5b274a1ba70104246ce13eb17145b60b0395dc909ea',
+  'after-car-accident-kentucky.html': '00a4dc24eca403e3a87e7b12c5806f7b110a766a544a5121d42c5c1e421646de',
+  'bundling-home-auto.html': 'ad14538f18add71e0f9433dac7e8ca7d16fb25060fc85610c97f2923881e7dde',
+  'cyber-safety.html': '3217d72aff522f0a351578afc9d7bda59a80e1677e0fd8c0ddc8431e10440e57',
+  'earthquake-insurance.html': '000d83792aee21fa5c25348e27407013850f374cd45740ec1866b1a3dc874946',
+  'home-vs-landlord-insurance.html': '57acab7fb1cacaa0cfee3ca3403af71888de6f94f2187ea3123d7bd8c6e49b52',
+  'index.html': '36b0ad7e76950c8f09778041b5e059f129f39a4af023bce63f7f8a170540ebb9',
+  'landlord-insurance.html': '2accc51867f7ba7ec7b11d72b52a70d45a16594b1d73741ce09428a169472d39',
+  'medicare-enrollment-guide.html': '7a097a40dcba53e55893154fa7bb6012114cab6d4cbd618ea9a4662c178cdf04',
+  'pet-insurance-guide.html': '2175de8960905ccdc5f7231e939307868d1e384e78192a5c2809995ea60339d5',
+  'tornado-season.html': '5e0ea9fc94e4c2c5faac2a4479e9d897266380781d2df2d2bf6dddb3159cc270',
+  'understanding-deductibles.html': '71dc89adc875c7a90088364b4beb76ba054ad2ab3a53608d7cd2ec07f2f6dddc',
+  'winter-storm.html': '14d766135361a06438a2073f6e14ee93795542aec3a7784b2f456f04ba26b177',
+  'workers-comp-kentucky.html': 'b6b652083d8052e2da45ab2a5ec7b0fe0fcba5bd391f08d2c0fd496c6900190a',
 });
 
 /** sha256 hex of a page's text, CRLF read as LF. */
