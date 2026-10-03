@@ -1,0 +1,294 @@
+{
+  "_comment": "CONT-05: facts for the standalone carrier pages, each taken from the carrier's own website and dated (as_of = the day the page was read). No appointment claims: whether the agency is appointed with a carrier is owner decision D6 (data/carriers.json appointment_verified_on). A rating prints only with a grade, an as-of date and the carrier's source page. Re-check every fact and link before publishing and at least every 90 days; remove any that no longer appear on the source.",
+  "berkshire-guard": {
+    "summary": "Berkshire Hathaway GUARD Insurance Companies write small business insurance through independent agents and brokers and are ultimately owned by Berkshire Hathaway Inc.",
+    "facts": [
+      {
+        "text": "GUARD says its companies are ultimately owned by Berkshire Hathaway Inc. and sell through a network of independent agents and brokers.",
+        "source_label": "GUARD, About Us",
+        "source_url": "https://www.guard.com/about-us/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "GUARD lists five subsidiary insurers: AmGUARD Insurance Company, AZGUARD Insurance Company, EastGUARD Insurance Company, NorGUARD Insurance Company and WestGUARD Insurance Company.",
+        "source_label": "GUARD, About Us",
+        "source_url": "https://www.guard.com/about-us/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "GUARD says it is headquartered in Wilkes-Barre, Pennsylvania, and was established in 1983.",
+        "source_label": "GUARD, About Us",
+        "source_url": "https://www.guard.com/about-us/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "GUARD's products are businessowner's policies, commercial auto, commercial umbrella, disability, general liability and inland marine, and workers' compensation. Availability varies by state; GUARD's operating area map shows each product's states.",
+        "source_label": "GUARD, Operating Area",
+        "source_url": "https://www.guard.com/operating-area/",
+        "as_of": "2026-10-03"
+      }
+    ],
+    "am_best": {
+      "rating": "A+",
+      "descriptor": "Superior",
+      "as_of": "2026-08-12",
+      "source_url": "https://www.guard.com/about-us/"
+    },
+    "links": [
+      {
+        "label": "GUARD Claims Center",
+        "url": "https://www.guard.com/claims/"
+      },
+      {
+        "label": "GUARD Customer Center (policy service and contact)",
+        "url": "https://www.guard.com/contact-us/"
+      }
+    ],
+    "product_links": [
+      {
+        "name": "General liability",
+        "url": "/commercial/general-liability"
+      },
+      {
+        "name": "Workers' compensation",
+        "url": "/commercial/workers-compensation"
+      },
+      {
+        "name": "Commercial auto",
+        "url": "/commercial/commercial-auto"
+      }
+    ]
+  },
+  "steadily": {
+    "summary": "Steadily writes landlord insurance for owners of rental properties, from single-family homes to multi-family buildings and short-term rentals.",
+    "facts": [
+      {
+        "text": "Steadily writes landlord insurance for single-family, multi-family, accessory dwelling unit, condo unit, and vacant and restoration properties, and for short-term rentals.",
+        "source_label": "Steadily",
+        "source_url": "https://www.steadily.com/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "The coverages Steadily lists include fire, water, storm and hail, legal liability, loss of rent, and vandalism and burglary.",
+        "source_label": "Steadily",
+        "source_url": "https://www.steadily.com/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "Steadily says Steadily Insurance Company, an Arizona insurance company, and Steadily Insurance Agency, Inc. are fully owned subsidiaries of Steadily, Inc.",
+        "source_label": "Steadily",
+        "source_url": "https://www.steadily.com/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "Steadily lists coverage in all 50 states, Kentucky included.",
+        "source_label": "Steadily",
+        "source_url": "https://www.steadily.com/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "Steadily describes loss of rent coverage, also called fair rental value coverage, as replacing the rental income you lose when a covered event makes a rental uninhabitable.",
+        "source_label": "Steadily",
+        "source_url": "https://www.steadily.com/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "Steadily says it writes liability coverage from $300,000 to $2 million into every landlord policy.",
+        "source_label": "Steadily",
+        "source_url": "https://www.steadily.com/",
+        "as_of": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "label": "Steadily claims",
+        "url": "https://www.steadily.com/claims"
+      }
+    ],
+    "product_links": [
+      {
+        "name": "Home insurance",
+        "url": "/personal/home"
+      }
+    ]
+  },
+  "obie": {
+    "summary": "Obie offers landlord insurance for real estate investors and property managers, from single-family rentals to larger multifamily buildings.",
+    "facts": [
+      {
+        "text": "Obie offers landlord insurance for single-family homes, multifamily buildings of two to four units, buildings with five or more units, and condo units.",
+        "source_label": "Obie",
+        "source_url": "https://www.obieinsurance.com/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "Obie describes its customers as landlords, real estate investors and property managers, and also works with lenders and technology partners.",
+        "source_label": "Obie, About Us",
+        "source_url": "https://www.obieinsurance.com/about-us",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "Obie's site names Obie Insurance Group, LLC and Obie Insurance Services, LLC, with their license numbers.",
+        "source_label": "Obie",
+        "source_url": "https://www.obieinsurance.com/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "Obie describes build-to-rent coverage for purpose-built rental homes and communities, addressing construction, property, liability, vacancy and rental income risks.",
+        "source_label": "Obie",
+        "source_url": "https://www.obieinsurance.com/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "Obie publishes a Risk Map that shows local property risks.",
+        "source_label": "Obie",
+        "source_url": "https://www.obieinsurance.com/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "Obie also offers embedded insurance, which lenders, platforms and real estate technology providers add to their own customer journeys through its APIs.",
+        "source_label": "Obie, About Us",
+        "source_url": "https://www.obieinsurance.com/about-us",
+        "as_of": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "label": "Obie claims",
+        "url": "https://app.obieinsurance.com/claims"
+      }
+    ],
+    "product_links": [
+      {
+        "name": "Home insurance",
+        "url": "/personal/home"
+      },
+      {
+        "name": "Commercial property",
+        "url": "/commercial/commercial-property"
+      }
+    ]
+  },
+  "hartford": {
+    "summary": "The Hartford writes small business insurance, including business owner's policies, general liability, workers' compensation and commercial auto.",
+    "facts": [
+      {
+        "text": "The Hartford says it has supported and protected people and businesses for more than 200 years.",
+        "source_label": "The Hartford, About Us",
+        "source_url": "https://www.thehartford.com/about-us",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "The Hartford's small business coverages include general liability, workers' compensation, professional liability, commercial property, commercial auto and cyber insurance.",
+        "source_label": "The Hartford, Business Insurance",
+        "source_url": "https://www.thehartford.com/business-insurance",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "The Hartford describes its business owner's policy as combining general liability, commercial property and business income insurance in one policy.",
+        "source_label": "The Hartford, Business Insurance",
+        "source_url": "https://www.thehartford.com/business-insurance",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "The Hartford says employment practices liability insurance may be added to its business owner's policy, for claims such as wrongful termination, discrimination and harassment.",
+        "source_label": "The Hartford, Business Insurance",
+        "source_url": "https://www.thehartford.com/business-insurance",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "The Hartford also offers insurance for midsize and large businesses and employee benefits for employers.",
+        "source_label": "The Hartford, About Us",
+        "source_url": "https://www.thehartford.com/about-us",
+        "as_of": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "label": "The Hartford claims",
+        "url": "https://www.thehartford.com/claims"
+      }
+    ],
+    "product_links": [
+      {
+        "name": "General liability",
+        "url": "/commercial/general-liability"
+      },
+      {
+        "name": "Workers' compensation",
+        "url": "/commercial/workers-compensation"
+      },
+      {
+        "name": "Commercial property",
+        "url": "/commercial/commercial-property"
+      },
+      {
+        "name": "Commercial auto",
+        "url": "/commercial/commercial-auto"
+      }
+    ]
+  },
+  "liberty-mutual": {
+    "summary": "Liberty Mutual writes personal and business insurance and sells through independent agents as well as its own channels.",
+    "facts": [
+      {
+        "text": "Liberty Mutual says independent agents sell its policies alongside policies from other insurance companies.",
+        "source_label": "Liberty Mutual, Independent Agents",
+        "source_url": "https://agents.libertymutual.com/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "Liberty Mutual's business insurance solutions include general liability, property, commercial auto and fleet, workers compensation, umbrella and excess liability, cyber, professional liability and surety.",
+        "source_label": "Liberty Mutual Business Insurance",
+        "source_url": "https://business.libertymutual.com/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "Liberty Mutual Insurance gives 175 Berkeley Street, Boston, Massachusetts as its address.",
+        "source_label": "Liberty Mutual, Independent Agents",
+        "source_url": "https://agents.libertymutual.com/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "Ironshore, a Liberty Mutual company, offers specialty and excess and surplus insurance through the wholesale market for U.S. businesses with complex risks.",
+        "source_label": "Liberty Mutual Business Insurance",
+        "source_url": "https://business.libertymutual.com/",
+        "as_of": "2026-10-03"
+      },
+      {
+        "text": "Liberty Mutual lists industry practices that include construction, manufacturing, real estate, professional services and public entities.",
+        "source_label": "Liberty Mutual Business Insurance",
+        "source_url": "https://business.libertymutual.com/",
+        "as_of": "2026-10-03"
+      }
+    ],
+    "links": [
+      {
+        "label": "Liberty Mutual claims center (personal policies)",
+        "url": "https://www.libertymutual.com/claims-center"
+      },
+      {
+        "label": "Liberty Mutual business claims",
+        "url": "https://business.libertymutual.com/claims/report-a-claim"
+      }
+    ],
+    "product_links": [
+      {
+        "name": "Home insurance",
+        "url": "/personal/home"
+      },
+      {
+        "name": "Auto insurance",
+        "url": "/personal/auto"
+      },
+      {
+        "name": "General liability",
+        "url": "/commercial/general-liability"
+      },
+      {
+        "name": "Workers' compensation",
+        "url": "/commercial/workers-compensation"
+      }
+    ]
+  }
+}

@@ -157,3 +157,25 @@
 /blog/index.html /blog/ 301
 /carrier /carriers/ 301
 /carriers/index.html /carriers/ 301
+
+# ─── Carrier pages consolidated 2026-10 (CONT-05, owner D6; keep at least a year) ───
+# The thin carrier pages 301 to their anchored entry on /carriers/. Pages
+# defaults fragment destinations to 302, so the status is explicit.
+/carriers/adaptive /carriers/#adaptive 301
+/carriers/adaptive.html /carriers/#adaptive 301
+/carriers/allstate /carriers/#allstate 301
+/carriers/allstate.html /carriers/#allstate 301
+/carriers/american-modern /carriers/#american-modern 301
+/carriers/american-modern.html /carriers/#american-modern 301
+/carriers/chubb /carriers/#chubb 301
+/carriers/chubb.html /carriers/#chubb 301
+/carriers/geico /carriers/#geico 301
+/carriers/geico.html /carriers/#geico 301
+/carriers/hiscox /carriers/#hiscox 301
+/carriers/hiscox.html /carriers/#hiscox 301
+/carriers/progressive /carriers/#progressive 301
+/carriers/progressive.html /carriers/#progressive 301
+/carriers/travelers /carriers/#travelers 301
+/carriers/travelers.html /carriers/#travelers 301
+/carriers/zurich /carriers/#zurich 301
+/carriers/zurich.html /carriers/#zurich 301

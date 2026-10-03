@@ -1,0 +1,150 @@
+{
+  "_comment": "MKT-02 (priority-hubs R3-1): line sections for the two priority hubs. DRAFTS: a section renders only after its signoff names the licensed reviewer, the license line they hold and the date (owner decision D9; content-accuracy D1 rotation). Until then the hub keeps its current copy. A section with `gates` also needs an ISO date recorded against every named gate (the life sections wait on TRUST-01 and on the owner's OA-25 confirmation of a life appointment). A signed section with `replaces` takes the place of the existing section with that heading. Every number comes from the linked source, read on the accessed date; re-check figures before signing. No Medicare copy or links here (D16, TRUST-01). Keep each section under 20% 5-word overlap with every other hub.",
+  "hubs": {
+    "owensboro-ky": [
+      {
+        "slug": "auto",
+        "replaces": "Auto insurance in Owensboro",
+        "heading": "Auto insurance in Owensboro",
+        "paragraphs_html": [
+          "Owensboro workers average a 17.1-minute commute, according to the Census Bureau's 2020-2024 American Community Survey, so most driving here is short trips across town and around Daviess County. Insurers rate a car by where it is kept and how it is used, so give us the real commute and any business driving when we quote.",
+          "A Kentucky auto policy has to carry at least $25,000 of bodily injury liability per person and $50,000 per accident, plus $25,000 for property damage, or a $60,000 single limit, along with basic reparation benefits (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758\">KRS 304.39-110(1)</a>). We quote higher limits next to the minimum so you can compare the cost. Start with our <a href=\"/personal/auto\">auto insurance</a> page."
+        ],
+        "sources": [
+          { "label": "U.S. Census Bureau QuickFacts, Owensboro city, Kentucky (mean travel time to work, 2020-2024)", "url": "https://www.census.gov/quickfacts/fact/table/owensborocitykentucky/PST045224", "accessed": "2026-10-03" },
+          { "label": "KRS 304.39-110", "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758", "accessed": "2026-10-03" }
+        ],
+        "product_links": ["/personal/auto"],
+        "signoff": null
+      },
+      {
+        "slug": "homeowners",
+        "replaces": "Homeowners insurance in Owensboro",
+        "heading": "Home and renters insurance in Owensboro",
+        "paragraphs_html": [
+          "The National Weather Service puts flood stage for the Ohio River at Owensboro at 40 feet, moderate flooding at 44 feet and major flooding at 49 feet. FEMA notes that most homeowners insurance does not cover flood damage, so a home near the river or a low-lying creek needs a separate <a href=\"/personal/flood\">flood insurance</a> policy, bought well before the water rises.",
+          "In Owensboro, 57.4 percent of occupied homes are owner-occupied (2020-2024 American Community Survey), so a large share of residents rent. A landlord's policy covers the building, not a tenant's belongings or liability, which is what <a href=\"/personal/renters\">renters insurance</a> is for. Owners can start with <a href=\"/personal/home\">home insurance</a>."
+        ],
+        "sources": [
+          { "label": "National Weather Service, Ohio River at Owensboro (OWBK2) flood categories", "url": "https://water.noaa.gov/gauges/owbk2", "accessed": "2026-10-03" },
+          { "label": "FEMA FloodSmart", "url": "https://www.floodsmart.gov/", "accessed": "2026-10-03" },
+          { "label": "U.S. Census Bureau QuickFacts, Owensboro city, Kentucky (owner-occupied housing unit rate, 2020-2024)", "url": "https://www.census.gov/quickfacts/fact/table/owensborocitykentucky/PST045224", "accessed": "2026-10-03" }
+        ],
+        "product_links": ["/personal/flood", "/personal/renters", "/personal/home"],
+        "signoff": null
+      },
+      {
+        "slug": "commercial",
+        "replaces": "Commercial insurance for Owensboro businesses",
+        "heading": "Business insurance in Owensboro and Daviess County",
+        "paragraphs_html": [
+          "The Census Bureau counts 2,385 employer establishments in Daviess County (2023) and 6,798 nonemployer businesses, the self-employed and other firms with no payroll (2024). A common starting point for both is <a href=\"/commercial/general-liability\">general liability</a> and <a href=\"/commercial/commercial-property\">commercial property</a>, often packaged together in a business owner's policy, with <a href=\"/commercial/commercial-auto\">commercial auto</a> for vehicles the business owns.",
+          "A lease, a customer contract or a vendor agreement usually states the coverage and limits it expects. Send us that page before you sign, and we will check the policy against it."
+        ],
+        "sources": [
+          { "label": "U.S. Census Bureau QuickFacts, Daviess County, Kentucky (employer establishments, 2023; nonemployer establishments, 2024)", "url": "https://www.census.gov/quickfacts/fact/table/daviesscountykentucky/PST045224", "accessed": "2026-10-03" }
+        ],
+        "product_links": ["/commercial/general-liability", "/commercial/commercial-property", "/commercial/commercial-auto"],
+        "signoff": null
+      },
+      {
+        "slug": "workers-comp",
+        "replaces": null,
+        "heading": "Workers' compensation for Daviess County employers",
+        "paragraphs_html": [
+          "Daviess County employer establishments had 43,758 employees in 2023, by the Census Bureau's count. In Kentucky, a business with one or more employees is subject to the workers' compensation law unless it is engaged solely in agriculture (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32533\">KRS 342.630</a>), and it must insure that liability with a company authorized to write workers' compensation in Kentucky, or furnish the commissioner satisfactory proof of its financial ability to pay compensation directly (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43318\">KRS 342.340</a>).",
+          "Sole proprietors, and qualified partners or LLC members, are covered only if they elect coverage by an endorsement to the policy (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=44523\">KRS 342.012</a>). In a corporation, every executive officer counts as an employee (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43049\">KRS 342.640(2)</a>), unless an officer formally elects not to be covered (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=51336\">KRS 342.650(6)</a>). Our <a href=\"/commercial/workers-compensation\">workers' compensation</a> page starts a quote."
+        ],
+        "sources": [
+          { "label": "U.S. Census Bureau QuickFacts, Daviess County, Kentucky (total employment, 2023)", "url": "https://www.census.gov/quickfacts/fact/table/daviesscountykentucky/PST045224", "accessed": "2026-10-03" },
+          { "label": "KRS 342.630", "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=32533", "accessed": "2026-10-03" },
+          { "label": "KRS 342.340", "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43318", "accessed": "2026-10-03" },
+          { "label": "KRS 342.012", "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=44523", "accessed": "2026-10-03" },
+          { "label": "KRS 342.640", "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=43049", "accessed": "2026-10-03" },
+          { "label": "KRS 342.650", "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=51336", "accessed": "2026-10-03" }
+        ],
+        "product_links": ["/commercial/workers-compensation"],
+        "signoff": null
+      },
+      {
+        "slug": "life",
+        "replaces": null,
+        "gates": { "TRUST-01": null, "OA-25 life appointment": null },
+        "heading": "Life insurance for Owensboro families",
+        "paragraphs_html": [
+          "Owensboro has 25,451 households, averaging 2.30 people each (2020-2024 American Community Survey). Life insurance pays the people who depend on your income if you die, so the amount usually starts from that income and from debts such as a mortgage.",
+          "<a href=\"/life/term-life\">Term life</a> covers a set number of years, for example while children are at home or a loan is outstanding. <a href=\"/life/whole-life\">Whole life</a> lasts for life and builds cash value, at a higher premium for the same amount."
+        ],
+        "sources": [
+          { "label": "U.S. Census Bureau QuickFacts, Owensboro city, Kentucky (households and persons per household, 2020-2024)", "url": "https://www.census.gov/quickfacts/fact/table/owensborocitykentucky/PST045224", "accessed": "2026-10-03" }
+        ],
+        "product_links": ["/life/term-life", "/life/whole-life"],
+        "signoff": null
+      }
+    ],
+    "mt-washington-ky": [
+      {
+        "slug": "auto",
+        "replaces": "Auto insurance and the I-65 commute",
+        "heading": "Auto insurance for Mt Washington commuters",
+        "paragraphs_html": [
+          "Mt Washington workers average a 29.2-minute trip to work (2020-2024 American Community Survey), so daily mileage adds up. The distance you drive is one of the things insurers weigh, so give us the actual figure when we quote.",
+          "Kentucky's floor is $25,000 per person and $50,000 per accident for bodily injury plus $25,000 for property damage, or one $60,000 single limit, along with basic reparation benefits (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758\">KRS 304.39-110(1)</a>). Insurers must also make underinsured motorist coverage available on request (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=54466\">KRS 304.39-320(2)</a>). See <a href=\"/personal/auto\">auto insurance</a>."
+        ],
+        "sources": [
+          { "label": "U.S. Census Bureau QuickFacts, Mount Washington city, Kentucky (mean travel time to work, 2020-2024)", "url": "https://www.census.gov/quickfacts/fact/table/mountwashingtoncitykentucky/PST045224", "accessed": "2026-10-03" },
+          { "label": "KRS 304.39-110", "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=46758", "accessed": "2026-10-03" },
+          { "label": "KRS 304.39-320", "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=54466", "accessed": "2026-10-03" }
+        ],
+        "product_links": ["/personal/auto"],
+        "signoff": null
+      },
+      {
+        "slug": "homeowners",
+        "replaces": "Homeowners insurance in Mt. Washington",
+        "heading": "Home insurance in a fast-growing city",
+        "paragraphs_html": [
+          "Mt Washington grew from 9,117 residents in the 2010 Census to 18,090 in the 2020 Census, and 86.1 percent of its occupied homes are owner-occupied (2020-2024 American Community Survey). New and older homes are rated differently: roof age, wiring, plumbing and the cost to rebuild all count, so set the dwelling limit from current construction costs rather than the purchase price.",
+          "FEMA notes that most homeowners insurance does not cover flood damage. Look up your address on FEMA's Flood Map Service Center before you buy, and ask us about <a href=\"/personal/flood\">flood insurance</a> alongside your <a href=\"/personal/home\">home insurance</a>."
+        ],
+        "sources": [
+          { "label": "U.S. Census Bureau QuickFacts, Mount Washington city, Kentucky (Census 2010 and 2020 population; owner-occupied housing unit rate, 2020-2024)", "url": "https://www.census.gov/quickfacts/fact/table/mountwashingtoncitykentucky/PST045224", "accessed": "2026-10-03" },
+          { "label": "FEMA FloodSmart", "url": "https://www.floodsmart.gov/", "accessed": "2026-10-03" },
+          { "label": "FEMA Flood Map Service Center", "url": "https://msc.fema.gov/portal/home", "accessed": "2026-10-03" }
+        ],
+        "product_links": ["/personal/home", "/personal/flood"],
+        "signoff": null
+      },
+      {
+        "slug": "life",
+        "replaces": null,
+        "gates": { "TRUST-01": null, "OA-25 life appointment": null },
+        "heading": "Life insurance for Mt Washington households",
+        "paragraphs_html": [
+          "Mt Washington's 6,936 households average 2.65 people, and the median household income is $96,239 (2020-2024 American Community Survey). When a household relies on one or two paychecks, the question is how long that income would need replacing and what debts would need paying off.",
+          "<a href=\"/life/term-life\">Term life</a> fits a need with an end date, such as a mortgage. <a href=\"/life/whole-life\">Whole life</a> stays in force for life. <a href=\"/life/disability\">Disability insurance</a> protects the paycheck itself if an illness or injury keeps you from working."
+        ],
+        "sources": [
+          { "label": "U.S. Census Bureau QuickFacts, Mount Washington city, Kentucky (households, persons per household, median household income, 2020-2024)", "url": "https://www.census.gov/quickfacts/fact/table/mountwashingtoncitykentucky/PST045224", "accessed": "2026-10-03" }
+        ],
+        "product_links": ["/life/term-life", "/life/whole-life", "/life/disability"],
+        "signoff": null
+      },
+      {
+        "slug": "bullitt-county-contractors",
+        "replaces": "Commercial insurance for Bullitt County businesses",
+        "heading": "Insurance for Bullitt County contractors",
+        "paragraphs_html": [
+          "Census QuickFacts lists 654 building permits for Bullitt County in 2025. Before a local building official issues a permit, the builder must show proof of workers' compensation coverage, or certify an exemption in writing on the commissioner's form (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623\">KRS 342.610(6)</a>). A contractor is also liable for an uninsured subcontractor's injured employees (<a href=\"https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623\">KRS 342.610(2)</a>), which is why subs are asked for certificates before they start.",
+          "For the job itself, <a href=\"/commercial/builders-risk\">builders risk</a> covers a structure while it is going up and <a href=\"/commercial/general-liability\">general liability</a> answers injury and damage claims. Our <a href=\"/industries/general-contractors\">general contractors</a> page lists Kentucky's subcontractor and bond rules."
+        ],
+        "sources": [
+          { "label": "U.S. Census Bureau QuickFacts, Bullitt County, Kentucky (building permits, 2025)", "url": "https://www.census.gov/quickfacts/fact/table/bullittcountykentucky/PST045224", "accessed": "2026-10-03" },
+          { "label": "KRS 342.610", "url": "https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=47623", "accessed": "2026-10-03" }
+        ],
+        "product_links": ["/commercial/builders-risk", "/commercial/general-liability", "/industries/general-contractors"],
+        "signoff": null
+      }
+    ]
+  }
+}

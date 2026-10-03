@@ -12,6 +12,9 @@ const { canonicalHref, pageUrl } = require('../lib/site-urls');
 const { renderGuides, renderLocalHelp, renderNearby, renderRelatedIndustries, renderIndustriesSection } = require('./internal-links');
 // Local proof modules; each renders nothing until verified data exists (LOCAL-05).
 const { renderHubTeam, renderHubCarriers, renderRatingLine } = require('./hub-proof');
+// Statute-linked industry blocks, sourced carrier facts, signed hub sections (CONT-04, CONT-05, MKT-02).
+const { carrierHasPage } = require('../lib/carrier-pages');
+const { renderIndustryRequirements, renderIndustryDetail, renderIndustryFaqs, renderCarrierProfile, hubSectionBlocks } = require('./sourced-content');
 // The Google rating badge: "<rating> on Google" linking to the listing, or nothing (TRUST-14).
 const { renderReviewBadge } = require('../lib/review-badge');
 
@@ -832,7 +835,7 @@ ${renderHubTrustBar(STATE_NAMES[city.state] || city.state)}
       <div class="container container--narrow">${renderRatingLine(ctx)}${renderHubTeam(city, ctx)}
         <h2>Why ${city.city} families and businesses choose The Way Agency</h2>
 ${city.context.split(/\n\n+/).map(p => `        <p>${p.trim()}</p>`).join('\n')}
-${(city.context_sections || []).map(s => {
+${hubSectionBlocks(city.context_sections, ((ctx.hubSections || {}).hubs || {})[city.slug], s => {
           const sectionId = (s.slug || s.heading.split(/\s+/)[0]).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
           return `        <h3 id="${sectionId}">${s.heading}</h3>\n        <p>${s.body}</p>`;
         }).join('\n')}
@@ -1022,11 +1025,9 @@ ${renderScripts()}
 function generateIndustryPage(ind, ctx) {
   const { office, renderNav, renderFooter, renderScripts } = ctx;
 
-  const coverageList = ind.typical_coverage.map(c => `<li>${c}</li>`).join('\n            ');
-
   const indFormHtml = renderInlineForm(ind.slug, { industry: ind.slug, line: 'commercial' })
     .replace('%%FORM_HEADING%%', `Get a quote for your ${ind.name.toLowerCase().replace(/s$/, '')} business`)
-    .replace('%%FORM_SUBTEXT%%', 'Tell us about your business and we\'ll come back with coverage options from carriers that specialize in your industry.');
+    .replace('%%FORM_SUBTEXT%%', 'Tell us about your business and we\'ll come back with coverage options.');
 
   // One breadcrumb trail, printed and in JSON-LD (TECH-01).
   const crumbs = renderBreadcrumbs([
@@ -1053,7 +1054,7 @@ ${renderHead({
 ${renderNav()}
 
 ${renderHero({
-    eyebrow: 'Industry Specialty',
+    eyebrow: 'Industries',
     title: `Insurance for<br>${ind.name}`,
     subtitle: ind.description,
     buttons: [
@@ -1070,31 +1071,21 @@ ${crumbs.html}
   <main id="main">
     <section class="section">
       <div class="container container--narrow">
-        <h2>What ${ind.name.toLowerCase()} typically need</h2>
-        <p>Based on our experience working with ${ind.name.toLowerCase()} across Kentucky, Indiana, and Tennessee, here are the coverage types you should have in place:</p>
-        <ul style="list-style:disc;padding-left:var(--space-xl);margin-bottom:var(--space-xl);">
-            ${coverageList}
-        </ul>
-
-        <h2>Kentucky-specific requirements</h2>
-        <p>${ind.ky_notes}</p>
-        <p>We represent carriers including specialty markets for ${ind.name.toLowerCase()}, which means we can often find coverage that generalist agencies cannot. We also handle certificates of insurance, additional insured endorsements, and audit support.</p>
+${renderIndustryRequirements(ind)}${renderIndustryDetail(ind)}
 
 ${indFormHtml}
+${renderIndustryFaqs(ind)}
 ${renderGuides(`/industries/${ind.slug}`, ctx, 'Guides')}
         <p><a href="/industries/">All industries we insure</a></p>
 
-        <h2>Why choose The Way Agency for ${ind.name.toLowerCase()} insurance?</h2>
-        <p><strong>Industry experience.</strong> We understand the specific risks, contract requirements, and coverage gaps that ${ind.name.toLowerCase()} face. We don't sell generic policies  -  we build programs that match real-world operations.</p>
-        <p><strong>Carrier access.</strong> As an independent agency, we access markets that captive agents and direct-to-carrier sites cannot. For specialty trades, this access is the difference between getting covered and getting declined.</p>
-        <p><strong>Certificate management.</strong> We handle COIs, additional insured requests, and evidence of coverage quickly. When you need a certificate for a job site by tomorrow morning, we make it happen.</p>
-        <p><strong>Claims advocacy.</strong> When something goes wrong on a job, we help you navigate the claims process and push back on the carrier when needed. We work for you, not the insurance company.</p>
+        <h2>How we help</h2>
+        <p>We prepare certificates of insurance and additional insured requests, answer premium audit questions, and help you report a claim to the insurance company.</p>
       </div>
     </section>
 
 ${renderCTA({
       title: `Get coverage for your ${ind.name.toLowerCase().replace(/s$/, '')} business`,
-      text: "We'll build a program that matches your operations, contracts, and budget.",
+      text: "Tell us about your operations and contracts and we'll come back with coverage options.",
       buttons: [
         { href: `/intake/?line=commercial&industry=${ind.slug}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
         { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
@@ -1196,12 +1187,19 @@ ${renderScripts()}
 
 function generateCarrierPage(carrier, line, ctx) {
   const { office, products, renderNav, renderFooter, renderScripts } = ctx;
-  const lineName = line === 'personal' ? 'Personal Insurance' : 'Commercial Insurance';
-  const lineSlug = line;
+  // Sourced facts from the carrier's own site (data/carrier-profiles.json, CONT-05).
+  const profile = (ctx.carrierProfiles || {})[carrier.slug] || null;
+  // Never fall back to carrier.description: that legacy copy carries unsourced
+  // superlatives ("largest", "competitive rates"; review H1). Without a sourced
+  // profile the hero, meta, og and JSON-LD say only what the page can support.
+  const summary = (profile && profile.summary) || `${carrier.name} is an insurance company.`;
 
-  // Find product pages for linked lines
+  // "Coverage lines we place with <carrier>" is an appointment claim: it prints
+  // only once the owner has verified the appointment (D6; appointment_verified_on).
   const allProducts = [...(products.personal || []), ...(products.commercial || []), ...(products.life || []), ...(products.health || [])];
-  const linkedProducts = (carrier.lines || []).map(id => allProducts.find(p => p.id === id || p.slug === id)).filter(Boolean);
+  const linkedProducts = carrier.appointment_verified_on
+    ? (carrier.lines || []).map(id => allProducts.find(p => p.id === id || p.slug === id)).filter(Boolean)
+    : [];
 
   const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
 
@@ -1214,16 +1212,6 @@ ${linkedProducts.map(p => `          <a href="${canonicalHref(p.url)}" class="ca
           </a>`).join('\n')}
         </div>` : '';
 
-  const strengthsList = (carrier.strengths || []).length > 0 ? `
-        <h2>Why we recommend ${carrier.name}</h2>
-        <ul style="list-style:disc;padding-left:var(--space-xl);margin-bottom:var(--space-xl);">
-          ${carrier.strengths.map(s => `<li>${s}</li>`).join('\n          ')}
-        </ul>` : '';
-
-  // No rating is printed until it carries an as-of date and a source (TRUST-05:
-  // GUARD was shown A++ against its own A+, and no rating was dated).
-  const ratingBadge = '';
-
   const breadcrumbs = renderBreadcrumbs([
     { name: 'Home', url: '/' },
     { name: 'Carriers', url: '/carriers/' },
@@ -1234,13 +1222,13 @@ ${linkedProducts.map(p => `          <a href="${canonicalHref(p.url)}" class="ca
 <html lang="en">
 ${renderHead({
     title: `${carrier.name} Insurance | The Way Agency`,
-    description: `${carrier.name} insurance through The Way Agency. ${carrier.description || `We represent ${carrier.name} for ${lineName.toLowerCase()} in Kentucky, Indiana, and Tennessee.`}`,
+    description: summary,
     canonical: `https://www.thewayagency.com/carriers/${carrier.slug}`,
     ogTitle: `${carrier.name} Insurance | The Way Agency`,
-    ogDescription: carrier.description || `We represent ${carrier.name} for insurance in KY, IN & TN.`,
+    ogDescription: summary,
     ogUrl: `https://www.thewayagency.com/carriers/${carrier.slug}`,
     schema: `<script type="application/ld+json">
-  ${JSON.stringify({"@context":"https://schema.org","@type":"Organization","name":carrier.name,"description":carrier.description||`${carrier.name} insurance carrier represented by The Way Agency in Kentucky, Indiana, and Tennessee.`})}
+  ${JSON.stringify({"@context":"https://schema.org","@type":"Organization","name":carrier.name,"description":summary})}
   </script>`,
   })}
 <body>
@@ -1248,9 +1236,9 @@ ${renderHead({
 ${renderNav()}
 
 ${renderHero({
-    eyebrow: 'Our Carriers',
+    eyebrow: 'Insurance companies',
     title: carrier.name,
-    subtitle: carrier.description || `We represent ${carrier.name} for ${lineName.toLowerCase()} in Kentucky, Indiana, and Tennessee.`,
+    subtitle: summary,
     buttons: [
       { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
     ],
@@ -1262,18 +1250,15 @@ ${breadcrumbs.html}
   <main id="main">
     <section class="section">
       <div class="container container--narrow">
-        ${ratingBadge}
+${renderCarrierProfile(carrier, profile)}
         ${productCards}
-        ${strengthsList}
-        <h2>How it works</h2>
-        <p>As an independent agency, we represent ${carrier.name} alongside other insurance companies. When you request a quote, we compare options from multiple companies — including ${carrier.name} — to find the best combination of coverage, service, and price for your specific situation.</p>
-        <p>You get the strength and backing of ${carrier.name} with the personal service and advocacy of a local, independent agent.</p>
+        <p>This page describes ${carrier.name} from its own published information; it does not mean we can place your coverage with it. Ask us which companies we can quote for you. <a href="/carriers/">See all carriers</a>.</p>
       </div>
     </section>
 
 ${renderCTA({
-      title: `Ready to see what ${carrier.name} can offer?`,
-      text: "Request a quote and we'll compare options from multiple carriers, including " + carrier.name + ".",
+      title: 'Want us to compare options?',
+      text: 'Tell us what you need to insure.',
       buttons: [
         { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
         { href: '/contact', text: 'Contact Us', className: 'btn btn--outline-white btn--lg' },
@@ -1314,20 +1299,20 @@ function generateCarriersIndex(carriers, ctx) {
   }
   allCarriers.sort((a, b) => a.name.localeCompare(b.name));
 
-  // Split into featured (have descriptions) and standard
-  const featured = allCarriers.filter(c => c.description);
-  const standard = allCarriers.filter(c => !c.description);
-
-  // Ratings are not printed (see generateCarrierPage); the card text is the
-  // description's first sentence without cutting "U.S." short.
+  // Featured: the standalone pages kept under content-accuracy D6, each with
+  // its sourced summary. Every carrier also gets an anchored entry, the target
+  // of the /carriers/<slug> 301s once D6 retires the thin pages (CONT-05).
+  const profiles = ctx.carrierProfiles || {};
+  const featured = allCarriers.filter(c => c.standalone_page === true);
   const featuredCards = featured.map(c => `          <a href="/carriers/${c.slug}" class="card" style="text-decoration:none;">
             <h3 class="card__title" style="font-size:var(--text-xl);">${c.name}</h3>
-            <p class="card__text">${firstSentence(c.description)}</p>
+            <p class="card__text">${esc((profiles[c.slug] && profiles[c.slug].summary) || `${c.name} is an insurance company.`)}</p>
             <span class="card__link">Learn more ${arrowSvg}</span>
           </a>`).join('\n');
 
-  const standardList = standard.map(c => {
-    return `<li style="padding:var(--space-sm) 0;border-bottom:1px solid var(--border);">${c.name}</li>`;
+  const standardList = allCarriers.map(c => {
+    const label = carrierHasPage(c) ? `<a href="/carriers/${c.slug}">${c.name}</a>` : c.name;
+    return `<li id="${c.slug}" style="padding:var(--space-sm) 0;border-bottom:1px solid var(--border);">${label}</li>`;
   }).join('\n            ');
 
   return `<!DOCTYPE html>
@@ -1367,8 +1352,8 @@ ${renderHero({
     <section class="section">
       <div class="container">
         <div class="section-header">
-          <p class="section-header__eyebrow">Featured Carriers</p>
-          <h2>Companies we work with most</h2>
+          <p class="section-header__eyebrow">Carrier profiles</p>
+          <h2>Insurance companies with a profile page</h2>
         </div>
         <div class="grid grid--3">
 ${featuredCards}
@@ -1378,8 +1363,7 @@ ${featuredCards}
 
     <section class="section section--light">
       <div class="container container--narrow">
-        <h2>All carriers we represent</h2>
-        <p style="color:var(--slate);margin-bottom:var(--space-xl);">In addition to our featured partners, we have access to these carriers for specialty and standard risks:</p>
+        <h2>Carriers A to Z</h2>
         <ul style="list-style:none;padding:0;">
             ${standardList}
         </ul>
@@ -1388,7 +1372,7 @@ ${featuredCards}
 
 ${renderCTA({
       title: 'Let us shop the market for you',
-      text: 'Tell us what you need and we\'ll compare options from our full carrier lineup.',
+      text: 'Tell us what you need to insure and ask us which companies we can quote for you.',
       buttons: [
         { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
         { href: '/contact', text: 'Contact Us', className: 'btn btn--outline-white btn--lg' },
