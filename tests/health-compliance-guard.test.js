@@ -82,9 +82,13 @@ describe('health compliance guard: each rule fails a fixture', () => {
     assert.ok(ids(run({ 'insurance/x.html': claim }, { tpmo: b })).includes('P-12'));
     const named = page({ body: '<p>Test Partner Agency LLC, a separate agency, can help you compare Medicare Advantage plans, and we refer you to them.</p>' });
     assert.ok(!ids(run({ 'insurance/x.html': named }, { tpmo: b })).includes('P-12'));
-    const pending = run({ 'insurance/x.html': claim });
+    // The site record: pending_owner with Branch B recorded (owner decision 3) fails too.
+    assert.equal(SITE_TPMO.branch, 'B');
+    assert.ok(ids(run({ 'insurance/x.html': claim })).includes('P-12'), 'Branch B fails even while pending');
+    const pendingNoBranch = Object.assign(JSON.parse(JSON.stringify(SITE_TPMO)), { branch: null });
+    const pending = run({ 'insurance/x.html': claim }, { tpmo: pendingNoBranch });
     assert.ok(!ids(pending).includes('P-12'));
-    assert.ok(pending.warnings.some((w) => w.startsWith('P-12 ')));
+    assert.ok(pending.warnings.some((w) => w.startsWith('P-12 ')), 'no branch recorded: warning only');
     assert.ok(ids(run({ 'insurance/x.html': page({ body: '<p>We can show you Medicare Advantage options and Part D plans side by side.</p>' }) }, { tpmo: activeA() })).includes('P-12'));
   });
 
@@ -92,6 +96,7 @@ describe('health compliance guard: each rule fails a fixture', () => {
     const hours = '<p>1-800-MEDICARE (TTY 1-877-486-2048) is available 24 hours a day, 7 days a week.</p>';
     assert.ok(ids(run({ 'x.html': page({ body: `<a href="tel:18006334227">1-800-MEDICARE</a>${hours}` }) })).includes('P-13'));
     assert.ok(ids(run({ 'x.html': page({ body: '<a href="tel:+18772937447">(877) 293-7447</a>' }) })).includes('P-13'));
+    assert.ok(ids(run({ 'x.html': page({ body: `<a href="tel:18774862048">TTY 1-877-486-2048</a>${hours}` }) })).includes('P-13'), 'the Medicare TTY');
     assert.ok(!ids(run({ 'x.html': page({ body: `<a href="tel:+15024135335">(502) 413-5335</a> <a href="sms:+15024135335">Text</a>${hours}` }) })).includes('P-13'), 'the agency number is fine');
   });
 
@@ -115,6 +120,8 @@ describe('health compliance guard: each rule fails a fixture', () => {
     assert.ok(ids(run({ 'health/x.html': page({ body: '<p>Open enrollment runs from November 1 through January 15.</p>' }) })).includes('P-18'));
     assert.ok(!ids(run({ 'health/x.html': page({ body: '<p>As of October 2026, open enrollment runs November 1, 2026 to January 15, 2027.</p>' }) })).includes('P-18'));
     assert.ok(!ids(run({ 'blog/x.html': page({ body: '<p>From November 1 through January 15.</p>' }) })).includes('P-18'));
+    assert.ok(ids(run({ 'health/x.html': page({ body: '<p>Open enrollment ends January 15th.</p>' }) })).includes('P-18'), '"15th" with no year');
+    assert.ok(!ids(run({ 'health/x.html': page({ body: '<p>Open Enrollment runs November 1st, 2026 - January 15th 2027.</p>' }) })).includes('P-18'), '"15th" with a year');
   });
 
   test('P-19 is a warning in Phase 1', () => {

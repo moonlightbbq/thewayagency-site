@@ -143,6 +143,6 @@ describe('intake: the mirror equals scripts/lib/medicare-disclaimer.js (drift)',
     const t = JSON.parse(JSON.stringify(SITE_TPMO));
     t.signed_record = 'compliance-log TEST #1';
     const el = tpmoDataElement(t);
-    assert.ok(!el.includes('signed_record') && !el.includes('_doc') && !el.includes('compliance-log'));
+    assert.ok(!el.includes('signed_record') && !el.includes('_doc') && !el.includes('compliance-log') && !el.includes('"branch"'));
   });
 });

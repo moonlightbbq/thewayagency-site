@@ -199,7 +199,7 @@ describe('isMedicarePost and publicTpmoData', () => {
 
   test('publicTpmoData drops the internal fields', () => {
     const p = M.publicTpmoData(active());
-    assert.ok(!('signed_record' in p) && !('_doc' in p));
+    assert.ok(!('signed_record' in p) && !('_doc' in p) && !('branch' in p));
     assert.equal(p.status, 'active');
     assert.equal(M.publicTpmoData(null), null);
   });

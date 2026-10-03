@@ -31,15 +31,14 @@
  *         (guaranteed, interest, cash value, loan, cap, crediting,
  *         dividend, annuity) in the same sentence                         any page; allowlist needs a named, dated source
  *   P-12  agency Medicare Advantage / Part D comparison claims, judged by the TPMO record:
- *         active A/mixed: the page must carry "Currently we represent"; active A1/C or
- *         not_applicable: fails; active B: fails unless the sentence names the partner;
- *         pending_owner: warning
- *   P-13  1-800-MEDICARE or the SHIP hotline as a tel: link                any page
+ *         branch B (any status): fails unless the sentence names the partner; active A/mixed: the page must carry "Currently we represent"; active A1/C or
+ *         not_applicable: fails; other pending_owner records: warning
+ *   P-13  1-800-MEDICARE, its TTY or the SHIP hotline as a tel: link     any page
  *   P-14  1-800-MEDICARE without "24 hours a day, 7 days a week"           any page
  *   P-15  the retired SHIP wording of the pre-2027 TPMO statement          any page
  *   P-16  a placeholder inside a .tpmo-disclaimer block                    any page
  *   P-17  tpmoProblems() while the TPMO record is active                   the record
- *   P-18  an undated "January 15" (no year after it)                       build/health/*.html
+ *   P-18  an undated "January 15"/"January 15th" (no year after it)                      build/health/*.html
  *   P-19  "never sell your data" (warning in Phase 1; Phase 3 makes it an error)
  *   P-20  a {{fact:...}} token left unresolved                             any page
  */
@@ -171,13 +170,16 @@ function scanSegments(segments, { file = '', tpmo = null, pageText = null } = {}
     const branch = tpmo && tpmo.branch;
     const partner = tpmo && tpmo.lead_disclosure && tpmo.lead_disclosure.partner_consent && tpmo.lead_disclosure.partner_consent.entity;
     const first = `"${claims[0].slice(0, 200)}"`;
-    if (status === 'active' && (branch === 'A' || branch === 'mixed')) {
+    if (branch === 'B') {
+      // Owner decision 3 (Branch B, recorded even while pending_owner): the site
+      // never says the agency compares MA/PDP plans. A claim fails in every status
+      // unless its sentence names the partner the consent record names.
+      const bad = claims.find((s) => !(partner && s.includes(partner)));
+      if (bad) problems.push(`P-12 ${file}: Medicare Advantage/Part D comparison claim that does not name the partner agency (Branch B): "${bad.slice(0, 200)}"`);
+    } else if (status === 'active' && (branch === 'A' || branch === 'mixed')) {
       if (!/Currently we represent/.test(whole)) problems.push(`P-12 ${file}: Medicare Advantage/Part D comparison claim without the TPMO statement: ${first}`);
     } else if (status === 'not_applicable' || (status === 'active' && (branch === 'A1' || branch === 'C'))) {
       problems.push(`P-12 ${file}: Medicare Advantage/Part D comparison claim, but the agency does not sell for two or more organizations: ${first}`);
-    } else if (status === 'active' && branch === 'B') {
-      const bad = claims.find((s) => !(partner && s.includes(partner)));
-      if (bad) problems.push(`P-12 ${file}: Medicare Advantage/Part D comparison claim that does not name the partner agency: "${bad.slice(0, 200)}"`);
     } else {
       warnings.push(`P-12 ${file}: Medicare Advantage/Part D comparison claim while the TPMO record is ${status || 'missing'}: ${first}`);
     }
@@ -232,7 +234,7 @@ function checkHealthCompliance(buildDir, { tpmo = null, today = new Date() } = {
     rawWarnings.push(...res.warnings);
 
     // P-13: 1-800-MEDICARE or the SHIP hotline as a tel: link.
-    const tel = /href=["']tel:[^"']*(?:633-?4227|MEDICARE|293-?7447)/i.exec(html);
+    const tel = /href=["']tel:[^"']*(?:633-?4227|MEDICARE|293-?7447|486-?2048)/i.exec(html);
     if (tel) problems.push(`P-13 ${file}: a third-party Medicare number is a tel: link (${tel[0]}); show 1-800-MEDICARE and the SHIP hotline as plain text`);
     // P-14: the hours sentence wherever 1-800-MEDICARE appears.
     if (/1-800-MEDICARE/.test(whole) && !/24 hours a day, 7 days a week/.test(whole)) {
@@ -245,7 +247,7 @@ function checkHealthCompliance(buildDir, { tpmo = null, today = new Date() } = {
     // P-18: an undated "January 15" on a health page.
     if (/^health\//.test(file)) {
       for (const seg of segments) {
-        const m = /January 15\b(?!,?\s*20\d\d)/.exec(seg);
+        const m = /January 15(?!\d)(?:th)?(?![a-z])(?!,?\s*20\d\d)/i.exec(seg);
         if (m) { problems.push(`P-18 ${file}: "January 15" with no year: "${excerpt(seg, m)}"`); break; }
       }
     }

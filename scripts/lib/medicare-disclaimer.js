@@ -243,12 +243,15 @@ function leadDisclosureText(data, { context = 'health', form } = {}) {
   return `${lead} ${SOLICITATION}${ld.tcpa === true ? ` ${TCPA_SENTENCE}` : ''}`;
 }
 
-/** The record without its internal fields, for the intake page. */
+/** The record without its internal fields (signed_record, _doc, branch), for the intake page. */
 function publicTpmoData(data) {
   if (!isObj(data)) return null;
   const copy = JSON.parse(JSON.stringify(data));
   delete copy.signed_record;
   delete copy._doc;
+  // The intake reads only lead_disclosure (and, from Phase 2, display/areas);
+  // the branch is internal (the owner does not advertise the partnership).
+  delete copy.branch;
   return copy;
 }
 
