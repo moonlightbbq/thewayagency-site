@@ -81,10 +81,12 @@ function copyJs(SRC, BUILD, minify) {
       // hand-written pages. attribution.js is ALSO copied standalone (the
       // loop's normal path) for /intake/, which deliberately never loads
       // app.js. app.js references window.TWA, so order matters.
-      const attrPath = path.join(srcDir, 'attribution.js');
+      // business-hours.js (window.TWA_HOURS, the one hours constant) is prepended the
+      // same way, ahead of attribution.js.
       let combined = fs.readFileSync(srcPath, 'utf8');
-      if (fs.existsSync(attrPath)) {
-        combined = fs.readFileSync(attrPath, 'utf8') + '\n;\n' + combined;
+      for (const name of ['attribution.js', 'business-hours.js']) {
+        const p = path.join(srcDir, name);
+        if (fs.existsSync(p)) combined = fs.readFileSync(p, 'utf8') + '\n;\n' + combined;
       }
       totalBefore += combined.length;
       if (terserBin) {

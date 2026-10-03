@@ -1112,6 +1112,13 @@
   // ═══════════════════════════════════════════════
   // 15. LIVE CHAT WIDGET (AI Chatbot with Streaming)
   // ═══════════════════════════════════════════════
+  // Published business hours live in src/js/business-hours.js (window.TWA_HOURS, the
+  // one hours constant: Mon-Fri 9:00 AM-5:00 PM, America/New_York). The build
+  // prepends it to this file. Without it, nothing is treated as after hours.
+  function isAfterHours() {
+    return !!(window.TWA_HOURS && window.TWA_HOURS.isAfterHours());
+  }
+
   function initChatWidget() {
     const path = window.location.pathname;
     if (path.startsWith('/intake') || path.startsWith('/portal') || path.startsWith('/partner') || path.startsWith('/admin')) return;
@@ -1480,27 +1487,17 @@
       resetChat();
     });
 
-    // ─── After-hours detection (Eastern Time) ────
-    function isAfterHours() {
-      var now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
-      var day = now.getDay(); // 0=Sun, 6=Sat
-      var hour = now.getHours();
-      var min = now.getMinutes();
-      if (day === 0 || day === 6) return true; // weekend
-      if (hour < 8 || (hour === 8 && min < 30)) return true; // before 9:00 AM
-      if (hour >= 17) return true; // after 5 PM
-      return false;
-    }
-
     var afterHours = isAfterHours();
     var afterHoursWelcome = 'Hey there! You\u2019ve reached us after hours. I\u2019m an AI assistant \u2014 I can get your info to a licensed agent who will reach out first thing next business day. What can I help you with?';
     var defaultWelcome = 'Hi! I\u2019m an AI assistant for The Way Agency \u2014 I can collect your info and connect you with a licensed agent. What are you looking for today?';
 
     // ─── Toggle panel ────────────────────────────
-    function openChat() {
+    // Opens only from a visitor's click (bubble or teaser): the chat never opens
+    // itself and never moves focus on its own (CONV-01).
+    function openChat(byUser) {
       isOpen = true;
       panel.classList.add('open');
-      track('chatbot_opened', { category: 'engagement', afterHours: afterHours });
+      track('chatbot_opened', { category: 'engagement', afterHours: afterHours, trigger: byUser === true ? 'click' : 'auto' });
       if (!hasOpened) {
         hasOpened = true;
         if (chatMessages.length === 0) {
@@ -1522,7 +1519,7 @@
         if (cta) cta.style.display = 'none';
         document.body.style.overflow = 'hidden';
       }
-      inputField.focus();
+      if (byUser === true) inputField.focus();
     }
 
     function closeChat() {
@@ -1540,7 +1537,7 @@
 
     function toggleChat() {
       if (isOpen) closeChat();
-      else openChat();
+      else openChat(true);
     }
 
     // ─── Event listeners ─────────────────────────
@@ -1556,30 +1553,51 @@
       }
     });
 
-    // ─── After-hours auto-engage ──────────────────
-    if (afterHours && chatMessages.length === 0) {
-      if (window.innerWidth > 767) {
-        // Desktop: auto-open chat after 3 seconds
-        setTimeout(function() { if (!isOpen) openChat(); }, 3000);
-      } else {
-        // Mobile: pulsing dot on bubble + dismissable toast
-        var dot = document.createElement('span');
+    // ─── After-hours teaser ───────────────────────
+    // Never auto-opens (CONV-01). After hours, a non-modal teaser (pulsing dot on the
+    // bubble plus a short toast) appears on every width, but not on a page with a
+    // form, and not once the visitor has started interacting with the page.
+    var hasForm = path === '/contact' || path === '/contact.html'
+      || !!document.querySelector('form.inline-quote-form, #contactForm, #applyForm, #giveawayForm');
+    if (afterHours && chatMessages.length === 0 && !hasForm) {
+      var interacted = false, dot = null, toast = null;
+      var teaserTimers = [];
+      var interactTypes = ['pointerdown', 'keydown', 'scroll', 'focusin'];
+      var onInteract = function(e) {
+        // A tap on the teaser or the bubble is the visitor accepting it, not a
+        // reason to withdraw it before its click lands.
+        var t = e && e.target;
+        if (t && t.nodeType === 1 && ((toast && toast.contains(t)) || bubble.contains(t))) return;
+        interacted = true;
+        teaserTimers.forEach(clearTimeout);
+        if (toast) { toast.remove(); toast = null; }
+        interactTypes.forEach(function(type) { window.removeEventListener(type, onInteract, true); });
+      };
+      interactTypes.forEach(function(type) {
+        window.addEventListener(type, onInteract, { capture: true, passive: true });
+      });
+      teaserTimers.push(setTimeout(function() {
+        if (interacted || isOpen) return;
+        dot = document.createElement('span');
         dot.style.cssText = 'position:absolute;top:2px;right:2px;width:12px;height:12px;background:#ef4444;border-radius:50%;border:2px solid #173358;animation:twaCbPulse 1.5s ease infinite;';
-        bubble.style.position = 'relative';
+        // The bubble is position:fixed (components CSS) and already the containing block for the absolute dot;
+        // forcing 'relative' here dropped it into normal flow at the end of <body>, off screen (review F1).
         bubble.appendChild(dot);
         var style = document.createElement('style');
         style.textContent = '@keyframes twaCbPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:.7}}';
         document.head.appendChild(style);
 
-        var toast = document.createElement('div');
+        toast = document.createElement('div');
+        toast.className = 'twa-cb-teaser';
         toast.style.cssText = 'position:fixed;bottom:calc(84px + env(safe-area-inset-bottom,0px));right:20px;background:#173358;color:#fff;padding:10px 16px;border-radius:20px;font-family:Montserrat,Arial,sans-serif;font-size:13px;font-weight:500;box-shadow:0 4px 14px rgba(0,0,0,.25);z-index:1002;opacity:0;transform:translateY(10px);transition:all .3s ease;cursor:pointer;';
         toast.textContent = 'After hours? Chat with us!';
         document.body.appendChild(toast);
-        setTimeout(function() { toast.style.opacity = '1'; toast.style.transform = 'translateY(0)'; }, 500);
-        setTimeout(function() { toast.style.opacity = '0'; toast.style.transform = 'translateY(10px)'; setTimeout(function() { toast.remove(); }, 300); }, 5500);
-        toast.addEventListener('click', function() { toast.remove(); dot.remove(); openChat(); });
-        bubble.addEventListener('click', function() { dot.remove(); toast.remove(); }, { once: true });
-      }
+        var shown = toast;
+        requestAnimationFrame(function() { requestAnimationFrame(function() { shown.style.opacity = '1'; shown.style.transform = 'translateY(0)'; }); });
+        teaserTimers.push(setTimeout(function() { shown.style.opacity = '0'; shown.style.transform = 'translateY(10px)'; setTimeout(function() { shown.remove(); }, 300); }, 5000));
+        shown.addEventListener('click', function() { shown.remove(); if (dot) dot.remove(); openChat(true); });
+        bubble.addEventListener('click', function() { if (dot) dot.remove(); shown.remove(); }, { once: true });
+      }, 500));
     }
 
     // ─── Virtual keyboard resize handling ────────
