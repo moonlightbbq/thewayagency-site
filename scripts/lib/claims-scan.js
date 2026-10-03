@@ -55,7 +55,9 @@ const RULES = Object.freeze([
   {
     id: 'review-credit',
     why: 'a review credit prints only from a signed SAGE approval (TRUST-06)',
-    patterns: [/\bReviewed by\b/g, /\bLast reviewed\b/gi],
+    // A quoted "Reviewed by" names the label (the /ai-disclosure explanation of
+    // when it appears); it credits no one.
+    patterns: [/(?<!["\u201c]|&ldquo;|&quot;)\bReviewed by\b/g, /\bLast reviewed\b/gi],
     // The blog renderer and its credit library implement the signed gate; the
     // blog README documents it. Blog posts themselves are decided by that gate.
     skipFile: (rel) => rel === 'scripts/generate-blog.js'

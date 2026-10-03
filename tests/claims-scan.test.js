@@ -98,6 +98,7 @@ describe('claims scan: honest text passes', () => {
     ['the blog README describing the gate', '- **"Reviewed by"** is never written here.', 'src/blog/README.md'],
     ['a signed review line in a post', 'Reviewed by Test Reviewer A on December 1, 2025', 'src/blog/example-post.md'],
     ['a neutral carrier phrase', 'We compare coverage from the insurance companies we are appointed with.', 'src/pages/index.html'],
+    ['the quoted label on /ai-disclosure', 'A page shows "Reviewed by" with a licensed agent\'s name and date only when that agent has approved that exact text.', 'src/pages/ai-disclosure.html'],
   ];
   for (const [what, text, file] of cases) {
     test(what, () => {
