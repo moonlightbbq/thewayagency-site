@@ -195,7 +195,6 @@ function renderBody_GTM() {
 
 function renderScripts() {
   return `  <div id="ai-chat-root"></div>
-  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
   <script src="/src/js/app.js" defer></script>`;
 }
 
