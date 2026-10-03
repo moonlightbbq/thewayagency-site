@@ -1019,6 +1019,8 @@ function personalizeUI() {
     var phoneDigits = cardPhone.replace(/\D/g, '');
     var phoneDisplay = phoneDigits.length === 10 ? '(' + phoneDigits.slice(0,3) + ') ' + phoneDigits.slice(3,6) + '-' + phoneDigits.slice(6) : cardPhone;
     contactHtml += '<li class="producer-card__contact-item"><a href="tel:+1' + phoneDigits + '"><span class="producer-card__contact-icon">&#128222;</span> ' + esc(phoneDisplay) + '</a></li>';
+    // Text goes to the agency line (above-the-fold D11); never a prefilled body.
+    contactHtml += '<li class="producer-card__contact-item"><a href="sms:+15024135335">Text (502) 413-5335</a></li>';
   }
   if (cardEmail) contactHtml += '<li class="producer-card__contact-item"><a href="mailto:' + esc(cardEmail) + '"><span class="producer-card__contact-icon">&#9993;</span> ' + esc(cardEmail) + '</a></li>';
   document.getElementById('producer-contact').innerHTML = contactHtml;

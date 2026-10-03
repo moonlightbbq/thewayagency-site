@@ -1011,17 +1011,22 @@ function showIntakeBanner(color, msg) {
         const digits = agent.phone.replace(/\D/g, '');
         const telHref = 'tel:+1' + digits;
         const first = agent.name.split(' ')[0];
-        // The call links switch to the producer's line. A text link always goes to
-        // the agency line, and a text link beside a call link to a different number
-        // would mislead, so the agency text links are taken out here until the
-        // owner decides how ?agent= pages pair (above-the-fold D11).
+        // The call links switch to the producer's line; the text links stay on the
+        // agency line (502) 413-5335, which takes texts (above-the-fold D11: whether
+        // producers' direct lines take texts is unconfirmed). Labels name the number
+        // so the visitor knows the text goes to the main line.
         const helpCall = document.getElementById('intake-help-call');
+        const helpText = document.getElementById('intake-help-text');
         if (helpFloat && helpCall) {
           helpCall.href = telHref;
           helpCall.textContent = 'Call ' + first;
           const label = helpCall.parentNode;
           label.textContent = 'Need help? ';
           label.appendChild(helpCall);
+          if (helpText) {
+            helpText.textContent = 'text (502) 413-5335';
+            label.append(' or ', helpText);
+          }
         }
         // Update header nav phone to show agent's number
         const navPhone = document.getElementById('nav-phone');
@@ -1029,8 +1034,6 @@ function showIntakeBanner(color, msg) {
           navPhone.href = telHref;
           const lbl = navPhone.querySelector('.intake-nav-label');
           if (lbl) lbl.textContent = agent.phone;
-          const navText = document.getElementById('nav-text');
-          if (navText) navText.remove();
         }
       }
       // Populate floating agent card
@@ -1052,6 +1055,8 @@ function showIntakeBanner(color, msg) {
           var digits = agent.phone.replace(/\D/g, '');
           var display = digits.length === 10 ? '(' + digits.slice(0,3) + ') ' + digits.slice(3,6) + '-' + digits.slice(6) : agent.phone;
           contactHtml += '<li><a href="tel:+1' + digits + '"><span style="font-size:13px;opacity:.6">&#128222;</span> ' + display + '</a></li>';
+          // Text goes to the agency line (D11); never a prefilled body.
+          contactHtml += '<li><a href="sms:+15024135335">Text (502) 413-5335</a></li>';
         }
         if (agent.email) contactHtml += '<li><a href="mailto:' + agent.email + '"><span style="font-size:13px;opacity:.6">&#9993;</span> ' + agent.email + '</a></li>';
         document.getElementById('agent-contact').innerHTML = contactHtml;
