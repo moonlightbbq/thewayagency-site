@@ -1,7 +1,8 @@
 'use strict';
 /**
  * Report-only checks for URL hygiene (url-hygiene spec 3.9): _redirects
- * (TECH-07) and the blog RSS feed (TECH-05). Nothing here rewrites output;
+ * (TECH-07), the blog RSS feed (TECH-05) and internal links that name a page
+ * by its .html file (TECH-02). Nothing here rewrites output;
  * scripts/validate-build.js fails CI on what these return.
  *
  * Dependency-free: CI's safe-build job runs validate-build.js on Node 18
@@ -170,4 +171,78 @@ function feedProblems(xml, { routes = null, expectedSlugs = null, max = 20 } = {
   return problems;
 }
 
-module.exports = { isHtmlFileUrl, parseRedirects, redirectProblems, sourceRegExp, feedItems, feedProblems };
+// ─── Internal links that redirect (TECH-02) ─────────────────
+
+const ATTR_RE = /\b(?:href|src|action|formaction|content)\s*=\s*(?:"([^"]*)"|'([^']*)')/gi;
+const LD_RE = /<script[^>]*\btype=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+const ABS_RE = /https:\/\/www\.thewayagency\.com\/[^\s"'<>)\\]*/g;
+const MD_LINK_RE = /\]\((\/[^)\s]*)\)/g;
+const strings = (v, out = []) => {
+  if (typeof v === 'string') out.push(v);
+  else if (v && typeof v === 'object') for (const x of Object.values(v)) strings(x, out);
+  return out;
+};
+
+/**
+ * Every internal URL in a page that names a page by its .html (or /index.html)
+ * file: attribute values (href, src, action, formaction, content), JSON-LD
+ * strings, and absolute www URLs anywhere (share links, copy-link scripts).
+ * Plain-text relative paths are not links and are not reported. Pages 308s
+ * each of these to the extensionless URL, so each is a redirect hop.
+ * @param {string} html
+ * @param {{skip?: Array<[number, number]>}} [opts] character ranges to ignore
+ *   (start inclusive, end exclusive), e.g. a <main> that waits on an owner sign-off
+ * @returns {Array<{kind: 'attr'|'jsonld'|'absolute', url: string, index: number}>}
+ */
+function htmlFileUrlsInHtml(html, { skip = [] } = {}) {
+  const src = String(html);
+  const skipped = (i) => skip.some(([a, b]) => i >= a && i < b);
+  const hits = [];
+  for (const m of src.matchAll(ATTR_RE)) {
+    const v = m[1] !== undefined ? m[1] : m[2];
+    if (isHtmlFileUrl(v) && !skipped(m.index)) hits.push({ kind: 'attr', url: v, index: m.index });
+  }
+  for (const m of src.matchAll(LD_RE)) {
+    if (skipped(m.index)) continue;
+    let d;
+    try { d = JSON.parse(m[1]); } catch { continue; }
+    for (const s of strings(d)) if (isHtmlFileUrl(s)) hits.push({ kind: 'jsonld', url: s, index: m.index });
+  }
+  // Absolute URLs not already reported as an attribute value or inside JSON-LD.
+  const ldRanges = [...src.matchAll(LD_RE)].map((m) => [m.index, m.index + m[0].length]);
+  const attrRanges = [...src.matchAll(ATTR_RE)].map((m) => [m.index, m.index + m[0].length, m[1] !== undefined ? m[1] : m[2]]);
+  for (const m of src.matchAll(ABS_RE)) {
+    if (!isHtmlFileUrl(m[0]) || skipped(m.index)) continue;
+    if (ldRanges.some(([a, b]) => m.index >= a && m.index < b)) continue;
+    if (attrRanges.some(([a, b, v]) => m.index >= a && m.index < b && v === m[0])) continue;
+    hits.push({ kind: 'absolute', url: m[0], index: m.index });
+  }
+  return hits;
+}
+
+/** The same for a text file (llms.txt, llms-full.txt): absolute www URLs, attribute values and markdown link targets. */
+function htmlFileUrlsInText(text) {
+  const src = String(text);
+  const hits = [];
+  for (const m of src.matchAll(ABS_RE)) if (isHtmlFileUrl(m[0])) hits.push({ kind: 'absolute', url: m[0], index: m.index });
+  for (const m of src.matchAll(ATTR_RE)) {
+    const v = m[1] !== undefined ? m[1] : m[2];
+    if (isHtmlFileUrl(v) && !v.startsWith(SITE_ORIGIN)) hits.push({ kind: 'attr', url: v, index: m.index });
+  }
+  for (const m of src.matchAll(MD_LINK_RE)) if (isHtmlFileUrl(m[1])) hits.push({ kind: 'markdown', url: m[1], index: m.index });
+  return hits;
+}
+
+/** [start, end) of the first <main>...</main> element, or null. */
+function mainRange(html) {
+  const src = String(html);
+  const a = src.search(/<main[\s>]/i);
+  if (a < 0) return null;
+  const close = src.indexOf('</main>', a);
+  return [a, close < 0 ? src.length : close + '</main>'.length];
+}
+
+module.exports = {
+  isHtmlFileUrl, parseRedirects, redirectProblems, sourceRegExp, feedItems, feedProblems,
+  htmlFileUrlsInHtml, htmlFileUrlsInText, mainRange,
+};

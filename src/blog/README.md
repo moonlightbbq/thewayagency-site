@@ -21,7 +21,7 @@ author_title: Independent Insurance Agency
 date: 2026-03-15
 modified: 2026-03-20
 reading_time: 5 min read
-related_page: /personal/home.html
+related_page: /personal/home
 tags: home insurance, kentucky, weather
 image: /src/assets/images/blog/your-post-slug-here.jpg
 image_alt: Short description of the featured image

@@ -650,6 +650,56 @@ if (fs.existsSync(redirectsPath)) {
   if (relatedBlocked.length === 0) pass(`Related Articles link no blocked_guides post (${blockedGuides.length} held)`);
 }
 
+// 14. No internal URL names a page by its .html file (TECH-02, url-hygiene 3.9
+// "2b"). Pages 308s /x.html -> /x and /dir/index.html -> /dir/, so each such
+// link, JSON-LD URL, share URL, llms URL or 404 suggestion is a redirect hop.
+// Covers every built page, llms.txt and llms-full.txt, 404-suggestions.json and
+// href strings in the built site JS. The feed is check 11 (its old .html guids
+// stay, with isPermaLink="false"). Dependency-free (CI runs this on Node 18).
+// Fix the emitter (scripts/lib/site-urls.js canonicalHref / pageUrl), or for a
+// hand-made page run scripts/codemods/extensionless-links.js.
+{
+  const { htmlFileUrlsInHtml, htmlFileUrlsInText } = require('./lib/url-hygiene');
+  const report = [];
+  for (const file of htmlFiles) {
+    const rel = path.relative(BUILD, file).split(path.sep).join('/');
+    if (rel.startsWith('src/')) continue;
+    const html = fs.readFileSync(file, 'utf8');
+    const hits = htmlFileUrlsInHtml(html);
+    if (hits.length) report.push({ rel, hits });
+  }
+  for (const name of ['llms.txt', 'llms-full.txt']) {
+    const f = path.join(BUILD, name);
+    if (!fs.existsSync(f)) continue;
+    const hits = htmlFileUrlsInText(fs.readFileSync(f, 'utf8'));
+    if (hits.length) report.push({ rel: name, hits });
+  }
+  const sugg = path.join(BUILD, '404-suggestions.json');
+  if (fs.existsSync(sugg)) {
+    const { isHtmlFileUrl } = require('./lib/url-hygiene');
+    let list = [];
+    try { list = JSON.parse(fs.readFileSync(sugg, 'utf8')); } catch { error('404-suggestions.json is not valid JSON'); }
+    const hits = (Array.isArray(list) ? list : []).filter((x) => x && isHtmlFileUrl(x.url)).map((x) => ({ kind: 'json', url: x.url }));
+    if (hits.length) report.push({ rel: '404-suggestions.json', hits });
+  }
+  const jsDir = path.join(BUILD, 'src', 'js');
+  if (fs.existsSync(jsDir)) {
+    const { isHtmlFileUrl } = require('./lib/url-hygiene');
+    for (const name of fs.readdirSync(jsDir).filter((n) => n.endsWith('.js'))) {
+      const js = fs.readFileSync(path.join(jsDir, name), 'utf8');
+      const hits = [...js.matchAll(/\bhref=\\?["']([^"'\\]+)/g)].map((m) => m[1]).filter(isHtmlFileUrl).map((url) => ({ kind: 'js', url }));
+      if (hits.length) report.push({ rel: `src/js/${name}`, hits });
+    }
+  }
+  const total = report.reduce((n, r) => n + r.hits.length, 0);
+  for (const r of report.slice(0, 40)) {
+    const ex = [...new Set(r.hits.map((h) => h.url))].slice(0, 3).join(', ');
+    error(`Internal .html URL (308s to the extensionless page) in ${r.rel}: ${r.hits.length} (e.g. ${ex})`);
+  }
+  if (report.length > 40) error(`Internal .html URLs: ... and ${report.length - 40} more files`);
+  if (total === 0) pass('No internal URL names a page by its .html file');
+}
+
 // Summary
 console.log(`\n${errors === 0 ? '✅' : '❌'} Validation complete: ${errors} errors, ${warnings} warnings, ${htmlFiles.length} pages checked`);
 process.exit(errors > 0 ? 1 : 0);
