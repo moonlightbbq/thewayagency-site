@@ -224,6 +224,17 @@ describe('cookie hygiene', () => {
     assert.doesNotMatch(c.value, /privacycheck|5555550123|search/);
   });
 
+  test('landing_page in twa_ft/twa_lt is stripped of identity and kept to 300 characters', () => {
+    const jar = new CookieJar();
+    const w = visit(jar, SITE + '/personal/auto?utm_source=test&name=Zz%20Privacycheck&email=zz.privacycheck%40example.com&utm_content=' + 'a'.repeat(600), '');
+    for (const name of ['twa_ft', 'twa_lt']) {
+      const lp = w.TWA.getCookie(name).landing_page;
+      assert.ok(lp.length <= 300, `${name}.landing_page is ${lp.length} characters`);
+      assert.ok(lp.startsWith('/personal/auto?utm_source=test&utm_content=aaa'));
+      assert.doesNotMatch(lp, /privacycheck|name=|email=/i);
+    }
+  });
+
   test('a tampered or malformed cookie is dropped, never sent as-is', () => {
     const jar = new CookieJar();
     jar.setCookieSync('twa_rl=' + encodeURIComponent(JSON.stringify({ ref_host: { x: 1 }, ai_source: 'x'.repeat(300) })) + '; Path=/', SITE + '/');
