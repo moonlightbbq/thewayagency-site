@@ -225,6 +225,8 @@ describe('product, line-hub and industry links (CONT-01 c, BLOG-03, TECH-01)', (
     assert.match(index, /href="sms:\+15024135335"/);
     assert.match(index, /<link rel="canonical" href="https:\/\/www\.thewayagency\.com\/industries\/">/);
     assert.doesNotMatch(index, /top-rated|\d+\+/i);
+    // ky_notes are unsourced until content-accuracy WP-G2: the index vouches for no rules.
+    assert.doesNotMatch(index, /rules we know/i);
   });
   test('each industry page links /industries/', () => {
     for (const i of landingData.industries) assert.ok(hrefs(main(pages.generateIndustryPage(i, ctx))).includes('/industries/'), i.slug);
