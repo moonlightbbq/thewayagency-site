@@ -26,7 +26,7 @@ The structural fact is that a captive agent's job, by definition, is to fit your
 
 ## What independent actually means
 
-[The Way Agency](/about/) is an independent insurance agency, founded 1998, licensed in Kentucky, Indiana, and Tennessee. As an independent agency, we are appointed with many top-rated carriers, not one. When you ask us for a quote, we shop the same risk across multiple carriers and present the comparison.
+[The Way Agency](/about/) is an independent insurance agency licensed in Kentucky, Indiana, and Tennessee. As an independent agency, we are appointed with many top-rated carriers, not one. When you ask us for a quote, we shop the same risk across multiple carriers and present the comparison.
 
 The structural fact is that an independent agent's job, by definition, is to match your risk against several carriers' appetites at once. If two or three carriers price the same home or auto differently — which is most of the time — the comparison surfaces a better fit. If every carrier we shop comes back high on a risk, independence does not invent a lower rate; the market is the market. What independence does give you is the option to move carriers without changing agents if your situation, or theirs, changes.
 

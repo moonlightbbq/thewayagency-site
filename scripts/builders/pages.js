@@ -15,6 +15,26 @@ function esc(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// The agency is licensed in these states (KY DOI 1244675, Indiana firm licence
+// 3874966, Tennessee business entity producer). Hub eyebrows and trust bars
+// state the hub's state from this map; they never print a founding or
+// "serving since" year (TRUST-02).
+const STATE_NAMES = { KY: 'Kentucky', IN: 'Indiana', TN: 'Tennessee' };
+
+// One hours line for the hub trust bars (owner decision 2026-10-02: Monday to
+// Friday, 9:00 AM to 5:00 PM Eastern; shown as ET so it stays right in daylight time).
+const HUB_HOURS_TEXT = 'Call or text Mon–Fri, 9–5 ET';
+
+function renderHubTrustBar(stateFull) {
+  return `    <div class="trust-bar"><div class="trust-bar__inner">
+      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Licensed in ${stateFull}</div>
+      <div class="trust-bar__divider"></div>
+      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Independent agency</div>
+      <div class="trust-bar__divider"></div>
+      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${HUB_HOURS_TEXT}</div>
+    </div></div>`;
+}
+
 // ─── Breadcrumb Helper ──────────────────────────
 
 function renderBreadcrumbs(items) {
@@ -51,11 +71,12 @@ function getFAQsForProduct(knowledgeBase, productId) {
 }
 
 function getCarriersForLine(carriers, lineKey) {
-  // life/health carriers fall back to personal carriers since the marquee
-  // is a generic logo strip; specific L/H carrier lists can be added to
-  // data/carriers.json later if we want differentiation.
-  const key = (lineKey === 'life' || lineKey === 'health') ? 'personal' : lineKey;
-  return carriers[key] || carriers.personal || [];
+  // No cross-line fallback: life and health pages never show the property and
+  // casualty carriers (TRUST-05). data/carriers.json has no life or health rows
+  // yet, so those pages show no strip. Wholesalers and MGAs (type
+  // "intermediary") are not carriers "we represent" and stay off the strip.
+  const rows = Array.isArray(carriers[lineKey]) ? carriers[lineKey] : [];
+  return rows.filter(c => c.type !== 'intermediary');
 }
 
 function generateCarrierMarquee(carriers, lineKey) {
@@ -66,7 +87,7 @@ function generateCarrierMarquee(carriers, lineKey) {
   ).join('\n          ');
   return `
     <section class="carriers">
-      <p class="carriers__label">We represent top-rated carriers</p>
+      <p class="carriers__label">Insurance companies we're appointed with</p>
       <div style="overflow:hidden;">
         <div class="carriers__track">
           ${carrierItems}
@@ -76,27 +97,28 @@ function generateCarrierMarquee(carriers, lineKey) {
     </section>`;
 }
 
-function getTestimonialsForLine(testimonials, lineKey) {
+function getTestimonialsForLine(testimonials, lineKey, blocked = []) {
   const lineMap = { personal: 'personal', commercial: 'commercial', life: 'life', health: 'health' };
   const lineName = lineMap[lineKey] || 'personal';
+  const blockedIds = new Set(blocked || []);
   // Accept testimonials tagged with either the new line keys or the legacy
-  // 'life_health' bucket so existing testimonial data still surfaces.
-  let filtered = testimonials.testimonials.filter(t => {
-    if (t.product_lines.includes(lineName)) return true;
-    if ((lineName === 'life' || lineName === 'health') && t.product_lines.includes('life_health')) return true;
+  // 'life_health' bucket so existing testimonial data still surfaces. No
+  // padding from other lines: a page shows only reviews about its own line,
+  // even if that means none (TRUST-11; health pages are regulated, 806 KAR 12:010).
+  const filtered = testimonials.testimonials.filter(t => {
+    if (blockedIds.has(t.id)) return false;
+    const lines = Array.isArray(t.product_lines) ? t.product_lines : [];
+    if (lines.includes(lineName)) return true;
+    if ((lineName === 'life' || lineName === 'health') && lines.includes('life_health')) return true;
     return false;
   });
-  if (filtered.length < 2) {
-    const others = testimonials.testimonials.filter(t => !filtered.includes(t));
-    filtered = [...filtered, ...others].slice(0, 3);
-  }
   return filtered.slice(0, 3);
 }
 
 const starSvg = '<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
 
-function generateTestimonials(testimonials, reviews, lineKey) {
-  const revs = getTestimonialsForLine(testimonials, lineKey);
+function generateTestimonials(testimonials, reviews, lineKey, blocked = []) {
+  const revs = getTestimonialsForLine(testimonials, lineKey, blocked);
   if (!revs.length) return '';
   return `
     <section class="section section--light">
@@ -125,19 +147,6 @@ function generateTestimonials(testimonials, reviews, lineKey) {
         </div>
       </div>
     </section>`;
-}
-
-function findReviewerForProduct(team, product, lineKey) {
-  const lineSpecialty = lineKey === 'personal' ? 'personal_lines'
-    : lineKey === 'commercial' ? 'commercial_lines'
-    : lineKey === 'life' ? 'life'
-    : lineKey === 'health' ? 'health'
-    : 'personal_lines';
-  const match = team.team.find(member =>
-    member.specialties.includes(product.id) ||
-    member.specialties.includes(lineSpecialty)
-  );
-  return match || team.team[0];
 }
 
 // ─── Template Functions ─────────────────────────
@@ -284,14 +293,14 @@ ${hiddenHtml}
 const hubConfig = {
   personal: {
     title: 'Personal Insurance | Home, Auto & More | The Way Agency',
-    description: 'Personal insurance solutions: home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet. We represent top-rated carriers to find the right coverage and price.',
+    description: 'Personal insurance solutions: home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet. We compare the insurance companies we\'re appointed with to find the right coverage and price.',
     canonical: '/personal/',
-    hero: { eyebrow: 'Personal Insurance', title: 'Protection for you<br>and your family', subtitle: 'From your home and vehicles to your personal liability, we help families find the right coverage from top-rated carriers.' },
+    hero: { eyebrow: 'Personal Insurance', title: 'Protection for you<br>and your family', subtitle: 'From your home and vehicles to your personal liability, we help families find the right coverage.' },
     sectionEyebrow: 'Coverage Options',
     sectionTitle: 'Personal insurance products',
     sectionDesc: 'Each product page explains what the coverage is, who needs it, what it costs, and what it doesn\'t cover, in plain language.',
     ctaTitle: 'Get a personal insurance quote',
-    ctaText: 'Tell us what you need and we\'ll shop top-rated carriers for the best options.',
+    ctaText: 'Tell us what you need and we\'ll compare the insurance companies we\'re appointed with for the best options.',
     crossSell: [
       { href: '/commercial/', title: 'Commercial Insurance', text: 'Liability, property, auto, workers comp, and more for your business.', label: 'Explore Commercial' },
       { href: '/life/', title: 'Life Insurance', text: 'Term life, whole life, annuities, disability, and final expense coverage.', label: 'Explore Life' },
@@ -301,14 +310,14 @@ const hubConfig = {
   },
   commercial: {
     title: 'Commercial Insurance | The Way Agency',
-    description: 'Commercial insurance for businesses: general liability, property, auto, workers comp, cyber, bonds, builders risk, special events, and professional liability from top-rated carriers.',
+    description: 'Commercial insurance for businesses: general liability, property, auto, workers comp, cyber, bonds, builders risk, special events, and professional liability.',
     canonical: '/commercial/',
     hero: { eyebrow: 'Commercial Insurance', title: 'Protection that lets<br>your business grow', subtitle: 'From general liability to workers comp, we help businesses build coverage that matches real risk and real operations.' },
     sectionEyebrow: 'Coverage Options',
     sectionTitle: 'Commercial insurance products',
     sectionDesc: 'Each product page explains who needs the coverage, what it protects against, what it costs, and what it does not cover.',
     ctaTitle: 'Get a commercial insurance quote',
-    ctaText: 'Tell us about your business and we\'ll build a coverage program from top-rated carriers.',
+    ctaText: 'Tell us about your business and we\'ll build a coverage program from the insurance companies we\'re appointed with.',
     crossSell: [
       { href: '/personal/', title: 'Personal Insurance', text: 'Home, auto, umbrella, and specialty coverage for you and your family.', label: 'Explore Personal' },
       { href: '/life/', title: 'Life Insurance', text: 'Term life, whole life, annuities, disability, and final expense coverage.', label: 'Explore Life' },
@@ -318,7 +327,7 @@ const hubConfig = {
   },
   life: {
     title: 'Life Insurance | Term, Whole, Annuities & More | The Way Agency',
-    description: 'Life insurance and lifetime protection: term life, whole life, annuities, disability, and final expense from top-rated carriers.',
+    description: 'Life insurance and lifetime protection: term life, whole life, annuities, disability, and final expense coverage.',
     canonical: '/life/',
     hero: { eyebrow: 'Life Insurance', title: 'Plan for what<br>matters most', subtitle: 'Term life, whole life, annuities, disability, and final expense. We help you navigate the options and choose with confidence.' },
     ctaTitle: 'Get a life insurance quote',
@@ -334,7 +343,7 @@ const hubConfig = {
   },
   health: {
     title: 'Health Insurance | Medicare, Individual, Group & More | The Way Agency',
-    description: 'Health insurance and supplemental coverage: Medicare, Medicaid, individual and group health, family health, dental, vision, and supplemental from top-rated carriers.',
+    description: 'Health insurance and supplemental coverage: Medicare, Medicaid, individual and group health, family health, dental, vision, and supplemental coverage.',
     canonical: '/health/',
     hero: { eyebrow: 'Health Insurance', title: 'Coverage built<br>around your care', subtitle: 'Medicare, Medicaid, individual and group health, dental, vision, and supplemental coverage. We help you navigate the options and choose with confidence.' },
     ctaTitle: 'Get a health insurance quote',
@@ -501,7 +510,7 @@ ${renderScripts()}
 // ─── Product Page Template ──────────────────────
 
 function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
-  const { products, office, team, knowledgeBase, carriers, testimonials, reviews, richContent, seoData, renderNav, renderFooter, renderScripts } = ctx;
+  const { products, office, knowledgeBase, carriers, testimonials, testimonialsBlocklist, reviews, richContent, seoData, renderNav, renderFooter, renderScripts } = ctx;
   const rc = richContent[product.id] || {};
   const faqs = rc.faqs || [];
   const kbFaqs = getFAQsForProduct(knowledgeBase, product.id);
@@ -546,7 +555,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
       <p>
         In our experience: <strong>${product.typical_cost_range}</strong>.
         ${product.cost_factors ? 'Key factors that affect your premium include: ' + product.cost_factors.join(', ') + '.' : ''}
-        As an independent agency, we represent top-rated carriers and match you with the right one for your situation.
+        As an independent agency, we compare the insurance companies we're appointed with and match you with the right one for your situation.
       </p>` : '');
 
   const faqSection = displayFaqs.length > 0 ? `
@@ -692,28 +701,13 @@ ${breadcrumbs.html}
 ${formHtml}
 
       ${relatedSection}
-
-      ${(() => {
-        const reviewer = findReviewerForProduct(team, product, lineKey);
-        const designations = reviewer.designations && reviewer.designations.length > 0 ? reviewer.designations.join(', ') + ' | ' : '';
-        const reviewDate = product.last_reviewed ? new Date(product.last_reviewed + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : 'March 2026';
-        return `<div style="margin-top:var(--space-2xl);padding:var(--space-lg);background:var(--light-bg);border:1px solid var(--border);border-radius:var(--border-radius-lg);">
-        <p style="font-size:var(--text-sm);color:var(--slate);margin-bottom:4px;">Reviewed by</p>
-        <p style="font-weight:600;color:var(--navy);margin-bottom:2px;">
-          <a href="/about/team.html#${reviewer.slug}" style="color:var(--navy);">${reviewer.name}</a>, ${reviewer.title}
-        </p>
-        <p style="font-size:var(--text-sm);color:var(--slate);margin-bottom:0;">
-          ${designations}Licensed in KY, IN &amp; TN | ${reviewer.years_experience} years experience | Last reviewed: ${reviewDate}
-        </p>
-      </div>`;
-      })()}
     </article>
 
     ${crossSellSection}
 
     <!-- City-specific links handled by dedicated landing pages -->
 
-    ${generateTestimonials(testimonials, reviews, lineKey)}
+    ${generateTestimonials(testimonials, reviews, lineKey, (testimonialsBlocklist && testimonialsBlocklist.blocked) || [])}
 
 ${renderCTA({
       title: `Ready to talk about ${product.name.toLowerCase()}?`,
@@ -776,8 +770,8 @@ ${faqs.map(f => `      {
     .replace('%%FORM_SUBTEXT%%', 'Tell us your name and email and a licensed agent will follow up with options.');
 
   const defaultTitle = `Insurance in ${city.city}, ${city.state} | The Way Agency`;
-  const defaultDescription = `Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from top-rated carriers. Get a quote today.`;
-  const defaultOgDescription = `Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance from top-rated carriers.`;
+  const defaultDescription = `Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance. Get a quote today.`;
+  const defaultOgDescription = `Insurance agency serving ${city.city}, ${city.state}. Home, auto, commercial, and life insurance.`;
   return `<!DOCTYPE html>
 <html lang="en">
 ${renderHead({
@@ -794,9 +788,9 @@ ${renderHead({
 ${renderNav()}
 
 ${renderHero({
-    eyebrow: `Independent agency · Serving ${city.county} since 1998`,
+    eyebrow: `Independent agency · Licensed in ${STATE_NAMES[city.state] || city.state}`,
     title: `Insurance in <span class="hero__title-accent">${city.city}</span>, ${city.state}`,
-    subtitle: `Top-rated carriers, right-sized coverage, local service. Personal, commercial, and life insurance for ${city.city} families and businesses.`,
+    subtitle: `Personal, commercial, and life insurance for ${city.city} families and businesses.`,
     buttons: [
       { href: `/intake/?city=${encodeURIComponent(city.city)}&state=${encodeURIComponent(city.state)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
       { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
@@ -807,13 +801,7 @@ ${renderHero({
   })}
 
   <main id="main">
-    <div class="trust-bar"><div class="trust-bar__inner">
-      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Since 1998</div>
-      <div class="trust-bar__divider"></div>
-      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Top-Rated Carriers</div>
-      <div class="trust-bar__divider"></div>
-      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Licensed in ${city.state}</div>
-    </div></div>
+${renderHubTrustBar(STATE_NAMES[city.state] || city.state)}
 
     <section class="section">
       <div class="container container--narrow">
@@ -824,7 +812,6 @@ ${(city.context_sections || []).map(s => {
           return `        <h3 id="${sectionId}">${s.heading}</h3>\n        <p>${s.body}</p>`;
         }).join('\n')}
 ${city.context_closing ? `        <p>${city.context_closing}</p>` : ''}
-${city.context_closing ? '' : `        <p>As an independent agency, we are not tied to one insurance company. We represent top-rated carriers &mdash; including Travelers, Progressive, Liberty Mutual, Chubb, The Hartford, and more &mdash; and we match you with the right ones for your specific situation in ${city.county}.</p>`}
 
         <h2>Insurance options in ${city.city}</h2>
         ${(() => {
@@ -842,7 +829,7 @@ ${faqAccordion}
 
         <h2>How it works</h2>
         <p><strong>1. Tell us what you need.</strong> Request a quote online or call ${office.phone}. We just need basic info to get started.</p>
-        <p><strong>2. We find the right carriers.</strong> We compare options across top-rated carriers to find the best coverage and price for your situation in ${city.city}.</p>
+        <p><strong>2. We find the right carriers.</strong> We compare options across the insurance companies we represent to find the best coverage and price for your situation in ${city.city}.</p>
         <p><strong>3. You choose with confidence.</strong> We present clear recommendations and help you understand exactly what you're buying. No pressure, no jargon.</p>
         <p style="color:var(--slate);font-size:var(--text-sm);">We aim to respond same-day during business hours (Mon\u2013Fri, 9:00 AM \u2013 5:00 PM).</p>
       </div>
@@ -874,6 +861,7 @@ function generateCountyPage(county, ctx) {
   const { office, renderNav, renderFooter, renderScripts } = ctx;
   const countyName = county.county_name;
   const stateAbbr = county.state;
+  const stateFull = county.state_full || STATE_NAMES[stateAbbr] || stateAbbr;
 
   // The hub's WebPage + Service JSON-LD comes from schema-generator.js
   // _buildHubNodes (the county only as an area served; no agency node here).
@@ -910,7 +898,7 @@ ${faqs.map(f => `      {
   </script>` : '';
 
   const defaultTitle = `Insurance in ${countyName}, ${stateAbbr} | The Way Agency`;
-  const defaultDescription = `Insurance agency serving ${countyName}, ${stateAbbr}. Home, auto, commercial, farm, and life insurance from top-rated carriers.`;
+  const defaultDescription = `Insurance agency serving ${countyName}, ${stateAbbr}. Home, auto, commercial, farm, and life insurance.`;
 
   const countyFormHtml = renderInlineForm(county.slug, { county: countyName, state: stateAbbr })
     .replace('%%FORM_HEADING%%', `Get an insurance quote in ${countyName}`)
@@ -932,9 +920,9 @@ ${renderHead({
 ${renderNav()}
 
 ${renderHero({
-    eyebrow: `Independent agency · Serving ${countyName} since 1998`,
+    eyebrow: `Independent agency · Licensed in ${stateFull}`,
     title: `Insurance in <span class="hero__title-accent">${countyName}</span>, ${stateAbbr}`,
-    subtitle: `Top-rated carriers, right-sized coverage, local service. Personal, commercial, farm, and life insurance for ${countyName} families and businesses.`,
+    subtitle: `Personal, commercial, farm, and life insurance for ${countyName} families and businesses.`,
     buttons: [
       { href: `/intake/?county=${encodeURIComponent(countyName)}&state=${encodeURIComponent(stateAbbr)}`, text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
       { href: 'tel:+15024135335', text: `Call ${office.phone}`, className: 'btn btn--outline-white btn--lg' },
@@ -945,13 +933,7 @@ ${renderHero({
   })}
 
   <main id="main">
-    <div class="trust-bar"><div class="trust-bar__inner">
-      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>Since 1998</div>
-      <div class="trust-bar__divider"></div>
-      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Top-Rated Carriers</div>
-      <div class="trust-bar__divider"></div>
-      <div class="trust-bar__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Licensed in ${stateAbbr}</div>
-    </div></div>
+${renderHubTrustBar(stateFull)}
 
     <section class="section">
       <div class="container container--narrow">
@@ -979,7 +961,7 @@ ${faqAccordion}
 
         <h2>How it works</h2>
         <p><strong>1. Tell us what you need.</strong> Request a quote online or call ${office.phone}. We just need basic info to get started.</p>
-        <p><strong>2. We find the right carriers.</strong> We compare options across top-rated carriers to find the best coverage and price for your situation in ${countyName}.</p>
+        <p><strong>2. We find the right carriers.</strong> We compare options across the insurance companies we represent to find the best coverage and price for your situation in ${countyName}.</p>
         <p><strong>3. You choose with confidence.</strong> We present clear recommendations and help you understand exactly what you're buying. No pressure, no jargon.</p>
         <p style="color:var(--slate);font-size:var(--text-sm);">We aim to respond same-day during business hours (Mon–Fri, 9:00 AM – 5:00 PM).</p>
       </div>
@@ -1017,10 +999,10 @@ function generateIndustryPage(ind, ctx) {
 <html lang="en">
 ${renderHead({
     title: `Insurance for ${ind.name} in Kentucky | The Way Agency`,
-    description: `Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. ${ind.description.split('.')[0]}. Get a quote from top-rated carriers.`,
+    description: `Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. ${ind.description.split('.')[0]}. Get a quote.`,
     canonical: `https://www.thewayagency.com/industries/${ind.slug}`,
     ogTitle: `Insurance for ${ind.name} in Kentucky | The Way Agency`,
-    ogDescription: `Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. Get a quote from top-rated carriers.`,
+    ogDescription: `Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. Get a quote.`,
     ogUrl: `https://www.thewayagency.com/industries/${ind.slug}`,
     // The page's Service JSON-LD comes from schema-generator.js _buildIndustryService.
     schema: '',
@@ -1054,7 +1036,7 @@ ${renderHero({
 
         <h2>Kentucky-specific requirements</h2>
         <p>${ind.ky_notes}</p>
-        <p>We represent top-rated carriers including specialty markets for ${ind.name.toLowerCase()}, which means we can often find coverage that generalist agencies cannot. We also handle certificates of insurance, additional insured endorsements, and audit support.</p>
+        <p>We represent carriers including specialty markets for ${ind.name.toLowerCase()}, which means we can often find coverage that generalist agencies cannot. We also handle certificates of insurance, additional insured endorsements, and audit support.</p>
 
 ${indFormHtml}
 
@@ -1111,7 +1093,9 @@ ${linkedProducts.map(p => `          <a href="${p.url}" class="card" style="text
           ${carrier.strengths.map(s => `<li>${s}</li>`).join('\n          ')}
         </ul>` : '';
 
-  const ratingBadge = carrier.am_best_rating ? `<p style="margin-top:var(--space-lg);"><strong>AM Best Rating:</strong> ${carrier.am_best_rating}</p>` : '';
+  // No rating is printed until it carries an as-of date and a source (TRUST-05:
+  // GUARD was shown A++ against its own A+, and no rating was dated).
+  const ratingBadge = '';
 
   const breadcrumbs = renderBreadcrumbs([
     { name: 'Home', url: '/' },
@@ -1155,7 +1139,7 @@ ${breadcrumbs.html}
         ${productCards}
         ${strengthsList}
         <h2>How it works</h2>
-        <p>As an independent agency, we represent ${carrier.name} alongside many other top-rated carriers. When you request a quote, we compare options from multiple companies — including ${carrier.name} — to find the best combination of coverage, service, and price for your specific situation.</p>
+        <p>As an independent agency, we represent ${carrier.name} alongside other insurance companies. When you request a quote, we compare options from multiple companies — including ${carrier.name} — to find the best combination of coverage, service, and price for your specific situation.</p>
         <p>You get the strength and backing of ${carrier.name} with the personal service and advocacy of a local, independent agent.</p>
       </div>
     </section>
@@ -1179,6 +1163,13 @@ ${renderScripts()}
 
 // ─── Carriers Index Page ────────────────────────
 
+// First sentence without cutting "U.S." (TRUST-05): it ends at . ! or ? followed
+// by whitespace and a capital letter, or by the end of the text.
+function firstSentence(t) {
+  const m = String(t || '').match(/^.*?[.!?](?=\s+[A-Z]|\s*$)/);
+  return m ? m[0] : String(t || '');
+}
+
 function generateCarriersIndex(carriers, ctx) {
   const { office, renderNav, renderFooter, renderScripts } = ctx;
   const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
@@ -1200,26 +1191,26 @@ function generateCarriersIndex(carriers, ctx) {
   const featured = allCarriers.filter(c => c.description);
   const standard = allCarriers.filter(c => !c.description);
 
+  // Ratings are not printed (see generateCarrierPage); the card text is the
+  // description's first sentence without cutting "U.S." short.
   const featuredCards = featured.map(c => `          <a href="/carriers/${c.slug}.html" class="card" style="text-decoration:none;">
             <h3 class="card__title" style="font-size:var(--text-xl);">${c.name}</h3>
-            ${c.am_best_rating ? `<p style="font-size:var(--text-xs);color:var(--green);font-weight:600;margin-bottom:var(--space-sm);">AM Best: ${c.am_best_rating}</p>` : ''}
-            <p class="card__text">${c.description.split('.')[0]}.</p>
+            <p class="card__text">${firstSentence(c.description)}</p>
             <span class="card__link">Learn more ${arrowSvg}</span>
           </a>`).join('\n');
 
   const standardList = standard.map(c => {
-    const rating = c.am_best_rating ? ` <span style="color:var(--green);font-size:var(--text-xs);font-weight:600;">(${c.am_best_rating})</span>` : '';
-    return `<li style="padding:var(--space-sm) 0;border-bottom:1px solid var(--border);">${c.name}${rating}</li>`;
+    return `<li style="padding:var(--space-sm) 0;border-bottom:1px solid var(--border);">${c.name}</li>`;
   }).join('\n            ');
 
   return `<!DOCTYPE html>
 <html lang="en">
 ${renderHead({
-    title: 'Our Insurance Carriers | Top-Rated Companies | The Way Agency',
-    description: 'The Way Agency represents top-rated insurance carriers including Travelers, Progressive, Chubb, Liberty Mutual, The Hartford, and more. We shop the market for you.',
+    title: 'Our Insurance Carriers | The Way Agency',
+    description: 'The Way Agency represents insurance carriers including Travelers, Progressive, Chubb, Liberty Mutual, The Hartford, and more. We shop the market for you.',
     canonical: 'https://www.thewayagency.com/carriers/',
     ogTitle: 'Our Insurance Carriers | The Way Agency',
-    ogDescription: 'We represent top-rated insurance carriers to find you the best coverage and price.',
+    ogDescription: 'We represent insurance carriers to find you the best coverage and price.',
     ogUrl: 'https://www.thewayagency.com/carriers/',
     schema: JSON.stringify({
       "@context": "https://schema.org",
@@ -1236,8 +1227,8 @@ ${renderNav()}
 
 ${renderHero({
     eyebrow: 'Our Carriers',
-    title: 'Top-rated carriers.<br>One independent agent.',
-    subtitle: 'We represent top-rated insurance carriers across personal, commercial, and life lines. That means we shop the market for you and find the best combination of coverage, service, and price.',
+    title: 'Insurance carriers we represent',
+    subtitle: 'We represent insurance carriers across personal and commercial lines. That means we shop the market for you and find the best combination of coverage, service, and price.',
     buttons: [
       { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
     ],

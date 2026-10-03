@@ -2,18 +2,12 @@
 title: What Every Kentucky Driver Should Know About Auto Insurance
 slug: kentucky-auto-insurance-guide
 description: Kentucky is a choice no-fault state with unique auto insurance requirements. Learn about minimum coverage, PIP, and how to get the right protection without overpaying.
-author: Audrey Lillpop
-author_title: Licensed Agent
-author_slug: audrey-lillpop
+author: The Way Agency
 date: 2026-04-01
 modified: 2026-04-01
 reading_time: 7 min read
 related_page: /personal/auto.html
 tags: auto insurance, kentucky, no-fault, PIP, car insurance
-reviewer: Audrey Lillpop
-reviewer_slug: audrey-lillpop
-reviewer_title: Licensed Agent
-reviewed_date: 2026-03-25
 ---
 
 Kentucky has some of the most unique auto insurance rules in the country. It is one of only a handful of "choice no-fault" states, which means you get to decide how your claims are handled before an accident ever happens.

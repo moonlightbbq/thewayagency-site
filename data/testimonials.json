@@ -1,9 +1,4 @@
 {
-  "reviews": {
-    "count": 24,
-    "rating": 5,
-    "source": "google"
-  },
   "testimonials": [
     {
       "id": "brian-osbourne",

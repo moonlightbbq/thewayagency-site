@@ -15,7 +15,8 @@
  * Examples:
  *   node scripts/admin.js team list
  *   node scripts/admin.js team add --name "Jane Doe" --title "Licensed Agent"
- *   node scripts/admin.js testimonial add --name "Client" --text "Great service" --rating 5
+ *   node scripts/admin.js testimonial add --name "Client" --text "Great service" --rating 5 \
+ *     --date 2026-09-30 --lines personal --source google --review-key <key>
  *   node scripts/admin.js kb add --question "Is flood covered?" --answer "No, separate policy needed"
  *   node scripts/admin.js blog list
  *   node scripts/admin.js deploy                # rebuild + git push
@@ -73,14 +74,17 @@ const teamActions = {
 
   add(opts) {
     if (!opts.name) { console.error('Error: --name is required'); process.exit(1); }
+    // No default title: "Licensed Agent" by default credited people who are not
+    // licensed. No default licence states either (TRUST-03): add a member's
+    // states to data/team.json by hand, from the state lookup, once verified.
+    if (!opts.title || opts.title === true) { console.error('Error: --title is required (the person\'s real title)'); process.exit(1); }
     const data = loadJSON('team.json');
     const member = {
       name: opts.name,
       slug: slugify(opts.name),
-      title: opts.title || 'Licensed Agent',
+      title: opts.title,
       photo: opts.photo || `/src/assets/images/team/${slugify(opts.name)}.webp`,
-      years_experience: parseInt(opts.years) || 0,
-      license_states: (opts.states || 'KY,IN,TN').split(','),
+      license_states: [],
       designations: opts.designations ? opts.designations.split(',') : [],
       specialties: opts.specialties ? opts.specialties.split(',') : [],
       bio: opts.bio || '',
@@ -91,6 +95,7 @@ const teamActions = {
     data.team.push(member);
     saveJSON('team.json', data);
     console.log(`  ✓ Added team member: ${member.name}`);
+    console.log('  ! license_states is empty: add licensed states in data/team.json only from a verified state licence lookup.');
   },
 
   remove(opts) {
@@ -119,17 +124,27 @@ const testimonialActions = {
 
   add(opts) {
     if (!opts.name || !opts.text) { console.error('Error: --name and --text required'); process.exit(1); }
+    // Provenance is required, never defaulted (TRUST-11): the review's own date,
+    // the lines it is about, where it was published, and a key or URL to find it.
+    const str = (v) => (typeof v === 'string' ? v.trim() : '');
+    const missing = [];
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(str(opts.date))) missing.push('--date YYYY-MM-DD (the review\'s own date)');
+    if (!str(opts.lines)) missing.push('--lines personal|commercial|life|health[,...]');
+    if (!str(opts.source)) missing.push('--source (for example google)');
+    if (!str(opts['review-key']) && !str(opts.url)) missing.push('--review-key or --url');
+    if (missing.length) { console.error('Error: required: ' + missing.join('; ')); process.exit(1); }
     const data = loadJSON('testimonials.json');
     const entry = {
       id: slugify(opts.name),
       name: opts.name,
       rating: parseInt(opts.rating) || 5,
       text: opts.text,
-      source: opts.source || 'google',
-      source_url: opts.url || '',
-      date: opts.date || new Date().toISOString().split('T')[0],
+      source: str(opts.source),
+      source_url: str(opts.url),
+      ...(str(opts['review-key']) ? { review_key: str(opts['review-key']) } : {}),
+      date: str(opts.date),
       agent: opts.agent || '',
-      product_lines: opts.lines ? opts.lines.split(',') : ['personal'],
+      product_lines: str(opts.lines).split(','),
       products: opts.products ? opts.products.split(',') : [],
     };
     data.testimonials.push(entry);
