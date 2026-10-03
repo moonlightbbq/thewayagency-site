@@ -444,23 +444,37 @@ if (fs.existsSync(redirectsPath)) {
 }
 
 // 11. Blog feed (TECH-05): the 20 newest rendered posts, newest first, at
-// extensionless URLs; old .html guids kept with isPermaLink="false".
+// extensionless URLs; old .html guids kept with isPermaLink="false". Posts
+// that scripts/lib/feed-hold.js holds (health and Medicare, until PR #63's
+// corrections are live) must not appear and do not count toward the 20.
 {
   const feedPath = path.join(BUILD, 'blog', 'feed.xml');
   if (fs.existsSync(feedPath)) {
     const { feedProblems } = require('./lib/url-hygiene');
     const { LEGACY_BLOG_PAGES } = require('./lib/legacy-blog-pages');
+    const { feedHoldReason } = require('./lib/feed-hold');
+    const metaContent = (html, prop) => [...html.matchAll(new RegExp(`<meta property="${prop}" content="([^"]*)">`, 'g'))]
+      .map((x) => x[1].replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&'));
     const posts = [];
+    const held = new Set();
     for (const name of fs.readdirSync(path.join(BUILD, 'blog'))) {
       if (!name.endsWith('.html') || name === 'index.html' || Object.prototype.hasOwnProperty.call(LEGACY_BLOG_PAGES, name)) continue;
       const html = fs.readFileSync(path.join(BUILD, 'blog', name), 'utf8');
       const m = /"@type":\s*"Article"[\s\S]*?"datePublished":\s*"([^"]*)"/.exec(html);
-      posts.push({ slug: name.slice(0, -'.html'.length), date: m ? m[1] : '' });
+      const slug = name.slice(0, -'.html'.length);
+      const title = (metaContent(html, 'og:title')[0] || '').replace(/ \| The Way Agency$/, '');
+      const category = metaContent(html, 'article:section')[0] || '';
+      if (feedHoldReason({ slug, title, category, tags: metaContent(html, 'article:tag') })) { held.add(slug); continue; }
+      posts.push({ slug, date: m ? m[1] : '' });
     }
     posts.sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0)));
-    const problems = feedProblems(fs.readFileSync(feedPath, 'utf8'), { routes, expectedSlugs: posts.map(p => p.slug) });
+    const feedXml = fs.readFileSync(feedPath, 'utf8');
+    const problems = feedProblems(feedXml, { routes, expectedSlugs: posts.map(p => p.slug) });
+    for (const slug of held) {
+      if (feedXml.includes(`/blog/${slug}<`) || feedXml.includes(`/blog/${slug}.html<`)) problems.push(`feed lists ${slug}, which scripts/lib/feed-hold.js holds out until the Medicare corrections are live`);
+    }
     for (const p of problems) error(p);
-    if (problems.length === 0) pass(`Feed lists the ${Math.min(20, posts.length)} newest posts, newest first, at extensionless URLs`);
+    if (problems.length === 0) pass(`Feed lists the ${Math.min(20, posts.length)} newest posts, newest first, at extensionless URLs (${held.size} health/Medicare posts held out)`);
   } else {
     error('blog/feed.xml not found');
   }

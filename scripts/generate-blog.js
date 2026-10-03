@@ -1137,7 +1137,15 @@ const rssItems = [];
 // Newest first (TECH-05): `posts` is in directory order, which is alphabetical,
 // so slicing it unsorted listed the first 20 slugs and never the newest posts.
 // Ties go by slug so two builds give the same feed.
-const rssPosts = posts.map(m => ({ slug: m.slug, title: m.title, description: m.description || '', publish_date: m.date }))
+// Health and Medicare posts are held out of the feed (only the feed) until
+// PR #63's corrections are live: see scripts/lib/feed-hold.js, which says
+// when to remove this filter.
+const { feedHoldReason } = require('./lib/feed-hold');
+const rssPosts = posts.filter(m => {
+  const why = feedHoldReason(m);
+  if (why) console.log(`  ~ feed: held ${m.slug} (${why}) until the Medicare corrections are live`);
+  return !why;
+}).map(m => ({ slug: m.slug, title: m.title, description: m.description || '', publish_date: m.date }))
   .sort((a, b) => (String(b.publish_date) < String(a.publish_date) ? -1 : String(b.publish_date) > String(a.publish_date) ? 1 : (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0)))
   .slice(0, 20);
 // Build author/category map from posts metadata
