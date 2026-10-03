@@ -78,3 +78,18 @@ test('a shared priority hub counts only for hubs in the priority set', () => {
   assert.deepEqual(rankRelated([host], [host, cand], { priorityHubs: new Set(['/insurance/owensboro-ky']) }).get('host'), ['cand']);
   assert.deepEqual(rankRelated([host], [host, cand], { priorityHubs: new Set() }).get('host'), []);
 });
+
+test('relatedBlockedProblems flags a Related Articles link to a blocked_guides post, not other links', () => {
+  const { relatedBlockedProblems } = require('../scripts/lib/link-structure-check');
+  const page = (links) => `<article><p><a href="/blog/held-post">in-text link is not Related</a></p>
+      <section><h2 style="x">Related Articles</h2><div>${links.map((s) => `<a href="/blog/${s}" class="card">t</a>`).join('')}</div></section></article>`;
+  const site = new Map([
+    ['/blog/a', { rel: 'blog/a.html', html: page(['ok-post', 'held-post']) }],
+    ['/blog/b', { rel: 'blog/b.html', html: page(['ok-post']) }],
+    ['/blog/frozen', { rel: 'blog/frozen.html', html: page(['held-post']) }],
+    ['/personal/home', { rel: 'personal/home.html', html: page(['held-post']) }],
+  ]);
+  const out = relatedBlockedProblems(site, ['held-post'], new Set(['blog/frozen.html']));
+  assert.equal(out.length, 1);
+  assert.match(out[0], /^\/blog\/a: Related Articles links held-post/);
+});

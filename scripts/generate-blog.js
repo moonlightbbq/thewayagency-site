@@ -1117,13 +1117,18 @@ const calendar = calendarEntries.calendar;
     };
     const priorityHubs = new Set(Object.entries(locations.hub_tiers || {})
       .filter(([slug, tier]) => tier === 'priority' && /^[a-z0-9-]+$/.test(slug)).map(([slug]) => `/insurance/${slug}`));
-    const hubLabels = (() => {
-      try { return JSON.parse(fs.readFileSync(path.join(DATA, 'internal-links.json'), 'utf8')).hub_labels || {}; } catch { return {}; }
+    const internalLinks = (() => {
+      try { return JSON.parse(fs.readFileSync(path.join(DATA, 'internal-links.json'), 'utf8')) || {}; } catch { return {}; }
     })();
+    const hubLabels = internalLinks.hub_labels || {};
+    // A post the money pages may not link yet (blocked_guides: legal
+    // corrections, BLOG-05 retirements, Medicare until TRUST-01) is not offered
+    // as a Related Article either. Its own page still gets Related links.
+    const blockedGuides = new Set(Object.keys(internalLinks.blocked_guides || {}));
     const titleBySlug = new Map(allPublishedFiltered.map(p => [p.slug, p.title]));
     const relatedBySlug = rankRelated(
       posts.map(m => merged(m.slug, { publish_date: m.date })),
-      allPublishedFiltered.map(p => merged(p.slug, p)),
+      allPublishedFiltered.filter(p => !blockedGuides.has(p.slug)).map(p => merged(p.slug, p)),
       { priorityHubs },
     );
     let noRelated = 0;

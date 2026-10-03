@@ -500,7 +500,7 @@ if (fs.existsSync(redirectsPath)) {
 // click-depth limits and no hub or industry page orphaned. Rules:
 // scripts/lib/link-structure-check.js (dependency-free).
 {
-  const { readSite, breadcrumbProblems, htmlHubLinkProblems, clickDepthProblems } = require('./lib/link-structure-check');
+  const { readSite, breadcrumbProblems, htmlHubLinkProblems, clickDepthProblems, relatedBlockedProblems } = require('./lib/link-structure-check');
   const site = readSite(BUILD);
   const crumbs = breadcrumbProblems(site);
   for (const p of crumbs) error(`Breadcrumb: ${p}`);
@@ -512,6 +512,11 @@ if (fs.existsSync(redirectsPath)) {
   const depthProblems = clickDepthProblems(site);
   for (const p of depthProblems) error(`Click depth: ${p}`);
   if (depthProblems.length === 0) pass('Priority hubs and /industries/ within click-depth limits; no orphaned hub or industry page');
+  const { LEGACY_BLOG_PAGES } = require('./lib/legacy-blog-pages');
+  const blockedGuides = Object.keys(JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'internal-links.json'), 'utf8')).blocked_guides || {});
+  const relatedBlocked = relatedBlockedProblems(site, blockedGuides, new Set(Object.keys(LEGACY_BLOG_PAGES).map((f) => `blog/${f}`)));
+  for (const p of relatedBlocked) error(`Related Articles: ${p}`);
+  if (relatedBlocked.length === 0) pass(`Related Articles link no blocked_guides post (${blockedGuides.length} held)`);
 }
 
 // Summary

@@ -12,6 +12,8 @@
  *  - clickDepthProblems: breadth-first from the homepage over href="/..."
  *    links: the priority hubs and /industries/ within their click-depth limits,
  *    and no /insurance/ or /industries/ page unreachable.
+ *  - relatedBlockedProblems: no generated post's Related Articles block links
+ *    a post in data/internal-links.json blocked_guides.
  */
 const fs = require('fs');
 const path = require('path');
@@ -128,4 +130,26 @@ function clickDepthProblems(site, limits = DEPTH_LIMITS) {
   return problems;
 }
 
-module.exports = { DEPTH_LIMITS, readSite, jsonLdNodes, breadcrumbProblems, htmlHubLinkProblems, clickDepths, clickDepthProblems };
+/**
+ * Related Articles links (generated posts only) into a blocked_guides slug.
+ * @param {Map} site readSite() output
+ * @param {Iterable<string>} blockedSlugs keys of internal-links.json blocked_guides
+ * @param {Set<string>} [skipRels] build-relative files to skip (the frozen hand-made posts)
+ */
+function relatedBlockedProblems(site, blockedSlugs, skipRels = new Set()) {
+  const blocked = new Set(blockedSlugs);
+  const out = [];
+  for (const [route, { rel, html }] of site) {
+    if (!rel.startsWith('blog/') || skipRels.has(rel)) continue;
+    const i = html.indexOf('>Related Articles</h2>');
+    if (i < 0) continue;
+    const end = html.indexOf('</section>', i);
+    const block = html.slice(i, end < 0 ? undefined : end);
+    for (const m of block.matchAll(/href="\/blog\/([a-z0-9-]+)(?:\.html)?"/g)) {
+      if (blocked.has(m[1])) out.push(`${route}: Related Articles links ${m[1]}, which internal-links.json blocked_guides holds`);
+    }
+  }
+  return out;
+}
+
+module.exports = { DEPTH_LIMITS, readSite, jsonLdNodes, breadcrumbProblems, htmlHubLinkProblems, clickDepths, clickDepthProblems, relatedBlockedProblems };
