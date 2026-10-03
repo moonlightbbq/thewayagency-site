@@ -50,6 +50,8 @@ const contentGuard = require('./lib/blog-content-guard');
 const { orgRef, teamMemberUrl, blogPostUrl, SITE_URL } = require('./lib/entity');
 const { isMedicarePost, renderTpmoForAreas } = require('./lib/medicare-disclaimer');
 const { legalClaimWarnings } = require('./lib/legal-claims-lint');
+// Mid-post CTA copy by line: no "free" on life, health or Medicare (CONT-03, D8).
+const { ctaCopy } = require('./lib/blog-cta-copy');
 
 const ROOT = path.resolve(__dirname, '..');
 const BLOG_SRC = path.join(ROOT, 'src', 'blog');
@@ -348,14 +350,13 @@ function injectMidPostCTA(html, category, relatedPage, { medicare = false } = {}
   const categoryLabels = { personal: 'personal insurance', commercial: 'business insurance', life: 'life insurance', health: 'health insurance', life_health: 'life and health insurance' };
   const label = categoryLabels[category] || 'insurance';
   const href = intakeHref(relatedPage, { medicare });
-  const ctaText = medicare
-    ? 'Talk with a licensed agent about your Medicare options.'
-    : 'Get a free quote from an independent agent. We shop top-rated carriers for you.';
+  const copy = ctaCopy(category, relatedPage, { medicare });
+  const ctaText = copy.text;
   const ctaHtml = `
       <div style="background:linear-gradient(135deg,var(--navy-dark),var(--navy));border-radius:var(--border-radius-lg);padding:var(--space-2xl);margin:var(--space-2xl) 0;text-align:center;">
         <p style="color:var(--white);font-size:var(--text-xl);font-weight:600;margin-bottom:var(--space-sm);">Need help with ${label}?</p>
         <p style="color:rgba(255,255,255,0.75);font-size:var(--text-sm);font-weight:300;margin-bottom:var(--space-lg);">${ctaText}</p>
-        <a href="${href}" style="display:inline-block;padding:10px 24px;background:var(--cyan);color:var(--navy-dark);border-radius:var(--border-radius);font-size:var(--text-sm);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;text-decoration:none;">Get a Free Quote</a>
+        <a href="${href}" style="display:inline-block;padding:10px 24px;background:var(--cyan);color:var(--navy-dark);border-radius:var(--border-radius);font-size:var(--text-sm);font-weight:600;text-transform:uppercase;letter-spacing:0.04em;text-decoration:none;">${copy.button}</a>
       </div>`;
 
   // Below section 3 (scripts/lib/blog-cta-placement.js); no CTA with fewer
