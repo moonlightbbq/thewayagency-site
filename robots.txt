@@ -27,13 +27,13 @@ Allow: /src/assets/
 Allow: /src/css/
 Allow: /src/js/
 
-# AI training crawlers (AEO-03 Option A, 2026-10). These product tokens are the
-# vendors' documented training crawlers, so ai-train=no above is expressed in a
-# form they read. Their search and answer crawlers (OAI-SearchBot, ChatGPT-User,
-# Claude-SearchBot, Claude-User, PerplexityBot, Applebot, Amzn-SearchBot,
-# Meta-WebIndexer, MistralAI-Index and others) are not named here, so they follow
-# the * group and stay allowed. tests/robots-txt.test.js proves both lists.
-# Note: Amazonbot and CCBot are not purely training crawlers.
+# AI training (AEO-03 Option A, 2026-10). Tokens we disallow so ai-train=no
+# above is expressed in a form vendors read. Amazonbot and CCBot also serve other
+# purposes; Applebot-Extended is a usage token, not a crawler. Search and answer
+# crawlers (OAI-SearchBot, ChatGPT-User, Claude-SearchBot, Claude-User,
+# PerplexityBot, Applebot, Amzn-SearchBot, Meta-WebIndexer, MistralAI-Index and
+# others) are not named here, so they follow the * group and stay allowed.
+# tests/robots-txt.test.js proves both lists.
 # Google-Extended and meta-externalagent are not listed: each waits on an
 # explicit owner decision. Never set Cloudflare's AI Training control to "Block"
 # or "Block on pages with ads": since 2026-09-15 it also blocks Googlebot,
