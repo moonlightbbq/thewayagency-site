@@ -29,7 +29,7 @@ function loadJson(filepath) {
 const { createVersionInfo, createInjectVersion } = require('./builders/seo');
 const assets = require('./builders/assets');
 const { copyBlogPages, runBlogGenerator } = require('./builders/blog-helpers');
-const { hubConfig, generateHubPage, generateProductPage, generateCityPage, generateCountyPage, generateIndustryPage, generateCarrierPage, generateCarriersIndex, setCriticalCss } = require('./builders/pages');
+const { hubConfig, generateHubPage, generateProductPage, generateCityPage, generateCountyPage, generateIndustryPage, generateCarrierPage, generateCarriersIndex } = require('./builders/pages');
 const { generateSitemap } = require('./builders/sitemap');
 const { createSchemaInjector } = require('./builders/schema-generator');
 
@@ -69,18 +69,11 @@ function renderFooter() {
   return _renderFooter(office, _reviews);
 }
 
-// ─── Critical CSS ───────────────────────────────
-let criticalCssMinified = '';
-const criticalCssPath = path.join(SRC, 'css', 'critical.css');
-if (fs.existsSync(criticalCssPath)) {
-  const criticalCssRaw = fs.readFileSync(criticalCssPath, 'utf8');
-  criticalCssMinified = assets.minifyCss(criticalCssRaw);
-  setCriticalCss(criticalCssMinified);
-  console.log(`  ✓ Critical CSS: ${(criticalCssMinified.length / 1024).toFixed(1)}KB (from ${(criticalCssRaw.length / 1024).toFixed(1)}KB)`);
-}
-
 // ─── Version Injection ──────────────────────────
-const injectVersion = createInjectVersion({ buildVersion, gitInfo, buildDate, reviews: _reviews, renderHead_GTM, renderBody_GTM, criticalCss: criticalCssMinified });
+// Pages load base/components/leadgen.css as ordinary render-blocking links. They are
+// same-origin, versioned (?v=) and immutable-cached (_headers). The old hand-kept
+// critical.css plus media="print" swap restyled sections after first paint (PERF-03).
+const injectVersion = createInjectVersion({ buildVersion, gitInfo, buildDate, reviews: _reviews, renderHead_GTM, renderBody_GTM });
 
 // ─── Schema Markup ──────────────────────────────
 // Owner-verified entity facts (base locality, sameAs, founding date): data/entity.json.
