@@ -1,4 +1,6 @@
 {
-  "blocked": [],
+  "blocked": [
+    "poseidon-crc"
+  ],
   "manual_overrides": {}
 }
