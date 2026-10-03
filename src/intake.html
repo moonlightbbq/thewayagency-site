@@ -2080,9 +2080,19 @@ function sanitizePhone(val) {
 // load, because rendering into a hidden container fails on mobile browsers.
 let _turnstileSiteKey = null;
 
+// One /api/config request per page, shared by Turnstile (now) and Google Maps
+// (when the visitor reaches step 2). A failed request is retried on the next call.
+let _intakeConfigPromise = null;
+function intakeConfig() {
+  if (!_intakeConfigPromise) {
+    _intakeConfigPromise = fetch(SAGE_API + '/api/config').then(r => r.json())
+      .catch((e) => { _intakeConfigPromise = null; throw e; });
+  }
+  return _intakeConfigPromise;
+}
 (async function loadTurnstileConfig() {
   try {
-    const cfg = await fetch(SAGE_API + '/api/config').then(r => r.json());
+    const cfg = await intakeConfig();
     if (cfg.turnstileSiteKey) _turnstileSiteKey = cfg.turnstileSiteKey;
   } catch (e) { /* config fetch failed — Turnstile will be skipped */ }
 })();
@@ -2575,7 +2585,10 @@ function showStep(n) {
   // Track step completion for the step we're leaving
   if (currentStep && currentStep !== n) trackStepComplete(currentStep);
   currentStep = n;
-  if (n === 3) renderProductQuestions();
+  // Google Maps loads when the visitor leaves step 1 (PERF-06): step 2 prefetches it
+  // while they pick products, step 3 binds the address fields it re-renders.
+  if (n >= 2) ensureIntakeMaps();
+  if (n === 3) { renderProductQuestions(); bindIntakeAutocompletes(); }
   if (n === 4) { renderReview(); initTurnstileOnReview(); }
   window.scrollTo({ top: 0, behavior: 'smooth' });
   // Track step enter (includes virtual pageview for GA4 funnel reports)
@@ -3833,22 +3846,40 @@ function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
 }
 
 // ── Google Maps Address Autocomplete ────────────────────────────────────────
-(async function loadIntakeGoogleMaps() {
-  try {
-    const cfg = await fetch(SAGE_API + '/api/config').then(r => r.json());
-    if (!cfg.googleMapsKey) { console.warn('[Maps] No Google Maps key'); return; }
-    window._initIntakeAutocomplete = function() {
-      _bindPlacesAutocomplete('i_address', 'i_address_street', 'i_city', 'i_state', 'i_zip');
-      _bindPlacesAutocomplete('i_ho_address', 'i_ho_address_street', 'i_ho_city', 'i_ho_state', 'i_ho_zip');
-      console.log('[Maps] Autocomplete initialized');
-    };
-    const s = document.createElement('script');
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${cfg.googleMapsKey}&libraries=places&callback=_initIntakeAutocomplete&v=weekly`;
-    s.async = true; s.defer = true;
-    s.onerror = () => console.error('[Maps] Failed to load Google Maps script');
-    document.head.appendChild(s);
-  } catch (e) { console.error('[Maps] Setup error:', e); }
-})();
+// Loaded on demand, once (PERF-06): it used to load at parse time while only
+// step 1 (name and contact) was on screen, adding Maps' main-thread work to the
+// first step. The address fields it serves are on step 3. Each input binds once;
+// #i_ho_address is re-created by every renderProductQuestions(), so it binds again
+// after each render. No field, label or order changes.
+let _mapsPromise = null;
+function ensureIntakeMaps() {
+  if (_mapsPromise) return _mapsPromise;
+  _mapsPromise = intakeConfig().then((cfg) => {
+    // A late config answer also gives Turnstile its key if the first request failed.
+    if (cfg && cfg.turnstileSiteKey && !_turnstileSiteKey) _turnstileSiteKey = cfg.turnstileSiteKey;
+    if (!cfg || !cfg.googleMapsKey) throw new Error('no Google Maps key');
+    return new Promise((resolve, reject) => {
+      window._initIntakeAutocomplete = () => { bindIntakeAutocompletes(); resolve(); };
+      const s = document.createElement('script');
+      s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(cfg.googleMapsKey)
+        + '&libraries=places&loading=async&callback=_initIntakeAutocomplete&v=weekly';
+      s.async = true;
+      s.onerror = () => reject(new Error('Google Maps script failed to load'));
+      document.head.appendChild(s);
+    });
+  }).catch((e) => { _mapsPromise = null; console.warn('[Maps]', e && e.message); });
+  return _mapsPromise;
+}
+function _bindAutocompleteOnce(inputId, streetId, cityId, stateId, zipId) {
+  const el = document.getElementById(inputId);
+  if (!el || el.dataset.acBound === '1' || !window.google?.maps?.places) return;
+  _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId);
+  el.dataset.acBound = '1';
+}
+function bindIntakeAutocompletes() {
+  _bindAutocompleteOnce('i_address', 'i_address_street', 'i_city', 'i_state', 'i_zip');
+  _bindAutocompleteOnce('i_ho_address', 'i_ho_address_street', 'i_ho_city', 'i_ho_state', 'i_ho_zip');
+}
 
 // ── Event delegation (replaces all inline onclick handlers) ──
 document.addEventListener('click', (e) => {

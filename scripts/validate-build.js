@@ -340,6 +340,15 @@ if (turnstileIssues === 0) pass('Turnstile only on widget pages (async); app.js 
   if (articleProblems === 0) pass('CTA labels: no "Get a" before a vowel sound');
 }
 
+// 7g. /intake/ loads Google Maps on demand (PERF-06): no parse-time loader.
+{
+  const p = path.join(BUILD, 'intake', 'index.html');
+  const intake = fs.existsSync(p) ? fs.readFileSync(p, 'utf8') : '';
+  if (!intake.includes('function ensureIntakeMaps(') || /\(async function loadIntakeGoogleMaps\(/.test(intake) || /<script[^>]+src="https:\/\/maps\.googleapis\.com/.test(intake)) {
+    error('Intake: Google Maps must load on demand from showStep() (ensureIntakeMaps), not at page load');
+  } else pass('Intake: Google Maps loads only after step 1');
+}
+
 // 8. Image size check (warn on images >500KB)
 let largeImages = 0;
 const assetsDir = path.join(BUILD, 'src', 'assets');
