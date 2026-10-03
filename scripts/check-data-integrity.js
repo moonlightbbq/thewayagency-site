@@ -473,7 +473,8 @@ if (calendar) {
   let missingBlogs = 0;
   const allCalPosts = [...(calendar.existing_posts || []), ...(calendar.year1 || [])];
   for (const p of allCalPosts) {
-    if (!p.slug) continue;
+    // A retired post (BLOG-05) was merged into a keeper: its file moved to archive/.
+    if (!p.slug || p.status === 'retired') continue;
     const mdPath = path.join(blogSrc, `${p.slug}.md`);
     if (!fs.existsSync(mdPath)) {
       // Check if it's an existing HTML post
