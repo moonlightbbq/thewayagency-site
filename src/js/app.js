@@ -349,9 +349,31 @@
       window.scrollTo(0, scrollY);
     }
 
+    // Keyboard and screen-reader state (PERF-07). At mobile widths the closed
+    // panel is only moved off screen, so its ~44 links stayed in the tab order
+    // ahead of the toggle; collapsed sub-menus were invisible tab stops too.
+    // `inert` takes both out (visibility cannot: the sub-menus force
+    // visibility:visible !important). Desktop menus are never inert.
+    const isMobileNav = () => window.innerWidth <= 968;
+    const menuOpen = () => links.classList.contains('nav__links--open');
+    if (!links.id) links.id = 'navLinks';
+    toggle.setAttribute('aria-controls', links.id);
+    toggle.setAttribute('aria-expanded', 'false');
+    function syncNavInert() {
+      const mobile = isMobileNav();
+      if (mobile && !menuOpen()) links.setAttribute('inert', ''); else links.removeAttribute('inert');
+      $$('.nav__dropdown').forEach(d => {
+        const menu = d.querySelector('.nav__dropdown-menu');
+        if (!menu) return;
+        if (mobile && !d.classList.contains('nav__dropdown--open')) menu.setAttribute('inert', ''); else menu.removeAttribute('inert');
+      });
+    }
+    const menuFocusables = () => $$('a[href], button:not([disabled])', links).filter(el => !el.closest('[inert]'));
+
     function closeAllDropdowns() {
       $$('.nav__dropdown').forEach(d => d.classList.remove('nav__dropdown--open'));
       $$('.nav__dropdown > .nav__link').forEach(l => l.setAttribute('aria-expanded', 'false'));
+      syncNavInert();
     }
 
     function closeMenu() {
@@ -361,6 +383,7 @@
       toggle.setAttribute('aria-expanded', 'false');
       closeAllDropdowns();
       unlockScroll();
+      syncNavInert();
     }
 
     toggle.addEventListener('click', () => {
@@ -371,10 +394,39 @@
         toggle.classList.add('nav__toggle--open');
         backdrop.classList.add('nav__backdrop--visible');
         toggle.setAttribute('aria-expanded', 'true');
+        syncNavInert();
+        // Move focus into the panel (it covers the page behind it).
+        const first = menuFocusables()[0];
+        if (first) first.focus({ preventScroll: true });
       } else {
         closeMenu();
       }
     });
+
+    // While the panel is open, Tab cycles between the toggle and the panel's links
+    // instead of moving to page content hidden behind it (WCAG F85).
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab' || !menuOpen() || !isMobileNav()) return;
+      const items = menuFocusables();
+      if (!items.length) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      if (!e.shiftKey && (active === last || active === toggle)) {
+        e.preventDefault();
+        (active === last ? toggle : first).focus();
+      } else if (e.shiftKey && (active === first || active === toggle)) {
+        e.preventDefault();
+        (active === first ? toggle : last).focus();
+      }
+    });
+
+    let navResizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(navResizeTimer);
+      navResizeTimer = setTimeout(syncNavInert, 100);
+    }, { passive: true });
+    syncNavInert();
 
     backdrop.addEventListener('click', closeMenu);
 
@@ -408,6 +460,7 @@
           if (!wasOpen) {
             dropdown.classList.add('nav__dropdown--open');
             link.setAttribute('aria-expanded', 'true');
+            syncNavInert();
             // Inject "View All" link if not already present
             const menu = dropdown.querySelector('.nav__dropdown-menu');
             if (menu && !menu.querySelector('.nav__dropdown-item--viewall')) {
@@ -1735,11 +1788,41 @@
   // FOOTER ACCORDION (mobile)
   // ═══════════════════════════════════════════════
   function initFooterAccordion() {
-    $$('.footer__heading').forEach(function(heading) {
-      heading.addEventListener('click', function() {
+    // Mobile: each footer heading is a disclosure button for its link list, and a
+    // collapsed list leaves the tab order (PERF-07; max-height:0 alone left its
+    // links focusable). Desktop: plain headings, lists always open.
+    const headings = $$('.footer__heading');
+    if (!headings.length) return;
+    headings.forEach(function(heading, i) {
+      const list = heading.nextElementSibling;
+      if (!list || !list.classList.contains('footer__link-list')) return;
+      if (!list.id) list.id = 'footer-list-' + (i + 1);
+      function sync() {
+        const mobile = window.innerWidth <= 768;
+        const open = heading.classList.contains('footer__heading--open');
+        if (mobile) {
+          heading.setAttribute('role', 'button');
+          heading.setAttribute('tabindex', '0');
+          heading.setAttribute('aria-expanded', open ? 'true' : 'false');
+          heading.setAttribute('aria-controls', list.id);
+          if (open) list.removeAttribute('inert'); else list.setAttribute('inert', '');
+        } else {
+          ['role', 'tabindex', 'aria-expanded', 'aria-controls'].forEach(function(a) { heading.removeAttribute(a); });
+          list.removeAttribute('inert');
+        }
+      }
+      function toggleList() {
         if (window.innerWidth > 768) return;
         heading.classList.toggle('footer__heading--open');
+        sync();
+      }
+      heading.addEventListener('click', toggleList);
+      heading.addEventListener('keydown', function(e) {
+        if (window.innerWidth > 768) return;
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleList(); }
       });
+      window.addEventListener('resize', sync, { passive: true });
+      sync();
     });
   }
 
