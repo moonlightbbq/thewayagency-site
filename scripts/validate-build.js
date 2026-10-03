@@ -659,21 +659,13 @@ if (fs.existsSync(redirectsPath)) {
 // Fix the emitter (scripts/lib/site-urls.js canonicalHref / pageUrl), or for a
 // hand-made page run scripts/codemods/extensionless-links.js.
 {
-  const { htmlFileUrlsInHtml, htmlFileUrlsInText, mainRange } = require('./lib/url-hygiene');
-  // WAITS ON OWNER D2 (OA-19): the <main> of these six compliance pages keeps
-  // its .html links until the owner approves a links-only Version bump. The
-  // commit that bumps them removes this exemption.
-  const EXEMPT_MAIN = new Set(['privacy.html', 'terms.html', 'disclosures.html', 'privacy-notice.html', 'ai-disclosure.html', 'information-security.html']);
+  const { htmlFileUrlsInHtml, htmlFileUrlsInText } = require('./lib/url-hygiene');
   const report = [];
-  let exempted = 0;
   for (const file of htmlFiles) {
     const rel = path.relative(BUILD, file).split(path.sep).join('/');
     if (rel.startsWith('src/')) continue;
     const html = fs.readFileSync(file, 'utf8');
-    const range = EXEMPT_MAIN.has(rel) ? mainRange(html) : null;
-    const all = htmlFileUrlsInHtml(html);
-    const hits = range ? htmlFileUrlsInHtml(html, { skip: [range] }) : all;
-    exempted += all.length - hits.length;
+    const hits = htmlFileUrlsInHtml(html);
     if (hits.length) report.push({ rel, hits });
   }
   for (const name of ['llms.txt', 'llms-full.txt']) {
@@ -705,7 +697,7 @@ if (fs.existsSync(redirectsPath)) {
     error(`Internal .html URL (308s to the extensionless page) in ${r.rel}: ${r.hits.length} (e.g. ${ex})`);
   }
   if (report.length > 40) error(`Internal .html URLs: ... and ${report.length - 40} more files`);
-  if (total === 0) pass(`No internal URL names a page by its .html file${exempted ? ` (${exempted} in compliance-page <main> wait on owner D2, OA-19)` : ''}`);
+  if (total === 0) pass('No internal URL names a page by its .html file');
 }
 
 // Summary
