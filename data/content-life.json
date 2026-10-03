@@ -173,32 +173,38 @@
   },
   "final-expense": {
     "direct_answer": "Final expense insurance is a small whole life policy, typically ranging from $5,000 to $25,000, designed to cover funeral and burial costs, outstanding medical bills, and small debts so your family is not burdened with these expenses after your death. It features simplified underwriting with no medical exam, making it accessible to older adults and those with health conditions that might disqualify them from traditional life insurance.",
-    "who_needs_it": "Final expense insurance is designed for seniors and older adults who want to ensure their families are not left paying for funeral costs, which average $7,000 to $12,000 nationally. It is particularly relevant for those who do not have enough savings designated for burial costs, who were declined for traditional life insurance due to health conditions, or who let earlier life insurance policies lapse. Many retirees carry small outstanding debts or medical bills that would pass to their estate or burden surviving family members. Unlike traditional whole life or term life, final expense policies are available to applicants ages 50 to 85 with only a health questionnaire rather than a medical exam. The Way Agency helps families choose between guaranteed-issue and simplified-issue policies based on health status and budget.",
+    "answer_sections": [
+      {
+        "heading": "Is there a $25,000 final expense benefit for seniors?",
+        "html": "<p>No government program pays seniors $25,000 for final expenses. Ads that use that phrase are generally selling private final expense insurance: a small whole life policy, usually $5,000 to $25,000, that you apply for and pay premiums on. Whether you're accepted, what you pay, and whether the full benefit is paid from day one (immediate) or only after a waiting period (graded) depend on your age, health and the insurance company.</p>"
+      }
+    ],
+    "who_needs_it": "Final expense insurance is designed for older adults who want to make sure their families are not left paying for a funeral, burial or cremation. It is particularly relevant for those who do not have savings set aside for these costs, who were declined for traditional life insurance due to health conditions, or who let earlier life insurance policies lapse. Many retirees carry small outstanding debts or medical bills that would pass to their estate or burden surviving family members. Unlike traditional whole life or term life, many final expense policies ask health questions instead of requiring a medical exam, and the ages an insurer accepts vary by insurer.",
     "what_it_covers": [
       "Funeral and burial or cremation costs",
       "Outstanding medical bills",
       "Credit card balances and small personal debts",
       "Legal and probate fees",
-      "Tax-free death benefit paid directly to your beneficiary (not restricted to funeral expenses)",
-      "Coverage for your entire life with premiums that never increase",
+      "A death benefit paid directly to your beneficiary (not restricted to funeral expenses)",
+      "Coverage for your entire life as long as premiums are paid",
       "Cash value accumulation (small, as policy amounts are modest)"
     ],
     "what_it_doesnt_cover": [
-      "Graded benefit policies limit the death benefit in the first 2-3 years (paying only a return of premiums plus interest for non-accidental death during this period)",
+      "Graded benefit policies limit the death benefit during an initial waiting period set by the policy (typically paying a return of premiums plus interest for non-accidental death during that period)",
       "Pre-existing conditions may trigger graded or modified benefits rather than immediate full coverage",
       "Large estate planning needs (coverage amounts are typically $5,000-$25,000)",
       "Income replacement for dependents (coverage amounts are too small; term or whole life is needed for that purpose)",
-      "Suicide within the first two years (premiums returned to beneficiary)"
+      "Suicide during the exclusion period stated in the policy"
     ],
-    "cost_narrative": "Final expense premiums range from $30 to $100 per month depending on your age, coverage amount, and whether you qualify for simplified-issue (health questions only) or guaranteed-issue (no health questions, but graded benefits). A healthy 65-year-old might pay $50 to $70 per month for $15,000 in immediate coverage. A 75-year-old with health issues might pay $80 to $100 per month for $10,000 in graded coverage. Guaranteed-issue policies are the most expensive per dollar of coverage because the insurer accepts all applicants regardless of health. The Way Agency always tries simplified-issue first, as it provides immediate full coverage at lower rates, and only recommends guaranteed-issue when health conditions require it.",
+    "cost_narrative": "Final expense premiums depend on your age, health, tobacco use, the coverage amount, and whether the policy is simplified issue (health questions, no medical exam) or guaranteed issue (no health questions, with a graded benefit). Guaranteed-issue policies generally cost more per dollar of coverage because the insurer accepts applicants regardless of health. Compare quotes for the same coverage amount and benefit type, and check whether the premium stays level for the life of the policy. For more on how these policies work, read our <a href=\"/blog/final-expense-insurance-guide\">guide to final expense insurance</a>.",
     "faqs": [
       {
         "question": "What is the difference between simplified-issue and guaranteed-issue final expense?",
-        "answer": "Simplified-issue policies ask a series of health questions but require no medical exam. If you answer the questions favorably, you get immediate full coverage from day one at lower premiums. Guaranteed-issue policies accept everyone regardless of health with no questions asked, but they come with a graded benefit period (usually 2 to 3 years) during which the full death benefit is not available. Guaranteed-issue premiums are higher for less coverage. The Way Agency attempts simplified-issue placement first."
+        "answer": "Simplified-issue policies ask a series of health questions but require no medical exam. If you answer the questions favorably, you may qualify for full coverage from day one at lower premiums, depending on the insurer. Guaranteed-issue policies accept applicants regardless of health with no health questions, but they come with a graded benefit period, set by the policy, during which the full death benefit is not available for death from natural causes. Guaranteed-issue premiums are higher for the same coverage."
       },
       {
         "question": "What is a graded benefit and how does it work?",
-        "answer": "A graded benefit means the full death benefit is not payable during the first 2 to 3 years of the policy. If you die from natural causes during this graded period, the beneficiary typically receives a return of all premiums paid plus interest (usually 5 to 10%). Death from an accident is typically covered at the full benefit amount from day one. After the graded period ends, the full death benefit is payable regardless of cause of death."
+        "answer": "A graded benefit means the full death benefit is not payable for death from natural causes during an initial waiting period set by the policy. If you die from natural causes during that period, the beneficiary typically receives a return of the premiums paid plus interest. Many policies pay the full benefit for accidental death from day one; check the policy. After the waiting period ends, the full death benefit is payable."
       },
       {
         "question": "Can I use a final expense policy for anything, or just funeral costs?",
@@ -206,11 +212,11 @@
       },
       {
         "question": "How much does a funeral cost?",
-        "answer": "According to the National Funeral Directors Association, the median cost of a funeral with burial in the United States is approximately $7,800 to $9,000. A casket alone averages $2,500 to $5,000. Adding a burial vault, cemetery plot, headstone, and service fees can push total costs to $10,000 to $15,000. Cremation is less expensive, averaging $3,000 to $7,000 depending on services. A final expense policy of $10,000 to $15,000 covers most funeral scenarios."
+        "answer": "It depends on the funeral home, where you live and the choices your family makes, such as burial or cremation, a viewing, a casket, a vault, a cemetery plot and a headstone. Ask local funeral homes for their price lists, add any medical bills or small debts you want covered, and use that total to choose a coverage amount."
       },
       {
         "question": "I am over 70 with health problems. Can I still get final expense insurance?",
-        "answer": "Yes. Final expense insurance is specifically designed for this situation. Simplified-issue policies accept applicants up to age 80 or 85 depending on the carrier, and many health conditions that would disqualify you from traditional life insurance are acceptable. If you cannot qualify for simplified-issue due to serious health conditions, guaranteed-issue policies are available with no health questions at all, though with graded benefits and higher premiums. The Way Agency works with multiple carriers and knows which ones are most lenient for specific conditions."
+        "answer": "Often, yes. Final expense insurance is designed for this situation. Simplified-issue policies ask health questions instead of requiring a medical exam, and the ages and health conditions each insurer accepts vary. If you cannot qualify for simplified issue, guaranteed-issue policies are available with no health questions, though with a graded benefit and higher premiums."
       }
     ]
   }
