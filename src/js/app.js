@@ -1262,6 +1262,7 @@
       '.twa-cb-action-btn.secondary:hover{background:#e2e8f0}',
       '.twa-cb-action-btn:disabled{opacity:.6;cursor:not-allowed}',
       '.twa-cb-powered{text-align:center;font-size:10px;color:#94a3b8;padding:4px 0 8px;flex-shrink:0}',
+      '.twa-cb-verify{align-self:center;max-width:100%}',
       '.twa-cb-bubble:active{transform:scale(0.95)}',
       '.twa-cb-input button:active:not(:disabled){color:#173358}',
       '.twa-cb-action-btn:active:not(:disabled){opacity:0.8}'
@@ -1371,6 +1372,78 @@
       });
     }
 
+    // ─── Human check (BL-26) ─────────────────────
+    // SAGE makes a lead, pages an agent or emails the visitor only for a chat
+    // that passed Cloudflare Turnstile. So a message that carries contact
+    // details (an email address or a phone-length run of digits) is sent with
+    // a fresh token. The widget only shows itself when Cloudflare needs the
+    // visitor to interact (appearance: interaction-only); the script loads only
+    // here, never on page load (PERF-02). Nothing blocks the visitor: with no
+    // token (no key, script blocked, check failed or timed out) the message is
+    // still sent, and SAGE holds the request for a person to call back.
+    function looksLikeContact(t) {
+      return /[^\s@]+@[^\s@]+\.[^\s@]+/.test(t) || /(?:\d[\s().-]*){7,}/.test(t);
+    }
+
+    function loadChatTurnstile() {
+      if (window.turnstile) return Promise.resolve(true);
+      if (!CONFIG.turnstileSiteKey) return Promise.resolve(false);
+      return new Promise(function(resolve) {
+        if (!document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]')) {
+          var s = document.createElement('script');
+          s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+          s.async = true;
+          document.head.appendChild(s);
+        }
+        var waited = 0;
+        (function poll() {
+          if (window.turnstile) { resolve(true); return; }
+          waited += 100;
+          if (waited >= 8000) { resolve(false); return; }
+          setTimeout(poll, 100);
+        })();
+      });
+    }
+
+    function getChatTurnstileToken() {
+      return loadChatTurnstile().then(function(ok) {
+        if (!ok || !window.turnstile) return '';
+        return new Promise(function(resolve) {
+          var box = document.createElement('div');
+          box.className = 'twa-cb-verify';
+          msgsArea.appendChild(box);
+          var done = false;
+          var widgetId = null;
+          var timer = null;
+          function finish(token) {
+            if (done) return;
+            done = true;
+            clearTimeout(timer);
+            try { if (widgetId !== null && widgetId !== undefined) window.turnstile.remove(widgetId); } catch (e) { /* already gone */ }
+            box.remove();
+            resolve(token || '');
+          }
+          timer = setTimeout(function() { finish(''); }, 15000);
+          try {
+            widgetId = window.turnstile.render(box, {
+              sitekey: CONFIG.turnstileSiteKey,
+              appearance: 'interaction-only',
+              callback: function(token) { finish(token); },
+              'error-callback': function() { finish(''); },
+              'expired-callback': function() { finish(''); },
+              'timeout-callback': function() { finish(''); },
+              // The visitor has to click: give them time, and show the box.
+              'before-interactive-callback': function() {
+                clearTimeout(timer);
+                timer = setTimeout(function() { finish(''); }, 120000);
+                msgsArea.scrollTop = msgsArea.scrollHeight;
+              }
+            });
+          } catch (e) { finish(''); }
+        });
+      });
+    }
+
     // ─── Streaming chat ──────────────────────────
     async function sendMessage(text) {
       if (!text.trim() || isSending) return;
@@ -1389,6 +1462,13 @@
       var botText = '';
       var botEl = null;
       var actionData = null;
+
+      // BL-26: contact details travel with a Turnstile token (see above).
+      var cfToken = '';
+      if (looksLikeContact(text)) {
+        cfToken = await getChatTurnstileToken();
+        track('chatbot_human_check', { category: 'engagement', result: cfToken ? 'token' : 'none' });
+      }
 
       var chatAbort = new AbortController();
       var chatAbortTimer = setTimeout(function() { chatAbort.abort(); }, 45000);
@@ -1410,7 +1490,8 @@
             twa_vid: getVisitorId(),
             _tracking: getTrackingIds(),
             attribution: getAttribution(),
-            referrer: document.referrer || 'direct'
+            referrer: document.referrer || 'direct',
+            cfToken: cfToken || undefined
           })
         });
 
