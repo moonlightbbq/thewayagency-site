@@ -21,6 +21,7 @@ const fs = require('fs');
 const path = require('path');
 const { isHeld, isKnownStatus, heldForApproval, heldNextStep } = require('./calendar-status');
 const { APPROVAL_RECORD_FIELDS } = require('./review-credit');
+const { scriptTextProblem } = require('./blog-content-guard');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 // Overridable for the same reason loadBacklog takes a path: the lost-update
@@ -966,6 +967,11 @@ function scoreCandidate(candidate, ymd, ctx, windowMonths, opts = {}) {
   if (candidate.status !== 'approved') {
     return { eligible: false, score: 0, reasons: [`status is "${candidate.status}", not approved`] };
   }
+  // Its title and description print on the blog index and in Related
+  // Articles: text the build refuses on any blog page is never scheduled
+  // (sage-server BL-54; blog-content-guard.js scriptTextProblem).
+  const scriptText = scriptTextProblem(candidate);
+  if (scriptText) return { eligible: false, score: 0, reasons: [scriptText] };
   const elig = eligibilityOn(candidate, ymd, windowMonths, opts);
   if (!elig.eligible) {
     // An unrecognised window is a data defect, not a scheduling outcome. Say

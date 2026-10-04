@@ -453,6 +453,20 @@ describe('front matter cannot print a review claim through a non-review key', ()
     }
   });
 
+  test('a post whose text says "javascript:" is not rendered, published or not, so the build guard never halts a deploy on it (sage-server BL-54)', () => {
+    const md = (slug) => post(slug).replace(/\n$/, '\n\nSee [the report](https:javascript:alert(1)) and JavaScript: x.\n');
+    const site = makeSite({ year1: [live('test-script-text')], files: { 'test-script-text': md('test-script-text'), 'test-script-uncal': md('test-script-uncal') } });
+    try {
+      const gen = site.run('generate-blog.js');
+      assert.equal(gen.status, 0, gen.stdout + gen.stderr);
+      assert.equal(site.page('test-script-text'), null, gen.stdout);
+      assert.equal(site.page('test-script-uncal'), null, gen.stdout);
+      assert.match(gen.stdout, /Not rendered test-script-text\.html .*"javascript:"/);
+    } finally {
+      site.done();
+    }
+  });
+
   test('uncalendared, or with the calendar unreadable, the gate still holds', () => {
     const site = makeSite({ files: { 'test-inj-uncal': withKey('test-inj-uncal', 'author_title', BYLINE_INJECTION) } });
     try {
@@ -469,7 +483,7 @@ describe('front matter cannot print a review claim through a non-review key', ()
   });
 
   test('what the gate allows is still only text: quotes, a JSON-LD break-out and a </script> in a FAQ add no reviewedBy and no byline', () => {
-    const md = `---\ntitle: SYNTHETIC "quoted" & 'single' title\nslug: test-encoded\ndescription: ${LD_INJECTION}\nauthor: Test Author Q\nauthor_slug: test-author-q\nauthor_title: Licensed Test Agent\nimage: /src/assets/images/test.jpg\nimage_alt: a" onerror="alert(1)\ndate: 2026-01-07\n---\n\n${body}\n\nSee [this](/x" onmouseover="alert(1)) and [that](javascript:alert(1)).\n\n### FAQ: Q</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "reviewedBy": {"@type": "Person", "name": "Test Reviewer C"}}</script>?\n\nA "quoted" answer & more.\n`;
+    const md = `---\ntitle: SYNTHETIC "quoted" & 'single' title\nslug: test-encoded\ndescription: ${LD_INJECTION}\nauthor: Test Author Q\nauthor_slug: test-author-q\nauthor_title: Licensed Test Agent\nimage: /src/assets/images/test.jpg\nimage_alt: a" onerror="alert(1)\ndate: 2026-01-07\n---\n\n${body}\n\nSee [this](/x" onmouseover="alert(1)) and [that](vbscript:msgbox(1)).\n\n### FAQ: Q</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "reviewedBy": {"@type": "Person", "name": "Test Reviewer C"}}</script>?\n\nA "quoted" answer & more.\n`;
     const site = makeSite({ year1: [live('test-encoded')], files: { 'test-encoded': md } });
     try {
       const gen = site.run('generate-blog.js');
@@ -483,7 +497,7 @@ describe('front matter cannot print a review claim through a non-review key', ()
       assert.equal(article.description, LD_INJECTION, 'the value round-trips as a string');
       assert.equal(article.headline, 'SYNTHETIC "quoted" & \'single\' title');
       assert.equal(article.author['@type'], 'Person');
-      assert.doesNotMatch(html, /onerror="alert|onmouseover="alert|href="javascript:/i, 'no attribute break-out, no script URL');
+      assert.doesNotMatch(html, /onerror="alert|onmouseover="alert|href="(?:javascript|vbscript):/i, 'no attribute break-out, no script URL');
       assert.match(html, /<h1 class="hero__title">SYNTHETIC &quot;quoted&quot; &amp; &#39;single&#39; title<\/h1>/);
     } finally {
       site.done();

@@ -109,11 +109,33 @@ function sitePath(value) {
   const s = String(value === undefined || value === null ? '' : value).trim();
   return /^\/(?!\/)[^\s"'<>\\]*$/.test(s) ? s : '';
 }
-/** A markdown link target the body may use: anything but a script or data URL. */
+// The only schemes a body link may carry (sage-server BL-54, AIA-089): web
+// pages, email, a call and a text (the "or text" links). Anything else with a
+// scheme (javascript:, vbscript:, data:, file:, an unknown one) is dropped.
+const SAFE_HREF_SCHEMES = Object.freeze(['http', 'https', 'mailto', 'tel', 'sms']);
+
+/**
+ * A markdown link target as the body may print it, else '#'. An ALLOWLIST: a
+ * target with one of SAFE_HREF_SCHEMES, or with none at all (a site path, a
+ * relative path, a ?query or a #fragment). `url` is the target as it sits in
+ * the already-escaped markdown (&amp; &lt; &gt; &quot;), so it is decoded once,
+ * as the browser decodes the attribute, before it is judged. A real URL
+ * percent-encodes quotes, angle brackets, backticks, spaces, control and
+ * format characters, so a target holding one raw is refused whole. That also
+ * covers the scheme tricks browsers undo (a tab or newline inside
+ * "java script:") and an invisible character in front of a scheme. A target
+ * that names a script scheme anywhere ("https:javascript:...") is refused
+ * too: it is never a link a post needs, and it would put "javascript:" into
+ * the page, which the build refuses (scripts/lib/blog-html-guard.js).
+ */
 function safeHref(url) {
-  // Browsers drop ASCII control characters and spaces inside a scheme.
-  const scheme = String(url).replace(/[\u0000-\u0020]/g, '').toLowerCase();
-  return /^(?:javascript|vbscript|data):/.test(scheme) ? '#' : url;
+  const decoded = String(url === undefined || url === null ? '' : url)
+    .replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+  if (/[\s\p{Cc}\p{Cf}"<>`]/u.test(decoded)) return '#';
+  if (/(?:java|vb)script:/i.test(decoded)) return '#';
+  const scheme = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(decoded);
+  if (scheme && !SAFE_HREF_SCHEMES.includes(scheme[1].toLowerCase())) return '#';
+  return url;
 }
 
 /**
@@ -552,7 +574,7 @@ ${renderNav()}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2zM4 2a2 2 0 1 1 0 4 2 2 0 0 1 0-4z"/></svg>
           Share
         </a>
-        <button onclick="navigator.clipboard.writeText('${blogPostUrl(slug)}').then(function(){this.textContent='Copied!';setTimeout(function(){this.textContent='Copy Link'}.bind(this),2000)}.bind(this))" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);background:var(--white);cursor:pointer;font-family:var(--font-body);font-weight:500;" aria-label="Copy link">
+        <button type="button" data-copy-link="${esc(blogPostUrl(slug))}" style="display:inline-flex;align-items:center;gap:4px;padding:6px 12px;border:1px solid var(--border);border-radius:var(--border-radius);font-size:var(--text-xs);color:var(--slate);background:var(--white);cursor:pointer;font-family:var(--font-body);font-weight:500;" aria-label="Copy link">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           Copy Link
         </button>

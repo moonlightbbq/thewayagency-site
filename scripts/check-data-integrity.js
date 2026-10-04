@@ -11,6 +11,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { canonicalHref } = require('./lib/site-urls');
+const { scriptTextProblem } = require('./lib/blog-content-guard');
 
 const ROOT = path.resolve(__dirname, '..');
 const MONTH_NAMES = ['january', 'february', 'march', 'april', 'may', 'june',
@@ -203,6 +204,9 @@ if (calendar) {
     if (!p.slug) { error(`content-calendar.json: "${(p.title || '').substring(0, 30)}..." missing slug`); calErrors++; }
     if (!p.publish_date) { error(`content-calendar.json: "${p.slug || 'unknown'}" missing publish_date`); calErrors++; }
     if (!p.status) { warn(`content-calendar.json: "${p.slug || 'unknown'}" missing status`); }
+    // Printed on the blog index and in Related Articles (sage-server BL-54).
+    const scriptText = scriptTextProblem(p);
+    if (scriptText) { error(`content-calendar.json: "${p.slug || 'unknown'}": ${scriptText}`); calErrors++; }
   }
   if (calErrors === 0) pass(`content-calendar.json: ${allCalPosts.length} entries, all valid`);
 
@@ -347,6 +351,14 @@ if (calendar) {
     const label = c.slug || c.title || 'unknown';
     if (!c.slug) { error(`content-backlog.json: candidate "${label}" missing slug`); queueErrors++; }
     if (!c.title) { error(`content-backlog.json: "${label}" missing title`); queueErrors++; }
+    // Scheduled, its title and description would print on the blog index
+    // (sage-server BL-54). An approved candidate is one the queue would
+    // schedule: an error. Any other status is not on its way to a page (the
+    // queue skips it, SAGE will not approve it), so it only warns: a rejected
+    // or proposed topic must not turn CI red until someone edits the JSON.
+    const scriptText = scriptTextProblem(c);
+    if (scriptText && c.status === 'approved') { error(`content-backlog.json: "${label}" is approved but ${scriptText}`); queueErrors++; }
+    else if (scriptText) warn(`content-backlog.json: "${label}" (${c.status}) ${scriptText}; the queue will not schedule it and SAGE will not approve it`);
     if (!c.primary_keyword) { warn(`content-backlog.json: "${label}" missing primary_keyword`); }
     if (!VALID_BACKLOG_STATUS.includes(c.status)) {
       error(`content-backlog.json: "${label}" has invalid status "${c.status}"`); queueErrors++;

@@ -565,6 +565,23 @@
     });
   }
 
+  // Blog "Copy Link" buttons (scripts/generate-blog.js): copy the page URL
+  // from data-copy-link. A listener, not an inline onclick, so a blog page
+  // carries no event-handler attribute at all and the build's blog guard
+  // (scripts/lib/blog-html-guard.js; sage-server BL-54) can refuse any.
+  function initCopyLink() {
+    $$('[data-copy-link]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const url = btn.getAttribute('data-copy-link');
+        if (!url || !navigator.clipboard) return;
+        navigator.clipboard.writeText(url).then(() => {
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = 'Copy Link'; }, 2000);
+        }).catch(() => {});
+      });
+    });
+  }
+
   // ═══════════════════════════════════════════════
   // 3. INLINE QUOTE FORMS (Product Pages)
   // ═══════════════════════════════════════════════
@@ -1042,19 +1059,32 @@
   // ═══════════════════════════════════════════════
   // 14. TESTIMONIAL CAROUSEL
   // ═══════════════════════════════════════════════
+  // The cards are built from the data-testimonials JSON, which is DATA: every
+  // value is HTML-escaped before it reaches innerHTML (sage-server BL-54). It
+  // was concatenated raw, so <div data-testimonials='[{"text":"<img src=x
+  // onerror=...>"}]'> anywhere on a page ran script under the site's
+  // 'unsafe-inline' CSP. The blog guard also refuses every data-* attribute
+  // but data-copy-link inside a post (scripts/lib/blog-html-guard.js).
+  function escapeHtml(value) {
+    return String(value === undefined || value === null ? '' : value)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
   function renderStars(rating) {
     return '<span style="color:#FBBC05;font-size:14px;">' + '&#9733;'.repeat(Math.min(rating || 5, 5)) + '</span>';
   }
 
   function renderTestimonialCard(t) {
     const products = (t.product_lines || t.products || []).slice(0, 2).map(function(p) {
-      return '<span style="display:inline-block;font-size:10px;padding:2px 8px;background:#eff6ff;color:#1e3a8a;border-radius:4px;font-weight:500;">' + (p.charAt(0).toUpperCase() + p.slice(1)).replace(/_/g, ' ') + '</span>';
+      var label = String(p);
+      return '<span style="display:inline-block;font-size:10px;padding:2px 8px;background:#eff6ff;color:#1e3a8a;border-radius:4px;font-weight:500;">' + escapeHtml((label.charAt(0).toUpperCase() + label.slice(1)).replace(/_/g, ' ')) + '</span>';
     }).join(' ');
     return '<div class="twa-testimonial-card" style="background:var(--white,#fff);border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,.06);min-width:280px;flex:1;">' +
       '<div style="margin-bottom:8px;">' + renderStars(t.rating) + '</div>' +
-      '<p style="font-size:14px;color:var(--charcoal,#1e293b);line-height:1.7;margin-bottom:12px;font-style:italic;font-weight:300;">"' + (t.text || '') + '"</p>' +
+      '<p style="font-size:14px;color:var(--charcoal,#1e293b);line-height:1.7;margin-bottom:12px;font-style:italic;font-weight:300;">"' + escapeHtml(t.text) + '"</p>' +
       '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-      '<span style="font-size:13px;font-weight:600;color:var(--navy,#173358);">' + (t.name || '') + '</span>' +
+      '<span style="font-size:13px;font-weight:600;color:var(--navy,#173358);">' + escapeHtml(t.name) + '</span>' +
       (products ? '<div style="display:flex;gap:4px;">' + products + '</div>' : '') +
       '</div></div>';
   }
@@ -2047,6 +2077,7 @@
     initABTests();
     initNav();
     initFAQ();
+    initCopyLink();
     initInlineForms();
     initFormStartTracking();
     initStickyMobileCTA();
