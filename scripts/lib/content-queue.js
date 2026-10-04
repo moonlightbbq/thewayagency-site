@@ -558,8 +558,10 @@ const W_FUNNEL_THIN = 5;
 // page's county_name, with their state (_placesFrom). A name is matched as a
 // run of _words() (aliases applied: "Mount Washington" and "Mt. Washington"
 // are both mt washington, "Fort Wayne" ft wayne), longest names first so
-// "Franklin County" is never read as Franklin, and no word is read for two
-// places. A state written right after the name decides which place it is
+// "Franklin County" is tried before Franklin, and no word is read for two
+// places. (If the longer name is rejected for its state, the shorter one can
+// still match inside it: "franklin county tn" reads as Franklin TN. Known
+// limit, mirrored in SAGE; no verdict changes versus the place-blind test.) A state written right after the name decides which place it is
 // (IN in capitals, or a lower-case "in" ending the keyword after a place the
 // site has in Indiana: "carmel in"); a name the site has in several states,
 // written without one (Hamilton County, IN and TN), or written with a state
@@ -756,7 +758,7 @@ const _stateOf = word => (word.upperIn ? 'in' : (STATE_WORDS[word.w] || null));
  * written in (aliases applied, nothing removed: "Mt. Washington" → mt
  * washington, "Bullitt County" → bullitt county), each with the place(s) it
  * names: kind (city or county), state and token. Longest names first, so
- * "Franklin County" is never read as Franklin. Mirrors placesFrom() in
+ * "Franklin County" is tried before Franklin. Mirrors placesFrom() in
  * topic-intent.js.
  * @returns {{words: string[], places: {kind: string, state: string, token: string}[]}[]}
  */
