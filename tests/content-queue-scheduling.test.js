@@ -297,8 +297,8 @@ describe('cannibalization sees short codes, numbers and states', () => {
   });
 
   describe('a state only one keyword names is a word only that one has', () => {
-    // A keyword naming no state is read as Kentucky, but the test has no place
-    // names: "nashville" without "tn" is still the Nashville search.
+    // A keyword naming no state is read as Kentucky, and a place does not lend
+    // its state: "nashville" without "tn" is still the Nashville search.
     const REFUSED = [
       ['home insurance nashville', 'home insurance nashville tn', 0.67],
       ['small business insurance nashville', 'small business insurance nashville tn', 0.75],
@@ -330,6 +330,195 @@ describe('cannibalization sees short codes, numbers and states', () => {
 
     test('Kentucky named on one side only is not counted', () => {
       assert.equal(score('auto insurance requirements', KY_AUTO_REQ.primary_keyword), 1);
+    });
+  });
+
+  describe('places: a city topic is not the statewide one, nor another city\'s', () => {
+    // The owner's priority markets are Owensboro and Mt. Washington on every
+    // line. Until 2026-10-04 the test had no place names, so a city topic
+    // could not be scheduled next to the statewide post on its line (and the
+    // reverse): "medicare supplement plans owensboro ky" scored 0.75 against
+    // "medicare supplement plans kentucky". Places come from the site's own
+    // data/landing-pages.json, read as sage-server hive/lib/topic-intent.js
+    // reads them. Statewide keywords here are the site's own public topics.
+    //
+    // The score with the place tokens taken out is the test as it was before
+    // places were read (they are only ever added to what tokenize returned).
+    const withoutPlaces = (k) => new Set([...q.tokenize(k)].filter(t => !t.startsWith('place:')));
+    const scoreBefore = (a, b) => q.jaccard(withoutPlaces(a), withoutPlaces(b));
+
+    // [city topic, statewide topic, score before places]
+    const CITY_VS_STATEWIDE = [
+      ['medicare supplement plans owensboro ky', 'medicare supplement plans kentucky', 0.75],
+      ['Owensboro medicare supplement plans', 'medicare supplement plans kentucky', 0.75],
+      ['medicare supplement plans Mt. Washington KY', 'medicare supplement plans kentucky', 0.75],
+      ['medicare supplement plans Mount Washington', 'medicare supplement plans kentucky', 0.75],
+      ['final expense insurance explained owensboro', 'final expense insurance explained', 0.75],
+      ['final expense insurance owensboro ky', 'final expense insurance kentucky', 0.67],
+      ['final expense insurance mt washington ky', 'final expense insurance kentucky', 0.67],
+      ['workers comp owensboro ky contractors', 'workers comp kentucky contractors', 0.75],
+      ['workers comp mt washington contractors', 'workers comp kentucky contractors', 0.75],
+      ['workers comp requirements owensboro ky', 'kentucky workers comp requirements', 0.75],
+      ['auto insurance requirements owensboro ky', 'auto insurance requirements kentucky', 0.67],
+      ['auto insurance requirements mt washington ky', 'auto insurance requirements kentucky', 0.67],
+      ['cheap auto insurance owensboro', 'cheap auto insurance kentucky', 0.67],
+      ['owensboro home insurance rates rising', 'kentucky home insurance rates rising', 0.75],
+      ['mt washington home insurance rates rising', 'kentucky home insurance rates rising', 0.75],
+      ['filing home insurance claim storm damage mount washington ky', 'filing home insurance claim storm damage', 0.83],
+    ];
+    for (const [city, statewide, before] of CITY_VS_STATEWIDE) {
+      test(`"${city}" is scheduled next to "${statewide}" (${before.toFixed(2)} before places)`, () => {
+        assert.equal(scoreBefore(city, statewide).toFixed(2), before.toFixed(2));
+        assert.equal(score(city, statewide), 0);
+        assert.equal(conflict(city, statewide), null, 'the city topic next to the statewide post');
+        assert.equal(conflict(statewide, city), null, 'the statewide topic next to the city post');
+      });
+    }
+
+    test('a city topic is eligible for a slot next to the statewide post on its line', () => {
+      const cal = calendar({ posts: [{ slug: 'medicare-supplement-plans-kentucky', primary_keyword: 'medicare supplement plans kentucky', status: 'planned' }] });
+      for (const kw of ['medicare supplement plans owensboro ky', 'medicare supplement plans Mount Washington']) {
+        const r = q.scoreCandidate(candidate({ slug: 'city-topic', primary_keyword: kw }), NEAR, ctxFor(cal), WINDOWS, { hasMarkdown: hasDraft });
+        assert.equal(r.eligible, true, `${kw}: ${r.reasons.join('; ')}`);
+      }
+    });
+
+    // The same city, the same search: refused at the score it always had.
+    const SAME_CITY = [
+      ['medicare supplement plans owensboro ky', 'medicare supplement plans owensboro', 1],
+      ['Owensboro medicare supplement plans', 'medicare supplement plans Owensboro, Kentucky', 1],
+      ['final expense insurance mt washington ky', 'final expense insurance Mount Washington', 1],
+      ['workers comp insurance owensboro ky', 'workers comp owensboro', 1],
+      ['auto insurance owensboro ky', 'auto insurance owensboro', 1],
+      ['auto insurance requirements mt. washington', 'mount washington auto insurance requirements ky', 1],
+      ['owensboro home insurance rates rising', 'home insurance rates owensboro ky', 0.75],
+      // a keyword naming two cities is the same search as one naming either
+      ['flood insurance owensboro henderson ky', 'flood insurance owensboro ky', 0.67],
+    ];
+    for (const [a, b, s] of SAME_CITY) {
+      test(`"${a}" is "${b}" (${s.toFixed(2)}, as before)`, () => {
+        assert.equal(score(a, b).toFixed(2), s.toFixed(2));
+        assert.equal(score(a, b), scoreBefore(a, b));
+        assert.ok(conflict(a, b), 'must be refused');
+        assert.ok(conflict(b, a), 'either way round');
+      });
+    }
+
+    // [one, other, score before places]
+    const DIFFERENT_PLACES = [
+      ['medicare supplement plans owensboro ky', 'medicare supplement plans mt washington ky', 0.6],
+      ['workers comp requirements owensboro', 'workers comp requirements mt washington', 0.6],
+      ['medicare supplement plans owensboro', 'medicare supplement plans louisville', 0.6],
+      // both in Bullitt County: when both name a city, the cities decide
+      ['home insurance mt washington ky bullitt county', 'home insurance shepherdsville ky bullitt county', 0.6],
+      // a city and a county are different places (the site has a page for each,
+      // owensboro-ky and daviess-county-ky), as topic-intent.js reads them
+      ['home insurance owensboro daviess county', 'home insurance daviess county ky', 0.75],
+      // one county name in two states, each with its state written ("in" ending
+      // the keyword after a place the site has in Indiana is Indiana)
+      ['home insurance hamilton county in', 'home insurance hamilton county tn', 0.75],
+    ];
+    for (const [a, b, before] of DIFFERENT_PLACES) {
+      test(`"${a}" is not "${b}" (${before.toFixed(2)} before places)`, () => {
+        assert.equal(scoreBefore(a, b).toFixed(2), before.toFixed(2));
+        assert.equal(score(a, b), 0);
+        assert.equal(conflict(a, b), null);
+        assert.equal(conflict(b, a), null, 'either way round');
+      });
+    }
+
+    test('a place is read as topic-intent.js reads it: name, aliases, a state that decides, longest name first', () => {
+      const places = (k) => [...q.tokenize(k)].filter(t => t.startsWith('place:'));
+      assert.deepEqual(places('cheap car insurance in mount washington ky'), ['place:city:mt-washington-ky']);
+      assert.deepEqual(places('Mt. Washington auto insurance'), ['place:city:mt-washington-ky']);
+      assert.deepEqual(places('Bowling Green KY car insurance quotes'), ['place:city:bowling-green-ky']);
+      assert.deepEqual(places('fort wayne auto insurance'), ['place:city:ft-wayne-in']);
+      assert.deepEqual(places('Daviess County home insurance'), ['place:county:daviess-county-ky']);
+      // "Franklin County" (KY) is never read as Franklin (TN)
+      assert.deepEqual(places('franklin county insurance'), ['place:county:franklin-county-ky']);
+      assert.deepEqual(places('home insurance henderson county ky'), ['place:county:henderson-county-ky']);
+      assert.deepEqual(places('home insurance shepherdsville ky bullitt county').sort(),
+        ['place:city:shepherdsville-ky', 'place:county:bullitt-county-ky']);
+      // a name the site has in several states, without one, is not a place;
+      // nor is a name with a state the site does not have it in
+      assert.deepEqual(places('home insurance hamilton county'), []);
+      assert.deepEqual(places('home insurance Franklin KY'), []);
+      assert.deepEqual(places('home insurance Clarksville IN'), []);
+      // the place's words are still words: only the place token is added
+      assert.deepEqual([...q.tokenize('medicare supplement plans owensboro ky')],
+        ['medicare', 'supplement', 'plans', 'owensboro', 'state:ky', 'place:city:owensboro-ky']);
+    });
+
+    test('a name read as no place is compared as before: Franklin KY (the site has Franklin TN) stays the statewide search', () => {
+      assert.equal(score('medicare supplement plans franklin ky', 'medicare supplement plans kentucky'), 0.75);
+      assert.ok(conflict('medicare supplement plans franklin ky', 'medicare supplement plans kentucky'));
+    });
+
+    test('a place name that is also a word is read as the place, as topic-intent.js reads it', () => {
+      assert.deepEqual([...q.tokenize('boat insurance for fishers')].filter(t => t.startsWith('place:')), ['place:city:fishers-in']);
+      assert.equal(score('boat insurance for fishers', 'boat insurance'), 0);
+    });
+
+    test('a pair is distinct (0) or scores exactly as before, on every keyword the site has, at its priority markets too', () => {
+      // Places only ever make the test refuse less. The site's calendar and
+      // backlog keywords, and each one that names no place at Owensboro and Mt.
+      // Washington.
+      const fs = require('fs');
+      const path = require('path');
+      const data = (f) => JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', f), 'utf8'));
+      const cal = data('content-calendar.json');
+      const real = [...(cal.year1 || []), ...(cal.existing_posts || []), ...(data('content-backlog.json').candidates || [])]
+        .map(p => p.primary_keyword).filter(Boolean);
+      const all = new Set(real);
+      for (const k of real) {
+        if ([...q.tokenize(k)].some(t => t.startsWith('place:'))) continue;
+        const base = k.replace(/\b(kentucky|ky)\b/gi, ' ').replace(/\s+/g, ' ').trim();
+        for (const v of [`${base} owensboro ky`, `owensboro ${base}`, `${base} mt washington ky`, `${base} Mount Washington`]) all.add(v);
+      }
+      const kws = [...all];
+      assert.ok(real.length > 50 && kws.length > 4 * 50, `${real.length} real keywords`);
+      const now = kws.map(k => q.tokenize(k));
+      const before = kws.map(withoutPlaces);
+      let distinct = 0;
+      for (let i = 0; i < kws.length; i++) {
+        for (let j = i + 1; j < kws.length; j++) {
+          if (q.jaccard(now[i], now[j]) !== q.jaccard(before[i], before[j])) {
+            assert.equal(q.jaccard(now[i], now[j]), 0, `${kws[i]} | ${kws[j]}`);
+            distinct++;
+          }
+        }
+      }
+      assert.ok(distinct > 0);
+    });
+
+    test('landing pages that cannot be read leave the test exactly as it was', () => {
+      const fs = require('fs');
+      const os = require('os');
+      const path = require('path');
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'queue-places-'));
+      const malformed = path.join(dir, 'malformed.json');
+      const noCities = path.join(dir, 'no-cities.json');
+      fs.writeFileSync(malformed, '{"cities": [');
+      fs.writeFileSync(noCities, JSON.stringify({ cities: 'not a list', counties: null }));
+      const pairs = [...CITY_VS_STATEWIDE, ...DIFFERENT_PLACES];
+      const saved = process.env.CONTENT_LANDING_PAGES_PATH;
+      try {
+        for (const file of [path.join(dir, 'missing.json'), malformed, noCities]) {
+          process.env.CONTENT_LANDING_PAGES_PATH = file;
+          for (const [a, b, before] of pairs) {
+            assert.ok(![...q.tokenize(a), ...q.tokenize(b)].some(t => t.startsWith('place:')), `${path.basename(file)}: ${a}`);
+            assert.equal(score(a, b).toFixed(2), before.toFixed(2), `${path.basename(file)}: ${a} | ${b}`);
+            assert.ok(conflict(a, b), `${path.basename(file)}: refused as before`);
+          }
+          for (const [a, b, s] of SAME_CITY) assert.equal(score(a, b).toFixed(2), s.toFixed(2));
+        }
+      } finally {
+        if (saved === undefined) delete process.env.CONTENT_LANDING_PAGES_PATH;
+        else process.env.CONTENT_LANDING_PAGES_PATH = saved;
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+      // and the real file is read again once the override is gone
+      assert.equal(score('medicare supplement plans owensboro ky', 'medicare supplement plans kentucky'), 0);
     });
   });
 
