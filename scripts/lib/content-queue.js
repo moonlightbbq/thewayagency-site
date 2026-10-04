@@ -513,11 +513,21 @@ const W_FUNNEL_THIN = 5;
 //    dropped (_isCount: "10 home insurance tips" is "home insurance tips");
 //  - states ("state:ky|tn|in"): Kentucky, Tennessee and Indiana by name or
 //    abbreviation. IN is Indiana only when written in capitals; "in" is the
-//    preposition.
+//    preposition;
+//  - places ("place:city:owensboro-ky", "place:county:daviess-county-ky"):
+//    the cities and counties the site has location pages for (see Places
+//    below). A place's words are still words too.
 //
 // jaccard() then reads two keywords as different searches (0) when they name
-// different subjects, or when both name states and the states differ,
-// whatever else they share. Otherwise it is the overlap of their words and
+// different subjects, when both name states and the states differ, or when
+// they do not name the same place: one names a place and the other none (a
+// line at a city is not the statewide post on that line: "medicare
+// supplement plans owensboro ky" vs "medicare supplement plans kentucky"
+// scored 0.75 and was refused), or they name different places, whatever
+// else they share. When a keyword names a city its cities are its places,
+// its counties only when it names no city, so Mt. Washington and
+// Shepherdsville (both in Bullitt County) are different places, and so are a
+// city and a county. Otherwise it is the overlap of their words and
 // subjects, and states are not counted, except that a keyword naming no state
 // is read as Kentucky, the agency's default market (which is why "kentucky"
 // was a stopword): "flood insurance" and "flood insurance kentucky" are one
@@ -538,13 +548,52 @@ const W_FUNNEL_THIN = 5;
 // slash; an all-year run such as 2026/2027 stays two year words) where SAGE
 // mirrors this in its own tokenizer.
 //
-// Known limits, accepted and each pinned by a test (the last three are read
-// the same way by topic-intent.js, which also knows place names):
-//  - the test has no place names, so the state a keyword names is the only
-//    state it has. A stateless keyword of 3+ words and a Tennessee or Indiana
-//    keyword that share every other word score 0.67 and are refused ("auto
-//    insurance requirements" vs "auto insurance requirements tennessee"); two
-//    keywords that both name a state are never confused this way;
+// Places (added 2026-10-04, so the owner's priority markets, Owensboro and Mt.
+// Washington on every line, can be scheduled next to the statewide post on
+// the same line, and a statewide post next to them). They mirror placesFrom()
+// and _read() in sage-server hive/lib/topic-intent.js, which reads the same
+// file the same way for its rule a (different places: distinct) and the
+// one-sided place of its rule e; keep the two in step. From
+// data/landing-pages.json: each city's name and its county, and each county
+// page's county_name, with their state (_placesFrom). A name is matched as a
+// run of _words() (aliases applied: "Mount Washington" and "Mt. Washington"
+// are both mt washington, "Fort Wayne" ft wayne), longest names first so
+// "Franklin County" is tried before Franklin, and no word is read for two
+// places. (If the longer name is rejected for its state, the shorter one can
+// still match inside it: "franklin county tn" reads as Franklin TN. Known
+// limit, mirrored in SAGE; no verdict changes versus the place-blind test.) A state written right after the name decides which place it is
+// (IN in capitals, or a lower-case "in" ending the keyword after a place the
+// site has in Indiana: "carmel in"); a name the site has in several states,
+// written without one (Hamilton County, IN and TN), or written with a state
+// the site does not have it in (Clarksville IN, Franklin KY), is not read as
+// a place (_placeTokens).
+//
+// Places only ever make the test refuse less: a pair is either distinct (0)
+// or scored exactly as it was before places were read, so no keyword is
+// refused next to one it was scheduled beside. Two keywords naming the same
+// place score as before (the place's words count as words, its token does
+// not), and a place does not lend its state: "home insurance nashville" vs
+// "home insurance nashville tn" is still 0.67. When data/landing-pages.json
+// cannot be read, or holds no places, no keyword names a place and the test
+// is exactly what it was. The file is read once per process, on the first
+// tokenize() (_places); SAGE require()s this lib fresh from the site mount,
+// so it reads the mount's copy. Where this differs from topic-intent.js: only
+// the keyword is read (SAGE also reads the slug); the file is the mount's
+// copy, where SAGE reads the remote's bytes when the mount is stale; and
+// SAGE's place guides (its rule c: a guide to a place in general vs that
+// place's post on one line) are not a rule here, so those pairs are scored
+// as before.
+//
+// Known limits, accepted and each pinned by a test (the last four are read
+// the same way by topic-intent.js):
+//  - a place does not lend its state, so the state a keyword names is the
+//    only state it has. A stateless keyword of 3+ words and a Tennessee or
+//    Indiana keyword that share every other word and name no place score
+//    0.67 and are refused ("auto insurance requirements" vs "auto insurance
+//    requirements tennessee"); two keywords that both name a state are never
+//    confused this way;
+//  - a place name that is also an ordinary word is read as the place
+//    ("boat insurance for fishers" names Fishers IN);
 //  - "plan a <word>" reads as the Medigap code plana ("plan a budget");
 //  - dotted abbreviations are read letter by letter ("U.S." is u + s, two
 //    subjects, not the stopword "us");
@@ -594,6 +643,12 @@ const LABEL_WORDS = new Set([
 ]);
 const STATE_TOKEN = 'state:';
 const SUBJECT_TOKEN = 'code:';
+const PLACE_TOKEN = 'place:';
+const CITY_TOKEN = `${PLACE_TOKEN}city:`;
+// CONTENT_LANDING_PAGES_PATH overrides it (read in _places), for the same
+// reason as CONTENT_CALENDAR_PATH: the test that an unreadable file leaves the
+// cannibalization test as it was runs against a path that is not the real file.
+const LANDING_PAGES_PATH = path.join(ROOT, 'data', 'landing-pages.json');
 // A word run for _words: numbers (thousands separators allowed) joined by
 // slashes, a "$" allowed after each slash, or else a run of letters, digits,
 // & and commas.
@@ -695,48 +750,141 @@ function _isCount(words, i) {
     && words.slice(i + 1).some(x => LIST_WORDS.has(x.w));
 }
 
-/** A keyword's tokens: words, subjects ("code:sr22") and states ("state:tn"). */
+/** The state a word names, if it is a state word ("in" only as IN in capitals). */
+const _stateOf = word => (word.upperIn ? 'in' : (STATE_WORDS[word.w] || null));
+
+/**
+ * Place names from landing-pages.json, as the runs of _words() they are
+ * written in (aliases applied, nothing removed: "Mt. Washington" → mt
+ * washington, "Bullitt County" → bullitt county), each with the place(s) it
+ * names: kind (city or county), state and token. Longest names first, so
+ * "Franklin County" is tried before Franklin. Mirrors placesFrom() in
+ * topic-intent.js.
+ * @returns {{words: string[], places: {kind: string, state: string, token: string}[]}[]}
+ */
+function _placesFrom(landing) {
+  const named = [];
+  for (const c of (landing && Array.isArray(landing.cities) ? landing.cities : [])) {
+    if (c && c.city) named.push({ name: c.city, state: c.state, kind: 'city' });
+    if (c && c.county) named.push({ name: c.county, state: c.state, kind: 'county' });
+  }
+  for (const c of (landing && Array.isArray(landing.counties) ? landing.counties : [])) {
+    if (c && c.county_name) named.push({ name: c.county_name, state: c.state, kind: 'county' });
+  }
+  const byWords = new Map();
+  for (const { name, state, kind } of named) {
+    const words = _words(name).map(x => x.w);
+    if (!words.length) continue;
+    const st = String(state || '').toLowerCase();
+    const key = words.join(' ');
+    if (!byWords.has(key)) byWords.set(key, { words, places: [] });
+    const g = byWords.get(key);
+    const token = `${PLACE_TOKEN}${kind}:${words.join('-')}${st ? `-${st}` : ''}`;
+    if (!g.places.some(p => p.token === token)) g.places.push({ kind, state: st, token });
+  }
+  return [...byWords.values()].sort((x, y) => y.words.length - x.words.length);
+}
+
+// The places read from the landing pages, once per process (per file).
+let _placeCache = null;
+
+/** The site's places (_placesFrom), or none when landing-pages.json cannot be read. */
+function _places() {
+  const file = process.env.CONTENT_LANDING_PAGES_PATH || LANDING_PAGES_PATH;
+  if (!_placeCache || _placeCache.file !== file) {
+    let places = [];
+    try { places = _placesFrom(JSON.parse(fs.readFileSync(file, 'utf8'))); } catch { places = []; }
+    _placeCache = { file, places };
+  }
+  return _placeCache.places;
+}
+
+/**
+ * The tokens of the places a keyword's words name (topic-intent.js _read): a
+ * place name, then a state word that decides which place it is when the
+ * site has the name in several states. A name that is not exactly one of
+ * the site's places once the state written after it is applied is not read
+ * as a place.
+ */
+function _placeTokens(words, places) {
+  const used = new Set();
+  const out = [];
+  for (const g of places) {
+    const n = g.words.length;
+    for (let i = 0; i + n <= words.length; i++) {
+      let hit = true;
+      for (let k = 0; k < n; k++) if (used.has(i + k) || words[i + k].w !== g.words[k]) { hit = false; break; }
+      if (!hit) continue;
+      const next = used.has(i + n) ? null : words[i + n];
+      let state = next ? _stateOf(next) : null;
+      // a lower-case "in" ending the keyword, after a place the site has in Indiana
+      if (!state && next && next.w === 'in' && i + n === words.length - 1 && g.places.some(p => p.state === 'in')) state = 'in';
+      const matches = state ? g.places.filter(p => p.state === state) : g.places;
+      if (matches.length !== 1) continue; // another place of that name, or several and no state written
+      out.push(matches[0].token);
+      for (let k = 0; k < n; k++) used.add(i + k);
+      if (state) used.add(i + n);
+    }
+  }
+  return out;
+}
+
+/**
+ * A keyword's tokens: words, subjects ("code:sr22"), states ("state:tn") and
+ * the site's places it names ("place:city:owensboro-ky").
+ */
 function tokenize(text) {
   const tokens = new Set();
   const words = _words(text);
   words.forEach((word, i) => {
-    const state = word.upperIn ? 'in' : STATE_WORDS[word.w];
+    const state = _stateOf(word);
     const w = word.w;
     if (state) tokens.add(STATE_TOKEN + state);
     else if (_isCount(words, i)) return;
     else if (word.code || (w.length <= 2 && !SHORT_STOP.has(w)) || (/\d/.test(w) && !YEAR.test(w))) tokens.add(SUBJECT_TOKEN + w);
     else if (w.length > 2 && !STOPWORDS.has(w)) tokens.add(w);
   });
+  for (const t of _placeTokens(words, _places())) tokens.add(t);
   return tokens;
 }
 
-/** A token set's states as named (none: empty), subjects, and everything but its states. */
+/**
+ * A token set's states as named (none: empty), subjects, places (its cities,
+ * or its counties when it names no city), and everything but its states and
+ * places.
+ */
 function _parts(tokens) {
   const states = new Set();
   const rest = new Set();
   const subjects = new Set();
+  const cities = new Set();
+  const counties = new Set();
   for (const t of tokens) {
     if (t.startsWith(STATE_TOKEN)) { states.add(t); continue; }
+    if (t.startsWith(PLACE_TOKEN)) { (t.startsWith(CITY_TOKEN) ? cities : counties).add(t); continue; }
     rest.add(t);
     if (t.startsWith(SUBJECT_TOKEN)) subjects.add(t);
   }
-  return { states, rest, subjects };
+  return { states, rest, subjects, places: cities.size ? cities : counties };
 }
 
 const _sameSet = (a, b) => a.size === b.size && [...a].every(t => b.has(t));
 
 /**
  * How far two keywords' tokens overlap, 0-1: 0 when they name different
- * subjects, or both name states and the states differ (two searches,
- * whatever else they share); otherwise the Jaccard overlap of everything but
- * the states, where a keyword naming no state is read as Kentucky and a
- * Tennessee or Indiana state only the other names is a token only it has.
+ * subjects, or both name states and the states differ, or they do not name
+ * the same place (one names a place and the other none, or no place is named
+ * by both): two searches, whatever else they share. Otherwise the Jaccard
+ * overlap of everything but the states and places, where a keyword naming no
+ * state is read as Kentucky and a Tennessee or Indiana state only the other
+ * names is a token only it has.
  */
 function jaccard(a, b) {
   const A = _parts(a);
   const B = _parts(b);
   if (!A.rest.size || !B.rest.size) return 0;
   if (!_sameSet(A.subjects, B.subjects)) return 0;
+  if ((A.places.size || B.places.size) && ![...A.places].some(t => B.places.has(t))) return 0;
   let unshared = 0;
   if (A.states.size && B.states.size) {
     if (!_sameSet(A.states, B.states)) return 0;
