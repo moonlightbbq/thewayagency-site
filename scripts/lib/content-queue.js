@@ -531,9 +531,12 @@ const W_FUNNEL_THIN = 5;
 // hive/lib/topic-intent.js, which SAGE uses to tell a researched topic from
 // the site's existing ones: keep the two in step. They are not shared because
 // SAGE must decide without this lib (it loads it from the site mount, which
-// may be stale or absent) and this lib cannot load SAGE's. One deliberate
-// difference: a state abbreviation is never the first half of a code ("KY 61"
-// stays a state and a number).
+// may be stale or absent) and this lib cannot load SAGE's. Deliberate
+// differences: a state abbreviation is never the first half of a code ("KY 61"
+// stays a state and a number), and numbers joined by slashes are read as one
+// run here (split limits as one code, thousands and "$" allowed after each
+// slash; an all-year run such as 2026/2027 stays two year words) where SAGE
+// mirrors this in its own tokenizer.
 //
 // Known limits, accepted and each pinned by a test (the last three are read
 // the same way by topic-intent.js, which also knows place names):
@@ -624,8 +627,11 @@ function _words(text) {
   for (const [raw] of s.matchAll(WORD_RUN)) {
     if (raw.includes('/')) {
       const parts = raw.replace(/[,$]/g, '').split('/');
-      if (parts.every(x => YEAR.test(x))) for (const x of parts) words.push({ w: x });
-      else words.push({ w: parts.join('/'), code: true });
+      if (parts.every(x => YEAR.test(x))) {
+        for (const x of parts) words.push({ w: x });
+      } else {
+        words.push({ w: parts.join('/'), code: true });
+      }
       continue;
     }
     const t = raw.replace(/^,+|,+$/g, ''); // "E&O," is the code eo
