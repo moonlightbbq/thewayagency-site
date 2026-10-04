@@ -257,6 +257,25 @@ if (jsonLdUrlIssues === 0) pass('JSON-LD URLs reference valid paths');
   if (entityProblems === 0) pass('Entity schema: one #organization entity, no invented locations, no review markup');
 }
 
+// 7e. Blog HTML guard (sage-server BL-54, AIA-089): no built blog page carries
+// "javascript:", an event-handler attribute or a script URL. Rules:
+// scripts/lib/blog-html-guard.js (dependency-free; build.js step 11a2 runs the
+// same guard, which is what stops a SAGE publish push on Cloudflare).
+{
+  const { blogHtmlProblems } = require('./lib/blog-html-guard');
+  const blogDir = path.join(BUILD, 'blog');
+  let blogPages = 0;
+  let blogProblems = 0;
+  if (fs.existsSync(blogDir)) {
+    for (const name of fs.readdirSync(blogDir).filter((n) => n.endsWith('.html'))) {
+      blogPages++;
+      for (const p of blogHtmlProblems(fs.readFileSync(path.join(blogDir, name), 'utf8'), `blog/${name}`)) { error(`Blog HTML: ${p}`); blogProblems++; }
+    }
+  }
+  if (blogPages === 0) error('Blog HTML: no built blog pages found to check (build/blog/*.html)');
+  else if (blogProblems === 0) pass(`Blog HTML: ${blogPages} blog pages carry no javascript:, no event-handler attribute and no script URL`);
+}
+
 // 7c. Carrier pages check
 const carrierDir = path.join(BUILD, 'carriers');
 if (fs.existsSync(carrierDir)) {

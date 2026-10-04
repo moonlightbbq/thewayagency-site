@@ -565,6 +565,23 @@
     });
   }
 
+  // Blog "Copy Link" buttons (scripts/generate-blog.js): copy the page URL
+  // from data-copy-link. A listener, not an inline onclick, so a blog page
+  // carries no event-handler attribute at all and the build's blog guard
+  // (scripts/lib/blog-html-guard.js; sage-server BL-54) can refuse any.
+  function initCopyLink() {
+    $$('[data-copy-link]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const url = btn.getAttribute('data-copy-link');
+        if (!url || !navigator.clipboard) return;
+        navigator.clipboard.writeText(url).then(() => {
+          btn.textContent = 'Copied!';
+          setTimeout(() => { btn.textContent = 'Copy Link'; }, 2000);
+        }).catch(() => {});
+      });
+    });
+  }
+
   // ═══════════════════════════════════════════════
   // 3. INLINE QUOTE FORMS (Product Pages)
   // ═══════════════════════════════════════════════
@@ -1905,6 +1922,7 @@
     initABTests();
     initNav();
     initFAQ();
+    initCopyLink();
     initInlineForms();
     initFormStartTracking();
     initStickyMobileCTA();
