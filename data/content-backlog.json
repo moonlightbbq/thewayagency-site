@@ -195,6 +195,365 @@
       "approved_by": "partner@thewayagency.com",
       "status": "approved",
       "notes": "From topic research task 604dcd9f-1acf-4e11-b37d-e2661ee4a50c (2026-10-02). Its automated quality check failed on a judge input cap, so the topics never reached the backlog; the owner reviewed the six proposals and approved this one directly on 2026-10-03. A licensed agent must verify the 815 KAR 20:080 licensing and $250k liability figures."
+    },
+    {
+      "slug": "25000-final-expense-benefit-real-kentucky-seniors",
+      "title": "Is the $25,000 Final Expense Benefit Real? What Kentucky Seniors Should Know",
+      "description": "Explains the misleading $25,000 final expense ads targeting Kentucky seniors, what Social Security actually pays, and how legitimate burial insurance works.",
+      "primary_keyword": "$25000 final expense benefit for seniors",
+      "secondary_keywords": [
+        "25k final expense package",
+        "25000 dollar final expense benefit",
+        "final expense insurance Kentucky seniors",
+        "burial insurance Kentucky",
+        "is final expense benefit real"
+      ],
+      "pillar": "education",
+      "topic_type": "explainer",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "conversion_goal": "consultation",
+      "related_cluster": "life-planning",
+      "seasonality_window": null,
+      "target_month": null,
+      "target_product_page": "/life/final-expense.html",
+      "target_location_pages": [],
+      "secondary_internal_links": [
+        "/life/final-expense.html",
+        "/life/term-life.html"
+      ],
+      "page_role": "supporting",
+      "refresh_cycle": "annual",
+      "source": "topic-research",
+      "research_task_id": "b4a8cbd3-5e0b-40d2-a945-64821dbf8789",
+      "priority_score": 91,
+      "score_breakdown": {
+        "demand": 25,
+        "winnability": 22,
+        "business_value": 18,
+        "aeo": 14,
+        "timing": 12
+      },
+      "research_brief": {
+        "demand_evidence": "GSC shows 6 variants of this query totaling 127+ impressions over 28 days at positions 4.2 to 10.1 with a combined 0 clicks, representing the agency's largest single content gap by impression volume. The '25k final expense package' variant alone sits at position 4.2 with 28 impressions and 0 CTR.",
+        "serp_landscape": "Page 1 is occupied by Medium blog posts, a JustAnswer Q&A thread, a Substack piece, advocacy sites (voicesforsafety.com), and one insurance agent FAQ (thejordaninsuranceagency.com). No .gov source, no Kentucky-specific content, no independent agency with local authority. Content is thin, mostly 300-600 words, several pages more than a year old. No AI Overview was surfaced for the primary query variant tested, indicating the answer engine position is unclaimed.",
+        "differentiation_angle": "Every current page 1 result treats this as a national scam story. A post grounded in Kentucky reality - referencing the KY Attorney General's Office of Senior Protection, the 12-fold increase in KY scam reports since 2019, and the specific mailer and robocall tactics seniors in Bullitt and Daviess counties receive - out-competes on relevance. The post should also pivot constructively: yes, the $25,000 government benefit is a myth, but a legitimate $25,000 whole-life final expense policy IS available from real carriers, and here is what it actually costs and requires in Kentucky.",
+        "direct_answer_target": "There is no government program that pays a $25,000 final expense benefit to Kentucky seniors. Social Security pays a one-time $255 death benefit. Ads claiming otherwise are misleading marketing used to generate insurance leads. Legitimate final expense policies - small whole-life plans from licensed carriers - can provide $5,000 to $25,000 in real coverage, with premiums and eligibility that vary by age and health.",
+        "questions_to_answer": [
+          "Is the $25,000 final expense benefit from the government real?",
+          "What does Social Security actually pay at death?",
+          "What is a 25k final expense package and does it exist?",
+          "How do I tell if a final expense mailer or robocall is a scam?",
+          "What does real burial insurance cost in Kentucky?",
+          "Who should I report a final expense scam to in Kentucky?",
+          "What is a graded death benefit and how does it affect my $25,000 policy?"
+        ],
+        "entities_to_cover": [
+          "Social Security $255 death benefit",
+          "Kentucky Attorney General Office of Senior Protection",
+          "FTC consumer alerts on senior fraud",
+          "CFPB complaint database",
+          "KY DOI licensed carrier lookup at insurance.ky.gov",
+          "guaranteed-issue vs simplified-issue final expense policies",
+          "graded death benefit",
+          "Colonial Penn",
+          "T-2 mailer scam",
+          "KRS 304.9 (insurance licensing)"
+        ],
+        "local_angle": "Kentucky saw a 12-fold increase in scam reports between 2019 and the pandemic years, with the KY Attorney General's Office of Senior Protection receiving over 7,000 scam reports in 2021 alone. Seniors in Bullitt and Daviess counties are receiving these mailers and robocalls. A licensed KY independent agent can verify any carrier through insurance.ky.gov and shop A-rated carriers - something no mailer or robocall can offer.",
+        "recommended_schema": [
+          "FAQPage",
+          "Article"
+        ],
+        "internal_links": [
+          "/life/final-expense.html",
+          "/life/term-life.html"
+        ],
+        "sources": [
+          "https://medium.com/@lovefoods_54026/scam-55-can-claim-a-25-000-burial-benefit-from-the-government-through-federal-aid-is-false-1b6ab38a5e05",
+          "https://www.justanswer.com/social-security/vt8sy-scam-or-truth-25000-burial-benefit.html",
+          "https://seniorburialquote.com/final-expense-insurance-scams",
+          "https://www.aol.com/kentucky-saw-12-fold-increase-155904058.html",
+          "https://www.ftc.gov/news-events/news/press-releases/2025/12/ftc-issues-annual-report-congress-agencys-actions-protect-older-adults",
+          "https://bankrate.com/insurance/life-insurance/final-expense"
+        ]
+      },
+      "proposed_at": "2026-10-04",
+      "approved_at": null,
+      "approved_by": null,
+      "status": "proposed",
+      "notes": "Proposed by topic research (task b4a8cbd3-5e0b-40d2-a945-64821dbf8789); needs approval before it can be scheduled."
+    },
+    {
+      "slug": "insurance-shepherdsville-ky-bullitt-county-guide",
+      "title": "Insurance in Shepherdsville, KY: A Bullitt County Guide for Families and Businesses",
+      "description": "A local guide to home, auto, and business insurance for Shepherdsville and Bullitt County residents, covering local risks, carrier options, and why independent agents beat captive options in this fast-growing community.",
+      "primary_keyword": "insurance Shepherdsville KY",
+      "secondary_keywords": [
+        "home insurance Shepherdsville Kentucky",
+        "auto insurance Bullitt County KY",
+        "independent insurance agent Shepherdsville",
+        "insurance 40165",
+        "Bullitt County insurance"
+      ],
+      "pillar": "local",
+      "topic_type": "local-guide",
+      "search_intent": "transactional",
+      "funnel_stage": "bottom",
+      "conversion_goal": "quote-request",
+      "related_cluster": "kentucky-local",
+      "seasonality_window": null,
+      "target_month": null,
+      "target_product_page": "/personal/home.html",
+      "target_location_pages": [
+        "/insurance/shepherdsville-ky.html",
+        "/insurance/mt-washington-ky.html"
+      ],
+      "secondary_internal_links": [
+        "/insurance/shepherdsville-ky.html",
+        "/insurance/mt-washington-ky.html",
+        "/personal/home.html",
+        "/personal/auto.html",
+        "/personal/flood.html"
+      ],
+      "page_role": "supporting",
+      "refresh_cycle": "annual",
+      "source": "topic-research",
+      "research_task_id": "b4a8cbd3-5e0b-40d2-a945-64821dbf8789",
+      "priority_score": 78,
+      "score_breakdown": {
+        "demand": 14,
+        "winnability": 21,
+        "business_value": 18,
+        "aeo": 11,
+        "timing": 14
+      },
+      "research_brief": {
+        "demand_evidence": "The zip code '40165' (Shepherdsville's primary zip) appeared in GSC at position 8 with 100% CTR, confirming hyper-local navigational demand. Shepherdsville is in Bullitt County, the agency's home county - the single strongest structural advantage the site holds. No blog post targets Shepherdsville specifically despite the location page /insurance/shepherdsville-ky.html existing in the site inventory.",
+        "serp_landscape": "SERP for 'insurance Shepherdsville KY' and related variants is dominated by captive agent profiles: State Farm (Steve Bell), Allstate (Scot Dawson), Kentucky Farm Bureau (multiple agents), Shelter Insurance (Jenni Grant), and Nationwide (Parsons). One thin independent (KyBred Insurance, Louisville-based) has a basic page. No local independent agency has a substantive educational blog post targeting Shepherdsville. This is an open field for the agency given its Bullitt County headquarters.",
+        "differentiation_angle": "Every captive agent page is a thin contact card. The post should be a genuine local guide: Shepherdsville is the fastest-growing city in Bullitt County, positioned along the I-65 corridor with new residential subdivisions, active commuter traffic to Louisville, and proximity to Fort Knox. Local risks include I-65 and US-31W traffic-pattern claims, Bullitt County storm patterns (hail frequency from Ohio Valley weather systems), and the specific flood zone patterns along Salt River tributaries. An independent agent can shop multiple carriers; a State Farm agent cannot.",
+        "direct_answer_target": "Shepherdsville and Bullitt County residents can choose from dozens of carriers for home and auto insurance - unlike captive agents who represent only one company. Key local considerations include hail and wind exposure from Ohio Valley storms, I-65 commuter accident rates, and the newer construction profile of Shepherdsville subdivisions, which affects replacement cost calculations. An independent agent shops all of these carriers in a single conversation.",
+        "questions_to_answer": [
+          "What does home insurance cost in Shepherdsville, KY?",
+          "Who are the best insurance agents in Shepherdsville KY?",
+          "What are the biggest insurance risks for Bullitt County homeowners?",
+          "How does independent insurance compare to Kentucky Farm Bureau in Bullitt County?",
+          "Do I need flood insurance in Shepherdsville?",
+          "What auto insurance coverage do I need commuting on I-65 from Shepherdsville to Louisville?"
+        ],
+        "entities_to_cover": [
+          "Bullitt County",
+          "Shepherdsville KY 40165",
+          "I-65 corridor",
+          "Salt River flood plain",
+          "KY Farm Bureau comparison",
+          "new construction replacement cost",
+          "Ohio Valley hail storms",
+          "Bullitt County Courthouse",
+          "Preston Highway",
+          "independent vs captive agent"
+        ],
+        "local_angle": "The Way Agency is headquartered in Mt. Washington, Bullitt County - the same county as Shepherdsville. This is the agency's literal backyard. Reference the I-65 corridor, the growth of subdivisions along KY-44 and Preston Highway, Bullitt County's rapid population growth, and the Salt River tributaries that create localized flood risk for some properties. This is the content where first-hand E-E-A-T is strongest.",
+        "recommended_schema": [
+          "FAQPage",
+          "Article"
+        ],
+        "internal_links": [
+          "/insurance/shepherdsville-ky.html",
+          "/insurance/mt-washington-ky.html",
+          "/personal/home.html",
+          "/personal/auto.html",
+          "/personal/flood.html"
+        ],
+        "sources": [
+          "https://kybredinsurance.com/shepherdsville/",
+          "https://protectwithstevebell.com/",
+          "https://www.kyfb.com/bullitt/shepherdsville/cheryl-day/",
+          "https://www.bbb.org/us/ky/shepherdsville/category/homeowners-insurance/accredited"
+        ]
+      },
+      "proposed_at": "2026-10-04",
+      "approved_at": null,
+      "approved_by": null,
+      "status": "proposed",
+      "notes": "Proposed by topic research (task b4a8cbd3-5e0b-40d2-a945-64821dbf8789); needs approval before it can be scheduled."
+    },
+    {
+      "slug": "why-insurance-premium-changed-renewal-kentucky",
+      "title": "Why Your Insurance Premium Changed at Renewal: A Kentucky Policyholder's Guide",
+      "description": "Explains the Kentucky-specific rules governing policy renewals, why premiums rise even without claims, and what policyholders can do when their renewal notice arrives.",
+      "primary_keyword": "insurance renewal process Kentucky",
+      "secondary_keywords": [
+        "why did my insurance premium go up at renewal",
+        "insurance non-renewal notice Kentucky",
+        "how insurance renewal works",
+        "insurance renewal what to expect",
+        "Kentucky auto renewal notice requirements"
+      ],
+      "pillar": "education",
+      "topic_type": "explainer",
+      "search_intent": "informational",
+      "funnel_stage": "top",
+      "conversion_goal": "coverage-review",
+      "related_cluster": "insurance-basics",
+      "seasonality_window": null,
+      "target_month": null,
+      "target_product_page": "/personal/auto.html",
+      "target_location_pages": [],
+      "secondary_internal_links": [
+        "/personal/auto.html",
+        "/personal/home.html"
+      ],
+      "page_role": "supporting",
+      "refresh_cycle": "annual",
+      "source": "topic-research",
+      "research_task_id": "b4a8cbd3-5e0b-40d2-a945-64821dbf8789",
+      "priority_score": 75,
+      "score_breakdown": {
+        "demand": 18,
+        "winnability": 18,
+        "business_value": 14,
+        "aeo": 12,
+        "timing": 13
+      },
+      "research_brief": {
+        "demand_evidence": "The query 'insurance renewal process' holds position 19 with 40 impressions and only 1 click in the 28-day window - the second-highest impression count among non-brand queries after the final expense cluster. Position 19 with this volume means a dedicated post targeting the consumer (not agent-licensing) angle can realistically move to page 1. The published 'understanding-your-policy-renewal-process' covers the agency operations side; this post targets the policyholder asking why their premium changed.",
+        "serp_landscape": "Page 1 is occupied by B2B/insurer-side content (selectsys.com insurance software, exdioninsurance.com agency operations), generic consumer explainers (trustmypolicy.com, insurancecurator.com, bpo.click-vision.com), and one home insurance-specific piece (pennypincher.com). No Kentucky-specific page exists anywhere in the top 20. The Kentucky DOI has a direct-authority .gov PDF on non-renewal of personal auto policies (howcantheydothat071217.pdf) that no local agency is citing or interpreting for consumers.",
+        "differentiation_angle": "Differentiation is KY statutory specificity. The KY DOI PDF establishes that for personal auto non-renewals, the insurer must send written notice at least 30 days before the end of the current policy period. Kentucky also does not prohibit credit scoring in underwriting or rating - a fact that surprises many policyholders who assume a claim-free record protects them from premium increases. Anchoring these statutory facts makes the post the authoritative KY consumer answer while every competitor publishes generic content.",
+        "direct_answer_target": "In Kentucky, insurance companies must send a renewal notice at least 30 days before your policy ends for personal auto coverage. Your premium can change at renewal for reasons unrelated to your claims - including credit score changes, local weather loss trends, construction costs, or reinsurance market shifts. Reviewing the renewal notice carefully and asking an independent agent to re-shop the market is the single most effective action you can take.",
+        "questions_to_answer": [
+          "Why did my home insurance go up at renewal even though I filed no claims?",
+          "How much notice does my insurance company have to give before not renewing in Kentucky?",
+          "What is the difference between a non-renewal and a cancellation in Kentucky?",
+          "Can my insurance company raise rates at renewal without warning?",
+          "What should I do when I get my renewal notice?",
+          "Can I shop for new insurance before my current policy expires?",
+          "Does my credit score affect my renewal premium in Kentucky?"
+        ],
+        "entities_to_cover": [
+          "KY DOI non-renewal notice requirements",
+          "KRS 304.20 (cancellation and non-renewal)",
+          "30-day notice requirement for personal auto",
+          "credit scoring in KY underwriting",
+          "loss ratio",
+          "reinsurance market",
+          "replacement cost inflation",
+          "underwriting review",
+          "comparison shopping window"
+        ],
+        "local_angle": "Kentucky does not prohibit the use of credit scores in insurance rating, meaning a dip in credit - even with no claims - can trigger a premium increase at renewal. Bullitt County and Daviess County homeowners have also seen above-average rate increases due to hail claim frequency along the Ohio Valley corridor. An independent agent at The Way Agency can re-shop across multiple carriers during the renewal window at no cost to the policyholder.",
+        "recommended_schema": [
+          "FAQPage",
+          "Article"
+        ],
+        "internal_links": [
+          "/personal/auto.html",
+          "/personal/home.html"
+        ],
+        "sources": [
+          "https://insurance.ky.gov/ppc/Documents/howcantheydothat071217.pdf",
+          "https://diamondbackins.com/insurance-renewal-process-a-complete-policy-guide/",
+          "https://trustmypolicy.com/insurance-policy-renewal/",
+          "https://nationalinsurancehelpauthority.com/insurance-renewal-process-explained"
+        ]
+      },
+      "proposed_at": "2026-10-04",
+      "approved_at": null,
+      "approved_by": null,
+      "status": "proposed",
+      "notes": "Proposed by topic research (task b4a8cbd3-5e0b-40d2-a945-64821dbf8789); needs approval before it can be scheduled."
+    },
+    {
+      "slug": "professional-liability-insurance-kentucky-who-needs-eo",
+      "title": "Professional Liability Insurance in Kentucky: Who Needs E&O and What It Costs",
+      "description": "A plain-language Kentucky guide to professional liability (E&O) insurance - who needs it, what KY law requires, what it costs, and how it differs from general liability.",
+      "primary_keyword": "professional liability insurance Kentucky",
+      "secondary_keywords": [
+        "errors and omissions insurance Kentucky",
+        "E&O insurance Kentucky small business",
+        "do I need professional liability insurance Kentucky",
+        "professional liability vs general liability Kentucky",
+        "errors omissions Kentucky cost"
+      ],
+      "pillar": "product",
+      "topic_type": "guide",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "conversion_goal": "quote-request",
+      "related_cluster": "commercial-specialty",
+      "seasonality_window": null,
+      "target_month": null,
+      "target_product_page": "/commercial/professional-liability.html",
+      "target_location_pages": [
+        "/insurance/owensboro-ky.html",
+        "/insurance/elizabethtown-ky.html",
+        "/insurance/mt-washington-ky.html"
+      ],
+      "secondary_internal_links": [
+        "/commercial/professional-liability.html",
+        "/commercial/general-liability.html",
+        "/commercial/cyber.html"
+      ],
+      "page_role": "supporting",
+      "refresh_cycle": "annual",
+      "source": "topic-research",
+      "research_task_id": "b4a8cbd3-5e0b-40d2-a945-64821dbf8789",
+      "priority_score": 73,
+      "score_breakdown": {
+        "demand": 13,
+        "winnability": 19,
+        "business_value": 17,
+        "aeo": 12,
+        "timing": 12
+      },
+      "research_brief": {
+        "demand_evidence": "The agency product page /commercial/professional-liability.html exists with no supporting blog content. The 'insurance types coverage comparing quotes claims' query (position 1.5, 83.3% CTR) signals strong demand for coverage comparison content, and E&O vs GL is the most common comparison question from commercial prospects. The query 'professional liability insurance Kentucky' has consistent SERP activity with no local Kentucky agency holding a top-10 editorial position.",
+        "serp_landscape": "Page 1 is occupied by biberk.com, techinsurance.com, insureon.com, bizinsure.com, allenthomasgroup.com, and progressivecommercial.com. The one KY-local result is ekinsurance.com (Winchester, KY) with a thin 400-word page. No result addresses the Kentucky-specific mandatory E&O requirement for real estate agents (KRS 324), the $20,000 surety bond requirement for Kentucky insurance consultants (KRS 304.9-105 and 304.9-330), or the lack of a general state mandate for other professions. The average cost data available ($88/month) comes from TechInsurance national averages with no KY-specific context.",
+        "differentiation_angle": "Anchor the post in KY statutory specificity: real estate agents and brokers in Kentucky are required by state law (KRS 324) to carry E&O. Insurance consultants must carry a $20,000 surety bond under KRS 304.9-105. For all other professions, professional liability is not legally mandated in Kentucky - but contract requirements and client demands often make it a practical requirement. The post should also explain the GL gap: general liability covers bodily injury and property damage, not financial harm from professional advice. A Kentucky consultant who gives bad advice that costs a client $50,000 has zero GL protection.",
+        "direct_answer_target": "Professional liability insurance (also called E&O or errors and omissions insurance) protects Kentucky businesses when a client claims your advice, service, or failure to act caused them financial harm. General liability will not cover this - it only covers physical injury and property damage. Kentucky real estate agents are required by state law to carry E&O. For most other professions, it is not legally required but is often demanded by contracts and clients.",
+        "questions_to_answer": [
+          "What is professional liability insurance and how is it different from general liability in Kentucky?",
+          "Does Kentucky require professional liability insurance?",
+          "Who needs errors and omissions insurance in Kentucky?",
+          "How much does professional liability insurance cost for a Kentucky small business?",
+          "Does a Kentucky real estate agent have to carry E&O insurance?",
+          "What does professional liability insurance NOT cover?",
+          "Can a Kentucky consultant be sued even if they did nothing wrong?"
+        ],
+        "entities_to_cover": [
+          "KRS 324 (Kentucky real estate E&O requirement)",
+          "KRS 304.9-105 (insurance consultant bond)",
+          "errors and omissions insurance",
+          "claims-made vs occurrence policy form",
+          "retroactive date",
+          "general liability coverage gap",
+          "Kentucky real estate commission",
+          "professional negligence",
+          "cyber liability overlap"
+        ],
+        "local_angle": "Owensboro's growing downtown professional services sector - accountants, consultants, architects, healthcare administrators - and Bullitt County's expanding contractor and engineering population both generate demand for E&O coverage. The Way Agency serves both markets and can place professional liability for industries ranging from home inspectors to IT consultants to non-profit administrators, which most storefront captive agents cannot access.",
+        "recommended_schema": [
+          "FAQPage",
+          "Article"
+        ],
+        "internal_links": [
+          "/commercial/professional-liability.html",
+          "/commercial/general-liability.html",
+          "/commercial/cyber.html"
+        ],
+        "sources": [
+          "https://ocmiworkerscomp.com/2025/10/kentucky-professional-liability-insurance-why-you-need-it/",
+          "https://www.insureon.com/states/kentucky-business-insurance",
+          "https://allenthomasgroup.com/commercial-insurance/policies/professional-liability-insurance/kentucky/",
+          "https://www.techinsurance.com/small-business-insurance/states/kentucky",
+          "https://www.bizinsure.com/professional-liability-insurance-kentucky/"
+        ]
+      },
+      "proposed_at": "2026-10-04",
+      "approved_at": null,
+      "approved_by": null,
+      "status": "proposed",
+      "notes": "Proposed by topic research (task b4a8cbd3-5e0b-40d2-a945-64821dbf8789); needs approval before it can be scheduled."
     }
   ]
 }
