@@ -1179,6 +1179,24 @@
     var chatSessionId = localStorage.getItem('twa_chat_sid') || '';
     var chatMessages = [];
     var chatResumeData = null; // populated from /api/chat/resume
+    // BL-26: SAGE says in each reply whether this chat session passed the human
+    // check. A token is skipped only on the word of a reply received on this
+    // page, for the same session id, in the last 20 minutes; never from
+    // storage (SAGE may have replaced a day-old session id). SAGE itself
+    // skips the check for a session it already verified, so a token sent to
+    // a verified session costs nothing.
+    var chatVerifiedFor = null; // { sessionId, at }
+    function sessionConfirmedVerified() {
+      return !!chatVerifiedFor && chatVerifiedFor.sessionId === chatSessionId && (Date.now() - chatVerifiedFor.at) < 20 * 60 * 1000;
+    }
+    function noteVerified(chunk) {
+      if (typeof chunk.verified !== 'boolean') return;
+      chatVerifiedFor = chunk.verified ? { sessionId: chunk.sessionId || chatSessionId, at: Date.now() } : null;
+    }
+    try { localStorage.removeItem('twa_chat_verified'); } catch (e) { /* storage blocked; nothing kept there any more */ }
+    // Set when the Turnstile script could not load (blocked): the page stops
+    // waiting for it on every message.
+    var chatTurnstileBlocked = false;
     var isSending = false;
     var isOpen = false;
     var hasOpened = false;
@@ -1262,6 +1280,9 @@
       '.twa-cb-action-btn.secondary:hover{background:#e2e8f0}',
       '.twa-cb-action-btn:disabled{opacity:.6;cursor:not-allowed}',
       '.twa-cb-powered{text-align:center;font-size:10px;color:#94a3b8;padding:4px 0 8px;flex-shrink:0}',
+      '.twa-cb-verify{align-self:center;max-width:100%}',
+      '.twa-cb-verify-msg{margin:0 0 6px;font-size:13px;color:#475569;text-align:center}',
+      '.twa-cb-verify-msg:empty{display:none}',
       '.twa-cb-bubble:active{transform:scale(0.95)}',
       '.twa-cb-input button:active:not(:disabled){color:#173358}',
       '.twa-cb-action-btn:active:not(:disabled){opacity:0.8}'
@@ -1351,7 +1372,9 @@
       if (el) el.remove();
     }
 
-    function addConfirmationCard(actionData) {
+    // `restored`: a card redrawn from history (a page load, a resume) is not a
+    // new conversion and is not tracked again.
+    function addConfirmationCard(actionData, restored) {
       var agentSlug = (actionData && actionData.agent) || '';
       var agentName = AGENT_NAMES[agentSlug] || 'Our team';
       var card = document.createElement('div');
@@ -1360,14 +1383,121 @@
         agentName + ' will reach out within one business day.';
       msgsArea.appendChild(card);
       msgsArea.scrollTop = msgsArea.scrollHeight;
-      track('chatbot_lead_submitted', { category: 'conversion', agent: agentSlug });
+      if (!restored) {
+        // BL-26: only a lead SAGE created carries a reference. A request held
+        // for a person to confirm (no human check), or one already on file, is
+        // not a lead yet and is tracked as its own event.
+        if (actionData && actionData.reference) track('chatbot_lead_submitted', { category: 'conversion', agent: agentSlug });
+        else track('chatbot_request_received', { category: 'engagement', agent: agentSlug });
+      }
     }
 
     // Restore saved messages into the DOM
     function restoreMessages() {
       chatMessages.forEach(function(m) {
         addMessageEl(m.role, m.text);
-        if (m.action) addConfirmationCard(m.action);
+        if (m.action) addConfirmationCard(m.action, true);
+      });
+    }
+
+    // ─── Human check (BL-26) ─────────────────────
+    // SAGE makes a lead, pages an agent or emails the visitor only for a chat
+    // that passed Cloudflare Turnstile. So a message that carries contact
+    // details (an email address or a phone-length run of digits) is sent with
+    // a fresh token. The widget only shows itself when Cloudflare needs the
+    // visitor to interact (appearance: interaction-only); the script loads only
+    // here, never on page load (PERF-02). Nothing blocks the visitor: with no
+    // token (no key, script blocked, check failed or timed out) the message is
+    // still sent, and SAGE holds the request for a person to call back.
+    function looksLikeContact(t) {
+      return /[^\s@]+@[^\s@]+\.[^\s@]+/.test(t) || /(?:\d[\s().-]*){7,}/.test(t);
+    }
+
+    function loadChatTurnstile() {
+      if (window.turnstile) return Promise.resolve(true);
+      if (!CONFIG.turnstileSiteKey || chatTurnstileBlocked) return Promise.resolve(false);
+      return new Promise(function(resolve) {
+        var settled = false;
+        function settle(ok) {
+          if (settled) return;
+          settled = true;
+          if (!ok) chatTurnstileBlocked = true; // remembered: no 8 s wait on the next message
+          resolve(ok);
+        }
+        var s = document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]');
+        if (!s) {
+          s = document.createElement('script');
+          s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+          s.async = true;
+          document.head.appendChild(s);
+        }
+        s.addEventListener('error', function() { settle(false); });
+        var waited = 0;
+        (function poll() {
+          if (settled) return;
+          if (window.turnstile) { settle(true); return; }
+          waited += 100;
+          if (waited >= 8000) { settle(false); return; }
+          setTimeout(poll, 100);
+        })();
+      });
+    }
+
+    function newChatSessionId() {
+      if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+      return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+    }
+
+    function getChatTurnstileToken() {
+      return loadChatTurnstile().then(function(ok) {
+        if (!ok || !window.turnstile) return '';
+        // The token names this chat session (cData) and the chat (action), and
+        // SAGE accepts it only for that session on this site. A brand-new chat
+        // gets its id here, before its first message.
+        if (!chatSessionId) { chatSessionId = newChatSessionId(); saveState(); }
+        return new Promise(function(resolve) {
+          var box = document.createElement('div');
+          box.className = 'twa-cb-verify';
+          var status = document.createElement('p');
+          status.className = 'twa-cb-verify-msg';
+          status.setAttribute('role', 'status');
+          status.setAttribute('aria-live', 'polite');
+          box.appendChild(status);
+          var widgetEl = document.createElement('div');
+          box.appendChild(widgetEl);
+          msgsArea.appendChild(box);
+          var done = false;
+          var widgetId = null;
+          var timer = null;
+          function finish(token) {
+            if (done) return;
+            done = true;
+            clearTimeout(timer);
+            try { if (widgetId !== null && widgetId !== undefined) window.turnstile.remove(widgetId); } catch (e) { /* already gone */ }
+            box.remove();
+            resolve(token || '');
+          }
+          timer = setTimeout(function() { finish(''); }, 15000);
+          try {
+            widgetId = window.turnstile.render(widgetEl, {
+              sitekey: CONFIG.turnstileSiteKey,
+              action: 'chat',
+              cData: chatSessionId,
+              appearance: 'interaction-only',
+              callback: function(token) { finish(token); },
+              'error-callback': function() { finish(''); },
+              'expired-callback': function() { finish(''); },
+              'timeout-callback': function() { finish(''); },
+              // The visitor has to click: say so, give them time, show the box.
+              'before-interactive-callback': function() {
+                clearTimeout(timer);
+                timer = setTimeout(function() { finish(''); }, 120000);
+                status.textContent = 'One quick check before we send your details.';
+                msgsArea.scrollTop = msgsArea.scrollHeight;
+              }
+            });
+          } catch (e) { finish(''); }
+        });
       });
     }
 
@@ -1390,6 +1520,13 @@
       var botEl = null;
       var actionData = null;
 
+      // BL-26: contact details travel with a Turnstile token (see above).
+      var cfToken = '';
+      if (looksLikeContact(text) && !sessionConfirmedVerified()) {
+        cfToken = await getChatTurnstileToken();
+        track('chatbot_human_check', { category: 'engagement', result: cfToken ? 'token' : 'none' });
+      }
+
       var chatAbort = new AbortController();
       var chatAbortTimer = setTimeout(function() { chatAbort.abort(); }, 45000);
 
@@ -1410,7 +1547,8 @@
             twa_vid: getVisitorId(),
             _tracking: getTrackingIds(),
             attribution: getAttribution(),
-            referrer: document.referrer || 'direct'
+            referrer: document.referrer || 'direct',
+            cfToken: cfToken || undefined
           })
         });
 
@@ -1450,8 +1588,10 @@
                 msgsArea.scrollTop = msgsArea.scrollHeight;
               }
               if (chunk.done) {
+                noteVerified(chunk);
                 if (chunk.action === 'connect_agent' && chunk.data) {
-                  actionData = chunk.data;
+                  // The reference marks a lead SAGE created (see addConfirmationCard).
+                  actionData = Object.assign({}, chunk.data, { reference: chunk.reference || '' });
                   track('chatbot_agent_suggested', { category: 'engagement', agent: chunk.data.agent || '' });
                 }
               }
@@ -1468,8 +1608,9 @@
               botText += lastChunk.text;
               if (botEl) botEl.innerHTML = formatChatText(botText);
             }
+            if (lastChunk.done) noteVerified(lastChunk);
             if (lastChunk.done && lastChunk.action === 'connect_agent' && lastChunk.data) {
-              actionData = lastChunk.data;
+              actionData = Object.assign({}, lastChunk.data, { reference: lastChunk.reference || '' });
               track('chatbot_agent_suggested', { category: 'engagement', agent: lastChunk.data.agent || '' });
             }
           } catch(pe2) {}
@@ -1511,6 +1652,7 @@
     function resetChat() {
       chatSessionId = '';
       chatMessages = [];
+      chatVerifiedFor = null;
       localStorage.removeItem('twa_chat_sid');
       localStorage.removeItem('twa_chat_messages');
       msgsArea.innerHTML = '';
@@ -1550,7 +1692,7 @@
           restoreMessages();
           // If we resumed from server and a lead was submitted, show confirmation card
           if (chatResumeData && chatResumeData.agentName) {
-            addConfirmationCard({ agentName: chatResumeData.agentName, reference: chatResumeData.reference });
+            addConfirmationCard({ agentName: chatResumeData.agentName, reference: chatResumeData.reference }, true);
           }
         }
       }
