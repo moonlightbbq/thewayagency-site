@@ -505,20 +505,27 @@ const W_FUNNEL_THIN = 5;
 //  - words, as before: 3+ characters, not in STOPWORDS;
 //  - subjects ("code:<x>"): what names a search of its own in one or two
 //    characters or in digits: short codes joined the way they are written
-//    (SR-22 → sr22, HO-3 → ho3, E&O → eo, Part A → parta, Plan G → plang),
-//    other short words (RV, EV, GL), and numbers ($25,000 → 25000). A year is
-//    a word, as it always was ("medicare open enrollment 2027 kentucky" is
-//    still the enrollment guide);
+//    (SR-22 → sr22, HO-3 → ho3, E&O → eo, Part A → parta, Plan G → plang,
+//    401(k) → 401k), other short words (RV, EV, GL), and numbers ($25,000 →
+//    25000, 250/500/100 limits, "10 employees", a zip code). A year is a word,
+//    as it always was ("medicare open enrollment 2027 kentucky" is still the
+//    enrollment guide), and a count of list items is dropped (_isCount: "10
+//    home insurance tips" is "home insurance tips");
 //  - states ("state:ky|tn|in"): Kentucky, Tennessee and Indiana by name or
 //    abbreviation. IN is Indiana only when written in capitals; "in" is the
-//    preposition. A keyword that names no state is a Kentucky search, the
-//    agency's default market (which is why "kentucky" was a stopword).
+//    preposition.
 //
 // jaccard() then reads two keywords as different searches (0) when they name
-// different states or different subjects, whatever else they share; otherwise
-// it is the overlap of their words and subjects (states are not counted:
-// "flood insurance" and "flood insurance kentucky" are one search). A plain
-// Set of words, with no states or subjects in it, scores exactly as before.
+// different subjects, or when both name states and the states differ,
+// whatever else they share. Otherwise it is the overlap of their words and
+// subjects, and states are not counted, except that a keyword naming no state
+// is read as Kentucky, the agency's default market (which is why "kentucky"
+// was a stopword): "flood insurance" and "flood insurance kentucky" are one
+// search, and a Tennessee or Indiana state that only one of the two names
+// counts as a word only that one has ("home insurance nashville" vs "home
+// insurance nashville tn" scores 0.67, so a place written once with its state
+// and once without is still one search). A plain Set of words, with no states
+// or subjects in it, scores exactly as before.
 //
 // The normalization (_words) mirrors _words() in sage-server
 // hive/lib/topic-intent.js, which SAGE uses to tell a researched topic from
@@ -528,9 +535,17 @@ const W_FUNNEL_THIN = 5;
 // difference: a state abbreviation is never the first half of a code ("KY 61"
 // stays a state and a number).
 //
-// Known limit: the test has no place names, so a Tennessee or Indiana city
-// written without its state ("home insurance nashville") reads as Kentucky.
-// Every Tennessee or Indiana keyword the site has had names its state.
+// Known limits, accepted and each pinned by a test (the last three are read
+// the same way by topic-intent.js, which also knows place names):
+//  - the test has no place names, so the state a keyword names is the only
+//    state it has. A stateless keyword of 3+ words and a Tennessee or Indiana
+//    keyword that share every other word score 0.67 and are refused ("auto
+//    insurance requirements" vs "auto insurance requirements tennessee"); two
+//    keywords that both name a state are never confused this way;
+//  - "plan a <word>" reads as the Medigap code plana ("plan a budget");
+//  - dotted abbreviations are read letter by letter ("U.S." is u + s, two
+//    subjects, not the stopword "us");
+//  - IN in an all-capitals keyword is Indiana ("HOME INSURANCE IN LOUISVILLE").
 
 const STOPWORDS = new Set(['insurance', 'the', 'and', 'for', 'your', 'what', 'guide', 'need', 'you']);
 // The only words of 1-2 characters that are dropped: function words and place
@@ -545,6 +560,20 @@ const STATE_WORDS = { ky: 'ky', kentucky: 'ky', tn: 'tn', tennessee: 'tn', india
 const DEFAULT_STATE = 'ky';
 const RAW_ALIASES = { mount: 'mt', saint: 'st', fort: 'ft' };
 const YEAR = /^(?:19|20)\d\d$/;
+// A number right before one of these, or a keyword's first number with one of
+// these anywhere after it, counts list items ("5 mistakes", "10 best", "7
+// winter driving tips"): _isCount.
+const LIST_WORDS = new Set([
+  'best', 'tips', 'ways', 'things', 'questions', 'mistakes', 'reasons', 'steps', 'signs', 'myths', 'facts',
+  'ideas', 'secrets', 'tricks', 'hacks', 'rules', 'lessons', 'habits', 'examples', 'types', 'kinds', 'factors',
+  'benefits', 'discounts', 'options', 'features', 'misconceptions',
+]);
+// A number right before one of these is a quantity, never a count ("16 year
+// old drivers: 5 tips" keeps 16; "$1 million" keeps 1).
+const UNIT_WORDS = new Set([
+  'year', 'years', 'month', 'months', 'week', 'weeks', 'day', 'days', 'hour', 'hours', 'mile', 'miles',
+  'percent', 'hundred', 'thousand', 'million', 'billion',
+]);
 const STATE_TOKEN = 'state:';
 const SUBJECT_TOKEN = 'code:';
 
@@ -552,8 +581,8 @@ const SUBJECT_TOKEN = 'code:';
  * The words of a keyword, in order: Unicode folded to ASCII where it can be
  * (NFKD, accents stripped), contractions and possessives dropped, thousands
  * separators removed ($25,000 → 25000), and codes joined: "E&O" → eo;
- * "SR-22"/"SR 22" → sr22, "HO-3" → ho3 (a 1-2 letter word that is not a
- * function word or a state, then a 1-3 digit number); "Part A" → parta,
+ * "401(k)" → 401k; "SR-22"/"SR 22" → sr22, "HO-3" → ho3 (a 1-2 letter word
+ * that is not a function word or a state, then a 1-3 digit number); "Part A" → parta,
  * "Plan G" → plang (Medicare parts A-D, Medigap plans A-N). Each word carries
  * whether it is a joined code and whether it was written as IN in capitals.
  * @returns {{w: string, code?: boolean, upperIn?: boolean}[]}
@@ -563,6 +592,7 @@ function _words(text) {
     .replace(/[‘’ʼ`]/g, '\'')
     .replace(/n't\b/gi, ' not')
     .replace(/'(?:s|d|m|ll|ve|re)\b/gi, '')
+    .replace(/(\d)\(([a-z])\)/gi, '$1$2') // 401(k), 403(b)
     .replace(/(^|[^\p{L}\p{N}&])([a-z])\s*&\s*([a-z])(?=$|[^\p{L}\p{N}&])/giu, '$1$2&$3');
   const words = [];
   for (const raw of s.split(/[^\p{L}\p{N}&,]+/u)) {
@@ -594,20 +624,43 @@ function _words(text) {
   return out;
 }
 
+/**
+ * Whether words[i] counts list items rather than naming a subject: a number
+ * of 1-2 digits written on its own (1-99; not part of a code, not a
+ * thousands number), not followed by a unit (UNIT_WORDS), and either
+ *  (a) right after "top" ("top 10 home insurance tips"),
+ *  (b) right before a list word (LIST_WORDS: "5 ways to lower car insurance",
+ *      "home insurance: 7 mistakes to avoid"), or
+ *  (c) the keyword's first word, with a list word anywhere after it ("10 home
+ *      insurance tips", "7 winter driving tips kentucky").
+ * Every other number stays a subject.
+ */
+function _isCount(words, i) {
+  const w = words[i];
+  if (w.code || !/^\d{1,2}$/.test(w.w)) return false;
+  const next = words[i + 1];
+  if (next && UNIT_WORDS.has(next.w)) return false;
+  if (i > 0 && words[i - 1].w === 'top') return true;
+  if (next && LIST_WORDS.has(next.w)) return true;
+  return i === 0 && words.some(x => LIST_WORDS.has(x.w));
+}
+
 /** A keyword's tokens: words, subjects ("code:sr22") and states ("state:tn"). */
 function tokenize(text) {
   const tokens = new Set();
-  for (const word of _words(text)) {
+  const words = _words(text);
+  words.forEach((word, i) => {
     const state = word.upperIn ? 'in' : STATE_WORDS[word.w];
     const w = word.w;
     if (state) tokens.add(STATE_TOKEN + state);
+    else if (_isCount(words, i)) return;
     else if (word.code || (w.length <= 2 && !SHORT_STOP.has(w)) || (/\d/.test(w) && !YEAR.test(w))) tokens.add(SUBJECT_TOKEN + w);
     else if (w.length > 2 && !STOPWORDS.has(w)) tokens.add(w);
-  }
+  });
   return tokens;
 }
 
-/** A token set's states (Kentucky when it names none), and the rest. */
+/** A token set's states as named (none: empty), subjects, and everything but its states. */
 function _parts(tokens) {
   const states = new Set();
   const rest = new Set();
@@ -617,7 +670,6 @@ function _parts(tokens) {
     rest.add(t);
     if (t.startsWith(SUBJECT_TOKEN)) subjects.add(t);
   }
-  if (!states.size) states.add(STATE_TOKEN + DEFAULT_STATE);
   return { states, rest, subjects };
 }
 
@@ -625,17 +677,25 @@ const _sameSet = (a, b) => a.size === b.size && [...a].every(t => b.has(t));
 
 /**
  * How far two keywords' tokens overlap, 0-1: 0 when they name different
- * states or different subjects (two searches, whatever else they share),
- * otherwise the Jaccard overlap of everything but the states.
+ * subjects, or both name states and the states differ (two searches,
+ * whatever else they share); otherwise the Jaccard overlap of everything but
+ * the states, where a keyword naming no state is read as Kentucky and a
+ * Tennessee or Indiana state only the other names is a token only it has.
  */
 function jaccard(a, b) {
   const A = _parts(a);
   const B = _parts(b);
   if (!A.rest.size || !B.rest.size) return 0;
-  if (!_sameSet(A.states, B.states) || !_sameSet(A.subjects, B.subjects)) return 0;
+  if (!_sameSet(A.subjects, B.subjects)) return 0;
+  let unshared = 0;
+  if (A.states.size && B.states.size) {
+    if (!_sameSet(A.states, B.states)) return 0;
+  } else {
+    for (const t of A.states.size ? A.states : B.states) if (t !== STATE_TOKEN + DEFAULT_STATE) unshared++;
+  }
   let inter = 0;
   for (const t of A.rest) if (B.rest.has(t)) inter++;
-  return inter / (A.rest.size + B.rest.size - inter);
+  return inter / (A.rest.size + B.rest.size + unshared - inter);
 }
 
 function median(nums) {

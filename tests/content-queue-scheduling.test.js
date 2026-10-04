@@ -150,6 +150,13 @@ describe('cannibalization sees short codes, numbers and states', () => {
       // other short codes
       ['E&O insurance for real estate agents', 'GL insurance for real estate agents'],
       ['RV insurance requirements kentucky', KY_AUTO_REQ.primary_keyword],
+      // numbers that are not counts of list items stay subjects
+      ['health insurance small business less than 10 employees kentucky', 'health insurance small business less than 50 employees kentucky'],
+      ['10 employees group health insurance', 'group health insurance for employees'],
+      ['250/500/100 auto insurance', '100/300/100 auto insurance'],
+      ['flood insurance 42301', 'flood insurance 42302'],
+      // a number before a unit is a quantity, even in a list keyword
+      ['16 year old driver insurance tips', '18 year old driver insurance tips'],
     ];
     for (const [a, b] of DISTINCT) {
       test(`"${a}" is not "${b}"`, () => {
@@ -199,9 +206,19 @@ describe('cannibalization sees short codes, numbers and states', () => {
       ['flood insurance louisville', 'flood insurance louisville KY'],
       // lower-case "in" is the preposition, not Indiana
       ['flood insurance in louisville', 'flood insurance louisville ky'],
-      // Mount/Mt. and accents fold
+      // Mount/Mt., 401(k) and accents fold
       ['cheap car insurance in mount washington ky', 'cheap car insurance Mt. Washington'],
+      ['401(k) vs life insurance', '401k vs life insurance'],
       ['café insurance louisville', 'cafe insurance louisville'],
+      // a count of list items is not a subject: "10 home insurance tips" is
+      // "home insurance tips" (a number after "top", before a list word, or
+      // leading a keyword that has a list word)
+      ['10 home insurance tips', 'home insurance tips'],
+      ['5 ways to lower car insurance kentucky', 'ways to lower car insurance kentucky'],
+      ['7 winter driving tips kentucky', 'winter driving insurance tips kentucky'],
+      ['5 common home insurance mistakes', '7 common home insurance mistakes'],
+      ['home insurance: 7 mistakes to avoid', 'home insurance mistakes to avoid'],
+      ['10 best car insurance companies kentucky', 'best car insurance companies kentucky'],
     ];
     for (const [a, b] of SAME) {
       test(`"${a}" is "${b}"`, () => {
@@ -209,6 +226,56 @@ describe('cannibalization sees short codes, numbers and states', () => {
         assert.ok(conflict(a, b));
       });
     }
+
+    test('"top 10" drops the count and keeps "top", as the test always read it', () => {
+      assert.equal(score('top 10 home insurance tips kentucky', 'home insurance tips kentucky').toFixed(2), '0.67');
+      assert.ok(conflict('top 10 home insurance tips kentucky', 'home insurance tips kentucky'));
+    });
+  });
+
+  describe('a state only one keyword names is a word only that one has', () => {
+    // A keyword naming no state is read as Kentucky, but the test has no place
+    // names: "nashville" without "tn" is still the Nashville search.
+    const REFUSED = [
+      ['home insurance nashville', 'home insurance nashville tn', 0.67],
+      ['small business insurance nashville', 'small business insurance nashville tn', 0.75],
+      ['home insurance evansville in', 'home insurance evansville indiana', 0.67],
+      // The accepted price: a stateless keyword of 3+ words and its Tennessee
+      // twin are refused too (the Kentucky keyword and the Tennessee one are not)
+      ['auto insurance requirements', 'auto insurance requirements tennessee', 0.67],
+    ];
+    for (const [a, b, s] of REFUSED) {
+      test(`"${a}" is "${b}" (${s})`, () => {
+        assert.equal(score(a, b).toFixed(2), s.toFixed(2));
+        assert.equal(score(b, a), score(a, b), 'either way round');
+        assert.ok(conflict(a, b));
+      });
+    }
+
+    test('a two-word stateless keyword and its Tennessee twin are scheduled (0.50)', () => {
+      assert.equal(score('flood insurance', 'flood insurance tennessee'), 0.5);
+      assert.equal(conflict('flood insurance', 'flood insurance tennessee'), null);
+    });
+
+    test('Kentucky named on one side only is not counted', () => {
+      assert.equal(score('auto insurance requirements', KY_AUTO_REQ.primary_keyword), 1);
+    });
+  });
+
+  describe('accepted limits, read the same way as topic-intent.js', () => {
+    test('"plan a <word>" reads as the Medigap code plana', () => {
+      assert.ok(q.tokenize('plan a budget for home insurance').has('code:plana'));
+      assert.equal(score('plan a budget for home insurance', 'budget for home insurance'), 0);
+    });
+
+    test('a dotted abbreviation is read letter by letter: "U.S." is not the stopword "us"', () => {
+      assert.equal(score('U.S. flood insurance', 'US flood insurance'), 0);
+    });
+
+    test('IN in an all-capitals keyword is Indiana', () => {
+      assert.equal(score('HOME INSURANCE IN LOUISVILLE', 'home insurance louisville ky'), 0);
+      assert.equal(score('Home Insurance In Louisville', 'home insurance louisville ky'), 1);
+    });
   });
 
   test('a year is still an ordinary word, not a subject of its own', () => {
