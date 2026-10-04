@@ -158,9 +158,18 @@ describe('cannibalization sees short codes, numbers and states', () => {
       // split limits are one subject, never three numbers or counts
       ['liability limits 50/100/50 options', 'liability limits 50/100/25 options'],
       ['25/50/25 coverage options', '50/50/25 coverage options'],
-      // a number before a unit or a quantity, even in a list keyword
+      ['100,000/300,000 liability limits', '250,000/500,000 liability limits'],
+      // a number before a unit or a quantity, even in a list keyword; a unit
+      // wins over "best"
       ['16 year old driver insurance tips', '18 year old driver insurance tips'],
       ['10 employees health insurance options kentucky', '50 employees health insurance options kentucky'],
+      ['best 20 year term life insurance', 'best 30 year term life insurance'],
+      ['best 15 passenger van insurance', 'best passenger van insurance'],
+      // ages and thresholds
+      ['turning 65 medicare options kentucky', 'medicare options kentucky'],
+      ['turning 26 health insurance options kentucky', 'health insurance options kentucky'],
+      ['under 25 car insurance discounts kentucky', 'car insurance discounts kentucky'],
+      ['over 50 life insurance options', 'life insurance options'],
       // a number after a label names a thing
       ['section 8 landlord insurance tips', 'landlord insurance tips'],
       ['type 1 diabetes life insurance tips', 'type 2 diabetes life insurance tips'],
@@ -234,8 +243,17 @@ describe('cannibalization sees short codes, numbers and states', () => {
       ['kentucky homeowners: 7 common mistakes', '7 common mistakes kentucky homeowners'],
       // "best 10" reads like "top 10"
       ['best 10 car insurance companies kentucky', '10 best car insurance companies kentucky'],
-      // split limits and 401(k) written another way
+      // after "top" or "best" a number before a quantity ranks it
+      ['top 10 cars for teen drivers', 'top 5 cars for teen drivers'],
+      ['best 10 cars for new drivers', 'best cars for new drivers'],
+      ['best 10 cars for teen drivers kentucky', '10 best cars for teen drivers kentucky'],
+      // a year before the count is not an earlier number
+      ['2026: 7 common home insurance mistakes', '2026: 5 common home insurance mistakes'],
+      // split limits, years and 401(k) written another way
       ['50/100/50 liability limits', 'liability limits 50/100/50'],
+      ['$100,000/$300,000 liability limits', '100000/300000 liability limits'],
+      ['100,000/300,000 liability limits', '100000/300000 liability limits'],
+      ['medicare open enrollment 2026/2027 kentucky', 'medicare open enrollment 2026 2027 kentucky'],
       ['life insurance vs 401k', '401(k) vs life insurance'],
     ];
     for (const [a, b] of SAME) {
@@ -256,9 +274,26 @@ describe('cannibalization sees short codes, numbers and states', () => {
       assert.ok(conflict('our 5 favorite home insurance discounts', '5 favorite home insurance discounts'));
     });
 
-    test('split limits are one subject token', () => {
+    test('split limits are one subject token, years joined by a slash two years', () => {
       assert.deepEqual([...q.tokenize('25/50/25 coverage options')], ['code:25/50/25', 'coverage', 'options']);
+      assert.deepEqual([...q.tokenize('$100,000/$300,000 limits')], ['code:100000/300000', 'limits']);
+      assert.deepEqual([...q.tokenize('open enrollment 2026/2027')], ['open', 'enrollment', '2026', '2027']);
     });
+
+    // A count dropped after "top", or after a year, leaves the word it came
+    // with, as origin/main read these.
+    const COUNT_LEFT_WORD = [
+      ['top 10 vehicles with the cheapest insurance', 'vehicles with the cheapest insurance', 0.75],
+      ['top 5 policies every small business needs', 'policies every small business needs', 0.83],
+      ['2026: 7 common home insurance mistakes', '7 common home insurance mistakes', 0.75],
+      ['medicare open enrollment 2026/2027 kentucky', 'medicare open enrollment 2027 kentucky', 0.8],
+    ];
+    for (const [a, b, s] of COUNT_LEFT_WORD) {
+      test(`"${a}" is "${b}" (${s})`, () => {
+        assert.equal(score(a, b).toFixed(2), s.toFixed(2));
+        assert.ok(conflict(a, b));
+      });
+    }
   });
 
   describe('a state only one keyword names is a word only that one has', () => {

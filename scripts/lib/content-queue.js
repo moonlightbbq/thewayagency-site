@@ -568,28 +568,41 @@ const LIST_WORDS = new Set([
   'ideas', 'secrets', 'tricks', 'hacks', 'rules', 'lessons', 'habits', 'examples', 'types', 'kinds', 'factors',
   'benefits', 'discounts', 'options', 'features', 'misconceptions',
 ]);
-// A number right before one of these is a quantity, never a count ("16 year
-// old drivers: 5 tips" keeps 16; "$1 million" keeps 1; "10 employees health
-// insurance options" keeps 10).
+// A number right before one of these is a measure, never a count, even after
+// "top" or "best" ("16 year old drivers: 5 tips" keeps 16; "best 20 year term"
+// keeps 20; "$1 million" keeps 1; "best 15 passenger van" keeps 15).
 const UNIT_WORDS = new Set([
   'year', 'years', 'month', 'months', 'week', 'weeks', 'day', 'days', 'hour', 'hours', 'mile', 'miles',
-  'percent', 'hundred', 'thousand', 'million', 'billion',
+  'percent', 'hundred', 'thousand', 'million', 'billion', 'passenger',
+]);
+// A number right before one of these is a quantity, not a count of list items
+// ("10 employees health insurance options" keeps 10), unless it follows "top"
+// or "best", where it ranks them ("top 10 cars for teen drivers").
+const QUANTITY_WORDS = new Set([
   'employees', 'drivers', 'vehicles', 'cars', 'trucks', 'people', 'members', 'units', 'acres', 'rooms', 'beds',
   'locations', 'properties', 'homes', 'policies',
 ]);
-// A number right after one of these names a thing, never a count ("section 8
-// landlord insurance tips", "class 8 truck", "type 2 diabetes", "chapter 7").
+// A number right after one of these names a thing, an age or a threshold,
+// never a count ("section 8 landlord insurance tips", "class 8 truck", "type 2
+// diabetes", "chapter 7", "turning 65 medicare options", "under 25").
 const LABEL_WORDS = new Set([
   'class', 'section', 'chapter', 'tier', 'level', 'phase', 'zone', 'type', 'category', 'grade', 'form',
+  'turning', 'age', 'ages', 'aged', 'under', 'over',
 ]);
 const STATE_TOKEN = 'state:';
 const SUBJECT_TOKEN = 'code:';
+// A word run for _words: numbers (thousands separators allowed) joined by
+// slashes, a "$" allowed after each slash, or else a run of letters, digits,
+// & and commas.
+const NUM_RUN = '(?:\\d{1,3}(?:,\\d{3})+|\\d+)';
+const WORD_RUN = new RegExp(`${NUM_RUN}(?:\\/\\$?${NUM_RUN})+|[\\p{L}\\p{N}&,]+`, 'gu');
 
 /**
  * The words of a keyword, in order: Unicode folded to ASCII where it can be
  * (NFKD, accents stripped), contractions and possessives dropped, thousands
  * separators removed ($25,000 → 25000), and codes joined: "E&O" → eo;
- * "401(k)" → 401k; split limits "50/100/50" stay one code; "SR-22"/"SR 22" →
+ * "401(k)" → 401k; split limits "50/100/50" and "$100,000/$300,000" stay one
+ * code (100000/300000), years "2026/2027" stay two years; "SR-22"/"SR 22" →
  * sr22, "HO-3" → ho3 (a 1-2 letter word that is not a function word or a
  * state, then a 1-3 digit number); "Part A" → parta,
  * "Plan G" → plang (Medicare parts A-D, Medigap plans A-N). Each word carries
@@ -606,9 +619,15 @@ function _words(text) {
   const words = [];
   // Runs of letters, digits, & and commas, as a split on everything else
   // would give, except that numbers joined by slashes stay one run: split
-  // limits (25/50/25, 250/500/100) are one subject, never three numbers.
-  for (const [raw] of s.matchAll(/\d+(?:\/\d+)+|[\p{L}\p{N}&,]+/gu)) {
-    if (raw.includes('/')) { words.push({ w: raw, code: true }); continue; }
+  // limits (25/50/25, 250/500/100, $100,000/$300,000) are one subject, never
+  // separate numbers. Years joined by a slash (2026/2027) are years.
+  for (const [raw] of s.matchAll(WORD_RUN)) {
+    if (raw.includes('/')) {
+      const parts = raw.replace(/[,$]/g, '').split('/');
+      if (parts.every(x => YEAR.test(x))) for (const x of parts) words.push({ w: x });
+      else words.push({ w: parts.join('/'), code: true });
+      continue;
+    }
     const t = raw.replace(/^,+|,+$/g, ''); // "E&O," is the code eo
     if (!t) continue;
     if (/^[a-z]&[a-z]$/i.test(t)) { words.push({ w: t.replace('&', '').toLowerCase(), code: true }); continue; }
@@ -640,17 +659,21 @@ function _words(text) {
 /**
  * Whether words[i] counts list items rather than naming a subject: a number
  * of 1-2 digits written on its own (1-99; not part of a code or of split
- * limits, not a thousands number), not right before a unit or quantity
- * (UNIT_WORDS), not right after a label (LABEL_WORDS), and either
- *  (a) right after "top" or "best" ("top 10 home insurance tips", "best 10
- *      car insurance companies"),
- *  (b) right before a list word (LIST_WORDS: "5 ways to lower car insurance",
- *      "home insurance: 7 mistakes to avoid"), or
- *  (c) the keyword's first number (no number of any length before it), with a
- *      list word anywhere after it ("10 home insurance tips", "the 7 most
- *      common home insurance mistakes", "kentucky homeowners: 7 common
- *      mistakes").
- * Every other number stays a subject.
+ * limits, not a thousands number), decided by the first of these that
+ * applies:
+ *  1. right before a unit (UNIT_WORDS): not a count ("best 20 year term");
+ *  2. right after a label (LABEL_WORDS): not a count ("turning 65", "type 2");
+ *  3. right after "top" or "best": a count ("top 10 home insurance tips",
+ *     "best 10 car insurance companies", "top 10 cars for teen drivers");
+ *  4. right before a quantity (QUANTITY_WORDS): not a count ("10 employees
+ *     health insurance options");
+ *  5. right before a list word (LIST_WORDS): a count ("5 ways to lower car
+ *     insurance", "home insurance: 7 mistakes to avoid");
+ *  6. the keyword's first number (no number but a year before it), with a
+ *     list word anywhere after it: a count ("10 home insurance tips", "the 7
+ *     most common home insurance mistakes", "2026: 7 common mistakes");
+ *  7. otherwise not a count.
+ * Every number that is not a count stays a subject.
  */
 function _isCount(words, i) {
   const w = words[i];
@@ -660,8 +683,10 @@ function _isCount(words, i) {
   if (next && UNIT_WORDS.has(next.w)) return false;
   if (prev && LABEL_WORDS.has(prev.w)) return false;
   if (prev && (prev.w === 'top' || prev.w === 'best')) return true;
+  if (next && QUANTITY_WORDS.has(next.w)) return false;
   if (next && LIST_WORDS.has(next.w)) return true;
-  return !words.slice(0, i).some(x => /^\d+$/.test(x.w)) && words.slice(i + 1).some(x => LIST_WORDS.has(x.w));
+  return !words.slice(0, i).some(x => /^\d+$/.test(x.w) && !YEAR.test(x.w))
+    && words.slice(i + 1).some(x => LIST_WORDS.has(x.w));
 }
 
 /** A keyword's tokens: words, subjects ("code:sr22") and states ("state:tn"). */
