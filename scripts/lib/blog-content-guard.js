@@ -46,6 +46,12 @@
  *     - slug, author_slug and reviewer_slug are lower-case letters, digits
  *       and hyphens;
  *     - date and modified are YYYY-MM-DD.
+ *   The whole post, front matter and body (sage-server BL-54, AIA-089)
+ *     - no "javascript:" in any case. A built blog page that carries it fails
+ *       the site build (scripts/lib/blog-html-guard.js), which halts every
+ *       deploy; refused here, a post never reaches main through SAGE and is
+ *       not rendered by the site, so the build never sees it. No post needs
+ *       the text: the renderer prints no such link.
  *   reading_time is not a rule: the renderer prints it only when it is
  *     "<1-3 digits> min" or "<1-3 digits> min read" (READING_TIME_RE), and
  *     the time it computes otherwise (it logs that it did).
@@ -509,10 +515,14 @@ function bylineAuthor(meta, team) {
 
 const _show = (key) => JSON.stringify(String(key).replace(/[^\x20-\x7E]/g, '?').slice(0, 40));
 
+// The literal the site build refuses on any blog page (blog-html-guard.js).
+const SCRIPT_URL_TEXT_RE = /javascript:/i;
+
 /**
  * Why a post's front matter must not publish or render, or null: one of the
  * deterministic rules (markup, an invisible, control or bidi character, a
- * slug or date that is not its plain form; see the header). Wording is never
+ * slug or date that is not its plain form, and anywhere in the post the text
+ * "javascript:"; see the header). Wording is never
  * a reason (reviewWordingWarnings), and neither is who the byline names
  * (bylineAuthor, bylineProblem): a data/team.json edit must never take a live
  * post off the site. Nor is a reading_time that is not "N min" or "N min
@@ -520,6 +530,9 @@ const _show = (key) => JSON.stringify(String(key).replace(/[^\x20-\x7E]/g, '?').
  * @param {string} md  the markdown file
  */
 function frontMatterProblem(md) {
+  if (SCRIPT_URL_TEXT_RE.test(String(md === undefined || md === null ? '' : md))) {
+    return 'the post carries the text "javascript:", which the site build refuses on any blog page';
+  }
   const fm = frontMatterOf(md);
   if (!fm) return null;
   for (const { key, value } of fm.lines) {

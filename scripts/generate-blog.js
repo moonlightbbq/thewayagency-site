@@ -120,14 +120,19 @@ const SAFE_HREF_SCHEMES = Object.freeze(['http', 'https', 'mailto', 'tel', 'sms'
  * relative path, a ?query or a #fragment). `url` is the target as it sits in
  * the already-escaped markdown (&amp; &lt; &gt; &quot;), so it is decoded once,
  * as the browser decodes the attribute, before it is judged. A real URL
- * percent-encodes quotes, angle brackets, backticks, spaces and control
- * characters, so a target holding one raw is refused whole. That also covers
- * the scheme tricks browsers undo (a tab or newline inside "java script:").
+ * percent-encodes quotes, angle brackets, backticks, spaces, control and
+ * format characters, so a target holding one raw is refused whole. That also
+ * covers the scheme tricks browsers undo (a tab or newline inside
+ * "java script:") and an invisible character in front of a scheme. A target
+ * that names a script scheme anywhere ("https:javascript:...") is refused
+ * too: it is never a link a post needs, and it would put "javascript:" into
+ * the page, which the build refuses (scripts/lib/blog-html-guard.js).
  */
 function safeHref(url) {
   const decoded = String(url === undefined || url === null ? '' : url)
     .replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-  if (/[\s\u0000-\u001f\u007f"<>`]/.test(decoded)) return '#';
+  if (/[\s\p{Cc}\p{Cf}"<>`]/u.test(decoded)) return '#';
+  if (/(?:java|vb)script:/i.test(decoded)) return '#';
   const scheme = /^([a-zA-Z][a-zA-Z0-9+.-]*):/.exec(decoded);
   if (scheme && !SAFE_HREF_SCHEMES.includes(scheme[1].toLowerCase())) return '#';
   return url;

@@ -13,9 +13,17 @@
  *   2. the guard (scripts/lib/blog-html-guard.js), which scripts/build.js
  *      (Cloudflare builds; SAGE's publish commits skip CI) and
  *      scripts/validate-build.js (CI) run over build/blog/*.html: no
- *      "javascript:", no event-handler attribute, no script URL. The page
- *      template carries no inline handler of its own (the Copy Link button is
- *      wired by src/js/app.js), so the guard needs no exceptions.
+ *      "javascript:", no event-handler or srcdoc attribute, no script URL, and
+ *      no script, iframe, object, embed, form (and the like) inside the post's
+ *      <article>. The page template carries no inline handler of its own (the
+ *      Copy Link button is wired by src/js/app.js), so the guard needs no
+ *      exceptions. Every payload from the BL-54 review is here, and each is
+ *      checked against jsdom parsing it with scripting off and on: whatever
+ *      jsdom would run, the guard refuses (the guard may also refuse markup a
+ *      browser shows as text: it fails closed);
+ *   3. blog-content-guard.js refuses a post whose text says "javascript:"
+ *      (SAGE before it commits, the site before it renders), so the build
+ *      guard's page-wide rule never halts a deploy on a post.
  *
  * Fixtures only, synthetic data: node --test runs suites in parallel and
  * build-gate-wiring.test.js rebuilds build/, so nothing here reads build/.
@@ -30,7 +38,46 @@ const { JSDOM } = require('jsdom');
 
 const ROOT = path.join(__dirname, '..');
 const { markdownToHtml, generateBlogPost } = require('../scripts/generate-blog');
-const { blogHtmlProblems, startTags } = require('../scripts/lib/blog-html-guard');
+const { blogHtmlProblems, startTags, ARTICLE_ACTIVE, ARTICLE_ACTIVE_ALLOWED } = require('../scripts/lib/blog-html-guard');
+const contentGuard = require('../scripts/lib/blog-content-guard');
+
+/**
+ * What jsdom would run in `html` (the BL-54 reviewer's probe): event-handler
+ * attributes, script URLs in URL attributes, srcdoc, inline script text.
+ * scripting: parse with the scripting flag on (jsdom runScripts 'dangerously',
+ * in its sandbox with a silent console and no resource loading), which is when
+ * <noscript> content is text.
+ */
+function jsdomDanger(html, { scripting = false } = {}) {
+  const { VirtualConsole } = require('jsdom');
+  const dom = new JSDOM(`<!doctype html><html><head></head><body>${html}<p>tail</p></body></html>`, {
+    url: 'https://www.thewayagency.com/blog/test-probe',
+    virtualConsole: new VirtualConsole(),
+    ...(scripting ? { runScripts: 'dangerously' } : {}),
+  });
+  const out = [];
+  try {
+    for (const el of dom.window.document.querySelectorAll('*')) {
+      for (const a of el.attributes) {
+        if (/^on/i.test(a.name)) out.push(`${el.localName}[${a.name}]`);
+        if (/^(href|src|action|formaction|xlink:href|data)$/i.test(a.name)) {
+          let p;
+          try { p = new URL(a.value, 'https://www.thewayagency.com/').protocol; } catch { p = '?'; }
+          if (p === 'javascript:' || p === 'vbscript:') out.push(`${el.localName}[${a.name}]=${p}`);
+        }
+        if (a.name === 'srcdoc') out.push(`${el.localName}[srcdoc]`);
+      }
+      if (el.localName === 'script' && el.textContent.trim()) out.push(`inline <script>: ${el.textContent.trim().slice(0, 30)}`);
+    }
+  } finally {
+    dom.window.close();
+  }
+  return out;
+}
+
+// A built blog page's shape: the template's own head and scripts outside the
+// post's <article>, the post inside it.
+const pageWith = (inArticle) => `<!DOCTYPE html><html lang="en"><head><title>SYNTHETIC | The Way Agency</title><meta name="description" content="SYNTHETIC"><link rel="stylesheet" href="/src/css/base.css"><script type="application/ld+json">{"@type":"Article"}</script><script>(function(){var t=1;if(t<2){window.dataLayer=[];}})();</script></head><body><noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TEST" height="0" width="0"></iframe></noscript><main id="main"><article class="product-content blog-content">${inArticle}</article></main><script src="/src/js/app.js" defer></script></body></html>`;
 
 const hrefOf = (html) => {
   const a = startTags(html).find((t) => t.tag === 'a');
@@ -180,23 +227,140 @@ describe('blogHtmlProblems: what it refuses (criterion 4: validate-build fails o
   });
 });
 
+// The BL-54 review's probes (probe-guard.js, probe-noscript.js), verbatim.
+const REVIEW_PAYLOADS = [
+  '<!--><img src=x onerror=alert(1)><p>a --> b</p>',
+  '<!---><img src=x onerror=alert(1)>',
+  '<!-- a --!><img src=x onerror=alert(1)>',
+  '<svg><title><img src=x onerror=alert(1)></title></svg>',
+  '<svg><style><img src=x onerror=alert(1)></style></svg>',
+  '<math><mtext><table><mglyph><style><img src=x onerror=alert(1)>',
+  '<script>alert(document.cookie)</script>',
+  '<iframe srcdoc="&lt;script&gt;alert(1)&lt;/script&gt;"></iframe>',
+  '<object data="javascript:alert(1)"></object>',
+  '<embed src="data:text/html,x">',
+  '<a href="jav&#x0A;ascript:alert(1)">x</a>',
+  '<a href="&#0000106avascript:alert(1)">x</a>',
+  '<a href="&Tab;javascript:alert(1)">x</a>',
+  '<a href="j&NewLine;avascript:alert(1)">x</a>',
+  '<img src=x onerror=alert(1)//>',
+  '<a href=x/onclick=alert(1)>',
+  '<a href="x"onclick="alert(1)">y</a>',
+  '<textarea><img src=x onerror=alert(1)></textarea>',
+  '<noscript><p title="</noscript><img src=x onerror=alert(1)>"></noscript>',
+  '<title><img src=x onerror=alert(1)></title>',
+  '<xmp><img src=x onerror=alert(1)></xmp>',
+  '<a href="java\u0001script:alert(1)">x</a>',
+];
+// probe-md.js: link targets through the markdown renderer.
+const REVIEW_TARGETS = [
+  'javascript:alert(1)', 'JaVaScRiPt:alert(1)', 'java\tscript:alert(1)', ' javascript:alert(1)', '\x01javascript:alert(1)',
+  '\x00javascript:alert(1)', '\u00a0javascript:alert(1)', '\u200bjavascript:alert(1)', '\ufeffjavascript:alert(1)', '\u2028javascript:alert(1)',
+  'java&#x09;script:alert(1)', '&#106;avascript:alert(1)', 'javascript&colon;alert(1)', 'javascript%3Aalert(1)',
+  'data:text/html,<script>alert(1)</script>', 'vbscript:x', '//evil.example/x', '\\\\evil.example/x', '/\\evil.example/x',
+  'https://ok.example/" onclick="x', "https://ok.example/' onclick='x", 'https://ok.example/x "title"', "https://ok.example/x 'title'",
+  'https://ok.example/*a*b', 'https://ok.example/**a**', 'https:javascript:alert(1)', 'http:/\\/evil', 'HTTPS://OK.example',
+  'mailto:a@b.example?subject=x&body=y', 'tel:+1502', 'sms:+1502?&body=hi', 'blob:https://x', 'filesystem:x', 'jar:x',
+  'intent://x#Intent;scheme=javascript;end', 'x-javascript:alert(1)', 'javascript:', 'javas\u0000cript:alert(1)',
+  'ja\u212avascript:x', // U+212A KELVIN SIGN
+];
+
+describe('the BL-54 review payloads, cross-checked against jsdom', () => {
+  test('whatever jsdom would run (scripting off or on), the guard refuses: inside a post\'s <article> and as a bare fragment', () => {
+    for (const payload of REVIEW_PAYLOADS) {
+      const danger = [...jsdomDanger(payload), ...jsdomDanger(payload, { scripting: true })];
+      if (!danger.length) continue;
+      assert.ok(blogHtmlProblems(pageWith(payload), 'blog/fixture.html').length > 0, `in a post, not refused: ${payload} (jsdom: ${danger.join(', ')})`);
+      assert.ok(blogHtmlProblems(payload, 'fixture').length > 0, `bare, not refused: ${payload} (jsdom: ${danger.join(', ')})`);
+    }
+  });
+
+  test('each review payload is refused (the ones jsdom shows as text fail closed), and none passes in a post', () => {
+    for (const payload of REVIEW_PAYLOADS) {
+      if (payload === '<a href=x/onclick=alert(1)>' || payload.includes('java\u0001script')) continue; // harmless: no attribute, no scheme (both readings agree with jsdom)
+      assert.ok(blogHtmlProblems(pageWith(payload), 'blog/fixture.html').length > 0, payload);
+    }
+  });
+
+  test('the comment forms end where the tokenizer ends them: <!-->, <!--->, --!>', () => {
+    for (const payload of ['<!--><img src=x onerror=alert(1)>', '<!---><img src=x onerror=alert(1)>', '<!-- a --!><img src=x onerror=alert(1)>']) {
+      assert.match(blogHtmlProblems(pageWith(payload), 'blog/fixture.html').join(' '), /<img> has an event-handler attribute onerror=/, payload);
+    }
+    assert.deepEqual(blogHtmlProblems(pageWith('<!-- <img src=x onerror=alert(1)> -->'), 'blog/fixture.html'), []);
+  });
+
+  test('<noscript> is read both ways: with scripting on, a "</noscript>" inside an attribute value ends it', () => {
+    const payload = '<noscript><p title="</noscript><img src=x onerror=alert(1)>"></noscript>';
+    assert.deepEqual(jsdomDanger(payload), []);
+    assert.deepEqual(jsdomDanger(payload, { scripting: true }), ['img[onerror]']);
+    assert.match(blogHtmlProblems(pageWith(payload), 'blog/fixture.html').join(' '), /onerror=/);
+  });
+
+  test('inside the post: script, iframe, object, embed, form and the rest of ARTICLE_ACTIVE are refused; srcdoc anywhere', () => {
+    assert.deepEqual(ARTICLE_ACTIVE_ALLOWED, [], 'the generator puts none of them in a post');
+    for (const tag of ARTICLE_ACTIVE) {
+      assert.match(blogHtmlProblems(pageWith(`<${tag}></${tag}>`), 'blog/fixture.html').join(' '), new RegExp(`<${tag}> inside the post's <article>`), tag);
+    }
+    assert.match(blogHtmlProblems(pageWith('<svg><script>alert(1)</script></svg>'), 'blog/fixture.html').join(' '), /<script> inside the post's <article>/);
+    assert.match(blogHtmlProblems('<html><body><div srcdoc="x"></div></body></html>', 'blog/fixture.html').join(' '), /srcdoc/);
+  });
+
+  test('every review link target renders with no handler, no extra attribute and an allowed scheme; a target whose text says "javascript:" is refused upstream', () => {
+    const ALLOWED = new Set(['http:', 'https:', 'mailto:', 'tel:', 'sms:']);
+    for (const t of REVIEW_TARGETS) {
+      const html = markdownToHtml(`[x](${t})`);
+      assert.deepEqual(jsdomDanger(html), [], JSON.stringify(t));
+      const dom = new JSDOM(`<!doctype html><body>${html}</body>`);
+      for (const a of dom.window.document.querySelectorAll('a')) {
+        assert.deepEqual([...a.attributes].map((x) => x.name), ['href'], JSON.stringify(t));
+        assert.ok(ALLOWED.has(new URL(a.getAttribute('href'), 'https://www.thewayagency.com/blog/p').protocol), `${JSON.stringify(t)} -> ${a.getAttribute('href')}`);
+      }
+      dom.window.close();
+      const post = `---\ntitle: SYNTHETIC\nslug: test-target\ndate: 2026-01-07\n---\n\n[x](${t})\n`;
+      if (/javascript:/i.test(t)) {
+        assert.match(String(contentGuard.frontMatterProblem(post)), /"javascript:"/, JSON.stringify(t));
+      } else {
+        assert.deepEqual(blogHtmlProblems(pageWith(html), 'blog/fixture.html'), [], JSON.stringify(t));
+      }
+    }
+  });
+});
+
+describe('blog-content-guard.js: a post that says "javascript:" never reaches the build (NIT 2)', () => {
+  test('refused in the body, in front matter, in any case; a post without it is not', () => {
+    const post = (fm, body) => `---\ntitle: SYNTHETIC title\nslug: test-script-text\n${fm}date: 2026-01-07\n---\n\n${body}\n`;
+    for (const md of [post('', 'See [x](https:javascript:alert(1)).'), post('', 'JavaScript: an aside.'), post('description: JAVASCRIPT: x\n', 'Body.'), `[x](\u2028javascript:alert(1))`]) {
+      assert.match(String(contentGuard.frontMatterProblem(md)), /the post carries the text "javascript:"/, md);
+    }
+    assert.equal(contentGuard.frontMatterProblem(post('', 'See [the report](https://www.weather.gov/x) and Java scripts.')), null);
+  });
+});
+
 describe('blogHtmlProblems: what it leaves alone', () => {
-  test('neutralized text: escaped attribute values, script and style bodies, comments and prose', () => {
-    for (const html of [
+  test('the template around a post: its head, its scripts, GTM\'s noscript iframe, all outside the <article>', () => {
+    assert.deepEqual(blogHtmlProblems(pageWith('<p>SYNTHETIC body</p>'), 'blog/fixture.html'), []);
+  });
+  test('neutralized text inside the post: escaped attribute values, prose, comments, links the renderer allows', () => {
+    for (const inArticle of [
       '<img alt="a&quot; onerror=&quot;alert(1)" src="/x.jpg">',
-      '<meta name="description" content="Turn on=the lights">',
-      '<script type="application/ld+json">{"a":"\\u003ca onclick=x\\u003e"}</script>',
-      '<script>if (a<b && c) { d.onload = e; }</script>',
-      '<style>a<b{}</style>',
-      '<!-- <a onclick=x> -->',
       '<p>Click on the link; it is on=time.</p>',
+      '<!-- <a onclick=x> -->',
       '<img src="data:image/png;base64,iVBORw0KGgo=" alt="">',
       '<a href="https://twitter.com/intent/tweet?text=x&amp;url=https://www.thewayagency.com/blog/x">s</a>',
       '<a href="tel:+15025550100">c</a><a href="sms:+15025550100">t</a><a href="mailto:zz.test@example.com">e</a>',
       '<button type="button" data-copy-link="https://www.thewayagency.com/blog/x">Copy Link</button>',
+      '<a href=x/onclick=alert(1)>y</a>',
+      '<a href="java\u0001script:alert(1)">a control inside the word is no scheme</a>',
+      '<svg width="14" height="14" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>',
     ]) {
-      assert.deepEqual(blogHtmlProblems(html, 'blog/fixture.html'), [], html);
+      assert.deepEqual(blogHtmlProblems(pageWith(inArticle), 'blog/fixture.html'), [], inArticle);
+      assert.deepEqual(jsdomDanger(inArticle), [], inArticle);
     }
+  });
+  test('the blog listing page (no post of its own) keeps its own filter script in <main>', () => {
+    const listing = '<html><head><meta name="description" content="x"></head><body><main><div id="blogGrid"></div><script>(function(){var grid=document.getElementById("blogGrid");})();</script></main></body></html>';
+    assert.deepEqual(blogHtmlProblems(listing, 'blog/index.html', { listing: true }), []);
+    assert.ok(blogHtmlProblems(listing, 'blog/index.html').length > 0, 'without listing: true, a page with no <article> is checked whole');
   });
 });
 
@@ -205,13 +369,13 @@ describe('the guard is wired where a deploy is decided', () => {
   test('build.js (Cloudflare Pages runs it; SAGE publish pushes skip CI) throws on any problem, after the entity schema guard', () => {
     const build = src('build.js');
     assert.match(build, /require\('\.\/lib\/blog-html-guard'\)/);
-    assert.match(build, /blogProblems\.push\(\.\.\.blogHtmlProblems\(fs\.readFileSync\(path\.join\(blogDir, name\), 'utf8'\), `blog\/\$\{name\}`\)\)/);
+    assert.match(build, /blogProblems\.push\(\.\.\.blogHtmlProblems\(fs\.readFileSync\(path\.join\(blogDir, name\), 'utf8'\), `blog\/\$\{name\}`, \{ listing: name === 'index\.html' \}\)\)/);
     assert.match(build, /throw new Error\(`Blog HTML guard failed/);
     assert.ok(build.indexOf('Blog HTML guard failed') > build.indexOf('Entity schema guard failed'));
   });
   test('validate-build.js (CI) reports every problem as an error, and fails when it finds no blog page', () => {
     const vb = src('validate-build.js');
-    assert.match(vb, /for \(const p of blogHtmlProblems\(fs\.readFileSync\(path\.join\(blogDir, name\), 'utf8'\), `blog\/\$\{name\}`\)\) \{ error\(/);
+    assert.match(vb, /for \(const p of blogHtmlProblems\(fs\.readFileSync\(path\.join\(blogDir, name\), 'utf8'\), `blog\/\$\{name\}`, \{ listing: name === 'index\.html' \}\)\) \{ error\(/);
     assert.match(vb, /if \(blogPages === 0\) error\(/);
   });
   test('the guard requires nothing (CI safe-build runs without npm ci)', () => {

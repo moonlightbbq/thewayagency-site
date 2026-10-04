@@ -269,7 +269,7 @@ if (jsonLdUrlIssues === 0) pass('JSON-LD URLs reference valid paths');
   if (fs.existsSync(blogDir)) {
     for (const name of fs.readdirSync(blogDir).filter((n) => n.endsWith('.html'))) {
       blogPages++;
-      for (const p of blogHtmlProblems(fs.readFileSync(path.join(blogDir, name), 'utf8'), `blog/${name}`)) { error(`Blog HTML: ${p}`); blogProblems++; }
+      for (const p of blogHtmlProblems(fs.readFileSync(path.join(blogDir, name), 'utf8'), `blog/${name}`, { listing: name === 'index.html' })) { error(`Blog HTML: ${p}`); blogProblems++; }
     }
   }
   if (blogPages === 0) error('Blog HTML: no built blog pages found to check (build/blog/*.html)');

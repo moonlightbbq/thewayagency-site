@@ -307,7 +307,7 @@ console.log('  ✓ Legal pages clean (em dashes / anchors)');
   const blogDir = path.join(BUILD, 'blog');
   const blogProblems = [];
   const blogPages = fs.existsSync(blogDir) ? fs.readdirSync(blogDir).filter((n) => n.endsWith('.html')) : [];
-  for (const name of blogPages) blogProblems.push(...blogHtmlProblems(fs.readFileSync(path.join(blogDir, name), 'utf8'), `blog/${name}`));
+  for (const name of blogPages) blogProblems.push(...blogHtmlProblems(fs.readFileSync(path.join(blogDir, name), 'utf8'), `blog/${name}`, { listing: name === 'index.html' }));
   if (blogProblems.length) {
     console.error('\n✗ Blog HTML guard failed:');
     blogProblems.slice(0, 50).forEach((p) => console.error('  - ' + p));
