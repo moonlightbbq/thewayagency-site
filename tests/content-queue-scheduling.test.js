@@ -111,6 +111,121 @@ describe('cannibalization', () => {
   });
 });
 
+describe('cannibalization sees short codes, numbers and states', () => {
+  // Until 2026-10-04 the tokenizer dropped every word of 1-2 characters and
+  // split "$25,000" into "25" and "000", so these pairs read as one search and
+  // the queue could refuse a topic SAGE had correctly proposed as distinct
+  // (sage-server hive/lib/topic-intent.js reads keywords the same way). The
+  // published keywords below are the site's own public topics.
+  const KY_AUTO_REQ = { slug: 'kentucky-auto-insurance-guide', primary_keyword: 'auto insurance requirements kentucky' };
+  const conflict = (kw, existingKw) => q.cannibalizationConflict(
+    candidate({ slug: 'the-candidate', primary_keyword: kw }),
+    ctxFor(calendar({ posts: [{ slug: 'the-existing-post', primary_keyword: existingKw, status: 'published' }] })));
+  const score = (a, b) => q.jaccard(q.tokenize(a), q.tokenize(b));
+
+  describe('different searches are scheduled', () => {
+    const DISTINCT = [
+      // a code only one keyword names (it scored 1.00)
+      ['SR-22 auto insurance requirements kentucky', KY_AUTO_REQ.primary_keyword],
+      ['SR22 auto insurance requirements', KY_AUTO_REQ.primary_keyword],
+      ['SR 22 auto insurance requirements Kentucky', KY_AUTO_REQ.primary_keyword],
+      // one city name in two states (it scored 1.00)
+      ['home insurance Clarksville IN', 'home insurance Clarksville TN'],
+      ['home insurance Clarksville TN', 'home insurance Clarksville IN'],
+      ['home insurance Franklin KY', 'home insurance Franklin TN'],
+      // a state by name: the queue refused these at 0.67
+      ['auto insurance requirements tennessee', KY_AUTO_REQ.primary_keyword],
+      ['Indiana auto insurance requirements', KY_AUTO_REQ.primary_keyword],
+      // policy forms (both read as "homeowners policy")
+      ['HO-3 homeowners policy kentucky', 'HO-5 homeowners policy kentucky'],
+      ['HO-3 vs HO-5 homeowners insurance', 'homeowners insurance kentucky'],
+      ['HO-3 vs HO-5 homeowners insurance', 'HO-3 vs HO-8 homeowners insurance'],
+      // Medicare plans and parts (both read as "medicare plan")
+      ['medicare plan G', 'medicare plan N'],
+      ['Medicare Part A explained', 'Medicare Part D explained'],
+      ['medicare supplement plan G kentucky', 'medicare supplement plans kentucky'],
+      // amounts ("$25,000" read as "000")
+      ['$25,000 final expense insurance', '$10,000 final expense insurance'],
+      ['$250,000 life insurance', '$25,000 life insurance'],
+      // other short codes
+      ['E&O insurance for real estate agents', 'GL insurance for real estate agents'],
+      ['RV insurance requirements kentucky', KY_AUTO_REQ.primary_keyword],
+    ];
+    for (const [a, b] of DISTINCT) {
+      test(`"${a}" is not "${b}"`, () => {
+        assert.equal(conflict(a, b), null);
+        assert.equal(conflict(b, a), null, 'either way round');
+      });
+    }
+
+    test('the SR-22 topic is eligible next to the Kentucky auto requirements guide', () => {
+      const cal = calendar({ existing: [{ ...KY_AUTO_REQ, status: 'published' }] });
+      const sr22 = candidate({ slug: 'sr-22-insurance-kentucky', primary_keyword: 'SR-22 auto insurance requirements kentucky' });
+      const r = q.scoreCandidate(sr22, NEAR, ctxFor(cal), WINDOWS, { hasMarkdown: hasDraft });
+      assert.equal(r.eligible, true, r.reasons.join('; '));
+    });
+  });
+
+  describe('real duplicates are still refused', () => {
+    // Every pair the queue refused among the 99 keywords ever on the site's
+    // calendar or backlog (git history to 2026-10-04), at the same score.
+    const REFUSED_TODAY = [
+      ['medicare open enrollment kentucky', 'medicare open enrollment 2027 kentucky', 0.75],
+      ['medicare open enrollment kentucky', 'medicare enrollment kentucky', 0.67],
+      ['boat insurance', 'boat insurance kentucky', 1],
+      ['personal auto vs commercial auto insurance', 'commercial auto insurance kentucky', 0.67],
+      ['insurance policy renewal process', 'insurance renewal process Kentucky', 0.67],
+    ];
+    for (const [a, b, s] of REFUSED_TODAY) {
+      test(`"${a}" is "${b}" (${s})`, () => {
+        const c = conflict(a, b);
+        assert.ok(c, 'must be refused');
+        assert.equal(c.slug, 'the-existing-post');
+        assert.equal(c.score.toFixed(2), s.toFixed(2));
+        assert.ok(conflict(b, a), 'either way round');
+      });
+    }
+
+    // The same code, number or state written another way is the same search.
+    const SAME = [
+      ['SR22 insurance requirements', 'SR-22 insurance requirements kentucky'],
+      ['medicare supplement Plan G', 'Medicare supplement plan g Kentucky'],
+      ['$25,000 final expense', '$25000 final expense'],
+      ['home insurance Clarksville TN', 'Clarksville, Tennessee home insurance'],
+      ['home insurance Carmel IN', 'home insurance carmel indiana'],
+      ['E & O insurance for realtors', 'E&O insurance for realtors'],
+      // a keyword that names no state is a Kentucky search
+      ['flood insurance', 'flood insurance kentucky'],
+      ['flood insurance louisville', 'flood insurance louisville KY'],
+      // lower-case "in" is the preposition, not Indiana
+      ['flood insurance in louisville', 'flood insurance louisville ky'],
+      // Mount/Mt. and accents fold
+      ['cheap car insurance in mount washington ky', 'cheap car insurance Mt. Washington'],
+      ['café insurance louisville', 'cafe insurance louisville'],
+    ];
+    for (const [a, b] of SAME) {
+      test(`"${a}" is "${b}"`, () => {
+        assert.equal(score(a, b), 1);
+        assert.ok(conflict(a, b));
+      });
+    }
+  });
+
+  test('a year is still an ordinary word, not a subject of its own', () => {
+    // "medicare open enrollment 2027" is the annual refresh of the same search
+    assert.equal(score('medicare open enrollment 2027', 'medicare open enrollment'), 0.75);
+  });
+
+  test('a plain Set of words scores exactly as before (SAGE calls tokenize and jaccard directly)', () => {
+    assert.equal(q.CANNIBALIZATION_THRESHOLD, 0.6);
+    assert.equal(q.jaccard(new Set(['flood', 'owensboro']), new Set(['flood'])), 0.5);
+    assert.equal(q.jaccard(new Set(['auto', 'requirements']), new Set(['auto', 'requirements'])), 1);
+    assert.equal(q.jaccard(new Set(), new Set(['flood'])), 0);
+    // a keyword of only stopwords and a state has nothing to compare
+    assert.equal(score('kentucky insurance', 'insurance kentucky'), 0);
+  });
+});
+
 describe('ranking prefers work already done', () => {
   test('a written draft outranks an unwritten one', () => {
     const written = candidate({ slug: 'written', primary_keyword: 'surety bonds explained' });
@@ -204,9 +319,7 @@ describe('fillSlots', () => {
     const slots = q.publishDatesWithin(TODAY, q.HORIZON_DAYS)
       .map(date => ({ date, state: 'reserved', locked_slug: null }));
     const cal = calendar({ slots });
-    // Genuinely distinct subject matter. Note "topic number 1/2/3" would NOT
-    // work: the digits are stripped as too short, so those keywords tokenize
-    // identically and the cannibalization check correctly rejects them.
+    // Genuinely distinct subject matter.
     const subjects = ['surety bonds', 'renters coverage', 'boat liability', 'workers compensation',
       'cyber breach', 'motorcycle storage', 'pet wellness', 'earthquake endorsement',
       'classic car agreed value', 'dental vision'];

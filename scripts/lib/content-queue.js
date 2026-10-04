@@ -488,18 +488,154 @@ const W_LOCATION_THIN = 10;
 const W_CLUSTER_THIN = 15;
 const W_FUNNEL_THIN = 5;
 
-const STOPWORDS = new Set(['insurance', 'kentucky', 'the', 'and', 'for', 'your', 'what', 'guide', 'need', 'you']);
+// ── The cannibalization test: which keywords are one search ──────────────
+//
+// A keyword is read as a set of tokens, and two keywords are one search when
+// their tokens overlap at CANNIBALIZATION_THRESHOLD or more. Until 2026-10-04
+// the tokenizer dropped every word of 1-2 characters and split "$25,000" into
+// "25" and "000", so the test could not see what made a search different:
+// "SR-22 auto insurance requirements kentucky" scored 1.00 against the
+// Kentucky auto requirements guide, "HO-3 vs HO-5" and "plan G" vs "plan N"
+// read as the same words, and "Clarksville IN" vs "Clarksville TN" as the same
+// city. SAGE reads keywords the way this test now does (see the note on
+// topic-intent.js below), so a topic it proposed as distinct and the owner
+// approved could still be refused here.
+//
+// What a keyword's tokens are:
+//  - words, as before: 3+ characters, not in STOPWORDS;
+//  - subjects ("code:<x>"): what names a search of its own in one or two
+//    characters or in digits: short codes joined the way they are written
+//    (SR-22 → sr22, HO-3 → ho3, E&O → eo, Part A → parta, Plan G → plang),
+//    other short words (RV, EV, GL), and numbers ($25,000 → 25000). A year is
+//    a word, as it always was ("medicare open enrollment 2027 kentucky" is
+//    still the enrollment guide);
+//  - states ("state:ky|tn|in"): Kentucky, Tennessee and Indiana by name or
+//    abbreviation. IN is Indiana only when written in capitals; "in" is the
+//    preposition. A keyword that names no state is a Kentucky search, the
+//    agency's default market (which is why "kentucky" was a stopword).
+//
+// jaccard() then reads two keywords as different searches (0) when they name
+// different states or different subjects, whatever else they share; otherwise
+// it is the overlap of their words and subjects (states are not counted:
+// "flood insurance" and "flood insurance kentucky" are one search). A plain
+// Set of words, with no states or subjects in it, scores exactly as before.
+//
+// The normalization (_words) mirrors _words() in sage-server
+// hive/lib/topic-intent.js, which SAGE uses to tell a researched topic from
+// the site's existing ones: keep the two in step. They are not shared because
+// SAGE must decide without this lib (it loads it from the site mount, which
+// may be stale or absent) and this lib cannot load SAGE's. One deliberate
+// difference: a state abbreviation is never the first half of a code ("KY 61"
+// stays a state and a number).
+//
+// Known limit: the test has no place names, so a Tennessee or Indiana city
+// written without its state ("home insurance nashville") reads as Kentucky.
+// Every Tennessee or Indiana keyword the site has had names its state.
 
-function tokenize(text) {
-  return new Set(String(text || '').toLowerCase().replace(/[^a-z0-9\s]/g, ' ')
-    .split(/\s+/).filter(w => w.length > 2 && !STOPWORDS.has(w)));
+const STOPWORDS = new Set(['insurance', 'the', 'and', 'for', 'your', 'what', 'guide', 'need', 'you']);
+// The only words of 1-2 characters that are dropped: function words and place
+// abbreviations (the "Mt." of Mt. Washington). Same list as SHORT_STOP in
+// topic-intent.js.
+const SHORT_STOP = new Set([
+  'a', 'i', 'an', 'as', 'at', 'be', 'by', 'do', 'go', 'he', 'if', 'in', 'is', 'it', 'me', 'my', 'no', 'of', 'on',
+  'or', 'so', 'to', 'up', 'us', 'we', 'ok', 'vs', 'wo', 'ca', 'mt', 'st', 'ft',
+]);
+// 'in' is not here: it is Indiana only as IN in capitals (see _words).
+const STATE_WORDS = { ky: 'ky', kentucky: 'ky', tn: 'tn', tennessee: 'tn', indiana: 'in' };
+const DEFAULT_STATE = 'ky';
+const RAW_ALIASES = { mount: 'mt', saint: 'st', fort: 'ft' };
+const YEAR = /^(?:19|20)\d\d$/;
+const STATE_TOKEN = 'state:';
+const SUBJECT_TOKEN = 'code:';
+
+/**
+ * The words of a keyword, in order: Unicode folded to ASCII where it can be
+ * (NFKD, accents stripped), contractions and possessives dropped, thousands
+ * separators removed ($25,000 → 25000), and codes joined: "E&O" → eo;
+ * "SR-22"/"SR 22" → sr22, "HO-3" → ho3 (a 1-2 letter word that is not a
+ * function word or a state, then a 1-3 digit number); "Part A" → parta,
+ * "Plan G" → plang (Medicare parts A-D, Medigap plans A-N). Each word carries
+ * whether it is a joined code and whether it was written as IN in capitals.
+ * @returns {{w: string, code?: boolean, upperIn?: boolean}[]}
+ */
+function _words(text) {
+  const s = String(text || '').normalize('NFKD').replace(/\p{M}+/gu, '')
+    .replace(/[‘’ʼ`]/g, '\'')
+    .replace(/n't\b/gi, ' not')
+    .replace(/'(?:s|d|m|ll|ve|re)\b/gi, '')
+    .replace(/(^|[^\p{L}\p{N}&])([a-z])\s*&\s*([a-z])(?=$|[^\p{L}\p{N}&])/giu, '$1$2&$3');
+  const words = [];
+  for (const raw of s.split(/[^\p{L}\p{N}&,]+/u)) {
+    const t = raw.replace(/^,+|,+$/g, ''); // "E&O," is the code eo
+    if (!t) continue;
+    if (/^[a-z]&[a-z]$/i.test(t)) { words.push({ w: t.replace('&', '').toLowerCase(), code: true }); continue; }
+    if (/^\d{1,3}(?:,\d{3})+$/.test(t)) { words.push({ w: t.replace(/,/g, '') }); continue; }
+    for (const part of t.split(/[&,]/)) {
+      if (!part) continue;
+      const lower = part.toLowerCase();
+      words.push({ w: RAW_ALIASES[lower] || lower, upperIn: part === 'IN' });
+    }
+  }
+  const out = [];
+  for (let i = 0; i < words.length; i++) {
+    const a = words[i];
+    const b = words[i + 1];
+    const codePair = b && !a.code && !b.code && (
+      (/^[a-z]{1,2}$/.test(a.w) && !SHORT_STOP.has(a.w) && !STATE_WORDS[a.w] && /^\d{1,3}$/.test(b.w))
+      || (a.w === 'part' && /^[a-d]$/.test(b.w))
+      || (a.w === 'plan' && /^[a-n]$/.test(b.w)));
+    if (codePair) {
+      out.push({ w: a.w + b.w, code: true });
+      i++;
+    } else {
+      out.push(a);
+    }
+  }
+  return out;
 }
 
+/** A keyword's tokens: words, subjects ("code:sr22") and states ("state:tn"). */
+function tokenize(text) {
+  const tokens = new Set();
+  for (const word of _words(text)) {
+    const state = word.upperIn ? 'in' : STATE_WORDS[word.w];
+    const w = word.w;
+    if (state) tokens.add(STATE_TOKEN + state);
+    else if (word.code || (w.length <= 2 && !SHORT_STOP.has(w)) || (/\d/.test(w) && !YEAR.test(w))) tokens.add(SUBJECT_TOKEN + w);
+    else if (w.length > 2 && !STOPWORDS.has(w)) tokens.add(w);
+  }
+  return tokens;
+}
+
+/** A token set's states (Kentucky when it names none), and the rest. */
+function _parts(tokens) {
+  const states = new Set();
+  const rest = new Set();
+  const subjects = new Set();
+  for (const t of tokens) {
+    if (t.startsWith(STATE_TOKEN)) { states.add(t); continue; }
+    rest.add(t);
+    if (t.startsWith(SUBJECT_TOKEN)) subjects.add(t);
+  }
+  if (!states.size) states.add(STATE_TOKEN + DEFAULT_STATE);
+  return { states, rest, subjects };
+}
+
+const _sameSet = (a, b) => a.size === b.size && [...a].every(t => b.has(t));
+
+/**
+ * How far two keywords' tokens overlap, 0-1: 0 when they name different
+ * states or different subjects (two searches, whatever else they share),
+ * otherwise the Jaccard overlap of everything but the states.
+ */
 function jaccard(a, b) {
-  if (!a.size || !b.size) return 0;
+  const A = _parts(a);
+  const B = _parts(b);
+  if (!A.rest.size || !B.rest.size) return 0;
+  if (!_sameSet(A.states, B.states) || !_sameSet(A.subjects, B.subjects)) return 0;
   let inter = 0;
-  for (const t of a) if (b.has(t)) inter++;
-  return inter / (a.size + b.size - inter);
+  for (const t of A.rest) if (B.rest.has(t)) inter++;
+  return inter / (A.rest.size + B.rest.size - inter);
 }
 
 function median(nums) {
