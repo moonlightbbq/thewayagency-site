@@ -1179,6 +1179,13 @@
     var chatSessionId = localStorage.getItem('twa_chat_sid') || '';
     var chatMessages = [];
     var chatResumeData = null; // populated from /api/chat/resume
+    // BL-26: SAGE says in each reply whether this chat session passed the human
+    // check; once it has, no more Turnstile tokens are fetched for it.
+    var chatVerified = false;
+    try { chatVerified = !!chatSessionId && localStorage.getItem('twa_chat_verified') === chatSessionId; } catch (e) { /* storage blocked */ }
+    // Set when the Turnstile script could not load (blocked): the page stops
+    // waiting for it on every message.
+    var chatTurnstileBlocked = false;
     var isSending = false;
     var isOpen = false;
     var hasOpened = false;
@@ -1206,6 +1213,8 @@
       try {
         localStorage.setItem('twa_chat_sid', chatSessionId);
         localStorage.setItem('twa_chat_messages', JSON.stringify(chatMessages));
+        if (chatVerified && chatSessionId) localStorage.setItem('twa_chat_verified', chatSessionId);
+        else localStorage.removeItem('twa_chat_verified');
       } catch(e) {}
     }
 
@@ -1263,6 +1272,8 @@
       '.twa-cb-action-btn:disabled{opacity:.6;cursor:not-allowed}',
       '.twa-cb-powered{text-align:center;font-size:10px;color:#94a3b8;padding:4px 0 8px;flex-shrink:0}',
       '.twa-cb-verify{align-self:center;max-width:100%}',
+      '.twa-cb-verify-msg{margin:0 0 6px;font-size:13px;color:#475569;text-align:center}',
+      '.twa-cb-verify-msg:empty{display:none}',
       '.twa-cb-bubble:active{transform:scale(0.95)}',
       '.twa-cb-input button:active:not(:disabled){color:#173358}',
       '.twa-cb-action-btn:active:not(:disabled){opacity:0.8}'
@@ -1352,7 +1363,9 @@
       if (el) el.remove();
     }
 
-    function addConfirmationCard(actionData) {
+    // `restored`: a card redrawn from history (a page load, a resume) is not a
+    // new conversion and is not tracked again.
+    function addConfirmationCard(actionData, restored) {
       var agentSlug = (actionData && actionData.agent) || '';
       var agentName = AGENT_NAMES[agentSlug] || 'Our team';
       var card = document.createElement('div');
@@ -1361,14 +1374,20 @@
         agentName + ' will reach out within one business day.';
       msgsArea.appendChild(card);
       msgsArea.scrollTop = msgsArea.scrollHeight;
-      track('chatbot_lead_submitted', { category: 'conversion', agent: agentSlug });
+      if (!restored) {
+        // BL-26: only a lead SAGE created carries a reference. A request held
+        // for a person to confirm (no human check), or one already on file, is
+        // not a lead yet and is tracked as its own event.
+        if (actionData && actionData.reference) track('chatbot_lead_submitted', { category: 'conversion', agent: agentSlug });
+        else track('chatbot_request_received', { category: 'engagement', agent: agentSlug });
+      }
     }
 
     // Restore saved messages into the DOM
     function restoreMessages() {
       chatMessages.forEach(function(m) {
         addMessageEl(m.role, m.text);
-        if (m.action) addConfirmationCard(m.action);
+        if (m.action) addConfirmationCard(m.action, true);
       });
     }
 
@@ -1387,30 +1406,56 @@
 
     function loadChatTurnstile() {
       if (window.turnstile) return Promise.resolve(true);
-      if (!CONFIG.turnstileSiteKey) return Promise.resolve(false);
+      if (!CONFIG.turnstileSiteKey || chatTurnstileBlocked) return Promise.resolve(false);
       return new Promise(function(resolve) {
-        if (!document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]')) {
-          var s = document.createElement('script');
+        var settled = false;
+        function settle(ok) {
+          if (settled) return;
+          settled = true;
+          if (!ok) chatTurnstileBlocked = true; // remembered: no 8 s wait on the next message
+          resolve(ok);
+        }
+        var s = document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]');
+        if (!s) {
+          s = document.createElement('script');
           s.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
           s.async = true;
           document.head.appendChild(s);
         }
+        s.addEventListener('error', function() { settle(false); });
         var waited = 0;
         (function poll() {
-          if (window.turnstile) { resolve(true); return; }
+          if (settled) return;
+          if (window.turnstile) { settle(true); return; }
           waited += 100;
-          if (waited >= 8000) { resolve(false); return; }
+          if (waited >= 8000) { settle(false); return; }
           setTimeout(poll, 100);
         })();
       });
     }
 
+    function newChatSessionId() {
+      if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID();
+      return 'c' + Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
+    }
+
     function getChatTurnstileToken() {
       return loadChatTurnstile().then(function(ok) {
         if (!ok || !window.turnstile) return '';
+        // The token names this chat session (cData) and the chat (action), and
+        // SAGE accepts it only for that session on this site. A brand-new chat
+        // gets its id here, before its first message.
+        if (!chatSessionId) { chatSessionId = newChatSessionId(); saveState(); }
         return new Promise(function(resolve) {
           var box = document.createElement('div');
           box.className = 'twa-cb-verify';
+          var status = document.createElement('p');
+          status.className = 'twa-cb-verify-msg';
+          status.setAttribute('role', 'status');
+          status.setAttribute('aria-live', 'polite');
+          box.appendChild(status);
+          var widgetEl = document.createElement('div');
+          box.appendChild(widgetEl);
           msgsArea.appendChild(box);
           var done = false;
           var widgetId = null;
@@ -1425,17 +1470,20 @@
           }
           timer = setTimeout(function() { finish(''); }, 15000);
           try {
-            widgetId = window.turnstile.render(box, {
+            widgetId = window.turnstile.render(widgetEl, {
               sitekey: CONFIG.turnstileSiteKey,
+              action: 'chat',
+              cData: chatSessionId,
               appearance: 'interaction-only',
               callback: function(token) { finish(token); },
               'error-callback': function() { finish(''); },
               'expired-callback': function() { finish(''); },
               'timeout-callback': function() { finish(''); },
-              // The visitor has to click: give them time, and show the box.
+              // The visitor has to click: say so, give them time, show the box.
               'before-interactive-callback': function() {
                 clearTimeout(timer);
                 timer = setTimeout(function() { finish(''); }, 120000);
+                status.textContent = 'One quick check before we send your details.';
                 msgsArea.scrollTop = msgsArea.scrollHeight;
               }
             });
@@ -1465,7 +1513,7 @@
 
       // BL-26: contact details travel with a Turnstile token (see above).
       var cfToken = '';
-      if (looksLikeContact(text)) {
+      if (looksLikeContact(text) && !chatVerified) {
         cfToken = await getChatTurnstileToken();
         track('chatbot_human_check', { category: 'engagement', result: cfToken ? 'token' : 'none' });
       }
@@ -1531,8 +1579,10 @@
                 msgsArea.scrollTop = msgsArea.scrollHeight;
               }
               if (chunk.done) {
+                if (typeof chunk.verified === 'boolean') chatVerified = chunk.verified;
                 if (chunk.action === 'connect_agent' && chunk.data) {
-                  actionData = chunk.data;
+                  // The reference marks a lead SAGE created (see addConfirmationCard).
+                  actionData = Object.assign({}, chunk.data, { reference: chunk.reference || '' });
                   track('chatbot_agent_suggested', { category: 'engagement', agent: chunk.data.agent || '' });
                 }
               }
@@ -1549,8 +1599,9 @@
               botText += lastChunk.text;
               if (botEl) botEl.innerHTML = formatChatText(botText);
             }
+            if (lastChunk.done && typeof lastChunk.verified === 'boolean') chatVerified = lastChunk.verified;
             if (lastChunk.done && lastChunk.action === 'connect_agent' && lastChunk.data) {
-              actionData = lastChunk.data;
+              actionData = Object.assign({}, lastChunk.data, { reference: lastChunk.reference || '' });
               track('chatbot_agent_suggested', { category: 'engagement', agent: lastChunk.data.agent || '' });
             }
           } catch(pe2) {}
@@ -1592,6 +1643,7 @@
     function resetChat() {
       chatSessionId = '';
       chatMessages = [];
+      chatVerified = false;
       localStorage.removeItem('twa_chat_sid');
       localStorage.removeItem('twa_chat_messages');
       msgsArea.innerHTML = '';
@@ -1631,7 +1683,7 @@
           restoreMessages();
           // If we resumed from server and a lead was submitted, show confirmation card
           if (chatResumeData && chatResumeData.agentName) {
-            addConfirmationCard({ agentName: chatResumeData.agentName, reference: chatResumeData.reference });
+            addConfirmationCard({ agentName: chatResumeData.agentName, reference: chatResumeData.reference }, true);
           }
         }
       }

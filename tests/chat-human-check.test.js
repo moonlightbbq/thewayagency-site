@@ -5,9 +5,12 @@
  * SAGE creates a lead, pages an agent or emails the visitor only for a chat that
  * passed the human check; without a token it holds the request for a person to
  * call back. So: a message with an email or a phone number goes with a fresh
- * token; other messages carry none; the Turnstile script loads only at that
- * moment (PERF-02), the widget shows only when Cloudflare needs an interaction,
- * and a failed check never stops the message.
+ * token bound to this chat session (cData) and to the chat (action); other
+ * messages carry none; once SAGE says the session is verified no more tokens are
+ * fetched; the Turnstile script loads only at that moment (PERF-02) and a
+ * blocked script is not waited for twice; the widget shows only when Cloudflare
+ * needs an interaction, with a polite live status; a failed check never stops
+ * the message; and only a lead SAGE created counts as a lead conversion.
  *
  * Drives the real scripts, concatenated as the build does (business-hours.js +
  * attribution.js + app.js), in jsdom. Turnstile and SAGE are stubbed.
@@ -26,14 +29,19 @@ const APP = ['src/js/business-hours.js', 'src/js/attribution.js', 'src/js/app.js
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const IN_HOURS = '2026-10-06T16:00:00Z'; // Tue 12:00 ET: no after-hours teaser
 
-/** A stub Turnstile: render() calls back with `token` (or throws / errors). */
+/** A stub Turnstile: render() calls back with `token` (or throws / errors / asks for a click). */
 function stubTurnstile(w, { token = 'TEST-turnstile-token', mode = 'ok' } = {}) {
   const calls = { render: [], remove: [] };
   w.turnstile = {
     render(el, opts) {
       calls.render.push({ el, opts });
       if (mode === 'throw') throw new Error('stub render failure');
-      setTimeout(() => (mode === 'error' ? opts['error-callback']() : opts.callback(token)), 5);
+      if (mode === 'interactive') {
+        setTimeout(() => opts['before-interactive-callback'](), 5);
+        setTimeout(() => opts.callback(token), 40);
+      } else {
+        setTimeout(() => (mode === 'error' ? opts['error-callback']() : opts.callback(token)), 5);
+      }
       return 'widget-1';
     },
     remove(id) { calls.remove.push(id); },
@@ -41,17 +49,24 @@ function stubTurnstile(w, { token = 'TEST-turnstile-token', mode = 'ok' } = {}) 
   return calls;
 }
 
-async function loadApp({ turnstile } = {}) {
+/**
+ * The page with the widget open. `final(body)` is SAGE's final SSE event for a
+ * posted message (default: done, not verified, no action).
+ */
+async function loadApp({ turnstile, final = () => ({ done: true, sessionId: 'tst-session' }), storage = {} } = {}) {
   const posts = [];
   const dom = new JSDOM('<!DOCTYPE html><html><head></head><body><section class="hero"><h1 class="hero__title">t</h1></section></body></html>', {
     url: 'https://www.thewayagency.com/auto-insurance', runScripts: 'outside-only', pretendToBeVisual: true,
     beforeParse(w) {
+      for (const [k, v] of Object.entries(storage)) w.localStorage.setItem(k, v);
       w.TextDecoder = TextDecoder;
       w.fetch = (u, opts = {}) => {
         const url = String(u);
         if (url.includes('/api/chat/message')) {
-          posts.push(JSON.parse(opts.body));
-          const sse = new TextEncoder().encode('data: {"text":"Thanks!"}\n\ndata: {"done":true,"sessionId":"tst-session"}\n\n');
+          const body = JSON.parse(opts.body);
+          posts.push(body);
+          const fin = { sessionId: body.sessionId || 'tst-session', ...final(body), done: true };
+          const sse = new TextEncoder().encode(`data: {"text":"Thanks!"}\n\ndata: ${JSON.stringify(fin)}\n\n`);
           let sent = false;
           return Promise.resolve({
             ok: true, status: 200,
@@ -87,21 +102,28 @@ async function say(w, posts, text) {
   w.document.querySelector('.twa-cb-input button').click();
   for (let i = 0; i < 200 && posts.length === before; i++) await sleep(10);
   assert.equal(posts.length, before + 1, 'the message was not sent');
-  await sleep(20);
+  await sleep(30);
   return posts[posts.length - 1];
 }
 
-const turnstileScripts = (w) => w.document.querySelectorAll('script[src*="challenges.cloudflare.com/turnstile"]').length;
+const turnstileScripts = (w) => w.document.querySelectorAll('script[src*="challenges.cloudflare.com/turnstile"]');
+const events = (w, name) => (w.dataLayer || []).filter((e) => e && e.event === name);
 
 describe('chat human check (BL-26)', () => {
-  test('a message with an email or a phone number goes with a fresh token; the widget shows only for an interaction', async () => {
+  test('a message with an email or a phone number goes with a fresh token bound to the session and the chat; the widget shows only for an interaction', async () => {
     const { w, posts, calls } = await loadApp({ turnstile: {} });
     try {
       const withEmail = await say(w, posts, 'Jordan Testcase, jordan@example.com');
       assert.equal(withEmail.cfToken, 'TEST-turnstile-token');
       assert.equal(calls.render.length, 1);
-      assert.equal(calls.render[0].opts.appearance, 'interaction-only');
-      assert.ok(calls.render[0].opts.sitekey, 'no site key');
+      const opts = calls.render[0].opts;
+      assert.equal(opts.appearance, 'interaction-only');
+      assert.equal(opts.action, 'chat');
+      assert.ok(opts.sitekey, 'no site key');
+      // A brand-new chat gets its session id before its first token, and the
+      // message carries the same id the token names.
+      assert.match(opts.cData, /^[A-Za-z0-9_-]{8,100}$/);
+      assert.equal(withEmail.sessionId, opts.cData);
       assert.equal(calls.remove.length, 1, 'the widget was not removed after use');
       assert.equal(w.document.querySelectorAll('.twa-cb-verify').length, 0);
 
@@ -120,6 +142,29 @@ describe('chat human check (BL-26)', () => {
     } finally { w.close(); }
   });
 
+  test('once SAGE says the session is verified, no more tokens are fetched (and a reload remembers it)', async () => {
+    // SAGE: a session is verified from the first message whose token checked out.
+    const verifiedSessions = new Set();
+    const final = (b) => { if (b.cfToken) verifiedSessions.add(b.sessionId); return { verified: verifiedSessions.has(b.sessionId) }; };
+    const { w, posts, calls } = await loadApp({ turnstile: {}, final });
+    try {
+      await say(w, posts, 'jordan@example.com');
+      assert.equal(calls.render.length, 1);
+      const next = await say(w, posts, 'and 502-555-0142');
+      assert.equal('cfToken' in next, false);
+      assert.equal(calls.render.length, 1);
+      assert.equal(w.localStorage.getItem('twa_chat_verified'), next.sessionId);
+    } finally { w.close(); }
+
+    const again = await loadApp({ turnstile: {}, storage: { twa_chat_sid: 'tst-known', twa_chat_verified: 'tst-known', twa_chat_messages: '[]' } });
+    try {
+      const body = await say(again.w, again.posts, 'jordan@example.com');
+      assert.equal(body.sessionId, 'tst-known');
+      assert.equal('cfToken' in body, false);
+      assert.equal(again.calls.render.length, 0);
+    } finally { again.w.close(); }
+  });
+
   test('a check that fails or cannot render never stops the message (SAGE holds it for a person)', async () => {
     for (const mode of ['throw', 'error']) {
       const { w, posts } = await loadApp({ turnstile: { mode } });
@@ -131,22 +176,80 @@ describe('chat human check (BL-26)', () => {
     }
   });
 
+  test('when Cloudflare needs a click, a polite live status says why', async () => {
+    const { w, posts } = await loadApp({ turnstile: { mode: 'interactive' } });
+    try {
+      const input = w.document.querySelector('.twa-cb-panel input');
+      input.value = 'jordan@example.com';
+      w.document.querySelector('.twa-cb-input button').click();
+      await sleep(20);
+      const status = w.document.querySelector('.twa-cb-verify .twa-cb-verify-msg');
+      assert.ok(status, 'no status element');
+      assert.equal(status.getAttribute('role'), 'status');
+      assert.equal(status.getAttribute('aria-live'), 'polite');
+      assert.match(status.textContent, /quick check/);
+      for (let i = 0; i < 100 && posts.length === 0; i++) await sleep(10);
+      assert.equal(posts[0].cfToken, 'TEST-turnstile-token');
+      assert.equal(w.document.querySelectorAll('.twa-cb-verify').length, 0);
+    } finally { w.close(); }
+  });
+
   test('the Turnstile script is not loaded with the page, only when contact details are sent', async () => {
     const { w, posts } = await loadApp();
     try {
-      assert.equal(turnstileScripts(w), 0);
+      assert.equal(turnstileScripts(w).length, 0);
       await say(w, posts, 'Hello there');
-      assert.equal(turnstileScripts(w), 0);
+      assert.equal(turnstileScripts(w).length, 0);
       // jsdom does not fetch the script: install the API as its load would.
       const pending = say(w, posts, 'jordan@example.com');
       await sleep(30);
-      assert.equal(turnstileScripts(w), 1);
-      const s = w.document.querySelector('script[src*="challenges.cloudflare.com/turnstile"]');
+      assert.equal(turnstileScripts(w).length, 1);
+      const s = turnstileScripts(w)[0];
       assert.match(s.getAttribute('src'), /render=explicit/);
       assert.equal(s.async, true);
       stubTurnstile(w);
       const body = await pending;
       assert.equal(body.cfToken, 'TEST-turnstile-token');
     } finally { w.close(); }
+  });
+
+  test('a blocked script is remembered: the next contact message is sent at once', async () => {
+    const { w, posts } = await loadApp();
+    try {
+      const pending = say(w, posts, 'jordan@example.com');
+      await sleep(30);
+      turnstileScripts(w)[0].dispatchEvent(new w.Event('error'));
+      const first = await pending;
+      assert.equal('cfToken' in first, false);
+      const started = Date.now();
+      const second = await say(w, posts, 'and 502-555-0142');
+      assert.equal('cfToken' in second, false);
+      assert.ok(Date.now() - started < 1500, 'waited for a script already known to be blocked');
+      assert.equal(turnstileScripts(w).length, 1);
+    } finally { w.close(); }
+  });
+
+  test('only a lead SAGE created (it carries a reference) counts as chatbot_lead_submitted; a held request is its own event; a redrawn card is not tracked', async () => {
+    let n = 0;
+    const final = () => (++n === 1
+      ? { action: 'connect_agent', data: { name: 'Jordan' } }                         // held: no reference
+      : { action: 'connect_agent', data: { name: 'Jordan' }, reference: 'TST-REF-1' }); // a lead
+    const { w, posts } = await loadApp({ turnstile: {}, final });
+    try {
+      await say(w, posts, 'jordan@example.com');
+      assert.equal(events(w, 'chatbot_lead_submitted').length, 0);
+      assert.equal(events(w, 'chatbot_request_received').length, 1);
+      await say(w, posts, '502-555-0142');
+      assert.equal(events(w, 'chatbot_lead_submitted').length, 1);
+    } finally { w.close(); }
+
+    const history = JSON.stringify([{ role: 'bot', text: 'Thanks!', action: { name: 'Jordan', reference: 'TST-REF-1' } }]);
+    const reload = await loadApp({ storage: { twa_chat_sid: 'tst-session', twa_chat_messages: history } });
+    try {
+      await sleep(30);
+      assert.ok(reload.w.document.body.textContent.includes('Info submitted'), 'the card was not redrawn');
+      assert.equal(events(reload.w, 'chatbot_lead_submitted').length, 0);
+      assert.equal(events(reload.w, 'chatbot_request_received').length, 0);
+    } finally { reload.w.close(); }
   });
 });
