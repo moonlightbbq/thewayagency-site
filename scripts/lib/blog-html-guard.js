@@ -19,8 +19,9 @@
  *     javascript: or vbscript: URL (entity-encoded, or with a tab or newline
  *     inside the scheme, or leading controls), or a data: URL in a link,
  *     form or object target;
- *   - inside the post, any element scripts/generate-blog.js does not put
- *     there (POST_ELEMENTS, an allowlist) and any comment. The post is the
+ *   - inside the post, any element or attribute scripts/generate-blog.js does
+ *     not put there (POST_ELEMENTS, POST_ATTRIBUTES: allowlists) and any
+ *     comment. The post is the
  *     page's <article>; a page with no <article> is all post, because the
  *     guard cannot tell its post from its template, except the blog listing
  *     (index.html, { listing: true }), which carries no post text (only
@@ -35,13 +36,21 @@
  * element's content stops being markup: <title>, <style>, <noscript>, <xmp>
  * and <plaintext> are text in HTML but markup inside <svg> or <math>, and a
  * comment or an open quote inside one shifts everything after it. So:
- *   - Inside the post the allowlist closes that class: every element the
+ *   - Inside the post the allowlists close that class: every element the
  *     generator puts there leaves the tokenizer in its ordinary data state,
  *     and a comment is refused, so the walk reads the post exactly as a
- *     browser does. Whatever a browser would run from the post (an on* or
- *     srcdoc attribute, a script URL, an element outside the allowlist) is
- *     refused. tests/blog-html-guard.test.js checks every review payload
- *     against jsdom, scripting off and on.
+ *     browser does. Whatever a browser would run from the post's own markup
+ *     (an on* or srcdoc attribute, a script URL, an element outside the
+ *     allowlist) is refused. The attribute allowlist also keeps site scripts
+ *     from being turned on the post: a site script that reads a data-*
+ *     attribute and writes HTML from it is a gadget (the testimonial carousel
+ *     in src/js/app.js wrote [data-testimonials] JSON into innerHTML until
+ *     BL-54), and the only data-* attribute allowed in a post is the
+ *     generator's data-copy-link, which app.js only copies to the clipboard.
+ *     Scripts that find elements by class or id write only their own static
+ *     markup. tests/blog-html-guard.test.js checks every review payload
+ *     against jsdom, scripting off and on, and the third review's gadget
+ *     payloads against src/js/app.js.
  *   - Outside the post (the template the generator owns, where front matter
  *     lands encoded) the page is walked twice and both readings must be
  *     clean: every element's content as markup, then the HTML raw-text
@@ -84,6 +93,18 @@ const LINK_ATTRIBUTES = ['href', 'xlink:href', 'action', 'formaction', 'data'];
 // raw-text, RCDATA or script element, so none changes how what follows is
 // tokenized. The 78 pages built on 2026-10-04 use a subset of these.
 const POST_ELEMENTS = ['a', 'blockquote', 'button', 'div', 'em', 'figure', 'h2', 'h3', 'h4', 'hr', 'img', 'li', 'nav', 'p', 'path', 'section', 'span', 'strong', 'svg', 'ul'];
+// Every attribute the generator puts on those elements inside a post (the 78
+// pages built on 2026-10-04 use all but the featured image's src, alt,
+// loading and fetchpriority). Lower case, as the tokenizer reports them
+// (viewBox is viewbox). Any other attribute is refused, every data-*
+// attribute but data-copy-link among them.
+//
+// Markdown the renderer does not support today, and what supporting it would
+// add to these lists in the same change: numbered lists wrapped in <ol>;
+// tables (table, thead, tbody, tr, th, td); code (pre, code); hard line
+// breaks (br); h5 and h6; images in the body (img with title, srcset is never
+// allowed); figcaption; footnotes (sup, a with id and href to #fn-...).
+const POST_ATTRIBUTES = ['alt', 'aria-expanded', 'aria-label', 'class', 'd', 'data-copy-link', 'fetchpriority', 'fill', 'height', 'href', 'id', 'loading', 'rel', 'src', 'stroke', 'stroke-width', 'style', 'target', 'type', 'viewbox', 'width'];
 const NAMED_ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", colon: ':', tab: '\t', newline: '\n', nbsp: ' ', sol: '/', lpar: '(', rpar: ')', period: '.', comma: ',', semi: ';', equals: '=', excl: '!', num: '#' };
 
 /** An attribute value as the browser reads it: character references decoded once. */
@@ -254,6 +275,11 @@ function blogHtmlProblems(html, rel = 'blog page', { listing = false } = {}) {
     if (inPost(t) && !POST_ELEMENTS.includes(t.tag)) {
       problems.add(`${rel}: <${t.tag}> ${where}; the generator puts only ${POST_ELEMENTS.join(', ')} in a post`);
     }
+    if (inPost(t)) {
+      for (const a of t.attrs) {
+        if (!POST_ATTRIBUTES.includes(a.name)) problems.add(`${rel}: <${t.tag} ${a.name}> ${where}; the generator puts only ${POST_ATTRIBUTES.join(', ')} on elements in a post`);
+      }
+    }
     for (const a of t.attrs) {
       if (/^on/.test(a.name)) {
         problems.add(`${rel}: <${t.tag}> has an event-handler attribute ${a.name}= (blog pages carry none; src/js/app.js wires the template's buttons)`);
@@ -275,4 +301,4 @@ function blogHtmlProblems(html, rel = 'blog page', { listing = false } = {}) {
   return [...problems];
 }
 
-module.exports = { blogHtmlProblems, tokens, startTags, decodeOnce, schemeOf, POST_ELEMENTS, RAW_TEXT_ELEMENTS };
+module.exports = { blogHtmlProblems, tokens, startTags, decodeOnce, schemeOf, POST_ELEMENTS, POST_ATTRIBUTES, RAW_TEXT_ELEMENTS };

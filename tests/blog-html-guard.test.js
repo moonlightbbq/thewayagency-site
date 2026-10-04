@@ -23,8 +23,11 @@
  *      payload from both BL-54 reviews is here, checked against jsdom with
  *      scripting off and on, and whatever jsdom would run from a post, the
  *      guard refuses (it may also refuse markup a browser shows as text: it
- *      fails closed). Outside the post, in the template, its two readings are
- *      a backstop, not a proof;
+ *      fails closed). Inside the post attributes are allowlisted too, so no
+ *      site script can be turned on it through a data-* attribute (the third
+ *      review's testimonial gadget; src/js/app.js no longer writes that JSON
+ *      as HTML either). Outside the post, in the template, its two readings
+ *      are a backstop, not a proof;
  *   3. blog-content-guard.js refuses a post whose text says "javascript:"
  *      (SAGE before it commits, the site before it renders), and the same text
  *      in a calendar entry or backlog candidate (the content queue does not
@@ -45,7 +48,7 @@ const { JSDOM } = require('jsdom');
 
 const ROOT = path.join(__dirname, '..');
 const { markdownToHtml, generateBlogPost } = require('../scripts/generate-blog');
-const { blogHtmlProblems, startTags, POST_ELEMENTS } = require('../scripts/lib/blog-html-guard');
+const { blogHtmlProblems, startTags, POST_ELEMENTS, POST_ATTRIBUTES } = require('../scripts/lib/blog-html-guard');
 const contentGuard = require('../scripts/lib/blog-content-guard');
 const queue = require('../scripts/lib/content-queue');
 const os = require('os');
@@ -492,7 +495,7 @@ describe('calendar topic text that says "javascript:" never reaches a built page
     assert.deepEqual(cal.year1, []);
   });
 
-  test('check-data-integrity reports it in the calendar and in the backlog (run on a temporary copy of data/)', () => {
+  test('check-data-integrity: an error in the calendar and for an approved candidate; a warning for a proposed, on-hold or rejected one (run on a temporary copy of data/)', () => {
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bl54-calendar-text-'));
     try {
       fs.cpSync(path.join(ROOT, 'data'), path.join(dir, 'data'), { recursive: true });
@@ -507,12 +510,24 @@ describe('calendar topic text that says "javascript:" never reaches a built page
       fs.writeFileSync(calPath, `${JSON.stringify(cal, null, 2)}\n`);
       const bPath = path.join(dir, 'data', 'content-backlog.json');
       const b = JSON.parse(fs.readFileSync(bPath, 'utf8'));
-      b.candidates = [...(b.candidates || []), candidate({ slug: 'test-cal-b', status: 'proposed', description: 'javascript: x' })];
+      const realCandidates = b.candidates || [];
+      b.candidates = [...realCandidates, ...['proposed', 'on-hold', 'rejected'].map((status) => candidate({ slug: `test-cal-${status}`, status, description: 'javascript: x' }))];
       fs.writeFileSync(bPath, `${JSON.stringify(b, null, 2)}\n`);
-      const r = run();
+      // Only non-approved candidates: warnings, and the data check still passes.
+      fs.writeFileSync(calPath, `${JSON.stringify({ ...cal, year1: cal.year1.filter((p) => p.slug !== 'test-cal-a') }, null, 2)}\n`);
+      let r = run();
+      assert.equal(r.status, 0, r.stdout);
+      for (const status of ['proposed', 'on-hold', 'rejected']) {
+        assert.match(r.stdout, new RegExp(`! content-backlog\\.json: "test-cal-${status}" \\(${status}\\) it carries the text "javascript:", which the site build refuses on any blog page; the queue will not schedule it and SAGE will not approve it`));
+      }
+      // An approved candidate and a calendar entry: errors.
+      b.candidates = [...b.candidates, candidate({ slug: 'test-cal-approved', status: 'approved', description: 'javascript: x' })];
+      fs.writeFileSync(bPath, `${JSON.stringify(b, null, 2)}\n`);
+      fs.writeFileSync(calPath, `${JSON.stringify(cal, null, 2)}\n`);
+      r = run();
       assert.equal(r.status, 1, r.stdout);
       assert.match(r.stdout, /✗ content-calendar\.json: "test-cal-a": it carries the text "javascript:"/);
-      assert.match(r.stdout, /✗ content-backlog\.json: "test-cal-b": it carries the text "javascript:"/);
+      assert.match(r.stdout, /✗ content-backlog\.json: "test-cal-approved" is approved but it carries the text "javascript:"/);
     } finally {
       fs.rmSync(dir, { recursive: true, force: true });
     }
@@ -526,6 +541,120 @@ describe('calendar topic text that says "javascript:" never reaches a built page
     });
     assert.equal(d.render, false);
     assert.match(d.why, /unsafe_calendar_text/);
+  });
+});
+
+// The third BL-54 review's gadget payloads (bl54r3/gadget.js), verbatim:
+// only allowlisted elements, but a data-* attribute a site script consumed.
+const GADGET_PAYLOADS = [
+  `<div data-testimonials='[{"text":"<img src=x onerror=window.__ran=1>"}]'></div>`,
+  `<div data-testimonials="[{&quot;text&quot;:&quot;&lt;img src=x onerror=window.__ran=2&gt;&quot;}]"></div>`,
+  `<div data-testimonials='[{"name":"<img src=x onerror=window.__ran=3>"}]' data-testimonial-mode="grid"></div>`,
+  `<section data-testimonials='[{"text":"<svg><svg onload=window.__ran=4>"}]'></section>`,
+  `<svg><a href="&#106;avascript:window.__ran=5"><path d="M0 0"/></a></svg>`,
+  `<img src=x onerror=window.__ran=6>`,
+];
+
+describe('attributes inside the post are allowlisted (third review: site-script gadgets)', () => {
+  test('every gadget payload is refused, in a post and in a generated page', () => {
+    const body = markdownToHtml(`${Array.from({ length: 60 }, (_, i) => `word${i}`).join(' ')}\n\n## One\n\nText.`);
+    GADGET_PAYLOADS.forEach((payload, i) => {
+      assert.ok(blogHtmlProblems(pageWith(payload), 'blog/fixture.html').length > 0, payload);
+      const html = generateBlogPost({ title: 'SYNTHETIC', slug: `test-p${i}`, description: 'SYNTHETIC', date: '2026-01-07' }, body + payload, []);
+      assert.ok(blogHtmlProblems(html, `blog/test-p${i}.html`).length > 0, payload);
+    });
+    assert.match(blogHtmlProblems(pageWith(GADGET_PAYLOADS[0]), 'blog/fixture.html').join(' '), /<div data-testimonials> inside the post's <article>/);
+  });
+
+  test('the generator\'s attributes pass; any other attribute, every data-* but data-copy-link among them, is refused', () => {
+    const all = POST_ATTRIBUTES.map((a) => `${a}="${a === 'href' ? '/x' : a === 'src' ? '/x.jpg' : 'x'}"`).join(' ');
+    assert.deepEqual(blogHtmlProblems(pageWith(`<p ${all}>x</p>`), 'blog/fixture.html'), []);
+    for (const attr of ['data-testimonials', 'data-testimonial-mode', 'data-field', 'data-x', 'srcset', 'title', 'formaction', 'ping', 'is', 'form', 'action', 'xlink:href', 'tabindex', 'hidden', 'popover', 'contenteditable', 'name', 'value']) {
+      assert.ok(blogHtmlProblems(pageWith(`<p ${attr}="x">x</p>`), 'blog/fixture.html').includes(`blog/fixture.html: <p ${attr}> inside the post's <article>; the generator puts only ${POST_ATTRIBUTES.join(', ')} on elements in a post`), attr);
+    }
+  });
+});
+
+describe('src/js/app.js writes testimonial JSON as text, never as markup (third review: the sink)', () => {
+  const APP = fs.readFileSync(path.join(ROOT, 'src', 'js', 'attribution.js'), 'utf8') + '\n;\n'
+    + fs.readFileSync(path.join(ROOT, 'src', 'js', 'app.js'), 'utf8');
+  async function run(markup) {
+    const { VirtualConsole } = require('jsdom');
+    const dom = new JSDOM(`<!doctype html><html><body>${markup}</body></html>`, {
+      url: 'https://www.thewayagency.com/test-testimonials',
+      runScripts: 'outside-only',
+      pretendToBeVisual: true,
+      virtualConsole: new VirtualConsole(),
+      beforeParse(w) {
+        w.fetch = () => Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({ chatEnabled: false }) });
+        w.matchMedia = () => ({ matches: false, addListener() {}, removeListener() {}, addEventListener() {}, removeEventListener() {} });
+        w.IntersectionObserver = class { observe() {} unobserve() {} disconnect() {} };
+        w.scrollTo = () => {};
+      },
+    });
+    dom.window.eval(APP);
+    await new Promise((r) => setTimeout(r, 20));
+    return dom;
+  }
+  const handlers = (doc) => [...doc.querySelectorAll('*')].flatMap((el) => [...el.attributes].filter((a) => /^on/i.test(a.name)).map((a) => `${el.localName}[${a.name}]`));
+
+  test('the review\'s payloads, in carousel, grid and single mode, make no element and no handler: the text shows as typed', async () => {
+    for (const [payload, typed] of [
+      [GADGET_PAYLOADS[0], '<img src=x onerror=window.__ran=1>'],
+      [GADGET_PAYLOADS[1], '<img src=x onerror=window.__ran=2>'],
+      [GADGET_PAYLOADS[2], '<img src=x onerror=window.__ran=3>'],
+      [GADGET_PAYLOADS[3], '<svg><svg onload=window.__ran=4>'],
+      [`<div data-testimonials='[{"text":"<img src=x onerror=window.__ran=7>","product_lines":["<img src=x onerror=window.__ran=8>"]}]' data-testimonial-mode="single"></div>`, '<img src=x onerror=window.__ran=7>'],
+    ]) {
+      const dom = await run(payload);
+      try {
+        const doc = dom.window.document;
+        assert.deepEqual(handlers(doc), [], payload);
+        assert.equal(doc.querySelectorAll('.twa-testimonial-card img, .twa-testimonial-card svg').length, 0, payload);
+        assert.ok(doc.querySelector('.twa-testimonial-card'), `a card renders: ${payload}`);
+        assert.ok(doc.querySelector('.twa-testimonial-card').textContent.includes(typed), payload);
+      } finally {
+        dom.window.close();
+      }
+    }
+  });
+
+  test('a real-shaped testimonial renders as before: stars, quoted text, name and product labels', async () => {
+    const items = [{ text: 'SYNTHETIC They found us a better rate & kept our coverage.', name: 'Test Client A.', rating: 4, product_lines: ['auto', 'home_owners'] }];
+    const dom = await run(`<div data-testimonials='${JSON.stringify(items).replace(/'/g, '&#39;')}' data-testimonial-mode="single"></div>`);
+    try {
+      const card = dom.window.document.querySelector('.twa-testimonial-card');
+      assert.equal(card.querySelector('p').textContent, '"SYNTHETIC They found us a better rate & kept our coverage."');
+      assert.equal(card.querySelector('span[style*="font-weight:600"]').textContent, 'Test Client A.');
+      assert.equal(card.querySelector('span[style*="FBBC05"]').textContent, '★'.repeat(4));
+      assert.deepEqual([...card.querySelectorAll('span[style*="eff6ff"]')].map((x) => x.textContent), ['Auto', 'Home owners']);
+    } finally {
+      dom.window.close();
+    }
+  });
+});
+
+describe('a post using every generator feature passes the guard (third review NIT 2)', () => {
+  test('em, h4, hr, a stat highlight, callouts, a featured image, the FAQ, the table of contents, Related Coverage and the CTA', () => {
+    const md = [
+      `${Array.from({ length: 60 }, (_, i) => `word${i}`).join(' ')} with *emphasis* and **strong** text and [a link](/personal/home.html).`,
+      '## First section', 'Text.', '#### A small heading', 'Text.',
+      '---',
+      '!!!stat 42% | of SYNTHETIC homes',
+      '> **Key takeaway:** SYNTHETIC callout.',
+      '> **Tip:** SYNTHETIC tip.',
+      '- one\n- two',
+      '1. first',
+      '## Second section', 'Text.', '## Third section', 'Text.', '## Fourth section', 'Text.',
+    ].join('\n\n');
+    const html = generateBlogPost({
+      title: 'SYNTHETIC every feature', slug: 'test-every-feature', description: 'SYNTHETIC', date: '2026-01-07',
+      image: '/src/assets/images/blog/test-every-feature.jpg', image_alt: 'SYNTHETIC alt', related_page: '/personal/home.html', category: 'personal',
+    }, markdownToHtml(md), [{ question: 'SYNTHETIC question?', answer: 'SYNTHETIC answer.' }]);
+    for (const tag of ['em', 'h4', 'hr', 'blockquote', 'figure', 'img', 'nav', 'section', 'button', 'svg', 'strong', 'li']) assert.match(html, new RegExp(`<${tag}[ >]`), tag);
+    assert.match(html, /stat-highlight/);
+    assert.match(html, /fetchpriority="high"/);
+    assert.deepEqual(blogHtmlProblems(html, 'blog/test-every-feature.html'), []);
   });
 });
 
