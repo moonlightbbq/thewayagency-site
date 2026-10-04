@@ -506,11 +506,11 @@ const W_FUNNEL_THIN = 5;
 //  - subjects ("code:<x>"): what names a search of its own in one or two
 //    characters or in digits: short codes joined the way they are written
 //    (SR-22 → sr22, HO-3 → ho3, E&O → eo, Part A → parta, Plan G → plang,
-//    401(k) → 401k), other short words (RV, EV, GL), and numbers ($25,000 →
-//    25000, 250/500/100 limits, "10 employees", a zip code). A year is a word,
-//    as it always was ("medicare open enrollment 2027 kentucky" is still the
-//    enrollment guide), and a count of list items is dropped (_isCount: "10
-//    home insurance tips" is "home insurance tips");
+//    401(k) → 401k, split limits 250/500/100 as one), other short words (RV,
+//    EV, GL), and numbers ($25,000 → 25000, "10 employees", a zip code). A
+//    year is a word, as it always was ("medicare open enrollment 2027
+//    kentucky" is still the enrollment guide), and a count of list items is
+//    dropped (_isCount: "10 home insurance tips" is "home insurance tips");
 //  - states ("state:ky|tn|in"): Kentucky, Tennessee and Indiana by name or
 //    abbreviation. IN is Indiana only when written in capitals; "in" is the
 //    preposition.
@@ -561,18 +561,26 @@ const DEFAULT_STATE = 'ky';
 const RAW_ALIASES = { mount: 'mt', saint: 'st', fort: 'ft' };
 const YEAR = /^(?:19|20)\d\d$/;
 // A number right before one of these, or a keyword's first number with one of
-// these anywhere after it, counts list items ("5 mistakes", "10 best", "7
-// winter driving tips"): _isCount.
+// these anywhere after it, counts list items ("5 mistakes", "10 best", "the 7
+// most common home insurance mistakes"): _isCount.
 const LIST_WORDS = new Set([
   'best', 'tips', 'ways', 'things', 'questions', 'mistakes', 'reasons', 'steps', 'signs', 'myths', 'facts',
   'ideas', 'secrets', 'tricks', 'hacks', 'rules', 'lessons', 'habits', 'examples', 'types', 'kinds', 'factors',
   'benefits', 'discounts', 'options', 'features', 'misconceptions',
 ]);
 // A number right before one of these is a quantity, never a count ("16 year
-// old drivers: 5 tips" keeps 16; "$1 million" keeps 1).
+// old drivers: 5 tips" keeps 16; "$1 million" keeps 1; "10 employees health
+// insurance options" keeps 10).
 const UNIT_WORDS = new Set([
   'year', 'years', 'month', 'months', 'week', 'weeks', 'day', 'days', 'hour', 'hours', 'mile', 'miles',
   'percent', 'hundred', 'thousand', 'million', 'billion',
+  'employees', 'drivers', 'vehicles', 'cars', 'trucks', 'people', 'members', 'units', 'acres', 'rooms', 'beds',
+  'locations', 'properties', 'homes', 'policies',
+]);
+// A number right after one of these names a thing, never a count ("section 8
+// landlord insurance tips", "class 8 truck", "type 2 diabetes", "chapter 7").
+const LABEL_WORDS = new Set([
+  'class', 'section', 'chapter', 'tier', 'level', 'phase', 'zone', 'type', 'category', 'grade', 'form',
 ]);
 const STATE_TOKEN = 'state:';
 const SUBJECT_TOKEN = 'code:';
@@ -581,8 +589,9 @@ const SUBJECT_TOKEN = 'code:';
  * The words of a keyword, in order: Unicode folded to ASCII where it can be
  * (NFKD, accents stripped), contractions and possessives dropped, thousands
  * separators removed ($25,000 → 25000), and codes joined: "E&O" → eo;
- * "401(k)" → 401k; "SR-22"/"SR 22" → sr22, "HO-3" → ho3 (a 1-2 letter word
- * that is not a function word or a state, then a 1-3 digit number); "Part A" → parta,
+ * "401(k)" → 401k; split limits "50/100/50" stay one code; "SR-22"/"SR 22" →
+ * sr22, "HO-3" → ho3 (a 1-2 letter word that is not a function word or a
+ * state, then a 1-3 digit number); "Part A" → parta,
  * "Plan G" → plang (Medicare parts A-D, Medigap plans A-N). Each word carries
  * whether it is a joined code and whether it was written as IN in capitals.
  * @returns {{w: string, code?: boolean, upperIn?: boolean}[]}
@@ -595,7 +604,11 @@ function _words(text) {
     .replace(/(\d)\(([a-z])\)/gi, '$1$2') // 401(k), 403(b)
     .replace(/(^|[^\p{L}\p{N}&])([a-z])\s*&\s*([a-z])(?=$|[^\p{L}\p{N}&])/giu, '$1$2&$3');
   const words = [];
-  for (const raw of s.split(/[^\p{L}\p{N}&,]+/u)) {
+  // Runs of letters, digits, & and commas, as a split on everything else
+  // would give, except that numbers joined by slashes stay one run: split
+  // limits (25/50/25, 250/500/100) are one subject, never three numbers.
+  for (const [raw] of s.matchAll(/\d+(?:\/\d+)+|[\p{L}\p{N}&,]+/gu)) {
+    if (raw.includes('/')) { words.push({ w: raw, code: true }); continue; }
     const t = raw.replace(/^,+|,+$/g, ''); // "E&O," is the code eo
     if (!t) continue;
     if (/^[a-z]&[a-z]$/i.test(t)) { words.push({ w: t.replace('&', '').toLowerCase(), code: true }); continue; }
@@ -626,23 +639,29 @@ function _words(text) {
 
 /**
  * Whether words[i] counts list items rather than naming a subject: a number
- * of 1-2 digits written on its own (1-99; not part of a code, not a
- * thousands number), not followed by a unit (UNIT_WORDS), and either
- *  (a) right after "top" ("top 10 home insurance tips"),
+ * of 1-2 digits written on its own (1-99; not part of a code or of split
+ * limits, not a thousands number), not right before a unit or quantity
+ * (UNIT_WORDS), not right after a label (LABEL_WORDS), and either
+ *  (a) right after "top" or "best" ("top 10 home insurance tips", "best 10
+ *      car insurance companies"),
  *  (b) right before a list word (LIST_WORDS: "5 ways to lower car insurance",
  *      "home insurance: 7 mistakes to avoid"), or
- *  (c) the keyword's first word, with a list word anywhere after it ("10 home
- *      insurance tips", "7 winter driving tips kentucky").
+ *  (c) the keyword's first number (no number of any length before it), with a
+ *      list word anywhere after it ("10 home insurance tips", "the 7 most
+ *      common home insurance mistakes", "kentucky homeowners: 7 common
+ *      mistakes").
  * Every other number stays a subject.
  */
 function _isCount(words, i) {
   const w = words[i];
   if (w.code || !/^\d{1,2}$/.test(w.w)) return false;
+  const prev = words[i - 1];
   const next = words[i + 1];
   if (next && UNIT_WORDS.has(next.w)) return false;
-  if (i > 0 && words[i - 1].w === 'top') return true;
+  if (prev && LABEL_WORDS.has(prev.w)) return false;
+  if (prev && (prev.w === 'top' || prev.w === 'best')) return true;
   if (next && LIST_WORDS.has(next.w)) return true;
-  return i === 0 && words.some(x => LIST_WORDS.has(x.w));
+  return !words.slice(0, i).some(x => /^\d+$/.test(x.w)) && words.slice(i + 1).some(x => LIST_WORDS.has(x.w));
 }
 
 /** A keyword's tokens: words, subjects ("code:sr22") and states ("state:tn"). */

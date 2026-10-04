@@ -155,8 +155,16 @@ describe('cannibalization sees short codes, numbers and states', () => {
       ['10 employees group health insurance', 'group health insurance for employees'],
       ['250/500/100 auto insurance', '100/300/100 auto insurance'],
       ['flood insurance 42301', 'flood insurance 42302'],
-      // a number before a unit is a quantity, even in a list keyword
+      // split limits are one subject, never three numbers or counts
+      ['liability limits 50/100/50 options', 'liability limits 50/100/25 options'],
+      ['25/50/25 coverage options', '50/50/25 coverage options'],
+      // a number before a unit or a quantity, even in a list keyword
       ['16 year old driver insurance tips', '18 year old driver insurance tips'],
+      ['10 employees health insurance options kentucky', '50 employees health insurance options kentucky'],
+      // a number after a label names a thing
+      ['section 8 landlord insurance tips', 'landlord insurance tips'],
+      ['type 1 diabetes life insurance tips', 'type 2 diabetes life insurance tips'],
+      ['class 8 truck insurance tips', 'class 7 truck insurance tips'],
     ];
     for (const [a, b] of DISTINCT) {
       test(`"${a}" is not "${b}"`, () => {
@@ -219,6 +227,16 @@ describe('cannibalization sees short codes, numbers and states', () => {
       ['5 common home insurance mistakes', '7 common home insurance mistakes'],
       ['home insurance: 7 mistakes to avoid', 'home insurance mistakes to avoid'],
       ['10 best car insurance companies kentucky', 'best car insurance companies kentucky'],
+      // the keyword's first number, not only its first word
+      ['the 7 most common home insurance mistakes', '7 most common home insurance mistakes'],
+      ['the 5 biggest home insurance mistakes', '5 biggest home insurance mistakes'],
+      ['the 10 best car insurance companies kentucky', '10 best car insurance companies kentucky'],
+      ['kentucky homeowners: 7 common mistakes', '7 common mistakes kentucky homeowners'],
+      // "best 10" reads like "top 10"
+      ['best 10 car insurance companies kentucky', '10 best car insurance companies kentucky'],
+      // split limits and 401(k) written another way
+      ['50/100/50 liability limits', 'liability limits 50/100/50'],
+      ['life insurance vs 401k', '401(k) vs life insurance'],
     ];
     for (const [a, b] of SAME) {
       test(`"${a}" is "${b}"`, () => {
@@ -230,6 +248,16 @@ describe('cannibalization sees short codes, numbers and states', () => {
     test('"top 10" drops the count and keeps "top", as the test always read it', () => {
       assert.equal(score('top 10 home insurance tips kentucky', 'home insurance tips kentucky').toFixed(2), '0.67');
       assert.ok(conflict('top 10 home insurance tips kentucky', 'home insurance tips kentucky'));
+    });
+
+    test('a count after an ordinary word is dropped and the word kept, as the test always read it', () => {
+      // "our" is not a stopword: 0.75 on origin/main too
+      assert.equal(score('our 5 favorite home insurance discounts', '5 favorite home insurance discounts'), 0.75);
+      assert.ok(conflict('our 5 favorite home insurance discounts', '5 favorite home insurance discounts'));
+    });
+
+    test('split limits are one subject token', () => {
+      assert.deepEqual([...q.tokenize('25/50/25 coverage options')], ['code:25/50/25', 'coverage', 'options']);
     });
   });
 
@@ -255,6 +283,14 @@ describe('cannibalization sees short codes, numbers and states', () => {
     test('a two-word stateless keyword and its Tennessee twin are scheduled (0.50)', () => {
       assert.equal(score('flood insurance', 'flood insurance tennessee'), 0.5);
       assert.equal(conflict('flood insurance', 'flood insurance tennessee'), null);
+    });
+
+    test('so is a one-word place keyword and its twin with the state (0.50; 1.00 on origin/main)', () => {
+      assert.equal(score('nashville insurance', 'nashville tn insurance'), 0.5);
+      assert.equal(conflict('nashville insurance', 'nashville tn insurance'), null);
+      assert.equal(score('evansville insurance', 'evansville insurance IN'), 0.5);
+      // one more shared word and the pair is one search again
+      assert.equal(score('insurance agency nashville', 'insurance agency nashville tn').toFixed(2), '0.67');
     });
 
     test('Kentucky named on one side only is not counted', () => {
