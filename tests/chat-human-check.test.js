@@ -142,7 +142,7 @@ describe('chat human check (BL-26)', () => {
     } finally { w.close(); }
   });
 
-  test('once SAGE says the session is verified, no more tokens are fetched (and a reload remembers it)', async () => {
+  test('a token is skipped only on the word of a reply for the same session on this page; never from storage, never after SAGE replaced the id', async () => {
     // SAGE: a session is verified from the first message whose token checked out.
     const verifiedSessions = new Set();
     const final = (b) => { if (b.cfToken) verifiedSessions.add(b.sessionId); return { verified: verifiedSessions.has(b.sessionId) }; };
@@ -151,18 +151,32 @@ describe('chat human check (BL-26)', () => {
       await say(w, posts, 'jordan@example.com');
       assert.equal(calls.render.length, 1);
       const next = await say(w, posts, 'and 502-555-0142');
-      assert.equal('cfToken' in next, false);
+      assert.equal('cfToken' in next, false);          // the last reply, same session: verified
       assert.equal(calls.render.length, 1);
-      assert.equal(w.localStorage.getItem('twa_chat_verified'), next.sessionId);
+      assert.equal(w.localStorage.getItem('twa_chat_verified'), null);
     } finally { w.close(); }
 
+    // A reload trusts nothing stored: the next contact message carries a token
+    // (SAGE skips the check itself when the session is still verified).
     const again = await loadApp({ turnstile: {}, storage: { twa_chat_sid: 'tst-known', twa_chat_verified: 'tst-known', twa_chat_messages: '[]' } });
     try {
       const body = await say(again.w, again.posts, 'jordan@example.com');
       assert.equal(body.sessionId, 'tst-known');
-      assert.equal('cfToken' in body, false);
-      assert.equal(again.calls.render.length, 0);
+      assert.equal(body.cfToken, 'TEST-turnstile-token');
+      assert.equal(again.w.localStorage.getItem('twa_chat_verified'), null, 'the old flag is cleared');
     } finally { again.w.close(); }
+
+    // SAGE replaced the (day-old) id and says the new session is not verified:
+    // the next contact message carries a token.
+    let n = 0;
+    const replaced = await loadApp({ turnstile: {}, final: () => (++n === 1 ? { sessionId: 'tst-old', verified: true } : { sessionId: 'tst-new', verified: false }) });
+    try {
+      await say(replaced.w, replaced.posts, 'jordan@example.com');
+      await say(replaced.w, replaced.posts, 'hello');
+      const body = await say(replaced.w, replaced.posts, '502-555-0142');
+      assert.equal(body.sessionId, 'tst-new');
+      assert.equal(body.cfToken, 'TEST-turnstile-token');
+    } finally { replaced.w.close(); }
   });
 
   test('a check that fails or cannot render never stops the message (SAGE holds it for a person)', async () => {

@@ -1180,9 +1180,20 @@
     var chatMessages = [];
     var chatResumeData = null; // populated from /api/chat/resume
     // BL-26: SAGE says in each reply whether this chat session passed the human
-    // check; once it has, no more Turnstile tokens are fetched for it.
-    var chatVerified = false;
-    try { chatVerified = !!chatSessionId && localStorage.getItem('twa_chat_verified') === chatSessionId; } catch (e) { /* storage blocked */ }
+    // check. A token is skipped only on the word of a reply received on this
+    // page, for the same session id, in the last 20 minutes; never from
+    // storage (SAGE may have replaced a day-old session id). SAGE itself
+    // skips the check for a session it already verified, so a token sent to
+    // a verified session costs nothing.
+    var chatVerifiedFor = null; // { sessionId, at }
+    function sessionConfirmedVerified() {
+      return !!chatVerifiedFor && chatVerifiedFor.sessionId === chatSessionId && (Date.now() - chatVerifiedFor.at) < 20 * 60 * 1000;
+    }
+    function noteVerified(chunk) {
+      if (typeof chunk.verified !== 'boolean') return;
+      chatVerifiedFor = chunk.verified ? { sessionId: chunk.sessionId || chatSessionId, at: Date.now() } : null;
+    }
+    try { localStorage.removeItem('twa_chat_verified'); } catch (e) { /* storage blocked; nothing kept there any more */ }
     // Set when the Turnstile script could not load (blocked): the page stops
     // waiting for it on every message.
     var chatTurnstileBlocked = false;
@@ -1213,8 +1224,6 @@
       try {
         localStorage.setItem('twa_chat_sid', chatSessionId);
         localStorage.setItem('twa_chat_messages', JSON.stringify(chatMessages));
-        if (chatVerified && chatSessionId) localStorage.setItem('twa_chat_verified', chatSessionId);
-        else localStorage.removeItem('twa_chat_verified');
       } catch(e) {}
     }
 
@@ -1513,7 +1522,7 @@
 
       // BL-26: contact details travel with a Turnstile token (see above).
       var cfToken = '';
-      if (looksLikeContact(text) && !chatVerified) {
+      if (looksLikeContact(text) && !sessionConfirmedVerified()) {
         cfToken = await getChatTurnstileToken();
         track('chatbot_human_check', { category: 'engagement', result: cfToken ? 'token' : 'none' });
       }
@@ -1579,7 +1588,7 @@
                 msgsArea.scrollTop = msgsArea.scrollHeight;
               }
               if (chunk.done) {
-                if (typeof chunk.verified === 'boolean') chatVerified = chunk.verified;
+                noteVerified(chunk);
                 if (chunk.action === 'connect_agent' && chunk.data) {
                   // The reference marks a lead SAGE created (see addConfirmationCard).
                   actionData = Object.assign({}, chunk.data, { reference: chunk.reference || '' });
@@ -1599,7 +1608,7 @@
               botText += lastChunk.text;
               if (botEl) botEl.innerHTML = formatChatText(botText);
             }
-            if (lastChunk.done && typeof lastChunk.verified === 'boolean') chatVerified = lastChunk.verified;
+            if (lastChunk.done) noteVerified(lastChunk);
             if (lastChunk.done && lastChunk.action === 'connect_agent' && lastChunk.data) {
               actionData = Object.assign({}, lastChunk.data, { reference: lastChunk.reference || '' });
               track('chatbot_agent_suggested', { category: 'engagement', agent: lastChunk.data.agent || '' });
@@ -1643,7 +1652,7 @@
     function resetChat() {
       chatSessionId = '';
       chatMessages = [];
-      chatVerified = false;
+      chatVerifiedFor = null;
       localStorage.removeItem('twa_chat_sid');
       localStorage.removeItem('twa_chat_messages');
       msgsArea.innerHTML = '';
