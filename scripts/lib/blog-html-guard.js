@@ -19,32 +19,38 @@
  *     javascript: or vbscript: URL (entity-encoded, or with a tab or newline
  *     inside the scheme, or leading controls), or a data: URL in a link,
  *     form or object target;
- *   - inside the post's <article>, any element that runs or loads active
- *     content or posts a form (ARTICLE_ACTIVE). The generator emits none of
- *     them there (ARTICLE_ACTIVE_ALLOWED is empty); the template's own
- *     scripts sit outside the article. A page with no <article> is checked
- *     whole, because the guard cannot tell its post from its template, except
- *     the blog listing (index.html, { listing: true }): it carries no post
- *     text, only encoded calendar titles and descriptions, and its own filter
- *     script sits in its <main>.
+ *   - inside the post, any element scripts/generate-blog.js does not put
+ *     there (POST_ELEMENTS, an allowlist) and any comment. The post is the
+ *     page's <article>; a page with no <article> is all post, because the
+ *     guard cannot tell its post from its template, except the blog listing
+ *     (index.html, { listing: true }), which carries no post text (only
+ *     encoded calendar titles and descriptions) and keeps its own filter
+ *     script in its <main>.
  *
- * The page is read by a walk that follows the HTML tokenizer's rules for tags,
- * attributes and comments (WHATWG HTML 13.2.5): attributes split on HTML
- * whitespace only, a quoted value may hold '>', end tags carry attributes,
- * and a comment ends at "<!-->", "<!--->", "-->" or "--!>". Whether an
- * element's content is markup or text depends on where it sits (<title> and
- * <style> are text in HTML but markup inside <svg>; <noscript> is text only
- * when scripting is on), so the page is walked twice and both readings must
- * be clean:
- *   1. every element's content as markup (<svg><title>, <textarea>, a
- *      scripting-off <noscript>, <xmp>);
- *   2. the HTML elements whose content is text, as text, with scripting on
- *      (script, style, xmp, iframe, noembed, noframes, noscript, title,
- *      textarea; plaintext to the end), which is where a "</noscript>" inside
- *      an attribute value ends the element early.
- * Reading 1 can refuse markup a browser shows as text (an <img onerror> typed
- * inside <textarea>): the guard fails closed. tests/blog-html-guard.test.js
- * checks it against jsdom, both ways.
+ * What is guaranteed, and where. The page is read by a walk that follows the
+ * HTML tokenizer's rules for tags, attributes and comments (WHATWG HTML
+ * 13.2.5): attributes split on HTML whitespace only, a quoted value may hold
+ * '>', end tags carry attributes, a comment ends at "<!-->", "<!--->", "-->"
+ * or "--!>". What it cannot follow without a tree builder is where an
+ * element's content stops being markup: <title>, <style>, <noscript>, <xmp>
+ * and <plaintext> are text in HTML but markup inside <svg> or <math>, and a
+ * comment or an open quote inside one shifts everything after it. So:
+ *   - Inside the post the allowlist closes that class: every element the
+ *     generator puts there leaves the tokenizer in its ordinary data state,
+ *     and a comment is refused, so the walk reads the post exactly as a
+ *     browser does. Whatever a browser would run from the post (an on* or
+ *     srcdoc attribute, a script URL, an element outside the allowlist) is
+ *     refused. tests/blog-html-guard.test.js checks every review payload
+ *     against jsdom, scripting off and on.
+ *   - Outside the post (the template the generator owns, where front matter
+ *     lands encoded) the page is walked twice and both readings must be
+ *     clean: every element's content as markup, then the HTML raw-text
+ *     elements (RAW_TEXT_ELEMENTS) as text with scripting on. These readings
+ *     are a backstop, not a proof: markup that nests a raw-text element
+ *     inside foreign content can mislead both. Nothing a post or a calendar
+ *     entry says reaches the template as markup.
+ * Either reading can refuse markup a browser shows as text: the guard fails
+ * closed.
  *
  * Why not a real parser: scripts/build.js and validate-build.js run where
  * Cloudflare builds and in CI's safe-build job, on Node 18 without npm ci.
@@ -69,10 +75,15 @@ const ALPHA = /[a-zA-Z]/;
 const RAW_TEXT_ELEMENTS = ['script', 'style', 'xmp', 'iframe', 'noembed', 'noframes', 'noscript', 'title', 'textarea'];
 // Attributes whose value a browser navigates to, submits to or loads as a document.
 const LINK_ATTRIBUTES = ['href', 'xlink:href', 'action', 'formaction', 'data'];
-// Elements that run or load active content, or post a form.
-const ARTICLE_ACTIVE = ['script', 'iframe', 'frame', 'frameset', 'object', 'embed', 'applet', 'portal', 'form', 'base', 'meta', 'link'];
-// Of those, the ones scripts/generate-blog.js puts inside a post's <article>: none.
-const ARTICLE_ACTIVE_ALLOWED = [];
+// Every element scripts/generate-blog.js puts inside a post's <article>: the
+// markdown renderer (p, h2-h4, strong, em, a, ul, li, blockquote, hr, div and
+// span for stat highlights), the template (figure and img for a featured
+// image, the byline, share and Copy Link buttons with their svg icons, the
+// table of contents, the FAQ, the mid-post CTA, Related Coverage) and the
+// Related Articles and local-help blocks added after it. None of them is a
+// raw-text, RCDATA or script element, so none changes how what follows is
+// tokenized. The 78 pages built on 2026-10-04 use a subset of these.
+const POST_ELEMENTS = ['a', 'blockquote', 'button', 'div', 'em', 'figure', 'h2', 'h3', 'h4', 'hr', 'img', 'li', 'nav', 'p', 'path', 'section', 'span', 'strong', 'svg', 'ul'];
 const NAMED_ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", colon: ':', tab: '\t', newline: '\n', nbsp: ' ', sol: '/', lpar: '(', rpar: ')', period: '.', comma: ',', semi: ';', equals: '=', excl: '!', num: '#' };
 
 /** An attribute value as the browser reads it: character references decoded once. */
@@ -158,11 +169,12 @@ function _readTag(s, j) {
 }
 
 /**
- * Every start and end tag in the page, with attributes.
+ * Every start tag, end tag and comment in the page (comments, DOCTYPEs, CDATA
+ * and bogus comments as { comment: true, at }).
  * @param {string} html
  * @param {{rawText?: boolean}} [opts]  rawText: read the RAW_TEXT_ELEMENTS'
  *   content as text (reading 2); else every element's content is markup (reading 1)
- * @returns {Array<{tag:string, attrs:Array<{name:string, value:string|null}>, at:number, end?:true}>}
+ * @returns {Array<{tag?:string, attrs?:Array<{name:string, value:string|null}>, at:number, end?:true, comment?:true}>}
  */
 function tokens(html, { rawText = false } = {}) {
   const s = String(html === undefined || html === null ? '' : html);
@@ -173,8 +185,8 @@ function tokens(html, { rawText = false } = {}) {
     const lt = s.indexOf('<', i);
     if (lt < 0) break;
     const c = s[lt + 1] || '';
-    if (s.startsWith('<!--', lt)) { i = _commentEnd(s, lt + 4); continue; }
-    if (c === '!' || c === '?') { i = _afterGt(s, lt + 2); continue; } // DOCTYPE, CDATA, bogus comments
+    if (s.startsWith('<!--', lt)) { out.push({ comment: true, at: lt }); i = _commentEnd(s, lt + 4); continue; }
+    if (c === '!' || c === '?') { out.push({ comment: true, at: lt }); i = _afterGt(s, lt + 2); continue; } // DOCTYPE, CDATA, bogus comments
     if (c === '/') {
       const c2 = s[lt + 2] || '';
       if (ALPHA.test(c2)) {
@@ -182,6 +194,7 @@ function tokens(html, { rawText = false } = {}) {
         out.push({ tag: t.tag, attrs: t.attrs, at: lt, end: true });
         i = t.next;
       } else {
+        if (c2 !== '>') out.push({ comment: true, at: lt }); // "</" + other: a bogus comment
         i = c2 === '>' ? lt + 3 : _afterGt(s, lt + 2);
       }
       continue;
@@ -200,7 +213,7 @@ function tokens(html, { rawText = false } = {}) {
 
 /** Start tags only (reading 1 by default). */
 function startTags(html, opts) {
-  return tokens(html, opts).filter((t) => !t.end);
+  return tokens(html, opts).filter((t) => !t.end && !t.comment);
 }
 
 /**
@@ -208,7 +221,7 @@ function startTags(html, opts) {
  * <article>, else the whole page; null for the listing page (no post).
  */
 function _postRange(toks, listing) {
-  const open = toks.find((t) => !t.end && t.tag === 'article');
+  const open = toks.find((t) => !t.end && !t.comment && t.tag === 'article');
   if (!open) return listing ? null : [-1, Infinity];
   const closes = toks.filter((t) => t.end && t.tag === 'article' && t.at > open.at);
   return [open.at, closes.length ? closes[closes.length - 1].at : Infinity];
@@ -230,10 +243,16 @@ function blogHtmlProblems(html, rel = 'blog page', { listing = false } = {}) {
   const asText = tokens(s, { rawText: true });
   const asMarkup = tokens(s);
   const post = _postRange(asText, listing);
+  const where = post && post[0] < 0 ? 'on a page with no <article> (all post)' : 'inside the post\'s <article>';
+  const inPost = (t) => post && t.at > post[0] && t.at < post[1];
   for (const t of [...asMarkup, ...asText]) {
     if (t.end) continue;
-    if (post && t.at > post[0] && t.at < post[1] && ARTICLE_ACTIVE.includes(t.tag) && !ARTICLE_ACTIVE_ALLOWED.includes(t.tag)) {
-      problems.add(`${rel}: <${t.tag}> ${post[0] < 0 ? 'on a page with no <article> (checked whole)' : 'inside the post\'s <article>'}; the generator puts no ${ARTICLE_ACTIVE.join(', ')} in a post`);
+    if (t.comment) {
+      if (inPost(t)) problems.add(`${rel}: a comment, DOCTYPE or CDATA ${where} at character ${t.at} (the generator writes none in a post)`);
+      continue;
+    }
+    if (inPost(t) && !POST_ELEMENTS.includes(t.tag)) {
+      problems.add(`${rel}: <${t.tag}> ${where}; the generator puts only ${POST_ELEMENTS.join(', ')} in a post`);
     }
     for (const a of t.attrs) {
       if (/^on/.test(a.name)) {
@@ -256,4 +275,4 @@ function blogHtmlProblems(html, rel = 'blog page', { listing = false } = {}) {
   return [...problems];
 }
 
-module.exports = { blogHtmlProblems, tokens, startTags, decodeOnce, schemeOf, ARTICLE_ACTIVE, ARTICLE_ACTIVE_ALLOWED, RAW_TEXT_ELEMENTS };
+module.exports = { blogHtmlProblems, tokens, startTags, decodeOnce, schemeOf, POST_ELEMENTS, RAW_TEXT_ELEMENTS };

@@ -478,6 +478,11 @@ function renderDecision(entry, rawBytes, team, opts) {
   const unsafe = frontMatterProblem(text);
   if (unsafe) return { render: false, credit: false, markdown: '', why: `${unsafe} (unsafe_frontmatter)` };
   if (!entry) return { render: true, credit: false, markdown: stripped(), why: 'not on the content calendar' };
+  // Its calendar title and description print on the blog index and in
+  // Related Articles: a post whose entry the build would refuse is not
+  // rendered (sage-server BL-54; blog-content-guard.js scriptTextProblem).
+  const scriptText = contentGuard.scriptTextProblem(entry);
+  if (scriptText) return { render: false, credit: false, markdown: '', why: `its calendar entry: ${scriptText} (unsafe_calendar_text)` };
   const status = entry.status;
   if (isHeld(status)) return { render: false, credit: false, markdown: '', why: 'its reviewer requested changes; it renders once they approve a version in SAGE or the hold is released' };
   if (status === 'error') return { render: false, credit: false, markdown: '', why: `the publisher put it in error (${entry.error_reason || 'no reason recorded'})` };

@@ -298,8 +298,9 @@ console.log('  ✓ Legal pages clean (em dashes / anchors)');
   console.log('  ✓ Entity schema: one #organization entity, no invented locations, no review markup');
 }
 // 11a2. Guard: no built blog page runs script it was not built with (sage-server
-//       BL-54, AIA-089): no "javascript:", no event-handler attribute, no script
-//       URL (scripts/lib/blog-html-guard.js). AI-written posts arrive as SAGE
+//       BL-54, AIA-089): no "javascript:", no event-handler or srcdoc attribute,
+//       no script URL, and inside a post only the generator's elements and no
+//       comment (scripts/lib/blog-html-guard.js). AI-written posts arrive as SAGE
 //       publish commits, which skip CI, so the guard runs here, where Cloudflare
 //       Pages builds: a failure keeps the last good deploy live.
 {
@@ -314,7 +315,7 @@ console.log('  ✓ Legal pages clean (em dashes / anchors)');
     if (blogProblems.length > 50) console.error(`  ... and ${blogProblems.length - 50} more`);
     throw new Error(`Blog HTML guard failed (${blogProblems.length} issue(s)).`);
   }
-  console.log(`  ✓ Blog HTML: ${blogPages.length} blog pages carry no javascript:, no event-handler attribute and no script URL`);
+  console.log(`  ✓ Blog HTML: ${blogPages.length} blog pages carry no javascript:, no event-handler attribute and no script URL; their posts hold only the generator's elements`);
 }
 // The Google rating badge renders only from a fresh sync with a listing URL (TRUST-14).
 if (_reviews) console.log(`  ✓ Review badge: "${_reviews.rating} on Google", ${_reviews.count} reviews, synced ${_reviews.syncedAt.slice(0, 10)}`);
