@@ -93,13 +93,17 @@
   // A/B TESTING FRAMEWORK
   // ═══════════════════════════════════════════════
   const AB_EXPERIMENTS = {
-    'hero-cta': {
+    // v2 replaces 'hero-cta' (control / free-quote / 'Compare Rates Now'):
+    // the button opens the intake form, not a live rate comparison, so the
+    // 'compare' arm promised something the page does not do. New name, not an
+    // edited arm list: changing the arm count re-buckets returning visitors.
+    // The data-ab-test="hero-cta" selector is the button, not the test name.
+    'hero-cta-v2': {
       variants: {
         control: { '[data-ab-test="hero-cta"]': null },
         'free-quote': { '[data-ab-test="hero-cta"]': 'Get a Free Quote' },
-        'compare': { '[data-ab-test="hero-cta"]': 'Compare Rates Now' },
       },
-      // Uniform 1/3 split — hashAssign has never read weights; a weighted
+      // Uniform split — hashAssign has never read weights; a weighted
       // rollout must launch as a NEW test name (re-bucketing mid-test
       // contaminates returning-visitor assignment).
     },
