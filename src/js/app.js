@@ -93,13 +93,17 @@
   // A/B TESTING FRAMEWORK
   // ═══════════════════════════════════════════════
   const AB_EXPERIMENTS = {
-    'hero-cta': {
+    // v2 replaces 'hero-cta' (control / free-quote / 'Compare Rates Now'):
+    // the button opens the intake form, not a live rate comparison, so the
+    // 'compare' arm promised something the page does not do. New name, not an
+    // edited arm list: changing the arm count re-buckets returning visitors.
+    // The data-ab-test="hero-cta" selector is the button, not the test name.
+    'hero-cta-v2': {
       variants: {
         control: { '[data-ab-test="hero-cta"]': null },
         'free-quote': { '[data-ab-test="hero-cta"]': 'Get a Free Quote' },
-        'compare': { '[data-ab-test="hero-cta"]': 'Compare Rates Now' },
       },
-      // Uniform 1/3 split — hashAssign has never read weights; a weighted
+      // Uniform split — hashAssign has never read weights; a weighted
       // rollout must launch as a NEW test name (re-bucketing mid-test
       // contaminates returning-visitor assignment).
     },
@@ -137,6 +141,24 @@
         if (newText === null) return; // control — no change
         const el = document.querySelector(selector);
         if (el) el.textContent = newText;
+      });
+
+      // Tag what the test owns, control included, so a click and the lead it
+      // starts name the test and arm instead of leaning on the date: the old
+      // 'hero-cta' and 'hero-cta-v2' share button labels. cta_click carries
+      // the data-ab-* pair; an /intake/ link carries ab=<test>.<arm>, which
+      // SAGE keeps in the lead's lead_page.
+      Object.keys(changes).forEach((selector) => {
+        $$(selector).forEach((el) => {
+          el.dataset.abExperiment = testName;
+          el.dataset.abVariant = chosenName;
+          const href = el.getAttribute('href');
+          if (href && href.startsWith('/intake/')) {
+            const u = new URL(href, window.location.origin);
+            u.searchParams.set('ab', testName + '.' + chosenName);
+            el.setAttribute('href', u.pathname + u.search);
+          }
+        });
       });
 
       // Optional behavior callback (for variants that need more than text-swap)
@@ -712,6 +734,7 @@
     const hero = document.querySelector('.hero__actions a[href^="/intake/"], .hero a.btn[href^="/intake/"]');
     const u = new URL(hero ? hero.getAttribute('href') : getIntakeUrl(), window.location.origin);
     u.searchParams.set('src', 'sticky');
+    u.searchParams.delete('ab'); // the hero's A/B tag names the hero button, not this bar
     return u.pathname + u.search;
   }
 
@@ -857,6 +880,8 @@
           page_path: window.location.pathname,
           destination: el.getAttribute('href') || '',
           position: getElementPosition(el),
+          // Same keys as ab_exposure, only on a button an A/B test owns.
+          ...(el.dataset.abExperiment ? { test_name: el.dataset.abExperiment, variant: el.dataset.abVariant } : {}),
         });
       });
     });
