@@ -1,0 +1,72 @@
+name: Topic Approval Digest
+
+# Sends the topic-approval digest (scripts/send-approval-digest.js) and commits
+# its snapshot in the same run (BL-78, sage AIA-121). SAGE binds a reply's
+# "approve 2" / "approve all" to the digest's recorded slug list in
+# data/content-backlog.json (digests[]) on main, so a digest that was sent but
+# not committed approves nothing: every reply to it is answered "Topic
+# approval not applied: no_digest_binding".
+#
+# Manual only. Topics are approved on SAGE's Proposed topics page; whether this
+# digest also goes out on a schedule is an owner decision (add a `schedule:`
+# trigger then). APPROVAL_TO (ONE address) and APPROVAL_CC (one address or a
+# comma-separated list) are repository variables, optional; a second To exits
+# 2 before anything is sent. Each must be an active SAGE user: SAGE mails only
+# active users and accepts approvals only from the digest's recipients.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# The publish run (fill-slots) also writes the backlog; one at a time keeps the
+# push below from being refused for an overlap (a refused push leaves a digest
+# that was sent but approves nothing). The group is shared with
+# publish-blog.yml and review-reminders.yml, and GitHub keeps one PENDING run
+# per group: dispatching this while one of them runs and another waits
+# replaces the waiting one (shown cancelled, grey). That can drop a pending
+# publish run (due posts wait for the next Wed/Sat run or a dispatch by hand)
+# or a day's review reminders. So dispatch this when no other run of the group
+# is queued (Actions tab). A digest run cancelled while waiting sent nothing.
+concurrency:
+  group: blog-review-calendar
+  cancel-in-progress: false
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # Exit 0 = sent (the snapshot is written to data/content-backlog.json),
+      # or nothing is proposed. Exit 2 = a setting is missing or the send
+      # failed; nothing is written.
+      - name: Send the topic-approval digest
+        env:
+          SAGE_API_URL: ${{ secrets.SAGE_API_URL }}
+          SAGE_API_TOKEN: ${{ secrets.SAGE_API_TOKEN }}
+          SAGE_CLIENT_ID: ${{ secrets.SAGE_CLIENT_ID }}
+          APPROVAL_TO: ${{ vars.APPROVAL_TO }}
+          APPROVAL_CC: ${{ vars.APPROVAL_CC }}
+        run: node scripts/send-approval-digest.js
+
+      # The snapshot SAGE binds replies to. Pushed through scripts/git-push-rebase.sh
+      # (as publish-blog.yml): rebased onto anything SAGE committed meanwhile and
+      # pushed only when no unit it changed was changed meanwhile; otherwise
+      # nothing is pushed and this step fails (replies to the digest are then
+      # refused, never mis-applied).
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/content-backlog.json
+          git diff --cached --quiet && exit 0
+          git commit -m "digest: topic approval snapshot for $(date +%Y-%m-%d)"
+          bash scripts/git-push-rebase.sh main
