@@ -709,10 +709,10 @@
   </div>
   <div class="time-estimate" id="time-estimate">About 3 minutes left</div>
 
-  <!-- Step 1: Contact Info (name, email, phone first — address in step 3) -->
+  <!-- Step 1: Contact Info (name, email, phone, then the verified home address) -->
   <div id="step-1" class="card">
     <h2>Tell us about yourself</h2>
-    <p class="card-desc">We just need your name and contact info to get started.</p>
+    <p class="card-desc">We just need your name, contact info and home address to get started.</p>
     <div class="form-row">
       <div class="form-group">
         <label for="i_fname">First Name *</label>
@@ -742,12 +742,34 @@
          even asked where they lived. Asking here is what lets the gate work at all.
          Full 50-state list on purpose: see the comment on renderStateOptions().
          Tickets b18ef40b, c2cc96ea. -->
-    <div class="form-group" id="state-group" style="max-width:280px;">
+    <!-- Home address (owner, 2026-10-07): ONE Google-verified line, and the
+         state comes FROM it. It counts only once the visitor picks a Places
+         suggestion that is a full US street address; see the verified-address
+         block in the script. If Maps/Places cannot load it degrades to a plain
+         required line plus the State select below (address_verified = false);
+         Google being down never blocks a lead. -->
+    <div class="form-group" id="addr-group">
+      <label for="i_address">Home address <span style="color:#ef4444">*</span></label>
+      <input type="text" id="i_address" required autocomplete="off" placeholder="Start typing your address" oninput="_onAddrInput(this)" aria-describedby="addr-verify-hint addr-verify-msg addr-verify-note">
+      <p id="addr-verify-hint" class="addr-verify-hint">Start typing, then pick your address from the list.</p>
+      <!-- Not role="alert": #step1-error announces the same text; this one is
+           read with the field (aria-describedby). -->
+      <p id="addr-verify-msg" class="addr-verify-msg" hidden></p>
+      <p id="addr-verify-note" class="addr-verify-hint" hidden>We couldn't match this address with Google, so your agent will confirm it with you.</p>
+    </div>
+    <input type="hidden" id="i_address_street">
+    <input type="hidden" id="i_city">
+    <input type="hidden" id="i_zip">
+    <!-- The State <select> still lives in step 1 (the out-of-area gate below and
+         scripts/check-intake-gate.js need it there) but it is HIDDEN while Places
+         works: a verified pick sets it via syncStateFromAutocomplete(). It is
+         shown, and required, only in the Google-unavailable fallback. -->
+    <div class="form-group" id="state-group" style="max-width:280px;" hidden>
       <label for="i_state">What state are you in? <span style="color:#ef4444">*</span></label>
       <select id="i_state" required onchange="onStateChange()"></select>
-      <div id="state-hint" style="font-size:12px;color:#6b7280;margin-top:4px;"></div>
-      <div id="state-oos" style="display:none;font-size:13px;color:#7c2d12;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;margin-top:8px;line-height:1.5;"></div>
     </div>
+    <div id="state-hint" style="font-size:12px;color:#6b7280;margin:-8px 0 8px;"></div>
+    <div id="state-oos" style="display:none;font-size:13px;color:#7c2d12;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;margin:0 0 16px;line-height:1.5;"></div>
     <!-- Business name — revealed by initGrid() only for commercial-line arrivals -->
     <div class="form-group" id="biz-name-step1-group" style="display:none">
       <label for="i_biz_name_1">Business Name <span style="color:#ef4444">*</span></label>
@@ -802,27 +824,8 @@
     <!-- Section 1: Your Information (always shown) -->
     <div style="margin-bottom:24px;">
       <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Your Information</div>
-      <div class="form-group">
-        <!-- ONE Google-verified line (owner, 2026-10-07): it counts only once
-             the visitor picks a Places suggestion that is a full US street
-             address. If Maps/Places cannot load it degrades to a plain required
-             line (formData.address_verified = false); Google being down never
-             blocks a lead. See the address-verification block in the script. -->
-        <label for="i_address">Home address <span style="color:#ef4444">*</span></label>
-        <input type="text" id="i_address" required autocomplete="off" placeholder="Start typing your address" oninput="_onAddrInput(this)" aria-describedby="addr-verify-hint addr-verify-msg addr-verify-note">
-        <p id="addr-verify-hint" class="addr-verify-hint">Start typing, then pick your address from the list.</p>
-        <!-- Not role="alert": #step3-error announces the same text; this one is
-             read with the field (aria-describedby). -->
-        <p id="addr-verify-msg" class="addr-verify-msg" hidden></p>
-        <p id="addr-verify-note" class="addr-verify-hint" hidden>We couldn't match this address with Google, so your agent will confirm it with you.</p>
-      </div>
-      <input type="hidden" id="i_address_street">
-      <input type="hidden" id="i_city">
-      <input type="hidden" id="i_zip">
-      <!-- The State <select> moved to STEP 1 (see the comment there). Places
-           autocomplete on the address above still writes to it via
-           syncStateFromAutocomplete(), so an address that disagrees with the
-           step-1 answer still surfaces the decline — checked again in nextStep(3). -->
+      <!-- The home address moved to STEP 1 (owner, 2026-10-07): it is asked once,
+           there, and the state comes from it. -->
       <div class="form-group" id="dob-group" style="max-width:280px;">
         <label for="i_dob">Date of Birth <span id="dob-req-star" style="color:#ef4444;display:none">*</span></label>
         <input type="text" id="i_dob" placeholder="MM/DD/YYYY" maxlength="10" inputmode="numeric" autocomplete="bday">
@@ -1402,7 +1405,7 @@ var addrVerify = { place: null, fallback: false, reason: '', incomplete: false, 
 var ADDR_PICK_MSG = 'Please pick your address from the suggestions.';
 var ADDR_FULL_MSG = 'Please pick a full street address (house number and ZIP) from the suggestions.';
 var ADDR_TYPED_MSG = 'Please pick your address from the suggestions, or type the full address with house number and ZIP.';
-var ADDR_MAPS_WAIT_MS = 3000;   // how long Review waits for a still-loading Places
+var ADDR_MAPS_WAIT_MS = 3000;   // how long Continue waits for a still-loading Places
 // For funnel events: 'verified' | 'fallback' | 'pending'. trackIntake() runs
 // before this line on first load (intake_start), so guard the hoisted var.
 function addressVerifiedState() {
@@ -1466,8 +1469,15 @@ function enterAddressFallback(reason) {
   if (inp) { inp.placeholder = '123 Main St, Louisville, KY 40202'; inp.setAttribute('autocomplete', 'street-address'); }
   var hint = document.getElementById('addr-verify-hint');
   if (hint) hint.hidden = true;
+  // Without a verified place there is no derived state: ask for it, so the
+  // out-of-area decline still works when Google does not.
+  showStateSelect(true);
   setAddrMsg('');
   trackIntake('intake_address_fallback', { reason: reason });
+}
+function showStateSelect(show) {
+  var g = document.getElementById('state-group');
+  if (g) g.hidden = !show;
 }
 // A Maps key/billing/quota rejection: Google calls this global.
 if (!window.gm_authFailure) window.gm_authFailure = function () { enterAddressFallback('maps_auth_failure'); };
@@ -1479,8 +1489,8 @@ function plausibleTypedAddress(line) {
   return !!m && /[A-Za-z]/.test(m[2]) && /(^|\D)\d{5}(-\d{4})?(\D|$)/.test(m[2]);
 }
 
-// Step-3 check (nextStep(3)). Returns a message or ''. `onlyProblem` is true
-// when every OTHER step-3 field passed: only then does a refusal count toward
+// Step-1 check (nextStep(1)). Returns a message or ''. `onlyProblem` is true
+// when every OTHER step-1 field passed: only then does a refusal count toward
 // the no-pick escape, so fixing some other field never spends attempts.
 // Waits briefly (button shows "Checking address…") for a still-loading Places
 // before deciding it is unavailable.
@@ -1490,7 +1500,7 @@ async function homeAddressProblem(onlyProblem) {
   if (addrVerify.place || addrVerify.fallback) return '';
   var el = document.getElementById('i_address');
   if (!el || el.dataset.acBound !== '1') {
-    var btn = document.querySelector('#step-3 [data-action="next-step"]');
+    var btn = document.querySelector('#step-' + currentStep + ' [data-action="next-step"]');
     // Overlapping waits (double-click): the idle label is saved only by the
     // first, and only the last to finish restores it, so the button can never
     // be left reading "Checking address…".
@@ -2821,7 +2831,8 @@ function showStep(n) {
   // Track step completion for the step we're leaving
   if (currentStep && currentStep !== n) trackStepComplete(currentStep);
   currentStep = n;
-  // Google Maps loads when the visitor leaves step 1 (PERF-06): step 2 prefetches it
+  // Google Maps loads on first use of the step-1 home address, or else when the
+  // visitor leaves step 1 (PERF-06): step 2 prefetches it
   // while they pick products, step 3 binds the address fields it re-renders.
   if (n >= 2) ensureIntakeMaps();
   if (n === 3) { renderProductQuestions(); bindIntakeAutocompletes(); }
@@ -2841,7 +2852,19 @@ async function nextStep(from) {
     if (!v('i_phone')) { err.textContent = 'Phone number is required.'; err.classList.remove('hidden'); trackValidationError(1, 'missing_phone'); return; }
     if (!isValidEmail(v('i_email'))) { err.textContent = 'Please enter a valid email address.'; err.classList.remove('hidden'); trackValidationError(1, 'invalid_email'); return; }
     if (!isValidPhone(v('i_phone'))) { err.textContent = 'Please enter a valid 10-digit phone number.'; err.classList.remove('hidden'); trackValidationError(1, 'invalid_phone'); return; }
-    if (!v('i_state')) { err.textContent = 'Please choose your state.'; err.classList.remove('hidden'); trackValidationError(1, 'missing_state'); return; }
+    // Business name is required up front for commercial-line arrivals (field is visible only then).
+    const bizGrp = document.getElementById('biz-name-step1-group');
+    if (bizGrp && bizGrp.style.display !== 'none' && !v('i_biz_name_1')) {
+      err.textContent = 'Please enter your business name.'; err.classList.remove('hidden'); trackValidationError(1, 'missing_business_name'); return;
+    }
+    // The verified home address runs LAST of the field checks, so a refusal
+    // counts toward the no-pick escape only when it is the sole problem left
+    // (every check above returns early). Its pick sets the state.
+    const addrProblem = await homeAddressProblem(true);
+    if (addrProblem) { err.textContent = addrProblem; err.classList.remove('hidden'); trackValidationError(1, v('i_address') ? 'address_not_verified' : 'missing_address'); return; }
+    // Only the Google-unavailable fallback shows the State select; without a
+    // verified place it is required there.
+    if (!v('i_state')) { err.textContent = 'Please choose your state.'; err.classList.remove('hidden'); trackValidationError(1, 'missing_state'); showStateSelect(true); return; }
     // The decline. This return is what stops trackPartial(true) below from firing —
     // and trackPartial(true) is the call that persists the lead and pages a
     // producer. Turning someone away has to happen HERE, before that, or we have
@@ -2850,13 +2873,8 @@ async function nextStep(from) {
       err.classList.add('hidden');
       showOutOfArea();
       trackValidationError(1, 'out_of_area');
-      document.getElementById('state-group').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.getElementById('addr-group').scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
-    }
-    // Business name is required up front for commercial-line arrivals (field is visible only then).
-    const bizGrp = document.getElementById('biz-name-step1-group');
-    if (bizGrp && bizGrp.style.display !== 'none' && !v('i_biz_name_1')) {
-      err.textContent = 'Please enter your business name.'; err.classList.remove('hidden'); trackValidationError(1, 'missing_business_name'); return;
     }
     err.classList.add('hidden');
 
@@ -2883,7 +2901,7 @@ async function nextStep(from) {
     // from before we changed the states we write.)
     if (await trackPartial(true) === 'declined') {
       trackValidationError(1, 'out_of_area_server');
-      document.getElementById('state-group').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.getElementById('addr-group').scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
   }
@@ -2898,7 +2916,7 @@ async function nextStep(from) {
   }
   if (from === 3) {
     const err = document.getElementById('step3-error');
-    // The address may have autocompleted to a state that contradicts step 1.
+    // The cart may have changed the line since step 1 (the state is from step 1).
     if (mustDecline()) { showOutOfArea(); trackValidationError(3, 'out_of_area'); return; }
     const problems = [];
     // Validate auto: at least one vehicle with year+make+model
@@ -2927,10 +2945,6 @@ async function nextStep(from) {
     }
     const refProblem = referrerProblem();
     if (refProblem) { problems.push(refProblem); trackValidationError(3, 'referrer_name'); }
-    // The verified home address runs LAST: a refusal counts toward the no-pick
-    // escape only when it is the sole remaining step-3 problem.
-    const addrProblem = await homeAddressProblem(problems.length === 0);
-    if (addrProblem) { problems.push(addrProblem); trackValidationError(3, v('i_address') ? 'address_not_verified' : 'missing_address'); }
     if (problems.length) {
       // Expand all cards so the offending field (which may be collapsed) is visible.
       document.querySelectorAll('#product-questions .qcard').forEach(c => c.classList.add('open'));
@@ -4051,6 +4065,7 @@ function _onAddrInput(el) {
     addrVerify.fallback = false;
     addrVerify.reason = '';
     var _n = document.getElementById('addr-verify-note'); if (_n) _n.hidden = true;
+    showStateSelect(false);
   }
   ['i_city','i_zip'].forEach(function(id) { var e = document.getElementById(id); if (e) e.value = ''; });
 }
@@ -4094,7 +4109,7 @@ function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
     ac.addListener('place_changed', () => {
       const place = ac.getPlace();
       // The home address is verified only by a full-street-address pick.
-      if (inputId === 'i_address') { onHomeAddressPlace(place, input); scheduleTrack(); return; }
+      if (inputId === 'i_address') { onHomeAddressPlace(place, input); if (!mustDecline()) scheduleTrack(); return; }
       if (!place.address_components) return;
       const p = _parsePlaceAddress(place);
       input.value = p.full;
@@ -4150,6 +4165,15 @@ function _bindAutocompleteOnce(inputId, streetId, cityId, stateId, zipId) {
   _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId);
   el.dataset.acBound = '1';
 }
+// The home address is on step 1 now: start loading Maps the first time the
+// visitor reaches for that field (still not at parse time, PERF-06).
+(function () {
+  var a = document.getElementById('i_address');
+  if (!a) return;
+  var go = function () { ensureIntakeMaps(); };
+  a.addEventListener('focus', go, { once: true });
+  a.addEventListener('input', go, { once: true });
+})();
 function bindIntakeAutocompletes() {
   _bindAutocompleteOnce('i_address', 'i_address_street', 'i_city', 'i_state', 'i_zip');
   _bindAutocompleteOnce('i_ho_address', 'i_ho_address_street', 'i_ho_city', 'i_ho_state', 'i_ho_zip');

@@ -199,6 +199,9 @@ describe('source order and masks', () => {
       const late = w.document.createElement('div'); late.className = 'pac-container'; w.document.body.appendChild(late);
       w.document.getElementById('i_address').dispatchEvent(new w.Event('focus'));
       assert.equal(late.getAttribute('data-clarity-mask'), 'True');
+      // Focusing the (step-1) home address also starts the lazy Maps load; let
+      // it settle before the window closes.
+      await new Promise((r) => setTimeout(r, 50));
     } finally { w.close(); }
   });
 
