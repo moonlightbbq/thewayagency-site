@@ -154,11 +154,11 @@
   .form-group input.filled { border-color: var(--mint); background: #f0fdf8 }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
   .form-row-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px }
-  .ab-referrer { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px 0; margin: 0 0 16px; min-width: 0 }
-  .ab-referrer legend { font-weight: 600; color: var(--navy); font-size: 14px; padding: 0 4px }
-  .ab-referrer .ab-optional { font-weight: 400; color: var(--slate, #64748b) }
-  /* .form-row's display:grid would beat the UA [hidden] rule: control must never see these. */
-  #ab-addr-row[hidden], .ab-referrer[hidden] { display: none }
+  .referrer-box { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px 0; margin: 0 0 16px; min-width: 0 }
+  .referrer-box legend { font-weight: 600; color: var(--navy); font-size: 14px; padding: 0 4px }
+  .referrer-box .referrer-optional { font-weight: 400; color: var(--slate, #64748b) }
+  .addr-verify-hint { font-size: 12px; color: var(--slate, #64748b); margin: 4px 0 0 }
+  .addr-verify-msg { font-size: 13px; color: #b91c1c; margin: 4px 0 0 }
 
   /* ─── Products ─── */
   .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
@@ -803,24 +803,22 @@
     <div style="margin-bottom:24px;">
       <div style="font-weight:600;color:var(--navy);font-size:15px;margin-bottom:12px;">Your Information</div>
       <div class="form-group">
-        <label for="i_address">Mailing Address <span style="color:#ef4444">*</span></label>
-        <input type="text" id="i_address" required autocomplete="off" placeholder="123 Main St, Louisville, KY 40202" oninput="_onAddrInput(this)">
+        <!-- ONE Google-verified line (owner, 2026-10-07): it counts only once
+             the visitor picks a Places suggestion that is a full US street
+             address. If Maps/Places cannot load it degrades to a plain required
+             line (formData.address_verified = false); Google being down never
+             blocks a lead. See the address-verification block in the script. -->
+        <label for="i_address">Home address <span style="color:#ef4444">*</span></label>
+        <input type="text" id="i_address" required autocomplete="off" placeholder="Start typing your address" oninput="_onAddrInput(this)" aria-describedby="addr-verify-hint addr-verify-msg addr-verify-note">
+        <p id="addr-verify-hint" class="addr-verify-hint">Start typing, then pick your address from the list.</p>
+        <!-- Not role="alert": #step3-error announces the same text; this one is
+             read with the field (aria-describedby). -->
+        <p id="addr-verify-msg" class="addr-verify-msg" hidden></p>
+        <p id="addr-verify-note" class="addr-verify-hint" hidden>We couldn't match this address with Google, so your agent will confirm it with you.</p>
       </div>
       <input type="hidden" id="i_address_street">
       <input type="hidden" id="i_city">
       <input type="hidden" id="i_zip">
-      <!-- A/B 'intake-address-referrer' (arm 'full-address'): this row stays
-           hidden for control. The variant moves #i_city / #i_zip in here,
-           makes them visible required text inputs, and relabels the box above
-           "Street Address". See applyAddressReferrerVariant(). -->
-      <div class="form-row" id="ab-addr-row" hidden>
-        <div class="form-group" id="ab-city-group">
-          <label for="i_city">City <span style="color:#ef4444">*</span></label>
-        </div>
-        <div class="form-group" id="ab-zip-group">
-          <label for="i_zip">ZIP Code <span style="color:#ef4444">*</span></label>
-        </div>
-      </div>
       <!-- The State <select> moved to STEP 1 (see the comment there). Places
            autocomplete on the address above still writes to it via
            syncStateFromAutocomplete(), so an address that disagrees with the
@@ -829,13 +827,12 @@
         <label for="i_dob">Date of Birth <span id="dob-req-star" style="color:#ef4444;display:none">*</span></label>
         <input type="text" id="i_dob" placeholder="MM/DD/YYYY" maxlength="10" inputmode="numeric" autocomplete="bday">
       </div>
-      <!-- A/B 'intake-address-referrer' (arm 'full-address'): optional referrer.
-           Hidden (and never sent) for control. These are a THIRD PARTY's details,
+      <!-- Optional referrer (owner, 2026-10-07). These are a THIRD PARTY's details,
            so autocomplete is off (never the applicant's own autofill), they are
            left out of DRAFT_FIELD_IDS and out of the offline-replay queue: they
            are never written to localStorage. Only the live POST carries them. -->
-      <fieldset id="ab-referrer" class="ab-referrer" hidden>
-        <legend>Who referred you? <span class="ab-optional">(optional)</span></legend>
+      <fieldset id="referrer-box" class="referrer-box">
+        <legend>Who referred you? <span class="referrer-optional">(optional)</span></legend>
         <div class="form-row">
           <div class="form-group">
             <label for="i_ref_name">Their name</label>
@@ -1181,11 +1178,9 @@ function trackIntake(eventName, params) {
     event_category: 'intake',
     intake_source: _funnelData.source,
     intake_agent: _funnelData.agent,
-    // A/B 'intake-address-referrer': a test-specific param (not the generic
-    // test_name/variant, which would collide with the next test and mislabel
-    // the other live intake tests), so funnel steps, abandonment and
-    // intake_complete split by arm in GA4. Exposure stays on ab_exposure.
-    ab_addr_ref: getAddrRefArm(),
+    // Verified home address: 'verified' | 'fallback' (Places down / no pick,
+    // sent as address_verified=false) | 'pending' (not answered yet).
+    address_verified: addressVerifiedState(),
     ...params,
   });
   if (window.CONFIG?.debug || new URLSearchParams(window.location.search).has('twa_debug')) {
@@ -1388,101 +1383,183 @@ function getTrackingIds() { return TWA.getTrackingIds(); }
   TWA.pushExposure('intake-call-or-text', textVariant);
 })();
 
-// ── A/B 'intake-address-referrer' (owner decision 2026-10-07) ───────────────
-// control      = today's step 3: one "Mailing Address" box (Places autocomplete
-//                fills hidden city/ZIP only when a suggestion is picked).
-// full-address = "Street Address" + visible, REQUIRED City and ZIP, plus an
-//                optional "Who referred you?" block (name + email or phone).
-// Uniform 50/50 (promoting the variant to 100% is a code change, not a re-weight). Control's DOM, validation and POST body stay
-// byte-for-byte today's: every variant branch below checks isFullAddressArm().
-// SAGE contract: sage-server #1067 (address/city/state/zip + referredBy*).
-// Assigned lazily: trackIntake('intake_start') runs earlier in this script than
-// this block, and every intake_* event must already carry the arm. The hash is
-// deterministic, so assigning on first use changes nothing about the bucket.
-// (Hence the literal test name everywhere: a hoisted `var` holding it would
-// still be undefined when that first event fires.)
-//
-// NOT TWA.assignVariant: its hashAssign (h*31 + c) is odd-multiplier, so
-// hash % 2 is just the parity of the character sum of 'vid:test', and every
-// two-arm test gets the same split up to a fixed flip — this arm would be
-// fully confounded with 'dob-required' and 'intake-call-or-text'. hashAssign
-// itself must not change (it would re-bucket those live tests mid-flight), so
-// this test runs the same 32-bit string hash through the murmur3 fmix32
-// finalizer, which mixes the high bits into bit 0: deterministic per visitor
-// (returning visitors keep their arm) and independent of the other tests.
-// ?force_variant= is honored like TWA.assignVariant. Without attribution.js
-// (the resilience stub) it pins control, as the stub does for every test.
-var addrRefArm;
-function addrRefBucket(visitorId) {
-  var str = visitorId + ':intake-address-referrer', h = 0;
-  for (var i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
-  h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b);
-  h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35);
-  h ^= h >>> 16;
-  return (h >>> 0) % 2;
-}
-function getAddrRefArm() {
-  if (!addrRefArm) {
-    var arms = ['control', 'full-address'];
-    var force = null;
-    try { force = new URLSearchParams(window.location.search).get('force_variant'); } catch (e) {}
-    if (force && arms.indexOf(force) !== -1) addrRefArm = force;
-    else if (window.TWA && typeof TWA.hashAssign === 'function' && TWA.getVisitorId()) { // real attribution.js, not the stub
-      addrRefArm = arms[addrRefBucket(TWA.getVisitorId())];
-    } else addrRefArm = 'control';
-  }
-  return addrRefArm;
-}
-function isFullAddressArm() { return getAddrRefArm() === 'full-address'; }
-function applyAddressReferrerVariant() {
-  if (!isFullAddressArm()) return;
-  document.body.classList.add('twa-ab-full-address');
-  var street = document.getElementById('i_address');
-  var streetLabel = document.querySelector('label[for="i_address"]');
-  if (streetLabel) streetLabel.innerHTML = 'Street Address <span style="color:#ef4444">*</span>';
-  if (street) {
-    street.placeholder = '123 Main St';
-    street.setAttribute('autocomplete', 'address-line1');
-  }
-  var row = document.getElementById('ab-addr-row');
-  [['i_city', 'ab-city-group', 'address-level2', 100], ['i_zip', 'ab-zip-group', 'postal-code', 10]].forEach(function (f) {
-    var inp = document.getElementById(f[0]);
-    var grp = document.getElementById(f[1]);
-    if (!inp || !grp) return;
-    inp.type = 'text';
-    inp.required = true;
-    inp.setAttribute('autocomplete', f[2]);
-    inp.setAttribute('maxlength', String(f[3]));
-    if (f[0] === 'i_zip') { inp.setAttribute('inputmode', 'numeric'); inp.setAttribute('placeholder', '40202'); }
-    grp.appendChild(inp);
-  });
-  if (row) row.hidden = false;
-  var ref = document.getElementById('ab-referrer');
-  if (ref) ref.hidden = false;
-}
-applyAddressReferrerVariant();
-TWA.pushExposure('intake-address-referrer', getAddrRefArm());
+// 'intake-address-referrer' (2026-10-07) is CONCLUDED: the owner promoted the
+// verified one-line address + optional referrer to 100% the same day, without
+// an A/B readout. No assignment, no ab_exposure, no ab_addr_ref param, no
+// formData.ab_test any more. Do not re-register the name.
 
-// Variant-only step-3 checks; control returns [] (today's validation untouched).
-function addressReferrerProblems() {
-  if (!isFullAddressArm()) return [];
-  var problems = [];
-  if (!v('i_city')) problems.push('Please enter your city.');
-  if (!/^\d{5}(-?\d{4})?$/.test(v('i_zip'))) problems.push('Please enter a valid 5-digit ZIP code.');
-  var refName = v('i_ref_name'), refContact = v('i_ref_contact');
-  if (refContact && !refName && refContact.indexOf('@') === -1) {
-    problems.push('Please add the name of the person who referred you.');
+// ── Verified home address (owner, 2026-10-07) ───────────────────────────────
+// Step 3 asks for ONE "Home address" line. It is satisfied only by picking a
+// Google Places suggestion that resolves to a full US street address
+// (street_number + route + locality/postal_town + state + postal_code). Typing,
+// or editing the text after a pick, invalidates it until a suggestion is picked
+// again. If Maps/Places cannot load or errors (network, quota, key, blocked),
+// the line becomes a plain required field and the lead goes out with
+// formData.address_verified = false: Google being down never blocks a lead.
+// From a verified pick the hidden fields carry the SAGE contract: address =
+// street line (number + route [+ #unit]), city, state (2-letter), zip (5-digit).
+var addrVerify = { place: null, fallback: false, reason: '', incomplete: false, blocked: 0 };
+var ADDR_PICK_MSG = 'Please pick your address from the suggestions.';
+var ADDR_FULL_MSG = 'Please pick a full street address (house number and ZIP) from the suggestions.';
+var ADDR_TYPED_MSG = 'Please pick your address from the suggestions, or type the full address with house number and ZIP.';
+var ADDR_MAPS_WAIT_MS = 3000;   // how long Review waits for a still-loading Places
+// For funnel events: 'verified' | 'fallback' | 'pending'. trackIntake() runs
+// before this line on first load (intake_start), so guard the hoisted var.
+function addressVerifiedState() {
+  if (!addrVerify) return 'pending';
+  return addrVerify.place ? 'verified' : addrVerify.fallback ? 'fallback' : 'pending';
+}
+function setAddrMsg(text) {
+  var m = document.getElementById('addr-verify-msg');
+  if (!m) return;
+  m.textContent = text || '';
+  m.hidden = !text;
+  var inp = document.getElementById('i_address');
+  if (inp) { if (text) inp.setAttribute('aria-invalid', 'true'); else inp.removeAttribute('aria-invalid'); }
+}
+function parseVerifiedPlace(place) {
+  if (!place || !place.address_components) return null;
+  var c = {};
+  place.address_components.forEach(function (comp) {
+    (comp.types || []).forEach(function (t) { if (!c[t]) c[t] = comp; });
+  });
+  var num = c.street_number && c.street_number.long_name;
+  var route = c.route && (c.route.short_name || c.route.long_name);
+  var cityC = c.locality || c.postal_town;
+  var city = cityC && cityC.long_name;
+  var state = c.administrative_area_level_1 && c.administrative_area_level_1.short_name;
+  var zip = c.postal_code && String(c.postal_code.long_name || '').slice(0, 5);
+  var country = c.country && c.country.short_name;
+  if (!num || !route || !city || !state || !/^\d{5}$/.test(zip || '') || (country && country !== 'US')) return null;
+  var street = num + ' ' + route + (c.subpremise ? ' #' + c.subpremise.long_name : '');
+  var formatted = place.formatted_address || (street + ', ' + city + ', ' + state + ' ' + zip);
+  return { street: street, city: city, state: String(state).toUpperCase(), zip: zip, formatted: formatted.replace(/, USA$/, ''), placeId: place.place_id || '' };
+}
+// place_changed on #i_address (see _bindPlacesAutocomplete).
+function onHomeAddressPlace(place, input) {
+  var p = parseVerifiedPlace(place);
+  var fill = function (id, val) { var el = document.getElementById(id); if (el) el.value = val; };
+  if (!p) {
+    addrVerify.place = null;
+    addrVerify.incomplete = !!(place && place.address_components);
+    ['i_address_street', 'i_city', 'i_zip'].forEach(function (id) { fill(id, ''); });
+    setAddrMsg(addrVerify.incomplete ? ADDR_FULL_MSG : ADDR_PICK_MSG);
+    return;
   }
-  return problems;
+  addrVerify.place = p;
+  addrVerify.incomplete = false;
+  addrVerify.blocked = 0;
+  input.value = p.formatted;
+  fill('i_address_street', p.street);
+  fill('i_city', p.city);
+  fill('i_zip', p.zip);
+  // The verified state wins over the step-1 answer, and the existing
+  // out-of-area check re-runs (nextStep(3) declines via mustDecline()).
+  syncStateFromAutocomplete(p.state);
+  setAddrMsg('');
+}
+function enterAddressFallback(reason) {
+  if (addrVerify.place || addrVerify.fallback) return;
+  addrVerify.fallback = true;
+  addrVerify.reason = reason;
+  var inp = document.getElementById('i_address');
+  if (inp) { inp.placeholder = '123 Main St, Louisville, KY 40202'; inp.setAttribute('autocomplete', 'street-address'); }
+  var hint = document.getElementById('addr-verify-hint');
+  if (hint) hint.hidden = true;
+  setAddrMsg('');
+  trackIntake('intake_address_fallback', { reason: reason });
+}
+// A Maps key/billing/quota rejection: Google calls this global.
+if (!window.gm_authFailure) window.gm_authFailure = function () { enterAddressFallback('maps_auth_failure'); };
+
+// A typed line plausible enough to send unverified: a leading house number and
+// a 5-digit ZIP after it ("junk" or "Main St" never qualifies).
+function plausibleTypedAddress(line) {
+  var m = /^\s*(\d+[A-Za-z]?)\s+(.+)$/.exec(line || '');
+  return !!m && /[A-Za-z]/.test(m[2]) && /(^|\D)\d{5}(-\d{4})?(\D|$)/.test(m[2]);
+}
+
+// Step-3 check (nextStep(3)). Returns a message or ''. `onlyProblem` is true
+// when every OTHER step-3 field passed: only then does a refusal count toward
+// the no-pick escape, so fixing some other field never spends attempts.
+// Waits briefly (button shows "Checking address…") for a still-loading Places
+// before deciding it is unavailable.
+async function homeAddressProblem(onlyProblem) {
+  var typed = v('i_address');
+  if (!typed) return 'Please enter your home address.';
+  if (addrVerify.place || addrVerify.fallback) return '';
+  var el = document.getElementById('i_address');
+  if (!el || el.dataset.acBound !== '1') {
+    var btn = document.querySelector('#step-3 [data-action="next-step"]');
+    // Overlapping waits (double-click): the idle label is saved only by the
+    // first, and only the last to finish restores it, so the button can never
+    // be left reading "Checking address…".
+    if (btn) {
+      var busy = +(btn.dataset.addrBusy || 0);
+      if (!busy) btn.dataset.idleLabel = btn.textContent;
+      btn.dataset.addrBusy = String(busy + 1);
+      btn.disabled = true; btn.textContent = 'Checking address…'; btn.setAttribute('aria-busy', 'true');
+    }
+    try { await Promise.race([ensureIntakeMaps(), new Promise(function (r) { setTimeout(r, ADDR_MAPS_WAIT_MS); })]); } catch (e) {}
+    if (btn) {
+      var left = Math.max(0, +(btn.dataset.addrBusy || 1) - 1);
+      btn.dataset.addrBusy = String(left);
+      if (!left) {
+        btn.disabled = false; btn.textContent = btn.dataset.idleLabel || btn.textContent; btn.removeAttribute('aria-busy');
+        delete btn.dataset.idleLabel; delete btn.dataset.addrBusy;
+      }
+    }
+    if (addrVerify.place || addrVerify.fallback) return '';
+    if (!el || el.dataset.acBound !== '1') { enterAddressFallback('places_unavailable'); return ''; }
+  }
+  var msg = addrVerify.incomplete ? ADDR_FULL_MSG : ADDR_PICK_MSG;
+  if (onlyProblem) {
+    // Places is up but nothing valid was picked. After two address-only
+    // refusals, accept a PLAUSIBLE typed line unverified: an address Google
+    // cannot suggest (new build, quota returning no predictions) must not
+    // strand a lead. Junk keeps being refused.
+    addrVerify.blocked++;
+    if (addrVerify.blocked > 2) {
+      if (plausibleTypedAddress(typed)) {
+        enterAddressFallback('no_pick_after_retries');
+        var note = document.getElementById('addr-verify-note');
+        if (note) note.hidden = false;
+        return '';
+      }
+      msg = ADDR_TYPED_MSG;
+    }
+  }
+  setAddrMsg(msg);
+  return msg;
+}
+
+// formData for the final submit. SAGE's intakeSubmitSchema strips unknown
+// top-level keys (zod default), but stores the submit's formData whole on the
+// submission's form_data, so the verification facts ride there.
+function addVerifiedAddressFormData(formData) {
+  formData.address_verified = !!addrVerify.place;
+  if (addrVerify.place) {
+    formData.place_id = addrVerify.place.placeId;
+    formData.formatted_address = addrVerify.place.formatted;
+  } else if (addrVerify.fallback) {
+    formData.address_fallback_reason = addrVerify.reason;
+  }
+  return formData;
+}
+
+// Optional referrer: a phone with no name asks for the name (SAGE wants at
+// least a name or an email). Returns a message or ''.
+function referrerProblem() {
+  var refName = v('i_ref_name'), refContact = v('i_ref_contact');
+  if (refContact && !refName && refContact.indexOf('@') === -1) return 'Please add the name of the person who referred you.';
+  return '';
 }
 
 // The referrer's contact is ONE box: '@' means email, otherwise a phone.
-// Spread into the live /api/intake final-submit body only (never the offline
-// queue, which is stored in localStorage). Control
-// gets {} so its JSON is unchanged; /api/intake/track never calls this.
+// Spread into the live /api/intake final-submit body only: never the offline
+// queue (stored in localStorage) and never /api/intake/track (autosave).
 function referrerFields() {
   var out = {};
-  if (!isFullAddressArm()) return out;
   var name = v('i_ref_name'), contact = v('i_ref_contact');
   if (name) out.referredByName = name.slice(0, 200);
   if (contact) {
@@ -1490,15 +1567,6 @@ function referrerFields() {
     else out.referredByPhone = contact.slice(0, 32);
   }
   return out;
-}
-
-// Tag variant leads so SAGE can split lead quality by arm: formData is a free
-// record, and lead_page already carries hero-cta 'ab=' tags the same way.
-// Control is not tagged (its payload must stay today's); every /intake/ visitor
-// is assigned at load, so an untagged lead after launch is a control lead.
-function tagAddressReferrerFormData(formData) {
-  if (isFullAddressArm()) formData.ab_test = 'intake-address-referrer.' + getAddrRefArm();
-  return formData;
 }
 
 let currentStep = 1;
@@ -2857,12 +2925,12 @@ async function nextStep(from) {
     if (selectedProducts.includes('other')) {
       if (!v('i_other_desc')) problems.push('Please describe the other coverage you need.');
     }
-    // Validate address
-    if (!v('i_address')) problems.push(isFullAddressArm() ? 'Please enter your street address.' : 'Please enter your mailing address.');
-    // A/B 'intake-address-referrer': required city + ZIP (variant only).
-    const abProblems = addressReferrerProblems();
-    if (abProblems.length) trackValidationError(3, 'ab_full_address_' + (abProblems[0].indexOf('city') !== -1 ? 'city' : abProblems[0].indexOf('ZIP') !== -1 ? 'zip' : 'referrer'));
-    problems.push(...abProblems);
+    const refProblem = referrerProblem();
+    if (refProblem) { problems.push(refProblem); trackValidationError(3, 'referrer_name'); }
+    // The verified home address runs LAST: a refusal counts toward the no-pick
+    // escape only when it is the sole remaining step-3 problem.
+    const addrProblem = await homeAddressProblem(problems.length === 0);
+    if (addrProblem) { problems.push(addrProblem); trackValidationError(3, v('i_address') ? 'address_not_verified' : 'missing_address'); }
     if (problems.length) {
       // Expand all cards so the offending field (which may be collapsed) is visible.
       document.querySelectorAll('#product-questions .qcard').forEach(c => c.classList.add('open'));
@@ -3443,10 +3511,9 @@ function renderReview() {
   html += `<div class="summary-row"><span class="label">Name</span><span class="value">${esc(v('i_fname'))} ${esc(v('i_lname'))}</span></div>`;
   if (v('i_email')) html += `<div class="summary-row"><span class="label">Email</span><span class="value">${esc(v('i_email'))}</span></div>`;
   if (v('i_phone')) html += `<div class="summary-row"><span class="label">Phone</span><span class="value">${esc(v('i_phone'))}</span></div>`;
-  const addr = isFullAddressArm()
-    ? [v('i_address'), v('i_city'), [v('i_state'), v('i_zip')].filter(Boolean).join(' ')].filter(Boolean).join(', ')
-    : v('i_address');
-  if (addr) html += `<div class="summary-row"><span class="label">Mailing Address</span><span class="value">${esc(addr)}</span></div>`;
+  // The one-line home address: Google's formatted line after a verified pick, else what was typed.
+  const addr = addrVerify.place ? addrVerify.place.formatted : v('i_address');
+  if (addr) html += `<div class="summary-row"><span class="label">Home Address</span><span class="value">${esc(addr)}</span></div>`;
   const _ref = referrerFields();
   if (_ref.referredByName || _ref.referredByEmail || _ref.referredByPhone) {
     const refDesc = [_ref.referredByName, _ref.referredByEmail || _ref.referredByPhone].filter(Boolean).join(', ');
@@ -3601,7 +3668,7 @@ async function submitQuickLead() {
   }
 
   // Build minimal formData with tracking info only
-  const formData = tagAddressReferrerFormData({ quick_lead: 'true' });
+  const formData = { quick_lead: 'true' };
   const urlParams = new URLSearchParams(window.location.search);
   const srcParam = urlParams.get('src');
   if (srcParam) formData.lead_source = srcParam;
@@ -3680,7 +3747,7 @@ async function submitQuickLead() {
       // Tracking
       if (window.gtag) gtag('event', 'intake_quick_lead', { products: selectedProducts.join(','), product_count: selectedProducts.length });
       if (window.dataLayer) {
-        dataLayer.push({ event: 'conversion', conversion_type: 'quick_lead', conversion_products: selectedProducts.join(','), conversion_reference: data.reference, conversion_source: srcParam || 'intake', ab_addr_ref: getAddrRefArm() });
+        dataLayer.push({ event: 'conversion', conversion_type: 'quick_lead', conversion_products: selectedProducts.join(','), conversion_reference: data.reference, conversion_source: srcParam || 'intake' });
       }
       if (window.fbq && sendMetaLead()) fbq('track', 'Lead', { content_category: 'quick_lead', currency: 'USD' }, { eventID: data.reference });
     } else {
@@ -3802,7 +3869,7 @@ async function submitIntake() {
     }
   }
 
-  const formData = tagAddressReferrerFormData(buildRiskFormData());
+  const formData = addVerifiedAddressFormData(buildRiskFormData());
 
   // Add source tracking, UTM attribution, and agent assignment
   const urlParams = new URLSearchParams(window.location.search);
@@ -3914,7 +3981,6 @@ async function submitIntake() {
           conversion_products: selectedProducts.join(','),
           conversion_reference: data.reference,
           conversion_source: srcParam || 'intake',
-          ab_addr_ref: getAddrRefArm(),
         });
       }
     } else {
@@ -3976,9 +4042,16 @@ function _onAddrInput(el) {
   // hidden field; it is now the applicant's own explicit choice, and wiping it on
   // every keystroke of the address box would silently discard it. A later
   // autocomplete pick still overwrites it via syncStateFromAutocomplete.
-  // Variant 'full-address': city/ZIP are visible fields the visitor typed, so
-  // editing the street must not wipe them.
-  if (typeof isFullAddressArm === 'function' && isFullAddressArm()) return;
+  // Any edit un-verifies the home address until a suggestion is picked again.
+  if (addrVerify.place) { addrVerify.place = null; if (!addrVerify.fallback) setAddrMsg(ADDR_PICK_MSG); }
+  // The no-pick escape covered THAT typed line only: an edit revokes it, and
+  // (attempts stay above 2) the next address-only Review re-runs the
+  // plausibility check at once. Google-unavailable fallbacks stay sticky.
+  if (addrVerify.fallback && addrVerify.reason === 'no_pick_after_retries') {
+    addrVerify.fallback = false;
+    addrVerify.reason = '';
+    var _n = document.getElementById('addr-verify-note'); if (_n) _n.hidden = true;
+  }
   ['i_city','i_zip'].forEach(function(id) { var e = document.getElementById(id); if (e) e.value = ''; });
 }
 function _onHoAddrInput(el) {
@@ -4008,7 +4081,8 @@ function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
   input.setAttribute('autocomplete', 'off');
   try {
     const ac = new google.maps.places.Autocomplete(input, {
-      types: ['address'], componentRestrictions: { country: 'us' }
+      types: ['address'], componentRestrictions: { country: 'us' },
+      fields: ['address_components', 'formatted_address', 'place_id'],
     });
     // Google appends its suggestion list (.pac-container) to the document body, outside the
     // masked wizard container, and its rows echo the typed address as page text.
@@ -4019,10 +4093,11 @@ function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
     input.addEventListener('input', _maskPlacesSuggestions);
     ac.addListener('place_changed', () => {
       const place = ac.getPlace();
+      // The home address is verified only by a full-street-address pick.
+      if (inputId === 'i_address') { onHomeAddressPlace(place, input); scheduleTrack(); return; }
       if (!place.address_components) return;
       const p = _parsePlaceAddress(place);
-      // Variant 'full-address': the box is the street line; city/ZIP have their own fields.
-      input.value = (inputId === 'i_address' && isFullAddressArm() && p.street) ? p.street : p.full;
+      input.value = p.full;
       const fill = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
       fill(streetId, p.street);
       fill(cityId, p.city);
@@ -4059,7 +4134,14 @@ function ensureIntakeMaps() {
       s.onerror = () => reject(new Error('Google Maps script failed to load'));
       document.head.appendChild(s);
     });
-  }).catch((e) => { _mapsPromise = null; console.warn('[Maps]', e && e.message); });
+  }).catch((e) => {
+    _mapsPromise = null;
+    console.warn('[Maps]', e && e.message);
+    // Never block the lead on Google: the home address becomes a plain line
+    // (unless Places is already bound to it from an earlier load).
+    const homeAddr = document.getElementById('i_address');
+    if (!homeAddr || homeAddr.dataset.acBound !== '1') enterAddressFallback('maps_load_failed');
+  });
   return _mapsPromise;
 }
 function _bindAutocompleteOnce(inputId, streetId, cityId, stateId, zipId) {
@@ -4153,8 +4235,29 @@ function collectDraft() {
     vehicles,
     step: currentStep,
     hoSameAddr,
+    // The verified home address, only while the box still shows exactly the
+    // picked line (an edit already cleared addrVerify.place). The applicant's
+    // own address only: referrer fields are never in a draft.
+    verifiedAddress: (addrVerify.place && v('i_address') === addrVerify.place.formatted) ? Object.assign({}, addrVerify.place) : undefined,
     savedAt: Date.now(),
   };
+}
+
+// A restored verified address counts as verified only if it is well-formed and
+// the restored box text is exactly its formatted line.
+function restoreVerifiedAddress(va, typedLine) {
+  if (!va || typeof va !== 'object') return;
+  var str = function (x) { return typeof x === 'string' ? x : ''; };
+  var p = { street: str(va.street), city: str(va.city), state: str(va.state).toUpperCase(), zip: str(va.zip), formatted: str(va.formatted), placeId: str(va.placeId) };
+  if (!p.street || !p.city || !/^[A-Z]{2}$/.test(p.state) || !/^\d{5}$/.test(p.zip) || !p.formatted || p.formatted !== typedLine) return;
+  addrVerify.place = p;
+  addrVerify.incomplete = false;
+  var fill = function (id, val) { var el = document.getElementById(id); if (el) el.value = val; };
+  fill('i_address_street', p.street);
+  fill('i_city', p.city);
+  fill('i_zip', p.zip);
+  syncStateFromAutocomplete(p.state);
+  setAddrMsg('');
 }
 
 function saveDraft() {
@@ -4214,6 +4317,8 @@ function restoreDraft(draft) {
   }
   // Restore homeowners address toggle
   if (typeof draft.hoSameAddr === 'boolean') hoSameAddr = draft.hoSameAddr;
+  // Restore the verified home address (the box itself is static, restored above).
+  restoreVerifiedAddress(draft.verifiedAddress, (draft.fields || {}).i_address || '');
   // Stash step-3 field values to re-apply when Step 3 renders (those fields
   // don't exist in the DOM yet — restore is capped at step 2).
   window._draftFields = draft.fields;
