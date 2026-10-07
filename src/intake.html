@@ -154,6 +154,11 @@
   .form-group input.filled { border-color: var(--mint); background: #f0fdf8 }
   .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
   .form-row-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 12px }
+  .ab-referrer { border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px 0; margin: 0 0 16px; min-width: 0 }
+  .ab-referrer legend { font-weight: 600; color: var(--navy); font-size: 14px; padding: 0 4px }
+  .ab-referrer .ab-optional { font-weight: 400; color: var(--slate, #64748b) }
+  /* .form-row's display:grid would beat the UA [hidden] rule: control must never see these. */
+  #ab-addr-row[hidden], .ab-referrer[hidden] { display: none }
 
   /* ─── Products ─── */
   .product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px }
@@ -804,6 +809,18 @@
       <input type="hidden" id="i_address_street">
       <input type="hidden" id="i_city">
       <input type="hidden" id="i_zip">
+      <!-- A/B 'intake-address-referrer' (arm 'full-address'): this row stays
+           hidden for control. The variant moves #i_city / #i_zip in here,
+           makes them visible required text inputs, and relabels the box above
+           "Street Address". See applyAddressReferrerVariant(). -->
+      <div class="form-row" id="ab-addr-row" hidden>
+        <div class="form-group" id="ab-city-group">
+          <label for="i_city">City <span style="color:#ef4444">*</span></label>
+        </div>
+        <div class="form-group" id="ab-zip-group">
+          <label for="i_zip">ZIP Code <span style="color:#ef4444">*</span></label>
+        </div>
+      </div>
       <!-- The State <select> moved to STEP 1 (see the comment there). Places
            autocomplete on the address above still writes to it via
            syncStateFromAutocomplete(), so an address that disagrees with the
@@ -812,6 +829,23 @@
         <label for="i_dob">Date of Birth <span id="dob-req-star" style="color:#ef4444;display:none">*</span></label>
         <input type="text" id="i_dob" placeholder="MM/DD/YYYY" maxlength="10" inputmode="numeric" autocomplete="bday">
       </div>
+      <!-- A/B 'intake-address-referrer' (arm 'full-address'): optional referrer.
+           Hidden (and never sent) for control. These are a THIRD PARTY's details,
+           so autocomplete is off (never the applicant's own autofill) and they
+           are left out of DRAFT_FIELD_IDS (never written to localStorage). -->
+      <fieldset id="ab-referrer" class="ab-referrer" hidden>
+        <legend>Who referred you? <span class="ab-optional">(optional)</span></legend>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="i_ref_name">Their name</label>
+            <input type="text" id="i_ref_name" maxlength="200" autocomplete="off" data-1p-ignore data-lpignore="true">
+          </div>
+          <div class="form-group">
+            <label for="i_ref_contact">Their email or phone</label>
+            <input type="text" id="i_ref_contact" maxlength="254" autocomplete="off" data-1p-ignore data-lpignore="true">
+          </div>
+        </div>
+      </fieldset>
     </div>
 
     <!-- Section 2: Product-specific details (injected by JS) -->
@@ -1146,6 +1180,10 @@ function trackIntake(eventName, params) {
     event_category: 'intake',
     intake_source: _funnelData.source,
     intake_agent: _funnelData.agent,
+    // A/B 'intake-address-referrer': same keys as ab_exposure, so funnel steps,
+    // abandonment and intake_complete split by arm in GA4.
+    test_name: 'intake-address-referrer',
+    variant: getAddrRefArm(),
     ...params,
   });
   if (window.CONFIG?.debug || new URLSearchParams(window.location.search).has('twa_debug')) {
@@ -1347,6 +1385,96 @@ function getTrackingIds() { return TWA.getTrackingIds(); }
   }
   TWA.pushExposure('intake-call-or-text', textVariant);
 })();
+
+// ── A/B 'intake-address-referrer' (owner decision 2026-10-07) ───────────────
+// control      = today's step 3: one "Mailing Address" box (Places autocomplete
+//                fills hidden city/ZIP only when a suggestion is picked).
+// full-address = "Street Address" + visible, REQUIRED City and ZIP, plus an
+//                optional "Who referred you?" block (name + email or phone).
+// Uniform 50/50 (hashAssign has no weights; promoting the variant to 100% is a
+// code change, not a re-weight). Control's DOM, validation and POST body stay
+// byte-for-byte today's: every variant branch below checks isFullAddressArm().
+// SAGE contract: sage-server #1067 (address/city/state/zip + referredBy*).
+// Assigned lazily: trackIntake('intake_start') runs earlier in this script than
+// this block, and every intake_* event must already carry the arm. The hash is
+// deterministic, so assigning on first use changes nothing about the bucket.
+// (Hence the literal test name everywhere: a hoisted `var` holding it would
+// still be undefined when that first event fires.)
+var addrRefArm;
+function getAddrRefArm() {
+  if (!addrRefArm) {
+    addrRefArm = (window.TWA && typeof TWA.assignVariant === 'function')
+      ? TWA.assignVariant('intake-address-referrer', ['control', 'full-address'])
+      : 'control';
+  }
+  return addrRefArm;
+}
+function isFullAddressArm() { return getAddrRefArm() === 'full-address'; }
+function applyAddressReferrerVariant() {
+  if (!isFullAddressArm()) return;
+  document.body.classList.add('twa-ab-full-address');
+  var street = document.getElementById('i_address');
+  var streetLabel = document.querySelector('label[for="i_address"]');
+  if (streetLabel) streetLabel.innerHTML = 'Street Address <span style="color:#ef4444">*</span>';
+  if (street) {
+    street.placeholder = '123 Main St';
+    street.setAttribute('autocomplete', 'address-line1');
+  }
+  var row = document.getElementById('ab-addr-row');
+  [['i_city', 'ab-city-group', 'address-level2', 100], ['i_zip', 'ab-zip-group', 'postal-code', 10]].forEach(function (f) {
+    var inp = document.getElementById(f[0]);
+    var grp = document.getElementById(f[1]);
+    if (!inp || !grp) return;
+    inp.type = 'text';
+    inp.required = true;
+    inp.setAttribute('autocomplete', f[2]);
+    inp.setAttribute('maxlength', String(f[3]));
+    if (f[0] === 'i_zip') { inp.setAttribute('inputmode', 'numeric'); inp.setAttribute('placeholder', '40202'); }
+    grp.appendChild(inp);
+  });
+  if (row) row.hidden = false;
+  var ref = document.getElementById('ab-referrer');
+  if (ref) ref.hidden = false;
+}
+applyAddressReferrerVariant();
+TWA.pushExposure('intake-address-referrer', getAddrRefArm());
+
+// Variant-only step-3 checks; control returns [] (today's validation untouched).
+function addressReferrerProblems() {
+  if (!isFullAddressArm()) return [];
+  var problems = [];
+  if (!v('i_city')) problems.push('Please enter your city.');
+  if (!/^\d{5}(-?\d{4})?$/.test(v('i_zip'))) problems.push('Please enter a valid 5-digit ZIP code.');
+  var refName = v('i_ref_name'), refContact = v('i_ref_contact');
+  if (refContact && !refName && refContact.indexOf('@') === -1) {
+    problems.push('Please add the name of the person who referred you.');
+  }
+  return problems;
+}
+
+// The referrer's contact is ONE box: '@' means email, otherwise a phone.
+// Spread into the /api/intake bodies (final submit + offline replay). Control
+// gets {} so its JSON is unchanged; /api/intake/track never calls this.
+function referrerFields() {
+  var out = {};
+  if (!isFullAddressArm()) return out;
+  var name = v('i_ref_name'), contact = v('i_ref_contact');
+  if (name) out.referredByName = name.slice(0, 200);
+  if (contact) {
+    if (contact.indexOf('@') !== -1) out.referredByEmail = contact.slice(0, 254);
+    else out.referredByPhone = contact.slice(0, 32);
+  }
+  return out;
+}
+
+// Tag variant leads so SAGE can split lead quality by arm: formData is a free
+// record, and lead_page already carries hero-cta 'ab=' tags the same way.
+// Control is not tagged (its payload must stay today's); every /intake/ visitor
+// is assigned at load, so an untagged lead after launch is a control lead.
+function tagAddressReferrerFormData(formData) {
+  if (isFullAddressArm()) formData.ab_test = 'intake-address-referrer.' + getAddrRefArm();
+  return formData;
+}
 
 let currentStep = 1;
 let selectedProducts = [];
@@ -2705,7 +2833,11 @@ async function nextStep(from) {
       if (!v('i_other_desc')) problems.push('Please describe the other coverage you need.');
     }
     // Validate address
-    if (!v('i_address')) problems.push('Please enter your mailing address.');
+    if (!v('i_address')) problems.push(isFullAddressArm() ? 'Please enter your street address.' : 'Please enter your mailing address.');
+    // A/B 'intake-address-referrer': required city + ZIP (variant only).
+    const abProblems = addressReferrerProblems();
+    if (abProblems.length) trackValidationError(3, 'ab_full_address_' + (abProblems[0].indexOf('city') !== -1 ? 'city' : abProblems[0].indexOf('ZIP') !== -1 ? 'zip' : 'referrer'));
+    problems.push(...abProblems);
     if (problems.length) {
       // Expand all cards so the offending field (which may be collapsed) is visible.
       document.querySelectorAll('#product-questions .qcard').forEach(c => c.classList.add('open'));
@@ -3286,8 +3418,15 @@ function renderReview() {
   html += `<div class="summary-row"><span class="label">Name</span><span class="value">${esc(v('i_fname'))} ${esc(v('i_lname'))}</span></div>`;
   if (v('i_email')) html += `<div class="summary-row"><span class="label">Email</span><span class="value">${esc(v('i_email'))}</span></div>`;
   if (v('i_phone')) html += `<div class="summary-row"><span class="label">Phone</span><span class="value">${esc(v('i_phone'))}</span></div>`;
-  const addr = v('i_address');
+  const addr = isFullAddressArm()
+    ? [v('i_address'), v('i_city'), [v('i_state'), v('i_zip')].filter(Boolean).join(' ')].filter(Boolean).join(', ')
+    : v('i_address');
   if (addr) html += `<div class="summary-row"><span class="label">Mailing Address</span><span class="value">${esc(addr)}</span></div>`;
+  const _ref = referrerFields();
+  if (_ref.referredByName || _ref.referredByEmail || _ref.referredByPhone) {
+    const refDesc = [_ref.referredByName, _ref.referredByEmail || _ref.referredByPhone].filter(Boolean).join(', ');
+    html += `<div class="summary-row"><span class="label">Referred by</span><span class="value">${esc(refDesc)}</span></div>`;
+  }
   const prods = selectedProducts.map(p => PROD_LABELS[p] || p).join(', ');
   html += `<div class="summary-row"><span class="label">Coverage</span><span class="value">${esc(prods)}</span></div>`;
 
@@ -3437,7 +3576,7 @@ async function submitQuickLead() {
   }
 
   // Build minimal formData with tracking info only
-  const formData = { quick_lead: 'true' };
+  const formData = tagAddressReferrerFormData({ quick_lead: 'true' });
   const urlParams = new URLSearchParams(window.location.search);
   const srcParam = urlParams.get('src');
   if (srcParam) formData.lead_source = srcParam;
@@ -3516,7 +3655,7 @@ async function submitQuickLead() {
       // Tracking
       if (window.gtag) gtag('event', 'intake_quick_lead', { products: selectedProducts.join(','), product_count: selectedProducts.length });
       if (window.dataLayer) {
-        dataLayer.push({ event: 'conversion', conversion_type: 'quick_lead', conversion_products: selectedProducts.join(','), conversion_reference: data.reference, conversion_source: srcParam || 'intake' });
+        dataLayer.push({ event: 'conversion', conversion_type: 'quick_lead', conversion_products: selectedProducts.join(','), conversion_reference: data.reference, conversion_source: srcParam || 'intake', test_name: 'intake-address-referrer', variant: getAddrRefArm() });
       }
       if (window.fbq && sendMetaLead()) fbq('track', 'Lead', { content_category: 'quick_lead', currency: 'USD' }, { eventID: data.reference });
     } else {
@@ -3638,7 +3777,7 @@ async function submitIntake() {
     }
   }
 
-  const formData = buildRiskFormData();
+  const formData = tagAddressReferrerFormData(buildRiskFormData());
 
   // Add source tracking, UTM attribution, and agent assignment
   const urlParams = new URLSearchParams(window.location.search);
@@ -3708,6 +3847,7 @@ async function submitIntake() {
         twa_vid: getVisitorId(),
         _tracking: getTrackingIds(),
         attribution: _fsAttr,
+        ...referrerFields(),
       })
     });
     if (!res.ok) {
@@ -3749,6 +3889,8 @@ async function submitIntake() {
           conversion_products: selectedProducts.join(','),
           conversion_reference: data.reference,
           conversion_source: srcParam || 'intake',
+          test_name: 'intake-address-referrer',
+          variant: getAddrRefArm(),
         });
       }
     } else {
@@ -3769,6 +3911,7 @@ async function submitIntake() {
       // weakened for replays); identity/attribution snapshot ride along.
       twa_vid: getVisitorId(), _tracking: getTrackingIds(), attribution: TWA.getAttribution(),
       offline_replay: true, queued_at: Date.now(),
+      ...referrerFields(),
     };
     try { localStorage.setItem('twa_intake_queue', JSON.stringify({ payload, ref: queueRef, ts: Date.now() })); } catch(qe) {}
     showContactFallback(err, 'Saved! We\'ll submit when you\'re back online. Ref: ' + queueRef + '. If it\'s urgent:', { email: true });
@@ -3807,6 +3950,9 @@ function _onAddrInput(el) {
   // hidden field; it is now the applicant's own explicit choice, and wiping it on
   // every keystroke of the address box would silently discard it. A later
   // autocomplete pick still overwrites it via syncStateFromAutocomplete.
+  // Variant 'full-address': city/ZIP are visible fields the visitor typed, so
+  // editing the street must not wipe them.
+  if (typeof isFullAddressArm === 'function' && isFullAddressArm()) return;
   ['i_city','i_zip'].forEach(function(id) { var e = document.getElementById(id); if (e) e.value = ''; });
 }
 function _onHoAddrInput(el) {
@@ -3849,7 +3995,8 @@ function _bindPlacesAutocomplete(inputId, streetId, cityId, stateId, zipId) {
       const place = ac.getPlace();
       if (!place.address_components) return;
       const p = _parsePlaceAddress(place);
-      input.value = p.full;
+      // Variant 'full-address': the box is the street line; city/ZIP have their own fields.
+      input.value = (inputId === 'i_address' && isFullAddressArm() && p.street) ? p.street : p.full;
       const fill = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
       fill(streetId, p.street);
       fill(cityId, p.city);
