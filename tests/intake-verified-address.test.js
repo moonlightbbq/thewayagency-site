@@ -107,6 +107,14 @@ function fillContact(w) {
   fill(w, { i_fname: 'Zz', i_lname: 'Addrtest', i_email: 'zz.addrtest@example.com', i_phone: '(555) 555-0123', i_state: 'KY' });
   w.eval("selectedProducts = ['renters']");
 }
+// One "Continue" on step 1 (where the home address now lives).
+async function step1(w, values = {}) {
+  fill(w, values);
+  w.showStep(1);
+  await w.nextStep(1);
+  return { advanced: !$(w, 'step-2').classList.contains('hidden'), error: $(w, 'step1-error').textContent };
+}
+// One "Review" on step 3 (DOB, product questions, referrer).
 async function step3(w, values = {}) {
   w.showStep(3);
   // 'dob-required' stays a live hash-assigned test; give it a DOB in either shape.
@@ -150,6 +158,26 @@ describe('every visitor gets the new step 3 (the A/B is concluded)', () => {
     } finally { w.close(); }
   });
 
+  test('the address is asked ONCE, on step 1; the State select there is hidden until a fallback', async () => {
+    const { w } = await loadIntake();
+    try {
+      const d = w.document;
+      assert.equal(d.querySelectorAll('#i_address').length, 1);
+      assert.ok($(w, 'i_address').closest('#step-1'), 'home address is on step 1');
+      for (const n of [2, 3, 4]) {
+        const step = $(w, 'step-' + n);
+        assert.equal(step.querySelector('[id^="i_address"]'), null, 'step ' + n);
+        assert.doesNotMatch(step.textContent, /Home address|Mailing Address/, 'step ' + n + ' does not ask again');
+      }
+      assert.ok($(w, 'i_state').closest('#step-1'), 'the State select stays in step 1 (check-intake-gate)');
+      assert.equal($(w, 'state-group').hidden, true);
+      assert.ok($(w, 'state-oos').closest('#step-1') && !$(w, 'state-oos').closest('#state-group'), 'the decline box is visible without the select');
+      // Order: name, email/phone, then the address.
+      const order = ['i_fname', 'i_email', 'i_phone', 'i_address'].map((id) => [...d.querySelectorAll('#step-1 input')].indexOf($(w, id)));
+      assert.deepEqual([...order].sort((a, b) => a - b), order);
+    } finally { w.close(); }
+  });
+
   test('Places is bound US-only, type address, with the fields the check reads', async () => {
     const { w, homeAc } = await loadIntake();
     try {
@@ -170,7 +198,7 @@ describe('verification', () => {
       assert.equal($(w, 'i_city').value, 'Louisville');
       assert.equal($(w, 'i_zip').value, '40202');
       assert.equal($(w, 'i_state').value, 'KY');
-      const r = await step3(w);
+      const r = await step1(w);
       assert.equal(r.advanced, true, r.error);
       const ev = gtagEvents(w).filter(([n]) => n === 'intake_step_complete').pop();
       assert.equal(ev[1].address_verified, 'verified');
@@ -182,7 +210,7 @@ describe('verification', () => {
     try {
       fillContact(w);
       type(w, '100 Main St, Louisville, KY 40202');
-      const r = await step3(w);
+      const r = await step1(w);
       assert.equal(r.advanced, false);
       assert.match(r.error, /Please pick your address from the suggestions/);
       assert.equal($(w, 'addr-verify-msg').hidden, false);
@@ -198,11 +226,11 @@ describe('verification', () => {
       pick(homeAc, place());
       type(w, '100 Main St, Louisville, KY 40203');
       assert.equal($(w, 'i_city').value, '', 'the verified city is cleared');
-      let r = await step3(w);
+      let r = await step1(w);
       assert.equal(r.advanced, false);
       assert.match(r.error, /pick your address/);
       pick(homeAc, place({ zip: '40203' }));
-      r = await step3(w);
+      r = await step1(w);
       assert.equal(r.advanced, true, r.error);
     } finally { w.close(); }
   });
@@ -215,7 +243,7 @@ describe('verification', () => {
         type(w, '100 Main');
         pick(homeAc, bad);
         assert.equal($(w, 'i_city').value, '');
-        const r = await step3(w);
+        const r = await step1(w);
         assert.equal(r.advanced, false, JSON.stringify(bad).slice(0, 80));
         assert.match(r.error, /pick (a full street address|your address)/);
       } finally { w.close(); }
@@ -233,16 +261,40 @@ describe('verification', () => {
     } finally { w.close(); }
   });
 
-  test('a verified state that differs from step 1 replaces it and gets the out-of-area decline', async () => {
-    const { w, homeAc } = await loadIntake();
+  test('step 1 declines out-of-area from the verified state (the pick sets the hidden select)', async () => {
+    const { w, homeAc, tracks } = await loadIntake();
     try {
       fillContact(w);
-      assert.equal($(w, 'i_state').value, 'KY');
+      fill(w, { i_state: '' });
       pick(homeAc, place({ city: 'Cincinnati', state: 'OH', zip: '45202' }));
       assert.equal($(w, 'i_state').value, 'OH');
-      const r = await step3(w);
+      assert.match($(w, 'state-oos').textContent, /aren't licensed in Ohio/, 'declined as soon as the pick lands');
+      const r = await step1(w);
       assert.equal(r.advanced, false);
-      assert.match(r.error, /aren't licensed in Ohio/);
+      assert.notEqual($(w, 'state-oos').style.display, 'none');
+      assert.match($(w, 'state-oos').textContent, /aren't licensed in Ohio/);
+      assert.equal(tracks.length, 0, 'a declined lead is never autosaved (no producer page)');
+      // A Kentucky pick takes the decline back and continues.
+      type(w, '100 Ma');
+      pick(homeAc, place());
+      assert.equal($(w, 'state-oos').style.display, 'none');
+      assert.equal((await step1(w)).advanced, true);
+    } finally { w.close(); }
+  });
+
+  test('step 1 autosave (/track) carries the derived state and the verified street, never the referrer', async () => {
+    const { w, homeAc, tracks } = await loadIntake();
+    try {
+      fillContact(w);
+      fill(w, { i_state: '', i_ref_name: 'Qq Referrertrack', i_ref_contact: 'qq.reftrack@example.com' });
+      pick(homeAc, place({ city: 'Nashville', state: 'TN', zip: '37203' }));
+      assert.equal((await step1(w)).advanced, true);
+      const t = tracks[tracks.length - 1];
+      assert.equal(t.state, 'TN');
+      assert.equal(t.address, '100 Main St');
+      assert.equal(t.city, 'Nashville');
+      assert.equal(t.zip, '37203');
+      assert.doesNotMatch(JSON.stringify(tracks), /referredBy|Referrertrack|reftrack/);
     } finally { w.close(); }
   });
 
@@ -261,12 +313,33 @@ describe('verification', () => {
 });
 
 describe('fallback: Google never blocks a lead', () => {
+  test('the fallback shows the State select, requires it, and still declines out-of-area', async () => {
+    const { w } = await loadIntake({ places: false });
+    try {
+      fillContact(w);
+      fill(w, { i_state: '' });
+      assert.equal($(w, 'state-group').hidden, true, 'hidden while Google may still verify');
+      type(w, '100 Main St, Cincinnati, OH 45202');
+      let r = await step1(w);
+      assert.equal(r.advanced, false);
+      assert.match(r.error, /choose your state/);
+      assert.equal($(w, 'state-group').hidden, false, 'shown once Google is unavailable');
+      assert.equal($(w, 'i_state').required, true);
+      $(w, 'i_state').value = 'OH'; w.onStateChange();
+      r = await step1(w);
+      assert.equal(r.advanced, false);
+      assert.match($(w, 'state-oos').textContent, /aren't licensed in Ohio/);
+      $(w, 'i_state').value = 'KY'; w.onStateChange();
+      assert.equal((await step1(w)).advanced, true);
+    } finally { w.close(); }
+  });
+
   test('Places never loads: a typed line passes, flagged and tracked', async () => {
     const { w, posts } = await loadIntake({ places: false });
     try {
       fillContact(w);
       type(w, '100 Main St, Louisville, KY 40202');
-      const r = await step3(w);
+      const r = await step1(w);
       assert.equal(r.advanced, true, r.error);
       const names = gtagEvents(w).map(([n]) => n);
       assert.ok(names.includes('intake_address_fallback'));
@@ -287,7 +360,7 @@ describe('fallback: Google never blocks a lead', () => {
     const { w } = await loadIntake({ places: false });
     try {
       fillContact(w);
-      const r = await step3(w);
+      const r = await step1(w);
       assert.equal(r.advanced, false);
       assert.match(r.error, /enter your home address/);
     } finally { w.close(); }
@@ -299,7 +372,7 @@ describe('fallback: Google never blocks a lead', () => {
       fillContact(w);
       w.gm_authFailure();
       type(w, '100 Main St, Louisville, KY 40202');
-      const r = await step3(w);
+      const r = await step1(w);
       assert.equal(r.advanced, true, r.error);
       assert.equal(gtagEvents(w).find(([n]) => n === 'intake_address_fallback')[1].reason, 'maps_auth_failure');
     } finally { w.close(); }
@@ -310,11 +383,11 @@ describe('fallback: Google never blocks a lead', () => {
     try {
       fillContact(w);
       type(w, '9 New Build Ln, Louisville, KY 40299');
-      let r = await step3(w);
+      let r = await step1(w);
       assert.equal(r.advanced, false);
       assert.match(r.error, /^Please pick your address from the suggestions\.$/);
-      assert.equal((await step3(w)).advanced, false);
-      r = await step3(w);
+      assert.equal((await step1(w)).advanced, false);
+      r = await step1(w);
       assert.equal(r.advanced, true, r.error);
       assert.equal(gtagEvents(w).find(([n]) => n === 'intake_address_fallback')[1].reason, 'no_pick_after_retries');
       assert.equal($(w, 'addr-verify-note').hidden, false, 'told the agency will confirm it');
@@ -331,16 +404,16 @@ describe('fallback: Google never blocks a lead', () => {
     try {
       fillContact(w);
       type(w, '9 New Build Ln, Louisville, KY 40299');
-      await step3(w); await step3(w);
-      assert.equal((await step3(w)).advanced, true, 'escape granted');
-      w.showStep(3);
+      await step1(w); await step1(w);
+      assert.equal((await step1(w)).advanced, true, 'escape granted');
+      w.showStep(1);
       type(w, 'junk');
       assert.equal($(w, 'addr-verify-note').hidden, true, 'the note goes with the edit');
-      let r = await step3(w);
+      let r = await step1(w);
       assert.equal(r.advanced, false);
       assert.equal(r.error, 'Please pick your address from the suggestions, or type the full address with house number and ZIP.');
       type(w, '11 New Build Ln, Louisville, KY 40299');
-      r = await step3(w);
+      r = await step1(w);
       assert.equal(r.advanced, true, 'plausibility re-checked at once (attempts stay above 2)');
       assert.equal($(w, 'addr-verify-note').hidden, false);
       await w.submitIntake();
@@ -357,26 +430,27 @@ describe('fallback: Google never blocks a lead', () => {
       w.gm_authFailure();
       type(w, 'anything typed');
       type(w, 'edited again');
-      const r = await step3(w);
+      const r = await step1(w);
       assert.equal(r.advanced, true, r.error);
       assert.equal(w.eval('addrVerify.reason'), 'maps_auth_failure');
     } finally { w.close(); }
   });
 
-  test('other step-3 errors never use up address attempts', async () => {
+  test('other step-1 errors never use up address attempts', async () => {
     const { w } = await loadIntake();
     try {
       fillContact(w);
       type(w, '9 New Build Ln, Louisville, KY 40299');
       for (let i = 0; i < 5; i++) {
-        const r = await step3(w, { i_ref_contact: '555-555-0100' });   // referrer phone with no name
+        const r = await step1(w, { i_phone: '555-01' });   // invalid phone, checked before the address
         assert.equal(r.advanced, false);
+        assert.match(r.error, /10-digit phone/);
       }
       assert.equal(w.eval('addrVerify.blocked'), 0, 'no attempt counted while another field was wrong');
       // Other field fixed: the address now gets its full two refusals.
-      assert.equal((await step3(w, { i_ref_contact: '' })).advanced, false);
-      assert.equal((await step3(w)).advanced, false);
-      assert.equal((await step3(w)).advanced, true);
+      assert.equal((await step1(w, { i_phone: '(555) 555-0123' })).advanced, false);
+      assert.equal((await step1(w)).advanced, false);
+      assert.equal((await step1(w)).advanced, true);
     } finally { w.close(); }
   });
 
@@ -387,7 +461,7 @@ describe('fallback: Google never blocks a lead', () => {
         fillContact(w);
         type(w, junk);
         let r;
-        for (let i = 0; i < 6; i++) r = await step3(w);
+        for (let i = 0; i < 6; i++) r = await step1(w);
         assert.equal(r.advanced, false, junk);
         assert.equal(r.error, 'Please pick your address from the suggestions, or type the full address with house number and ZIP.');
         assert.ok(!gtagEvents(w).some(([n]) => n === 'intake_address_fallback'), junk);
@@ -400,10 +474,8 @@ describe('fallback: Google never blocks a lead', () => {
     try {
       fillContact(w);
       w.ensureIntakeMaps = () => new Promise(() => {});
-      w.showStep(3);
-      fill(w, { i_dob: $(w, 'i_dob').type === 'date' ? '1980-01-01' : '01/01/1980' });
       type(w, '100 Main St, Louisville, KY 40202');
-      const btn = w.document.querySelector('#step-3 [data-action="next-step"]');
+      const btn = $(w, 'step1-btn');
       const label = btn.textContent;
       w.ADDR_MAPS_WAIT_MS = 120;
       const first = w.homeAddressProblem(true);
@@ -426,12 +498,10 @@ describe('fallback: Google never blocks a lead', () => {
       fillContact(w);
       w.ensureIntakeMaps = () => new Promise(() => {});   // never settles
       w.ADDR_MAPS_WAIT_MS = 150;
-      w.showStep(3);
-      fill(w, { i_dob: $(w, 'i_dob').type === 'date' ? '1980-01-01' : '01/01/1980' });
       type(w, '100 Main St, Louisville, KY 40202');
-      const btn = w.document.querySelector('#step-3 [data-action="next-step"]');
+      const btn = $(w, 'step1-btn');
       const label = btn.textContent;
-      const pending = w.nextStep(3);
+      const pending = w.nextStep(1);
       await new Promise((r) => setTimeout(r, 20));
       assert.equal(btn.disabled, true);
       assert.equal(btn.textContent, 'Checking address…');
@@ -440,7 +510,7 @@ describe('fallback: Google never blocks a lead', () => {
       assert.equal(btn.disabled, false);
       assert.equal(btn.textContent, label);
       assert.equal(gtagEvents(w).find(([n]) => n === 'intake_address_fallback')[1].reason, 'places_unavailable');
-      assert.equal($(w, 'step-4').classList.contains('hidden'), false);
+      assert.equal($(w, 'step-2').classList.contains('hidden'), false);
     } finally { w.close(); }
   });
 });
@@ -553,7 +623,7 @@ describe('draft and accessibility', () => {
     try {
       assert.equal($(w, 'i_address').value, VA.formatted);
       assert.equal($(w, 'i_city').value, 'Louisville');
-      const r = await step3(w);
+      const r = await step1(w);
       assert.equal(r.advanced, true, r.error);
       await w.submitIntake();
       assert.equal(posts[0].formData.address_verified, true);
@@ -566,7 +636,7 @@ describe('draft and accessibility', () => {
     const { w } = await resume(draftWith({ i_address: VA.formatted }, VA));
     try {
       type(w, VA.formatted + ' Apt 9');
-      const r = await step3(w);
+      const r = await step1(w);
       assert.equal(r.advanced, false);
       assert.match(r.error, /pick your address/);
     } finally { w.close(); }
@@ -577,16 +647,16 @@ describe('draft and accessibility', () => {
       const { w } = await resume(d);
       try {
         assert.equal(w.eval('addrVerify.place'), null);
-        assert.equal((await step3(w)).advanced, false);
+        assert.equal((await step1(w)).advanced, false);
       } finally { w.close(); }
     }
   });
 
-  test('the address message is not a second live alert (step3-error announces it)', async () => {
+  test('the address message is not a second live alert (step1-error announces it)', async () => {
     const { w } = await loadIntake();
     try {
       assert.equal($(w, 'addr-verify-msg').getAttribute('role'), null);
-      assert.equal($(w, 'step3-error').getAttribute('role'), 'alert');
+      assert.equal($(w, 'step1-error').getAttribute('role'), 'alert');
       assert.match($(w, 'i_address').getAttribute('aria-describedby'), /addr-verify-msg/);
     } finally { w.close(); }
   });
