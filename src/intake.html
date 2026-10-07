@@ -809,9 +809,12 @@
              line (formData.address_verified = false); Google being down never
              blocks a lead. See the address-verification block in the script. -->
         <label for="i_address">Home address <span style="color:#ef4444">*</span></label>
-        <input type="text" id="i_address" required autocomplete="off" placeholder="Start typing your address" oninput="_onAddrInput(this)" aria-describedby="addr-verify-hint addr-verify-msg">
+        <input type="text" id="i_address" required autocomplete="off" placeholder="Start typing your address" oninput="_onAddrInput(this)" aria-describedby="addr-verify-hint addr-verify-msg addr-verify-note">
         <p id="addr-verify-hint" class="addr-verify-hint">Start typing, then pick your address from the list.</p>
-        <p id="addr-verify-msg" class="addr-verify-msg" role="alert" hidden></p>
+        <!-- Not role="alert": #step3-error announces the same text; this one is
+             read with the field (aria-describedby). -->
+        <p id="addr-verify-msg" class="addr-verify-msg" hidden></p>
+        <p id="addr-verify-note" class="addr-verify-hint" hidden>We couldn't match this address with Google, so your agent will confirm it with you.</p>
       </div>
       <input type="hidden" id="i_address_street">
       <input type="hidden" id="i_city">
@@ -1398,6 +1401,8 @@ function getTrackingIds() { return TWA.getTrackingIds(); }
 var addrVerify = { place: null, fallback: false, reason: '', incomplete: false, blocked: 0 };
 var ADDR_PICK_MSG = 'Please pick your address from the suggestions.';
 var ADDR_FULL_MSG = 'Please pick a full street address (house number and ZIP) from the suggestions.';
+var ADDR_TYPED_MSG = 'Please pick your address from the suggestions, or type the full address with house number and ZIP.';
+var ADDR_MAPS_WAIT_MS = 3000;   // how long Review waits for a still-loading Places
 // For funnel events: 'verified' | 'fallback' | 'pending'. trackIntake() runs
 // before this line on first load (intake_start), so guard the hoisted var.
 function addressVerifiedState() {
@@ -1467,24 +1472,49 @@ function enterAddressFallback(reason) {
 // A Maps key/billing/quota rejection: Google calls this global.
 if (!window.gm_authFailure) window.gm_authFailure = function () { enterAddressFallback('maps_auth_failure'); };
 
-// Step-3 check (nextStep(3)). Returns a message or ''. Waits briefly for a
-// still-loading Places before deciding it is unavailable.
-async function homeAddressProblem() {
+// A typed line plausible enough to send unverified: a leading house number and
+// a 5-digit ZIP after it ("junk" or "Main St" never qualifies).
+function plausibleTypedAddress(line) {
+  var m = /^\s*(\d+[A-Za-z]?)\s+(.+)$/.exec(line || '');
+  return !!m && /[A-Za-z]/.test(m[2]) && /(^|\D)\d{5}(-\d{4})?(\D|$)/.test(m[2]);
+}
+
+// Step-3 check (nextStep(3)). Returns a message or ''. `onlyProblem` is true
+// when every OTHER step-3 field passed: only then does a refusal count toward
+// the no-pick escape, so fixing some other field never spends attempts.
+// Waits briefly (button shows "Checking address…") for a still-loading Places
+// before deciding it is unavailable.
+async function homeAddressProblem(onlyProblem) {
   var typed = v('i_address');
   if (!typed) return 'Please enter your home address.';
   if (addrVerify.place || addrVerify.fallback) return '';
   var el = document.getElementById('i_address');
   if (!el || el.dataset.acBound !== '1') {
-    try { await Promise.race([ensureIntakeMaps(), new Promise(function (r) { setTimeout(r, 3000); })]); } catch (e) {}
+    var btn = document.querySelector('#step-3 [data-action="next-step"]');
+    var label = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = 'Checking address…'; btn.setAttribute('aria-busy', 'true'); }
+    try { await Promise.race([ensureIntakeMaps(), new Promise(function (r) { setTimeout(r, ADDR_MAPS_WAIT_MS); })]); } catch (e) {}
+    if (btn) { btn.disabled = false; btn.textContent = label; btn.removeAttribute('aria-busy'); }
     if (addrVerify.place || addrVerify.fallback) return '';
     if (!el || el.dataset.acBound !== '1') { enterAddressFallback('places_unavailable'); return ''; }
   }
-  // Places is up but nothing valid was picked. After two refusals, accept the
-  // typed line unverified: an address Google cannot suggest (new build, quota
-  // returning no predictions) must not strand a lead.
-  addrVerify.blocked++;
-  if (addrVerify.blocked > 2) { enterAddressFallback('no_pick_after_retries'); return ''; }
   var msg = addrVerify.incomplete ? ADDR_FULL_MSG : ADDR_PICK_MSG;
+  if (onlyProblem) {
+    // Places is up but nothing valid was picked. After two address-only
+    // refusals, accept a PLAUSIBLE typed line unverified: an address Google
+    // cannot suggest (new build, quota returning no predictions) must not
+    // strand a lead. Junk keeps being refused.
+    addrVerify.blocked++;
+    if (addrVerify.blocked > 2) {
+      if (plausibleTypedAddress(typed)) {
+        enterAddressFallback('no_pick_after_retries');
+        var note = document.getElementById('addr-verify-note');
+        if (note) note.hidden = false;
+        return '';
+      }
+      msg = ADDR_TYPED_MSG;
+    }
+  }
   setAddrMsg(msg);
   return msg;
 }
@@ -2881,11 +2911,12 @@ async function nextStep(from) {
     if (selectedProducts.includes('other')) {
       if (!v('i_other_desc')) problems.push('Please describe the other coverage you need.');
     }
-    // Validate the verified home address (one line, Places pick; see homeAddressProblem()).
-    const addrProblem = await homeAddressProblem();
-    if (addrProblem) { problems.push(addrProblem); trackValidationError(3, v('i_address') ? 'address_not_verified' : 'missing_address'); }
     const refProblem = referrerProblem();
     if (refProblem) { problems.push(refProblem); trackValidationError(3, 'referrer_name'); }
+    // The verified home address runs LAST: a refusal counts toward the no-pick
+    // escape only when it is the sole remaining step-3 problem.
+    const addrProblem = await homeAddressProblem(problems.length === 0);
+    if (addrProblem) { problems.push(addrProblem); trackValidationError(3, v('i_address') ? 'address_not_verified' : 'missing_address'); }
     if (problems.length) {
       // Expand all cards so the offending field (which may be collapsed) is visible.
       document.querySelectorAll('#product-questions .qcard').forEach(c => c.classList.add('open'));
@@ -3999,6 +4030,7 @@ function _onAddrInput(el) {
   // autocomplete pick still overwrites it via syncStateFromAutocomplete.
   // Any edit un-verifies the home address until a suggestion is picked again.
   if (addrVerify.place) { addrVerify.place = null; if (!addrVerify.fallback) setAddrMsg(ADDR_PICK_MSG); }
+  if (addrVerify.reason === 'no_pick_after_retries') { var _n = document.getElementById('addr-verify-note'); if (_n) _n.hidden = true; }
   ['i_city','i_zip'].forEach(function(id) { var e = document.getElementById(id); if (e) e.value = ''; });
 }
 function _onHoAddrInput(el) {
@@ -4182,8 +4214,29 @@ function collectDraft() {
     vehicles,
     step: currentStep,
     hoSameAddr,
+    // The verified home address, only while the box still shows exactly the
+    // picked line (an edit already cleared addrVerify.place). The applicant's
+    // own address only: referrer fields are never in a draft.
+    verifiedAddress: (addrVerify.place && v('i_address') === addrVerify.place.formatted) ? Object.assign({}, addrVerify.place) : undefined,
     savedAt: Date.now(),
   };
+}
+
+// A restored verified address counts as verified only if it is well-formed and
+// the restored box text is exactly its formatted line.
+function restoreVerifiedAddress(va, typedLine) {
+  if (!va || typeof va !== 'object') return;
+  var str = function (x) { return typeof x === 'string' ? x : ''; };
+  var p = { street: str(va.street), city: str(va.city), state: str(va.state).toUpperCase(), zip: str(va.zip), formatted: str(va.formatted), placeId: str(va.placeId) };
+  if (!p.street || !p.city || !/^[A-Z]{2}$/.test(p.state) || !/^\d{5}$/.test(p.zip) || !p.formatted || p.formatted !== typedLine) return;
+  addrVerify.place = p;
+  addrVerify.incomplete = false;
+  var fill = function (id, val) { var el = document.getElementById(id); if (el) el.value = val; };
+  fill('i_address_street', p.street);
+  fill('i_city', p.city);
+  fill('i_zip', p.zip);
+  syncStateFromAutocomplete(p.state);
+  setAddrMsg('');
 }
 
 function saveDraft() {
@@ -4243,6 +4296,8 @@ function restoreDraft(draft) {
   }
   // Restore homeowners address toggle
   if (typeof draft.hoSameAddr === 'boolean') hoSameAddr = draft.hoSameAddr;
+  // Restore the verified home address (the box itself is static, restored above).
+  restoreVerifiedAddress(draft.verifiedAddress, (draft.fields || {}).i_address || '');
   // Stash step-3 field values to re-apply when Step 3 renders (those fields
   // don't exist in the DOM yet — restore is capped at step 2).
   window._draftFields = draft.fields;

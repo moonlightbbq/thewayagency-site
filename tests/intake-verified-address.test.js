@@ -55,12 +55,13 @@ function place({ num = '100', route = 'Main St', city = 'Louisville', state = 'K
   return { address_components: comps, formatted_address: formatted, place_id: id };
 }
 
-async function loadIntake({ places = true, offline = false } = {}) {
+async function loadIntake({ places = true, offline = false, draft } = {}) {
   const posts = [], tracks = [], autocompletes = [];
   const dom = new JSDOM(PAGE, {
     runScripts: 'dangerously',
     url: 'https://www.thewayagency.com/intake/',
     beforeParse(w) {
+      if (draft) w.localStorage.setItem('twa_intake_draft', JSON.stringify(draft));
       if (places) {
         w.google = { maps: { places: { Autocomplete: class {
           constructor(input, opts) { this.input = input; this.opts = opts; this.listeners = {}; this._place = {}; autocompletes.push(this); }
@@ -304,16 +305,80 @@ describe('fallback: Google never blocks a lead', () => {
     } finally { w.close(); }
   });
 
-  test('Places up but nothing picked: refused twice, then accepted unverified (no_pick_after_retries)', async () => {
+  test('Places up, nothing picked: a plausible typed line passes on the third address-only attempt, flagged', async () => {
+    const { w, posts } = await loadIntake();
+    try {
+      fillContact(w);
+      type(w, '9 New Build Ln, Louisville, KY 40299');
+      let r = await step3(w);
+      assert.equal(r.advanced, false);
+      assert.match(r.error, /^Please pick your address from the suggestions\.$/);
+      assert.equal((await step3(w)).advanced, false);
+      r = await step3(w);
+      assert.equal(r.advanced, true, r.error);
+      assert.equal(gtagEvents(w).find(([n]) => n === 'intake_address_fallback')[1].reason, 'no_pick_after_retries');
+      assert.equal($(w, 'addr-verify-note').hidden, false, 'told the agency will confirm it');
+      assert.match($(w, 'addr-verify-note').textContent, /agent will confirm/);
+      await w.submitIntake();
+      assert.equal(posts[0].formData.address_verified, false);
+      assert.equal(posts[0].formData.address_fallback_reason, 'no_pick_after_retries');
+      assert.equal(posts[0].address, '9 New Build Ln, Louisville, KY 40299');
+    } finally { w.close(); }
+  });
+
+  test('other step-3 errors never use up address attempts', async () => {
     const { w } = await loadIntake();
     try {
       fillContact(w);
       type(w, '9 New Build Ln, Louisville, KY 40299');
+      for (let i = 0; i < 5; i++) {
+        const r = await step3(w, { i_ref_contact: '555-555-0100' });   // referrer phone with no name
+        assert.equal(r.advanced, false);
+      }
+      assert.equal(w.eval('addrVerify.blocked'), 0, 'no attempt counted while another field was wrong');
+      // Other field fixed: the address now gets its full two refusals.
+      assert.equal((await step3(w, { i_ref_contact: '' })).advanced, false);
       assert.equal((await step3(w)).advanced, false);
-      assert.equal((await step3(w)).advanced, false);
-      const r = await step3(w);
-      assert.equal(r.advanced, true, r.error);
-      assert.equal(gtagEvents(w).find(([n]) => n === 'intake_address_fallback')[1].reason, 'no_pick_after_retries');
+      assert.equal((await step3(w)).advanced, true);
+    } finally { w.close(); }
+  });
+
+  test('junk never passes, however many attempts', async () => {
+    for (const junk of ['junk', 'Main St Louisville KY', '40202 Main St', '12 Main St Louisville KY']) {
+      const { w } = await loadIntake();
+      try {
+        fillContact(w);
+        type(w, junk);
+        let r;
+        for (let i = 0; i < 6; i++) r = await step3(w);
+        assert.equal(r.advanced, false, junk);
+        assert.equal(r.error, 'Please pick your address from the suggestions, or type the full address with house number and ZIP.');
+        assert.ok(!gtagEvents(w).some(([n]) => n === 'intake_address_fallback'), junk);
+      } finally { w.close(); }
+    }
+  });
+
+  test('a slow Maps load shows "Checking address…" on a disabled button, then falls back', async () => {
+    const { w } = await loadIntake({ places: false });
+    try {
+      fillContact(w);
+      w.ensureIntakeMaps = () => new Promise(() => {});   // never settles
+      w.ADDR_MAPS_WAIT_MS = 150;
+      w.showStep(3);
+      fill(w, { i_dob: $(w, 'i_dob').type === 'date' ? '1980-01-01' : '01/01/1980' });
+      type(w, '100 Main St, Louisville, KY 40202');
+      const btn = w.document.querySelector('#step-3 [data-action="next-step"]');
+      const label = btn.textContent;
+      const pending = w.nextStep(3);
+      await new Promise((r) => setTimeout(r, 20));
+      assert.equal(btn.disabled, true);
+      assert.equal(btn.textContent, 'Checking address…');
+      assert.equal(btn.getAttribute('aria-busy'), 'true');
+      await pending;
+      assert.equal(btn.disabled, false);
+      assert.equal(btn.textContent, label);
+      assert.equal(gtagEvents(w).find(([n]) => n === 'intake_address_fallback')[1].reason, 'places_unavailable');
+      assert.equal($(w, 'step-4').classList.contains('hidden'), false);
     } finally { w.close(); }
   });
 });
@@ -395,5 +460,72 @@ describe('the /api/intake payload', () => {
         }
       } finally { w.close(); }
     }
+  });
+});
+
+describe('draft and accessibility', () => {
+  const VA = { street: '100 Main St', city: 'Louisville', state: 'KY', zip: '40202', formatted: '100 Main St, Louisville, KY 40202', placeId: 'ChIJ_test_place_1' };
+  function draftWith(fields, verifiedAddress) {
+    return { fields: { i_fname: 'Zz', i_lname: 'Addrtest', i_email: 'zz.addrtest@example.com', i_phone: '(555) 555-0123', i_state: 'KY', ...fields },
+      products: ['renters'], vehicles: [], step: 2, hoSameAddr: true, verifiedAddress, savedAt: Date.now() };
+  }
+  async function resume(draft) {
+    const ctx = await loadIntake({ draft });
+    ctx.w.document.getElementById('draft-resume-btn').click();
+    return ctx;
+  }
+
+  test('the draft saves the verified place (never the referrer) and a resumed, unedited address stays verified', async () => {
+    const a = await loadIntake();
+    let saved;
+    try {
+      fillContact(a.w);
+      pick(a.homeAc, place());
+      fill(a.w, { i_ref_name: 'Qq Referrerdraft', i_ref_contact: 'qq.refdraft@example.com' });
+      a.w.saveDraft();
+      saved = JSON.parse(a.w.localStorage.getItem('twa_intake_draft'));
+      assert.deepEqual(saved.verifiedAddress, VA);
+      assert.doesNotMatch(JSON.stringify(saved), /Referrerdraft|refdraft|i_ref_/);
+    } finally { a.w.close(); }
+    const { w, posts } = await resume(saved);
+    try {
+      assert.equal($(w, 'i_address').value, VA.formatted);
+      assert.equal($(w, 'i_city').value, 'Louisville');
+      const r = await step3(w);
+      assert.equal(r.advanced, true, r.error);
+      await w.submitIntake();
+      assert.equal(posts[0].formData.address_verified, true);
+      assert.equal(posts[0].formData.place_id, VA.placeId);
+      assert.equal(posts[0].address, '100 Main St');
+    } finally { w.close(); }
+  });
+
+  test('a resumed verified address that is then edited must be picked again', async () => {
+    const { w } = await resume(draftWith({ i_address: VA.formatted }, VA));
+    try {
+      type(w, VA.formatted + ' Apt 9');
+      const r = await step3(w);
+      assert.equal(r.advanced, false);
+      assert.match(r.error, /pick your address/);
+    } finally { w.close(); }
+  });
+
+  test('a draft whose box text does not match the saved place, or a malformed place, is not verified', async () => {
+    for (const d of [draftWith({ i_address: '1 Other Rd, Louisville, KY 40202' }, VA), draftWith({ i_address: VA.formatted }, { ...VA, zip: 'x' })]) {
+      const { w } = await resume(d);
+      try {
+        assert.equal(w.eval('addrVerify.place'), null);
+        assert.equal((await step3(w)).advanced, false);
+      } finally { w.close(); }
+    }
+  });
+
+  test('the address message is not a second live alert (step3-error announces it)', async () => {
+    const { w } = await loadIntake();
+    try {
+      assert.equal($(w, 'addr-verify-msg').getAttribute('role'), null);
+      assert.equal($(w, 'step3-error').getAttribute('role'), 'alert');
+      assert.match($(w, 'i_address').getAttribute('aria-describedby'), /addr-verify-msg/);
+    } finally { w.close(); }
   });
 });
