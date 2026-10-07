@@ -698,10 +698,18 @@ function sendError(status, text) {
 
 async function sendEmail(to, subject, htmlBody, { cc = REVIEW_CC } = {}) {
   const url = `${SAGE_API_URL}/api/email-drafts`;
+  // One key per email, reused by every retry below (BL-34). SAGE never saves
+  // or sends a second copy under one key: a retry after a send that certainly
+  // failed (a 429, a 5xx before it left) is sent once more under the same
+  // key; a retry of a sent email gets the first answer. A send SAGE handed to
+  // Microsoft without an answer comes back as 202 { outcome: 'unknown' }: not
+  // retried (it may have been delivered).
+  const idempotencyKey = `site-review-${crypto.randomUUID()}`;
   const opts = {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'Idempotency-Key': idempotencyKey,
       'x-api-key': SAGE_API_TOKEN,
       // SAGE enforces CSRF on every api-key call (SAGE_FF_BEARER_CSRF_ENFORCE).
       // Without this header the request dies at 403 CLIENT_ID_REQUIRED *before*
@@ -725,7 +733,11 @@ async function sendEmail(to, subject, htmlBody, { cc = REVIEW_CC } = {}) {
       const resp = await fetch(url, opts);
       if (resp.ok) {
         if (attempt > 0) console.log(`    ✓ succeeded on attempt ${attempt + 1}`);
-        return resp.json();
+        const answer = await resp.json();
+        if (answer && answer.outcome === 'unknown') {
+          console.log('    ! SAGE could not confirm delivery (outcome unknown): not retried; check the sending mailbox\'s Sent Items');
+        }
+        return answer;
       }
       const text = await resp.text();
       const retryable = resp.status >= 500 || resp.status === 429;
