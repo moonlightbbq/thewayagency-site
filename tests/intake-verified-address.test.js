@@ -326,6 +326,43 @@ describe('fallback: Google never blocks a lead', () => {
     } finally { w.close(); }
   });
 
+  test('after the no-pick escape, editing to junk is refused; another plausible line passes with the note again', async () => {
+    const { w, posts } = await loadIntake();
+    try {
+      fillContact(w);
+      type(w, '9 New Build Ln, Louisville, KY 40299');
+      await step3(w); await step3(w);
+      assert.equal((await step3(w)).advanced, true, 'escape granted');
+      w.showStep(3);
+      type(w, 'junk');
+      assert.equal($(w, 'addr-verify-note').hidden, true, 'the note goes with the edit');
+      let r = await step3(w);
+      assert.equal(r.advanced, false);
+      assert.equal(r.error, 'Please pick your address from the suggestions, or type the full address with house number and ZIP.');
+      type(w, '11 New Build Ln, Louisville, KY 40299');
+      r = await step3(w);
+      assert.equal(r.advanced, true, 'plausibility re-checked at once (attempts stay above 2)');
+      assert.equal($(w, 'addr-verify-note').hidden, false);
+      await w.submitIntake();
+      assert.equal(posts[0].address, '11 New Build Ln, Louisville, KY 40299');
+      assert.equal(posts[0].formData.address_verified, false);
+      assert.equal(posts[0].formData.address_fallback_reason, 'no_pick_after_retries');
+    } finally { w.close(); }
+  });
+
+  test('a Google-unavailable fallback stays sticky across edits', async () => {
+    const { w } = await loadIntake();
+    try {
+      fillContact(w);
+      w.gm_authFailure();
+      type(w, 'anything typed');
+      type(w, 'edited again');
+      const r = await step3(w);
+      assert.equal(r.advanced, true, r.error);
+      assert.equal(w.eval('addrVerify.reason'), 'maps_auth_failure');
+    } finally { w.close(); }
+  });
+
   test('other step-3 errors never use up address attempts', async () => {
     const { w } = await loadIntake();
     try {
@@ -356,6 +393,31 @@ describe('fallback: Google never blocks a lead', () => {
         assert.ok(!gtagEvents(w).some(([n]) => n === 'intake_address_fallback'), junk);
       } finally { w.close(); }
     }
+  });
+
+  test('overlapping "Checking address" waits never leave the button stuck busy', async () => {
+    const { w } = await loadIntake({ places: false });
+    try {
+      fillContact(w);
+      w.ensureIntakeMaps = () => new Promise(() => {});
+      w.showStep(3);
+      fill(w, { i_dob: $(w, 'i_dob').type === 'date' ? '1980-01-01' : '01/01/1980' });
+      type(w, '100 Main St, Louisville, KY 40202');
+      const btn = w.document.querySelector('#step-3 [data-action="next-step"]');
+      const label = btn.textContent;
+      w.ADDR_MAPS_WAIT_MS = 120;
+      const first = w.homeAddressProblem(true);
+      await new Promise((r) => setTimeout(r, 40));
+      w.ADDR_MAPS_WAIT_MS = 200;
+      const second = w.homeAddressProblem(true);   // starts while the first is busy
+      await first;
+      assert.equal(btn.textContent, 'Checking address…', 'still busy while the second waits');
+      assert.equal(btn.disabled, true);
+      await second;
+      assert.equal(btn.textContent, label);
+      assert.equal(btn.disabled, false);
+      assert.equal(btn.getAttribute('aria-busy'), null);
+    } finally { w.close(); }
   });
 
   test('a slow Maps load shows "Checking address…" on a disabled button, then falls back', async () => {

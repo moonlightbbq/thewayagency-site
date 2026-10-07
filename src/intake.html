@@ -1491,10 +1491,24 @@ async function homeAddressProblem(onlyProblem) {
   var el = document.getElementById('i_address');
   if (!el || el.dataset.acBound !== '1') {
     var btn = document.querySelector('#step-3 [data-action="next-step"]');
-    var label = btn ? btn.textContent : '';
-    if (btn) { btn.disabled = true; btn.textContent = 'Checking address…'; btn.setAttribute('aria-busy', 'true'); }
+    // Overlapping waits (double-click): the idle label is saved only by the
+    // first, and only the last to finish restores it, so the button can never
+    // be left reading "Checking address…".
+    if (btn) {
+      var busy = +(btn.dataset.addrBusy || 0);
+      if (!busy) btn.dataset.idleLabel = btn.textContent;
+      btn.dataset.addrBusy = String(busy + 1);
+      btn.disabled = true; btn.textContent = 'Checking address…'; btn.setAttribute('aria-busy', 'true');
+    }
     try { await Promise.race([ensureIntakeMaps(), new Promise(function (r) { setTimeout(r, ADDR_MAPS_WAIT_MS); })]); } catch (e) {}
-    if (btn) { btn.disabled = false; btn.textContent = label; btn.removeAttribute('aria-busy'); }
+    if (btn) {
+      var left = Math.max(0, +(btn.dataset.addrBusy || 1) - 1);
+      btn.dataset.addrBusy = String(left);
+      if (!left) {
+        btn.disabled = false; btn.textContent = btn.dataset.idleLabel || btn.textContent; btn.removeAttribute('aria-busy');
+        delete btn.dataset.idleLabel; delete btn.dataset.addrBusy;
+      }
+    }
     if (addrVerify.place || addrVerify.fallback) return '';
     if (!el || el.dataset.acBound !== '1') { enterAddressFallback('places_unavailable'); return ''; }
   }
@@ -4030,7 +4044,14 @@ function _onAddrInput(el) {
   // autocomplete pick still overwrites it via syncStateFromAutocomplete.
   // Any edit un-verifies the home address until a suggestion is picked again.
   if (addrVerify.place) { addrVerify.place = null; if (!addrVerify.fallback) setAddrMsg(ADDR_PICK_MSG); }
-  if (addrVerify.reason === 'no_pick_after_retries') { var _n = document.getElementById('addr-verify-note'); if (_n) _n.hidden = true; }
+  // The no-pick escape covered THAT typed line only: an edit revokes it, and
+  // (attempts stay above 2) the next address-only Review re-runs the
+  // plausibility check at once. Google-unavailable fallbacks stay sticky.
+  if (addrVerify.fallback && addrVerify.reason === 'no_pick_after_retries') {
+    addrVerify.fallback = false;
+    addrVerify.reason = '';
+    var _n = document.getElementById('addr-verify-note'); if (_n) _n.hidden = true;
+  }
   ['i_city','i_zip'].forEach(function(id) { var e = document.getElementById(id); if (e) e.value = ''; });
 }
 function _onHoAddrInput(el) {
