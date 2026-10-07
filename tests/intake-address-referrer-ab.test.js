@@ -35,7 +35,7 @@ const RULES = {
 const CONTROL_KEYS = ['sessionId', 'firstName', 'lastName', 'email', 'phone', 'address', 'city', 'state', 'zip',
   'products', 'formData', 'notes', 'agent', '_hp_company', 'cfToken', 'twa_vid', '_tracking', 'attribution'];
 
-async function loadIntake({ query = '', vid } = {}) {
+async function loadIntake({ query = '', vid, offline = false } = {}) {
   const posts = [];
   const dom = new JSDOM(PAGE, {
     runScripts: 'dangerously',
@@ -46,6 +46,7 @@ async function loadIntake({ query = '', vid } = {}) {
         const href = String(input);
         if (href.includes('/api/intake/rules')) return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(RULES) });
         if (href.endsWith('/api/intake')) {
+          if (offline) return Promise.reject(new TypeError('Failed to fetch'));
           posts.push(JSON.parse(init.body));
           return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({ ok: true, reference: 'TEST' }) });
         }
@@ -77,14 +78,28 @@ function fillContact(w) {
 const exposures = (w) => (w.dataLayer || []).filter((e) => e && e.event === 'ab_exposure' && e.test_name === TEST);
 const plain = (o) => JSON.parse(JSON.stringify(o));
 
+// Reference copies, kept here on purpose (a test that imported the page's own
+// function would agree with any bug in it). hashAssign is attribution.js's
+// live assignment for the other intake tests; refBucket is this test's.
+function h32(str) { let h = 0; for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; } return h; }
+const hashAssign = (vid, test, n) => Math.abs(h32(vid + ':' + test)) % n;
+function refBucket(vid) {
+  let h = h32(vid + ':' + TEST);
+  h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35); h ^= h >>> 16;
+  return (h >>> 0) % 2;
+}
+// Visitor ids shaped like attribution.js makes them (random base36 + time base36).
+function fakeVid(i) { return (i * 2654435761 >>> 0).toString(36) + (i * 40503 % 99991).toString(36) + (1790000000000 + i * 7919).toString(36); }
+
 describe('assignment and exposure', () => {
-  test('a visitor is bucketed by TWA.hashAssign(vid, test, 2), deterministically, with one exposure', async () => {
+  test('a visitor is bucketed by fmix32(hash(vid:test)) % 2, deterministically, with one exposure', async () => {
     const seen = new Set();
     for (const vid of ['vid-alpha-001', 'vid-bravo-002', 'vid-charlie-003', 'vid-delta-004', 'vid-echo-005', 'vid-fox-006']) {
       const { w } = await loadIntake({ vid });
       try {
-        const expected = ['control', 'full-address'][w.TWA.hashAssign(vid, TEST, 2)];
+        const expected = ['control', 'full-address'][refBucket(vid)];
         assert.equal(w.eval('getAddrRefArm()'), expected, vid);
+        assert.equal(w.addrRefBucket(vid), refBucket(vid), vid);
         const ex = exposures(w);
         assert.equal(ex.length, 1);
         assert.deepEqual(plain(ex[0]), { event: 'ab_exposure', test_name: TEST, variant: expected, visitor_id: vid });
@@ -94,11 +109,41 @@ describe('assignment and exposure', () => {
     assert.equal(seen.size, 2, 'six fixed visitors should land in both arms');
   });
 
+  test('a returning visitor keeps their arm across page loads', async () => {
+    for (const vid of ['vid-return-001', 'vid-return-002', 'vid-return-003']) {
+      const a = await loadIntake({ vid }); const armA = a.w.eval('getAddrRefArm()'); a.w.close();
+      const b = await loadIntake({ vid }); const armB = b.w.eval('getAddrRefArm()'); b.w.close();
+      assert.equal(armA, armB, vid);
+    }
+  });
+
+  test('the arm is independent of dob-required and intake-call-or-text (each cell 25% ± 2%)', async () => {
+    const { w } = await loadIntake();
+    try {
+      const N = 40000;
+      for (const other of ['dob-required', 'intake-call-or-text']) {
+        const cells = [0, 0, 0, 0];
+        for (let i = 0; i < N; i++) {
+          const vid = fakeVid(i);
+          assert.equal(w.addrRefBucket(vid), refBucket(vid));
+          // The live tests' assignment, from the page's own attribution.js.
+          cells[refBucket(vid) * 2 + w.TWA.hashAssign(vid, other, 2)]++;
+        }
+        for (const c of cells) assert.ok(Math.abs(c / N - 0.25) <= 0.02, other + ' cross-tab ' + cells.join('/'));
+      }
+      // Guard the premise: the old assignment really was confounded, so a
+      // revert to TWA.assignVariant would fail the cross-tab above.
+      let same = 0;
+      for (let i = 0; i < 2000; i++) { const vid = fakeVid(i); if (hashAssign(vid, TEST, 2) === hashAssign(vid, 'dob-required', 2)) same++; }
+      assert.ok(same === 0 || same === 2000, 'hashAssign % 2 is parity-locked across tests (' + same + '/2000)');
+    } finally { w.close(); }
+  });
+
   test('the hash split is roughly uniform (two arms, no weights)', async () => {
     const { w } = await loadIntake();
     try {
       let variant = 0;
-      for (let i = 0; i < 4000; i++) variant += w.TWA.hashAssign('v' + i + '-' + (i * 7919).toString(36), TEST, 2);
+      for (let i = 0; i < 4000; i++) variant += w.addrRefBucket(fakeVid(i));
       assert.ok(variant > 1700 && variant < 2300, 'variant share ' + variant + '/4000');
     } finally { w.close(); }
   });
@@ -277,6 +322,28 @@ describe('the /api/intake payload', () => {
     }
   });
 
+  test('no referrer value ever reaches localStorage: draft, offline queue, anything', async () => {
+    const REF_NAME = 'Qq Referrerstorage', REF_EMAIL = 'qq.refstorage@example.com', REF_PHONE = '(502) 555-0177';
+    for (const contact of [REF_EMAIL, REF_PHONE]) {
+      const { w, posts } = await loadIntake({ query: '?force_variant=full-address', offline: true });
+      try {
+        fillContact(w);
+        fill(w, { i_address: '100 Main St', i_city: 'Louisville', i_zip: '40202', i_ref_name: REF_NAME, i_ref_contact: contact });
+        w.saveDraft();
+        w.showStep(4);
+        await w.submitIntake();
+        assert.equal(posts.length, 0, 'the POST failed, so the offline path ran');
+        const queued = JSON.parse(w.localStorage.getItem('twa_intake_queue'));
+        assert.ok(queued && queued.payload, 'the submission was queued offline');
+        assert.equal(queued.payload.city, 'Louisville', 'the address still rides the queue');
+        assert.doesNotMatch(JSON.stringify(queued), /referredBy/);
+        let all = '';
+        for (let i = 0; i < w.localStorage.length; i++) all += w.localStorage.key(i) + '=' + w.localStorage.getItem(w.localStorage.key(i)) + '\n';
+        for (const needle of ['Referrerstorage', 'refstorage', '555-0177', '5550177']) assert.ok(!all.includes(needle), 'localStorage holds ' + needle);
+      } finally { w.close(); }
+    }
+  });
+
   test('the autosave (trackPartial -> /api/intake/track) never carries referrer fields', () => {
     const body = HTML.slice(HTML.indexOf('async function trackPartial('), HTML.indexOf('async function checkTakeover('));
     assert.ok(body.length > 100);
@@ -285,20 +352,22 @@ describe('the /api/intake payload', () => {
 });
 
 describe('analytics carry the arm', () => {
-  test('intake_* funnel events and the conversion push name the test and arm', async () => {
+  test('intake_* funnel events and the conversion push carry ab_addr_ref (not generic test_name/variant)', async () => {
     const { w } = await submit2();
     try {
       const gtagEvents = w.dataLayer.filter((e) => e && e[0] === 'event').map((e) => [e[1], plain(e[2])]);
       const complete = gtagEvents.find(([n]) => n === 'intake_complete');
       assert.ok(complete, 'intake_complete fired');
-      assert.equal(complete[1].test_name, TEST);
-      assert.equal(complete[1].variant, 'full-address');
       for (const [name, params] of gtagEvents.filter(([n]) => /^intake_/.test(n))) {
-        assert.equal(params.variant, 'full-address', name + ' carries the arm');
+        assert.equal(params.ab_addr_ref, 'full-address', name + ' carries the arm');
+        assert.ok(!('test_name' in params) && !('variant' in params), name + ' has no generic test_name/variant');
       }
       const conv = w.dataLayer.find((e) => e && e.event === 'conversion' && e.conversion_type === 'quote_request');
-      assert.equal(conv.test_name, TEST);
-      assert.equal(conv.variant, 'full-address');
+      assert.equal(conv.ab_addr_ref, 'full-address');
+      assert.ok(!('test_name' in conv) && !('variant' in conv));
+      // Exposure stays on the framework's ab_exposure event.
+      assert.equal(exposures(w).length, 1);
+      assert.equal(exposures(w)[0].variant, 'full-address');
     } finally { w.close(); }
   });
 

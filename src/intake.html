@@ -831,8 +831,9 @@
       </div>
       <!-- A/B 'intake-address-referrer' (arm 'full-address'): optional referrer.
            Hidden (and never sent) for control. These are a THIRD PARTY's details,
-           so autocomplete is off (never the applicant's own autofill) and they
-           are left out of DRAFT_FIELD_IDS (never written to localStorage). -->
+           so autocomplete is off (never the applicant's own autofill), they are
+           left out of DRAFT_FIELD_IDS and out of the offline-replay queue: they
+           are never written to localStorage. Only the live POST carries them. -->
       <fieldset id="ab-referrer" class="ab-referrer" hidden>
         <legend>Who referred you? <span class="ab-optional">(optional)</span></legend>
         <div class="form-row">
@@ -1180,10 +1181,11 @@ function trackIntake(eventName, params) {
     event_category: 'intake',
     intake_source: _funnelData.source,
     intake_agent: _funnelData.agent,
-    // A/B 'intake-address-referrer': same keys as ab_exposure, so funnel steps,
-    // abandonment and intake_complete split by arm in GA4.
-    test_name: 'intake-address-referrer',
-    variant: getAddrRefArm(),
+    // A/B 'intake-address-referrer': a test-specific param (not the generic
+    // test_name/variant, which would collide with the next test and mislabel
+    // the other live intake tests), so funnel steps, abandonment and
+    // intake_complete split by arm in GA4. Exposure stays on ab_exposure.
+    ab_addr_ref: getAddrRefArm(),
     ...params,
   });
   if (window.CONFIG?.debug || new URLSearchParams(window.location.search).has('twa_debug')) {
@@ -1391,8 +1393,7 @@ function getTrackingIds() { return TWA.getTrackingIds(); }
 //                fills hidden city/ZIP only when a suggestion is picked).
 // full-address = "Street Address" + visible, REQUIRED City and ZIP, plus an
 //                optional "Who referred you?" block (name + email or phone).
-// Uniform 50/50 (hashAssign has no weights; promoting the variant to 100% is a
-// code change, not a re-weight). Control's DOM, validation and POST body stay
+// Uniform 50/50 (promoting the variant to 100% is a code change, not a re-weight). Control's DOM, validation and POST body stay
 // byte-for-byte today's: every variant branch below checks isFullAddressArm().
 // SAGE contract: sage-server #1067 (address/city/state/zip + referredBy*).
 // Assigned lazily: trackIntake('intake_start') runs earlier in this script than
@@ -1400,12 +1401,35 @@ function getTrackingIds() { return TWA.getTrackingIds(); }
 // deterministic, so assigning on first use changes nothing about the bucket.
 // (Hence the literal test name everywhere: a hoisted `var` holding it would
 // still be undefined when that first event fires.)
+//
+// NOT TWA.assignVariant: its hashAssign (h*31 + c) is odd-multiplier, so
+// hash % 2 is just the parity of the character sum of 'vid:test', and every
+// two-arm test gets the same split up to a fixed flip — this arm would be
+// fully confounded with 'dob-required' and 'intake-call-or-text'. hashAssign
+// itself must not change (it would re-bucket those live tests mid-flight), so
+// this test runs the same 32-bit string hash through the murmur3 fmix32
+// finalizer, which mixes the high bits into bit 0: deterministic per visitor
+// (returning visitors keep their arm) and independent of the other tests.
+// ?force_variant= is honored like TWA.assignVariant. Without attribution.js
+// (the resilience stub) it pins control, as the stub does for every test.
 var addrRefArm;
+function addrRefBucket(visitorId) {
+  var str = visitorId + ':intake-address-referrer', h = 0;
+  for (var i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
+  h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b);
+  h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35);
+  h ^= h >>> 16;
+  return (h >>> 0) % 2;
+}
 function getAddrRefArm() {
   if (!addrRefArm) {
-    addrRefArm = (window.TWA && typeof TWA.assignVariant === 'function')
-      ? TWA.assignVariant('intake-address-referrer', ['control', 'full-address'])
-      : 'control';
+    var arms = ['control', 'full-address'];
+    var force = null;
+    try { force = new URLSearchParams(window.location.search).get('force_variant'); } catch (e) {}
+    if (force && arms.indexOf(force) !== -1) addrRefArm = force;
+    else if (window.TWA && typeof TWA.hashAssign === 'function' && TWA.getVisitorId()) { // real attribution.js, not the stub
+      addrRefArm = arms[addrRefBucket(TWA.getVisitorId())];
+    } else addrRefArm = 'control';
   }
   return addrRefArm;
 }
@@ -1453,7 +1477,8 @@ function addressReferrerProblems() {
 }
 
 // The referrer's contact is ONE box: '@' means email, otherwise a phone.
-// Spread into the /api/intake bodies (final submit + offline replay). Control
+// Spread into the live /api/intake final-submit body only (never the offline
+// queue, which is stored in localStorage). Control
 // gets {} so its JSON is unchanged; /api/intake/track never calls this.
 function referrerFields() {
   var out = {};
@@ -3655,7 +3680,7 @@ async function submitQuickLead() {
       // Tracking
       if (window.gtag) gtag('event', 'intake_quick_lead', { products: selectedProducts.join(','), product_count: selectedProducts.length });
       if (window.dataLayer) {
-        dataLayer.push({ event: 'conversion', conversion_type: 'quick_lead', conversion_products: selectedProducts.join(','), conversion_reference: data.reference, conversion_source: srcParam || 'intake', test_name: 'intake-address-referrer', variant: getAddrRefArm() });
+        dataLayer.push({ event: 'conversion', conversion_type: 'quick_lead', conversion_products: selectedProducts.join(','), conversion_reference: data.reference, conversion_source: srcParam || 'intake', ab_addr_ref: getAddrRefArm() });
       }
       if (window.fbq && sendMetaLead()) fbq('track', 'Lead', { content_category: 'quick_lead', currency: 'USD' }, { eventID: data.reference });
     } else {
@@ -3889,8 +3914,7 @@ async function submitIntake() {
           conversion_products: selectedProducts.join(','),
           conversion_reference: data.reference,
           conversion_source: srcParam || 'intake',
-          test_name: 'intake-address-referrer',
-          variant: getAddrRefArm(),
+          ab_addr_ref: getAddrRefArm(),
         });
       }
     } else {
@@ -3911,7 +3935,9 @@ async function submitIntake() {
       // weakened for replays); identity/attribution snapshot ride along.
       twa_vid: getVisitorId(), _tracking: getTrackingIds(), attribution: TWA.getAttribution(),
       offline_replay: true, queued_at: Date.now(),
-      ...referrerFields(),
+      // No referrerFields() here: this payload is saved to localStorage
+      // (twa_intake_queue, no age limit), and a third party's details never
+      // go to storage. A referrer lost on an offline replay is acceptable.
     };
     try { localStorage.setItem('twa_intake_queue', JSON.stringify({ payload, ref: queueRef, ts: Date.now() })); } catch(qe) {}
     showContactFallback(err, 'Saved! We\'ll submit when you\'re back online. Ref: ' + queueRef + '. If it\'s urgent:', { email: true });
