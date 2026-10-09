@@ -46,10 +46,12 @@ PII_GUARD_REQUIRE_INDEX=1 node "$PII_GUARD" scan-range "$head" --not origin/main
 
 # 2. A review approved this exact head (the latest marker from a collaborator wins).
 review_ok() {
-  local h=$1 line
-  line=$(gh api "repos/{owner}/{repo}/issues/$PR/comments" --paginate \
-    -q '.[] | select(.author_association=="OWNER" or .author_association=="MEMBER" or .author_association=="COLLABORATOR") | .body' 2>/dev/null \
-    | tr -d '\r' | grep -E '^[[:space:]]*SAGE-REVIEW: verdict=(APPROVE|CHANGES) head=[0-9a-f]{40}[[:space:]]*$' | tail -1) || return 1
+  local h=$1 bodies line
+  # Read the comments first, so a failed read and "no marker" give different, non-empty reasons.
+  bodies=$(gh api "repos/{owner}/{repo}/issues/$PR/comments" --paginate \
+    -q '.[] | select(.author_association=="OWNER" or .author_association=="MEMBER" or .author_association=="COLLABORATOR") | .body' 2>/dev/null) \
+    || { echo "could not read the PR comments"; return 1; }
+  line=$(printf '%s\n' "$bodies" | tr -d '\r' | grep -E '^[[:space:]]*SAGE-REVIEW: verdict=(APPROVE|CHANGES) head=[0-9a-f]{40}[[:space:]]*$' | tail -1 || true)
   [ -n "$line" ] || { echo "no SAGE-REVIEW marker on PR #$PR"; return 1; }
   case "$line" in
     *"verdict=APPROVE head=$h"*) return 0 ;;
@@ -68,9 +70,11 @@ while :; do
   for name in "${EXPECTED[@]}"; do
     st=$(printf '%s\n' "$checks" | awk -F'\t' -v n="$name" '$1==n {print $2}' | tail -1)
     case "$st" in
-      pass|skipping) ;;
+      # Only pass. None of the 7 is path-filtered or conditional on a PR, so a
+      # 'skipping' check means a job that never ran: not a pass.
+      pass) ;;
       pending|queued|in_progress|'') [ -z "$st" ] && missing+=("$name"); pending=1 ;;
-      *) bad+=("$name=$st") ;;
+      *) bad+=("$name=$st") ;;   # fail, cancel, skipping
     esac
   done
   [ ${#bad[@]} -gt 0 ] && no "checks did not pass: ${bad[*]} (a cancelled check is not a pass: re-run it, then gate again)"
