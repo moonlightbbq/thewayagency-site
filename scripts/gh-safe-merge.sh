@@ -84,5 +84,11 @@ echo "  ✓ All ${#EXPECTED[@]} checks passed: ${EXPECTED[*]}"
 now=$(gh pr view "$PR" --json headRefOid -q .headRefOid)
 [ "$now" = "$head" ] || no "the PR head moved during the wait ($head → $now): review and gate the new head"
 msg=$(review_ok "$head") || no "$msg"
-gh pr merge "$PR" --squash --delete-branch --match-head-commit "$head" || no "gh pr merge failed"
+# No --delete-branch: it also checks main out locally, which fails when another
+# worktree holds main, AFTER the remote merge succeeded (a false refusal on #101).
+# The PR state is the source of truth; the branch is deleted through the API.
+gh pr merge "$PR" --squash --match-head-commit "$head" || true
+[ "$(gh pr view "$PR" --json state -q .state)" = MERGED ] || no "gh pr merge did not merge PR #$PR"
+branch=$(gh pr view "$PR" --json headRefName -q .headRefName)
+gh api -X DELETE "repos/{owner}/{repo}/git/refs/heads/$branch" >/dev/null 2>&1 || echo "  ! could not delete branch $branch (delete it by hand)"
 echo "✔ Merged PR #$PR at ${head:0:12}."
