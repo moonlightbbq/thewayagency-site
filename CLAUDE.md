@@ -40,3 +40,7 @@ double-hyphens (` -- `), or broken in-page anchors. Keep the copy plain
 (use commas, parentheses, or separate sentences instead of em dashes). The
 footer business-hours en dash (`Mon-Fri: 9:00 AM - 5:00 PM`, using a real
 en dash) sits outside `<main>` and is intentionally allowed.
+
+## Merging PRs
+
+No branch protection, and main deploys to production. **Never `gh pr merge` directly:** run `scripts/gh-safe-merge.sh <PR#>`. It requires all 7 named checks present and passing, a `SAGE-REVIEW: verdict=APPROVE head=<sha>` marker on the exact head (post it with sage-server's `scripts/review-marker.sh` after a final review), and a clean customer-data scan.
