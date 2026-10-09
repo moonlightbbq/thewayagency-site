@@ -3013,6 +3013,96 @@
           "https://www.lendingtree.com/home-insurance/homeowners-insurance-kentucky/"
         ]
       }
+    },
+    {
+      "publish_date": "2026-10-21",
+      "title": "Insurance for Plumbing Contractors in Kentucky: A Complete 2026 Guide",
+      "slug": "plumbing-contractor-insurance-kentucky-guide",
+      "description": "A Kentucky-specific guide covering every coverage type plumbing contractors need to license, bid jobs, and protect against water damage claims, with the actual state minimums from DHBC regulations.",
+      "pillar": "product",
+      "topic_type": "guide",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "primary_keyword": "plumbing contractor insurance kentucky",
+      "secondary_keywords": [
+        "kentucky plumber insurance requirements",
+        "insurance for plumbers kentucky",
+        "kentucky plumbing license insurance",
+        "plumber general liability kentucky"
+      ],
+      "target_product_page": "/commercial/general-liability.html",
+      "target_location_pages": [
+        "/industries/plumbing-contractors.html"
+      ],
+      "secondary_internal_links": [
+        "/industries/plumbing-contractors.html",
+        "/commercial/general-liability.html",
+        "/commercial/workers-compensation.html",
+        "/commercial/bonds.html",
+        "/blog/insurance-checklist-hvac-contractors",
+        "/blog/workers-comp-requirements-kentucky-2026"
+      ],
+      "related_cluster": "industry-trades",
+      "conversion_goal": "quote-request",
+      "evergreen_or_seasonal": "evergreen",
+      "seasonality_window": null,
+      "refresh_cycle": "annual",
+      "page_role": "supporting",
+      "is_link_target": false,
+      "receives_future_links": true,
+      "status": "planned",
+      "source": "queue-lock",
+      "locked_at": "2026-10-09",
+      "notes": "From topic research task 604dcd9f-1acf-4e11-b37d-e2661ee4a50c (2026-10-02). Its automated quality check failed on a judge input cap, so the topics never reached the backlog; the owner reviewed the six proposals and approved this one directly on 2026-10-03. A licensed agent must verify the 815 KAR 20:080 licensing and $250k liability figures.",
+      "research_brief": {
+        "demand_evidence": "The agency already has a plumbing contractors industry page (/industries/plumbing-contractors.html) and the published HVAC and roofing contractor insurance guides have performed well as a cluster. The plumbing guide is the missing sibling. Live SERP shows ContractorNerd, MoneyGeek, and allenthomasgroup.com rank for 'plumbing contractor insurance Kentucky', while rbisomerset.com (a Kentucky independent agency in Somerset) has a targeted post. The agency's existing product page and industry page give it entity authority to rank for a dedicated blog post targeting this query family.",
+        "serp_landscape": "Page 1 is mixed: ContractorNerd (national, data-heavy, cost-focused), MoneyGeek (aggregator), allenthomasgroup.com (out-of-state independent agency with a Kentucky-specific page), rbisomerset.com (Kentucky independent agency, thin post), and ServiceTitan (trade software). No post combines the Kentucky DHBC licensing insurance minimums (the $250,000 GL minimum from 815 KAR 20:080 for master plumbers), completed operations coverage detail, water damage liability, and a working Kentucky agent's perspective. The allenthomasgroup page is the strongest competitor but is a generic agency not located in Bullitt or Daviess County.",
+        "differentiation_angle": "A post grounded in Kentucky Revised Statute KRS Chapter 318 and 815 KAR 20:080, explaining the $250,000 GL minimum for master plumber licensing, the surety bond considerations for plumbing contractors, the specific water damage and completed operations exposure Kentucky plumbers face in the cold-weather months (freeze-thaw burst pipes along the Ohio River valley), and The Way Agency's real access to specialty carriers that restrict plumbing work will beat every generic national guide.",
+        "direct_answer_target": "Kentucky plumbing contractors must carry at least $250,000 in general liability insurance to hold a master plumber or plumbing contractor license under 815 KAR 20:080. Most working contractors carry $1 million per occurrence to meet GC contract requirements. Workers compensation is also required for any employee under KRS 342.630. Completed operations and water damage liability are the two coverage gaps that cause the most denied claims.",
+        "questions_to_answer": [
+          "How much general liability insurance does a Kentucky plumber need?",
+          "Is workers comp required for plumbing contractors in Kentucky?",
+          "What is completed operations coverage and why do plumbers need it?",
+          "Does standard GL cover water damage from plumbing work?",
+          "What is inland marine and do plumbers need it?",
+          "How does plumbing contractor insurance affect my DHBC license?",
+          "What does a surety bond cover that insurance does not?"
+        ],
+        "entities_to_cover": [
+          "Kentucky Department of Housing, Buildings and Construction (DHBC)",
+          "815 KAR 20:080 (minimum insurance thresholds for plumbing contractors)",
+          "KRS Chapter 318 (plumbing permit and license statute)",
+          "KRS 342.630 (workers comp requirement)",
+          "general liability with water damage endorsement",
+          "completed operations coverage",
+          "inland marine (tools and equipment)",
+          "commercial auto",
+          "surety bond",
+          "master plumber license vs plumbing contractor license distinction"
+        ],
+        "local_angle": "Kentucky plumbers face a freeze-thaw exposure unique to the Ohio River valley and Bullitt County climate, where burst pipe emergencies spike from November through February. New construction in Shepherdsville and Mt. Washington means more residential plumbing jobs on freshly built subdivisions, where a botched connection caught months later triggers a completed operations claim. The Way Agency knows which carriers will write plumbing in Kentucky without a plumbing exclusion, which is the most common coverage gap this agency sees in contractor policies written elsewhere.",
+        "recommended_schema": [
+          "FAQPage",
+          "HowTo",
+          "Article"
+        ],
+        "internal_links": [
+          "/industries/plumbing-contractors.html",
+          "/commercial/general-liability.html",
+          "/commercial/workers-compensation.html",
+          "/commercial/bonds.html",
+          "/blog/insurance-checklist-hvac-contractors",
+          "/blog/workers-comp-requirements-kentucky-2026"
+        ],
+        "sources": [
+          "https://contractornerd.com/plumber-insurance/kentucky",
+          "https://www.servicetitan.com/licensing/plumbing/kentucky",
+          "https://contractorrequirements.com/plumber/kentucky/",
+          "https://coipulse.com/trades/plumbers/kentucky",
+          "https://adaptdigitalsolutions.com/articles/kentucky-contractor-license-requirements/",
+          "https://rbisomerset.com/blog/kentucky-plumber-insurance/"
+        ]
+      }
     }
   ],
   "slots": [
@@ -3118,20 +3208,6 @@
       "reserved_at": "2026-08-29"
     },
     {
-      "date": "2026-10-03",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
-      "reserved_at": "2026-09-05"
-    },
-    {
-      "date": "2026-10-07",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
-      "reserved_at": "2026-09-09"
-    },
-    {
       "date": "2026-10-10",
       "state": "locked",
       "locked_slug": "kentucky-home-insurance-rates-rising-2026",
@@ -3154,9 +3230,9 @@
     },
     {
       "date": "2026-10-21",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
+      "state": "locked",
+      "locked_slug": "plumbing-contractor-insurance-kentucky-guide",
+      "locked_at": "2026-10-09",
       "reserved_at": "2026-09-23"
     },
     {
@@ -3179,6 +3255,13 @@
       "locked_slug": null,
       "locked_at": null,
       "reserved_at": "2026-10-03"
+    },
+    {
+      "date": "2026-11-04",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-10-09"
     }
   ],
   "coverage_targets": {
