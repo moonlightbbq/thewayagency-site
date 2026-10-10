@@ -9,6 +9,10 @@ modified: 2026-10-10
 reading_time: 10 min read
 related_page: /personal/home
 tags: kentucky home insurance rates rising, why is my home insurance going up kentucky, home insurance increase kentucky 2026, how to lower home insurance kentucky, kentucky homeowners insurance cost 2026
+reviewer: Audrey Lillpop
+reviewer_slug: audrey-lillpop
+reviewer_title: Licensed Agent
+reviewed_date: 2026-10-05
 ---
 
 If your homeowners renewal came in higher than last year, you have plenty of company. In a March 2026 Pew Research Center survey, 71 percent of U.S. homeowners said their insurance costs had gone up over the last few years, and 42 percent said they had gone up a lot ([Pew Research Center](https://www.pewresearch.org/short-reads/2026/05/06/71-of-u-s-homeowners-say-their-home-insurance-costs-have-gone-up/)). Kentucky's premiums are among the highest in the country, and they rose faster than most states' this year.

@@ -2775,7 +2775,7 @@
       "page_role": "seasonal",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "approved",
+      "status": "published",
       "source": "queue-lock",
       "locked_at": "2026-10-03",
       "notes": "From topic research task 604dcd9f-1acf-4e11-b37d-e2661ee4a50c (2026-10-02). Its automated quality check failed on a judge input cap, so the topics never reached the backlog; the owner reviewed the six proposals and approved this one directly on 2026-10-03. Fast-tracked by owner decision 2026-10-03 for the 2026-10-10 slot: locked by hand at D-7, inside the D-10 floor fillSlots keeps, with the markdown already drafted; it publishes only with the assigned licensed reviewer's approval.",
@@ -2835,7 +2835,9 @@
       "approved_sha256": "f43a4eb8db6405697fc6853b7a23a77a542b6f3df7ac7fa6d8a708ad5e6cc740",
       "approved_date": "2026-10-05",
       "approved_publish_date": "2026-10-10",
-      "approval_mac": "JjXCCE-4JGXA13LupaMZD8aHgDHvaWdlSMY0afJlAYk"
+      "approval_mac": "JjXCCE-4JGXA13LupaMZD8aHgDHvaWdlSMY0afJlAYk",
+      "credited_sha256": "986481673a7baaabec531a505f65488db0585a44581888ee400b2e7cff87d0e1",
+      "credit_mac": "TeaF-whxYNCqnycZtFcUKnUzdBivsI2DoObSpfRv0hU"
     },
     {
       "publish_date": "2026-10-14",
