@@ -1325,27 +1325,37 @@ async function submitPortal() {
 async function handleFiles(fileList) {
   const resultsEl = document.getElementById('upload-results');
   if (!resultsEl) return;
-  resultsEl.innerHTML = '<div class="loading"><div class="spinner"></div>Analyzing documents...</div>';
+  resultsEl.innerHTML = '<div class="loading"><div class="spinner"></div>Uploading documents...</div>';
 
-  const images = [];
+  // SAGE /api/portal/:token/upload takes { files: [{ filename, mime_type, data }] }
+  // and answers { ok, documents: [{ id, filename, size_bytes }] }. It stores the
+  // files for the team to review; it does not read them back here.
+  const files = [];
   for (const file of fileList) {
-    const base64 = await fileToBase64(file);
-    images.push({ data: base64, mediaType: file.type || 'image/jpeg' });
+    const data = await fileToBase64(file);
+    files.push({ filename: file.name || 'photo.jpg', mime_type: file.type || 'image/jpeg', data });
   }
 
   try {
     const res = await fetch(SAGE_API + '/api/portal/' + TOKEN + '/upload', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ images }),
+      body: JSON.stringify({ files }),
     });
-    const data = await res.json();
-    if (res.ok && data.fields_extracted > 0) {
-      const fieldList = (data.fields || []).map(f => `<div class="review-row"><span class="review-label">${esc(f.label||f.key)}</span><span class="review-value">${esc(f.value)}</span></div>`).join('');
-      resultsEl.innerHTML = `<div class="review-card"><h3>Extracted ${data.fields_extracted} Fields</h3>${fieldList}</div><div style="text-align:center;color:#16a34a;font-weight:600;margin-top:12px">Successfully added to your file!</div>`;
+    const data = await res.json().catch(() => ({}));
+    const docs = Array.isArray(data.documents) ? data.documents : [];
+    if (res.ok && data.ok && docs.length) {
+      const list = docs.map(d => `<div class="review-row"><span class="review-label">${esc(d.filename)}</span><span class="review-value">Received</span></div>`).join('');
+      const skipped = files.length - docs.length;
+      const skippedNote = skipped > 0
+        ? `<div style="text-align:center;color:var(--muted);margin-top:8px">${skipped} file${skipped === 1 ? ' was' : 's were'} not accepted. Please upload a PDF, JPG or PNG under 10 MB.</div>`
+        : '';
+      resultsEl.innerHTML = `<div class="review-card"><h3>Received ${docs.length} document${docs.length === 1 ? '' : 's'}</h3>${list}</div><div style="text-align:center;color:#16a34a;font-weight:600;margin-top:12px">Thank you. A team member will review them.</div>${skippedNote}`;
       document.getElementById('upload-zone')?.classList.add('active');
+    } else if (res.status === 413) {
+      resultsEl.innerHTML = '<div style="text-align:center;color:var(--red)">These files are too large to send together. Please upload them one at a time.</div>';
     } else {
-      resultsEl.innerHTML = '<div style="text-align:center;color:var(--muted)">No information could be extracted. Try a clearer photo.</div>';
+      resultsEl.innerHTML = `<div style="text-align:center;color:var(--red)">${esc(data.error || 'Upload failed. Please try again.')}</div>`;
     }
   } catch (e) {
     resultsEl.innerHTML = '<div style="text-align:center;color:var(--red)">Upload failed — please try again</div>';
