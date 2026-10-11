@@ -910,6 +910,11 @@
     </div>
   </div>
 
+  <!-- The /track Turnstile widget (SAGE CR-100). Outside every step card so it
+       is never rendered into a hidden container; appearance interaction-only
+       keeps it invisible unless Cloudflare asks this visitor to click. -->
+  <div id="turnstile-track" style="display:flex;justify-content:center;margin:8px auto"></div>
+
   <!-- Confirmation -->
   <div id="step-confirm" class="card hidden" data-clarity-mask="True">
     <div class="confirmation">
@@ -2325,6 +2330,9 @@ function noteTurnstileConfig(cfg) {
 }
 (async function loadTurnstileConfig() {
   try { noteTurnstileConfig(await intakeConfig()); } catch (e) { /* unknown; turnstileGate() retries once at submit */ }
+  // The /track token is minted from page load, so it is ready by step 1's Continue.
+  for (let i = 0; i < 40 && _turnstileSiteKey && !window.turnstile; i++) await new Promise(r => setTimeout(r, 250));
+  initTrackTurnstile();
 })();
 
 // At submit, with no token yet: 'ready' (key and script present), 'off' (SAGE
@@ -2355,6 +2363,55 @@ function initTurnstileOnReview() {
       theme: 'light',
     });
   } catch (e) { console.warn('[Turnstile] Render failed:', e); }
+}
+
+// ── /track Turnstile token (SAGE CR-100) ─────────────────────────────────────
+// SAGE creates the lead record and pages a producer for a live session only
+// once a Turnstile token minted for action 'intake_track' has verified it. The
+// token rides /track as `trackToken` on the keystroke autosave, the step
+// transitions and the exit flush until SAGE answers humanVerified:true, then
+// never again. The keystroke autosave carries it so the first save with a name
+// and a contact creates the lead record and the live alert, as it did before
+// CR-100 (a visitor who leaves during step 1 is still a lead). It is its own
+// widget and its own variable, never `turnstileToken`: tokens are single use,
+// and the final submit needs the step-4 widget's token unspent.
+// Nothing here ever blocks the visitor: with no token, /track still saves the
+// form and SAGE simply holds the lead record until a later step verifies, or
+// until the final submit.
+let _trackToken = null;
+let _trackWidgetId = null;
+let _trackVerified = false;
+function initTrackTurnstile() {
+  if (_trackWidgetId != null || !_turnstileSiteKey || !window.turnstile) return;
+  try {
+    _trackWidgetId = turnstile.render('#turnstile-track', {
+      sitekey: _turnstileSiteKey,
+      action: 'intake_track',
+      appearance: 'interaction-only',
+      callback: (t) => { _trackToken = t; },
+      'expired-callback': () => { _trackToken = null; },
+      'error-callback': () => { _trackToken = null; },
+    });
+  } catch (e) { console.warn('[Turnstile] track widget render failed:', e); }
+}
+// The token for this /track, waiting up to maxMs for one (and no longer once a
+// save in flight verifies the session); '' once SAGE has verified it. Taken tokens are spent: the widget is reset after a
+// track that did not verify (noteTrackResult) for the next try.
+async function takeTrackToken(maxMs) {
+  if (_trackVerified) return '';
+  initTrackTurnstile();
+  if (_trackWidgetId == null) return ''; // no widget (Turnstile off or not loaded): never wait
+  for (let waited = 0; !_trackToken && !_trackVerified && waited < maxMs; waited += 100) await new Promise(r => setTimeout(r, 100));
+  if (_trackVerified) return '';
+  const t = _trackToken || '';
+  _trackToken = null;
+  return t;
+}
+function noteTrackResult(data, sentToken) {
+  _trackVerified = !!(data && data.humanVerified === true);
+  if (sentToken && !_trackVerified && _trackWidgetId != null) {
+    try { turnstile.reset(_trackWidgetId); } catch (e) { /* the next render retries */ }
+  }
 }
 
 function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
@@ -2466,7 +2523,10 @@ function buildRiskFormData() {
   return formData;
 }
 
-async function trackPartial(notify) {
+// tokenWaitMs: offer a /track token (SAGE CR-100), waiting up to that long for
+// one; omitted, none is sent. Taken only once the save is sure to go out, so a
+// save that returns early never spends one.
+async function trackPartial(notify, tokenWaitMs) {
   const firstName = v('i_fname'), lastName = v('i_lname');
   const email = v('i_email'), phone = v('i_phone');
   if (!firstName || !lastName) return;
@@ -2478,6 +2538,7 @@ async function trackPartial(notify) {
   // must not become a notification anyway. SAGE refuses it as well; this simply
   // avoids the pointless round trip.
   if (mustDecline()) return;
+  const trackToken = tokenWaitMs == null ? '' : await takeTrackToken(tokenWaitMs);
 
   try {
     // Landing-page / referrer / UTM attribution so the portal live-intake pop-up
@@ -2514,7 +2575,8 @@ async function trackPartial(notify) {
         agent: _agentParam,
         notify: !!notify,
         _hp_company: document.getElementById('_hp_company')?.value || '',
-        cfToken: turnstileToken || '',
+        // SAGE CR-100: the /track token (never the step-4 widget's token).
+        trackToken: trackToken || undefined,
         // The visitor id proper — no longer conflated with the sage sessionId
         // (sessionId already rides as its own key above).
         twa_vid: getVisitorId(),
@@ -2528,6 +2590,8 @@ async function trackPartial(notify) {
     });
     _fieldsDirtySinceTrack = false;
     const data = await res.json().catch(() => ({}));
+    if (res.ok) noteTrackResult(data, !!trackToken);
+    else if (trackToken) noteTrackResult(null, true);
 
     // The server is the authority on who we can write, and it says so with
     // 400 { code: 'OUT_OF_AREA' }. That answer used to be thrown on the floor:
@@ -2557,14 +2621,18 @@ async function trackPartial(notify) {
         pollTimer = setInterval(checkTakeover, _pollInterval);
       }
     }
-  } catch (e) { /* network failure — the next keystroke retries */ }
+  } catch (e) {
+    // network failure — the next keystroke retries (with a fresh token).
+    if (trackToken) noteTrackResult(null, true);
+  }
 }
 
 // Debounce auto-save
 let _trackTimer = null;
 function scheduleTrack() {
   clearTimeout(_trackTimer);
-  _trackTimer = setTimeout(trackPartial, 1500);
+  // A ready /track token rides the autosave (never waited for: SAGE CR-100).
+  _trackTimer = setTimeout(() => trackPartial(false, 0), 1500);
 }
 
 // Attach to contact fields — fires on blur so we capture as they tab through
@@ -2589,6 +2657,9 @@ function _flushTrackOnExit() {
   const email = v('i_email'), phone = v('i_phone');
   if (!firstName || !lastName || (!email && !phone) || mustDecline()) return;
   _fieldsDirtySinceTrack = false;
+  // A ready /track token rides the exit save (SAGE CR-100), taken synchronously.
+  const exitToken = _trackVerified ? '' : (_trackToken || '');
+  _trackToken = null;
   try {
     fetch(SAGE_API + '/api/intake/track', {
       method: 'POST',
@@ -2605,6 +2676,7 @@ function _flushTrackOnExit() {
         formData: buildRiskFormData(),
         lead_page: window.location.pathname + window.location.search,
         lead_referrer: document.referrer || 'direct',
+        trackToken: exitToken || undefined,
       }),
     }).catch(() => {});
   } catch (e) { /* dying page — nothing to do */ }
@@ -2899,7 +2971,7 @@ async function nextStep(from) {
     // refuse. (Normally mustDecline() above has caught this already — this is the
     // path where the browser could not know: rules offline, or a stale page cached
     // from before we changed the states we write.)
-    if (await trackPartial(true) === 'declined') {
+    if (await trackPartial(true, 2500) === 'declined') {
       trackValidationError(1, 'out_of_area_server');
       document.getElementById('addr-group').scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
@@ -2955,7 +3027,7 @@ async function nextStep(from) {
   // Autosave on step transitions (fire-and-forget): step-1 Continue already
   // tracks via the notify path above; 2→3 and 3→4 are the moments the risk
   // answers exist and would otherwise only survive via the exit flush.
-  if (from === 2 || from === 3) trackPartial(false);
+  if (from === 2 || from === 3) trackPartial(false, 0);
   showStep(from + 1);
 }
 
