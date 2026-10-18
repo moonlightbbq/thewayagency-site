@@ -2053,13 +2053,7 @@ function syncStateFromAutocomplete(state) {
     // picker that decides whether it is needed (toggleProd() reveals it). A
     // commercial arrival keeps it on step 1, as the four-step form does, so the
     // step-1 lead SAGE pages a producer for already carries the business name.
-    const biz = document.getElementById('biz-name-step1-group');
-    const anchor = document.getElementById('step2-error');
-    if (biz && anchor) {
-      biz.style.maxWidth = '360px';
-      biz.style.margin = '0 auto 4px';
-      anchor.parentNode.insertBefore(biz, anchor);
-    }
+    moveBusinessNameToStep2();
   }
 
   renderStateOptions();
@@ -4033,13 +4027,27 @@ function turnstileErrorCode() { return _turnstileErrorFamily ? 'turnstile_' + _t
 // ── Submit ───────────────────────────────────────────────────────────────────
 // Short form: "Get My Quote" on step 2. It runs step 2's own checks (nextStep(2)
 // never runs on the short form) and then the same submit as the long form.
+// Short form: put the business-name field on step 2, beside the coverage picker
+// (no-op if it is there already). Also used when step 2 must ask for it but the
+// field was left on step 1, e.g. a commercial arrival whose resumed draft
+// (which never stores the name) opened straight on step 2.
+function moveBusinessNameToStep2() {
+  const biz = document.getElementById('biz-name-step1-group');
+  const anchor = document.getElementById('step2-error');
+  if (!biz || !anchor || biz.closest('#step-2')) return biz;
+  biz.style.maxWidth = '360px';
+  biz.style.margin = '0 auto 4px';
+  anchor.parentNode.insertBefore(biz, anchor);
+  return biz;
+}
+
 async function submitShort() {
   const err = document.getElementById('step2-error');
   if (!selectedProducts.length) { err.textContent = 'Please select at least one type of coverage.'; err.classList.remove('hidden'); trackValidationError(2, 'no_products'); return; }
   // A bare /intake/ visitor had no line at step 1 (see nextStep(2)).
   if (mustDecline()) { showOutOfArea(); trackValidationError(2, 'out_of_area'); return; }
   if (cartNeedsBusinessName(selectedProducts) && !v('i_biz_name_1')) {
-    const grp = document.getElementById('biz-name-step1-group');
+    const grp = moveBusinessNameToStep2();
     if (grp) grp.style.display = '';
     err.textContent = 'Please enter your business name.'; err.classList.remove('hidden');
     trackValidationError(2, 'missing_business_name');
@@ -4573,6 +4581,13 @@ function restoreDraft(draft) {
   // Navigate to the step the user was on (but cap at step 2 — step 3/4 have dynamic content)
   const targetStep = Math.min(draft.step || 1, 2);
   if (targetStep > 1) showStep(targetStep);
+  // Short form resumed on step 2 with a commercial cart: the draft does not keep
+  // the business name, so show the field there now rather than at the first
+  // refused "Get My Quote" (toggleProd(), which normally reveals it, did not run).
+  if (isShortForm() && targetStep === 2 && cartNeedsBusinessName(selectedProducts) && !v('i_biz_name_1')) {
+    const grp = moveBusinessNameToStep2();
+    if (grp) grp.style.display = '';
+  }
   // A resumed draft carries both a state and a cart, so re-run the decision.
   evaluateStateEligibility();
   // A resumed draft never pages a producer by itself (CONV-08). It used to fire

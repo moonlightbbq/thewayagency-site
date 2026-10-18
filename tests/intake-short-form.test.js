@@ -57,7 +57,7 @@ function place({ num = '100', route = 'Main St', city = 'Louisville', state = 'K
 // POST /api/intake stays pending until release(status) answers it. siteKey:
 // false leaves _turnstileSiteKey unset (the config has not arrived yet).
 // tracks: every /api/intake/track body, in order.
-async function loadIntake({ vid, query = '', rules = true, stub = false, postFails = false, holdPost = false, siteKey = true } = {}) {
+async function loadIntake({ vid, query = '', rules = true, stub = false, postFails = false, holdPost = false, siteKey = true, draft } = {}) {
   const posts = [], tracks = [], renders = [], autocompletes = [];
   let release = null;
   // stub: the page as served without attribution.js (the resilience stub runs).
@@ -66,6 +66,7 @@ async function loadIntake({ vid, query = '', rules = true, stub = false, postFai
     url: 'https://www.thewayagency.com/intake/' + query,
     beforeParse(w) {
       if (vid) w.localStorage.setItem('twa_vid', vid);
+      if (draft) w.localStorage.setItem('twa_intake_draft', JSON.stringify(draft));
       w.google = { maps: { places: { Autocomplete: class {
         constructor(input) { this.input = input; this.listeners = {}; this._place = {}; autocompletes.push(this); }
         addListener(ev, fn) { this.listeners[ev] = fn; }
@@ -400,6 +401,37 @@ describe('the short form\'s business name', () => {
       assert.equal(r.advanced, true, r.error);
       await until(() => tracks.some((t) => t.notify && t.businessName === 'Fixture Bop LLC'), 'step-1 /track with the business name');
       w.eval(`if (!selectedProducts.includes('bop')) selectedProducts = ['bop']; turnstileToken = '${TOKEN}'`);
+      await w.submitShort();
+      assert.equal(posts.length, 1);
+      assert.equal(posts[0].businessName, 'Fixture Bop LLC');
+    } finally { w.close(); }
+  });
+
+  test('a commercial arrival resumed on step 2 is asked for the name ON step 2 (the draft never keeps it)', async () => {
+    const a = await loadIntake({ query: '?product=bop' });
+    let saved;
+    try {
+      fill(a.w, { i_biz_name_1: 'Fixture Bop LLC' });
+      const r = await throughStep1(a.w, a.homeAc);
+      assert.equal(r.advanced, true, r.error);
+      a.w.eval("if (!selectedProducts.includes('bop')) selectedProducts = ['bop']");
+      a.w.saveDraft();
+      saved = JSON.parse(a.w.localStorage.getItem('twa_intake_draft'));
+      assert.equal(saved.step, 2);
+      assert.doesNotMatch(JSON.stringify(saved), /Fixture Bop/);
+    } finally { a.w.close(); }
+    const { w, posts } = await loadIntake({ query: '?product=bop', draft: saved });
+    try {
+      $(w, 'draft-resume-btn').click();
+      assert.equal($(w, 'step-2').classList.contains('hidden'), false);
+      const grp = $(w, 'biz-name-step1-group');
+      assert.ok(grp.closest('#step-2'), 'the field is on the step the visitor is on');
+      assert.notEqual(grp.style.display, 'none');
+      w.eval(`turnstileToken = '${TOKEN}'`);
+      await w.submitShort();
+      assert.equal(posts.length, 0);
+      assert.match($(w, 'step2-error').textContent, /business name/);
+      fill(w, { i_biz_name_1: 'Fixture Bop LLC' });
       await w.submitShort();
       assert.equal(posts.length, 1);
       assert.equal(posts[0].businessName, 'Fixture Bop LLC');
