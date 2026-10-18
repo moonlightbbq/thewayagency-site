@@ -407,6 +407,70 @@ describe('the short form\'s business name', () => {
     } finally { w.close(); }
   });
 
+  // A draft saved on step 2 with the given cart, for the resume tests below.
+  async function draftOnStep2(query, products) {
+    const a = await loadIntake({ query });
+    try {
+      if (query.includes('line=commercial')) fill(a.w, { i_biz_name_1: 'Fixture Draft LLC' });
+      const r = await throughStep1(a.w, a.homeAc);
+      assert.equal(r.advanced, true, r.error);
+      a.w.eval(`selectedProducts = ${JSON.stringify(products)}`);
+      a.w.saveDraft();
+      return JSON.parse(a.w.localStorage.getItem('twa_intake_draft'));
+    } finally { a.w.close(); }
+  }
+
+  test('a personal arrival who picked bop, went Back and pressed Continue is not held on step 1 by the step-2 field', async () => {
+    const { w, homeAc } = await loadIntake();
+    try {
+      let r = await throughStep1(w, homeAc);
+      assert.equal(r.advanced, true, r.error);
+      w.toggleProd(w.document.querySelector('.product-opt[data-pid="bop"]'));
+      assert.notEqual($(w, 'biz-name-step1-group').style.display, 'none');
+      w.prevStep(2);
+      r = await throughStep1(w, homeAc);
+      assert.equal(r.advanced, true, r.error);
+    } finally { w.close(); }
+  });
+
+  test('a plain /intake/ visitor resuming a bop draft sees the business-name field on step 2 at once', async () => {
+    const saved = await draftOnStep2('', ['bop']);
+    const { w } = await loadIntake({ draft: saved });
+    try {
+      $(w, 'draft-resume-btn').click();
+      await new Promise((r) => setTimeout(r, 50)); // let showStep(2)'s Maps prefetch settle before close()
+      const grp = $(w, 'biz-name-step1-group');
+      assert.ok(grp.closest('#step-2'));
+      assert.notEqual(grp.style.display, 'none');
+    } finally { w.close(); }
+  });
+
+  test('a ?line=commercial arrival resuming a non-commercial-cart draft, then adding bop, is asked on step 2', async () => {
+    const saved = await draftOnStep2('?line=commercial', ['dwelling_fire']);
+    const { w, posts } = await loadIntake({ query: '?line=commercial', draft: saved });
+    try {
+      $(w, 'draft-resume-btn').click();
+      assert.ok($(w, 'biz-name-step1-group').closest('#step-1'), 'nothing has asked for it on step 2 yet');
+      w.eval(`selectedProducts = ['dwelling_fire', 'bop']; turnstileToken = '${TOKEN}'`);
+      await w.submitShort();
+      assert.equal(posts.length, 0);
+      const grp = $(w, 'biz-name-step1-group');
+      assert.ok(grp.closest('#step-2'), 'the field the error points at is on screen');
+      assert.notEqual(grp.style.display, 'none');
+      assert.deepEqual(stepsOf(w, 'intake_validation_error', 'missing_business_name'), [2]);
+    } finally { w.close(); }
+  });
+
+  test('an empty cart on the short form is logged as a step-2 validation error', async () => {
+    const { w, homeAc } = await loadIntake();
+    try {
+      await throughStep1(w, homeAc);
+      w.eval('selectedProducts = []');
+      await w.submitShort();
+      assert.deepEqual(stepsOf(w, 'intake_validation_error', 'no_products'), [2]);
+    } finally { w.close(); }
+  });
+
   test('a commercial arrival resumed on step 2 is asked for the name ON step 2 (the draft never keeps it)', async () => {
     const a = await loadIntake({ query: '?product=bop' });
     let saved;
