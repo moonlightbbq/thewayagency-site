@@ -121,8 +121,8 @@ async function step1(w, values = {}) {
 // One "Review" on step 3 (DOB, product questions, referrer): four-step form only.
 async function step3(w, values = {}) {
   w.showStep(3);
-  // 'dob-required' stays a live hash-assigned test on the four-step form; give it a DOB in either shape.
-  fill(w, { i_dob: $(w, 'i_dob').type === 'date' ? '1980-01-01' : '01/01/1980', ...values });
+  // DOB is the MM/DD/YYYY text field ('dob-required' is concluded); a DOB keeps life carts valid too.
+  fill(w, { i_dob: '01/01/1980', ...values });
   await w.nextStep(3);
   return { advanced: !$(w, 'step-4').classList.contains('hidden'), error: $(w, 'step3-error').textContent };
 }
@@ -150,17 +150,20 @@ describe('every visitor gets the new step 3 (the A/B is concluded)', () => {
     } finally { w.close(); }
   });
 
-  test('no assignment, exposure or param for intake-address-referrer; the other intake tests still expose', async () => {
+  test('no assignment, exposure or param for intake-address-referrer or dob-required; intake-call-or-text still exposes', async () => {
     const { w } = await loadIntake();
     try {
       const ex = (w.dataLayer || []).filter((e) => e && e.event === 'ab_exposure').map((e) => e.test_name);
       assert.ok(!ex.includes('intake-address-referrer'));
-      // ('dob-required' exposes on ?twa_form=long only: tests/intake-short-form.test.js.)
+      // 'dob-required' is concluded too (owner, 2026-10-18): tests/intake-short-form.test.js.
+      assert.ok(!ex.includes('dob-required'));
       assert.ok(ex.includes('intake-call-or-text'));
       assert.equal(typeof w.getAddrRefArm, 'undefined');
       for (const [name, params] of gtagEvents(w)) assert.ok(!('ab_addr_ref' in params), name);
       // No test tags a lead any more ('intake-short-form' went to 100% with no A/B too).
       assert.doesNotMatch(HTML, /ab_addr_ref:\s|ab_short_form|formData\.ab_test\s*=|assignVariant\('intake-address-referrer'/);
+      // Retired names stay retired: never re-register 'dob-required'.
+      assert.doesNotMatch(HTML, /assignVariant\(\s*'dob-required'|pushExposure\(\s*'dob-required'|twa-ab-dob-required'\)/);
     } finally { w.close(); }
   });
 
