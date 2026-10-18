@@ -185,9 +185,10 @@ describe('the applicant actually reads the decline on submit', () => {
   // Both submit handlers used to throw on !res.ok, and the catch rendered "Network
   // error. Please check your connection" — so the applicant read either "Submission
   // failed" or a lie about their wifi. The wording IS this ticket.
+  // Every visitor submits from step 2 (the short form), so its error box is the one read.
   test('a 400 OUT_OF_AREA renders the server words verbatim, not "Submission failed"', () => {
-    w.showStep(4);
-    const err = stepErr(w, 4);
+    w.showStep(2);
+    const err = stepErr(w, 2);
     const words = "We're really sorry, but we aren't licensed to write personal insurance in California. "
       + 'We can only take care of folks in Kentucky, Indiana and Tennessee right now.';
 
@@ -199,8 +200,8 @@ describe('the applicant actually reads the decline on submit', () => {
   });
 
   test('an ordinary server error still reports as an error, with call and text (CONV-10)', () => {
-    w.showStep(4);
-    const err = stepErr(w, 4);
+    w.showStep(2);
+    const err = stepErr(w, 2);
     w.renderSubmitError(err, 500, { error: 'Something broke' });
     assert.match(err.textContent, /didn't accept the request/);
     assert.doesNotMatch(err.textContent, /Network error/);
@@ -209,8 +210,8 @@ describe('the applicant actually reads the decline on submit', () => {
   });
 
   test('a 400 field message is still the server\'s own words', () => {
-    w.showStep(4);
-    const err = stepErr(w, 4);
+    w.showStep(2);
+    const err = stepErr(w, 2);
     w.renderSubmitError(err, 400, { error: 'Please enter a valid email.' });
     assert.equal(err.textContent, 'Please enter a valid email.');
   });

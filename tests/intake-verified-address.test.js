@@ -55,11 +55,15 @@ function place({ num = '100', route = 'Main St', city = 'Louisville', state = 'K
   return { address_components: comps, formatted_address: formatted, place_id: id };
 }
 
-async function loadIntake({ places = true, offline = false, draft } = {}) {
+// Every visitor gets the short form (submit from step 2, submitShort()). The
+// referrer box, the step-4 review and the quick lead are four-step only: those
+// tests load with query: LONG (?twa_form=long).
+const LONG = '?twa_form=long';
+async function loadIntake({ places = true, offline = false, draft, query = '' } = {}) {
   const posts = [], tracks = [], autocompletes = [];
   const dom = new JSDOM(PAGE, {
     runScripts: 'dangerously',
-    url: 'https://www.thewayagency.com/intake/',
+    url: 'https://www.thewayagency.com/intake/' + query,
     beforeParse(w) {
       if (draft) w.localStorage.setItem('twa_intake_draft', JSON.stringify(draft));
       if (places) {
@@ -114,10 +118,10 @@ async function step1(w, values = {}) {
   await w.nextStep(1);
   return { advanced: !$(w, 'step-2').classList.contains('hidden'), error: $(w, 'step1-error').textContent };
 }
-// One "Review" on step 3 (DOB, product questions, referrer).
+// One "Review" on step 3 (DOB, product questions, referrer): four-step form only.
 async function step3(w, values = {}) {
   w.showStep(3);
-  // 'dob-required' stays a live hash-assigned test; give it a DOB in either shape.
+  // 'dob-required' stays a live hash-assigned test on the four-step form; give it a DOB in either shape.
   fill(w, { i_dob: $(w, 'i_dob').type === 'date' ? '1980-01-01' : '01/01/1980', ...values });
   await w.nextStep(3);
   return { advanced: !$(w, 'step-4').classList.contains('hidden'), error: $(w, 'step3-error').textContent };
@@ -151,10 +155,12 @@ describe('every visitor gets the new step 3 (the A/B is concluded)', () => {
     try {
       const ex = (w.dataLayer || []).filter((e) => e && e.event === 'ab_exposure').map((e) => e.test_name);
       assert.ok(!ex.includes('intake-address-referrer'));
-      assert.ok(ex.includes('dob-required') && ex.includes('intake-call-or-text'));
+      // ('dob-required' exposes on ?twa_form=long only: tests/intake-short-form.test.js.)
+      assert.ok(ex.includes('intake-call-or-text'));
       assert.equal(typeof w.getAddrRefArm, 'undefined');
       for (const [name, params] of gtagEvents(w)) assert.ok(!('ab_addr_ref' in params), name);
-      assert.doesNotMatch(HTML, /ab_addr_ref:\s|formData\.ab_test\s*=|assignVariant\('intake-address-referrer'/);
+      // No test tags a lead any more ('intake-short-form' went to 100% with no A/B too).
+      assert.doesNotMatch(HTML, /ab_addr_ref:\s|ab_short_form|formData\.ab_test\s*=|assignVariant\('intake-address-referrer'/);
     } finally { w.close(); }
   });
 
@@ -300,7 +306,7 @@ describe('verification', () => {
 
   test('a referrer phone with no name asks for the name; an email alone is fine', async () => {
     for (const [contact, ok] of [['555-555-0100', false], ['ref.person@example.com', true]]) {
-      const { w, homeAc } = await loadIntake();
+      const { w, homeAc } = await loadIntake({ query: LONG }); // the referrer box is on step 3: four-step only
       try {
         fillContact(w);
         pick(homeAc, place());
@@ -347,7 +353,7 @@ describe('fallback: Google never blocks a lead', () => {
       assert.match(fb.reason, /^(maps_load_failed|places_unavailable)$/);
       assert.equal($(w, 'addr-verify-hint').hidden, true);
       assert.equal(gtagEvents(w).filter(([n]) => n === 'intake_step_complete').pop()[1].address_verified, 'fallback');
-      await w.submitIntake();
+      await w.submitShort();
       assert.equal(posts.length, 1);
       assert.equal(posts[0].address, '100 Main St, Louisville, KY 40202');
       assert.equal(posts[0].formData.address_verified, false);
@@ -392,7 +398,7 @@ describe('fallback: Google never blocks a lead', () => {
       assert.equal(gtagEvents(w).find(([n]) => n === 'intake_address_fallback')[1].reason, 'no_pick_after_retries');
       assert.equal($(w, 'addr-verify-note').hidden, false, 'told the agency will confirm it');
       assert.match($(w, 'addr-verify-note').textContent, /agent will confirm/);
-      await w.submitIntake();
+      await w.submitShort();
       assert.equal(posts[0].formData.address_verified, false);
       assert.equal(posts[0].formData.address_fallback_reason, 'no_pick_after_retries');
       assert.equal(posts[0].address, '9 New Build Ln, Louisville, KY 40299');
@@ -416,7 +422,7 @@ describe('fallback: Google never blocks a lead', () => {
       r = await step1(w);
       assert.equal(r.advanced, true, 'plausibility re-checked at once (attempts stay above 2)');
       assert.equal($(w, 'addr-verify-note').hidden, false);
-      await w.submitIntake();
+      await w.submitShort();
       assert.equal(posts[0].address, '11 New Build Ln, Louisville, KY 40299');
       assert.equal(posts[0].formData.address_verified, false);
       assert.equal(posts[0].formData.address_fallback_reason, 'no_pick_after_retries');
@@ -516,8 +522,30 @@ describe('fallback: Google never blocks a lead', () => {
 });
 
 describe('the /api/intake payload', () => {
-  test('a verified lead sends street/city/state/zip, address_verified + place_id + formatted_address, and the referrer', async () => {
+  test('a verified lead sends street/city/state/zip and address_verified + place_id + formatted_address from step 2', async () => {
     const { w, posts, homeAc } = await loadIntake();
+    try {
+      fillContact(w);
+      pick(homeAc, place({ sub: '2' }));
+      assert.equal((await step1(w)).advanced, true);
+      await w.submitShort();
+      assert.equal(posts.length, 1);
+      const b = posts[0];
+      assert.deepEqual(Object.keys(b), BASE_KEYS, 'the short form has no referrer box, so no referredBy keys');
+      assert.equal(b.address, '100 Main St #2');
+      assert.equal(b.city, 'Louisville');
+      assert.equal(b.state, 'KY');
+      assert.equal(b.zip, '40202');
+      assert.equal(b.formData.address_verified, true);
+      assert.equal(b.formData.place_id, 'ChIJ_test_place_1');
+      assert.equal(b.formData.formatted_address, '100 Main St #2, Louisville, KY 40202');
+      assert.ok(!('ab_test' in b.formData));
+      assert.equal(b.formData.lead_referrer, 'direct');
+    } finally { w.close(); }
+  });
+
+  test('four-step form: the step-4 review shows the verified address and the lead carries the referrer', async () => {
+    const { w, posts, homeAc } = await loadIntake({ query: LONG }); // review + referrer: four-step only
     try {
       fillContact(w);
       pick(homeAc, place({ sub: '2' }));
@@ -544,7 +572,7 @@ describe('the /api/intake payload', () => {
 
   test('a referrer phone goes to referredByPhone; a blank referrer sends no referredBy keys', async () => {
     for (const [ref, keys] of [[{ i_ref_name: 'Pat', i_ref_contact: '(502) 555-0100' }, ['referredByName', 'referredByPhone']], [{}, []]]) {
-      const { w, posts, homeAc } = await loadIntake();
+      const { w, posts, homeAc } = await loadIntake({ query: LONG }); // the referrer box: four-step only
       try {
         fillContact(w);
         pick(homeAc, place());
@@ -556,7 +584,7 @@ describe('the /api/intake payload', () => {
   });
 
   test('the quick lead carries no ab tag and no referrer', async () => {
-    const { w, posts } = await loadIntake();
+    const { w, posts } = await loadIntake({ query: LONG }); // the quick-lead link: four-step only
     try {
       fillContact(w);
       await w.submitQuickLead();
@@ -569,7 +597,7 @@ describe('the /api/intake payload', () => {
   test('no referrer value ever reaches localStorage (draft + offline queue) or the /track autosave', async () => {
     const REF_NAME = 'Qq Referrerstorage';
     for (const contact of ['qq.refstorage@example.com', '(502) 555-0177']) {
-      const { w, posts, tracks, homeAc } = await loadIntake({ offline: true });
+      const { w, posts, tracks, homeAc } = await loadIntake({ offline: true, query: LONG }); // the referrer box: four-step only
       try {
         fillContact(w);
         pick(homeAc, place());
@@ -625,7 +653,7 @@ describe('draft and accessibility', () => {
       assert.equal($(w, 'i_city').value, 'Louisville');
       const r = await step1(w);
       assert.equal(r.advanced, true, r.error);
-      await w.submitIntake();
+      await w.submitShort();
       assert.equal(posts[0].formData.address_verified, true);
       assert.equal(posts[0].formData.place_id, VA.placeId);
       assert.equal(posts[0].address, '100 Main St');
