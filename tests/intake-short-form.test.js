@@ -54,9 +54,11 @@ function place({ num = '100', route = 'Main St', city = 'Louisville', state = 'K
 
 // vid: a twa_vid to seed (the form must not depend on it). postFails: POST
 // /api/intake rejects with a network error (the offline-queue path). holdPost:
-// POST /api/intake stays pending until release(status) answers it.
-async function loadIntake({ vid, query = '', rules = true, stub = false, postFails = false, holdPost = false } = {}) {
-  const posts = [], renders = [], autocompletes = [];
+// POST /api/intake stays pending until release(status) answers it. siteKey:
+// false leaves _turnstileSiteKey unset (the config has not arrived yet).
+// tracks: every /api/intake/track body, in order.
+async function loadIntake({ vid, query = '', rules = true, stub = false, postFails = false, holdPost = false, siteKey = true } = {}) {
+  const posts = [], tracks = [], renders = [], autocompletes = [];
   let release = null;
   // stub: the page as served without attribution.js (the resilience stub runs).
   const dom = new JSDOM(stub ? HTML : PAGE, {
@@ -72,15 +74,17 @@ async function loadIntake({ vid, query = '', rules = true, stub = false, postFai
       w.fetch = (input, init) => {
         const href = String(input);
         if (href.includes('/api/intake/rules')) return rules ? Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(RULES) }) : Promise.reject(new TypeError('offline'));
+        if (href.includes('/api/intake/track')) tracks.push(JSON.parse(init.body));
         if (href.includes('/api/intake/track')) return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({ ok: true, sessionId: 's1' }) });
         if (href.endsWith('/api/intake')) {
           posts.push(JSON.parse(init.body));
           if (postFails) return Promise.reject(new TypeError('Failed to fetch'));
           if (holdPost) {
             return new Promise((resolve) => {
-              release = (status = 200) => resolve(status === 200
-                ? { ok: true, status, json: () => Promise.resolve({ ok: true, reference: 'TEST' }) }
-                : { ok: false, status, json: () => Promise.resolve({ ok: false, error: 'Server error' }) });
+              // body: what SAGE answers (default: a reference on 200, an error otherwise).
+              release = (status = 200, body) => resolve(status === 200
+                ? { ok: true, status, json: () => Promise.resolve(body || { ok: true, reference: 'TEST' }) }
+                : { ok: false, status, json: () => Promise.resolve(body || { ok: false, error: 'Server error' }) });
             });
           }
           return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({ ok: true, reference: 'TEST' }) });
@@ -98,10 +102,10 @@ async function loadIntake({ vid, query = '', rules = true, stub = false, postFai
     await new Promise((r) => setTimeout(r, 5));
     if (!rules || (w.serviceStateNames && w.serviceStateNames())) break;
   }
-  w.eval("_turnstileSiteKey = 'test-key-test-key-test-key'");
+  if (siteKey) w.eval("_turnstileSiteKey = 'test-key-test-key-test-key'");
   w.bindIntakeAutocompletes();
   const homeAc = () => autocompletes.find((a) => a.input.id === 'i_address');
-  return { w, posts, renders, homeAc, release: (status) => release(status) };
+  return { w, posts, tracks, renders, homeAc, release: (status, body) => release(status, body) };
 }
 
 const $ = (w, id) => w.document.getElementById(id);
@@ -120,6 +124,8 @@ async function until(cond, what) {
   assert.ok(cond(), 'timed out waiting for ' + what);
 }
 const shortExposures = (w) => (w.dataLayer || []).filter((e) => e && e.event === 'ab_exposure' && e.test_name === 'intake-short-form');
+// The step_number of every gtag event called `name`.
+const stepsOf = (w, name, msg) => [...gtagEvents(w)].filter(([n, p]) => n === name && (!msg || p.error_message === msg)).map(([, p]) => p.step_number);
 const gtagEvents = (w) => (w.dataLayer || []).filter((e) => e && e[0] === 'event').map((e) => [e[1], JSON.parse(JSON.stringify(e[2] || {}))]);
 const isShortPage = (w) => w.document.body.classList.contains('twa-intake-short')
   && w.getComputedStyle($(w, 'short-submit')).display === 'block'
@@ -196,14 +202,29 @@ describe('every visitor gets the short form (no A/B)', () => {
     try { w.showStep(2); await new Promise((r) => setTimeout(r, 50)); assert.deepEqual(renders, ['#turnstile-step2']); } finally { w.close(); }
   });
 
-  test('the time estimate counts two steps, not four', async () => {
+  test('a site key that arrives after step 2 is shown still mounts the step-2 widget (the bounded retry)', async () => {
+    const { w, renders } = await loadIntake({ siteKey: false });
+    try {
+      w.showStep(2);
+      await new Promise((r) => setTimeout(r, 50));
+      assert.deepEqual(renders, [], 'nothing can render without a site key');
+      w.eval("_turnstileSiteKey = 'test-key-test-key-test-key'");
+      await until(() => renders.length > 0, 'the step-2 widget');
+      assert.deepEqual(renders, ['#turnstile-step2']);
+    } finally { w.close(); }
+  });
+
+  test('the time estimate counts two steps, not four, from the first screen', async () => {
     const { w } = await loadIntake();
     try {
-      w.showStep(1);
+      // No showStep(1) here: the first screen is whatever the page shows at load.
+      assert.equal($(w, 'step-1').classList.contains('hidden'), false);
       assert.equal($(w, 'time-estimate').textContent, 'About 1 minute left');
       w.showStep(2);
       await new Promise((r) => setTimeout(r, 50));
       assert.equal($(w, 'time-estimate').textContent, 'Almost done!');
+      w.showStep(1);
+      assert.equal($(w, 'time-estimate').textContent, 'About 1 minute left');
     } finally { w.close(); }
   });
 });
@@ -408,16 +429,50 @@ describe('the short form\'s business name', () => {
     } finally { w.close(); }
   });
 
-  test('a name typed for a commercial cart is not sent once the cart is personal', async () => {
-    const { w, posts, homeAc } = await loadIntake();
+  test('a name typed for a commercial cart is not sent once the cart is personal (POST, autosave, exit flush)', async () => {
+    const { w, posts, tracks, homeAc } = await loadIntake();
     try {
       await throughStep1(w, homeAc);
       fill(w, { i_biz_name_1: 'Fixture Shop LLC' });
-      w.eval(`selectedProducts = ['auto']; turnstileToken = '${TOKEN}'`);
+      // Commercial cart: the autosave carries the name (the control).
+      w.eval("selectedProducts = ['bop']");
+      await w.trackPartial(false, 0);
+      assert.equal(tracks.at(-1).businessName, 'Fixture Shop LLC');
+      // The cart turns personal: the autosave and the pagehide flush drop it.
+      w.eval("selectedProducts = ['auto']");
+      await w.trackPartial(false, 0);
+      assert.ok(!tracks.at(-1).businessName, 'autosave sent the stale business name');
+      const before = tracks.length;
+      w.document.dispatchEvent(new w.Event('input', { bubbles: true }));
+      w.dispatchEvent(new w.Event('pagehide'));
+      assert.equal(tracks.length, before + 1, 'the exit flush posted');
+      assert.ok(!tracks.at(-1).businessName, 'exit flush sent the stale business name');
+      w.eval(`turnstileToken = '${TOKEN}'`);
       await w.submitShort();
       assert.equal(posts.length, 1);
       assert.ok(!posts[0].businessName);
     } finally { w.close(); }
+  });
+
+  test('offline at "Get My Quote": the queued lead keeps the step-2 business name, and only for a commercial cart', async () => {
+    const queued = async (cart) => {
+      const { w, posts, homeAc } = await loadIntake({ postFails: true });
+      try {
+        await throughStep1(w, homeAc);
+        fill(w, { i_biz_name_1: 'Fixture Bop LLC' });
+        w.eval(`selectedProducts = ${JSON.stringify(cart)}; turnstileToken = '${TOKEN}'`);
+        await w.submitShort();
+        assert.equal(posts.length, 1);
+        const q = JSON.parse(w.localStorage.getItem('twa_intake_queue'));
+        assert.ok(q && q.payload, 'queued');
+        assert.deepEqual(stepsOf(w, 'intake_validation_error', 'submit_queued_offline'), [2]);
+        assert.equal($(w, 'step2-error').classList.contains('hidden'), false);
+        return q.payload;
+      } finally { w.close(); }
+    };
+    // SAGE refuses a commercial cart with no business name on replay: the lead would be lost.
+    assert.equal((await queued(['bop'])).businessName, 'Fixture Bop LLC');
+    assert.ok(!(await queued(['auto'])).businessName);
   });
 
   // SAGE_CL_PRODUCTS mirrors CL_PRODUCTS in sage-server src/lib/product-lines.js
@@ -462,7 +517,7 @@ describe('analytics carry no test param', () => {
     } finally { w.close(); }
   });
 
-  test('the conversion push carries no ab_short_form', async () => {
+  test('the conversion push carries no ab_short_form, and the submit completes step 2', async () => {
     const { w, homeAc } = await loadIntake();
     try {
       await throughStep1(w, homeAc);
@@ -471,6 +526,23 @@ describe('analytics carry no test param', () => {
       const conv = (w.dataLayer || []).find((e) => e && e.event === 'conversion' && e.conversion_type === 'quote_request');
       assert.ok(conv);
       assert.ok(!('ab_short_form' in conv));
+      // The submit completes step 2, the default form's last step; there is no step 4.
+      assert.deepEqual(stepsOf(w, 'intake_step_complete'), [1, 2]);
+    } finally { w.close(); }
+  });
+
+  test('a lead SAGE answers without ok logs its validation error on step 2, not step 4', async () => {
+    const { w, posts, homeAc, release } = await loadIntake({ holdPost: true });
+    try {
+      await throughStep1(w, homeAc);
+      w.eval(`selectedProducts = ['renters']; turnstileToken = '${TOKEN}'`);
+      const btn = $(w, 'submit-btn-short');
+      btn.click();
+      await until(() => posts.length === 1, 'the POST');
+      release(200, { ok: false, error: 'Server error' });
+      await until(() => !btn.disabled, 'the button to re-enable');
+      assert.deepEqual(stepsOf(w, 'intake_validation_error', 'submit_failed_server'), [2]);
+      assert.deepEqual(stepsOf(w, 'intake_step_complete'), [1]);
     } finally { w.close(); }
   });
 });
@@ -485,6 +557,7 @@ describe('?twa_form=long: the four-step form, as it always was', () => {
       assert.notEqual(w.getComputedStyle($(w, 'short-submit')).display, 'block');
       assert.notEqual(w.getComputedStyle(w.document.querySelector('#step-2 > .btn-row')).display, 'none');
       assert.notEqual(w.getComputedStyle($(w, 'quick-lead-link')).display, 'none');
+      assert.equal($(w, 'time-estimate').textContent, 'About 3 minutes left');
       w.showStep(1);
       assert.equal($(w, 'time-estimate').textContent, 'About 3 minutes left');
     } finally { w.close(); }
@@ -510,6 +583,7 @@ describe('?twa_form=long: the four-step form, as it always was', () => {
       await w.submitIntake();
       assert.equal(posts.length, 1);
       assert.ok(!('ab_test' in posts[0].formData));
+      assert.ok(stepsOf(w, 'intake_step_complete').includes(4));
     } finally { w.close(); }
   });
 

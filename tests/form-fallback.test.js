@@ -201,11 +201,21 @@ function intakeValuesIntact(d) {
 }
 
 // The final submit is the short form's "Get My Quote" on step 2 (every visitor).
+// ?twa_form=long (QA, and the one-line rollback) keeps its step-4 submit covered:
+// its errors must land on step 4, never in the hidden #step2-error.
 // The quick-lead link is four-step only, so that case loads with ?twa_form=long.
-for (const [label, run, errId, formType, query] of [
-  ['final submit (short form, step 2)', (w) => w.submitShort(), 'step2-error', 'intake_final', ''],
-  ['quick lead (four-step ?twa_form=long, step 2)', (w) => w.submitQuickLead(), 'step2-error', 'intake_quick', '?twa_form=long'],
+// button: [id, label restored after a failure], or null when not checked.
+for (const [label, run, errId, formType, query, button] of [
+  ['final submit (short form, step 2)', (w) => w.submitShort(), 'step2-error', 'intake_final', '', ['submit-btn-short', 'Get My Quote']],
+  ['final submit (four-step ?twa_form=long, step 4)', (w) => w.submitIntake(), 'step4-error', 'intake_final', '?twa_form=long', ['submit-btn', 'Submit Quote Request']],
+  ['quick lead (four-step ?twa_form=long, step 2)', (w) => w.submitQuickLead(), 'step2-error', 'intake_quick', '?twa_form=long', null],
 ]) {
+  const buttonRestored = (d) => {
+    if (!button) return;
+    const btn = d.getElementById(button[0]);
+    assert.equal(btn.textContent, button[1]);
+    assert.equal(btn.disabled, false);
+  };
   describe(`/intake/ ${label} failure states`, () => {
     test('(a) no Turnstile: fallback, and NO POST', async () => {
       const ctx = await loadIntake({ query, turnstile: 'none' });
@@ -215,6 +225,7 @@ for (const [label, run, errId, formType, query] of [
         const el = ctx.d.getElementById(errId);
         checkFallback(ctx.w, el, intakeErrors(ctx.w), formType, 'turnstile_unavailable');
         intakeValuesIntact(ctx.d);
+        buttonRestored(ctx.d);
       } finally { ctx.w.close(); }
     });
 
@@ -271,6 +282,7 @@ for (const [label, run, errId, formType, query] of [
           assert.equal(ctx.posts.length, 1);
           checkFallback(ctx.w, ctx.d.getElementById(errId), intakeErrors(ctx.w), formType, code);
           intakeValuesIntact(ctx.d);
+          buttonRestored(ctx.d);
         } finally { ctx.w.close(); }
       });
     }
@@ -281,6 +293,7 @@ for (const [label, run, errId, formType, query] of [
         await run(ctx.w);
         checkFallback(ctx.w, ctx.d.getElementById(errId), intakeErrors(ctx.w), formType, 'network', { email: true });
         intakeValuesIntact(ctx.d);
+        buttonRestored(ctx.d);
       } finally { ctx.w.close(); }
     });
 

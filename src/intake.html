@@ -1445,9 +1445,16 @@ function isShortForm() {
   }
   return _shortForm;
 }
+const TIME_ESTIMATES = { 1: 'About 3 minutes left', 2: 'About 2 minutes left', 3: 'About 1 minute left', 4: 'Almost done!' };
+// Short form: step 2 is the last one.
+const TIME_ESTIMATES_SHORT = { 1: 'About 1 minute left', 2: 'Almost done!' };
 (function applyShortForm() {
   if (!isShortForm()) return;
   document.body.classList.add('twa-intake-short');
+  // The markup carries the four-step copy and nothing calls showStep(1) at load,
+  // so the first screen would otherwise say "About 3 minutes left".
+  var timeEl = document.getElementById('time-estimate');
+  if (timeEl) timeEl.textContent = TIME_ESTIMATES_SHORT[1];
   // Business Name sits with the coverage picker that decides whether it is needed.
   var biz = document.getElementById('biz-name-step1-group');
   var anchor = document.getElementById('step2-error');
@@ -2960,9 +2967,7 @@ async function validateContacts() {
 }
 
 // ── Step navigation ─────────────────────────────────────────────────────────
-const TIME_ESTIMATES = { 1: 'About 3 minutes left', 2: 'About 2 minutes left', 3: 'About 1 minute left', 4: 'Almost done!' };
-// Short form: step 2 is the last one.
-const TIME_ESTIMATES_SHORT = { 1: 'About 1 minute left', 2: 'Almost done!' };
+// TIME_ESTIMATES / TIME_ESTIMATES_SHORT are declared above applyShortForm().
 
 function showStep(n) {
   for (let i = 1; i <= 4; i++) document.getElementById('step-' + i).classList.toggle('hidden', i !== n);
