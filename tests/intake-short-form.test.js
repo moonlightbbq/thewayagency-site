@@ -61,9 +61,10 @@ function place({ num = '100', route = 'Main St', city = 'Louisville', state = 'K
   };
 }
 
-async function loadIntake({ arm, query = '' } = {}) {
+async function loadIntake({ arm, query = '', rules = true, stub = false } = {}) {
   const posts = [], renders = [], autocompletes = [];
-  const dom = new JSDOM(PAGE, {
+  // stub: the page as served without attribution.js (the resilience stub runs).
+  const dom = new JSDOM(stub ? HTML : PAGE, {
     runScripts: 'dangerously',
     url: 'https://www.thewayagency.com/intake/' + query,
     beforeParse(w) {
@@ -75,7 +76,7 @@ async function loadIntake({ arm, query = '' } = {}) {
       } } } };
       w.fetch = (input, init) => {
         const href = String(input);
-        if (href.includes('/api/intake/rules')) return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(RULES) });
+        if (href.includes('/api/intake/rules')) return rules ? Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(RULES) }) : Promise.reject(new TypeError('offline'));
         if (href.includes('/api/intake/track')) return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({ ok: true, sessionId: 's1' }) });
         if (href.endsWith('/api/intake')) {
           posts.push(JSON.parse(init.body));
@@ -92,7 +93,7 @@ async function loadIntake({ arm, query = '' } = {}) {
   const w = dom.window;
   for (let i = 0; i < 50; i++) {
     await new Promise((r) => setTimeout(r, 5));
-    if (w.serviceStateNames && w.serviceStateNames()) break;
+    if (!rules || (w.serviceStateNames && w.serviceStateNames())) break;
   }
   w.eval("_turnstileSiteKey = 'test-key-test-key-test-key'");
   w.bindIntakeAutocompletes();
@@ -144,6 +145,11 @@ describe('assignment and exposure', () => {
 
   test('the id the four-step-form harnesses pin (tests/helpers/intake-arm.js) buckets to control', () => {
     assert.equal(bucket(require('./helpers/intake-arm').CONTROL_VID), 0);
+  });
+
+  test('without attribution.js (the stub) every visitor is control', async () => {
+    const { w } = await loadIntake({ arm: 'short', stub: true });
+    try { assert.equal(w.getShortFormArm(), 'control'); } finally { w.close(); }
   });
 
   test('?force_variant= and ?twa_form= pin either arm', async () => {
@@ -272,6 +278,54 @@ describe('the short submit', () => {
       await w.submitShort();
       assert.equal(posts.length, 0);
       assert.equal($(w, 'step-confirm').classList.contains('hidden'), true);
+      assert.match($(w, 'step2-error').textContent, /aren't licensed in Ohio/);
+    } finally { w.close(); }
+  });
+});
+
+describe('the short arm\'s business name', () => {
+  test('picking a commercial tile shows the field; leaving the cart personal hides it again', async () => {
+    const { w, homeAc } = await loadIntake({ arm: 'short' });
+    try {
+      await throughStep1(w, homeAc);
+      const tile = (pid) => w.document.querySelector(`.product-opt[data-pid="${pid}"]`);
+      assert.equal($(w, 'biz-name-step1-group').style.display, 'none');
+      w.toggleProd(tile('bop'));
+      assert.notEqual($(w, 'biz-name-step1-group').style.display, 'none');
+      w.toggleProd(tile('bop'));
+      assert.equal($(w, 'biz-name-step1-group').style.display, 'none');
+    } finally { w.close(); }
+  });
+
+  test('with the rules fetch down, a special-event cart still asks for the business name', async () => {
+    const { w, posts, homeAc } = await loadIntake({ arm: 'short', rules: false });
+    try {
+      await throughStep1(w, homeAc);
+      w.eval("selectedProducts = ['special_event']; turnstileToken = 'test-token-test-token-test-token-test-token'");
+      await w.submitShort();
+      assert.equal(posts.length, 0);
+      assert.match($(w, 'step2-error').textContent, /business name/);
+    } finally { w.close(); }
+  });
+
+  test('a name typed for a commercial cart is not sent once the cart is personal', async () => {
+    const { w, posts, homeAc } = await loadIntake({ arm: 'short' });
+    try {
+      await throughStep1(w, homeAc);
+      fill(w, { i_biz_name_1: 'Fixture Shop LLC' });
+      w.eval("selectedProducts = ['auto']; turnstileToken = 'test-token-test-token-test-token-test-token'");
+      await w.submitShort();
+      assert.equal(posts.length, 1);
+      assert.ok(!posts[0].businessName);
+    } finally { w.close(); }
+  });
+
+  test('the time estimate counts two steps, not four', async () => {
+    const { w } = await loadIntake({ arm: 'short' });
+    try {
+      w.showStep(2);
+      await new Promise((r) => setTimeout(r, 50));
+      assert.equal($(w, 'time-estimate').textContent, 'Almost done!');
     } finally { w.close(); }
   });
 });

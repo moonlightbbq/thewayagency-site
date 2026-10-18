@@ -2680,7 +2680,7 @@ async function trackPartial(notify, tokenWaitMs) {
         // Step 1 requires it for business products. SAGE can't open a
         // cl-sales card without one, so an abandoned commercial form had no
         // pipeline to land on.
-        businessName: v('i_biz_name') || v('i_biz_name_1') || undefined,
+        businessName: businessNameToSend() || undefined,
         step: currentStep,
         agent: _agentParam,
         notify: !!notify,
@@ -2779,7 +2779,7 @@ function _flushTrackOnExit() {
         sessionId, firstName, lastName, email, phone,
         address: v('i_address_street') || v('i_address'), city: v('i_city'), state: v('i_state'), zip: v('i_zip'),
         products: selectedProducts, step: currentStep, agent: _agentParam, notify: false,
-        businessName: v('i_biz_name') || v('i_biz_name_1') || undefined,
+        businessName: businessNameToSend() || undefined,
         _hp_company: document.getElementById('_hp_company')?.value || '',
         twa_vid: getVisitorId(), _tracking: getTrackingIds(),
         attribution: TWA.getAttribution(),
@@ -2994,6 +2994,8 @@ async function validateContacts() {
 
 // ── Step navigation ─────────────────────────────────────────────────────────
 const TIME_ESTIMATES = { 1: 'About 3 minutes left', 2: 'About 2 minutes left', 3: 'About 1 minute left', 4: 'Almost done!' };
+// Short arm: step 2 is the last one.
+const TIME_ESTIMATES_SHORT = { 1: 'About 1 minute left', 2: 'Almost done!' };
 
 function showStep(n) {
   for (let i = 1; i <= 4; i++) document.getElementById('step-' + i).classList.toggle('hidden', i !== n);
@@ -3009,7 +3011,7 @@ function showStep(n) {
   });
   // Time estimate
   const timeEl = document.getElementById('time-estimate');
-  if (timeEl) timeEl.textContent = TIME_ESTIMATES[n] || '';
+  if (timeEl) timeEl.textContent = (isShortFormArm() ? TIME_ESTIMATES_SHORT : TIME_ESTIMATES)[n] || '';
   // Step enter animation
   const stepEl = document.getElementById('step-' + n);
   if (stepEl) {
@@ -3203,15 +3205,28 @@ document.getElementById('i_dob').addEventListener('input', function() {
 
 // ── Product-specific questions (Step 3) ─────────────────────────────────────
 const COMMERCIAL_PRODUCTS = ['bop','cgl','commercial_auto','workers_comp','cyber','eo','bonds','builders_risk'];
-// The short arm's business-name rule: the local list OR the server's own
-// RULES.productLines (GET /api/intake/rules). The local list is short by ids the
-// form offers (special_event, commercial_property, farm_ranch), and SAGE refuses
-// a commercial cart without a business name; with no step 3 there would be no
-// field on screen to fix it. (Control keeps COMMERCIAL_PRODUCTS: its step 3 only
-// renders Business Info for that list.)
+// The short arm's business-name rule: SAGE's commercial list (CL_PRODUCTS in
+// sage-server src/lib/product-lines.js, mirrored here for when the rules fetch
+// fails) OR the server's own RULES.productLines (GET /api/intake/rules).
+// COMMERCIAL_PRODUCTS is short by ids the form offers (special_event,
+// commercial_property, farm_ranch), and SAGE refuses a commercial cart without a
+// business name; with no step 3 there would be no field on screen to fix it.
+// (Control keeps COMMERCIAL_PRODUCTS: its step 3 only renders Business Info for
+// that list.)
+const SAGE_CL_PRODUCTS = ['bop', 'cgl', 'commercial_auto', 'workers_comp', 'cyber', 'eo',
+  'commercial_property', 'commercial_umbrella', 'professional_liability',
+  'contractors', 'garage', 'inland_marine', 'crime', 'bonds',
+  'builders_risk', 'farm_ranch', 'special_event'];
 function cartNeedsBusinessName(ids) {
-  return (ids || []).some(id => COMMERCIAL_PRODUCTS.includes(id)
+  return (ids || []).some(id => SAGE_CL_PRODUCTS.includes(id) || COMMERCIAL_PRODUCTS.includes(id)
     || !!(RULES && RULES.productLines && RULES.productLines[id] === 'commercial'));
+}
+// The business name every payload sends. Control: as today. Short arm: only while
+// the field is asked for (a commercial cart or a commercial arrival), so a name
+// typed for 'bop' is not sent once the cart has turned personal.
+function businessNameToSend() {
+  if (!isShortFormArm()) return v('i_biz_name') || v('i_biz_name_1');
+  return (cartNeedsBusinessName(selectedProducts) || getEntryLine() === 'commercial') ? v('i_biz_name_1') : '';
 }
 const PROPERTY_PRODUCTS = ['flood','earthquake','dwelling_fire'];
 // Life-coverage tiles that share the same coverage-amount / type / tobacco questions.
@@ -4170,7 +4185,7 @@ async function submitIntake() {
         city: v('i_city'),
         state: v('i_state'),
         zip: v('i_zip'),
-        businessName: v('i_biz_name') || v('i_biz_name_1') || undefined,
+        businessName: businessNameToSend() || undefined,
         products: selectedProducts,
         formData,
         notes: v('i_notes'),
@@ -4235,7 +4250,7 @@ async function submitIntake() {
     const payload = {
       sessionId, firstName: v('i_fname'), lastName: v('i_lname'), email: v('i_email'), phone: v('i_phone'),
       address: v('i_address_street') || v('i_address'), city: v('i_city'), state: v('i_state'), zip: v('i_zip'),
-      businessName: v('i_biz_name') || (SHORT ? v('i_biz_name_1') : '') || undefined,
+      businessName: (SHORT ? businessNameToSend() : v('i_biz_name')) || undefined,
       products: selectedProducts, formData, notes: v('i_notes'), agent: agentParam || '',
       _hp_company: document.getElementById('_hp_company')?.value || '', cfToken: '',
       // Replay context: the queued token is stale by replay time, so
