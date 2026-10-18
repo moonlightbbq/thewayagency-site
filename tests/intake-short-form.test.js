@@ -157,20 +157,57 @@ describe('every visitor gets the short form (no A/B)', () => {
     } finally { w.close(); }
   });
 
-  // 'dob-required' only changes the step-3 DOB field, which the short form never
-  // shows: exposing default visitors would log them into an arm that changes
-  // nothing they see. It stays live on the four-step form only.
-  test('dob-required assigns and exposes only on ?twa_form=long', async () => {
+  // 'dob-required' is CONCLUDED (owner, 2026-10-18; no readout): nobody is
+  // assigned or exposed, on either form, and DOB is required for life only. The
+  // odd testvids (and ?force_variant=required) used to land in 'required'.
+  test('dob-required is concluded: no exposure, no class, DOB optional unless life, on both forms', async () => {
     const dobExposures = (w) => (w.dataLayer || []).filter((e) => e && e.event === 'ab_exposure' && e.test_name === 'dob-required');
-    for (const vid of ['testvid0', 'testvid1', 'testvid2', 'testvid3', 'testvid4', 'testvid5']) {
-      const { w } = await loadIntake({ vid });
+    const exposed = (w) => (w.dataLayer || []).filter((e) => e && e.event === 'ab_exposure').map((e) => e.test_name);
+    const vids = ['testvid0', 'testvid1', 'testvid2', 'testvid3', 'testvid4', 'testvid5'];
+    const cases = [];
+    for (const query of ['', '?force_variant=required', LONG, LONG + '&force_variant=required']) {
+      for (const vid of vids) cases.push({ vid, query });
+    }
+    for (const c of cases) {
+      const tag = JSON.stringify(c);
+      const { w } = await loadIntake(c);
       try {
-        assert.equal(dobExposures(w).length, 0, vid);
-        assert.equal(w.document.body.classList.contains('twa-ab-dob-required'), false, vid);
+        assert.equal(dobExposures(w).length, 0, tag);
+        assert.ok(exposed(w).includes('intake-call-or-text'), tag);
+        assert.equal(w.document.body.classList.contains('twa-ab-dob-required'), false, tag);
+        assert.equal($(w, 'i_dob').type, 'text', tag);
+        assert.equal($(w, 'i_dob').getAttribute('placeholder'), 'MM/DD/YYYY', tag);
+        assert.equal(w.document.querySelector('label[for="i_dob"]').parentNode.querySelector('.twa-form-microcopy'), null, tag);
       } finally { w.close(); }
     }
-    const { w } = await loadIntake({ query: LONG });
-    try { assert.equal(dobExposures(w).length, 1); } finally { w.close(); }
+    // Step 3 (four-step form only): a personal cart passes without a DOB; a life
+    // cart is still refused without one, and passes with one.
+    const step3 = async (vid, products, dob) => {
+      const { w, homeAc } = await loadIntake({ vid, query: LONG });
+      try {
+        await throughStep1(w, homeAc);
+        for (const pid of products) w.toggleProd(w.document.querySelector(`.product-opt[data-pid="${pid}"]`));
+        assert.equal(w.eval('JSON.stringify(selectedProducts.slice().sort())'), JSON.stringify([...products].sort()));
+        w.showStep(3);
+        $(w, 'i_dob').value = dob;
+        await w.nextStep(3);
+        return { advanced: !$(w, 'step-4').classList.contains('hidden'), error: $(w, 'step3-error').textContent,
+          star: $(w, 'dob-req-star').style.display, ariaRequired: $(w, 'i_dob').getAttribute('aria-required') };
+      } finally { w.close(); }
+    };
+    for (const vid of vids) {
+      let r = await step3(vid, ['renters'], '');
+      assert.equal(r.advanced, true, vid + ' personal, no DOB: ' + r.error);
+      assert.equal(r.star, 'none', vid);
+      assert.equal(r.ariaRequired, 'false', vid);
+      r = await step3(vid, ['renters', 'term_life'], '');
+      assert.equal(r.advanced, false, vid + ' life, no DOB');
+      assert.match(r.error, /date of birth for life insurance/, vid);
+      assert.equal(r.star, '', vid);
+      assert.equal(r.ariaRequired, 'true', vid);
+      r = await step3(vid, ['renters', 'term_life'], '01/01/1980');
+      assert.equal(r.advanced, true, vid + ' life with DOB: ' + r.error);
+    }
   });
 
   test('?force_variant= no longer picks a form', async () => {

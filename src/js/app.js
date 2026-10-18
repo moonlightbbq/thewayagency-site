@@ -111,6 +111,8 @@
     // (registered via TWA.assignVariant/pushExposure): app.js never loads on
     // /intake/, so both tests were permanently inert here while still pushing
     // ab_exposure on every other page — poisoning the exposure data.
+    // 'dob-required' has since been CONCLUDED (owner, 2026-10-18; no readout):
+    // do not re-register it here or there.
   };
 
   // Visitor id / tracking ids / A-B hash live in src/js/attribution.js

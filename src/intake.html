@@ -1370,34 +1370,16 @@ function getTrackingIds() { return TWA.getTrackingIds(); }
 // Moved from app.js, which never loads on /intake/ — both tests were
 // permanently inert while still pushing ab_exposure on every OTHER page,
 // poisoning the exposure data. Assignment/exposure via TWA; ?force_variant=
-// honored. Apply bodies are verbatim from app.js.
+// honored. Apply bodies are verbatim from app.js. Only 'intake-call-or-text'
+// still runs.
 (function () {
-  // 'dob-required' changes only the step-3 DOB field, and the short form (every
-  // visitor since 2026-10-18) never shows step 3. Assigning and exposing it there
-  // would log every visitor into an arm that changes nothing they see, poisoning
-  // its readout the same way, so it runs only on the four-step ?twa_form=long form
-  // (paused for default visitors; concluding it is the owner's call).
-  // isShortForm() is defined below (hoisted; it reads the URL on first call).
-  var dobVariant = isShortForm() ? null : TWA.assignVariant('dob-required', ['control', 'required']);
-  if (dobVariant === 'required') {
-    document.body.classList.add('twa-ab-dob-required');
-    var dobInput = document.getElementById('i_dob');
-    if (dobInput) {
-      dobInput.type = 'date';
-      dobInput.removeAttribute('maxlength');
-      dobInput.removeAttribute('placeholder');
-      dobInput.removeAttribute('inputmode');
-      var dobLabel = document.querySelector('label[for="i_dob"]');
-      if (dobLabel && !dobLabel.parentNode.querySelector('.twa-form-microcopy')) {
-        var micro = document.createElement('p');
-        micro.className = 'twa-form-microcopy';
-        micro.textContent = 'Needed for accurate quote.';
-        micro.style.cssText = 'font-size:12px;color:var(--slate,#64748b);margin:2px 0 0;';
-        dobLabel.insertAdjacentElement('afterend', micro);
-      }
-    }
-  }
-  if (dobVariant) TWA.pushExposure('dob-required', dobVariant);
+  // 'dob-required' (2026-10-18) is CONCLUDED: the owner ended it with no
+  // readout. It had been paused since the short form shipped (its step-3 DOB
+  // field only shows on ?twa_form=long), and its results were confounded with
+  // 'intake-call-or-text' (hashAssign gives every two-arm test the same split).
+  // No assignment, no ab_exposure, no twa-ab-dob-required class; DOB stays the
+  // optional MM/DD/YYYY text field, required for life only. Do not re-register
+  // the name.
 
   var textVariant = TWA.assignVariant('intake-call-or-text', ['control', 'with-text']);
   if (textVariant === 'with-text') {
@@ -3092,17 +3074,14 @@ async function nextStep(from) {
       if (!vehs.length || !vehs.some(v => v.year && v.make && v.model))
         problems.push('Please enter at least one complete vehicle (year, make, and model).');
     }
-    // Validate DOB: required for life always; required for all personal lines under A/B 'dob-required' variant
+    // Validate DOB: required for life only
     {
       const lifeSelected = selectedProducts.some(p => LIFE_COVERAGE.includes(p));
-      const abDobRequired = document.body.classList.contains('twa-ab-dob-required');
-      const dobGroup = document.getElementById('dob-group');
-      const dobVisible = dobGroup && dobGroup.style.display !== 'none';
-      if (lifeSelected || (abDobRequired && dobVisible)) {
+      if (lifeSelected) {
         const dobVal = v('i_dob');
-        // type=date yields YYYY-MM-DD (10 chars); type=text auto-format yields MM/DD/YYYY (10 chars)
+        // the type=text auto-format yields MM/DD/YYYY (10 chars)
         if (!dobVal || dobVal.length !== 10) {
-          problems.push(lifeSelected ? 'Please enter your date of birth for life insurance.' : 'Please enter your date of birth.');
+          problems.push('Please enter your date of birth for life insurance.');
         }
       }
     }
@@ -3151,9 +3130,8 @@ document.getElementById('i_phone').addEventListener('input', function() {
   }
 });
 
-// ── DOB auto-format (MM/DD/YYYY) — skipped when input is type=date (browser handles) ─────
+// ── DOB auto-format (MM/DD/YYYY) ─────
 document.getElementById('i_dob').addEventListener('input', function() {
-  if (this.type === 'date') return; // native date input
   let digits = this.value.replace(/\D/g, '');
   if (digits.length > 8) digits = digits.slice(0, 8);
   let formatted = '';
@@ -3492,14 +3470,12 @@ const SCHEMA_FIELD_IDS = Object.values(PRODUCT_QUESTION_SCHEMA)
   .filter(f => f && f.id).map(f => f.id);
 
 // Show the DOB required asterisk (and aria-required) whenever DOB is required —
-// i.e. any life coverage is selected (or the inert A/B personal-lines variant).
+// i.e. any life coverage is selected.
 // Called on product selection AND on the questions render so the asterisk never
 // lags behind the field's actual requiredness. Ticket 4adb868f.
 function updateDobRequiredStar() {
   const sel = [...document.querySelectorAll('.product-opt.selected')].map(e => e.dataset.pid);
-  const hasPersonalSel = sel.some(p => !COMMERCIAL_PRODUCTS.includes(p));
-  const required = sel.some(p => LIFE_COVERAGE.includes(p))
-    || (document.body.classList.contains('twa-ab-dob-required') && hasPersonalSel);
+  const required = sel.some(p => LIFE_COVERAGE.includes(p));
   const star = document.getElementById('dob-req-star');
   if (star) star.style.display = required ? '' : 'none';
   const input = document.getElementById('i_dob');
@@ -3516,10 +3492,8 @@ function renderProductQuestions() {
   // Show/hide DOB based on whether personal lines are selected
   const dobGroup = document.getElementById('dob-group');
   if (dobGroup) dobGroup.style.display = hasPersonal ? '' : 'none';
-  // DOB required-state mirror of the Step-3 validator (the lifeSelected/abDobRequired
-  // check in nextStep). dobAbRequired is currently inert here — the A/B harness in
-  // app.js isn't loaded on intake.html — but is kept so the asterisk stays a true
-  // mirror if it ever is. Surface requiredness both visually (*) and to AT (aria-required).
+  // DOB required-state mirror of the Step-3 validator (the lifeSelected check in
+  // nextStep). Surface requiredness both visually (*) and to AT (aria-required).
   updateDobRequiredStar();
 
   // Ticket 4adb868f: the "When does your policy expire?" question presumes an
