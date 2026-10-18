@@ -1372,7 +1372,13 @@ function getTrackingIds() { return TWA.getTrackingIds(); }
 // poisoning the exposure data. Assignment/exposure via TWA; ?force_variant=
 // honored. Apply bodies are verbatim from app.js.
 (function () {
-  var dobVariant = TWA.assignVariant('dob-required', ['control', 'required']);
+  // 'dob-required' changes only the step-3 DOB field, and the short form (every
+  // visitor since 2026-10-18) never shows step 3. Assigning and exposing it there
+  // would log every visitor into an arm that changes nothing they see, poisoning
+  // its readout the same way, so it runs only on the four-step ?twa_form=long form
+  // (paused for default visitors; concluding it is the owner's call).
+  // isShortForm() is defined below (hoisted; it reads the URL on first call).
+  var dobVariant = isShortForm() ? null : TWA.assignVariant('dob-required', ['control', 'required']);
   if (dobVariant === 'required') {
     document.body.classList.add('twa-ab-dob-required');
     var dobInput = document.getElementById('i_dob');
@@ -1391,7 +1397,7 @@ function getTrackingIds() { return TWA.getTrackingIds(); }
       }
     }
   }
-  TWA.pushExposure('dob-required', dobVariant);
+  if (dobVariant) TWA.pushExposure('dob-required', dobVariant);
 
   var textVariant = TWA.assignVariant('intake-call-or-text', ['control', 'with-text']);
   if (textVariant === 'with-text') {

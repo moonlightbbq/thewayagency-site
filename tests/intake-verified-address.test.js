@@ -121,7 +121,7 @@ async function step1(w, values = {}) {
 // One "Review" on step 3 (DOB, product questions, referrer): four-step form only.
 async function step3(w, values = {}) {
   w.showStep(3);
-  // 'dob-required' stays a live hash-assigned test; give it a DOB in either shape.
+  // 'dob-required' stays a live hash-assigned test on the four-step form; give it a DOB in either shape.
   fill(w, { i_dob: $(w, 'i_dob').type === 'date' ? '1980-01-01' : '01/01/1980', ...values });
   await w.nextStep(3);
   return { advanced: !$(w, 'step-4').classList.contains('hidden'), error: $(w, 'step3-error').textContent };
@@ -155,7 +155,8 @@ describe('every visitor gets the new step 3 (the A/B is concluded)', () => {
     try {
       const ex = (w.dataLayer || []).filter((e) => e && e.event === 'ab_exposure').map((e) => e.test_name);
       assert.ok(!ex.includes('intake-address-referrer'));
-      assert.ok(ex.includes('dob-required') && ex.includes('intake-call-or-text'));
+      // ('dob-required' exposes on ?twa_form=long only: tests/intake-short-form.test.js.)
+      assert.ok(ex.includes('intake-call-or-text'));
       assert.equal(typeof w.getAddrRefArm, 'undefined');
       for (const [name, params] of gtagEvents(w)) assert.ok(!('ab_addr_ref' in params), name);
       // No test tags a lead any more ('intake-short-form' went to 100% with no A/B too).
