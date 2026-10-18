@@ -20,6 +20,7 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
+const { pinFourStepForm } = require('./helpers/intake-arm');
 
 const ROOT = path.join(__dirname, '..');
 const SRC = path.join(ROOT, 'src');
@@ -64,6 +65,7 @@ async function loadIntake() {
     runScripts: 'dangerously',
     url: 'https://www.thewayagency.com/intake/',
     beforeParse(w) {
+      pinFourStepForm(w);
       w.fbq = (...args) => calls.push(args);
       w.fetch = (input) => {
         const href = String(input);

@@ -24,6 +24,7 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
+const { pinFourStepForm } = require('./helpers/intake-arm');
 
 const ROOT = path.join(__dirname, '..');
 const HTML = fs.readFileSync(path.join(ROOT, 'src', 'intake.html'), 'utf8');
@@ -61,6 +62,7 @@ async function loadIntake({ places = true, offline = false, draft } = {}) {
     runScripts: 'dangerously',
     url: 'https://www.thewayagency.com/intake/',
     beforeParse(w) {
+      pinFourStepForm(w);
       if (draft) w.localStorage.setItem('twa_intake_draft', JSON.stringify(draft));
       if (places) {
         w.google = { maps: { places: { Autocomplete: class {
@@ -154,7 +156,8 @@ describe('every visitor gets the new step 3 (the A/B is concluded)', () => {
       assert.ok(ex.includes('dob-required') && ex.includes('intake-call-or-text'));
       assert.equal(typeof w.getAddrRefArm, 'undefined');
       for (const [name, params] of gtagEvents(w)) assert.ok(!('ab_addr_ref' in params), name);
-      assert.doesNotMatch(HTML, /ab_addr_ref:\s|formData\.ab_test\s*=|assignVariant\('intake-address-referrer'/);
+      // (formData.ab_test itself is reused by 'intake-short-form'; only this name is retired.)
+      assert.doesNotMatch(HTML, /ab_addr_ref:\s|formData\.ab_test\s*=\s*'intake-address-referrer|assignVariant\('intake-address-referrer'/);
     } finally { w.close(); }
   });
 
