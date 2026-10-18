@@ -383,35 +383,37 @@ describe('the short form\'s business name', () => {
     } finally { w.close(); }
   });
 
-  // Commercial arrivals see the field from page load. On the short form it sits on
-  // step 2, so step 1 must not demand it, and the name is sent for any cart.
-  test('a ?product=bop arrival passes step 1 without a name, is asked on step 2, then posts it', async () => {
-    const { w, posts, homeAc } = await loadIntake({ query: '?product=bop' });
+  // Commercial arrivals see the field from page load and, as on the four-step
+  // form, give it on step 1: the step-1 lead SAGE pages a producer for (and opens
+  // a commercial sales card from) must already carry the business name.
+  test('a ?product=bop arrival is asked for the name on step 1, and the step-1 lead carries it', async () => {
+    const { w, posts, tracks, homeAc } = await loadIntake({ query: '?product=bop' });
     try {
-      const r = await throughStep1(w, homeAc);
-      assert.equal(r.advanced, true, r.error);
       const grp = $(w, 'biz-name-step1-group');
       assert.notEqual(grp.style.display, 'none');
-      assert.ok(grp.closest('#step-2'));
-      w.eval(`if (!selectedProducts.includes('bop')) selectedProducts = ['bop']; turnstileToken = '${TOKEN}'`);
-      await w.submitShort();
-      assert.equal(posts.length, 0);
-      assert.match($(w, 'step2-error').textContent, /business name/);
+      assert.ok(grp.closest('#step-1'));
+      let r = await throughStep1(w, homeAc);
+      assert.equal(r.advanced, false);
+      assert.match(r.error, /business name/);
       fill(w, { i_biz_name_1: 'Fixture Bop LLC' });
+      r = await throughStep1(w, homeAc);
+      assert.equal(r.advanced, true, r.error);
+      await until(() => tracks.some((t) => t.notify && t.businessName === 'Fixture Bop LLC'), 'step-1 /track with the business name');
+      w.eval(`if (!selectedProducts.includes('bop')) selectedProducts = ['bop']; turnstileToken = '${TOKEN}'`);
       await w.submitShort();
       assert.equal(posts.length, 1);
       assert.equal(posts[0].businessName, 'Fixture Bop LLC');
     } finally { w.close(); }
   });
 
-  test('a ?line=commercial arrival keeps the field through tile toggles and sends the name for any cart', async () => {
+  test('a ?line=commercial arrival keeps the field on step 1 through tile toggles and sends the name for any cart', async () => {
     const { w, posts, homeAc } = await loadIntake({ query: '?line=commercial' });
     try {
+      fill(w, { i_biz_name_1: 'Fixture Landlord LLC' });
       const r = await throughStep1(w, homeAc);
       assert.equal(r.advanced, true, r.error);
       const grp = $(w, 'biz-name-step1-group');
-      assert.notEqual(grp.style.display, 'none');
-      assert.ok(grp.closest('#step-2'));
+      assert.ok(grp.closest('#step-1'));
       // dwelling_fire is offered under commercial but needs no name in SAGE.
       const tile = () => w.document.querySelector('.product-opt[data-pid="dwelling_fire"]');
       assert.ok(tile());
@@ -420,7 +422,6 @@ describe('the short form\'s business name', () => {
       w.toggleProd(tile());
       assert.notEqual(grp.style.display, 'none', 'off');
       w.toggleProd(tile());
-      fill(w, { i_biz_name_1: 'Fixture Landlord LLC' });
       w.eval(`turnstileToken = '${TOKEN}'`);
       await w.submitShort();
       assert.equal(posts.length, 1);
