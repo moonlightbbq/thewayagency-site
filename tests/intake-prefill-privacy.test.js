@@ -14,7 +14,6 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
-const { pinFourStepForm } = require('./helpers/intake-arm');
 
 const ROOT = path.join(__dirname, '..');
 const HTML = fs.readFileSync(path.join(ROOT, 'src', 'intake.html'), 'utf8');
@@ -46,7 +45,6 @@ async function loadIntake(url, { seed } = {}) {
     runScripts: 'dangerously',
     url,
     beforeParse(w) {
-      pinFourStepForm(w);
       if (seed) seed(w);
       w.fetch = (input, init) => {
         const href = String(input);

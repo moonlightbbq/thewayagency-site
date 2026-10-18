@@ -16,7 +16,6 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
-const { pinFourStepForm } = require('./helpers/intake-arm');
 
 const ROOT = path.join(__dirname, '..');
 const HTML = fs.readFileSync(path.join(ROOT, 'src', 'intake.html'), 'utf8');
@@ -37,7 +36,6 @@ async function loadIntake({ url = 'https://www.thewayagency.com/intake/?product=
     runScripts: 'dangerously',
     url,
     beforeParse(w) {
-      pinFourStepForm(w);
       if (seed) seed(w);
       w.fetch = (input, init) => {
         const href = String(input);
@@ -81,7 +79,8 @@ function beforeUnloadPrevented(w) {
 
 describe('a successful submit ends the form (markSubmitted)', () => {
   test('quick lead: no Leave-site prompt, no abandonment, _submitted set, draft cleared', async () => {
-    const w = await loadIntake();
+    // The quick-lead link is four-step only (?twa_form=long).
+    const w = await loadIntake({ url: 'https://www.thewayagency.com/intake/?product=auto&src=inline&twa_form=long' });
     try {
       fillStep1(w);
       w.eval("selectedProducts = ['auto']");
@@ -98,16 +97,22 @@ describe('a successful submit ends the form (markSubmitted)', () => {
     } finally { w.close(); }
   });
 
-  test('full submit: the same end state', async () => {
+  test('full submit (the short form\'s step-2 "Get My Quote"): the same end state', async () => {
     const w = await loadIntake();
     try {
       fillStep1(w);
       w.eval("selectedProducts = ['auto']");
-      await w.submitIntake();
+      assert.equal(beforeUnloadPrevented(w), true, 'unsaved input does prompt');
+      w.saveDraft();
+      assert.ok(w.localStorage.getItem('twa_intake_draft'), 'a draft exists before the submit');
+      await w.submitShort();
+      assert.equal(w.document.getElementById('ref-number').textContent, 'Reference: #TEST');
       assert.equal(w.eval('_submitted'), true);
       assert.equal(beforeUnloadPrevented(w), false);
       hideAndShow(w);
       assert.equal(abandons(w), 0);
+      await sleep(700);
+      assert.equal(w.localStorage.getItem('twa_intake_draft'), null, 'the draft outlived the submit');
     } finally { w.close(); }
   });
 
@@ -116,7 +121,7 @@ describe('a successful submit ends the form (markSubmitted)', () => {
     try {
       fillStep1(w);
       w.eval("selectedProducts = ['auto']; sessionId = 'test-session-test-session'");
-      await w.submitQuickLead();
+      await w.submitShort();
       set(w, 'i_fname', FIRST); // a stray input after the confirmation
       const before = w.__calls.filter((c) => c.url.includes('/api/intake/track')).length;
       w.dispatchEvent(new w.Event('pagehide'));

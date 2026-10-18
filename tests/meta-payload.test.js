@@ -20,7 +20,6 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
-const { pinFourStepForm } = require('./helpers/intake-arm');
 
 const ROOT = path.join(__dirname, '..');
 const SRC = path.join(ROOT, 'src');
@@ -59,13 +58,12 @@ describe('source: no product data and no advanced matching sent to Meta', () => 
 });
 
 /** The intake with fbq stubbed; every fetch answered locally. */
-async function loadIntake() {
+async function loadIntake(query = '') {
   const calls = [];
   const dom = new JSDOM(PAGE, {
     runScripts: 'dangerously',
-    url: 'https://www.thewayagency.com/intake/',
+    url: 'https://www.thewayagency.com/intake/' + query,
     beforeParse(w) {
-      pinFourStepForm(w);
       w.fbq = (...args) => calls.push(args);
       w.fetch = (input) => {
         const href = String(input);
@@ -89,6 +87,24 @@ const leadCalls = (calls) => calls.filter((c) => c[0] === 'track' && c[1] === 'L
 const plain = (o) => JSON.parse(JSON.stringify(o));
 
 describe('behaviour: the Lead event on full submit (trackSubmitSuccess)', () => {
+  test('the short form\'s step-2 "Get My Quote" sends one product-free Lead; a health cart sends none', async () => {
+    for (const [cart, n] of [[['auto', 'homeowners'], 1], [['medicare'], 0]]) {
+      const { w, calls } = await loadIntake();
+      try {
+        w.eval(`selectedProducts = ${JSON.stringify(cart)}`);
+        await w.submitShort();
+        assert.equal(w.document.getElementById('ref-number').textContent, 'Reference: #TEST', 'the submit itself succeeded');
+        const leads = leadCalls(calls);
+        assert.equal(leads.length, n, cart.join(','));
+        if (n) {
+          assert.deepEqual(plain(leads[0][2]), { content_category: 'quote_request', currency: 'USD' });
+          assert.deepEqual(plain(leads[0][3]), { eventID: 'TEST' });
+        }
+        assert.ok(!JSON.stringify(calls).match(/auto|homeowners|personal|medicare/), 'product or line reached fbq');
+      } finally { w.close(); }
+    }
+  });
+
   test('a P&C cart sends one Lead with no product or line', async () => {
     const { w, calls } = await loadIntake();
     try {
@@ -130,9 +146,10 @@ describe('behaviour: the Lead event on full submit (trackSubmitSuccess)', () => 
   });
 });
 
+// The quick-lead link is four-step only: these load with ?twa_form=long.
 describe('behaviour: the Lead event on the quick lead (submitQuickLead)', () => {
   test('a P&C quick lead sends one product-free Lead with the reference as eventID', async () => {
-    const { w, calls } = await loadIntake();
+    const { w, calls } = await loadIntake('?twa_form=long');
     try {
       w.eval("selectedProducts = ['auto']");
       await w.submitQuickLead();
@@ -145,7 +162,7 @@ describe('behaviour: the Lead event on the quick lead (submitQuickLead)', () => 
   });
 
   test('a Medicare quick lead sends no Lead', async () => {
-    const { w, calls } = await loadIntake();
+    const { w, calls } = await loadIntake('?twa_form=long');
     try {
       w.eval("selectedProducts = ['medicare']");
       await w.submitQuickLead();

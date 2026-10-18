@@ -169,12 +169,12 @@ describe('/contact failure states', () => {
 // ── /intake/ ────────────────────────────────────────────────────────────────
 // sitekey: true (a key), false (config without the field: unknown), '' (SAGE
 // reports Turnstile off), 'reject' (the config request fails every time)
-async function loadIntake({ turnstile = 'ok', answer = { status: 200, body: { ok: true, reference: 'R1' } }, sitekey = true } = {}) {
+async function loadIntake({ turnstile = 'ok', answer = { status: 200, body: { ok: true, reference: 'R1' } }, sitekey = true, query = '' } = {}) {
   const posts = [];
   const configCalls = [];
   const config = sitekey === true ? { turnstileSiteKey: SITEKEY } : sitekey === '' ? { turnstileSiteKey: '' } : sitekey === 'reject' ? 'reject' : {};
   const dom = new JSDOM(INTAKE, {
-    runScripts: 'dangerously', url: 'https://www.thewayagency.com/intake/',
+    runScripts: 'dangerously', url: 'https://www.thewayagency.com/intake/' + query,
     beforeParse(w) {
       w.fetch = fetchStub(w, answer, posts, { config, configCalls });
       w.turnstile = turnstileStub(turnstile);
@@ -200,13 +200,15 @@ function intakeValuesIntact(d) {
   assert.equal(d.getElementById('i_email').value, 'zz.privacycheck@example.com');
 }
 
-for (const [label, run, errId, formType] of [
-  ['final submit (step 4)', (w) => w.submitIntake(), 'step4-error', 'intake_final'],
-  ['quick lead (step 2)', (w) => w.submitQuickLead(), 'step2-error', 'intake_quick'],
+// The final submit is the short form's "Get My Quote" on step 2 (every visitor).
+// The quick-lead link is four-step only, so that case loads with ?twa_form=long.
+for (const [label, run, errId, formType, query] of [
+  ['final submit (short form, step 2)', (w) => w.submitShort(), 'step2-error', 'intake_final', ''],
+  ['quick lead (four-step ?twa_form=long, step 2)', (w) => w.submitQuickLead(), 'step2-error', 'intake_quick', '?twa_form=long'],
 ]) {
   describe(`/intake/ ${label} failure states`, () => {
     test('(a) no Turnstile: fallback, and NO POST', async () => {
-      const ctx = await loadIntake({ turnstile: 'none' });
+      const ctx = await loadIntake({ query, turnstile: 'none' });
       try {
         await run(ctx.w);
         assert.equal(ctx.posts.length, 0, 'posted an empty token SAGE always rejects');
@@ -217,7 +219,7 @@ for (const [label, run, errId, formType] of [
     });
 
     test('(a2) Turnstile loaded but /api/config has no turnstileSiteKey field (unknown): fallback, no POST', async () => {
-      const ctx = await loadIntake({ turnstile: 'stuck', sitekey: false });
+      const ctx = await loadIntake({ query, turnstile: 'stuck', sitekey: false });
       try {
         ctx.w.eval('turnstileToken = null');
         await run(ctx.w);
@@ -227,7 +229,7 @@ for (const [label, run, errId, formType] of [
     });
 
     test('(a3) SAGE reports Turnstile off (empty site key): posts with no token, no fallback', async () => {
-      const ctx = await loadIntake({ turnstile: 'none', sitekey: '', answer: { status: 200, body: { ok: true, reference: 'R1' } } });
+      const ctx = await loadIntake({ query, turnstile: 'none', sitekey: '', answer: { status: 200, body: { ok: true, reference: 'R1' } } });
       try {
         ctx.w.eval('turnstileToken = null');
         await run(ctx.w);
@@ -238,7 +240,7 @@ for (const [label, run, errId, formType] of [
     });
 
     test('(a4) /api/config unreachable: one retry at submit, then a server (not browser) message, no POST', async () => {
-      const ctx = await loadIntake({ turnstile: 'stuck', sitekey: 'reject' });
+      const ctx = await loadIntake({ query, turnstile: 'stuck', sitekey: 'reject' });
       try {
         ctx.w.eval('turnstileToken = null');
         const before = ctx.configCalls.length;
@@ -252,7 +254,7 @@ for (const [label, run, errId, formType] of [
     });
 
     test('(b) a token that never arrives: fallback after the poll, no POST', async () => {
-      const ctx = await loadIntake({ turnstile: 'stuck' });
+      const ctx = await loadIntake({ query, turnstile: 'stuck' });
       try {
         await run(ctx.w);
         assert.equal(ctx.posts.length, 0);
@@ -263,7 +265,7 @@ for (const [label, run, errId, formType] of [
 
     for (const [status, code] of [[403, 'http_403'], [429, 'http_429'], [500, 'http_5xx']]) {
       test(`(c/d) server ${status}: call and text fallback`, async () => {
-        const ctx = await loadIntake({ answer: { status, body: { error: 'Verification failed' } } });
+        const ctx = await loadIntake({ query, answer: { status, body: { error: 'Verification failed' } } });
         try {
           await run(ctx.w);
           assert.equal(ctx.posts.length, 1);
@@ -274,7 +276,7 @@ for (const [label, run, errId, formType] of [
     }
 
     test('(e) rejected fetch: fallback with email', async () => {
-      const ctx = await loadIntake({ answer: 'reject' });
+      const ctx = await loadIntake({ query, answer: 'reject' });
       try {
         await run(ctx.w);
         checkFallback(ctx.w, ctx.d.getElementById(errId), intakeErrors(ctx.w), formType, 'network', { email: true });
@@ -283,7 +285,7 @@ for (const [label, run, errId, formType] of [
     });
 
     test('400 field message is unchanged (no fallback, no event)', async () => {
-      const ctx = await loadIntake({ answer: { status: 400, body: { error: 'Please enter a valid email.' } } });
+      const ctx = await loadIntake({ query, answer: { status: 400, body: { error: 'Please enter a valid email.' } } });
       try {
         await run(ctx.w);
         const el = ctx.d.getElementById(errId);
@@ -294,7 +296,7 @@ for (const [label, run, errId, formType] of [
     });
 
     test('OUT_OF_AREA decline is unchanged', async () => {
-      const ctx = await loadIntake({ answer: { status: 400, body: { code: 'OUT_OF_AREA', error: "We aren't licensed in Ohio." } } });
+      const ctx = await loadIntake({ query, answer: { status: 400, body: { code: 'OUT_OF_AREA', error: "We aren't licensed in Ohio." } } });
       try {
         await run(ctx.w);
         assert.ok(ctx.d.getElementById(errId).classList.contains('hidden'));

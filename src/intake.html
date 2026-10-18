@@ -461,10 +461,10 @@
   .bundle-pill.added:hover { background: #1565a0 }
   [data-action]:active { transform: scale(0.97); }
   #quick-lead-link:hover { opacity: 1 !important; text-decoration: underline !important; }
-  /* A/B 'intake-short-form', arm 'short' (body.twa-intake-short): submit from
+  /* The short quote form (body.twa-intake-short, every visitor): submit from
      step 2. Steps 3 and 4 stay in the DOM (showStep() loops 1..4, the
-     offline-replay and draft code read their fields); the short arm just never
-     goes there. Control (no class) renders exactly today's page. */
+     offline-replay and draft code read their fields); the short form just never
+     goes there. ?twa_form=long (no class) renders the four-step form. */
   #short-submit { display: none; }
   body.twa-intake-short #short-submit { display: block; }
   body.twa-intake-short #step-2 > .btn-row,
@@ -826,8 +826,8 @@
       <a href="#" id="quick-lead-link" data-action="quick-lead" style="font-size:13px;color:var(--blue);text-decoration:none;opacity:0.85;transition:opacity .15s;">or we reach out for next steps &rarr;</a>
     </div>
     <div id="turnstile-quick" style="position:absolute;left:-9999px;"></div>
-    <!-- Short arm only (CSS above): the submit. The business-name field moves in
-         just above it (applyShortFormArm). Turnstile mounts here VISIBLY: an
+    <!-- Short form only (CSS above): the submit. The business-name field moves in
+         just above it (applyShortForm). Turnstile mounts here VISIBLY: an
          off-screen mount works for an invisible challenge and silently never
          returns a token if the sitekey ever serves an interactive one. -->
     <div id="short-submit">
@@ -1212,10 +1212,6 @@ function trackIntake(eventName, params) {
     // Verified home address: 'verified' | 'fallback' (Places down / no pick,
     // sent as address_verified=false) | 'pending' (not answered yet).
     address_verified: addressVerifiedState(),
-    // A/B 'intake-short-form': a test-specific param (the generic
-    // test_name/variant would mislabel the other live intake tests), so funnel
-    // steps, abandonment and intake_complete split by arm in GA4.
-    ab_short_form: getShortFormArm(),
     ...params,
   });
   if (window.CONFIG?.debug || new URLSearchParams(window.location.search).has('twa_debug')) {
@@ -1423,57 +1419,28 @@ function getTrackingIds() { return TWA.getTrackingIds(); }
 // an A/B readout. No assignment, no ab_exposure, no ab_addr_ref param, no
 // formData.ab_test any more. Do not re-register the name.
 
-// ── A/B 'intake-short-form' ─────────────────────────────────────────────────
-// control = today's four-step form, byte-for-byte: every short-arm branch below
-//           checks isShortFormArm().
-// short   = submit from step 2: name, email, phone and the verified home address
-//           on step 1, coverage on step 2 (plus Business Name when the cart is
-//           commercial), then "Get My Quote". Steps 3 and 4 are never shown.
-// Why: 47% of sessions that start the form never finish it, and the owner wants
-// clean abandonment-vs-lead-quality data before shortening it for everyone.
-// Uniform 50/50; promoting an arm to 100% is a code change, not a re-weight.
-// Short-arm leads carry formData.ab_test = 'intake-short-form.short'; control is
-// untagged (every /intake/ visitor is assigned at load, so an untagged lead after
-// launch is a control lead). intake_* events and the conversion push carry
-// ab_short_form=<arm>; exposure goes on ab_exposure.
-//
-// Same independent bucket as the retired intake-address-referrer test: the
-// 32-bit string hash of 'vid:test' through the murmur3 fmix32 finalizer. NOT
-// TWA.assignVariant, whose hashAssign % 2 is the parity of the character sum, so
-// every two-arm test there lands on the same split (dob-required and
-// intake-call-or-text are confounded with each other; this one is not).
-// Assigned lazily: trackIntake('intake_start') runs earlier in this script than
-// this block, and the hash is deterministic, so first use changes no bucket.
-// ?force_variant=control|short pins an arm (as TWA.assignVariant honours it), and
-// ?twa_form=long|short does the same for QA links. Without attribution.js (the
-// resilience stub) it pins control, as the stub does for every test.
-var shortFormArm;
-function shortFormBucket(visitorId) {
-  var str = visitorId + ':intake-short-form', h = 0;
-  for (var i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
-  h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b);
-  h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35);
-  h ^= h >>> 16;
-  return (h >>> 0) % 2;
-}
-function getShortFormArm() {
-  if (!shortFormArm) {
-    var arms = ['control', 'short'];
-    var params = null;
-    try { params = new URLSearchParams(window.location.search); } catch (e) {}
-    var force = params && params.get('force_variant');
-    var qa = params && ({ long: 'control', short: 'short' })[params.get('twa_form')];
-    if (force && arms.indexOf(force) !== -1) shortFormArm = force;
-    else if (qa) shortFormArm = qa;
-    else if (window.TWA && typeof TWA.hashAssign === 'function' && TWA.getVisitorId()) { // real attribution.js, not the stub
-      shortFormArm = arms[shortFormBucket(TWA.getVisitorId())];
-    } else shortFormArm = 'control';
+// ── Short quote form (owner, 2026-10-18) ────────────────────────────────────
+// Every visitor gets the short form: name, email, phone and the verified home
+// address on step 1, coverage on step 2 (plus Business Name when the cart is
+// commercial), then "Get My Quote" submits from step 2 (submitShort()). Steps 3
+// and 4 are never shown. Why: 47% of the visitors who started the four-step form
+// never finished it, and the owner chose the shorter route for everyone, with no
+// A/B ("no need for a b, go shorter route every time"). No assignment, no
+// ab_exposure, no formData.ab_test, no analytics param; the 'intake-short-form'
+// test name is retired, do not re-register it.
+// Steps 3 and 4 stay in the file: ?twa_form=long restores the four-step form,
+// exactly as it was before, for that ONE visit (QA), and rolling back for
+// everyone is a one-line change to isShortForm().
+// Read once at load, so one visit never switches forms part-way.
+var _shortForm;
+function isShortForm() {
+  if (_shortForm === undefined) {
+    try { _shortForm = new URLSearchParams(window.location.search).get('twa_form') !== 'long'; } catch (e) { _shortForm = true; }
   }
-  return shortFormArm;
+  return _shortForm;
 }
-function isShortFormArm() { return getShortFormArm() === 'short'; }
-(function applyShortFormArm() {
-  if (!isShortFormArm()) return;
+(function applyShortForm() {
+  if (!isShortForm()) return;
   document.body.classList.add('twa-intake-short');
   // Business Name sits with the coverage picker that decides whether it is needed.
   var biz = document.getElementById('biz-name-step1-group');
@@ -1484,12 +1451,6 @@ function isShortFormArm() { return getShortFormArm() === 'short'; }
     anchor.parentNode.insertBefore(biz, anchor);
   }
 })();
-TWA.pushExposure('intake-short-form', getShortFormArm());
-// Short-arm leads say so; control's payload stays today's.
-function tagShortFormData(formData) {
-  if (isShortFormArm()) formData.ab_test = 'intake-short-form.short';
-  return formData;
-}
 
 // ── Verified home address (owner, 2026-10-07) ───────────────────────────────
 // Step 3 asks for ONE "Home address" line. It is satisfied only by picking a
@@ -2450,8 +2411,8 @@ function initTurnstileOnReview() {
   if (!_turnstileSiteKey || turnstileWidgetId != null) return; // already rendered or no key
   if (!window.turnstile) return; // script not loaded yet
   try {
-    // The short arm submits from step 2, so its widget mounts there.
-    turnstileWidgetId = turnstile.render(isShortFormArm() ? '#turnstile-step2' : '#turnstile-container', {
+    // The short form submits from step 2, so its widget mounts there.
+    turnstileWidgetId = turnstile.render(isShortForm() ? '#turnstile-step2' : '#turnstile-container', {
       sitekey: _turnstileSiteKey,
       callback: (token) => { turnstileToken = token; },
       'expired-callback': () => { turnstileToken = null; },
@@ -2460,7 +2421,7 @@ function initTurnstileOnReview() {
     });
   } catch (e) { console.warn('[Turnstile] Render failed:', e); }
 }
-// Short arm: render the widget on reaching step 2. The sitekey and the script
+// Short form: render the widget on reaching step 2. The sitekey and the script
 // load asynchronously and step 2 can come seconds after page load (step 4 never
 // did), so retry, BOUNDED (~6s): an unbounded chain keeps a timer alive for the
 // life of the tab when the config genuinely fails. submitIntake() still handles
@@ -2899,10 +2860,10 @@ function toggleProd(el) {
   // Reflect DOB-required (life) on the asterisk immediately on selection, not
   // only when the product-questions step later renders. Ticket 4adb868f.
   updateDobRequiredStar();
-  // Short arm: there is no step 3 to ask for the business name, so show it the
+  // Short form: there is no step 3 to ask for the business name, so show it the
   // moment the cart turns commercial, and hide it again if it stops being
   // (commercial arrivals keep it, as initGrid showed it up front).
-  if (isShortFormArm()) {
+  if (isShortForm()) {
     const grp = document.getElementById('biz-name-step1-group');
     if (grp && cartNeedsBusinessName(selectedProducts)) grp.style.display = '';
     else if (grp && getEntryLine() !== 'commercial') grp.style.display = 'none';
@@ -2994,7 +2955,7 @@ async function validateContacts() {
 
 // ── Step navigation ─────────────────────────────────────────────────────────
 const TIME_ESTIMATES = { 1: 'About 3 minutes left', 2: 'About 2 minutes left', 3: 'About 1 minute left', 4: 'Almost done!' };
-// Short arm: step 2 is the last one.
+// Short form: step 2 is the last one.
 const TIME_ESTIMATES_SHORT = { 1: 'About 1 minute left', 2: 'Almost done!' };
 
 function showStep(n) {
@@ -3011,7 +2972,7 @@ function showStep(n) {
   });
   // Time estimate
   const timeEl = document.getElementById('time-estimate');
-  if (timeEl) timeEl.textContent = (isShortFormArm() ? TIME_ESTIMATES_SHORT : TIME_ESTIMATES)[n] || '';
+  if (timeEl) timeEl.textContent = (isShortForm() ? TIME_ESTIMATES_SHORT : TIME_ESTIMATES)[n] || '';
   // Step enter animation
   const stepEl = document.getElementById('step-' + n);
   if (stepEl) {
@@ -3029,7 +2990,7 @@ function showStep(n) {
   if (n >= 2) ensureIntakeMaps();
   if (n === 3) { renderProductQuestions(); bindIntakeAutocompletes(); }
   if (n === 4) { renderReview(); initTurnstileOnReview(); }
-  if (n === 2 && isShortFormArm()) initTurnstileOnStep2();
+  if (n === 2 && isShortForm()) initTurnstileOnStep2();
   window.scrollTo({ top: 0, behavior: 'smooth' });
   // Track step enter (includes virtual pageview for GA4 funnel reports)
   trackStepEnter(n);
@@ -3046,9 +3007,9 @@ async function nextStep(from) {
     if (!isValidEmail(v('i_email'))) { err.textContent = 'Please enter a valid email address.'; err.classList.remove('hidden'); trackValidationError(1, 'invalid_email'); return; }
     if (!isValidPhone(v('i_phone'))) { err.textContent = 'Please enter a valid 10-digit phone number.'; err.classList.remove('hidden'); trackValidationError(1, 'invalid_phone'); return; }
     // Business name is required up front for commercial-line arrivals (field is visible only then).
-    // (The short arm moved the field onto step 2, where submitShort() checks it.)
+    // (The short form moved the field onto step 2, where submitShort() checks it.)
     const bizGrp = document.getElementById('biz-name-step1-group');
-    if (bizGrp && !isShortFormArm() && bizGrp.style.display !== 'none' && !v('i_biz_name_1')) {
+    if (bizGrp && !isShortForm() && bizGrp.style.display !== 'none' && !v('i_biz_name_1')) {
       err.textContent = 'Please enter your business name.'; err.classList.remove('hidden'); trackValidationError(1, 'missing_business_name'); return;
     }
     // The verified home address runs LAST of the field checks, so a refusal
@@ -3205,14 +3166,14 @@ document.getElementById('i_dob').addEventListener('input', function() {
 
 // ── Product-specific questions (Step 3) ─────────────────────────────────────
 const COMMERCIAL_PRODUCTS = ['bop','cgl','commercial_auto','workers_comp','cyber','eo','bonds','builders_risk'];
-// The short arm's business-name rule: SAGE's commercial list (CL_PRODUCTS in
+// The short form's business-name rule: SAGE's commercial list (CL_PRODUCTS in
 // sage-server src/lib/product-lines.js, mirrored here for when the rules fetch
 // fails) OR the server's own RULES.productLines (GET /api/intake/rules).
 // COMMERCIAL_PRODUCTS is short by ids the form offers (special_event,
 // commercial_property, farm_ranch), and SAGE refuses a commercial cart without a
 // business name; with no step 3 there would be no field on screen to fix it.
-// (Control keeps COMMERCIAL_PRODUCTS: its step 3 only renders Business Info for
-// that list.)
+// (The four-step ?twa_form=long form keeps COMMERCIAL_PRODUCTS: its step 3 only
+// renders Business Info for that list.)
 const SAGE_CL_PRODUCTS = ['bop', 'cgl', 'commercial_auto', 'workers_comp', 'cyber', 'eo',
   'commercial_property', 'commercial_umbrella', 'professional_liability',
   'contractors', 'garage', 'inland_marine', 'crime', 'bonds',
@@ -3221,11 +3182,11 @@ function cartNeedsBusinessName(ids) {
   return (ids || []).some(id => SAGE_CL_PRODUCTS.includes(id) || COMMERCIAL_PRODUCTS.includes(id)
     || !!(RULES && RULES.productLines && RULES.productLines[id] === 'commercial'));
 }
-// The business name every payload sends. Control: as today. Short arm: only while
-// the field is asked for (a commercial cart or a commercial arrival), so a name
-// typed for 'bop' is not sent once the cart has turned personal.
+// The business name every payload sends. Four-step form: as it always did. Short
+// form: only while the field is asked for (a commercial cart or a commercial
+// arrival), so a name typed for 'bop' is not sent once the cart has turned personal.
 function businessNameToSend() {
-  if (!isShortFormArm()) return v('i_biz_name') || v('i_biz_name_1');
+  if (!isShortForm()) return v('i_biz_name') || v('i_biz_name_1');
   return (cartNeedsBusinessName(selectedProducts) || getEntryLine() === 'commercial') ? v('i_biz_name_1') : '';
 }
 const PROPERTY_PRODUCTS = ['flood','earthquake','dwelling_fire'];
@@ -4052,8 +4013,8 @@ function noteTurnstileError(code) {
 function turnstileErrorCode() { return _turnstileErrorFamily ? 'turnstile_' + _turnstileErrorFamily : 'turnstile_timeout'; }
 
 // ── Submit ───────────────────────────────────────────────────────────────────
-// Short arm: "Get My Quote" on step 2. It runs step 2's own checks (nextStep(2)
-// never runs on this arm) and then the same submit as the long form.
+// Short form: "Get My Quote" on step 2. It runs step 2's own checks (nextStep(2)
+// never runs on the short form) and then the same submit as the long form.
 async function submitShort() {
   const err = document.getElementById('step2-error');
   if (!selectedProducts.length) { err.textContent = 'Please select at least one type of coverage.'; err.classList.remove('hidden'); trackValidationError(2, 'no_products'); return; }
@@ -4072,9 +4033,9 @@ async function submitShort() {
 }
 
 async function submitIntake() {
-  // The short arm submits from step 2 (submitShort): its own button, its own
+  // The short form submits from step 2 (submitShort): its own button, its own
   // error box (an error written to the hidden #step4-error is a silent dead end).
-  const SHORT = isShortFormArm();
+  const SHORT = isShortForm();
   const SUBMIT_STEP = SHORT ? 2 : 4;
   const SUBMIT_LABEL = SHORT ? 'Get My Quote' : 'Submit Quote Request';
   const btn = document.getElementById(SHORT ? 'submit-btn-short' : 'submit-btn');
@@ -4082,7 +4043,7 @@ async function submitIntake() {
 
   // Require Business Name when a commercial product is selected (captured on
   // Step 1 for commercial-line arrivals, else in the Step 3 Business Info section;
-  // the short arm's field sits on step 2).
+  // the short form's field sits on step 2).
   const hasCommercialSubmit = SHORT ? cartNeedsBusinessName(selectedProducts) : selectedProducts.some(p => COMMERCIAL_PRODUCTS.includes(p));
   const bizNameVal = v('i_biz_name') || v('i_biz_name_1');
   if (hasCommercialSubmit && !bizNameVal) {
@@ -4125,7 +4086,7 @@ async function submitIntake() {
     }
   }
 
-  const formData = tagShortFormData(addVerifiedAddressFormData(buildRiskFormData()));
+  const formData = addVerifiedAddressFormData(buildRiskFormData());
 
   // Add source tracking, UTM attribution, and agent assignment
   const urlParams = new URLSearchParams(window.location.search);
@@ -4237,7 +4198,6 @@ async function submitIntake() {
           conversion_products: selectedProducts.join(','),
           conversion_reference: data.reference,
           conversion_source: srcParam || 'intake',
-          ab_short_form: getShortFormArm(),
         });
       }
     } else {

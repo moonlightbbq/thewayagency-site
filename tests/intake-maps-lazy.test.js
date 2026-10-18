@@ -17,10 +17,10 @@ const { JSDOM } = require('jsdom');
 const HTML = fs.readFileSync(path.join(__dirname, '..', 'src', 'intake.html'), 'utf8');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-async function loadIntake() {
+async function loadIntake(query = '') {
   const configCalls = [];
   const dom = new JSDOM(HTML, {
-    runScripts: 'dangerously', url: 'https://www.thewayagency.com/intake/',
+    runScripts: 'dangerously', url: 'https://www.thewayagency.com/intake/' + query,
     beforeParse(w) {
       w.fetch = (u) => {
         const url = String(u);
@@ -63,7 +63,8 @@ describe('/intake/ Google Maps on demand', () => {
       assert.ok(s[0].async);
       assert.match(s[0].src, /loading=async/);
       assert.match(s[0].src, /callback=_initIntakeAutocomplete/);
-      w.showStep(1); w.showStep(2); w.showStep(3);
+      // Every visitor gets the short form: steps 1 and 2 only, back and forth.
+      w.showStep(1); w.showStep(2); w.showStep(1); w.showStep(2);
       await sleep(30);
       assert.equal(mapsScripts(w).length, 1);
       assert.equal(configCalls.length, 1, 'Turnstile and Maps share one /api/config request');
@@ -71,7 +72,7 @@ describe('/intake/ Google Maps on demand', () => {
   });
 
   test('callback binds the inputs on screen; 3 -> 2 -> 3 binds the re-rendered property address once and never re-binds the mailing address', async () => {
-    const { w } = await loadIntake();
+    const { w } = await loadIntake('?twa_form=long'); // step 3's property address: four-step only
     try {
       w.eval("selectedProducts = ['homeowners']");
       w.showStep(2);
@@ -116,7 +117,8 @@ describe('/intake/ Google Maps on demand', () => {
       await sleep(30);
       assert.equal(mapsScripts(w).length, 0);
       fail = false;
-      w.showStep(3);
+      w.showStep(1); // "Back", then "Continue" again (the short form has no step 3)
+      w.showStep(2);
       await sleep(30);
       assert.equal(mapsScripts(w).length, 1);
     } finally { w.close(); }

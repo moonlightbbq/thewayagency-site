@@ -1,9 +1,10 @@
 /**
- * A/B 'intake-short-form': control is today's four-step quote form; the short
- * arm submits from step 2 (contact + verified home address on step 1, coverage
- * on step 2, "Get My Quote"). 47% of sessions that start the form never finish
- * it; the owner wants abandonment-vs-lead-quality data before shortening it for
- * everyone, so this ships as a 50/50 test, not a straight change.
+ * The short quote form (owner, 2026-10-18: "no need for a b, go shorter route
+ * every time"). Every /intake/ visitor submits from step 2: contact + verified
+ * home address on step 1, coverage on step 2, "Get My Quote". There is no A/B:
+ * no assignment, no ab_exposure, no ab_short_form param, no formData.ab_test.
+ * ?twa_form=long restores the four-step form for one visit (QA / rollback), and
+ * must behave exactly as the four-step form always did.
  *
  * Drives the REAL src/intake.html in jsdom with src/js/attribution.js inlined and
  * google.maps.places mocked; every fetch is answered locally (nothing reaches
@@ -22,6 +23,8 @@ const HTML = fs.readFileSync(path.join(ROOT, 'src', 'intake.html'), 'utf8');
 const ATTR = fs.readFileSync(path.join(ROOT, 'src', 'js', 'attribution.js'), 'utf8');
 const ATTR_TAG = '<script src="/src/js/attribution.js"></script>';
 const PAGE = HTML.replace(ATTR_TAG, '<script>' + ATTR + '</script>');
+const LONG = '?twa_form=long';
+const TOKEN = 'test-token-test-token-test-token-test-token';
 
 // GET /api/intake/rules as SAGE serves it. special_event is COMMERCIAL here and
 // absent from the page's local COMMERCIAL_PRODUCTS list.
@@ -30,21 +33,6 @@ const RULES = {
   productLines: { auto: 'personal', homeowners: 'personal', renters: 'personal', bop: 'commercial', special_event: 'commercial' },
   stateNames: { KY: 'Kentucky', OH: 'Ohio' }, declineTemplate: "We aren't licensed in {{STATE}}.", stateToken: '{{STATE}}',
 };
-
-// The page's bucket, reimplemented independently: 32-bit string hash of
-// 'vid:intake-short-form' through the murmur3 fmix32 finalizer, % 2.
-function bucket(vid) {
-  const str = vid + ':intake-short-form';
-  let h = 0;
-  for (let i = 0; i < str.length; i++) { h = ((h << 5) - h) + str.charCodeAt(i); h |= 0; }
-  h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b);
-  h ^= h >>> 13; h = Math.imul(h, 0xc2b2ae35);
-  h ^= h >>> 16;
-  return (h >>> 0) % 2;
-}
-function vidFor(arm) {
-  for (let i = 0; ; i++) { const vid = 'testvid' + i; if (['control', 'short'][bucket(vid)] === arm) return vid; }
-}
 
 function place({ num = '100', route = 'Main St', city = 'Louisville', state = 'KY', zip = '40202' } = {}) {
   return {
@@ -61,14 +49,16 @@ function place({ num = '100', route = 'Main St', city = 'Louisville', state = 'K
   };
 }
 
-async function loadIntake({ arm, query = '', rules = true, stub = false } = {}) {
+// vid: a twa_vid to seed (the form must not depend on it). postFails: POST
+// /api/intake rejects with a network error (the offline-queue path).
+async function loadIntake({ vid, query = '', rules = true, stub = false, postFails = false } = {}) {
   const posts = [], renders = [], autocompletes = [];
   // stub: the page as served without attribution.js (the resilience stub runs).
   const dom = new JSDOM(stub ? HTML : PAGE, {
     runScripts: 'dangerously',
     url: 'https://www.thewayagency.com/intake/' + query,
     beforeParse(w) {
-      if (arm) w.localStorage.setItem('twa_vid', vidFor(arm));
+      if (vid) w.localStorage.setItem('twa_vid', vid);
       w.google = { maps: { places: { Autocomplete: class {
         constructor(input) { this.input = input; this.listeners = {}; this._place = {}; autocompletes.push(this); }
         addListener(ev, fn) { this.listeners[ev] = fn; }
@@ -80,6 +70,7 @@ async function loadIntake({ arm, query = '', rules = true, stub = false } = {}) 
         if (href.includes('/api/intake/track')) return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({ ok: true, sessionId: 's1' }) });
         if (href.endsWith('/api/intake')) {
           posts.push(JSON.parse(init.body));
+          if (postFails) return Promise.reject(new TypeError('Failed to fetch'));
           return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({ ok: true, reference: 'TEST' }) });
         }
         return Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve({}) });
@@ -111,102 +102,90 @@ async function throughStep1(w, homeAc, p = place()) {
   await w.nextStep(1);
   return { advanced: !$(w, 'step-2').classList.contains('hidden'), error: $(w, 'step1-error').textContent };
 }
-const exposures = (w) => (w.dataLayer || []).filter((e) => e && e.event === 'ab_exposure' && e.test_name === 'intake-short-form');
+const shortExposures = (w) => (w.dataLayer || []).filter((e) => e && e.event === 'ab_exposure' && e.test_name === 'intake-short-form');
 const gtagEvents = (w) => (w.dataLayer || []).filter((e) => e && e[0] === 'event').map((e) => [e[1], JSON.parse(JSON.stringify(e[2] || {}))]);
+const isShortPage = (w) => w.document.body.classList.contains('twa-intake-short')
+  && w.getComputedStyle($(w, 'short-submit')).display === 'block'
+  && !!$(w, 'biz-name-step1-group').closest('#step-2');
 
-describe('assignment and exposure', () => {
-  test('a visitor is bucketed by fmix32(hash(vid:test)) % 2, with one exposure', async () => {
-    for (const arm of ['control', 'short']) {
-      const { w } = await loadIntake({ arm });
+describe('every visitor gets the short form (no A/B)', () => {
+  test('a fixed, a random, no visitor id and the no-attribution.js stub all get the short form', async () => {
+    const cases = [{ vid: 'test-vid-control-2' }, { vid: 'testvid0' }, { vid: 'testvid1' },
+      { vid: 'rand-' + Math.random().toString(36).slice(2) }, {}, { stub: true }];
+    for (const c of cases) {
+      const { w } = await loadIntake(c);
       try {
-        assert.equal(w.getShortFormArm(), arm);
-        const ex = exposures(w);
-        assert.equal(ex.length, 1);
-        assert.equal(ex[0].variant, arm);
-        assert.equal(ex[0].visitor_id, vidFor(arm));
+        assert.equal(w.isShortForm(), true, JSON.stringify(c));
+        assert.equal(isShortPage(w), true, JSON.stringify(c));
       } finally { w.close(); }
     }
   });
 
-  test('the arm is independent of dob-required and intake-call-or-text (each cell 25% ± 2%)', async () => {
-    const { w } = await loadIntake({ arm: 'control' });
+  test('no assignment and no ab_exposure for intake-short-form', async () => {
+    const { w } = await loadIntake({ vid: 'testvid1' });
     try {
-      for (const other of ['dob-required', 'intake-call-or-text']) {
-        const cells = [0, 0, 0, 0];
-        const N = 40000;
-        for (let i = 0; i < N; i++) {
-          const vid = 'v' + i.toString(36) + 'x' + (i * 7919).toString(36);
-          cells[bucket(vid) * 2 + w.TWA.hashAssign(vid, other, 2)]++;
-        }
-        for (const c of cells) assert.ok(Math.abs(c / N - 0.25) < 0.02, `${other}: ${cells.join('/')}`);
-      }
+      assert.equal(shortExposures(w).length, 0);
+      for (const fn of ['getShortFormArm', 'isShortFormArm', 'shortFormBucket', 'tagShortFormData']) assert.equal(typeof w[fn], 'undefined', fn);
+      // The other intake tests still expose.
+      const ex = (w.dataLayer || []).filter((e) => e && e.event === 'ab_exposure').map((e) => e.test_name);
+      assert.ok(ex.includes('dob-required') && ex.includes('intake-call-or-text'));
+      assert.doesNotMatch(HTML, /ab_short_form|formData\.ab_test\s*=|pushExposure\('intake-short-form'|fmix32/);
     } finally { w.close(); }
   });
 
-  test('the id the four-step-form harnesses pin (tests/helpers/intake-arm.js) buckets to control', () => {
-    assert.equal(bucket(require('./helpers/intake-arm').CONTROL_VID), 0);
-  });
-
-  test('without attribution.js (the stub) every visitor is control', async () => {
-    const { w } = await loadIntake({ arm: 'short', stub: true });
-    try { assert.equal(w.getShortFormArm(), 'control'); } finally { w.close(); }
-  });
-
-  test('?force_variant= and ?twa_form= pin either arm', async () => {
-    for (const [query, arm] of [['?force_variant=short', 'short'], ['?force_variant=control', 'control'], ['?twa_form=short', 'short'], ['?twa_form=long', 'control']]) {
-      const { w } = await loadIntake({ arm: arm === 'short' ? 'control' : 'short', query });
-      try { assert.equal(w.getShortFormArm(), arm, query); } finally { w.close(); }
+  test('?force_variant= no longer picks a form', async () => {
+    for (const query of ['?force_variant=control', '?force_variant=short']) {
+      const { w } = await loadIntake({ query });
+      try { assert.equal(isShortPage(w), true, query); } finally { w.close(); }
     }
   });
-});
 
-describe('what each arm sees', () => {
-  test('control: today\'s page (no class, business name on step 1, Continue and quick lead on step 2)', async () => {
-    const { w } = await loadIntake({ arm: 'control' });
-    try {
-      assert.equal(w.document.body.classList.contains('twa-intake-short'), false);
-      assert.ok($(w, 'biz-name-step1-group').closest('#step-1'));
-      assert.notEqual(w.getComputedStyle($(w, 'short-submit')).display, 'block');
-      assert.ok($(w, 'quick-lead-link'));
-    } finally { w.close(); }
+  test('sage-server\'s contract test still finds the short form by its submit function', () => {
+    assert.match(HTML, /function submitShort\(/);
   });
 
-  test('short: the step-2 submit shows, Continue and steps 3-4 do not, business name moves to step 2', async () => {
-    const { w } = await loadIntake({ arm: 'short' });
+  test('the step-2 submit shows, Continue, quick lead and steps 3-4 do not, business name sits on step 2', async () => {
+    const { w } = await loadIntake();
     try {
-      assert.equal(w.document.body.classList.contains('twa-intake-short'), true);
       assert.equal(w.getComputedStyle($(w, 'short-submit')).display, 'block');
       assert.equal(w.getComputedStyle(w.document.querySelector('#step-2 > .btn-row')).display, 'none');
-      assert.equal(w.getComputedStyle(w.document.querySelector('.progress-label[data-step="3"]')).display, 'none');
+      assert.equal(w.getComputedStyle($(w, 'quick-lead-link')).display, 'none');
+      for (const sel of ['.progress-label[data-step="3"]', '.progress-label[data-step="4"]', '.progress-seg[data-step="3"]', '.progress-seg[data-step="4"]']) {
+        assert.equal(w.getComputedStyle(w.document.querySelector(sel)).display, 'none', sel);
+      }
       assert.ok($(w, 'biz-name-step1-group').closest('#step-2'));
     } finally { w.close(); }
   });
 
-  test('short: Turnstile renders on step 2, visibly; control still renders on step 4', async () => {
+  test('Turnstile renders on step 2, visibly', async () => {
+    const { w, renders } = await loadIntake();
     // showStep(>=2) starts the async Maps prefetch; let it settle before close().
-    const settle = () => new Promise((r) => setTimeout(r, 50));
-    let { w, renders } = await loadIntake({ arm: 'short' });
-    try { w.showStep(2); await settle(); assert.deepEqual(renders, ['#turnstile-step2']); } finally { w.close(); }
-    ({ w, renders } = await loadIntake({ arm: 'control' }));
+    try { w.showStep(2); await new Promise((r) => setTimeout(r, 50)); assert.deepEqual(renders, ['#turnstile-step2']); } finally { w.close(); }
+  });
+
+  test('the time estimate counts two steps, not four', async () => {
+    const { w } = await loadIntake();
     try {
-      w.showStep(2); await settle(); assert.deepEqual(renders, []);
-      w.eval("selectedProducts = ['renters']");
-      w.showStep(4); await settle(); assert.deepEqual(renders, ['#turnstile-container']);
+      w.showStep(1);
+      assert.equal($(w, 'time-estimate').textContent, 'About 1 minute left');
+      w.showStep(2);
+      await new Promise((r) => setTimeout(r, 50));
+      assert.equal($(w, 'time-estimate').textContent, 'Almost done!');
     } finally { w.close(); }
   });
 });
 
 describe('the short submit', () => {
-  test('step 1 then "Get My Quote" posts the lead from step 2, tagged with the arm', async () => {
-    const { w, posts, homeAc } = await loadIntake({ arm: 'short' });
+  test('step 1 then "Get My Quote" posts the lead from step 2, with no test tag', async () => {
+    const { w, posts, homeAc } = await loadIntake();
     try {
       const r = await throughStep1(w, homeAc);
       assert.equal(r.advanced, true, r.error);
-      w.eval("selectedProducts = ['renters']; turnstileToken = 'test-token-test-token-test-token-test-token'");
+      w.eval(`selectedProducts = ['renters']; turnstileToken = '${TOKEN}'`);
       await w.submitShort();
       assert.equal(posts.length, 1);
       const body = posts[0];
-      assert.equal(body.formData.ab_test, 'intake-short-form.short');
+      assert.ok(!('ab_test' in body.formData));
       assert.deepEqual(body.products, ['renters']);
       assert.equal(body.address, '100 Main St');
       assert.equal(body.state, 'KY');
@@ -216,21 +195,8 @@ describe('the short submit', () => {
     } finally { w.close(); }
   });
 
-  test('control\'s step-4 submit is untagged', async () => {
-    const { w, posts, homeAc } = await loadIntake({ arm: 'control' });
-    try {
-      const r = await throughStep1(w, homeAc);
-      assert.equal(r.advanced, true, r.error);
-      w.eval("selectedProducts = ['renters']; turnstileToken = 'test-token-test-token-test-token-test-token'");
-      w.showStep(4);
-      await w.submitIntake();
-      assert.equal(posts.length, 1);
-      assert.ok(!('ab_test' in posts[0].formData));
-    } finally { w.close(); }
-  });
-
   test('an empty cart holds the visitor on step 2 with the error on screen', async () => {
-    const { w, posts, homeAc } = await loadIntake({ arm: 'short' });
+    const { w, posts, homeAc } = await loadIntake();
     try {
       await throughStep1(w, homeAc);
       await w.submitShort();
@@ -241,10 +207,10 @@ describe('the short submit', () => {
   });
 
   test('a cart only the server calls commercial asks for the business name, then sends it', async () => {
-    const { w, posts, homeAc } = await loadIntake({ arm: 'short' });
+    const { w, posts, homeAc } = await loadIntake();
     try {
       await throughStep1(w, homeAc);
-      w.eval("selectedProducts = ['special_event']; turnstileToken = 'test-token-test-token-test-token-test-token'");
+      w.eval(`selectedProducts = ['special_event']; turnstileToken = '${TOKEN}'`);
       await w.submitShort();
       assert.equal(posts.length, 0);
       assert.match($(w, 'step2-error').textContent, /business name/);
@@ -257,10 +223,10 @@ describe('the short submit', () => {
   });
 
   test('a personal cart is never asked for a business name', async () => {
-    const { w, posts, homeAc } = await loadIntake({ arm: 'short' });
+    const { w, posts, homeAc } = await loadIntake();
     try {
       await throughStep1(w, homeAc);
-      w.eval("selectedProducts = ['auto']; turnstileToken = 'test-token-test-token-test-token-test-token'");
+      w.eval(`selectedProducts = ['auto']; turnstileToken = '${TOKEN}'`);
       await w.submitShort();
       assert.equal(posts.length, 1);
       assert.ok(!posts[0].businessName);
@@ -268,13 +234,13 @@ describe('the short submit', () => {
   });
 
   test('an out-of-area personal cart is declined at the step-2 submit, nothing posted', async () => {
-    const { w, posts, homeAc } = await loadIntake({ arm: 'short' });
+    const { w, posts, homeAc } = await loadIntake();
     try {
       // A bare /intake/ visitor has no line at step 1, so Ohio passes step 1 and the
       // cart is the first thing that can decide it.
       const r = await throughStep1(w, homeAc, place({ city: 'Columbus', state: 'OH', zip: '43004' }));
       assert.equal(r.advanced, true, r.error);
-      w.eval("selectedProducts = ['renters']; turnstileToken = 'test-token-test-token-test-token-test-token'");
+      w.eval(`selectedProducts = ['renters']; turnstileToken = '${TOKEN}'`);
       await w.submitShort();
       assert.equal(posts.length, 0);
       assert.equal($(w, 'step-confirm').classList.contains('hidden'), true);
@@ -283,9 +249,9 @@ describe('the short submit', () => {
   });
 });
 
-describe('the short arm\'s business name', () => {
+describe('the short form\'s business name', () => {
   test('picking a commercial tile shows the field; leaving the cart personal hides it again', async () => {
-    const { w, homeAc } = await loadIntake({ arm: 'short' });
+    const { w, homeAc } = await loadIntake();
     try {
       await throughStep1(w, homeAc);
       const tile = (pid) => w.document.querySelector(`.product-opt[data-pid="${pid}"]`);
@@ -297,59 +263,168 @@ describe('the short arm\'s business name', () => {
     } finally { w.close(); }
   });
 
-  test('with the rules fetch down, a special-event cart still asks for the business name', async () => {
-    const { w, posts, homeAc } = await loadIntake({ arm: 'short', rules: false });
+  test('with the rules fetch down, a special-event cart shows the field on step 2, then posts the name', async () => {
+    const { w, posts, homeAc } = await loadIntake({ rules: false });
     try {
       await throughStep1(w, homeAc);
-      w.eval("selectedProducts = ['special_event']; turnstileToken = 'test-token-test-token-test-token-test-token'");
+      w.eval(`selectedProducts = ['special_event']; turnstileToken = '${TOKEN}'`);
       await w.submitShort();
       assert.equal(posts.length, 0);
       assert.match($(w, 'step2-error').textContent, /business name/);
+      const grp = $(w, 'biz-name-step1-group');
+      assert.notEqual(grp.style.display, 'none');
+      assert.ok(grp.closest('#step-2'), 'the field the error asks for is on the step the visitor is on');
+      fill(w, { i_biz_name_1: 'Fixture Fairs LLC' });
+      await w.submitShort();
+      assert.equal(posts.length, 1);
+      assert.equal(posts[0].businessName, 'Fixture Fairs LLC');
     } finally { w.close(); }
   });
 
   test('a name typed for a commercial cart is not sent once the cart is personal', async () => {
-    const { w, posts, homeAc } = await loadIntake({ arm: 'short' });
+    const { w, posts, homeAc } = await loadIntake();
     try {
       await throughStep1(w, homeAc);
       fill(w, { i_biz_name_1: 'Fixture Shop LLC' });
-      w.eval("selectedProducts = ['auto']; turnstileToken = 'test-token-test-token-test-token-test-token'");
+      w.eval(`selectedProducts = ['auto']; turnstileToken = '${TOKEN}'`);
       await w.submitShort();
       assert.equal(posts.length, 1);
       assert.ok(!posts[0].businessName);
     } finally { w.close(); }
   });
 
-  test('the time estimate counts two steps, not four', async () => {
-    const { w } = await loadIntake({ arm: 'short' });
+  // SAGE_CL_PRODUCTS mirrors CL_PRODUCTS in sage-server src/lib/product-lines.js
+  // (SAGE refuses a commercial cart without a business name). Every commercial
+  // tile the form offers must either be in it, or be listed here with the reason
+  // SAGE does not need a business name for it. A new commercial tile fails this
+  // test until someone decides which.
+  const OFFERED_COMMERCIAL_NOT_SAGE_CL = {
+    // The catalog groups Dwelling Fire (DP-1/DP-3 landlord policy on a 1-4 family
+    // home) under commercial, but SAGE's CL_PRODUCTS treats it as PERSONAL, so
+    // SAGE requires no business name for it.
+    dwelling_fire: 'personal in SAGE',
+  };
+  test('SAGE_CL_PRODUCTS covers COMMERCIAL_PRODUCTS and every commercial tile the form offers', async () => {
+    const { w } = await loadIntake();
     try {
-      w.showStep(2);
-      await new Promise((r) => setTimeout(r, 50));
-      assert.equal($(w, 'time-estimate').textContent, 'Almost done!');
+      const sageCl = w.eval('SAGE_CL_PRODUCTS');
+      const local = w.eval('COMMERCIAL_PRODUCTS');
+      for (const id of local) assert.ok(sageCl.includes(id), `COMMERCIAL_PRODUCTS has ${id}, SAGE_CL_PRODUCTS does not`);
+      const offered = w.eval("PRODUCTS.filter((p) => p.line === 'commercial').map((p) => p.id)");
+      assert.ok(offered.length > 0);
+      for (const id of offered) {
+        assert.ok(sageCl.includes(id) || id in OFFERED_COMMERCIAL_NOT_SAGE_CL,
+          `commercial tile '${id}' is in neither SAGE_CL_PRODUCTS nor the exception list: decide whether SAGE needs a business name for it`);
+      }
+      // The exceptions stay true exceptions (offered as commercial, not in the mirror).
+      for (const id of Object.keys(OFFERED_COMMERCIAL_NOT_SAGE_CL)) {
+        assert.ok(offered.includes(id) && !sageCl.includes(id), `stale exception '${id}'`);
+      }
     } finally { w.close(); }
   });
 });
 
-describe('analytics carry the arm', () => {
-  test('intake_* funnel events carry ab_short_form', async () => {
-    const { w, homeAc } = await loadIntake({ arm: 'short' });
+describe('analytics carry no test param', () => {
+  test('intake_* funnel events carry no ab_short_form', async () => {
+    const { w, homeAc } = await loadIntake();
     try {
       await throughStep1(w, homeAc);
       const evs = gtagEvents(w).filter(([n]) => /^intake_/.test(n));
       assert.ok(evs.length > 0);
-      for (const [name, params] of evs) assert.equal(params.ab_short_form, 'short', name);
+      for (const [name, params] of evs) assert.ok(!('ab_short_form' in params), name);
     } finally { w.close(); }
   });
 
-  test('the conversion push carries ab_short_form', async () => {
-    const { w, homeAc } = await loadIntake({ arm: 'short' });
+  test('the conversion push carries no ab_short_form', async () => {
+    const { w, homeAc } = await loadIntake();
     try {
       await throughStep1(w, homeAc);
-      w.eval("selectedProducts = ['renters']; turnstileToken = 'test-token-test-token-test-token-test-token'");
+      w.eval(`selectedProducts = ['renters']; turnstileToken = '${TOKEN}'`);
       await w.submitShort();
       const conv = (w.dataLayer || []).find((e) => e && e.event === 'conversion' && e.conversion_type === 'quote_request');
       assert.ok(conv);
-      assert.equal(conv.ab_short_form, 'short');
+      assert.ok(!('ab_short_form' in conv));
     } finally { w.close(); }
+  });
+});
+
+describe('?twa_form=long: the four-step form, as it always was', () => {
+  test('no class, business name on step 1, Continue and quick lead on step 2, four-step time estimate', async () => {
+    const { w } = await loadIntake({ query: LONG });
+    try {
+      assert.equal(w.isShortForm(), false);
+      assert.equal(w.document.body.classList.contains('twa-intake-short'), false);
+      assert.ok($(w, 'biz-name-step1-group').closest('#step-1'));
+      assert.notEqual(w.getComputedStyle($(w, 'short-submit')).display, 'block');
+      assert.notEqual(w.getComputedStyle(w.document.querySelector('#step-2 > .btn-row')).display, 'none');
+      assert.notEqual(w.getComputedStyle($(w, 'quick-lead-link')).display, 'none');
+      w.showStep(1);
+      assert.equal($(w, 'time-estimate').textContent, 'About 3 minutes left');
+    } finally { w.close(); }
+  });
+
+  test('Turnstile renders on step 4, not step 2', async () => {
+    const settle = () => new Promise((r) => setTimeout(r, 50));
+    const { w, renders } = await loadIntake({ query: LONG });
+    try {
+      w.showStep(2); await settle(); assert.deepEqual(renders, []);
+      w.eval("selectedProducts = ['renters']");
+      w.showStep(4); await settle(); assert.deepEqual(renders, ['#turnstile-container']);
+    } finally { w.close(); }
+  });
+
+  test('the step-4 submit is untagged', async () => {
+    const { w, posts, homeAc } = await loadIntake({ query: LONG });
+    try {
+      const r = await throughStep1(w, homeAc);
+      assert.equal(r.advanced, true, r.error);
+      w.eval(`selectedProducts = ['renters']; turnstileToken = '${TOKEN}'`);
+      w.showStep(4);
+      await w.submitIntake();
+      assert.equal(posts.length, 1);
+      assert.ok(!('ab_test' in posts[0].formData));
+    } finally { w.close(); }
+  });
+
+  test('a step-1 business name on a PERSONAL cart is still sent on the live POST', async () => {
+    const { w, posts, homeAc } = await loadIntake({ query: LONG });
+    try {
+      await throughStep1(w, homeAc);
+      fill(w, { i_biz_name_1: 'Fixture Longform LLC' });
+      w.eval(`selectedProducts = ['auto']; turnstileToken = '${TOKEN}'`);
+      w.showStep(4);
+      await w.submitIntake();
+      assert.equal(posts.length, 1);
+      assert.equal(posts[0].businessName, 'Fixture Longform LLC');
+    } finally { w.close(); }
+  });
+
+  test('the offline-queue payload sends businessName only from the step-3 field', async () => {
+    // cart, step-1 name, step-3 name (null: the field is not on the page)
+    const queued = async (cart, biz1, biz3) => {
+      const { w, posts, homeAc } = await loadIntake({ query: LONG, postFails: true });
+      try {
+        await throughStep1(w, homeAc);
+        fill(w, { i_biz_name_1: biz1 });
+        w.eval(`selectedProducts = ${JSON.stringify(cart)}; turnstileToken = '${TOKEN}'`);
+        w.showStep(3);
+        if (biz3 !== null) fill(w, { i_biz_name: biz3 });
+        else assert.equal($(w, 'i_biz_name'), null);
+        w.showStep(4);
+        await w.submitIntake();
+        assert.equal(posts.length, 1);
+        const q = JSON.parse(w.localStorage.getItem('twa_intake_queue'));
+        assert.ok(q && q.payload, 'queued');
+        return { live: posts[0], queued: q.payload };
+      } finally { w.close(); }
+    };
+    // Personal cart: the live POST sent the step-1 name, the queue does not.
+    const personal = await queued(['auto'], 'Fixture Step1 LLC', null);
+    assert.equal(personal.live.businessName, 'Fixture Step1 LLC');
+    assert.ok(!personal.queued.businessName);
+    // Commercial cart: the queue sends the step-3 field, not the step-1 one.
+    const commercial = await queued(['bop'], 'Fixture Step1 LLC', 'Fixture Step3 LLC');
+    assert.equal(commercial.live.businessName, 'Fixture Step3 LLC');
+    assert.equal(commercial.queued.businessName, 'Fixture Step3 LLC');
   });
 });
