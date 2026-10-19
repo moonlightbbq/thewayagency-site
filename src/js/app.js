@@ -2013,7 +2013,7 @@
   // ═══════════════════════════════════════════════
   var TEAM_DATA = [
     { slug: 'sheilia-royal', name: 'Sheilia Royal', title: 'Agency Principal / Licensed Agent', photo: '', email: 'sheilia@thewayagency.com', phone: '(502) 413-5335 ext 1' },
-    { slug: 'audrey-lillpop', name: 'Audrey Lillpop', title: 'Licensed Agent', photo: '/src/assets/images/team/audrey-lillpop.webp', email: 'audrey@thewayagency.com', phone: '(502) 413-5335 ext 2' },
+    { slug: 'audrey-lillpop', name: 'Audrey Lillpop', title: 'Licensed Agent', photo: '/src/assets/images/team/audrey-lillpop.webp', email: 'audrey@thewayagency.com', phone: '(270) 414-4385' },
     { slug: 'kelly-mccallister', name: 'Kelly McCallister', title: 'Client Care Specialist', photo: '/src/assets/images/team/kelly-mccallister.webp', email: 'kelly@thewayagency.com', phone: '(502) 413-5335 ext 3' },
     { slug: 'jill-boone', name: 'Jill Boone', title: 'Licensed Agent', photo: '', email: 'jill@thewayagency.com', phone: '(502) 413-5335 ext 4' },
     { slug: 'luke-royal', name: 'Luke Royal', title: 'Agency Owner', photo: '', email: 'partner@thewayagency.com', phone: '(502) 413-5335' },
