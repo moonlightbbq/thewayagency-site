@@ -880,12 +880,17 @@
     schedTimer = setInterval(schedule, 40);
     // Created outside a tap (PRESS START came before this script): iOS Safari keeps the
     // context suspended until a gesture resumes it, so resume on the next one.
+    // A finger's pointerdown is not a gesture (its pointerup/touchend is), so listen for
+    // all of them and only stop once the context is actually running.
     if (AC.state === 'suspended') {
+      var GESTURES = ['pointerup', 'touchend', 'click', 'keydown'];
       var wake = function () {
-        AC.resume();
-        window.removeEventListener('pointerdown', wake, true); window.removeEventListener('keydown', wake, true);
+        AC.resume().then(function () {
+          if (AC.state !== 'running') return;
+          GESTURES.forEach(function (g) { window.removeEventListener(g, wake, true); });
+        }, function () {});
       };
-      window.addEventListener('pointerdown', wake, true); window.addEventListener('keydown', wake, true);
+      GESTURES.forEach(function (g) { window.addEventListener(g, wake, true); });
     }
   }
   function setMuted(m) {
