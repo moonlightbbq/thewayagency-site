@@ -232,8 +232,10 @@
   }
 
   // ── the birthday hero ──
-  // Tan, shirtless, six-pack, black shades, a runner in The Way Agency navy shorts.
-  var SKIN = '#c68642', SKIN_D = '#9a5f2c', SKIN_L = '#e2a868', HAIR = '#2a1a10', SHADE = '#0b0b0f', SHORTS = NAVY;
+  // Sun-tanned, tousled salt-and-pepper hair, a little goatee, big grin, shirtless with a
+  // six-pack and black shades: a runner in The Way Agency navy shorts.
+  var SKIN = '#dfa274', SKIN_D = '#b47549', SKIN_L = '#f3c398', SHADE = '#0b0b0f', SHORTS = NAVY;
+  var HAIR = '#8d8883', HAIR_D = '#57534f', HAIR_L = '#c9c5bf', GOATEE = '#4a4440';
   // pose: 'run0' | 'run1' | 'stand' | 'flex' | 'blow' | 'wave'. (x, y) = feet centre, s = pixel size.
   // Facing right; 14 x 26 grid.
   function hero(ctx, x, y, s, pose, t, opts) {
@@ -290,13 +292,18 @@
       P(SKIN_D, 2, 9, 1, 6); P(SKIN, 11, 9, 1, 6);
     }
     // head
-    P(HAIR, 5, 0, 5, 1); P(HAIR, 4, 1, 7, 1); P(HAIR, 4, 2, 1, 2);
+    // tousled salt-and-pepper, fuller on top (one row above the grid)
+    P(HAIR_D, 5, -1, 1, 1); P(HAIR, 6, -1, 2, 1); P(HAIR_L, 9, -1, 1, 1);
+    P(HAIR, 4, 0, 7, 1); P(HAIR_L, 6, 0, 2, 1); P(HAIR_D, 10, 0, 1, 1);
+    P(HAIR, 4, 1, 7, 1); P(HAIR_D, 5, 1, 1, 1); P(HAIR_L, 8, 1, 2, 1);
+    P(HAIR_D, 4, 2, 1, 2); P(HAIR, 5, 2, 1, 1);
     P(SKIN, 5, 2, 6, 5); P(SKIN_D, 5, 5, 1, 1);
     P(SHADE, 4, 3, 8, 2);                                     // wrap-around black shades
     if (opts.glint || Math.floor(t * 2.2) % 5 === 0) P('#ffffff', 9, 3, 1, 1);
     P(SKIN, 6, 7, 3, 1);                                      // neck
     if (pose === 'blow') { P(SKIN_L, 10, 5, 2, 2); P('#6b2a1a', 11, 5, 1, 1); }
-    else { P('#6b2a1a', 8, 5, 3, 1); P('#ffffff', 9, 5, 1, 1); }  // grin
+    else { P('#6b2a1a', 8, 5, 3, 1); P('#ffffff', 8, 5, 2, 1); }  // big grin
+    P(GOATEE, 9, 6, 1, 1);                                    // goatee
   }
 
   // ── vehicles (side view, facing right). (x, y) = left end of the body, y = ground. ──
