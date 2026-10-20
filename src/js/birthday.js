@@ -878,9 +878,19 @@
     for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     songStart = AC.currentTime + 0.1; songIdx = 0; songLoop = 0;
     schedTimer = setInterval(schedule, 40);
+    // Created outside a tap (PRESS START came before this script): iOS Safari keeps the
+    // context suspended until a gesture resumes it, so resume on the next one.
+    if (AC.state === 'suspended') {
+      var wake = function () {
+        AC.resume();
+        window.removeEventListener('pointerdown', wake, true); window.removeEventListener('keydown', wake, true);
+      };
+      window.addEventListener('pointerdown', wake, true); window.addEventListener('keydown', wake, true);
+    }
   }
   function setMuted(m) {
     muted = m;
+    if (AC && AC.state === 'suspended' && !document.hidden) AC.resume();
     if (master) master.gain.setTargetAtTime(m ? 0 : 0.5, AC.currentTime, 0.02);
   }
   function sfx(name) { if (AC && !muted && SFX[name]) SFX[name](AC.currentTime + 0.01); }
@@ -945,6 +955,10 @@
     var api = { seek: function (T) { return frame(T); }, total: TOTAL, scenes: SCENES.map(function (s) { return s.id + ':' + s.dur; }) };
     window.__bdayCard = api;
     document.dispatchEvent(new CustomEvent('bday:ready', { detail: { name: N } }));
+    window.addEventListener('hashchange', function () {
+      N = readName(); document.dispatchEvent(new CustomEvent('bday:ready', { detail: { name: N } }));
+      if (lastDrawn != null) frame(lastDrawn);
+    });
     if (reduce) {
       frame(sceneTitle.dur + sceneRun.dur + sceneHome.dur + 5.4);
       document.dispatchEvent(new CustomEvent('bday:cta'));
@@ -969,10 +983,6 @@
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) { cancelAnimationFrame(raf); last = null; if (AC) AC.suspend(); }
       else { cancelAnimationFrame(raf); raf = requestAnimationFrame(tick); if (AC) AC.resume(); }
-    });
-    window.addEventListener('hashchange', function () {
-      N = readName(); document.dispatchEvent(new CustomEvent('bday:ready', { detail: { name: N } }));
-      if (lastDrawn != null) frame(lastDrawn);
     });
     api.startAudio = startAudio; api.setMuted = setMuted;
   }
