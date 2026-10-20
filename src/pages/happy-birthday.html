@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="robots" content="noindex, nofollow">
+  <!-- No GTM/Clarity here: the page writes a name from the URL fragment into its text and title -->
+  <meta name="twa-analytics" content="none">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Happy Birthday! A 16-Bit Party | The Way Agency</title>
   <meta name="description" content="Somebody sent you a 16-bit birthday party from The Way Agency. Press start, turn the sound up and celebrate.">
@@ -12,7 +14,6 @@
   <link rel="apple-touch-icon" href="/src/assets/images/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="dns-prefetch" href="https://www.googletagmanager.com">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
 
   <!-- Open Graph: the link preview stays generic; the name lives only in the #fragment -->
@@ -40,13 +41,14 @@
     html,body{margin:0;height:100%;background:var(--ink);color:#fff;overflow:hidden;font-family:Montserrat,system-ui,sans-serif}
     .bd-stage{position:fixed;top:0;left:0;right:0;bottom:var(--dock,0px);display:flex;align-items:center;justify-content:center;transition:bottom .45s ease}
     #bdayCanvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;background:var(--ink)}
-    .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+    .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
     .bd-top{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:max(10px,env(safe-area-inset-top)) 16px 10px;pointer-events:none;z-index:3}
     .bd-top a,.bd-top button{pointer-events:auto}
     .bd-logo img{display:block;height:28px;width:auto;filter:drop-shadow(0 2px 0 rgba(0,0,0,.6))}
     .bd-btn{font-family:var(--pixel);font-size:10px;line-height:1;color:#fff;background:var(--navy-dark);border:3px solid #fff;box-shadow:3px 3px 0 #000;padding:9px 10px;cursor:pointer;text-transform:uppercase;text-decoration:none;display:inline-block}
-    .bd-btn:hover,.bd-btn:focus-visible{background:var(--navy);outline:none}
+    .bd-btn:hover{background:var(--navy)}
+    .bd-btn:focus-visible,.bd-start:focus-visible,.bd-cta a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
     .bd-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
 
     /* PRESS START */
@@ -91,10 +93,10 @@
     <span class="hint">SOUND ON &#9835;</span>
   </button>
 
-  <section class="bd-cta" id="bdCta" aria-labelledby="bdCtaTitle" aria-hidden="true">
+  <section class="bd-cta" id="bdCta" aria-labelledby="bdCtaTitle" inert>
     <button class="bd-btn x" id="bdCtaMin" type="button" aria-label="Minimize">&#9660;</button>
     <h2 id="bdCtaTitle">PLAYER 2, READY?</h2>
-    <p id="bdCtaText">The same crew that keeps this birthday legend's house and cars covered can look after yours. Home, auto, business and life insurance from a local independent agency. Free quote, no pressure.</p>
+    <p id="bdCtaText">Life is better when you&#39;re covered. The Way Agency&#39;s local agents shop home, auto, business and life insurance for you. Free quote, no pressure.</p>
     <div class="row">
       <a class="bd-btn go" id="bdQuote" href="/intake/?src=bday-card&amp;utm_source=birthday-card&amp;utm_medium=referral&amp;utm_campaign=bday-card">Get my free quote</a>
       <button class="bd-btn share" id="bdShare" type="button">Share the party</button>
@@ -112,19 +114,20 @@
       var cta = document.getElementById('bdCta'), min = document.getElementById('bdCtaMin');
       var toast = document.getElementById('bdToast');
       function cap(s) { return s.charAt(0) + s.slice(1).toLowerCase(); }
+      // The name only greets; the copy never claims the named person is a client.
+      var defaultTitle = document.title;
       document.addEventListener('bday:ready', function (e) {
         var n = e.detail.name;
-        if (!n.given) return;
-        var first = cap(n.given);
-        document.getElementById('bdTitle').textContent = 'Happy birthday, ' + n.full.split(' ').map(cap).join(' ') + '!';
-        document.title = 'Happy Birthday, ' + first + '! | The Way Agency';
-        document.getElementById('bdCtaText').textContent = 'The same crew that keeps ' + first + "'s house and cars covered can look after yours. Home, auto, business and life insurance from a local independent agency. Free quote, no pressure.";
+        document.getElementById('bdTitle').textContent = n.given ? 'Happy birthday, ' + n.full.split(' ').map(cap).join(' ') + '!' : 'Happy birthday!';
+        document.title = n.given ? 'Happy Birthday, ' + cap(n.given) + '! | The Way Agency' : defaultTitle;
       });
       start.addEventListener('click', function () {
-        if (window.BdayCard) window.BdayCard.startAudio();
-        start.hidden = true; mute.hidden = false;
+        // Pressed before birthday.js loaded: it starts the sound itself when it arrives.
+        if (window.BdayCard) window.BdayCard.startAudio(); else window.__bdayWantsAudio = true;
+        start.hidden = true; mute.hidden = false; mute.focus();
       });
       mute.addEventListener('click', function () {
+        if (!window.BdayCard) return;
         var m = !window.BdayCard.isMuted();
         window.BdayCard.setMuted(m);
         mute.textContent = m ? 'Sound: off' : 'Sound: on';
@@ -137,11 +140,13 @@
         setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 470);
       }
       document.addEventListener('bday:cta', function () {
-        cta.classList.add('on'); cta.setAttribute('aria-hidden', 'false'); dock();
+        cta.classList.add('on'); cta.inert = false; dock();
       });
       min.addEventListener('click', function () {
         var m = cta.classList.toggle('min');
         min.setAttribute('aria-label', m ? 'Expand' : 'Minimize');
+        // minimized: only the expand button stays reachable
+        Array.prototype.forEach.call(cta.querySelectorAll('#bdCtaText, .row, .fine'), function (el) { el.inert = m; });
         dock();
       });
       window.addEventListener('resize', function () {

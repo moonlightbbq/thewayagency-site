@@ -101,8 +101,11 @@ function createInjectVersion({ buildVersion, gitInfo, buildDate, reviews, render
     html = html.replace(/src="\/src\/js\/([\w-]+)\.js"/g, `src="/src/js/$1.js?v=${buildVersion}"`);
     html = html.replace(/href="\/src\/css\/(\w+)\.css"/g, `href="/src/css/$1.css?v=${buildVersion}"`);
 
-    // Inject GTM head snippet (before </head>) and body snippet (after <body>)
-    if (!html.includes('gtm.js')) {
+    // Inject GTM head snippet (before </head>) and body snippet (after <body>).
+    // A page that writes a person's name into its text from the URL fragment opts out
+    // with <meta name="twa-analytics" content="none">: GTM's Clarity session replay
+    // records page text and GA records document.title.
+    if (!html.includes('gtm.js') && !/<meta name="twa-analytics" content="none">/.test(html)) {
       html = html.replace('</head>', renderHead_GTM() + '\n</head>');
       html = html.replace(/<body[^>]*>/, '$&\n' + renderBody_GTM());
     }

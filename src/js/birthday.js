@@ -542,7 +542,7 @@
       GIFTS.forEach(function (g, i) {
         var sx = g.x - t * RUN_V, dt = t - (g.x - RUN_X) / RUN_V;
         if (dt >= 0) {
-          if (dt < 0.8) { textO(ctx, '+500', RUN_X - 6, gy - 60 - dt * 26, 1, '#ffffff', '#3a1c05'); confetti(ctx, dt * 3, 0, W, H, RAINBOW, 0); }
+          if (dt < 0.8) textO(ctx, '+500', RUN_X - 6, gy - 60 - dt * 26, 1, '#ffffff', '#3a1c05');
           return;
         }
         if (sx > W + 10) return;
@@ -627,7 +627,7 @@
       }
       if (t > 5.0) {
         var by2 = banner(ctx, t, 5.0, W, 36, 'COVERED!', ['#ffffff', CYAN_L, CYAN, BLUE, CYAN, CYAN_L], NAVY_D, 4);
-        subtitle(ctx, t, 5.6, W, by2 + 2, 'PROTECTED BY THE WAY AGENCY', '#ffffff', NAVY_D);
+        subtitle(ctx, t, 5.6, W, by2 + 2, 'STORM SEASON? GET COVERED.', '#ffffff', NAVY_D);
       }
     }
   };
@@ -755,7 +755,7 @@
           R(ctx, 'rgba(255,255,255,0.75)', lerp(hx + 18, cx - 14, wp), gy - 64 + Math.sin(w * 1.7 + t * 9) * 6 - wp * 6, 4, 1);
         }
       }
-      if (t > 4.5 && t < 5.2) banner(ctx, t, 4.5, W, 50, 'K.O.!', ['#ffffff', '#ff4d6d', '#ffffff'], '#2a0a3a', 5);
+      if (t > 4.5 && t < 5.2) banner(ctx, t, 4.5, W, 50, 'K.O.!', ['#ffd0d8', '#ff9fb0', '#ff4d6d', '#ff9fb0'], '#2a0a3a', 5);
       if (t > 5.0) {
         fireworkShow(ctx, t, 5.4, W, H, FW, 7, 0.4);
         confetti(ctx, t, 5.0, W, H, RAINBOW, 120);
@@ -900,7 +900,7 @@
     if (!cv) return;
     var ctx = cv.getContext('2d');
     var N = readName();
-    var W = 256, H = STAGE_H, oy = 0, hud = 4;
+    var W = 256, H = STAGE_H, oy = 0, hud = 4, lastDrawn = null;
     // Fit the 180-row stage into the wrapper (which stops above the docked quote box).
     // Wide screens get up to 480 columns, then side bars; tall ones get extra sky and ground.
     function resize() {
@@ -913,12 +913,14 @@
       cv.width = W; cv.height = H;
       cv.style.width = Math.round(W * s) + 'px'; cv.style.height = Math.round(H * s) + 'px';
       ctx.imageSmoothingEnabled = false;
+      if (lastDrawn != null) frame(lastDrawn);             // a canvas resize wipes it: redraw (reduced motion has no loop)
     }
     resize();
     window.addEventListener('resize', resize);
 
     function frame(T) {
       var cur = sceneAt(T);
+      lastDrawn = T;
       N.hud = hud;
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       R(ctx, cur.s.top, 0, 0, W, oy + 1);
@@ -966,13 +968,17 @@
     raf = requestAnimationFrame(tick);
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) { cancelAnimationFrame(raf); last = null; if (AC) AC.suspend(); }
-      else { raf = requestAnimationFrame(tick); if (AC) AC.resume(); }
+      else { cancelAnimationFrame(raf); raf = requestAnimationFrame(tick); if (AC) AC.resume(); }
     });
-    window.addEventListener('hashchange', function () { N = readName(); document.dispatchEvent(new CustomEvent('bday:ready', { detail: { name: N } })); });
+    window.addEventListener('hashchange', function () {
+      N = readName(); document.dispatchEvent(new CustomEvent('bday:ready', { detail: { name: N } }));
+      if (lastDrawn != null) frame(lastDrawn);
+    });
     api.startAudio = startAudio; api.setMuted = setMuted;
   }
 
   window.BdayCard = { startAudio: startAudio, setMuted: setMuted, isMuted: function () { return muted; }, readName: readName, FONT: FONT };
+  if (window.__bdayWantsAudio) startAudio();               // PRESS START came before this script
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();

@@ -74,3 +74,27 @@ test('preview image exists at the size the meta tags claim', () => {
   assert.strictEqual(png.readUInt32BE(16), 1200);
   assert.strictEqual(png.readUInt32BE(20), 630);
 });
+
+test('the built page carries no analytics: GTM (and Clarity through it) never sees the name', () => {
+  const { createInjectVersion } = require('../scripts/builders/seo');
+  const inject = createInjectVersion({
+    buildVersion: 't', gitInfo: { branch: 'b' }, buildDate: 'd', reviews: null,
+    renderHead_GTM: () => '<script src="https://www.googletagmanager.com/gtm.js?id=GTM-X"></script>',
+    renderBody_GTM: () => '<noscript>gtm</noscript>',
+  });
+  const out = inject(html, '/happy-birthday.html');
+  assert.doesNotMatch(out, /googletagmanager|gtm\.js|clarity\.ms/);
+  // and the opt-out is specific: an ordinary page still gets GTM
+  assert.match(inject('<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body></body></html>', '/x.html'), /gtm\.js/);
+});
+
+test('the quote box never says the named person is a client', () => {
+  assert.doesNotMatch(html, /keeps ' \+|'s house and cars/);
+  assert.doesNotMatch(html, /getElementById\('bdCtaText'\)/);   // the copy is never rewritten with the name
+});
+
+test('the quote box is inert until it opens, and its body is inert while minimized', () => {
+  assert.match(html, /<section class="bd-cta" id="bdCta"[^>]*\binert\b/);
+  assert.match(html, /cta\.inert = false/);
+  assert.match(html, /querySelectorAll\('#bdCtaText, \.row, \.fine'\)[\s\S]*el\.inert = m/);
+});
