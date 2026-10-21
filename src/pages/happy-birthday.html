@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <!-- No GTM/Clarity here: the page writes a name from the URL fragment into its text and title -->
+  <meta name="twa-analytics" content="none">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Happy Birthday! A 16-Bit Party | The Way Agency</title>
+  <meta name="description" content="Somebody sent you a 16-bit birthday party from The Way Agency. Press start, turn the sound up and celebrate.">
+  <link rel="canonical" href="https://www.thewayagency.com/happy-birthday">
+  <meta name="theme-color" content="#0F2240">
+  <link rel="icon" href="/src/assets/images/favicon.png">
+  <link rel="apple-touch-icon" href="/src/assets/images/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Open Graph: the link preview stays generic; the name lives only in the #fragment -->
+  <meta property="og:title" content="You've been sent a 16-bit birthday party!">
+  <meta property="og:description" content="Press start. Sound on. A birthday party from The Way Agency.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.thewayagency.com/happy-birthday">
+  <meta property="og:site_name" content="The Way Agency">
+  <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/og-happy-birthday.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:type" content="image/png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="You've been sent a 16-bit birthday party!">
+  <meta name="twitter:description" content="Press start. Sound on. A birthday party from The Way Agency.">
+  <meta name="twitter:image" content="https://www.thewayagency.com/src/assets/images/og-happy-birthday.png">
+
+  <style>
+    /* ── 16-bit birthday card · The Way Agency brand ── */
+    :root{
+      --navy:#173358; --navy-dark:#0F2240; --blue:#3097D3; --cyan:#20BCEE; --cyan-light:#5FD0F3;
+      --gold:#ffe066; --ink:#060b1c; --pixel:'Press Start 2P', ui-monospace, monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;background:var(--ink);color:#fff;overflow:hidden;font-family:Montserrat,system-ui,sans-serif}
+    .bd-stage{position:fixed;top:0;left:0;right:0;bottom:var(--dock,0px);display:flex;align-items:center;justify-content:center;transition:bottom .45s ease}
+    #bdayCanvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges;background:var(--ink)}
+    .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;border:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+    .bd-top{position:fixed;top:0;left:0;right:0;display:flex;align-items:center;justify-content:space-between;padding:max(10px,env(safe-area-inset-top)) 16px 10px;pointer-events:none;z-index:3}
+    .bd-top a,.bd-top button{pointer-events:auto}
+    .bd-logo img{display:block;height:28px;width:auto;filter:drop-shadow(0 2px 0 rgba(0,0,0,.6))}
+    .bd-btn{font-family:var(--pixel);font-size:10px;line-height:1;color:#fff;background:var(--navy-dark);border:3px solid #fff;box-shadow:3px 3px 0 #000;padding:9px 10px;cursor:pointer;text-transform:uppercase;text-decoration:none;display:inline-block}
+    .bd-btn:hover{background:var(--navy)}
+    .bd-btn:focus-visible,.bd-start:focus-visible,.bd-cta a:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+    .bd-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
+
+    /* PRESS START */
+    .bd-start{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 16px max(14vh,90px);z-index:2;background:linear-gradient(180deg,rgba(6,11,28,0) 40%,rgba(6,11,28,.55));border:0;width:100%;cursor:pointer;color:#fff}
+    .bd-start[hidden]{display:none}
+    .bd-start .press{font-family:var(--pixel);font-size:clamp(16px,4.4vw,30px);color:var(--gold);text-shadow:3px 3px 0 #3a1c05,-2px -2px 0 #3a1c05,2px -2px 0 #3a1c05,-2px 2px 0 #3a1c05;animation:blink 1.1s steps(2,start) infinite}
+    .bd-start .hint{margin-top:14px;font-family:var(--pixel);font-size:10px;color:#cfe8ff;text-shadow:2px 2px 0 #000}
+    @keyframes blink{to{visibility:hidden}}
+
+    /* the quote dialog: a 16-bit text box */
+    .bd-cta{position:fixed;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translate(-50%,140%);width:min(560px,calc(100% - 32px));z-index:4;background:var(--navy-dark);border:4px solid #fff;box-shadow:0 0 0 4px var(--navy-dark),6px 6px 0 4px #000;padding:14px 16px 16px;transition:transform .45s cubic-bezier(.2,1.4,.4,1)}
+    .bd-cta.on{transform:translate(-50%,0)}
+    .bd-cta.min{transform:translate(-50%,calc(100% - 44px))}
+    .bd-cta h2{font-family:var(--pixel);font-size:clamp(11px,2.6vw,14px);color:var(--gold);margin:0 34px 10px 0;line-height:1.5}
+    .bd-cta h2::before{content:"\25B6  ";color:var(--cyan)}
+    .bd-cta p{margin:0 0 14px;font-size:15px;line-height:1.5;color:#e8f1ff}
+    .bd-cta .row{display:flex;flex-wrap:wrap;gap:10px}
+    .bd-cta .go{background:var(--cyan);color:var(--navy-dark);font-size:12px;padding:12px 14px;flex:1 1 auto;text-align:center}
+    .bd-cta .go:hover,.bd-cta .go:focus-visible{background:var(--cyan-light)}
+    .bd-cta .share{flex:0 1 auto}
+    .bd-cta .x{position:absolute;top:8px;right:8px;width:30px;height:30px;padding:0;font-size:12px;box-shadow:2px 2px 0 #000;border-width:2px}
+    .bd-cta.min .x{transform:rotate(180deg)}
+    .bd-cta .fine{margin:12px 0 0;font-size:11px;color:#9fb6d6}
+    .bd-cta .fine a{color:#cfe8ff}
+    .bd-toast{position:fixed;top:64px;left:50%;transform:translateX(-50%);font-family:var(--pixel);font-size:10px;background:#000;color:var(--gold);padding:8px 10px;border:2px solid #fff;z-index:5;display:none}
+    .bd-toast.on{display:block}
+    @media (max-width:420px){.bd-cta p{font-size:14px}.bd-logo img{height:22px}}
+    @media (prefers-reduced-motion:reduce){.bd-start .press{animation:none}.bd-cta{transition:none}}
+  </style>
+</head>
+<body>
+  <h1 class="sr-only" id="bdTitle">Happy birthday!</h1>
+  <div class="bd-stage"><canvas id="bdayCanvas" role="img" aria-label="A looping 16-bit birthday animation: a salt-and-pepper-haired runner in black sunglasses sprints a track, a storm rolls over a house and three cars until The Way Agency's shield pops up, he wins the race to a happy birthday banner and fireworks, and blows out the candles on a giant cake boss."></canvas></div>
+
+  <div class="bd-top">
+    <a class="bd-logo" href="/" aria-label="The Way Agency home"><img src="/src/assets/images/logo-horizontal-white-2x.png" alt="The Way Agency" width="142" height="28"></a>
+    <button class="bd-btn" id="bdMute" type="button" aria-pressed="false" hidden>Sound: on</button>
+  </div>
+
+  <button class="bd-start" id="bdStart" type="button" aria-label="Press start to play the birthday party with sound">
+    <span class="press">PRESS START</span>
+    <span class="hint">SOUND ON &#9835;</span>
+  </button>
+
+  <section class="bd-cta" id="bdCta" aria-labelledby="bdCtaTitle" inert>
+    <button class="bd-btn x" id="bdCtaMin" type="button" aria-label="Minimize">&#9660;</button>
+    <h2 id="bdCtaTitle">PLAYER 2, READY?</h2>
+    <p id="bdCtaText">Life is better when you&#39;re covered. The Way Agency&#39;s local agents shop home, auto, business and life insurance for you. Free quote, no pressure.</p>
+    <div class="row">
+      <a class="bd-btn go" id="bdQuote" href="/intake/?src=bday-card&amp;utm_source=birthday-card&amp;utm_medium=referral&amp;utm_campaign=bday-card">Get my free quote</a>
+      <button class="bd-btn share" id="bdShare" type="button">Share the party</button>
+    </div>
+    <p class="fine">From <a href="/">The Way Agency</a>, Owensboro, KY.</p>
+  </section>
+  <div class="bd-toast" id="bdToast" role="status" aria-live="polite"></div>
+
+  <noscript><p style="position:fixed;inset:auto 16px 16px;font-family:Montserrat,sans-serif">Happy birthday from The Way Agency! Turn on JavaScript to play the party. <a href="/intake/" style="color:#5FD0F3">Get a free quote</a></p></noscript>
+
+  <script src="/src/js/birthday.js" defer></script>
+  <script>
+    (function () {
+      var start = document.getElementById('bdStart'), mute = document.getElementById('bdMute');
+      var cta = document.getElementById('bdCta'), min = document.getElementById('bdCtaMin');
+      var toast = document.getElementById('bdToast');
+      function cap(s) { return s.charAt(0) + s.slice(1).toLowerCase(); }
+      // The name only greets; the copy never claims the named person is a client.
+      var defaultTitle = document.title;
+      document.addEventListener('bday:ready', function (e) {
+        var n = e.detail.name;
+        document.getElementById('bdTitle').textContent = n.given ? 'Happy birthday, ' + n.full.split(' ').map(cap).join(' ') + '!' : 'Happy birthday!';
+        document.title = n.given ? 'Happy Birthday, ' + cap(n.given) + '! | The Way Agency' : defaultTitle;
+      });
+      start.addEventListener('click', function () {
+        // Pressed before birthday.js loaded: it starts the sound itself when it arrives.
+        if (window.BdayCard) window.BdayCard.startAudio(); else window.__bdayWantsAudio = true;
+        start.hidden = true; mute.hidden = false; mute.focus();
+      });
+      mute.addEventListener('click', function () {
+        if (!window.BdayCard) return;
+        var m = !window.BdayCard.isMuted();
+        window.BdayCard.setMuted(m);
+        mute.textContent = m ? 'Sound: off' : 'Sound: on';
+        mute.setAttribute('aria-pressed', m ? 'true' : 'false');
+      });
+      // The stage ends above the docked box so the box never covers the action.
+      function dock() {
+        var h = !cta.classList.contains('on') ? 0 : (cta.classList.contains('min') ? 52 : cta.offsetHeight + 22);
+        document.documentElement.style.setProperty('--dock', h + 'px');
+        setTimeout(function () { window.dispatchEvent(new Event('resize')); }, 470);
+      }
+      document.addEventListener('bday:cta', function () {
+        cta.classList.add('on'); cta.inert = false; dock();
+      });
+      min.addEventListener('click', function () {
+        var m = cta.classList.toggle('min');
+        min.setAttribute('aria-label', m ? 'Expand' : 'Minimize');
+        // minimized: only the expand button stays reachable
+        Array.prototype.forEach.call(cta.querySelectorAll('#bdCtaText, .row, .fine'), function (el) { el.inert = m; });
+        dock();
+      });
+      window.addEventListener('resize', function () {
+        if (!cta.classList.contains('on') || cta.classList.contains('min')) return;
+        var h = cta.offsetHeight + 22;
+        if (getComputedStyle(document.documentElement).getPropertyValue('--dock').trim() !== h + 'px') dock();
+      });
+      function say(msg) { toast.textContent = msg; toast.classList.add('on'); setTimeout(function () { toast.classList.remove('on'); }, 1800); }
+      document.getElementById('bdShare').addEventListener('click', function () {
+        var url = location.href;
+        if (navigator.share) { navigator.share({ title: 'A 16-bit birthday party', url: url }).catch(function () {}); return; }
+        if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { say('LINK COPIED!'); }, function () { say(url); });
+        else say(url);
+      });
+    })();
+  </script>
+</body>
+</html>
