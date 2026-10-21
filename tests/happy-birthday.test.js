@@ -98,3 +98,8 @@ test('the quote box is inert until it opens, and its body is inert while minimiz
   assert.match(html, /cta\.inert = false/);
   assert.match(html, /querySelectorAll\('#bdCtaText, \.row, \.fine'\)[\s\S]*el\.inert = m/);
 });
+
+test('the name never goes into the tab title (an edge-injected Google tag records document.title)', () => {
+  assert.doesNotMatch(html, /document\.title\s*=/);
+  assert.doesNotMatch(js, /document\.title\s*=/);
+});

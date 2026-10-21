@@ -114,12 +114,11 @@
       var cta = document.getElementById('bdCta'), min = document.getElementById('bdCtaMin');
       var toast = document.getElementById('bdToast');
       function cap(s) { return s.charAt(0) + s.slice(1).toLowerCase(); }
-      // The name only greets; the copy never claims the named person is a client.
-      var defaultTitle = document.title;
+      // The name only greets, in the page (never the tab title: Cloudflare's edge-injected
+      // Google tag records document.title). The copy never claims the named person is a client.
       document.addEventListener('bday:ready', function (e) {
         var n = e.detail.name;
         document.getElementById('bdTitle').textContent = n.given ? 'Happy birthday, ' + n.full.split(' ').map(cap).join(' ') + '!' : 'Happy birthday!';
-        document.title = n.given ? 'Happy Birthday, ' + cap(n.given) + '! | The Way Agency' : defaultTitle;
       });
       start.addEventListener('click', function () {
         // Pressed before birthday.js loaded: it starts the sound itself when it arrives.
