@@ -2000,7 +2000,8 @@
       "notes": "",
       "reviewer": "Jill Boone",
       "reviewer_email": "jill@thewayagency.com",
-      "reviewer_slug": "jill-boone"
+      "reviewer_slug": "jill-boone",
+      "review_send_error": "2026-10-31: Email send failed (403): {\"error\":\"Not sent: an API key can send only to active SAGE users or the system mailbox, and this address is neither: jill@thewayagency.com. The draft is saved in the SAGE email queue for a person to review, with its To only: the queue does not keep a Cc.\",\"code\""
     },
     {
       "week": 36,
