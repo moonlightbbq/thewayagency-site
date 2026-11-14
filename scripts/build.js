@@ -175,6 +175,12 @@ for (const [lineKey, lineInfo] of Object.entries(lineMap)) {
   }
 }
 console.log(`  ✓ Generated ${generatedCount} product pages from JSON`);
+// Flyer redirects (Y-76): every source and target page exists, or the build stops.
+{
+  const { assertFlyerPages, FLYER_REDIRECTS } = require('./lib/flyer-redirects');
+  assertFlyerPages(BUILD);
+  console.log(`  ✓ Flyer redirects: ${FLYER_REDIRECTS.length} source and target pages built`);
+}
 
 // 6b. Generate geo-targeted city landing pages
 assets.ensureDir(path.join(BUILD, 'insurance'));
