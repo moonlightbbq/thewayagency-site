@@ -422,7 +422,17 @@ function showBanner(color, msg) {
 fetch(SAGE_API + '/api/health').then(r=>r.json()).then(d=>{ const el=document.getElementById('portal-version'); if(el&&d.version) el.textContent='v'+d.version; }).catch(()=>{});
 
 const params = new URLSearchParams(location.search);
-const TOKEN = params.get('t');
+// The link's token (?t=). It becomes part of the PATH of every request this
+// page sends to SAGE, so it must be exactly a token. Anything else is treated
+// as no token at all: a "../" would re-aim the request at another SAGE path
+// (?t=..%2F..%2Fadmin fetched SAGE's /admin from the visitor's browser), and a
+// "?" or "#" would add a query of the sender's choosing. SAGE issues UUIDs;
+// the shape below also admits hex and base64url, and nothing with a slash,
+// dot, percent or question mark.
+function portalToken(raw) {
+  return typeof raw === 'string' && /^[A-Za-z0-9_-]{8,128}$/.test(raw) ? raw : null;
+}
+const TOKEN = portalToken(params.get('t'));
 let CONFIG = null;
 let STEP = 0;
 let FIELDS = [];
