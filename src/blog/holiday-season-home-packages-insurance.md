@@ -13,7 +13,7 @@ tags: home insurance, holiday season, package theft, personal property, winter
 
 The holiday season brings a lot of good things. It also brings a spike in package deliveries, houseguests, decorations on every surface, and the kind of hectic schedule that makes it easy to overlook risks around your home.
 
-Between Thanksgiving and New Year's, homeowners file more claims for theft, fire, and liability injuries than almost any other time of year. Knowing what your homeowners insurance covers — and what it does not — can save you a lot of stress during the busiest season of the year.
+Between Thanksgiving and New Year's, homeowners file more claims for theft, fire, and liability injuries than almost any other time of year. Knowing what your homeowners insurance covers, and what it does not, can save you a lot of stress during the busiest season of the year.
 
 ## Package theft and your homeowners insurance
 
@@ -26,7 +26,7 @@ Here is how it works:
 - The claim is subject to your deductible. If your deductible is $1,000 and the stolen package was worth $150, it does not make financial sense to file.
 - High-value items like electronics, jewelry, or designer goods may be subject to sub-limits. Check your policy for category-specific caps.
 
-The practical advice: for most individual package thefts, the value is below your deductible, and filing a claim is not worth the impact on your claims history. Focus on prevention instead — use delivery lockers, require signatures, ship to your workplace, or install a video doorbell.
+The practical advice: for most individual package thefts, the value is below your deductible, and filing a claim is not worth the impact on your claims history. Focus on prevention instead: use delivery lockers, require signatures, ship to your workplace, or install a video doorbell.
 
 If you rent your home, your [renters insurance](/personal/renters.html) provides the same personal property coverage for stolen packages.
 
@@ -36,13 +36,13 @@ Holiday decorations are a leading cause of home fires between November and Janua
 
 **What your insurance covers.** If a fire caused by holiday decorations damages your home, your homeowners insurance covers the repairs under your dwelling coverage. If your personal belongings are damaged, personal property coverage applies. If you are displaced from your home, your policy's loss of use coverage pays for temporary housing and additional living expenses.
 
-**What it does not cover.** If the fire was caused by negligence that your insurer deems preventable — like knowingly using a recalled string of lights or ignoring obvious safety hazards — the claim could be complicated. This is rare, but worth being aware of.
+**What it does not cover.** If the fire was caused by negligence that your insurer deems preventable, like knowingly using a recalled string of lights or ignoring obvious safety hazards, the claim could be complicated. This is rare, but worth being aware of.
 
 **Reducing the risk:**
 
 - Water your Christmas tree daily. A dry tree can ignite in seconds.
 - Do not leave candles unattended.
-- Use LED lights instead of incandescent — they generate less heat.
+- Use LED lights instead of incandescent. They generate less heat.
 - Do not daisy-chain extension cords or overload outlets.
 - Turn off all decorative lights before going to bed or leaving the house.
 - Keep space heaters away from decorations, curtains, and wrapping paper.
@@ -51,7 +51,7 @@ Holiday decorations are a leading cause of home fires between November and Janua
 
 The holidays bring family and friends to your home. That means more people walking on your property, more kids running around, and more opportunities for someone to get hurt.
 
-If a houseguest is injured at your home — they slip on icy steps, trip over a cord, or twist an ankle on uneven ground — your homeowners liability coverage pays for their medical bills and legal costs if they sue.
+If a houseguest is injured at your home (they slip on icy steps, trip over a cord, or twist an ankle on uneven ground), your homeowners liability coverage pays for their medical bills and legal costs if they sue.
 
 Most homeowners policies include at least $100,000 in liability coverage, but $300,000 or $500,000 is worth carrying, especially during the holidays when your home sees more traffic.
 
@@ -61,11 +61,11 @@ If you host large gatherings or have significant assets to protect, an [umbrella
 
 ## Travel and empty homes
 
-If you travel during the holidays, your home sits empty — and empty homes face higher risks of break-ins, frozen pipes, and undetected water damage.
+If you travel during the holidays, your home sits empty, and empty homes face higher risks of break-ins, frozen pipes, and undetected water damage.
 
 **Theft.** Your homeowners policy covers break-in theft, but some policies have conditions for homes left vacant for extended periods (typically 30 to 60 days). A week-long holiday trip should not trigger any issues, but let your agent know if you will be away for an extended period.
 
-**Frozen pipes.** Kentucky winters bring freezing temperatures, and burst pipes are one of the most common and expensive homeowners claims. Your policy covers water damage from burst pipes, but most policies require you to take reasonable steps to prevent freezing — like keeping your heat on and leaving cabinet doors open under sinks.
+**Frozen pipes.** Kentucky winters bring freezing temperatures, and burst pipes are one of the most common and expensive homeowners claims. Your policy covers water damage from burst pipes, but most policies require you to take reasonable steps to prevent freezing, like keeping your heat on and leaving cabinet doors open under sinks.
 
 If you leave for the holidays:
 
@@ -78,7 +78,7 @@ If you leave for the holidays:
 
 ## Gift-giving and high-value items
 
-If you receive or give high-value gifts — jewelry, electronics, musical instruments, collectibles — check whether they fall within your policy's sub-limits.
+If you receive or give high-value gifts (jewelry, electronics, musical instruments, collectibles), check whether they fall within your policy's sub-limits.
 
 Most homeowners policies cap coverage on specific categories:
 
@@ -92,7 +92,7 @@ If a new gift exceeds these limits, you can schedule (itemize) the item on your 
 ## A holiday insurance checklist
 
 - [ ] Review your personal property coverage limits and sub-limits for high-value items
-- [ ] Check your liability coverage — consider increasing it for the holiday season
+- [ ] Check your liability coverage, and consider increasing it for the holiday season
 - [ ] Test smoke detectors and fire extinguishers before decorating
 - [ ] Set up delivery alerts and require signatures for expensive packages
 - [ ] If traveling, set your thermostat to at least 55 degrees and have someone check the house
@@ -100,7 +100,7 @@ If a new gift exceeds these limits, you can schedule (itemize) the item on your 
 
 ## Review your coverage before the new year
 
-The holidays are a natural time to think about what you have and what you need. If you have not reviewed your homeowners insurance recently, take a few minutes before the end of the year. Life changes — new purchases, renovations, a new family member — all affect your coverage needs.
+The holidays are a natural time to think about what you have and what you need. If you have not reviewed your homeowners insurance recently, take a few minutes before the end of the year. Life changes, such as new purchases, renovations, or a new family member, all affect your coverage needs.
 
 If you want help reviewing your [homeowners insurance](/personal/home.html) or adding coverage for the holiday season, reach out. We are here to help you head into the new year with the right protection in place.
 
@@ -110,7 +110,7 @@ Yes. Stolen packages are generally covered under your personal property coverage
 
 ### FAQ: Are holiday decoration fires covered by home insurance?
 
-Yes. Fire damage from holiday decorations is covered under your dwelling and personal property coverage. Your policy also covers temporary housing costs if the fire makes your home uninhabitable. Take precautions to reduce fire risk — water your tree, use LED lights, and never leave candles unattended.
+Yes. Fire damage from holiday decorations is covered under your dwelling and personal property coverage. Your policy also covers temporary housing costs if the fire makes your home uninhabitable. Take precautions to reduce fire risk: water your tree, use LED lights, and never leave candles unattended.
 
 ### FAQ: Does my homeowners policy cover frozen pipe damage during winter travel?
 
