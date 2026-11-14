@@ -1638,7 +1638,24 @@ let contactValidated = false;  // Whether silent validation has passed
 let pollTimer = null;          // Polls for agent takeover
 let turnstileToken = null;     // Cloudflare Turnstile token
 let turnstileWidgetId = null;  // Widget ID for reset
-const _agentParam = new URLSearchParams(window.location.search).get('agent') || '';
+// Y-89: the routing `agent` this page sends (/track, the quick lead, the final
+// submit). Today: only the ?agent= on THIS page's URL, a producer's quote link,
+// exactly as before. HELD_AGENT_ROUTES is Luke's call (Y0 11/15): true would also
+// send the ?agent= the visitor arrived with on another page (TWA.heldAgent, slug
+// checked); SAGE applies the same producer checks as a quote link either way.
+const HELD_AGENT_ROUTES = false;
+function routingAgent() {
+  const own = new URLSearchParams(window.location.search).get('agent') || '';
+  return own || (HELD_AGENT_ROUTES && typeof TWA.heldAgent === 'function' ? TWA.heldAgent() : '');
+}
+// Y-89: the lead_source this page sends: the visitor's flyer code first (Luke's
+// test: a flyer landing, then a click-through, files the lead under the flyer),
+// then the button or link src that opened the page.
+function intakeLeadSource() {
+  const pageSrc = new URLSearchParams(window.location.search).get('src') || '';
+  return typeof TWA.leadSource === 'function' ? TWA.leadSource(pageSrc) : pageSrc;
+}
+const _agentParam = routingAgent();
 
 // ── Product catalog (drives the dynamic grid) ───────────────────────────────
 const PRODUCTS = [
@@ -2620,7 +2637,7 @@ async function trackPartial(notify, tokenWaitMs) {
     const _attr = {
       lead_page: window.location.pathname + window.location.search,
       lead_referrer: document.referrer || 'direct',
-      lead_source: _trkParams.get('src') || _cookieAttr.src || undefined,
+      lead_source: intakeLeadSource() || _cookieAttr.src || undefined,
     };
     for (const _k of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'gclid', 'fbclid']) {
       _attr[_k] = _trkParams.get(_k) || _cookieAttr[_k] || undefined;
@@ -3850,8 +3867,9 @@ async function submitQuickLead() {
   const formData = { quick_lead: 'true' };
   const urlParams = new URLSearchParams(window.location.search);
   const srcParam = urlParams.get('src');
-  if (srcParam) formData.lead_source = srcParam;
-  const agentParam = urlParams.get('agent');
+  const leadSrc = intakeLeadSource();
+  if (leadSrc) formData.lead_source = leadSrc;
+  const agentParam = routingAgent();
   ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(key => {
     const val = urlParams.get(key); if (val) formData[key] = val;
   });
@@ -3891,6 +3909,7 @@ async function submitQuickLead() {
         cfToken: turnstileToken || '',
         twa_vid: sessionId || getVisitorId(),
         _tracking: getTrackingIds(),
+        attribution: TWA.getAttribution(), // Y-89: the quick lead sent none
       })
     });
     if (!res.ok) {
@@ -4092,8 +4111,9 @@ async function submitIntake() {
   // Add source tracking, UTM attribution, and agent assignment
   const urlParams = new URLSearchParams(window.location.search);
   const srcParam = urlParams.get('src');
-  if (srcParam) formData.lead_source = srcParam;
-  const agentParam = urlParams.get('agent');
+  const leadSrc = intakeLeadSource();
+  if (leadSrc) formData.lead_source = leadSrc;
+  const agentParam = routingAgent();
 
   // Capture campaign params: URL first, then the twa_lt/twa_ft cookies via
   // TWA.getAttribution() for returning visitors. (The old cookie fallback read

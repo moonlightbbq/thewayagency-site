@@ -141,6 +141,78 @@
     return out;
   }
 
+  // ─── Flyer code (Y-89) ────────────────────────
+  // A printed flyer's QR adds ?src=flyer-xx. The site's own buttons also use
+  // ?src= (hero, sticky, exit-intent, inline, coverage-review, bday-card), so:
+  //   - a flyer code (and a valid ?agent=) counts as a TOUCH and is written to
+  //     twa_ft / twa_lt like a UTM (Luke 11/15); a button src never is, so an
+  //     in-site click never replaces a visitor's last-touch UTM or click id;
+  //   - the flyer code also gets a session cookie (twa_cs), sent as
+  //     attribution.campaign_src;
+  //   - leadSource() gives the flyer code before any button name, so the lead
+  //     SAGE receives is filed under the flyer after any click-through.
+  // Only a valid code is kept, checked again on every read. Never written into
+  // the page, never sent to an ad platform, never used to route a lead.
+  var CAMPAIGN_COOKIE = 'twa_cs';
+  var CAMPAIGN_SRC_RE = /^flyer-[a-z0-9]{2,8}$/;
+  // A producer's quote-link slug (?agent=), as the team list spells them.
+  var AGENT_RE = /^[a-z0-9][a-z0-9-]{0,39}$/;
+  function cleanCampaignSrc(v) { return typeof v === 'string' && CAMPAIGN_SRC_RE.test(v) ? v : ''; }
+  function cleanAgent(v) { return typeof v === 'string' && AGENT_RE.test(v) ? v : ''; }
+
+  // No max-age: a session cookie, gone when the browser session ends.
+  function setSessionCookie(name, value) {
+    document.cookie = name + '=' + encodeURIComponent(JSON.stringify(value)) + ';path=/;SameSite=Lax'
+      + (window.location.protocol === 'https:' ? ';Secure' : '');
+  }
+
+  // The stored flyer code as a clean string ({} when none or malformed).
+  function getCampaign() {
+    var c = getCookie(CAMPAIGN_COOKIE);
+    var out = {};
+    if (!c || typeof c !== 'object') return out;
+    var src = cleanCampaignSrc(c.campaign_src);
+    if (src) out.campaign_src = src;
+    return out;
+  }
+
+  // Reads this page's URL: a valid flyer code replaces the stored one (the
+  // latest flyer wins); anything else is ignored. Safe to call more than once.
+  function captureCampaign(search) {
+    var params = new URLSearchParams(search === undefined ? window.location.search : search);
+    var src = cleanCampaignSrc(params.get('src'));
+    if (src) {
+      setSessionCookie(CAMPAIGN_COOKIE, { campaign_src: src });
+      _log('campaign_set', { campaign_src: src });
+    }
+    return getCampaign();
+  }
+
+  // The flyer code this visitor came from: this session's, else the last
+  // touch's. '' when none. Never the first touch (a flyer weeks ago that a
+  // later campaign replaced is not this lead's source).
+  function flyerSource() {
+    var cs = getCampaign().campaign_src;
+    if (cs) return cs;
+    var lt = getCookie('twa_lt');
+    return lt && typeof lt === 'object' ? cleanCampaignSrc(lt.src) : '';
+  }
+
+  // The lead_source a form sends: the flyer code first, then the button or
+  // page src the form was opened with (pageSrc), else ''.
+  function leadSource(pageSrc) {
+    return flyerSource() || (typeof pageSrc === 'string' ? pageSrc : '') || '';
+  }
+
+  // The ?agent= this visitor arrived with (last touch, else first), checked
+  // again on read. Sent as attribution.agent; a form sends it as the routing
+  // `agent` field only when it decides to (intake.html HELD_AGENT_ROUTES).
+  function heldAgent() {
+    var lt = getCookie('twa_lt') || {};
+    var ft = getCookie('twa_ft') || {};
+    return cleanAgent(lt.agent) || cleanAgent(ft.agent) || '';
+  }
+
   // ─── Capture attribution from URL ─────────────
   function captureAttribution() {
     var params = new URLSearchParams(window.location.search);
@@ -159,9 +231,13 @@
     if (fbclid) { touchData.fbclid = fbclid; hasAttribution = true; }
 
     var src = params.get('src');
-    var agent = params.get('agent');
+    var agent = cleanAgent(params.get('agent'));
     if (src) touchData.src = src;
     if (agent) touchData.agent = agent;
+    // Y-89 (Luke 11/15): a flyer code or an agent link is a touch too. A site
+    // button's src (hero, sticky, inline...) is not, so in-site navigation never
+    // replaces the last touch.
+    if (cleanCampaignSrc(src) || agent) hasAttribution = true;
 
     // The first/last-touch cookies keep this for 365/30 days and ride every
     // SAGE submission: never store identity or a token in them (TRUST-08).
@@ -182,6 +258,8 @@
     // Latest external referral: its own cookie, so the touches above resolve
     // exactly as before (CONV-05).
     captureReferral(params);
+    // Flyer code: its own session cookie too (Y-89).
+    captureCampaign(window.location.search);
 
     // Session landing page (set once per session via sessionStorage)
     try {
@@ -233,6 +311,10 @@
     };
     if (rf.ref_host) out.ref_host = rf.ref_host;
     if (rf.ai_source) out.ai_source = rf.ai_source;
+    var flyer = flyerSource();
+    if (flyer) out.campaign_src = flyer;
+    var agentHeld = heldAgent();
+    out.agent = agentHeld;
     return out;
   }
 
@@ -367,6 +449,11 @@
     captureAttribution: captureAttribution,
     getAttribution: getAttribution,
     getReferral: getReferral,
+    getCampaign: getCampaign,
+    captureCampaign: captureCampaign,
+    flyerSource: flyerSource,
+    leadSource: leadSource,
+    heldAgent: heldAgent,
     aiSourceOfDomain: aiSourceOfDomain,
     AI_HOSTS: Object.freeze(Object.assign({}, AI_HOSTS)),
     hashAssign: hashAssign,
