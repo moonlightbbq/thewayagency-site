@@ -5,10 +5,18 @@
  * licensed_states, in BOTH directions:
  *
  *   1. a list that names a state the agency is not licensed in fails
- *      ("Kentucky, Indiana, Tennessee, and Ohio" after OH leaves entity.json);
+ *      ("Kentucky, Indiana, Ohio, and Tennessee" after OH leaves entity.json);
  *   2. a list made only of licensed states that leaves one of them out fails
  *      ("KY, IN & TN" while OH is licensed: the owner's 11/14 complaint, "OH
- *      hasnt been added to all of the locations where our states are listed").
+ *      hasnt been added to all of the locations where our states are listed");
+ *   3. a list of exactly the licensed states in another order than
+ *      licensed_states fails ("KY, IN, TN & OH": the owner's order, 11/14, is
+ *      KY, IN, OH, TN).
+ *
+ * And the JSON-LD areaServed of the Accident and Health pages (health/*, and
+ * life/disability) names exactly data/entity.json health_licensed_states, never a
+ * licensed state without that line (Y0 ruling 11/14: the Ohio agency licence has
+ * no Accident and Health line); every other areaServed names licensed states only.
  *
  * A list is two or more state names, or two or more state abbreviations, joined
  * by commas, "and", "&" / "&amp;" or "/", anywhere in the file: text, FAQ
@@ -24,6 +32,7 @@
 const fs = require('fs');
 const path = require('path');
 const { LEGACY_BLOG_PAGES } = require('./legacy-blog-pages');
+const { ACCIDENT_HEALTH_PRODUCTS } = require('./licensed-states');
 
 const US_STATES = Object.freeze({
   AL: 'Alabama', AK: 'Alaska', AZ: 'Arizona', AR: 'Arkansas', CA: 'California', CO: 'Colorado', CT: 'Connecticut',
@@ -44,7 +53,7 @@ const NAME_LIST = new RegExp(`\\b(?:${NAME_ALT})\\b(?:${SEP}\\b(?:${NAME_ALT})\\
 const ABBR_LIST = new RegExp(`\\b(?:${ABBR_ALT})\\b(?:${SEP}\\b(?:${ABBR_ALT})\\b)+`, 'g');
 const SEP_RE = new RegExp(SEP);
 
-/** Every state list in `text`: [{ codes: ['IN','KY'], text }], codes sorted and unique. */
+/** Every state list in `text`: [{ codes: ['IN','KY'], order: ['KY','IN'], text }], codes sorted and unique, order as written. */
 function findStateLists(text) {
   const out = [];
   for (const [re, kind] of [[NAME_LIST, 'name'], [ABBR_LIST, 'abbr']]) {
@@ -52,7 +61,7 @@ function findStateLists(text) {
     let m;
     while ((m = re.exec(text))) {
       const codes = m[0].split(SEP_RE).map((t) => (kind === 'name' ? BY_NAME[t.replace(/\s+/g, ' ').trim().toLowerCase()] : t.trim()));
-      out.push({ codes: [...new Set(codes)].sort(), text: m[0].replace(/\s+/g, ' ') });
+      out.push({ codes: [...new Set(codes)].sort(), order: [...new Set(codes)], text: m[0].replace(/\s+/g, ' ') });
     }
   }
   return out;
@@ -68,13 +77,10 @@ const PUBLISHED_POST_REASON = 'published blog post text (dated, reviewed content
  * allows that exact list in that exact file, nothing else.
  */
 const ALLOW = Object.freeze([
-  ...FROZEN_BLOG.map((file) => ({ file, codes: 'IN,KY,TN', reason: 'frozen hand-made blog page (byte-pinned, scripts/lib/legacy-blog-pages.js): its footer is never edited' })),
   { file: 'blog/earthquake-insurance.html', codes: 'KY,TN', reason: 'frozen hand-made blog page (byte-pinned): its own text' },
   { file: 'about/team.html', codes: 'IN,KY', reason: 'a team member\'s own licensed states (visible card and JSON-LD)' },
   { file: 'about/team.html', codes: 'IN,KY,TN', reason: 'Y0 ruling option (a): the two Ohio-licensed people\'s JSON-LD descriptions are unchanged (visible text only); flagged for the owner on the preview' },
-  { file: 'privacy.html', codes: 'IN,KY,TN', reason: 'the "Residents of ..." sentence: owner call, unchanged and flagged on the preview (Y0)' },
-  ...['about/careers.html', 'about/careers/apply.html', 'about/careers/employee-benefits-leader.html', 'about/careers/intern.html', 'about/careers/pc-insurance-agent.html']
-    .map((file) => ({ file, codes: 'IN,KY,TN', reason: 'careers copy: unchanged by Y0 ruling (job territory), flagged for the owner on the preview' })),
+  { file: 'about/careers/employee-benefits-leader.html', codes: 'IN,KY,TN', reason: 'the Employee Benefits role is health business (group health): the states with an Accident and Health line (data/entity.json health_licensed_states), and its licence requirement; Y-74 rework, flagged for the owner on the preview' },
   { file: 'forrest-frank-2026.html', codes: 'IN,KY,TN', reason: 'the ended sweepstakes page: unchanged by Y0 ruling (its official rules named the eligible states)' },
   ...['blog/community-involvement-2026.html', 'blog/community-spotlight-local-businesses.html', 'blog/how-independent-agents-save-money.html',
     'blog/how-to-read-declarations-page.html', 'blog/independent-vs-kentucky-farm-bureau-bullitt-county.html', 'blog/small-business-insurance-evansville-in.html',
@@ -108,12 +114,18 @@ function allowed(rel, codes, allow) {
 function licensedStateProblems(text, rel, licensed, allow = ALLOW) {
   const lic = new Set(licensed);
   const want = [...lic].sort().join(',');
+  const inOrder = licensed.join(', ');
   const problems = [];
   const used = [];
   for (const l of findStateLists(text)) {
     const outside = l.codes.filter((c) => !lic.has(c));
     const omits = !outside.length && l.codes.length >= 2 && l.codes.join(',') !== want;
-    if (!outside.length && !omits) continue;
+    if (!outside.length && !omits) {
+      if (l.codes.join(',') === want && l.order.join(', ') !== inOrder) {
+        problems.push(`${rel}: "${l.text}" lists the agency's states out of order (data/entity.json order: ${inOrder})`);
+      }
+      continue;
+    }
     const rule = allowed(rel, l.codes, allow);
     if (rule) { used.push(rule); continue; }
     if (outside.length) problems.push(`${rel}: "${l.text}" names ${outside.join(', ')}, which data/entity.json does not license (licensed: ${want})`);
@@ -122,10 +134,59 @@ function licensedStateProblems(text, rel, licensed, allow = ALLOW) {
   return { problems, used };
 }
 
+/** The built pages of the Accident and Health products: health/*, and each ACCIDENT_HEALTH_PRODUCTS page. */
+function isAccidentHealthPage(rel) {
+  return rel.startsWith('health/') || ACCIDENT_HEALTH_PRODUCTS.some((id) => rel === `life/${id}.html`);
+}
+
+/** The State names of every areaServed in the page's JSON-LD: [['KY','IN',...], ...]. */
+function areaServedLists(html) {
+  const out = [];
+  const re = /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g;
+  let m;
+  const walk = (v) => {
+    if (Array.isArray(v)) { v.forEach(walk); return; }
+    if (!v || typeof v !== 'object') return;
+    for (const [k, x] of Object.entries(v)) {
+      if (k === 'areaServed') {
+        const states = (Array.isArray(x) ? x : [x]).filter((n) => n && n['@type'] === 'State').map((n) => BY_NAME[String(n.name).toLowerCase()] || `?${n.name}`);
+        if (states.length) out.push(states);
+      }
+      walk(x);
+    }
+  };
+  while ((m = re.exec(html))) {
+    let data;
+    try { data = JSON.parse(m[1]); } catch { continue; }
+    walk(data);
+  }
+  return out;
+}
+
+/**
+ * areaServed problems in one built page: an Accident and Health page names
+ * exactly the health states; any other page names licensed states only.
+ */
+function areaServedProblems(html, rel, licensed, health) {
+  const problems = [];
+  const ah = isAccidentHealthPage(rel);
+  for (const states of areaServedLists(html)) {
+    if (ah) {
+      if ([...states].sort().join(',') !== [...health].sort().join(',')) {
+        problems.push(`${rel}: areaServed names ${states.join(', ')}, but an Accident and Health page names exactly the health states (data/entity.json health_licensed_states: ${health.join(', ')})`);
+      }
+    } else {
+      const outside = states.filter((c) => !licensed.includes(c));
+      if (outside.length) problems.push(`${rel}: areaServed names ${outside.join(', ')}, which data/entity.json does not license`);
+    }
+  }
+  return problems;
+}
+
 const TEXT_FILE = /\.(html?|txt|json|xml|js|mjs)$/i;
 
 /** The guard over a built tree. */
-function licensedStateProblemsInTree(dir, licensed, allow = ALLOW) {
+function licensedStateProblemsInTree(dir, licensed, allow = ALLOW, { health } = {}) {
   const problems = [];
   const usedRules = new Set();
   let files = 0;
@@ -136,8 +197,10 @@ function licensedStateProblemsInTree(dir, licensed, allow = ALLOW) {
       if (!TEXT_FILE.test(e.name)) continue;
       files++;
       const rel = path.relative(dir, p).split(path.sep).join('/');
-      const r = licensedStateProblems(fs.readFileSync(p, 'utf8'), rel, licensed, allow);
+      const text = fs.readFileSync(p, 'utf8');
+      const r = licensedStateProblems(text, rel, licensed, allow);
       problems.push(...r.problems);
+      if (health && /\.html?$/i.test(e.name)) problems.push(...areaServedProblems(text, rel, licensed, health));
       r.used.forEach((u) => usedRules.add(u));
     }
   };
@@ -145,4 +208,4 @@ function licensedStateProblemsInTree(dir, licensed, allow = ALLOW) {
   return { problems, files, usedRules: [...usedRules] };
 }
 
-module.exports = { US_STATES, ALLOW, FROZEN_BLOG, findStateLists, licensedStateProblems, licensedStateProblemsInTree };
+module.exports = { US_STATES, ALLOW, FROZEN_BLOG, findStateLists, licensedStateProblems, licensedStateProblemsInTree, isAccidentHealthPage, areaServedLists, areaServedProblems };

@@ -333,13 +333,15 @@ console.log('  ✓ Legal pages clean (em dashes / anchors)');
 }
 // 11a4. Guard: every list of US states a built file prints agrees with
 //       data/entity.json licensed_states, both ways: no state it does not
-//       license, and no list of its states that leaves one out (Y-74 PR-B). A list
+//       license, no list of its states that leaves one out, none out of order,
+//       and the Accident and Health pages' areaServed names only the health
+//       states (Y-74 PR-B). A list
 //       that is right for another reason passes only by an explicit rule in
 //       scripts/lib/licensed-states-guard.js ALLOW.
 {
   const { licensedStateProblemsInTree } = require('./lib/licensed-states-guard');
-  const { licensedStates } = require('./lib/licensed-states');
-  const { problems: stateProblems, files: stateFiles, usedRules } = licensedStateProblemsInTree(BUILD, licensedStates());
+  const { licensedStates, healthLicensedStates } = require('./lib/licensed-states');
+  const { problems: stateProblems, files: stateFiles, usedRules } = licensedStateProblemsInTree(BUILD, licensedStates(), undefined, { health: healthLicensedStates() });
   if (stateProblems.length) {
     console.error('\n✗ Licensed-states guard failed:');
     stateProblems.slice(0, 50).forEach((p) => console.error('  - ' + p));

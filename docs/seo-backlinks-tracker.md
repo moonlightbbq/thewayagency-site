@@ -79,7 +79,7 @@ Subject: Local insurance expert available for [seasonal topic] coverage
 Hi [reporter],
 
 I am Sheilia Royal, Agency Principal at The Way Agency, an independent insurance agency in
-Owensboro. We are licensed in KY, IN, and TN.
+Owensboro. We are licensed in KY, IN, OH, and TN.
 
 I write to offer myself as a local source for upcoming coverage on [Ohio River flood season /
 KY DOI rate filings / spring hail / I-65 commuter auto / open enrollment]. Independent agency

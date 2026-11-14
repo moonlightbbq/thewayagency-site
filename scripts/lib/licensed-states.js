@@ -25,4 +25,37 @@ function licensedStates(dataDir = DEFAULT_DATA) {
   return states.slice();
 }
 
-module.exports = { licensedStates };
+/**
+ * The licensed states where the agency also holds an Accident and Health line:
+ * data/entity.json health_licensed_states. Every one must be a licensed state;
+ * they come back in licensed_states order. A missing or empty list throws.
+ */
+function healthLicensedStates(dataDir = DEFAULT_DATA) {
+  const key = `health:${dataDir}`;
+  if (cache.has(key)) return cache.get(key).slice();
+  const file = path.join(dataDir, 'entity.json');
+  const listed = JSON.parse(fs.readFileSync(file, 'utf8')).health_licensed_states;
+  if (!Array.isArray(listed) || listed.length === 0) throw new Error(`licensed-states: ${file} lists no health_licensed_states`);
+  const licensed = licensedStates(dataDir);
+  for (const s of listed) if (!licensed.includes(s)) throw new Error(`licensed-states: health state "${s}" in ${file} is not a licensed state`);
+  const states = licensed.filter((s) => listed.includes(s));
+  cache.set(key, Object.freeze(states.slice()));
+  return states.slice();
+}
+
+// Products sold under an Accident and Health line although the site files them
+// under another line: disability income insurance (life/disability).
+const ACCIDENT_HEALTH_PRODUCTS = Object.freeze(['disability']);
+
+/**
+ * The states a page's Service areaServed names (Y-74): the health line and the
+ * Accident and Health products name only health_licensed_states; every other
+ * line names every licensed state.
+ * @param {{ line: string, productId?: string }} page
+ */
+function areaServedStates({ line, productId } = {}, dataDir = DEFAULT_DATA) {
+  if (line === 'health' || ACCIDENT_HEALTH_PRODUCTS.includes(productId)) return healthLicensedStates(dataDir);
+  return licensedStates(dataDir);
+}
+
+module.exports = { licensedStates, healthLicensedStates, areaServedStates, ACCIDENT_HEALTH_PRODUCTS };

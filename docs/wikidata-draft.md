@@ -7,7 +7,7 @@ Create at https://www.wikidata.org/wiki/Special:NewItem while logged into a Wiki
 ## Labels
 
 - English label: The Way Agency
-- English description: Independent insurance agency in Owensboro, Kentucky, United States, licensed in Kentucky, Indiana, and Tennessee
+- English description: Independent insurance agency in Owensboro, Kentucky, United States, licensed in Kentucky, Indiana, Ohio, and Tennessee
 
 ## Aliases (English)
 

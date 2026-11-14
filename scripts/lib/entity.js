@@ -49,12 +49,12 @@ function _list(items, conj, oxford) {
   return `${items.slice(0, -1).join(', ')}${oxford ? ',' : ''} ${conj} ${items[items.length - 1]}`;
 }
 
-/** ['KY','IN','TN','OH'] -> 'Kentucky, Indiana, Tennessee, and Ohio' (oxford: false drops the last comma). */
+/** ['KY','IN','TN','OH'] -> 'Kentucky, Indiana, Ohio, and Tennessee' (oxford: false drops the last comma). */
 function stateNamesText(codes, { oxford = true } = {}) {
   return _list(_names(codes), 'and', oxford);
 }
 
-/** ['KY','IN','TN','OH'] -> 'KY, IN, TN & OH' (conj '&', '&amp;' or 'and'). */
+/** ['KY','IN','TN','OH'] -> 'KY, IN, OH & TN' (conj '&', '&amp;' or 'and'). */
 function stateCodesText(codes, { conj = '&', oxford = false } = {}) {
   _names(codes);
   return _list(codes.slice(), conj, oxford);

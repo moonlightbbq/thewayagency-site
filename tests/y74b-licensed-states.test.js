@@ -26,7 +26,7 @@ const { stateNamesText, stateCodesText, stateCountWord, stateAreaServed, STATE_N
 const { licensedStates } = require('../scripts/lib/licensed-states');
 
 const THREE = ['KY', 'IN', 'TN'];
-const FOUR = ['KY', 'IN', 'TN', 'OH'];
+const FOUR = ['KY', 'IN', 'OH', 'TN'];
 // The list as the pages wrote it, in every form they used.
 const THREE_ONLY = /Kentucky, Indiana,? (?:and|&amp;|&) Tennessee|KY, IN,? (?:and|&amp;|&) TN\b|KY, IN, TN<|all three states|Three States\./g;
 
@@ -42,9 +42,9 @@ describe('state text formatters', () => {
     ]);
   });
   test('with Ohio added', () => {
-    assert.equal(stateNamesText(FOUR), 'Kentucky, Indiana, Tennessee, and Ohio');
-    assert.equal(stateNamesText(FOUR, { oxford: false }), 'Kentucky, Indiana, Tennessee and Ohio');
-    assert.equal(stateCodesText(FOUR, { conj: '&amp;' }), 'KY, IN, TN &amp; OH');
+    assert.equal(stateNamesText(FOUR), 'Kentucky, Indiana, Ohio, and Tennessee');
+    assert.equal(stateNamesText(FOUR, { oxford: false }), 'Kentucky, Indiana, Ohio and Tennessee');
+    assert.equal(stateCodesText(FOUR, { conj: '&amp;' }), 'KY, IN, OH &amp; TN');
     assert.equal(stateCountWord(FOUR), 'four');
   });
   test('two states and one state read naturally', () => {
@@ -88,7 +88,7 @@ describe('built surfaces derive the states', () => {
   const shared = require('../scripts/shared-templates');
   const office = JSON.parse(read('data/locations.json')).offices[0];
   test('the shared footer says the licensed states', () => {
-    assert.match(shared.renderFooter(office, null), /Licensed in KY, IN, TN &amp; OH\. Way Associates, Inc dba The Way Agency\./);
+    assert.match(shared.renderFooter(office, null), /Licensed in KY, IN, OH &amp; TN\. Way Associates, Inc dba The Way Agency\./);
   });
   test('no builder hard-codes the three states any more', () => {
     for (const f of ['scripts/builders/pages.js', 'scripts/builders/schema-generator.js', 'scripts/builders/llms.js',
@@ -112,11 +112,22 @@ describe('built surfaces derive the states', () => {
     };
     const ind = ctx.landingData.industries[0];
     const html = inject(pages.generateIndustryPage(ind, ctx), 'industry', ind);
-    assert.ok(html.includes(`Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, Tennessee, and Ohio.`));
-    assert.ok(html.includes('across Kentucky, Indiana, Tennessee, and Ohio, here are'));
+    assert.ok(html.includes(`Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, Ohio, and Tennessee.`));
+    assert.ok(html.includes('across Kentucky, Indiana, Ohio, and Tennessee, here are'));
     const served = [...html.matchAll(/"areaServed":\s*(\[[^\]]*\])/g)].map((m) => JSON.parse(m[1]).map((s) => s.name));
     assert.ok(served.length >= 1);
-    for (const s of served) assert.deepEqual(s, ['Kentucky', 'Indiana', 'Tennessee', 'Ohio']);
+    for (const s of served) assert.deepEqual(s, ['Kentucky', 'Indiana', 'Ohio', 'Tennessee']);
+    // Per line (Y0 11/14): a health product and disability serve only the states with an
+    // Accident and Health line; every other product serves every licensed state.
+    const productServed = (lineKey, id) => {
+      const product = ctx.products[lineKey].find((x) => x.id === id);
+      const out = pages.generateProductPage(product, lineKey, lineKey, lineKey, ctx);
+      return [...out.matchAll(/"areaServed":\s*(\[[^\]]*\])/g)].map((m) => JSON.parse(m[1]).map((x) => x.name));
+    };
+    assert.deepEqual(productServed('health', 'medicare'), [['Kentucky', 'Indiana', 'Tennessee']]);
+    assert.deepEqual(productServed('life', 'disability'), [['Kentucky', 'Indiana', 'Tennessee']]);
+    assert.deepEqual(productServed('life', 'term-life'), [['Kentucky', 'Indiana', 'Ohio', 'Tennessee']]);
+    assert.deepEqual(productServed('personal', 'pet'), [['Kentucky', 'Indiana', 'Ohio', 'Tennessee']]);
   });
   test('a carrier page names no state in its own copy (Y0: no OH on carrier pages)', () => {
     const pages = require('../scripts/builders/pages');
@@ -138,26 +149,47 @@ describe('hand-made pages (Y0 rulings)', () => {
   const CHANGED = ['src/pages/index.html', 'src/pages/about/index.html', 'src/pages/about/community.html', 'src/pages/about/locations.html',
     'src/pages/contact.html', 'src/pages/404.html', 'src/pages/about/claims.html', 'src/pages/ai-disclosure.html', 'src/pages/disclosures.html',
     'src/pages/information-security.html', 'src/pages/login.html', 'src/pages/privacy-notice.html', 'src/pages/terms.html',
-    'src/pages/privacy.html', 'src/pages/about/team.html', 'data/landing-pages.json', 'data/knowledge-base.json'];
+    'src/pages/privacy.html', 'src/pages/about/team.html', 'data/landing-pages.json', 'data/knowledge-base.json',
+    'src/pages/about/careers.html', 'src/pages/about/careers/apply.html', 'src/pages/about/careers/intern.html', 'src/pages/about/careers/pc-insurance-agent.html',
+    'src/pages/about/careers/employee-benefits-leader.html', 'data/seo.json'];
   // The only three-state text left on these pages, each by a ruling.
   const KEPT = {
-    'src/pages/privacy.html': ['Kentucky, Indiana, and Tennessee'], // "Residents of ..." (owner call)
     'src/pages/about/team.html': ['Kentucky, Indiana, and Tennessee', 'Kentucky, Indiana, and Tennessee'], // JSON-LD, option (a)
+    // The Employee Benefits role is health business: the Accident and Health states (Y-74 rework).
+    // JSON-LD and The Role, the location chip, the licence requirement and "a strong reputation in".
+    'src/pages/about/careers/employee-benefits-leader.html': ['Kentucky, Indiana, and Tennessee', 'KY, IN &amp; TN', 'Kentucky, Indiana, and Tennessee', 'KY, IN, and TN', 'KY, IN, and TN'],
   };
   test('no page Y0 cleared still lists only the three states, except the kept sentences', () => {
     for (const f of CHANGED) assert.deepEqual(read(f).match(THREE_ONLY) || [], KEPT[f] || [], f);
   });
-  test('privacy: the "Residents of" sentence is unchanged', () => {
-    assert.match(read('src/pages/privacy.html'), /<p>Residents of Kentucky, Indiana, and Tennessee may have additional privacy rights/);
+  test('privacy: the "Residents of" sentence names the four states (owner brief 11/14)', () => {
+    assert.match(read('src/pages/privacy.html'), /<p>Residents of Kentucky, Indiana, Ohio, and Tennessee may have additional privacy rights/);
+  });
+  test('home FAQ and the knowledge base make no health claim for all four states (Y0 H1)', () => {
+    for (const f of ['src/pages/index.html', 'data/knowledge-base.json']) {
+      const t = read(f);
+      assert.doesNotMatch(t, /all four states with [^.]*health/, f);
+      assert.match(t, /across all four states with personal, commercial, and life insurance\./, f);
+    }
+  });
+  test('the owner\'s footer: "Licensed in KY, IN, OH & TN." on the shared footer and every hand page footer', () => {
+    const shared = require('../scripts/shared-templates');
+    assert.match(shared.renderFooter(JSON.parse(read('data/locations.json')).offices[0], null), />Licensed in KY, IN, OH &amp; TN\. Way Associates, Inc dba The Way Agency\.</);
+    const { LEGACY_BLOG_PAGES } = require('../scripts/lib/legacy-blog-pages');
+    const hand = [...CHANGED.filter((f) => f.endsWith('.html')), ...Object.keys(LEGACY_BLOG_PAGES).map((n) => `src/pages/blog/${n}`)];
+    for (const f of hand) {
+      const footers = read(f).match(/>Licensed in [^<]*\. Way Associates, Inc dba The Way Agency\.</g) || [];
+      for (const ft of footers) assert.equal(ft, '>Licensed in KY, IN, OH &amp; TN. Way Associates, Inc dba The Way Agency.<', f);
+    }
   });
   test('team: only Sheilia Royal and Kelly McCallister show Ohio; no credential, number or JSON-LD names Ohio', () => {
     const html = read('src/pages/about/team.html');
     const cards = [...html.matchAll(/<div class="card team-(?:card|featured)" id="([a-z-]+)">([\s\S]*?)<p class="team-experience">([^<]*)<\/p>/g)]
       .map((m) => [m[1], m[3]]);
     assert.deepEqual(Object.fromEntries(cards), {
-      'sheilia-royal': 'Licensed in KY, IN, TN, OH',
+      'sheilia-royal': 'Licensed in KY, IN, OH, TN',
       'audrey-lillpop': 'Licensed in KY, IN',
-      'kelly-mccallister': 'Licensed in KY, IN, TN, OH',
+      'kelly-mccallister': 'Licensed in KY, IN, OH, TN',
       'jill-boone': 'Licensed in KY, IN',
     });
     const ld = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]).join('\n');
@@ -173,9 +205,17 @@ describe('hand-made pages (Y0 rulings)', () => {
       assert.match(read(`legal-archive/2026.10/${p}.html`), />Version 2026\.10<\/span>/, `${p} 2026.10 kept`);
     }
   });
-  test('out of scope pages still say three states (careers, sweepstakes)', () => {
-    for (const f of ['src/pages/about/careers.html', 'src/pages/forrest-frank-2026.html']) {
-      assert.doesNotMatch(read(f), /\bOhio\b|\bOH\b/, f);
+  test('out of scope: the ended sweepstakes page keeps its three states', () => {
+    assert.doesNotMatch(read('src/pages/forrest-frank-2026.html'), /\bOhio\b|\bOH\b/);
+  });
+  test('careers: Ohio everywhere except the Employee Benefits role\'s health lines', () => {
+    const eb = read('src/pages/about/careers/employee-benefits-leader.html');
+    assert.match(eb, /division across Kentucky, Indiana, and Tennessee/);
+    assert.match(eb, /willing to obtain KY, IN, and TN licenses/);
+    assert.match(eb, /<\/svg> KY, IN &amp; TN<\/span>/);
+    assert.match(eb, /strong reputation in KY, IN, and TN/);
+    for (const f of ['careers.html', 'careers/apply.html', 'careers/intern.html', 'careers/pc-insurance-agent.html']) {
+      assert.doesNotMatch(read(`src/pages/about/${f}`), /Kentucky, Indiana, and Tennessee|KY, IN,? (and|&amp;) TN/, f);
     }
   });
   test('STATE_NAMES spells Ohio; check-data-integrity accepts what it spells', () => {

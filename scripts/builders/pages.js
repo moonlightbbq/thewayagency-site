@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 // The agency reference for every JSON-LD block here (never a full agency node: SCHEMA-01, SCHEMA-02).
 const { orgRef, STATE_NAMES, stateNamesText, stateAreaServed } = require('../lib/entity');
-const { licensedStates } = require('../lib/licensed-states');
+const { licensedStates, areaServedStates } = require('../lib/licensed-states');
 const { canonicalHref, pageUrl } = require('../lib/site-urls');
 // Navigation blocks rendered from data/internal-links.json (LOCAL-01, BLOG-03, TECH-01, MKT-04).
 const { renderGuides, renderLocalHelp, renderNearby, renderRelatedIndustries, renderIndustriesSection } = require('./internal-links');
@@ -444,7 +444,7 @@ ${renderHead({
       "description": config.schema.serviceDesc,
       "url": `https://www.thewayagency.com${config.canonical}`,
       "provider": orgRef(),
-      "areaServed": stateAreaServed(LICENSED)
+      "areaServed": stateAreaServed(areaServedStates({ line: lineKey }))
     }, null, 2)}
   </script>
   <script type="application/ld+json">
@@ -648,7 +648,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
     "serviceType": product.name,
     "url": productUrl,
     "provider": orgRef(),
-    "areaServed": stateAreaServed(LICENSED),
+    "areaServed": stateAreaServed(areaServedStates({ line: lineKey, productId: product.id })),
     "description": product.summary || ''
   }, null, 2).replace(/</g, '\\u003c')}
   </script>${faqSchema}`;

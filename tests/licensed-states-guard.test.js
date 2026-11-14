@@ -5,7 +5,11 @@
  *   1. a list naming a state entity.json does not license fails;
  *   2. a list of the agency's states that leaves one out fails (the owner's 11/14
  *      complaint: "OH hasnt been added to all of the locations where our states
- *      are listed").
+ *      are listed");
+ *   3. a list of exactly the agency's states in another order fails (the owner's
+ *      order, 11/14: KY, IN, OH, TN).
+ * And the Accident and Health pages' JSON-LD areaServed names exactly
+ * health_licensed_states (Y0 ruling 11/14: no Accident and Health line in Ohio).
  * Exceptions only by an explicit rule (file + exact states + reason).
  * Synthetic pages, plus the real build when one is present.
  *
@@ -19,8 +23,8 @@ const path = require('node:path');
 
 const ROOT = path.join(__dirname, '..');
 const guard = require('../scripts/lib/licensed-states-guard');
-const { licensedStates } = require('../scripts/lib/licensed-states');
-const FOUR = ['KY', 'IN', 'TN', 'OH'];
+const { licensedStates, healthLicensedStates, areaServedStates } = require('../scripts/lib/licensed-states');
+const FOUR = ['KY', 'IN', 'OH', 'TN'];
 const THREE = ['KY', 'IN', 'TN'];
 const run = (html, licensed, rel = 'page.html', allow = []) => guard.licensedStateProblems(html, rel, licensed, allow).problems;
 
@@ -54,9 +58,68 @@ describe('direction 2: a list of the agency\'s states that leaves one out', () =
       assert.match(p[0], /leaves out/);
     }
   });
-  test('the full list passes in any order and form', () => {
-    for (const html of ['Kentucky, Indiana, Tennessee, and Ohio', 'KY, IN, TN &amp; OH', 'Ohio, Kentucky, Tennessee and Indiana']) assert.deepEqual(run(html, FOUR), [], html);
+  test('the full list passes in the agency\'s order, in any form', () => {
+    for (const html of ['Kentucky, Indiana, Ohio, and Tennessee', 'KY, IN, OH &amp; TN', 'KY/IN/OH/TN', 'Kentucky, Indiana, Ohio and Tennessee']) assert.deepEqual(run(html, FOUR), [], html);
     assert.deepEqual(run('Kentucky, Indiana, and Tennessee', THREE), []);
+  });
+});
+
+describe('direction 3: the agency\'s order (owner 11/14: KY, IN, OH, TN)', () => {
+  test('MUST-FAIL: the four states in any other order', () => {
+    for (const html of ['Kentucky, Indiana, Tennessee, and Ohio', 'KY, IN, TN &amp; OH', 'Ohio, Kentucky, Tennessee and Indiana', '{"text":"KY, IN, TN, OH"}']) {
+      const p = run(html, FOUR);
+      assert.equal(p.length, 1, html);
+      assert.match(p[0], /out of order \(data\/entity\.json order: KY, IN, OH, TN\)/, html);
+    }
+  });
+  test('a partial list is judged by direction 2, never by order', () => {
+    const p = run('Tennessee and Kentucky', FOUR);
+    assert.equal(p.length, 1);
+    assert.match(p[0], /leaves out/);
+  });
+});
+
+describe('areaServed on the Accident and Health pages', () => {
+  const page = (...names) => `<script type="application/ld+json">${JSON.stringify({ '@type': 'Service', areaServed: names.map((name) => ({ '@type': 'State', name })) })}</script>`;
+  const HEALTH = ['KY', 'IN', 'TN'];
+  test('the health pages and life/disability are Accident and Health pages; other life pages are not', () => {
+    for (const rel of ['health/index.html', 'health/medicare.html', 'life/disability.html']) assert.ok(guard.isAccidentHealthPage(rel), rel);
+    for (const rel of ['life/term-life.html', 'life/index.html', 'personal/pet.html', 'industries/restaurants.html']) assert.ok(!guard.isAccidentHealthPage(rel), rel);
+  });
+  test('MUST-FAIL: a health or disability page whose areaServed names Ohio', () => {
+    for (const rel of ['health/medicare.html', 'life/disability.html']) {
+      const p = guard.areaServedProblems(page('Kentucky', 'Indiana', 'Ohio', 'Tennessee'), rel, FOUR, HEALTH);
+      assert.equal(p.length, 1, rel);
+      assert.match(p[0], /Accident and Health page names exactly the health states/);
+    }
+  });
+  test('MUST-FAIL: a health page that leaves a health state out', () => {
+    assert.equal(guard.areaServedProblems(page('Kentucky', 'Indiana'), 'health/index.html', FOUR, HEALTH).length, 1);
+  });
+  test('the health states pass on a health page; every licensed state passes elsewhere; an unlicensed one fails elsewhere', () => {
+    assert.deepEqual(guard.areaServedProblems(page('Kentucky', 'Indiana', 'Tennessee'), 'health/index.html', FOUR, HEALTH), []);
+    assert.deepEqual(guard.areaServedProblems(page('Kentucky', 'Indiana', 'Ohio', 'Tennessee'), 'life/term-life.html', FOUR, HEALTH), []);
+    assert.equal(guard.areaServedProblems(page('Kentucky', 'Georgia'), 'personal/auto.html', FOUR, HEALTH).length, 1);
+  });
+  test('the builders\' source: health and disability read health_licensed_states, never every licensed state', () => {
+    assert.deepEqual(licensedStates(), FOUR);
+    assert.deepEqual(healthLicensedStates(), HEALTH);
+    assert.deepEqual(areaServedStates({ line: 'health' }), HEALTH);
+    assert.deepEqual(areaServedStates({ line: 'life', productId: 'disability' }), HEALTH);
+    assert.deepEqual(areaServedStates({ line: 'life', productId: 'term-life' }), FOUR);
+    assert.deepEqual(areaServedStates({ line: 'personal', productId: 'pet' }), FOUR);
+  });
+  test('MUST-FAIL: a health state that is not a licensed state, or no health list, throws', () => {
+    const { healthLicensedStates: fresh } = require('../scripts/lib/licensed-states');
+    for (const [name, extra] of [['not-licensed', { health_licensed_states: ['KY', 'GA'] }], ['missing', { health_licensed_states: undefined }], ['empty', { health_licensed_states: [] }]]) {
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), `health-states-${name}-`));
+      try {
+        fs.writeFileSync(path.join(dir, 'entity.json'), JSON.stringify({ licensed_states: FOUR, ...extra }));
+        assert.throws(() => fresh(dir), /licensed-states:/, name);
+      } finally {
+        fs.rmSync(dir, { recursive: true, force: true });
+      }
+    }
   });
 });
 
@@ -95,14 +158,25 @@ describe('a built tree', () => {
   });
   test('scripts/build.js runs the guard over BUILD with entity.json\'s states and throws on a problem', () => {
     const src = fs.readFileSync(path.join(ROOT, 'scripts', 'build.js'), 'utf8');
-    assert.match(src, /licensedStateProblemsInTree\(BUILD, licensedStates\(\)\)/);
+    assert.match(src, /licensedStateProblemsInTree\(BUILD, licensedStates\(\), undefined, \{ health: healthLicensedStates\(\) \}\)/);
     assert.match(src, /throw new Error\(`Licensed-states guard failed/);
   });
   test('when a build is present: no problem, every exception rule is used, and without OH the hand-made pages fail', (t) => {
     const build = path.join(ROOT, 'build');
     if (!fs.existsSync(path.join(build, 'index.html'))) { t.skip('no build/ (run node scripts/build.js)'); return; }
-    const r = guard.licensedStateProblemsInTree(build, licensedStates());
+    const r = guard.licensedStateProblemsInTree(build, licensedStates(), undefined, { health: healthLicensedStates() });
     assert.deepEqual(r.problems, []);
+    // Every Accident and Health page carries an areaServed, and it is the health states (no OH).
+    const ah = ['health/index.html', 'health/medicare.html', 'health/group-health.html', 'life/disability.html'];
+    for (const rel of ah) {
+      const lists = guard.areaServedLists(fs.readFileSync(path.join(build, rel), 'utf8'));
+      assert.ok(lists.length >= 1, rel);
+      for (const l of lists) assert.deepEqual(l, ['KY', 'IN', 'TN'], rel);
+    }
+    // Were the health pages to name every licensed state, the built tree fails.
+    const asIfHealthWereAll = guard.licensedStateProblemsInTree(build, licensedStates(), undefined, { health: licensedStates() });
+    const ahFiles = new Set(asIfHealthWereAll.problems.map((p) => p.split(':')[0]));
+    for (const rel of ah) assert.ok(ahFiles.has(rel), rel);
     const unused = guard.ALLOW.filter((a) => !r.usedRules.includes(a)).map((a) => `${a.file} ${a.codes}`);
     assert.deepEqual(unused, [], 'a stale exception rule');
     const without = guard.licensedStateProblemsInTree(build, THREE);

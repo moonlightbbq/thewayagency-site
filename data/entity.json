@@ -3,9 +3,11 @@
   "verified_by": null,
   "verified_on": null,
   "base_locality": null,
-  "licensed_states": ["KY", "IN", "TN", "OH"],
+  "licensed_states": ["KY", "IN", "OH", "TN"],
+  "_health_licensed_states_note": "The licensed states where the agency also holds an Accident and Health line. The health pages and life/disability name only these in their JSON-LD areaServed (scripts/lib/licensed-states.js areaServedStates; Y0 ruling 2026-11-14: the Ohio agency licence has Property, Casualty and Life, no Accident and Health). Change only on the owner's word.",
+  "health_licensed_states": ["KY", "IN", "TN"],
   "slogan": "The Way Insurance Gets Done",
-  "description": "Independent insurance agency licensed in Kentucky, Indiana, Tennessee, and Ohio.",
+  "description": "Independent insurance agency licensed in Kentucky, Indiana, Ohio, and Tennessee.",
   "same_as": [
     "https://www.facebook.com/TheWayAgency/",
     "https://www.linkedin.com/company/the-way-agency-insurance",
