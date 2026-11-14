@@ -1917,7 +1917,7 @@ function mustDecline() {
 }
 
 // The full 50-state list, always — and that is deliberate. The first version of
-// this offered only KY/IN/TN for a personal-lines cart, which meant an applicant
+// this offered only the licensed states for a personal-lines cart, which meant an applicant
 // in California had no option to select and the field silently stayed EMPTY.
 // The server treats an empty state as "not asked yet" (it has to — most people
 // have not reached the address step), so the one applicant we most needed to
@@ -1996,7 +1996,7 @@ function evaluateStateEligibility() {
   if (mustDecline()) showOutOfArea(); else hideOutOfArea();
 }
 
-// "Kentucky, Indiana and Tennessee", derived from the server's list so a fourth
+// The licensed states' names, derived from the server's list so a fourth
 // licensed state flows through here the day it is added there.
 function serviceStateNames() {
   if (!RULES) return '';
