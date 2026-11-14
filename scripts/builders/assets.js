@@ -160,7 +160,8 @@ function copySubPages(SRC, BUILD, injectVersion) {
 function copyRootFiles(ROOT, BUILD) {
   // The IndexNow key file (<32 hex>.txt) must be served from the host root (AEO-02).
   const indexNowKeyFiles = fs.readdirSync(ROOT).filter((f) => /^[0-9a-f]{32}\.txt$/.test(f));
-  for (const file of ['_redirects', '_headers', 'robots.txt', 'favicon.ico', ...indexNowKeyFiles]) {
+  // BingSiteAuth.xml: Bing Webmaster Tools re-checks this file to keep the site verified.
+  for (const file of ['_redirects', '_headers', 'robots.txt', 'favicon.ico', 'BingSiteAuth.xml', ...indexNowKeyFiles]) {
     const src = path.join(ROOT, file);
     if (fs.existsSync(src)) {
       fs.copyFileSync(src, path.join(BUILD, file));
