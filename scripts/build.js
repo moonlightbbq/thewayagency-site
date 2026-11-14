@@ -318,6 +318,19 @@ console.log('  ✓ Legal pages clean (em dashes / anchors)');
   }
   console.log(`  ✓ Blog HTML: ${blogPages.length} blog pages carry no javascript:, no event-handler attribute and no script URL; their posts hold only the generator's elements and attributes`);
 }
+// 11a3. Guard: every @thewayagency.com address a built file names is a real agency
+//       mailbox (scripts/lib/agency-email-guard.js, sage-server Y-83: the claims
+//       page named claims@, which does not exist). Runs over every built text file.
+{
+  const { agencyEmailProblemsInTree } = require('./lib/agency-email-guard');
+  const { problems: emailProblems, files: emailFiles } = agencyEmailProblemsInTree(BUILD);
+  if (emailProblems.length) {
+    console.error('\n✗ Agency email guard failed:');
+    emailProblems.slice(0, 50).forEach((p) => console.error('  - ' + p));
+    throw new Error(`Agency email guard failed (${emailProblems.length} issue(s)).`);
+  }
+  console.log(`  ✓ Agency email: ${emailFiles} built text files name only agency mailboxes`);
+}
 // The Google rating badge renders only from a fresh sync with a listing URL (TRUST-14).
 if (_reviews) console.log(`  ✓ Review badge: "${_reviews.rating} on Google", ${_reviews.count} reviews, synced ${_reviews.syncedAt.slice(0, 10)}`);
 else console.warn('  ⚠ Review badge hidden: the Google rating is missing, has no listing URL (agency.google_maps_url) or was last synced more than 30 days ago');
