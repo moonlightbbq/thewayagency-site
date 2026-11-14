@@ -115,7 +115,9 @@ describe('homepage (LOCAL-01 rec 1; RW-D1; D7)', () => {
     for (const h of [...HUBS.map((s) => `/insurance/${s}`), '/about/locations', '/health/']) assert.ok(hrefs(body).includes(h), h);
   });
   test('the title, the hero H1 and the hero subtitle are unchanged', () => {
-    assert.match(html, /<title>The Way Agency \| Independent Insurance in KY, IN &amp; TN<\/title>/);
+    // The states are the licensed ones (data/entity.json; Y-74 added Ohio), the rest of the title is unchanged.
+    const states = require('../scripts/lib/entity').stateCodesText(require('../scripts/lib/licensed-states').licensedStates(), { conj: '&amp;' });
+    assert.ok(html.includes(`<title>The Way Agency | Independent Insurance in ${states}</title>`), states);
     assert.match(html, /<h1 class="hero__title"[^>]*>The Way Insurance<br>Gets Done<\/h1>/);
     assert.match(html, /<p class="hero__subtitle"[^>]*>Insurance shouldn't be confusing or one-size-fits-all\./);
   });

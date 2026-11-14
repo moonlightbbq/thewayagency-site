@@ -6,7 +6,7 @@
 const fs = require('fs');
 const path = require('path');
 // The agency reference for every JSON-LD block here (never a full agency node: SCHEMA-01, SCHEMA-02).
-const { orgRef, STATE_NAMES, stateNamesText, stateCodesText, stateAreaServed } = require('../lib/entity');
+const { orgRef, STATE_NAMES, stateNamesText, stateAreaServed } = require('../lib/entity');
 const { licensedStates } = require('../lib/licensed-states');
 const { canonicalHref, pageUrl } = require('../lib/site-urls');
 // Navigation blocks rendered from data/internal-links.json (LOCAL-01, BLOG-03, TECH-01, MKT-04).
@@ -38,7 +38,7 @@ function esc(str) {
 // own state from STATE_NAMES (scripts/lib/entity.js); they never print a founding
 // or "serving since" year (TRUST-02).
 const LICENSED = licensedStates();
-const LICENSED_NAMES = stateNamesText(LICENSED); // 'Kentucky, Indiana, and Tennessee'
+const LICENSED_NAMES = stateNamesText(LICENSED); // every licensed state, by name
 
 // One hours line for the hub trust bars (owner decision 2026-10-02: Monday to
 // Friday, 9:00 AM to 5:00 PM Eastern; shown as ET so it stays right in daylight time).
@@ -1232,13 +1232,13 @@ ${linkedProducts.map(p => `          <a href="${canonicalHref(p.url)}" class="ca
 <html lang="en">
 ${renderHead({
     title: `${carrier.name} Insurance | The Way Agency`,
-    description: `${carrier.name} insurance through The Way Agency. ${carrier.description || `We represent ${carrier.name} for ${lineName.toLowerCase()} in ${LICENSED_NAMES}.`}`,
+    description: `${carrier.name} insurance through The Way Agency. ${carrier.description || `We represent ${carrier.name} for ${lineName.toLowerCase()}.`}`,
     canonical: `https://www.thewayagency.com/carriers/${carrier.slug}`,
     ogTitle: `${carrier.name} Insurance | The Way Agency`,
-    ogDescription: carrier.description || `We represent ${carrier.name} for insurance in ${stateCodesText(LICENSED)}.`,
+    ogDescription: carrier.description || `We represent ${carrier.name} at The Way Agency.`,
     ogUrl: `https://www.thewayagency.com/carriers/${carrier.slug}`,
     schema: `<script type="application/ld+json">
-  ${JSON.stringify({"@context":"https://schema.org","@type":"Organization","name":carrier.name,"description":carrier.description||`${carrier.name} insurance carrier represented by The Way Agency in ${LICENSED_NAMES}.`})}
+  ${JSON.stringify({"@context":"https://schema.org","@type":"Organization","name":carrier.name,"description":carrier.description||`${carrier.name} insurance carrier represented by The Way Agency.`})}
   </script>`,
   })}
 <body>
@@ -1248,7 +1248,7 @@ ${renderNav()}
 ${renderHero({
     eyebrow: 'Our Carriers',
     title: carrier.name,
-    subtitle: carrier.description || `We represent ${carrier.name} for ${lineName.toLowerCase()} in ${LICENSED_NAMES}.`,
+    subtitle: carrier.description || `We represent ${carrier.name} for ${lineName.toLowerCase()}.`,
     buttons: [
       { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
     ],

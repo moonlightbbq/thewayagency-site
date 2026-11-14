@@ -79,8 +79,8 @@ const RULES = Object.freeze([
   },
   {
     id: 'licensing',
-    why: 'two of the four agents hold no Tennessee licence (TRUST-03)',
-    patterns: [/\bEach agent is licensed in Kentucky, Indiana, and Tennessee\b/g, /\blicensed across three states\b/gi],
+    why: 'two of the four agents hold no Tennessee or Ohio licence (TRUST-03)',
+    patterns: [/\bEach agent is licensed in Kentucky, Indiana,? (?:and )?Tennessee(?:,? and Ohio)?\b/g, /\blicensed across (?:three|four) states\b/gi],
   },
   {
     id: 'claims-role',
