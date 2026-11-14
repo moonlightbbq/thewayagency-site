@@ -267,11 +267,50 @@ describe('a reviewer who cannot be reached: the content owner is alerted, nothin
     const e = r.calendar.year1[0];
     assert.equal(e.status, 'planned', 'not requested, so it is retried');
     assert.equal(e.reviewer_email, EMAIL_REV.email);
-    assert.match(e.review_send_error, /^2026-11-15: Email send failed \(403\)/);
+    assert.match(e.review_send_error, /^2026-11-15: RECIPIENT_NOT_INTERNAL: Email send failed \(403\)/);
+    assert.match(r.sent[1].subject, /^Blog review cannot reach its reviewer: /);
+    assert.match(r.sent[1].html, /give the entry in data\/content-calendar\.json a licensed reviewer who can be reached/);
     assert.equal(r.failures.length, 1);
     assert.equal(r.counts.alerts, 1);
     const fin = await run([entry('test-403', 2, 'in-review', assignedTo(EMAIL_REV))], { fail });
     assert.equal(fin.calendar.year1[0].final_reminder_dates, undefined, 'a refused reminder is not recorded');
+  });
+
+  test('SAGE cannot read the site (503 REVIEW_LANE_SITE_UNREADABLE): the true reason in plain words, recorded with its code, retried next run', async () => {
+    const fail = (to) => (to === SAGE_REV.email ? sageError(503, 'REVIEW_LANE_SITE_UNREADABLE') : null);
+    const r = await run([entry('test-503', 14, 'planned', assignedTo(SAGE_REV))], { fail });
+    assert.deepEqual(r.sent.map((m) => m.to), [SAGE_REV.email, OWNER]);
+    const alert = r.sent[1];
+    assert.match(alert.subject, /^Blog review request not sent \(SAGE could not read the site\): "SYNTHETIC test-503"/);
+    assert.match(alert.html, /SAGE could not read the website to verify this review request, so nothing was sent to Test Sage Reviewer \(test-sage-reviewer@example\.com\)\. It will try again on the next run\./);
+    assert.match(alert.html, /This is not a problem with the reviewer/);
+    assert.match(alert.html, /the request is sent again automatically on the next run/);
+    assert.doesNotMatch(alert.html, /not an active SAGE user|give the entry in data\/content-calendar\.json a licensed reviewer/);
+    const e = r.calendar.year1[0];
+    assert.equal(e.status, 'planned', 'not requested, so the next run tries again');
+    assert.equal(e.reviewer_email, SAGE_REV.email, 'never reassigned');
+    assert.match(e.review_send_error, /^2026-11-15: REVIEW_LANE_SITE_UNREADABLE: Email send failed \(503\)/);
+    assert.equal(r.failures.length, 1);
+    assert.equal(r.counts.alerts, 1);
+  });
+
+  test('sendError reads SAGE\'s 503 code from a JSON body or from plain text', () => {
+    const j = sre.sendError(503, JSON.stringify({ error: 'SAGE could not read the site', code: 'REVIEW_LANE_SITE_UNREADABLE' }));
+    assert.equal(j.status, 503);
+    assert.equal(j.code, 'REVIEW_LANE_SITE_UNREADABLE');
+    assert.equal(sre.isSiteUnreadable(j), true);
+    assert.equal(sre.sendError(503, 'upstream says REVIEW_LANE_SITE_UNREADABLE').code, 'REVIEW_LANE_SITE_UNREADABLE');
+    assert.equal(sre.sendError(403, '{"code":"RECIPIENT_NOT_INTERNAL"}').code, 'RECIPIENT_NOT_INTERNAL');
+  });
+
+  test('the two refusals are told apart from the status and the code text alone (no parsed code)', () => {
+    const e503 = Object.assign(new Error('Email send failed (503): {"error":"x","code":"REVIEW_LANE_SITE_UNREADABLE"}'), { status: 503, code: null });
+    const e403 = Object.assign(new Error('Email send failed (403): RECIPIENT_NOT_INTERNAL'), { status: 403, code: null });
+    assert.equal(sre.isSiteUnreadable(e503), true);
+    assert.equal(sre.isNotInternal(e503), false);
+    assert.equal(sre.isNotInternal(e403), true);
+    assert.equal(sre.isSiteUnreadable(e403), false);
+    assert.equal(sre.isSiteUnreadable(Object.assign(new Error('Email send failed (503): busy'), { status: 503 })), false, 'a plain 503 is not this case');
   });
 
   test('when the alert cannot be sent either, its full text is in the log and the run fails', async () => {
