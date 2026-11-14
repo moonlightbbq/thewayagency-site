@@ -100,6 +100,71 @@
       "last_reviewed": "2026-03"
     },
     {
+      "id": "condo",
+      "name": "Condo Insurance",
+      "slug": "condo",
+      "url": "/personal/condo",
+      "icon": "building",
+      "title_tag": "Condo Insurance | The Way Agency",
+      "meta_description": "Condo insurance covers your unit from the walls in, your belongings and your liability. We compare companies to fit your association's master policy.",
+      "h1": "What does condo insurance cover?",
+      "summary": "Covers the inside of your unit, your belongings and your personal liability. Works alongside your association's master policy, which usually covers the building and common areas.",
+      "cost_factors": [
+        "how much of the unit the master policy leaves to you",
+        "value of your belongings and improvements",
+        "deductible amount",
+        "claims history",
+        "the building's age and construction"
+      ],
+      "requirement": "Often required by the condo association's bylaws and by mortgage lenders.",
+      "common_exclusions": [
+        "flood damage",
+        "earthquake damage",
+        "the building and common areas (the association's policy)",
+        "normal wear and tear"
+      ],
+      "related_products": [
+        "renters",
+        "flood",
+        "umbrella",
+        "auto"
+      ],
+      "last_reviewed": "2026-11"
+    },
+    {
+      "id": "dwelling_fire",
+      "name": "Landlord Insurance",
+      "slug": "landlord",
+      "url": "/personal/landlord",
+      "icon": "house",
+      "title_tag": "Landlord Insurance for Rental Homes | The Way Agency",
+      "meta_description": "Landlord insurance (a dwelling fire policy) covers a 1 to 4 family home you rent out: the building, lost rent and your liability. Compare options with us.",
+      "h1": "What does landlord insurance cover?",
+      "summary": "Covers a 1 to 4 family home you rent to others: the building, your liability as the owner and, on most policies, the rent you lose while a covered loss is repaired. Your tenants' belongings are not covered; that is their renters policy.",
+      "cost_factors": [
+        "the home's replacement cost",
+        "age, roof and systems",
+        "number of units",
+        "deductible amount",
+        "claims history"
+      ],
+      "requirement": "Required by most mortgage lenders on a rental property. A homeowners policy usually does not cover a home you rent out.",
+      "common_exclusions": [
+        "tenants' belongings",
+        "flood damage",
+        "earthquake damage",
+        "wear and tear and maintenance",
+        "a building with five or more units, or one owned through a business entity (commercial property)"
+      ],
+      "related_products": [
+        "home",
+        "umbrella",
+        "flood",
+        "renters"
+      ],
+      "last_reviewed": "2026-11"
+    },
+    {
       "id": "umbrella",
       "name": "Umbrella Insurance",
       "slug": "umbrella",
@@ -224,6 +289,38 @@
         "auto"
       ],
       "last_reviewed": "2026-03"
+    },
+    {
+      "id": "rv",
+      "name": "RV Insurance",
+      "slug": "rv",
+      "url": "/personal/rv",
+      "icon": "caravan",
+      "title_tag": "RV Insurance for Motorhomes and Campers | The Way Agency",
+      "meta_description": "RV insurance covers motorhomes and towable campers: damage, liability on the road and your belongings inside. The Way Agency compares companies for you.",
+      "h1": "What does RV insurance cover?",
+      "summary": "Covers motorhomes (Class A, B and C) and towables (travel trailers, fifth wheels and pop-up campers): damage to the RV, liability when you drive it, and on many policies your belongings inside and campsite liability.",
+      "cost_factors": [
+        "type and value of the RV",
+        "how often you use it and whether you live in it full time",
+        "where it is stored",
+        "driving record",
+        "deductible amount"
+      ],
+      "requirement": "A motorhome you drive needs at least the liability your state requires. A towable takes liability from the vehicle pulling it, but its own damage needs its own coverage.",
+      "common_exclusions": [
+        "normal wear and tear",
+        "mechanical breakdown (unless added)",
+        "mold and slow leaks",
+        "commercial or rental use (unless added)"
+      ],
+      "related_products": [
+        "auto",
+        "boat",
+        "umbrella",
+        "motorcycle"
+      ],
+      "last_reviewed": "2026-11"
     },
     {
       "id": "classic-car",

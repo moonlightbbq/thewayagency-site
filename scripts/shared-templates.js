@@ -28,10 +28,13 @@ function renderNav() {
             <a href="/personal/home" class="nav__dropdown-item">Home</a>
             <a href="/personal/auto" class="nav__dropdown-item">Auto</a>
             <a href="/personal/renters" class="nav__dropdown-item">Renters</a>
+            <a href="/personal/condo" class="nav__dropdown-item">Condo</a>
+            <a href="/personal/landlord" class="nav__dropdown-item">Landlord</a>
             <a href="/personal/umbrella" class="nav__dropdown-item">Umbrella</a>
             <a href="/personal/flood" class="nav__dropdown-item">Flood</a>
             <a href="/personal/motorcycle" class="nav__dropdown-item">Motorcycle</a>
             <a href="/personal/boat" class="nav__dropdown-item">Boat</a>
+            <a href="/personal/rv" class="nav__dropdown-item">RV</a>
             <a href="/personal/classic-car" class="nav__dropdown-item">Classic Car</a>
             <a href="/personal/earthquake" class="nav__dropdown-item">Earthquake</a>
             <a href="/personal/pet" class="nav__dropdown-item">Pet</a>

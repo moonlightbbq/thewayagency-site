@@ -452,5 +452,114 @@
         "answer": "Most comprehensive pet insurance plans cover hereditary and breed-specific conditions  -  like hip dysplasia in German Shepherds, IVDD in Dachshunds, or heart conditions in Cavalier King Charles Spaniels  -  as long as they were not pre-existing at enrollment. This is one of the most important reasons to enroll early, before these conditions develop. Some budget-tier or accident-only plans exclude hereditary conditions, so read the policy carefully. If you own a breed known for expensive health issues, a plan that covers hereditary conditions is especially important."
       }
     ]
+  },
+  "condo": {
+    "direct_answer": "Condo insurance (an HO-6 policy) covers what your association's master policy leaves to you: the inside of your unit, your belongings, and your personal liability. The master policy usually covers the building and common areas. How much of the unit is yours to insure depends on that policy and your bylaws, so the first step is reading them together.",
+    "who_needs_it": "If you own a condominium or a townhome in an association, you need a policy that picks up where the association's coverage stops. Many associations require owners to carry one, and a lender usually does too. We look at your association's master policy with you, find the gap between what it covers and what you own, and match the policy to that gap.",
+    "what_it_covers": [
+      "Your unit from the walls in: flooring, cabinets, fixtures and improvements you or an earlier owner made, up to the limit the master policy leaves to you",
+      "Your personal belongings, in the unit or away from home",
+      "Personal liability if someone is hurt in your unit or you damage a neighbor's unit",
+      "Loss of use: extra living costs while your unit is repaired after a covered loss",
+      "Loss assessment: your share of a covered loss the association assesses to owners (on many policies)"
+    ],
+    "what_it_doesnt_cover": [
+      "The building's structure and common areas, which the association's master policy covers",
+      "Flood damage, which needs a separate flood policy",
+      "Earthquake damage, unless added",
+      "Normal wear and tear and maintenance"
+    ],
+    "cost_narrative": "What a condo policy costs depends mostly on how much of the unit the master policy leaves to you, the value of your belongings and improvements, your deductible, your claims history and the building itself. A master policy that covers only the bare walls leaves more for your policy to cover than one that covers the unit as it was first built. As an independent agency, we compare the insurance companies we're appointed with and match you with the right one for your unit.",
+    "faqs": [
+      {
+        "question": "Does my association's master policy cover my unit?",
+        "answer": "Partly. Most master policies cover the building's structure and common areas. Some also cover the inside of each unit as it was originally built, and some cover only the bare walls. Your bylaws and the master policy say which, and your condo policy should cover the rest."
+      },
+      {
+        "question": "What is loss assessment coverage?",
+        "answer": "If the association has a covered loss bigger than its policy pays, or a large deductible, it can assess each owner a share. Loss assessment coverage on your condo policy can pay your share, up to its limit."
+      },
+      {
+        "question": "Do I need condo insurance if my association does not require it?",
+        "answer": "Your belongings, your improvements and your personal liability are not covered by the master policy. A condo policy is how you protect them, whether or not it is required."
+      },
+      {
+        "question": "Does condo insurance cover water damage from a neighbor's unit?",
+        "answer": "Sudden water damage, like a burst pipe in the unit above, is usually covered for your part of the unit and your belongings. Flooding from outside is not; that needs a flood policy."
+      }
+    ]
+  },
+  "dwelling_fire": {
+    "direct_answer": "Landlord insurance, often written as a dwelling fire policy, covers a 1 to 4 family home you rent to others. It protects the building, your liability as the owner and, on most policies, the rent you lose while a covered loss is repaired. A homeowners policy usually stops covering a home once you rent it out, so a rental needs its own policy.",
+    "who_needs_it": "If you rent out a house, a duplex, or a building with up to four units, and you own it in your own name, a landlord policy is the usual fit. Your lender will expect one. If the building has five or more units, or you own it through an LLC or another business, it is written as commercial property instead, and we can quote that too.",
+    "what_it_covers": [
+      "The dwelling: the rental home's structure, and on many policies detached structures like a garage or shed",
+      "Fair rental value: the rent you lose while a covered loss makes the home unlivable (on most policies)",
+      "Premises liability if a tenant or visitor is hurt and you are found responsible (added to the policy or written alongside it)",
+      "Your own property kept at the rental for its upkeep, like appliances you supply"
+    ],
+    "what_it_doesnt_cover": [
+      "Your tenants' belongings, which their renters policy covers",
+      "Flood damage, which needs a separate flood policy",
+      "Earthquake damage, unless added",
+      "Wear and tear, maintenance and damage from neglect",
+      "A building with five or more units, or one owned through a business entity, which is written as commercial property"
+    ],
+    "cost_narrative": "What a landlord policy costs depends on the home's replacement cost, its age, roof and systems, the number of units, your deductible and your claims history. Policies differ in how they settle a loss (replacement cost or actual cash value) and in what perils they name, so we compare those terms as well as the price. As an independent agency, we compare the insurance companies we're appointed with and match you with the right one for your rental.",
+    "faqs": [
+      {
+        "question": "Can I keep my homeowners policy if I rent my home out?",
+        "answer": "Usually not. Most homeowners policies cover a home you live in. Once you rent it to others, tell your agent: the home generally needs a landlord or dwelling fire policy instead."
+      },
+      {
+        "question": "Does landlord insurance cover my tenant's belongings?",
+        "answer": "No. A landlord policy covers your building and your liability. Your tenants need their own renters insurance for their belongings, and many landlords require it in the lease."
+      },
+      {
+        "question": "What if I own the rental through an LLC?",
+        "answer": "A rental owned by an LLC or another business, or a building with five or more units, is written as commercial property rather than a personal landlord policy. We quote both."
+      },
+      {
+        "question": "Does landlord insurance pay for lost rent?",
+        "answer": "Most policies include fair rental value coverage, which pays the rent you lose while the home is being repaired after a covered loss. Check the limit and how long it pays."
+      }
+    ]
+  },
+  "rv": {
+    "direct_answer": "RV insurance covers recreational vehicles: motorhomes you drive (Class A, B and C) and towables you pull (travel trailers, fifth wheels and pop-up campers). It protects the RV against damage, covers your liability on the road for a motorhome, and on many policies covers your belongings inside and your liability at the campsite.",
+    "who_needs_it": "If you own a motorhome, your state requires liability coverage to drive it, and your lender will require physical damage coverage on a financed RV. If you own a towable, the vehicle pulling it carries the liability on the road, but damage to the camper itself needs its own coverage. Full-time RVers need a policy written for living in the RV, which adds coverage closer to a homeowners policy.",
+    "what_it_covers": [
+      "Collision and comprehensive damage to the RV, including fire, theft, storms and hitting an animal",
+      "Liability for injuries and damage you cause while driving a motorhome",
+      "Personal belongings inside the RV (on many policies)",
+      "Campsite or vacation liability while the RV is parked and in use (on many policies)",
+      "Emergency expenses and roadside help if the RV breaks down away from home (on many policies)",
+      "Full-timer coverage for an RV you live in year round (when added)"
+    ],
+    "what_it_doesnt_cover": [
+      "Normal wear and tear and routine maintenance",
+      "Mechanical breakdown, unless added",
+      "Mold, rot and damage from slow leaks over time",
+      "Renting the RV out or using it for business, unless added"
+    ],
+    "cost_narrative": "What RV insurance costs depends on the type and value of the RV, how often you use it and whether you live in it, where it is stored when you are not traveling, your driving record and your deductible. A motorhome costs more to insure than a towable because it carries its own liability. As an independent agency, we compare the insurance companies we're appointed with and match you with the right one for how you travel.",
+    "faqs": [
+      {
+        "question": "Does my auto policy cover my travel trailer?",
+        "answer": "Your auto policy usually extends liability to a trailer you are towing, but not damage to the trailer itself. To cover the camper against damage or theft, it needs its own coverage."
+      },
+      {
+        "question": "Do I need different coverage if I live in my RV full time?",
+        "answer": "Yes. Full-timer coverage adds protection closer to a homeowners policy, like personal liability when you are parked and more coverage for your belongings. Tell us if the RV is your home."
+      },
+      {
+        "question": "Can I pause coverage while my RV is stored?",
+        "answer": "Many policies let you lower coverage while the RV is in storage and not being driven, while keeping comprehensive coverage against fire, theft and storms. We can look at what fits your season."
+      },
+      {
+        "question": "Is a pop-up camper covered the same way as a fifth wheel?",
+        "answer": "Both are towables, so the vehicle pulling them carries the road liability, and each needs its own coverage for damage. The value and how it is stored change the cost."
+      }
+    ]
   }
 }
