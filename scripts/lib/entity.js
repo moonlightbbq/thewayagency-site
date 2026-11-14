@@ -18,9 +18,9 @@
  *
  * Owner-verified facts (base locality, sameAs, founding date, mailing contact
  * point) come from data/entity.json, which SAGE's data-edit allowlist does not
- * include. This file reads no files: tests/render-review-gate.test.js runs
- * generate-blog.js from a temp tree that holds scripts/lib and three data
- * files only.
+ * include. This file reads no files (scripts/lib/licensed-states.js reads the
+ * licensed states): tests/render-review-gate.test.js runs generate-blog.js from
+ * a temp tree that holds scripts/lib and four data files only.
  */
 'use strict';
 
@@ -30,7 +30,45 @@ const ORG_ID = `${SITE_URL}/#organization`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
 const LOGO_URL = `${SITE_URL}/src/assets/images/logo-social.jpg`; // 631x631 JPEG
 const AGENCY_NAME = 'The Way Agency';
-const STATE_NAMES = Object.freeze({ KY: 'Kentucky', IN: 'Indiana', TN: 'Tennessee' });
+// Every state the site can name. The states the agency is licensed in are
+// data/entity.json licensed_states (read by scripts/lib/licensed-states.js);
+// a state listed here is only one the site knows how to spell.
+const STATE_NAMES = Object.freeze({ KY: 'Kentucky', IN: 'Indiana', TN: 'Tennessee', OH: 'Ohio' });
+const COUNT_WORDS = ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+
+function _names(codes) {
+  return (codes || []).map((s) => {
+    if (!STATE_NAMES[s]) throw new Error(`entity: unknown licensed state "${s}"`);
+    return STATE_NAMES[s];
+  });
+}
+
+function _list(items, conj, oxford) {
+  if (items.length <= 1) return items[0] || '';
+  if (items.length === 2) return `${items[0]} ${conj} ${items[1]}`;
+  return `${items.slice(0, -1).join(', ')}${oxford ? ',' : ''} ${conj} ${items[items.length - 1]}`;
+}
+
+/** ['KY','IN','TN','OH'] -> 'Kentucky, Indiana, Tennessee, and Ohio' (oxford: false drops the last comma). */
+function stateNamesText(codes, { oxford = true } = {}) {
+  return _list(_names(codes), 'and', oxford);
+}
+
+/** ['KY','IN','TN','OH'] -> 'KY, IN, TN & OH' (conj '&', '&amp;' or 'and'). */
+function stateCodesText(codes, { conj = '&', oxford = false } = {}) {
+  _names(codes);
+  return _list(codes.slice(), conj, oxford);
+}
+
+/** ['KY','IN','TN','OH'] -> 'four'. */
+function stateCountWord(codes) {
+  return COUNT_WORDS[(codes || []).length] || String((codes || []).length);
+}
+
+/** [{ '@type': 'State', name }] for each licensed state (JSON-LD areaServed). */
+function stateAreaServed(codes) {
+  return _names(codes).map((name) => ({ '@type': 'State', name }));
+}
 
 /** The reference every page except the homepage uses for the agency. */
 function orgRef() {
@@ -91,10 +129,7 @@ function hoursAvailable(hours) {
 function agencyNode({ agency, office, entity }) {
   const telephone = phoneE164(office.phone);
   const base = entity.base_locality || null; // entity-schema D1; null: no address at all
-  const areaServed = (entity.licensed_states || []).map((s) => {
-    if (!STATE_NAMES[s]) throw new Error(`entity: unknown licensed state "${s}"`);
-    return { '@type': 'State', name: STATE_NAMES[s] };
-  });
+  const areaServed = stateAreaServed(entity.licensed_states);
   const node = {
     '@context': 'https://schema.org',
     '@type': base ? 'InsuranceAgency' : 'Organization',
@@ -140,4 +175,5 @@ function agencyNode({ agency, office, entity }) {
 module.exports = {
   SITE_URL, HOME_URL, ORG_ID, WEBSITE_ID, LOGO_URL, AGENCY_NAME, STATE_NAMES,
   orgRef, teamMemberUrl, blogPostUrl, phoneE164, hoursAvailable, agencyNode,
+  stateNamesText, stateCodesText, stateCountWord, stateAreaServed,
 };
