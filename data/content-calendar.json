@@ -2001,7 +2001,7 @@
       "reviewer": "Jill Boone",
       "reviewer_email": "jill@thewayagency.com",
       "reviewer_slug": "jill-boone",
-      "review_send_error": "2026-11-11: Email send failed (403): {\"error\":\"Not sent: an API key can send only to active SAGE users or the system mailbox, and this address is neither: jill@thewayagency.com. The draft is saved in the SAGE email queue for a person to review, with its To only: the queue does not keep a Cc.\",\"code\""
+      "review_send_error": "2026-11-14: Email send failed (403): {\"error\":\"Not sent: an API key can send only to active SAGE users or the system mailbox, and this address is neither: jill@thewayagency.com. The draft is saved in the SAGE email queue for a person to review, with its To only: the queue does not keep a Cc.\",\"code\""
     },
     {
       "week": 36,
@@ -2037,12 +2037,13 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "planned",
+      "status": "in-review",
       "source": "markdown",
       "notes": "",
       "reviewer": "Audrey Lillpop",
       "reviewer_email": "audrey@thewayagency.com",
-      "reviewer_slug": "audrey-lillpop"
+      "reviewer_slug": "audrey-lillpop",
+      "review_sent_date": "2026-11-14"
     },
     {
       "week": 38,
