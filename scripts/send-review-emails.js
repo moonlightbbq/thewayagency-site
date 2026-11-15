@@ -87,6 +87,8 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+// Y-84 (A): no review request for a post that breaks the blog writing rules.
+const { postProblems, loadExceptions } = require('./lib/blog-writing-guard');
 
 const ROOT = path.resolve(__dirname, '..');
 const CALENDAR_PATH = path.join(ROOT, 'data', 'content-calendar.json');
@@ -659,6 +661,7 @@ function formatEmailChannelEmail(post, content, reviewer, token, { kind = 'reque
 // REVIEW_LANE_SITE_UNREADABLE, SAGE's own access to the site.
 const ALERT_FIX = Object.freeze({
   reviewer: 'Every post needs its assigned licensed reviewer\'s approval to publish, so this post will not publish on its date unless that is fixed. Nothing was reassigned. To fix it: give the entry in data/content-calendar.json a licensed reviewer who can be reached (an active SAGE user, or a data/team.json member with "review_via": "email"), or correct data/team.json.',
+  writing: 'This is not a problem with the reviewer, and nothing was sent or reassigned. The post breaks the blog writing rules (scripts/lib/blog-writing-guard.js: no em dash, none of the stock lines, every statistic names its source, no "(coming soon)"). Fix the writing in its markdown file; the review request goes out automatically on the next run. The post cannot publish until it has been approved.',
   site_unreadable: 'This is not a problem with the reviewer, and nothing in data/content-calendar.json or data/team.json needs to change. Nothing was sent and nothing was reassigned. SAGE needs its access to the website repository restored; the request is sent again automatically on the next run. The post cannot publish until it has been approved.',
 });
 
@@ -666,7 +669,7 @@ function formatAlertEmail(post, problem, { fix = 'reviewer' } = {}) {
   return `
 <div style="max-width:680px;margin:0 auto;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;">
   <div style="background:#7f1d1d;color:white;padding:24px 32px;border-radius:12px 12px 0 0;">
-    <p style="margin:0 0 4px;font-size:11px;color:#fecaca;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;">Blog review cannot reach its reviewer</p>
+    <p style="margin:0 0 4px;font-size:11px;color:#fecaca;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;">${fix === 'writing' ? 'Blog review request not sent' : 'Blog review cannot reach its reviewer'}</p>
     <h1 style="margin:0;font-size:20px;font-weight:700;line-height:1.3;">${escHtml(post.title)}</h1>
     <p style="margin:8px 0 0;font-size:13px;color:#fecaca;">${escHtml(post.slug)} &middot; scheduled for ${escHtml(post.publish_date)}</p>
   </div>
@@ -799,6 +802,7 @@ const isNotInternal = (err) => !!err && (err.code === 'RECIPIENT_NOT_INTERNAL' |
 async function runReviewEmails({
   calendar, team, today, sageUrl, tokenSecret, readPostBytes: readBytes, send,
   finalOnly = false, alertTo = REVIEW_CC, log = (line) => console.log(line),
+  writingExceptions = loadExceptions(path.join(__dirname, '..', 'data', 'blog-writing-exceptions.json')),
 }) {
   if (!tokenSecret) throw new Error('runReviewEmails: the review-request token secret is required');
   const counts = { requests: 0, reminders: 0, finals: 0, alerts: 0, queued: 0 };
@@ -812,7 +816,9 @@ async function runReviewEmails({
     alerted.add(post.slug);
     const subject = fix === 'site_unreadable'
       ? `Blog review request not sent (SAGE could not read the site): "${post.title}" (${post.publish_date})`
-      : `Blog review cannot reach its reviewer: "${post.title}" (${post.publish_date})`;
+      : fix === 'writing'
+        ? `Blog review request not sent (the post breaks the writing rules): "${post.title}" (${post.publish_date})`
+        : `Blog review cannot reach its reviewer: "${post.title}" (${post.publish_date})`;
     log(`  ! ALERT for "${post.title}" (${post.slug}): ${problem}`);
     try {
       await send(alertTo, subject, formatAlertEmail(post, problem, { fix }), { cc: null });
@@ -880,6 +886,20 @@ async function runReviewEmails({
       const bytes = readBytes(post.slug);
       if (!bytes) {
         log(`  ! Skipping "${post.title}" — markdown file not found`);
+        continue;
+      }
+      // Y-84 (A): the reviewer only ever approves text that keeps the writing
+      // rules. A post that breaks one stays planned, keeps any reviewer it
+      // names, records why on the entry (review_send_error, read by the queue
+      // status and SAGE), and its content owner is alerted with each problem.
+      const writing = postProblems(post.slug, bytes.toString('utf8'), writingExceptions).problems;
+      if (writing.length) {
+        const list = writing.slice(0, 8).map((w) => `line ${w.line} [${w.rule}] ${w.text}`).join('; ');
+        const more = writing.length > 8 ? `; and ${writing.length - 8} more` : '';
+        post.review_send_error = `${today}: WRITING_RULES: ${writing.length} problem(s) in src/blog/${post.slug}.md, first: line ${writing[0].line} [${writing[0].rule}]`.slice(0, 300);
+        calendarChanged = true;
+        failures.push(`${post.slug}: breaks the blog writing rules (${writing.length} problem(s)); no review request sent`);
+        await alert(post, `No review request was sent: src/blog/${post.slug}.md breaks the blog writing rules in ${writing.length} place(s): ${list}${more}.`, { fix: 'writing' });
         continue;
       }
       let member;

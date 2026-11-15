@@ -13,7 +13,7 @@ tags: insurance review, checklist, year-end, coverage review, kentucky
 
 The end of the year is a natural time to take stock. You review your finances, set goals, and plan for the year ahead. Your insurance should be part of that process.
 
-Life changes throughout the year — a new car, a home renovation, a teenager who started driving, a new baby, a side business, a change in income. Every one of these affects your insurance needs. If you do not review your policies at least once a year, your coverage drifts out of alignment with your actual life, and gaps appear that you will not notice until you file a claim.
+Life changes throughout the year: a new car, a home renovation, a teenager who started driving, a new baby, a side business, a change in income. Every one of these affects your insurance needs. If you do not review your policies at least once a year, your coverage drifts out of alignment with your actual life, and gaps appear that you will not notice until you file a claim.
 
 Here is a practical checklist to walk through before the calendar turns.
 
@@ -23,13 +23,13 @@ Pull out your homeowners [declarations page](/blog/understanding-your-insurance-
 
 **Is your dwelling coverage still accurate?** Construction costs have risen significantly in recent years. If your policy insures your home for $200,000 but it would cost $280,000 to rebuild today, you are underinsured. Ask your agent to run a replacement cost estimate.
 
-**Did you make home improvements this year?** A new roof, a kitchen renovation, a finished basement, a deck, an addition — all of these increase your home's replacement value and should be reflected in your coverage.
+**Did you make home improvements this year?** A new roof, a kitchen renovation, a finished basement, a deck, an addition: all of these increase your home's replacement value and should be reflected in your coverage.
 
 **Are your personal property limits adequate?** Think about major purchases you made this year. New furniture, electronics, appliances, or other items increase the total value of your belongings. If you have outgrown your current limits, adjust them.
 
 **Do you have the right endorsements?** Check whether you have sewer backup coverage, water damage coverage, and scheduled items for high-value belongings like jewelry, art, or firearms. If you acquired any high-value items this year, schedule them on your policy.
 
-**Has your risk profile changed?** Did you install a trampoline, get a dog, add a swimming pool, or start a home-based business? These all affect your homeowners policy — either your coverage or your premium, and sometimes both.
+**Has your risk profile changed?** Did you install a trampoline, get a dog, add a swimming pool, or start a home-based business? These all affect your homeowners policy: either your coverage or your premium, and sometimes both.
 
 ## Auto insurance review
 
@@ -43,7 +43,7 @@ Pull out your homeowners [declarations page](/blog/understanding-your-insurance-
 
 **Is your liability coverage high enough?** Most agents recommend at least 100/300/100. If you have been carrying state minimums, now is a good time to increase.
 
-**Do you have uninsured motorist coverage?** Kentucky's uninsured driver rate is around 12 percent. If you dropped or reduced UM/UIM coverage, reconsider.
+**Do you have uninsured motorist coverage?** Some Kentucky drivers carry no insurance at all. If you dropped or reduced UM/UIM coverage, reconsider.
 
 ## Life insurance review
 
@@ -75,7 +75,7 @@ Pull out your homeowners [declarations page](/blog/understanding-your-insurance-
 
 ## Umbrella policy review
 
-**Do you have an umbrella policy?** If you have assets to protect — a home, savings, retirement accounts — an umbrella policy adds $1 million or more in liability coverage above your auto and home policies for typically $200 to $400 per year. If you do not have one, this is worth adding.
+**Do you have an umbrella policy?** If you have assets to protect (a home, savings, retirement accounts), an umbrella policy adds $1 million or more in liability coverage above your auto and home policies for typically $200 to $400 per year. If you do not have one, this is worth adding.
 
 **Are your underlying limits high enough?** Umbrella policies require minimum underlying limits on your auto and home policies. Make sure your base policies meet those requirements.
 
@@ -101,7 +101,7 @@ Either way, do not let another year end without knowing where you stand.
 
 ### FAQ: How often should I review my insurance coverage?
 
-At least once a year, and any time you experience a major life change — buying a home, having a baby, getting married or divorced, changing jobs, starting a business, or making a major purchase. An annual review catches changes you may have forgotten to report throughout the year.
+At least once a year, and any time you experience a major life change: buying a home, having a baby, getting married or divorced, changing jobs, starting a business, or making a major purchase. An annual review catches changes you may have forgotten to report throughout the year.
 
 ### FAQ: What is the most commonly overlooked item in an insurance review?
 

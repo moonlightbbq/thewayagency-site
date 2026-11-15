@@ -306,7 +306,7 @@ describe('a held post never renders, and is loud when its date arrives', () => {
     const publishStep = wf.slice(wf.indexOf('- name: Publish scheduled posts'), wf.indexOf('- name: Commit and push'));
     assert.match(publishStep, /BLOG_REVIEW_TOKEN_SECRET: \$\{\{ secrets\.BLOG_REVIEW_TOKEN_SECRET \}\}/);
     assert.match(wf, /SAGE_REVIEW_URL: \$\{\{ secrets\.SAGE_REVIEW_URL \}\}/);
-    assert.match(wf, /queue-status\.js --fail-on I4,I2b,I6,I7,I8,I9\n/, 'I8 (due without licensed approval) turns the publish run red');
+    assert.match(wf, /queue-status\.js --fail-on I4,I2b,I6,I7,I8,I9,W1\n/, 'I8 (due without licensed approval) and W1 (writing holds) turn the publish run red');
     assert.match(wf, /REQUIRED: unset \(or under 32 characters\), this step exits 2/);
   });
 
