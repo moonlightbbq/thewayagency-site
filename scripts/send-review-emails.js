@@ -58,6 +58,12 @@
  * exits 2. A 403 RECIPIENT_NOT_INTERNAL also leaves the draft in SAGE's email
  * queue for a person, on every retry.
  *
+ * SAGE answering 503 REVIEW_LANE_SITE_UNREADABLE (it could not read this site to
+ * verify the request, so nothing was sent; sage-server Y-85) is not the
+ * reviewer's fault: the content owner gets an alert that says so in plain
+ * words, nothing is reassigned, and the next run tries again. The entry's
+ * review_send_error names the code, so the two cases read apart.
+ *
  * The "Request Changes" link composes a reply carrying the signed
  * review-request token, which SAGE turns into a held post and a proposed edit.
  *
@@ -649,7 +655,14 @@ function formatEmailChannelEmail(post, content, reviewer, token, { kind = 'reque
 }
 
 // ─── Alert to the content owner ─────────────
-function formatAlertEmail(post, problem) {
+// The fix text under the problem: the reviewer case (the default) or, for 503
+// REVIEW_LANE_SITE_UNREADABLE, SAGE's own access to the site.
+const ALERT_FIX = Object.freeze({
+  reviewer: 'Every post needs its assigned licensed reviewer\'s approval to publish, so this post will not publish on its date unless that is fixed. Nothing was reassigned. To fix it: give the entry in data/content-calendar.json a licensed reviewer who can be reached (an active SAGE user, or a data/team.json member with "review_via": "email"), or correct data/team.json.',
+  site_unreadable: 'This is not a problem with the reviewer, and nothing in data/content-calendar.json or data/team.json needs to change. Nothing was sent and nothing was reassigned. SAGE needs its access to the website repository restored; the request is sent again automatically on the next run. The post cannot publish until it has been approved.',
+});
+
+function formatAlertEmail(post, problem, { fix = 'reviewer' } = {}) {
   return `
 <div style="max-width:680px;margin:0 auto;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;">
   <div style="background:#7f1d1d;color:white;padding:24px 32px;border-radius:12px 12px 0 0;">
@@ -659,7 +672,7 @@ function formatAlertEmail(post, problem) {
   </div>
   <div style="background:#ffffff;padding:24px 32px;border:1px solid #e2e8f0;border-radius:0 0 12px 12px;">
     <p style="margin:0 0 12px;color:#1e293b;font-size:14px;line-height:1.6;">${escHtml(problem)}</p>
-    <p style="margin:0 0 12px;color:#475569;font-size:14px;line-height:1.6;">Every post needs its assigned licensed reviewer's approval to publish, so this post will not publish on its date unless that is fixed. Nothing was reassigned. To fix it: give the entry in data/content-calendar.json a licensed reviewer who can be reached (an active SAGE user, or a data/team.json member with "review_via": "email"), or correct data/team.json.</p>
+    <p style="margin:0 0 12px;color:#475569;font-size:14px;line-height:1.6;">${escHtml(ALERT_FIX[fix] || ALERT_FIX.reviewer)}</p>
     <p style="margin:0;color:#64748b;font-size:12px;">Sent by scripts/send-review-emails.js. This alert repeats on every run until it is fixed.</p>
   </div>
 </div>`;
@@ -687,7 +700,7 @@ function sendError(status, text) {
     code = (j && (j.code || (j.error && j.error.code))) || null;
   } catch { /* not JSON */ }
   if (!code) {
-    const m = /\b(RECIPIENT_NOT_INTERNAL|KILL_SWITCH_OUTBOUND_PAUSED)\b/.exec(String(text));
+    const m = /\b(RECIPIENT_NOT_INTERNAL|KILL_SWITCH_OUTBOUND_PAUSED|REVIEW_LANE_SITE_UNREADABLE)\b/.exec(String(text));
     if (m) code = m[1];
   }
   const err = new Error(`Email send failed (${status}): ${text}`);
@@ -762,6 +775,7 @@ async function sendEmail(to, subject, htmlBody, { cc = REVIEW_CC } = {}) {
 // ─── The passes ─────────────────────────────
 
 const isPaused = (err) => !!err && (err.code === 'KILL_SWITCH_OUTBOUND_PAUSED' || (err.status === 409 && /KILL_SWITCH/.test(String(err.message))));
+const isSiteUnreadable = (err) => !!err && (err.code === 'REVIEW_LANE_SITE_UNREADABLE' || (err.status === 503 && /REVIEW_LANE_SITE_UNREADABLE/.test(String(err.message))));
 const isNotInternal = (err) => !!err && (err.code === 'RECIPIENT_NOT_INTERNAL' || (err.status === 403 && /RECIPIENT_NOT_INTERNAL/.test(String(err.message))));
 
 /**
@@ -793,13 +807,15 @@ async function runReviewEmails({
   const rotation = rotationReviewers(team);
   const alerted = new Set();
 
-  async function alert(post, problem) {
+  async function alert(post, problem, { fix = 'reviewer' } = {}) {
     if (alerted.has(post.slug)) return;
     alerted.add(post.slug);
-    const subject = `Blog review cannot reach its reviewer: "${post.title}" (${post.publish_date})`;
+    const subject = fix === 'site_unreadable'
+      ? `Blog review request not sent (SAGE could not read the site): "${post.title}" (${post.publish_date})`
+      : `Blog review cannot reach its reviewer: "${post.title}" (${post.publish_date})`;
     log(`  ! ALERT for "${post.title}" (${post.slug}): ${problem}`);
     try {
-      await send(alertTo, subject, formatAlertEmail(post, problem), { cc: null });
+      await send(alertTo, subject, formatAlertEmail(post, problem, { fix }), { cc: null });
       counts.alerts++;
       log(`    alert sent to the content owner (${alertTo})`);
     } catch (err) {
@@ -830,7 +846,10 @@ async function runReviewEmails({
       }
       failures.push(`${what} for ${post.slug} to ${member.email}: ${err.message}`);
       log(`  ! Failed to send ${what} to ${member.email}: ${err.message}`);
-      if (isNotInternal(err)) {
+      if (isSiteUnreadable(err)) {
+        await alert(post, `SAGE could not read the website to verify this review request, so nothing was sent to ${member.name} (${member.email}). `
+          + 'It will try again on the next run.', { fix: 'site_unreadable' });
+      } else if (isNotInternal(err)) {
         await alert(post, `SAGE refused to email ${member.name} (${member.email}), the assigned reviewer: not an active SAGE user`
           + `${member.review_via === 'email' ? ', and SAGE does not (yet) allow email to reviewers who review by email' : ''}. `
           + 'SAGE keeps the refused email in its email queue for a person to review.');
@@ -903,7 +922,8 @@ async function runReviewEmails({
         // send had ever been attempted: combined with a 4xx (never retried) and
         // a workflow step that swallowed the exit code, the review email failed
         // silently for two months while every run reported green.
-        post.review_send_error = `${today}: ${outcome.message}`.slice(0, 300);
+        // The code first (403 RECIPIENT_NOT_INTERNAL or 503 REVIEW_LANE_SITE_UNREADABLE), so the two read apart.
+        post.review_send_error = `${today}: ${outcome.code ? `${outcome.code}: ` : ''}${outcome.message}`.slice(0, 300);
       } else {
         post.status = 'in-review';
         post.review_sent_date = today;
@@ -1036,7 +1056,7 @@ async function main() {
 
 module.exports = {
   issueReviewToken, buildReviewSubjects, formatReviewEmail, formatReminderEmail, formatFinalReminderEmail,
-  formatEmailChannelEmail, formatAlertEmail, articleBodyText, reviewTokenSecret,
+  formatEmailChannelEmail, formatAlertEmail, ALERT_FIX, isSiteUnreadable, isNotInternal, sendError, articleBodyText, reviewTokenSecret,
   sageReviewBase, reviewApprovalUrl, MIN_SECRET_LENGTH, escHtml, markdownToEmailHtml,
   reviewChannel, rotationReviewers, assignedReviewer, getNextReviewer, daysBetweenUtc, runReviewEmails, sendEmail,
 };
