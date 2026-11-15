@@ -263,6 +263,19 @@
     document.getElementById('callback-time-group').style.display = this.value === 'callback' ? '' : 'none';
   });
 
+  // Y-89: a visitor from the coverage-review flyer (?src=flyer-stm, kept for the
+  // session by attribution.js) finds "I want a coverage review" already chosen,
+  // unless they have picked something. app.js (which carries window.TWA) is
+  // deferred, so this waits for it. Only a fixed option value is set.
+  document.addEventListener('DOMContentLoaded', function() {
+    if (!window.TWA || typeof TWA.captureCampaign !== 'function') return;
+    var sel = document.getElementById('subject');
+    if (!sel || sel.value) return;
+    if (TWA.captureCampaign().campaign_src !== 'flyer-stm') return;
+    sel.value = 'review';
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+
   // ── Contact Form ──
   (function() {
     var form = document.getElementById('contactForm');
