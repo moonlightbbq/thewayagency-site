@@ -9,6 +9,7 @@ const path = require('path');
 const { orgRef, STATE_NAMES, stateNamesText, stateAreaServed } = require('../lib/entity');
 const { licensedStates, areaServedStates } = require('../lib/licensed-states');
 const { canonicalHref, pageUrl } = require('../lib/site-urls');
+const { flyerRedirectScript } = require('../lib/flyer-redirects');
 // Navigation blocks rendered from data/internal-links.json (LOCAL-01, BLOG-03, TECH-01, MKT-04).
 const { renderGuides, renderLocalHelp, renderNearby, renderRelatedIndustries, renderIndustriesSection } = require('./internal-links');
 // Local proof modules; each renders nothing until verified data exists (LOCAL-05).
@@ -163,7 +164,7 @@ function generateTestimonials(testimonials, reviews, lineKey, blocked = []) {
 
 // ─── Template Functions ─────────────────────────
 
-function renderHead({ title, description, canonical, ogTitle, ogDescription, ogUrl, schema, robots }) {
+function renderHead({ title, description, canonical, ogTitle, ogDescription, ogUrl, schema, robots, pagePath }) {
   // Ordinary render-blocking links (same-origin, versioned, immutable-cached). No
   // inlined critical subset and no media="print" swap: that swap restyled sections
   // after first paint (PERF-03).
@@ -172,8 +173,11 @@ function renderHead({ title, description, canonical, ogTitle, ogDescription, ogU
   <link rel="stylesheet" href="/src/css/components.css">
   <link rel="stylesheet" href="/src/css/leadgen.css">`;
 
+  // Flyer redirects (Y-76): first in <head>, before GTM; '' on every page but two.
+  const flyer = pagePath ? flyerRedirectScript(pagePath) : '';
   return `<head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8">${flyer ? `
+  ${flyer}` : ''}
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${title}</title>
   <meta name="description" content="${description}">
@@ -431,6 +435,7 @@ ${renderHead({
     title: config.title,
     description: config.description,
     canonical: `https://www.thewayagency.com${config.canonical}`,
+    pagePath: config.canonical,
     ogTitle: config.title,
     ogDescription: config.description,
     ogUrl: `https://www.thewayagency.com${config.canonical}`,
@@ -669,6 +674,7 @@ ${renderHead({
     title: product.title_tag,
     description: product.meta_description || product.summary,
     canonical: pageUrl(product.url),
+    pagePath: product.url,
     ogTitle: product.title_tag,
     ogDescription: product.summary,
     ogUrl: pageUrl(product.url),

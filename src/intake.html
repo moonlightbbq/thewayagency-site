@@ -1146,7 +1146,7 @@ function showIntakeBanner(color, msg) {
   const subtitle = document.getElementById('intake-subtitle');
   if (!headline) return;
 
-  const PROD_NAMES = { homeowners:'Homeowners', auto:'Auto', umbrella:'Umbrella', flood:'Flood', life:'Life', renters:'Renters', bop:'Business', cgl:'Liability', commercial_auto:'Commercial Auto', workers_comp:'Workers Comp', cyber:'Cyber', bonds:'Bonds', motorcycle:'Motorcycle', boat:'Boat', rv:'RV', medicare:'Medicare', medicaid:'Medicaid', individual_health:'Individual Health', family_health:'Family Health', group_health:'Group Health', supplemental_health:'Supplemental Health', dental_vision:'Dental & Vision', term_life:'Term Life', whole_life:'Whole Life', final_expense:'Final Expense', annuities:'Annuities', disability:'Disability' };
+  const PROD_NAMES = { homeowners:'Homeowners', auto:'Auto', umbrella:'Umbrella', flood:'Flood', life:'Life', renters:'Renters', condo:'Condo', bop:'Business', cgl:'Liability', commercial_auto:'Commercial Auto', workers_comp:'Workers Comp', cyber:'Cyber', bonds:'Bonds', motorcycle:'Motorcycle', boat:'Boat', rv:'RV', medicare:'Medicare', medicaid:'Medicaid', individual_health:'Individual Health', family_health:'Family Health', group_health:'Group Health', supplemental_health:'Supplemental Health', dental_vision:'Dental & Vision', term_life:'Term Life', whole_life:'Whole Life', final_expense:'Final Expense', annuities:'Annuities', disability:'Disability' };
 
   if (product && PROD_NAMES[product]) {
     headline.textContent = PROD_NAMES[product] + ' Insurance Quote';
@@ -1647,6 +1647,7 @@ const PRODUCTS = [
   { id: 'auto',            icon: '\u{1F697}', label: 'Auto',                 line: 'personal' },
   { id: 'umbrella',        icon: '\u2614\uFE0F', label: 'Umbrella',          line: 'personal' },
   { id: 'renters',         icon: '\u{1F3E2}', label: 'Renters',              line: 'personal' },
+  { id: 'condo',           icon: '\u{1F3D8}\uFE0F', label: 'Condo',          line: 'personal' },
   // Life (shown first when ?line=life; granular products mirror data/products.json)
   { id: 'term_life',       icon: '\u2764\uFE0F', label: 'Term Life',          line: 'life' },
   { id: 'whole_life',      icon: '\u{1F496}', label: 'Whole Life',            line: 'life' },
@@ -3181,6 +3182,11 @@ function businessNameToSend() {
   return (cartNeedsBusinessName(selectedProducts) || getEntryLine() === 'commercial') ? v('i_biz_name_1') : '';
 }
 const PROPERTY_PRODUCTS = ['flood','earthquake','dwelling_fire'];
+// Y-76: a condo unit takes the homeowners property card (address, value, year built),
+// never more questions than a home (owner 10/18: the shorter route every time). The
+// HO-6 details (walls-in coverage, the association's master policy) are collected on the call.
+const HOME_PRODUCTS = ['homeowners', 'condo'];
+const hasHomeProduct = () => HOME_PRODUCTS.some(p => selectedProducts.includes(p));
 // Life-coverage tiles that share the same coverage-amount / type / tobacco questions.
 // ('life' kept for backward safety; annuities/disability don't use these fields.)
 const LIFE_COVERAGE = ['life','term_life','whole_life','final_expense'];
@@ -3252,7 +3258,7 @@ function renderFields(schema) {
 
 // Dedicated body renderers for the 4 complex products (extracted verbatim so
 // their bespoke submit/validation/restore wiring is unchanged).
-function renderHomeownersBody() {
+function renderHomeownersBody(isCondo) {
   const addr = v('i_address');
   return `<div class="toggle-row">
         <span class="toggle-label">Property is at the same address as mailing?</span>
@@ -3268,7 +3274,7 @@ function renderHomeownersBody() {
         <input type="hidden" id="i_ho_zip">
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Estimated Home Value</label><select id="i_ho_value">
+        <div class="form-group"><label>${isCondo ? 'Estimated Unit Value' : 'Estimated Home Value'}</label><select id="i_ho_value">
           <option value="">Select</option><option value="under150k">Under $150K</option><option value="150k-250k">$150K - $250K</option><option value="250k-400k">$250K - $400K</option><option value="400k-600k">$400K - $600K</option><option value="600k-1m">$600K - $1M</option><option value="over1m">$1M+</option>
         </select></div>
         <div class="form-group"><label>Year Built</label><input type="text" id="i_ho_yearbuilt" maxlength="4" placeholder="e.g. 1990"></div>
@@ -3513,15 +3519,19 @@ function renderProductQuestions() {
 
   // ═══ Per-product collapsible cards (icon header + schema/dedicated body) ═══
   const iconOf = pid => (PRODUCTS.find(p => p.id === pid) || {}).icon || '';
-  let cardIdx = 0, lifeDone = false;
+  let cardIdx = 0, lifeDone = false, homeDone = false;
   selectedProducts.forEach(pid => {
     let body = null, label = PROD_LABELS[pid] || pid, icon = iconOf(pid);
     if (LIFE_COVERAGE.includes(pid)) {
       if (lifeDone) return;            // life-coverage tiles share one card
       lifeDone = true; label = 'Life Insurance'; icon = '❤️';
       body = renderLifeBody();
-    } else if (pid === 'homeowners') {
-      body = renderHomeownersBody();
+    } else if (HOME_PRODUCTS.includes(pid)) {
+      if (homeDone) return;            // home and condo share one property card
+      homeDone = true;
+      const condoOnly = !selectedProducts.includes('homeowners');
+      if (condoOnly) label = PROD_LABELS.condo;
+      body = renderHomeownersBody(condoOnly);
     } else if (pid === 'auto') {
       label = 'Auto Details';
       body = `<div id="vehicles-container"></div>
@@ -3605,7 +3615,7 @@ function renderProductQuestions() {
   }
 
   // Restore homeowners same-address toggle
-  if (selectedProducts.includes('homeowners') && !savedHoSame) {
+  if (hasHomeProduct() && !savedHoSame) {
     setHomeSameAddr(false);
   }
 
@@ -3668,7 +3678,7 @@ function getVehicles() {
 // ── All product labels ──────────────────────────────────────────────────────
 const PROD_LABELS = {
   homeowners: 'Homeowners', auto: 'Auto', umbrella: 'Umbrella', flood: 'Flood',
-  life: 'Life', renters: 'Renters', bop: 'Business Owners Policy', motorcycle: 'Motorcycle',
+  life: 'Life', renters: 'Renters', condo: 'Condo', bop: 'Business Owners Policy', motorcycle: 'Motorcycle',
   dwelling_fire: 'Dwelling Fire', cgl: 'General Liability', commercial_auto: 'Commercial Auto',
   workers_comp: 'Workers Comp', cyber: 'Cyber', eo: 'Professional Liability', boat: 'Boat', rv: 'RV',
   earthquake: 'Earthquake', farm_ranch: 'Farm / Ranch', bonds: 'Bonds', builders_risk: 'Builders Risk',
@@ -3710,7 +3720,7 @@ function renderReview() {
   // Helper to read form field values for review summary
   const rv = id => { const e = document.getElementById(id); if (!e) return ''; const val = e.value.trim(); if (!val) return ''; if (e.tagName === 'SELECT') { const opt = e.options[e.selectedIndex]; return opt ? opt.textContent.trim() : val; } return val; };
 
-  if (selectedProducts.includes('homeowners')) {
+  if (hasHomeProduct()) {
     if (hoSameAddr) {
       html += `<div class="summary-row"><span class="label">Property Address</span><span class="value">Same as mailing</span></div>`;
     } else {
