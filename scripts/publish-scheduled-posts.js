@@ -42,6 +42,8 @@
 const fs = require('fs');
 const path = require('path');
 const { isPublishable, isKnownStatus, isAwaitingApproval, heldNextStep } = require('./lib/calendar-status');
+// Y-84 (A): a due post that breaks the blog writing rules never publishes.
+const { postProblems, loadExceptions } = require('./lib/blog-writing-guard');
 const {
   approvalCheck, applyReviewCredit, readinessError, frontMatterProblem, reviewWordingWarnings, describeWordingWarning,
   reviewSecret, recordCredit, clearApprovalRecord,
@@ -170,6 +172,23 @@ for (const post of calendar.year1) {
     console.log(`  ! ERROR: "${post.title}" (${post.slug}) - ${NOT_READY_WHY[notReady] || notReady}${detail ? `: ${detail}` : ''}`);
     markError(post, notReady);
     continue;
+  }
+
+  // Y-84 (A): the blog writing rules (scripts/lib/blog-writing-guard.js: no em
+  // dash, no stock lines, every statistic sourced, no "(coming soon)"). A due
+  // post that breaks one goes to 'error' (I7 turns the run red) and never
+  // renders; the production build itself never fails on it. Exceptions are only
+  // the named entries in data/blog-writing-exceptions.json.
+  {
+    const writing = postProblems(post.slug, mdContent, loadExceptions(path.join(__dirname, '..', 'data', 'blog-writing-exceptions.json'))).problems;
+    if (writing.length) {
+      console.log(`  ! ERROR: "${post.title}" (${post.slug}) - breaks the blog writing rules (${writing.length} problem(s)); not published:`);
+      for (const w of writing.slice(0, 10)) console.log(`      src/blog/${post.slug}.md:${w.line} [${w.rule}] ${w.text}`);
+      if (writing.length > 10) console.log(`      ... and ${writing.length - 10} more`);
+      console.log('      To publish it: fix the writing, then the assigned reviewer approves the new text in SAGE (set the entry back to "in-review" first).');
+      markError(post, 'writing_rules');
+      continue;
+    }
   }
 
   // Who the post credits as its reviewer (scripts/lib/review-credit.js).

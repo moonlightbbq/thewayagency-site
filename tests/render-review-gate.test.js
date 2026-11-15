@@ -653,7 +653,7 @@ describe('fix round 4: no forged credit through the byline, any printed value or
     'test-r4-fullwidth-title': withKey('test-r4-fullwidth-title', 'title', `SYNTHETIC \uFF32\uFF45\uFF56\uFF49\uFF45\uFF57\uFF45\uFF44 by ${REVIEWER.name}`),
     'test-r4-approved': withKey('test-r4-approved', 'author_title', `Approved by ${credit}`),
     'test-r4-author': withKey('test-r4-author', 'author', `${AUTHOR.name} | Reviewed by ${REVIEWER.name}`),
-    'test-r4-title': withKey('test-r4-title', 'title', `SYNTHETIC guide — Reviewed by ${REVIEWER.name}, Licensed Agent`),
+    'test-r4-title': withKey('test-r4-title', 'title', `SYNTHETIC guide: Reviewed by ${REVIEWER.name}, Licensed Agent`),
     'test-r4-cta': fm('test-r4-cta', `cta_title: Reviewed by ${REVIEWER.name}, Licensed Agent\n`),
     'test-r4-desc': withKey('test-r4-desc', 'description', 'Vetted by our licensed agents.'),
     'test-r4-alt': fm('test-r4-alt', `image_alt: Approved by ${REVIEWER.name}\n`),

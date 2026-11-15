@@ -2037,13 +2037,12 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "in-review",
+      "status": "planned",
       "source": "markdown",
       "notes": "",
       "reviewer": "Audrey Lillpop",
       "reviewer_email": "audrey@thewayagency.com",
-      "reviewer_slug": "audrey-lillpop",
-      "review_sent_date": "2026-11-14"
+      "reviewer_slug": "audrey-lillpop"
     },
     {
       "week": 38,

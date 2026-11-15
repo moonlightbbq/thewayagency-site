@@ -1,0 +1,4 @@
+{
+  "_note": "Y-84 (A): named exceptions to the blog writing rules (scripts/lib/blog-writing-guard.js). Each entry waives ONE rule on the lines of ONE post that contain `contains`, with a reason. There is no per-line ignore marker in a post. Every entry is reviewed in the PR that adds it; scripts/check-blog-writing.js fails on an entry that waives nothing.",
+  "exceptions": []
+}

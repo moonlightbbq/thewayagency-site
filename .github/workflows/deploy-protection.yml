@@ -71,6 +71,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # the blog writing check diffs the PR against its base
       - uses: actions/setup-node@v4
         with:
           node-version: '18'
@@ -80,6 +82,19 @@ jobs:
         run: test -f build/blog/feed.xml && echo "RSS feed exists" || exit 1
       - name: Check blog index
         run: test -f build/blog/index.html && echo "Blog index exists" || exit 1
+      # Y-84 (A): the blog writing rules (scripts/lib/blog-writing-guard.js). A PR
+      # fails when a post it adds or edits is unpublished and breaks a rule, or a
+      # live post exceeds data/blog-writing-baseline.json (counts only go down). On
+      # a push to main only the live ratchet runs: SAGE and the weekly publisher
+      # push drafts directly, and those are held at the review request instead.
+      - name: Blog writing rules
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch --no-tags origin "${{ github.base_ref }}"
+            node scripts/check-blog-writing.js --changed "origin/${{ github.base_ref }}"
+          else
+            node scripts/check-blog-writing.js
+          fi
 
   analytics-validation:
     runs-on: ubuntu-latest

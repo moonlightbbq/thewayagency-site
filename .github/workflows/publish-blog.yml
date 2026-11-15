@@ -165,7 +165,7 @@ jobs:
       # It does not run when Commit and push failed (a refused push): the run is
       # already red, and the working tree is not what main holds.
       - name: Queue health
-        run: node scripts/queue-status.js --fail-on I4,I2b,I6,I7,I8,I9
+        run: node scripts/queue-status.js --fail-on I4,I2b,I6,I7,I8,I9,W1
 
       # Step 5: The review step continues on error so it cannot stop a publish
       # (step 1); its failure still turns the run red, here, after everything

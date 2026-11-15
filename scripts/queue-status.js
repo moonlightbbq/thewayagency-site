@@ -12,7 +12,12 @@
  *
  * Usage: node scripts/queue-status.js [--today YYYY-MM-DD] [--strict]
  *   --strict            exit 1 if ANY invariant is violated
- *   --fail-on I4,I2b,I6,I7,I8,I9 exit 1 only for these invariants (for CI)
+ *   --fail-on I4,I2b,I6,I7,I8,I9,W1 exit 1 only for these invariants (for CI)
+ *
+ * W1 (Y-84 (A), site-only): an unpublished calendar post inside its review
+ * request window (0-18 days out) whose markdown breaks the blog writing rules
+ * (scripts/lib/blog-writing-guard.js). Its review request is held until the
+ * writing is fixed, so it cannot be approved in time unless someone acts.
  *
  * CI uses --fail-on rather than --strict: an empty slot inside the markdown
  * window (I4) must break the build, but a thin backlog (I5) is a planning
@@ -115,6 +120,22 @@ if (stats.heldForApproval.length) {
     console.log(`  ${p.publish_date}  ${String(p.status).padEnd(9)} ${p.slug}  reviewer: ${p.reviewer_email || 'none assigned'}`);
   }
   console.log('  Not published and not rendered until the assigned reviewer approves (I8).');
+}
+
+// W1: writing holds (Y-84 (A)). Site-only: content-queue.js, which SAGE also
+// loads, is not changed.
+{
+  const w = require('./lib/blog-writing-check');
+  const holds = w.writingHolds(cal, { today, exceptions: w.loadExceptions(w.DEFAULTS.exceptionsFile) });
+  if (holds.length) {
+    console.log(`\nWRITING HOLDS: the post breaks the blog writing rules, so it is held at its review request (planned) or at publish (${holds.length}):`);
+    for (const { entry: p, problems: found } of holds) {
+      console.log(`  ${p.publish_date}  ${String(p.status).padEnd(9)} ${p.slug}  ${found.length} problem(s), first: line ${found[0].line} [${found[0].rule}]`);
+      const held = p.status === 'planned' ? 'its review request is held until fixed' : 'it will not publish on its date (the publish gate) until fixed and approved again';
+      violations.push({ id: 'W1', message: `${p.slug} (${p.publish_date}): ${found.length} writing-rule problem(s), first line ${found[0].line} [${found[0].rule}]; ${held}` });
+    }
+    console.log('  Fix the writing in src/blog/<slug>.md; the review request goes out on the next run (scripts/lib/blog-writing-guard.js).');
+  }
 }
 
 console.log(`\n${'='.repeat(46)}`);

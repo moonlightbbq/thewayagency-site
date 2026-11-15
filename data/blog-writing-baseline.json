@@ -1,0 +1,215 @@
+{
+  "_note": "Y-84 (A) ratchet: per live post, per rule (scripts/lib/blog-writing-guard.js), the number of problems it may still have. Counts only go down: scripts/check-blog-writing.js fails a live post above its count, and an entry above the post's real count (lower it in the same change). Rewrite with: node scripts/check-blog-writing.js --write-baseline (never raises a count).",
+  "posts": {
+    "back-to-school-insurance-checklist": {
+      "dash": 1,
+      "stock": 1,
+      "statistic": 1
+    },
+    "best-auto-insurance-rates-mt-washington-ky": {
+      "dash": 11,
+      "stock": 1,
+      "statistic": 1
+    },
+    "boating-safety-insurance-ohio-river": {
+      "stock": 1
+    },
+    "bowling-green-tornado-lessons-coverage": {
+      "stock": 1
+    },
+    "bundling-home-auto-insurance-savings": {
+      "dash": 11,
+      "stock": 3,
+      "statistic": 1
+    },
+    "commercial-property-insurance-guide": {
+      "dash": 6,
+      "stock": 1
+    },
+    "community-involvement-2026": {
+      "dash": 8,
+      "stock": 5
+    },
+    "community-spotlight-local-businesses": {
+      "stock": 3
+    },
+    "cyber-insurance-small-business-essentials": {
+      "dash": 1,
+      "statistic": 1
+    },
+    "digital-insurance-agency-vs-traditional": {
+      "dash": 11,
+      "stock": 4
+    },
+    "disability-insurance-protecting-income": {
+      "stock": 1,
+      "statistic": 3
+    },
+    "fall-home-maintenance-insurance": {
+      "dash": 1,
+      "stock": 2
+    },
+    "filing-home-insurance-claim-storm-damage": {
+      "stock": 1
+    },
+    "final-expense-insurance-guide": {
+      "dash": 8,
+      "stock": 1
+    },
+    "flood-insurance-ohio-river-valley-2026": {
+      "dash": 11,
+      "stock": 2,
+      "statistic": 3
+    },
+    "general-liability-foundation-business-coverage": {
+      "dash": 1,
+      "stock": 1
+    },
+    "group-health-insurance-small-business-kentucky": {
+      "statistic": 6
+    },
+    "homeowners-wont-cover-flooding": {
+      "dash": 1
+    },
+    "how-independent-agents-save-money": {
+      "dash": 2,
+      "stock": 9
+    },
+    "how-independent-agents-use-data-better-rates": {
+      "dash": 1,
+      "stock": 4
+    },
+    "how-much-life-insurance-do-you-need": {
+      "statistic": 2
+    },
+    "how-to-compare-insurance-quotes": {
+      "dash": 13,
+      "stock": 5
+    },
+    "how-to-read-declarations-page": {
+      "statistic": 1
+    },
+    "independent-vs-kentucky-farm-bureau-bullitt-county": {
+      "dash": 1,
+      "stock": 2
+    },
+    "insurance-checklist-hvac-contractors": {
+      "stock": 3
+    },
+    "insurance-customer-lifetime-value-explained": {
+      "dash": 2,
+      "stock": 4
+    },
+    "insurance-first-time-homebuyers-kentucky": {
+      "dash": 5,
+      "stock": 6,
+      "statistic": 1
+    },
+    "insurance-for-kentucky-bourbon-distilleries": {
+      "dash": 14,
+      "stock": 3,
+      "statistic": 1
+    },
+    "insurance-guide-roofing-contractors": {
+      "stock": 1
+    },
+    "insurance-nashville-small-business": {
+      "dash": 7,
+      "stock": 1
+    },
+    "insurance-restaurants-food-service-kentucky": {
+      "dash": 7,
+      "stock": 1
+    },
+    "insurance-tips-indianapolis-homeowners": {
+      "stock": 2,
+      "statistic": 1
+    },
+    "insurance-tips-louisville-homeowners": {
+      "stock": 1,
+      "statistic": 4
+    },
+    "kentucky-auto-insurance-guide": {
+      "stock": 3,
+      "statistic": 2
+    },
+    "kentucky-home-insurance-rates-rising-2026": {
+      "statistic": 1
+    },
+    "liability-limits-how-much-enough": {
+      "stock": 1
+    },
+    "medicare-enrollment-guide-louisville-2026": {
+      "dash": 9,
+      "statistic": 1
+    },
+    "medicare-open-enrollment-2027": {
+      "dash": 4,
+      "stock": 2
+    },
+    "mt-washington-auto-insurance": {
+      "stock": 2,
+      "statistic": 2
+    },
+    "mt-washington-home-insurance": {
+      "stock": 3
+    },
+    "ohio-river-flood-risk-henderson-owensboro": {
+      "statistic": 3
+    },
+    "owensboro-flood-risk-neighborhood-fema-zones-2026": {
+      "statistic": 4
+    },
+    "professional-liability-who-needs-eo": {
+      "dash": 8
+    },
+    "renters-insurance-landlord-policy-gaps": {
+      "stock": 1
+    },
+    "replacement-cost-vs-actual-cash-value": {
+      "statistic": 4
+    },
+    "small-business-insurance-evansville-in": {
+      "stock": 2
+    },
+    "spring-home-maintenance-insurance": {
+      "stock": 2,
+      "statistic": 2
+    },
+    "summer-weather-risks-kentucky-businesses": {
+      "stock": 1
+    },
+    "surety-bonds-explained": {
+      "statistic": 7
+    },
+    "term-life-vs-whole-life": {
+      "statistic": 1
+    },
+    "understanding-auto-insurance-coverage-options": {
+      "dash": 9,
+      "statistic": 2
+    },
+    "understanding-certificates-of-insurance": {
+      "stock": 1
+    },
+    "understanding-your-policy-renewal-process": {
+      "dash": 2,
+      "stock": 3,
+      "statistic": 1
+    },
+    "what-happens-when-you-file-insurance-claim": {
+      "statistic": 1
+    },
+    "what-is-ivans-insurance-data": {
+      "stock": 1
+    },
+    "what-is-liability-insurance": {
+      "stock": 2,
+      "coming_soon": 1
+    },
+    "workers-comp-requirements-kentucky-2026": {
+      "dash": 7,
+      "statistic": 2
+    }
+  }
+}

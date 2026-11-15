@@ -82,7 +82,7 @@ function runSite(script, { entries, files, team = TEAM, args = [], env = { BLOG_
   fs.mkdirSync(path.join(tmp, 'data'), { recursive: true });
   fs.mkdirSync(path.join(tmp, 'src', 'blog'), { recursive: true });
   fs.copyFileSync(path.join(REPO, 'scripts', script), path.join(tmp, 'scripts', script));
-  for (const lib of ['calendar-status.js', 'review-credit.js', 'blog-content-guard.js']) {
+  for (const lib of ['calendar-status.js', 'review-credit.js', 'blog-content-guard.js', 'blog-writing-guard.js']) {
     fs.copyFileSync(path.join(REPO, 'scripts', 'lib', lib), path.join(tmp, 'scripts', 'lib', lib));
   }
   fs.writeFileSync(path.join(tmp, 'data', 'team.json'), JSON.stringify({ team }));
@@ -352,7 +352,7 @@ describe('review-credit wording in a front-matter value is flagged, never refuse
     ['review wording in a byline field', 'author_title: Licensed Agent | Reviewed by Test Reviewer B on December 1, 2025\n'],
     ['a synonym ("Approved by")', 'author_title: Approved by Test Reviewer B, Licensed Agent on December 1, 2025\n'],
     ['an author_title that is not the member\'s, with wording', `author_slug: ${REVIEWER.slug}\nauthor: ${REVIEWER.name}\nauthor_title: Licensed Agent | Reviewed by ${REVIEWER.name}\n`],
-    ['a credit in the title', `title: SYNTHETIC guide \u2014 Reviewed by ${REVIEWER.name}, Licensed Agent\n`],
+    ['a credit in the title', `title: SYNTHETIC guide: Reviewed by ${REVIEWER.name}, Licensed Agent\n`],
     ['a credit in the CTA banner', `cta_title: Reviewed by ${REVIEWER.name}, Licensed Agent\n`],
     ['a credit in the CTA text', 'cta_text: Fact-checked by our licensed agents.\n'],
     ['a credit in the image alt text', `image_alt: Approved by ${REVIEWER.name}\n`],
