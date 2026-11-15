@@ -19,16 +19,17 @@ const path = require('node:path');
 const ROOT = path.join(__dirname, '..');
 const { AGENCY_ADDRESSES, agencyEmailProblems, agencyEmailProblemsInTree, decodeAt } = require('../scripts/lib/agency-email-guard');
 
-describe('the claims page (Y-83)', () => {
+describe('the claims page (Y-83; Y-88b: "We want claims called in")', () => {
   const html = fs.readFileSync(path.join(ROOT, 'src/pages/about/claims.html'), 'utf8');
-  test('names service@ three times (two links and the visible text) and claims@ nowhere', () => {
+  test('invites no emailed claim: no claims@, no service@, no "Email Our Claims Team"; the footer keeps hello@', () => {
     assert.equal((html.match(/claims@thewayagency\.com/gi) || []).length, 0);
-    assert.equal((html.match(/service@thewayagency\.com/g) || []).length, 3);
-    assert.equal((html.match(/href="mailto:service@thewayagency\.com"/g) || []).length, 2);
-    assert.match(html, />\s*service@thewayagency\.com\s*</);
+    assert.equal((html.match(/service@thewayagency\.com/g) || []).length, 0);
+    assert.doesNotMatch(html, /Email Our Claims Team/);
+    assert.deepEqual(html.match(/href="mailto:[^"]+"/g), ['href="mailto:hello@thewayagency.com"']);
   });
-  test('the button wording is unchanged', () => {
-    assert.match(html, /<a href="mailto:service@thewayagency\.com" class="btn btn--outline-white btn--lg">Email Our Claims Team<\/a>/);
+  test('claims are called or texted in: the call and text links stay', () => {
+    assert.match(html, /<a href="tel:\+15024135335" class="btn btn--primary btn--lg">Call to File a Claim<\/a>/);
+    assert.match(html, /<a href="sms:\+15024135335" class="btn btn--outline-white btn--lg">Text Us<\/a>/);
   });
 });
 
@@ -96,6 +97,6 @@ describe('the build runs the guard over its output', () => {
     assert.deepEqual(problems, []);
     const claims = fs.readFileSync(path.join(build, 'about', 'claims.html'), 'utf8');
     assert.equal((claims.match(/claims@thewayagency\.com/gi) || []).length, 0);
-    assert.equal((claims.match(/service@thewayagency\.com/g) || []).length, 3);
+    assert.equal((claims.match(/service@thewayagency\.com/g) || []).length, 0, 'Y-88b: no emailed claims');
   });
 });
