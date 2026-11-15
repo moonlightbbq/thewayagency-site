@@ -42,6 +42,7 @@ test('the generator leaves held posts out of the feed only', () => {
     for (const f of ['generate-blog.js', 'shared-templates.js']) fs.copyFileSync(path.join(REPO, 'scripts', f), path.join(tmp, 'scripts', f));
     for (const f of fs.readdirSync(path.join(REPO, 'scripts', 'lib'))) fs.copyFileSync(path.join(REPO, 'scripts', 'lib', f), path.join(tmp, 'scripts', 'lib', f));
     fs.copyFileSync(path.join(REPO, 'data', 'locations.json'), path.join(tmp, 'data', 'locations.json'));
+    fs.copyFileSync(path.join(REPO, 'data', 'entity.json'), path.join(tmp, 'data', 'entity.json')); // the licensed states (scripts/lib/licensed-states.js)
     fs.writeFileSync(path.join(tmp, 'data', 'team.json'), JSON.stringify({ team: [] }));
     const body = Array.from({ length: 240 }, (_, i) => `word${i}`).join(' ');
     // Two held posts (newest), then 22 ordinary ones, oldest last.

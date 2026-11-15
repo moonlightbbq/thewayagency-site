@@ -256,6 +256,8 @@ const agency = locations.agency;
 const _reviews = require('./lib/review-badge').googleRating(agency);
 const { renderNav, renderFooter: _renderFooter, renderScripts, renderHead_GTM, renderBody_GTM } = require('./shared-templates');
 function renderFooter() { return _renderFooter(office, _reviews); }
+// The licensed states for the blog index subtitle: data/entity.json licensed_states.
+const LICENSED_NAMES = require('./lib/entity').stateNamesText(require('./lib/licensed-states').licensedStates(DATA), { oxford: false });
 
 // ─── Reading Time Calculator ────────────────
 function calculateReadingTime(html) {
@@ -714,7 +716,7 @@ ${renderNav()}
     <div class="hero__content">
       <p class="hero__eyebrow">Blog</p>
       <h1 class="hero__title">Insurance insights<br>&amp; practical tips</h1>
-      <p class="hero__subtitle">Practical insurance guidance for Kentucky, Indiana and Tennessee families and businesses. No jargon, no fluff.</p>
+      <p class="hero__subtitle">Practical insurance guidance for ${LICENSED_NAMES} families and businesses. No jargon, no fluff.</p>
     </div>
     <div class="hero__accent"></div>
   </section>

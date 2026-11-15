@@ -19,7 +19,7 @@
  *
  * Usage: called from build.js, returns an injectSchema(html, pageType, context) function.
  */
-const { SITE_URL, STATE_NAMES, orgRef, agencyNode, phoneE164 } = require('../lib/entity');
+const { SITE_URL, STATE_NAMES, orgRef, agencyNode, phoneE164, stateAreaServed } = require('../lib/entity');
 
 /**
  * Create the schema injection function.
@@ -63,7 +63,7 @@ function createSchemaInjector({ agency, office, entity }) {
         break;
 
       case 'industry':
-        schemas.push(_buildIndustryService(context));
+        schemas.push(_buildIndustryService(context, entity.licensed_states));
         break;
 
       // 'carrier': the page's own Organization node names the carrier; the
@@ -143,8 +143,8 @@ function _buildHubNodes(html, place, kind, office) {
 }
 
 // Industry page: one Service. areaServed matches the page's own description
-// (Kentucky, Indiana, and Tennessee).
-function _buildIndustryService(ind) {
+// (every licensed state: data/entity.json licensed_states).
+function _buildIndustryService(ind, states) {
   const url = `${SITE_URL}/industries/${ind.slug}`;
   return {
     '@context': 'https://schema.org',
@@ -154,7 +154,7 @@ function _buildIndustryService(ind) {
     serviceType: 'Commercial insurance',
     url,
     provider: orgRef(),
-    areaServed: ['KY', 'IN', 'TN'].map((s) => ({ '@type': 'State', name: STATE_NAMES[s] })),
+    areaServed: stateAreaServed(states),
   };
 }
 

@@ -28,6 +28,7 @@ test('the feed lists the 20 newest posts, newest first, at extensionless URLs', 
     for (const f of ['generate-blog.js', 'shared-templates.js']) fs.copyFileSync(path.join(REPO, 'scripts', f), path.join(tmp, 'scripts', f));
     for (const f of fs.readdirSync(path.join(REPO, 'scripts', 'lib'))) fs.copyFileSync(path.join(REPO, 'scripts', 'lib', f), path.join(tmp, 'scripts', 'lib', f));
     fs.copyFileSync(path.join(REPO, 'data', 'locations.json'), path.join(tmp, 'data', 'locations.json'));
+    fs.copyFileSync(path.join(REPO, 'data', 'entity.json'), path.join(tmp, 'data', 'entity.json')); // the licensed states (scripts/lib/licensed-states.js)
     fs.writeFileSync(path.join(tmp, 'data', 'team.json'), JSON.stringify({ team: [] }));
     const year1 = posts.map((p) => ({ slug: p.slug, title: `SYNTHETIC ${p.slug}`, publish_date: p.date, status: 'published' }));
     fs.writeFileSync(path.join(tmp, 'data', 'content-calendar.json'), JSON.stringify({ existing_posts: [], year1 }, null, 2));

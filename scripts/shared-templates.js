@@ -12,6 +12,8 @@
 
 // The Google rating badge (TRUST-14).
 const { renderReviewBadge } = require('./lib/review-badge');
+const { stateCodesText } = require('./lib/entity');
+const { licensedStates } = require('./lib/licensed-states'); // the footer's licence line: data/entity.json
 
 function renderNav() {
   return `  <nav class="nav" id="nav">
@@ -182,7 +184,7 @@ ${renderServiceAreasColumn()}
         <a href="/terms">Terms</a>
       </div>
     </div>
-    <p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in KY, IN &amp; TN. Way Associates, Inc dba The Way Agency.</p>
+    <p style="max-width:var(--max-width);margin:var(--space-sm) auto 0;padding:0 var(--space-xl);font-size:11px;color:rgba(255,255,255,0.3);">Licensed in ${stateCodesText(licensedStates(), { conj: '&amp;' })}. Way Associates, Inc dba The Way Agency.</p>
   </footer>`;
 }
 

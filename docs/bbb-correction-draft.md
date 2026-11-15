@@ -35,7 +35,7 @@ Please update the profile as follows:
 - Business name: The Way Agency (DBA of Way Associates, Inc)
 - Mailing address: PO Box 187, Owensboro, KY 42302
 - Service area: Daviess County, Bullitt County, and surrounding regions across Kentucky,
-  Indiana, and Tennessee
+  Indiana, Ohio, and Tennessee
 - Phone: (502) 413-5335
 - Email: hello@thewayagency.com
 - Website: https://www.thewayagency.com

@@ -6,7 +6,8 @@
 const fs = require('fs');
 const path = require('path');
 // The agency reference for every JSON-LD block here (never a full agency node: SCHEMA-01, SCHEMA-02).
-const { orgRef } = require('../lib/entity');
+const { orgRef, STATE_NAMES, stateNamesText, stateAreaServed } = require('../lib/entity');
+const { licensedStates, areaServedStates } = require('../lib/licensed-states');
 const { canonicalHref, pageUrl } = require('../lib/site-urls');
 // Navigation blocks rendered from data/internal-links.json (LOCAL-01, BLOG-03, TECH-01, MKT-04).
 const { renderGuides, renderLocalHelp, renderNearby, renderRelatedIndustries, renderIndustriesSection } = require('./internal-links');
@@ -32,11 +33,12 @@ function esc(str) {
   return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-// The agency is licensed in these states (KY DOI 1244675, Indiana firm licence
-// 3874966, Tennessee business entity producer). Hub eyebrows and trust bars
-// state the hub's state from this map; they never print a founding or
-// "serving since" year (TRUST-02).
-const STATE_NAMES = { KY: 'Kentucky', IN: 'Indiana', TN: 'Tennessee' };
+// The states the agency is licensed in: data/entity.json licensed_states
+// (scripts/lib/licensed-states.js). Hub eyebrows and trust bars state the hub's
+// own state from STATE_NAMES (scripts/lib/entity.js); they never print a founding
+// or "serving since" year (TRUST-02).
+const LICENSED = licensedStates();
+const LICENSED_NAMES = stateNamesText(LICENSED); // every licensed state, by name
 
 // One hours line for the hub trust bars (owner decision 2026-10-02: Monday to
 // Friday, 9:00 AM to 5:00 PM Eastern; shown as ET so it stays right in daylight time).
@@ -442,7 +444,7 @@ ${renderHead({
       "description": config.schema.serviceDesc,
       "url": `https://www.thewayagency.com${config.canonical}`,
       "provider": orgRef(),
-      "areaServed": [{ "@type": "State", "name": "Kentucky" }, { "@type": "State", "name": "Indiana" }, { "@type": "State", "name": "Tennessee" }]
+      "areaServed": stateAreaServed(areaServedStates({ line: lineKey }))
     }, null, 2)}
   </script>
   <script type="application/ld+json">
@@ -646,11 +648,7 @@ function generateProductPage(product, lineName, lineSlug, lineKey, ctx) {
     "serviceType": product.name,
     "url": productUrl,
     "provider": orgRef(),
-    "areaServed": [
-      { "@type": "State", "name": "Kentucky" },
-      { "@type": "State", "name": "Indiana" },
-      { "@type": "State", "name": "Tennessee" }
-    ],
+    "areaServed": stateAreaServed(areaServedStates({ line: lineKey, productId: product.id })),
     "description": product.summary || ''
   }, null, 2).replace(/</g, '\\u003c')}
   </script>${faqSchema}`;
@@ -1040,10 +1038,10 @@ function generateIndustryPage(ind, ctx) {
 <html lang="en">
 ${renderHead({
     title: `Insurance for ${ind.name} in Kentucky | The Way Agency`,
-    description: `Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. ${ind.description.split('.')[0]}. Get a quote.`,
+    description: `Insurance for ${ind.name.toLowerCase()} in ${LICENSED_NAMES}. ${ind.description.split('.')[0]}. Get a quote.`,
     canonical: `https://www.thewayagency.com/industries/${ind.slug}`,
     ogTitle: `Insurance for ${ind.name} in Kentucky | The Way Agency`,
-    ogDescription: `Insurance for ${ind.name.toLowerCase()} in Kentucky, Indiana, and Tennessee. Get a quote.`,
+    ogDescription: `Insurance for ${ind.name.toLowerCase()} in ${LICENSED_NAMES}. Get a quote.`,
     ogUrl: `https://www.thewayagency.com/industries/${ind.slug}`,
     // The page's Service JSON-LD comes from schema-generator.js _buildIndustryService.
     schema: `<script type="application/ld+json">${crumbs.schema}</script>`,
@@ -1071,7 +1069,7 @@ ${crumbs.html}
     <section class="section">
       <div class="container container--narrow">
         <h2>What ${ind.name.toLowerCase()} typically need</h2>
-        <p>Based on our experience working with ${ind.name.toLowerCase()} across Kentucky, Indiana, and Tennessee, here are the coverage types you should have in place:</p>
+        <p>Based on our experience working with ${ind.name.toLowerCase()} across ${LICENSED_NAMES}, here are the coverage types you should have in place:</p>
         <ul style="list-style:disc;padding-left:var(--space-xl);margin-bottom:var(--space-xl);">
             ${coverageList}
         </ul>
@@ -1234,13 +1232,13 @@ ${linkedProducts.map(p => `          <a href="${canonicalHref(p.url)}" class="ca
 <html lang="en">
 ${renderHead({
     title: `${carrier.name} Insurance | The Way Agency`,
-    description: `${carrier.name} insurance through The Way Agency. ${carrier.description || `We represent ${carrier.name} for ${lineName.toLowerCase()} in Kentucky, Indiana, and Tennessee.`}`,
+    description: `${carrier.name} insurance through The Way Agency. ${carrier.description || `We represent ${carrier.name} for ${lineName.toLowerCase()}.`}`,
     canonical: `https://www.thewayagency.com/carriers/${carrier.slug}`,
     ogTitle: `${carrier.name} Insurance | The Way Agency`,
-    ogDescription: carrier.description || `We represent ${carrier.name} for insurance in KY, IN & TN.`,
+    ogDescription: carrier.description || `We represent ${carrier.name} at The Way Agency.`,
     ogUrl: `https://www.thewayagency.com/carriers/${carrier.slug}`,
     schema: `<script type="application/ld+json">
-  ${JSON.stringify({"@context":"https://schema.org","@type":"Organization","name":carrier.name,"description":carrier.description||`${carrier.name} insurance carrier represented by The Way Agency in Kentucky, Indiana, and Tennessee.`})}
+  ${JSON.stringify({"@context":"https://schema.org","@type":"Organization","name":carrier.name,"description":carrier.description||`${carrier.name} insurance carrier represented by The Way Agency.`})}
   </script>`,
   })}
 <body>
@@ -1250,7 +1248,7 @@ ${renderNav()}
 ${renderHero({
     eyebrow: 'Our Carriers',
     title: carrier.name,
-    subtitle: carrier.description || `We represent ${carrier.name} for ${lineName.toLowerCase()} in Kentucky, Indiana, and Tennessee.`,
+    subtitle: carrier.description || `We represent ${carrier.name} for ${lineName.toLowerCase()}.`,
     buttons: [
       { href: '/intake/', text: 'Get a Quote', className: 'btn btn--primary btn--lg' },
     ],

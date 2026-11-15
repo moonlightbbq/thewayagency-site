@@ -2,13 +2,13 @@
   "pages": {
     "/": {
       "title": "The Way Agency | Independent Insurance in Owensboro, KY",
-      "description": "Independent insurance agency licensed in KY, IN and TN: home, auto, business and life insurance. Call or text (502) 413-5335.",
+      "description": "Independent insurance agency licensed in KY, IN, OH and TN: home, auto, business and life insurance. Call or text (502) 413-5335.",
       "schema_types": ["Organization", "WebSite", "FAQPage"],
       "last_reviewed": "2026-03"
     },
     "/personal/": {
       "title": "Personal Insurance in Kentucky | Home, Auto & More | The Way Agency",
-      "description": "Personal insurance from top-rated carriers: home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet insurance in KY, IN & TN.",
+      "description": "Personal insurance from top-rated carriers: home, auto, renters, umbrella, flood, motorcycle, boat, classic car, earthquake, and pet insurance in KY, IN, OH & TN.",
       "schema_types": ["Service", "ItemList", "BreadcrumbList"],
       "last_reviewed": "2026-03"
     },
@@ -32,7 +32,7 @@
     },
     "/about/": {
       "title": "About The Way Agency | Independent Insurance in Kentucky",
-      "description": "The Way Agency helps families and businesses in Kentucky, Indiana, and Tennessee find the right insurance, with a faith-based, client-centered approach.",
+      "description": "The Way Agency helps families and businesses in Kentucky, Indiana, Ohio, and Tennessee find the right insurance, with a faith-based, client-centered approach.",
       "schema_types": ["AboutPage"],
       "last_reviewed": "2026-03"
     },
@@ -44,13 +44,13 @@
     },
     "/about/locations.html": {
       "title": "Locations We Serve | The Way Agency",
-      "description": "Insurance service areas in Kentucky, Indiana, and Tennessee.",
+      "description": "Insurance service areas in Kentucky, Indiana, Ohio, and Tennessee.",
       "schema_types": ["WebPage"],
       "last_reviewed": "2026-03"
     },
     "/about/careers.html": {
       "title": "Insurance Careers | Join The Way Agency",
-      "description": "Join our team of insurance professionals serving Kentucky, Indiana, and Tennessee. View open positions at The Way Agency.",
+      "description": "Join our team of insurance professionals serving Kentucky, Indiana, Ohio, and Tennessee. View open positions at The Way Agency.",
       "schema_types": ["WebPage"],
       "last_reviewed": "2026-03"
     },
@@ -61,7 +61,7 @@
       "last_reviewed": "2026-03"
     },
     "/contact.html": {
-      "title": "Contact The Way Agency | Insurance in KY, IN & TN",
+      "title": "Contact The Way Agency | Insurance in KY, IN, OH & TN",
       "description": "Contact The Way Agency for insurance questions, coverage reviews, and quotes. Call (502) 413-5335 or send us a message.",
       "schema_types": ["ContactPage"],
       "last_reviewed": "2026-03"

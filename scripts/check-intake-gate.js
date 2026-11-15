@@ -2,7 +2,9 @@
 /**
  * Out-of-area decline guard (ticket c2cc96ea).
  *
- * The agency writes personal / life / health only in KY, IN and TN. Commercial it
+ * The agency writes personal / life / health only in the states SAGE serves (GET
+ * /api/intake/rules, the agency's licensed states; health only where it holds an
+ * Accident and Health line). Commercial it
  * writes anywhere. Turning an out-of-area applicant away has gone wrong in four
  * distinct ways already, and each one is pinned here so it cannot come back.
  *

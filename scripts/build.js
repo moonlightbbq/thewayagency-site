@@ -331,6 +331,25 @@ console.log('  ✓ Legal pages clean (em dashes / anchors)');
   }
   console.log(`  ✓ Agency email: ${emailFiles} built text files name only agency mailboxes`);
 }
+// 11a4. Guard: every list of US states a built file prints agrees with
+//       data/entity.json licensed_states, both ways: no state it does not
+//       license, no list of its states that leaves one out, none out of order,
+//       and the Accident and Health pages' areaServed names only the health
+//       states (Y-74 PR-B). A list
+//       that is right for another reason passes only by an explicit rule in
+//       scripts/lib/licensed-states-guard.js ALLOW.
+{
+  const { licensedStateProblemsInTree } = require('./lib/licensed-states-guard');
+  const { licensedStates, healthLicensedStates } = require('./lib/licensed-states');
+  const { problems: stateProblems, files: stateFiles, usedRules } = licensedStateProblemsInTree(BUILD, licensedStates(), undefined, { health: healthLicensedStates() });
+  if (stateProblems.length) {
+    console.error('\n✗ Licensed-states guard failed:');
+    stateProblems.slice(0, 50).forEach((p) => console.error('  - ' + p));
+    if (stateProblems.length > 50) console.error(`  ... and ${stateProblems.length - 50} more`);
+    throw new Error(`Licensed-states guard failed (${stateProblems.length} issue(s)).`);
+  }
+  console.log(`  ✓ Licensed states: ${stateFiles} built text files agree with data/entity.json (${usedRules.length} explicit exception rules used)`);
+}
 // The Google rating badge renders only from a fresh sync with a listing URL (TRUST-14).
 if (_reviews) console.log(`  ✓ Review badge: "${_reviews.rating} on Google", ${_reviews.count} reviews, synced ${_reviews.syncedAt.slice(0, 10)}`);
 else console.warn('  ⚠ Review badge hidden: the Google rating is missing, has no listing URL (agency.google_maps_url) or was last synced more than 30 days ago');

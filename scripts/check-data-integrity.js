@@ -145,7 +145,13 @@ if (entity) {
   const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
   const states = entity.licensed_states;
   if (!Array.isArray(states) || states.length === 0) bad('licensed_states must list the licensed states');
-  else for (const s of states) if (!['KY', 'IN', 'TN'].includes(s)) bad(`licensed_states: "${s}" is not KY, IN or TN`);
+  else {
+    // A state the site can name (scripts/lib/entity.js STATE_NAMES), once each. Which of
+    // them the agency is licensed in is the owner's fact, in this list.
+    const known = Object.keys(require('./lib/entity').STATE_NAMES);
+    for (const s of states) if (!known.includes(s)) bad(`licensed_states: "${s}" is not one of ${known.join(', ')}`);
+    if (new Set(states).size !== states.length) bad('licensed_states lists a state twice');
+  }
   const base = entity.base_locality;
   if (base !== null && base !== undefined) {
     const ok = base && typeof base === 'object' && typeof base.addressLocality === 'string' && typeof base.addressRegion === 'string'

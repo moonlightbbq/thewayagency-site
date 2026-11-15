@@ -25,7 +25,7 @@ function renderManifest(ctx) {
 
   return `# The Way Agency
 
-The Way Agency is an independent insurance agency${founded}, headquartered in Owensboro, Kentucky. Licensed in Kentucky, Indiana, and Tennessee.
+The Way Agency is an independent insurance agency${founded}, headquartered in Owensboro, Kentucky. Licensed in ${require('../lib/entity').stateNamesText(ctx.entity.licensed_states)}.
 
 ## What we do
 

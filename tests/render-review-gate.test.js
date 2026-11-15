@@ -73,6 +73,7 @@ function makeSite({ year1 = [], existing = [], files = {} }) {
     fs.copyFileSync(path.join(REPO, 'scripts', 'lib', f), path.join(tmp, 'scripts', 'lib', f));
   }
   fs.copyFileSync(path.join(REPO, 'data', 'locations.json'), path.join(tmp, 'data', 'locations.json'));
+  fs.copyFileSync(path.join(REPO, 'data', 'entity.json'), path.join(tmp, 'data', 'entity.json')); // the licensed states (scripts/lib/licensed-states.js)
   fs.writeFileSync(path.join(tmp, 'data', 'team.json'), JSON.stringify({ team: TEAM }));
   fs.writeFileSync(path.join(tmp, 'data', 'content-calendar.json'), JSON.stringify({ existing_posts: existing, year1 }, null, 2));
   for (const [name, md] of Object.entries(files)) fs.writeFileSync(path.join(tmp, 'src', 'blog', name.endsWith('.md') ? name : `${name}.md`), md);

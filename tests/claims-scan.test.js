@@ -67,6 +67,8 @@ describe('claims scan: every hard rule catches its retracted phrase', () => {
     ['office', "subtitle.textContent = 'A local agent serving ' + city;", 'src/intake.html'],
     ['licensing', 'Each agent is licensed in Kentucky, Indiana, and Tennessee.', 'src/pages/about/team.html'],
     ['licensing', 'Our agents are licensed across three states.', page],
+    ['licensing', 'Each agent is licensed in Kentucky, Indiana, Ohio, and Tennessee.', 'src/pages/about/team.html'],
+    ['licensing', 'Our agents are licensed across four states.', page],
     ['claims-role', 'Before anything else, give us a call.', 'src/pages/about/claims.html'],
     ['claims-role', 'When you need to file a claim, we fight for you.', page],
     ['claims-role', 'we help you navigate the claims process and push back on the carrier when needed.', 'scripts/builders/pages.js'],
