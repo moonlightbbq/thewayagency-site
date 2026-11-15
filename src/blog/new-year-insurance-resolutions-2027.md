@@ -31,7 +31,7 @@ Insurance rates change every year. Carriers adjust their pricing based on claims
 
 But shopping the right way matters. Comparing two quotes with different coverage limits is not a real comparison. You need apples-to-apples quotes with the same limits, deductibles, and endorsements.
 
-This is where an independent agent earns their keep. We [compare quotes from top-rated carriers](/blog/how-to-compare-insurance-quotes.html) and make sure the comparison is fair. We do this at no extra cost to you, because we are paid by the carrier you choose, not by you directly.
+This is where an independent agent earns their keep. We [compare quotes from many carriers](/blog/how-to-compare-insurance-quotes.html) and make sure the comparison is fair. We do this at no extra cost to you, because we are paid by the carrier you choose, not by you directly.
 
 If it has been more than two years since you shopped, add this to your January to-do list.
 
@@ -41,7 +41,7 @@ There are a few coverage gaps that are more common than they should be:
 
 **No umbrella policy.** If you own a home, have savings, or earn a solid income, a $1 million umbrella policy is one of the best values in insurance. It typically costs $200 to $400 per year and adds an extra layer of liability protection above your auto and home policies.
 
-**No flood insurance.** Standard homeowners policies do not cover flood damage. Period. If you are in a flood-prone area of Kentucky, especially along the Ohio River or in low-lying areas, a separate flood policy is worth the conversation.
+**No flood insurance.** Standard homeowners policies do not cover flood damage. If you are in a flood-prone area of Kentucky, especially along the Ohio River or in low-lying areas, a separate flood policy is worth the conversation.
 
 **Gaps between personal and business coverage.** If you use your personal vehicle for business, your personal auto policy may not cover an accident that happens during a work trip. If you run a business from home, your homeowners policy probably does not cover business equipment or liability. These gaps are fixable, but only if you address them.
 
@@ -94,4 +94,4 @@ No. Insurance companies use what is called a "soft pull" when checking your cred
 
 ### FAQ: Can an independent agent help me save money on insurance?
 
-Yes. Independent agents work with top-rated carriers and can compare rates across the market. Because carriers price risk differently, the cheapest option varies from person to person. An independent agent finds the best match for your specific situation at no extra cost to you.
+Yes. Independent agents work with many carriers and can compare rates across the market. Because carriers price risk differently, the cheapest option varies from person to person. An independent agent finds the best match for your specific situation at no extra cost to you.
