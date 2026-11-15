@@ -12,7 +12,7 @@ tags: [medicare, louisville, kentucky, seniors, health-insurance, enrollment]
 status: published
 ---
 
-If you are turning 65 this year — or helping a parent or spouse figure out their options — Medicare can feel like a lot to take in. There are letters attached to everything, deadlines that actually matter, and more plan choices than anyone expected. But once you break it down, it is manageable. And you do not have to figure it out alone.
+If you are turning 65 this year, or helping a parent or spouse figure out their options, Medicare can feel like a lot to take in. There are letters attached to everything, deadlines that actually matter, and more plan choices than anyone expected. But once you break it down, it is manageable. And you do not have to figure it out alone.
 
 This guide walks through what Louisville-area seniors need to know about Medicare for 2026: what the parts cover, when to sign up, how to choose between plans, and where to get local help.
 
@@ -22,7 +22,7 @@ Medicare is divided into parts, each covering a different piece of your healthca
 
 **Part A (Hospital Insurance)** covers inpatient hospital stays, skilled nursing facility care, hospice, and some home health services. Most people do not pay a premium for Part A if they or their spouse paid Medicare taxes for at least 10 years.
 
-**Part B (Medical Insurance)** covers doctor visits, outpatient care, preventive services, lab work, and medical equipment. Part B has a monthly premium — for 2026, the standard premium is set by CMS each fall. You pay this whether you choose Original Medicare or Medicare Advantage.
+**Part B (Medical Insurance)** covers doctor visits, outpatient care, preventive services, lab work, and medical equipment. Part B has a monthly premium. For 2026, the standard premium is set by CMS each fall. You pay this whether you choose Original Medicare or Medicare Advantage.
 
 **Part C (Medicare Advantage)** is an alternative way to receive your Part A and Part B benefits. These plans are offered by private insurance companies and typically bundle hospital, medical, and prescription drug coverage into one plan. Many include extras like dental, vision, and hearing. The trade-off is that you are usually limited to a provider network.
 
@@ -34,7 +34,7 @@ For a more detailed breakdown, visit our [Medicare page](/health/medicare.html).
 
 Timing matters with Medicare. Miss a window and you could face penalties or gaps in coverage.
 
-**Initial Enrollment Period (IEP).** This is the seven-month window around your 65th birthday — it starts three months before your birthday month, includes your birthday month, and extends three months after. This is your best opportunity to enroll without penalties or complications. If you are still working and covered by an employer plan, you may be able to delay, but talk to someone before you assume that.
+**Initial Enrollment Period (IEP).** This is the seven-month window around your 65th birthday: it starts three months before your birthday month, includes your birthday month, and extends three months after. This is your best opportunity to enroll without penalties or complications. If you are still working and covered by an employer plan, you may be able to delay, but talk to someone before you assume that.
 
 **General Enrollment Period.** If you missed your IEP and are not covered by an employer plan, you can sign up between January 1 and March 31 each year. Coverage begins July 1. Late enrollment penalties may apply, so this is not the ideal route.
 
@@ -48,9 +48,9 @@ The bottom line: do not wait until the last minute. If you are approaching 65, s
 
 This is the biggest decision most people face, and there is no one-size-fits-all answer.
 
-**Original Medicare + Medigap (Medicare Supplement)** gives you the most flexibility. You can see any doctor or hospital in the country that accepts Medicare — no network, no referrals. A Medigap plan fills in the gaps that Original Medicare leaves behind, like deductibles and coinsurance. You will also need a separate Part D plan for prescriptions. Medigap premiums tend to be higher, but your out-of-pocket costs at the point of care are predictable. Learn more on our [supplemental health page](/health/supplemental-health.html).
+**Original Medicare + Medigap (Medicare Supplement)** gives you the most flexibility. You can see any doctor or hospital in the country that accepts Medicare, with no network and no referrals. A Medigap plan fills in the gaps that Original Medicare leaves behind, like deductibles and coinsurance. You will also need a separate Part D plan for prescriptions. Medigap premiums tend to be higher, but your out-of-pocket costs at the point of care are predictable. Learn more on our [supplemental health page](/health/supplemental-health.html).
 
-**Medicare Advantage** bundles everything into one plan, often with lower premiums and added benefits like dental and vision. But you are working within a network. In the Louisville metro area, most major health systems — Norton Healthcare, Baptist Health, UofL Health — participate in Advantage plan networks, but not all plans include all systems. If you have specific doctors you want to keep, check the plan directory carefully.
+**Medicare Advantage** bundles everything into one plan, often with lower premiums and added benefits like dental and vision. But you are working within a network. In the Louisville metro area, most major health systems (Norton Healthcare, Baptist Health, UofL Health) participate in Advantage plan networks, but not all plans include all systems. If you have specific doctors you want to keep, check the plan directory carefully.
 
 If you travel frequently, spend part of the year in another state, or want the freedom to see any provider without worrying about networks, Original Medicare with a Medigap plan is usually the better fit. If you want lower monthly costs and are comfortable staying in-network in the [Louisville area](/insurance/louisville-ky.html), a Medicare Advantage plan may work well.
 
@@ -58,13 +58,13 @@ If you travel frequently, spend part of the year in another state, or want the f
 
 Do not overlook Part D. Even if you are healthy and take few medications now, enrolling in a Part D plan when you are first eligible protects you from late enrollment penalties down the road.
 
-Each Part D plan has a formulary — a list of covered drugs organized into cost tiers. The same medication can be on different tiers depending on the plan, which means your out-of-pocket cost varies. If you take regular prescriptions, compare formularies before choosing a plan. The Medicare Plan Finder at medicare.gov lets you enter your specific medications and see estimated costs for each available plan.
+Each Part D plan has a formulary: a list of covered drugs organized into cost tiers. The same medication can be on different tiers depending on the plan, which means your out-of-pocket cost varies. If you take regular prescriptions, compare formularies before choosing a plan. The Medicare Plan Finder at medicare.gov lets you enter your specific medications and see estimated costs for each available plan.
 
 For 2026, the Inflation Reduction Act provisions continue to cap insulin costs and limit annual out-of-pocket spending on Part D drugs. These are meaningful protections, especially for seniors managing chronic conditions.
 
 ## Common Medicare mistakes to avoid
 
-**Waiting too long to enroll.** If you miss your Initial Enrollment Period and do not have qualifying employer coverage, you could face a Part B late enrollment penalty — an extra 10% on your premium for every 12 months you were eligible but did not sign up. That penalty is permanent.
+**Waiting too long to enroll.** If you miss your Initial Enrollment Period and do not have qualifying employer coverage, you could face a Part B late enrollment penalty: an extra 10% on your premium for every 12 months you were eligible but did not sign up. That penalty is permanent.
 
 **Assuming all plans are the same.** Two Medicare Advantage plans in Jefferson County can have very different networks, formularies, copays, and out-of-pocket maximums. Do not pick one based on the name or the premium alone.
 
@@ -76,7 +76,7 @@ For 2026, the Inflation Reduction Act provisions continue to cap insulin costs a
 
 ## Louisville-area Medicare resources
 
-You have solid local resources available — take advantage of them.
+You have solid local resources available. Take advantage of them.
 
 **Kentucky State Health Insurance Assistance Program (SHIP).** SHIP counselors provide free, unbiased Medicare counseling. They can help you understand your options, compare plans, and enroll. In the Louisville area, you can reach SHIP through the Louisville Metro Department of Public Health and Wellness or by calling 1-877-293-7447.
 
@@ -90,7 +90,7 @@ You have solid local resources available — take advantage of them.
 
 Here is something a lot of people do not realize: working with an independent insurance agent to navigate Medicare costs you nothing. We are compensated by the insurance carriers, not by you. Our service is free.
 
-As an independent agency, we are not locked into one company. We work with multiple carriers, which means we can show you Medicare Supplement plans, Medicare Advantage options, and Part D plans side by side and help you find the one that actually fits your situation — your doctors, your medications, your budget.
+As an independent agency, we are not locked into one company. We work with multiple carriers, which means we can show you Medicare Supplement plans, Medicare Advantage options, and Part D plans side by side and help you find the one that actually fits your situation: your doctors, your medications, your budget.
 
 We sit down with you, walk through your options, answer your questions, and help you enroll when you are ready. No pressure, no hard sell. Just straightforward guidance from someone who knows these plans inside and out.
 
