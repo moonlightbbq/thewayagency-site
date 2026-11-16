@@ -23,71 +23,29 @@
  */
 const { test, describe, before, after } = require('node:test');
 const assert = require('node:assert/strict');
-const http = require('node:http');
-const path = require('node:path');
-const { execFile } = require('node:child_process');
 
-const ROOT = path.join(__dirname, '..');
-const BUILD = path.join(ROOT, 'scripts', 'build.js');
+const { goodRules, startStubSage, runBuild: buildIn, copySite } = require('./helpers/site-build');
 
-// A healthy GET /api/intake/rules, as SAGE serves it. The decline apologises and
-// says nothing whatsoever about commercial lines — we write CL nationwide, but the
-// owner was explicit that this is for us to know and never to pitch to a
-// personal-lines applicant we are declining.
-const GOOD_RULES = {
-  serviceStates: ['KY', 'IN', 'TN'],
-  stateNames: { KY: 'Kentucky', IN: 'Indiana', TN: 'Tennessee' },
-  stateToken: '{{STATE}}',
-  declineTemplate:
-    "We're really sorry, but we aren't licensed to write personal insurance in {{STATE}}. "
-    + 'We can only take care of folks in Kentucky, Indiana and Tennessee right now, so we '
-    + "can't help with this one. We hate to turn you away, and we hope you find great coverage.",
-  // Every tile the form offers has to be classifiable. The list is read off the real
-  // PRODUCTS grid in src/intake.html so this stub cannot drift away from the page.
-  productLines: productIdsFromForm().reduce((m, id) => { m[id] = 'personal'; return m; }, {}),
-};
-
-function productIdsFromForm() {
-  const html = require('node:fs').readFileSync(path.join(ROOT, 'src', 'intake.html'), 'utf8');
-  const grid = html.match(/const PRODUCTS = \[[\s\S]*?\n\];/);
-  const ids = grid ? [...grid[0].matchAll(/id:\s*'([a-z_]+)'/g)].map((m) => m[1]) : [];
-  return ids.filter((id) => id !== 'other');
-}
-
-// Run the real build against the stub. Resolves with the exit code + output.
-function runBuild(sageApi) {
-  return new Promise((resolve) => {
-    execFile('node', [BUILD], {
-      cwd: ROOT,
-      env: { ...process.env, SAGE_API: sageApi },
-      timeout: 60000,
-    }, (err, stdout, stderr) => {
-      resolve({ code: err ? (err.code ?? 1) : 0, out: String(stdout) + String(stderr) });
-    });
-  });
-}
+// The decline, the product classification and the server are the shared stub
+// (tests/helpers/site-build.js). Y-97: every build here runs in a throwaway copy
+// of the repo, never in the repo's own build/, which other test files read while
+// this one runs.
+const GOOD_RULES = goodRules();
+let site;
+const runBuild = (sageApi) => buildIn(site.dir, sageApi);
 
 describe('scripts/build.js actually enforces the cross-repo intake gate', () => {
   let srv, rules, url;
 
   before(async () => {
     rules = structuredClone(GOOD_RULES);
+    site = copySite('build-gate-wiring-');
     // One server for all the tests; each test swaps what it serves.
-    srv = await new Promise((resolve) => {
-      const s = http.createServer((req, res) => {
-        if (req.url === '/api/intake/rules') {
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify(rules));
-          return;
-        }
-        res.writeHead(404).end();
-      });
-      s.listen(0, '127.0.0.1', () => resolve(s));
-    });
-    url = `http://127.0.0.1:${srv.address().port}`;
+    srv = await startStubSage(() => rules);
+    url = srv.url;
   });
 
-  after(() => { if (srv) srv.close(); });
+  after(async () => { if (srv) await srv.close(); if (site) site.done(); });
 
   // The control. If this fails, every "the build refuses" assertion below is
   // worthless, because the build would be failing for some unrelated reason.

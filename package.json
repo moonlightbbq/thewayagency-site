@@ -16,7 +16,7 @@
     "safe-build": "node scripts/pre-build-check.js && node scripts/build.js && node scripts/validate-build.js",
     "deploy": "node scripts/deploy.js",
     "admin": "node scripts/admin.js",
-    "test": "node --test tests/*.test.js"
+    "test": "node tests/helpers/prebuild.js && node --test tests/*.test.js"
   },
   "engines": {
     "node": ">=18"
