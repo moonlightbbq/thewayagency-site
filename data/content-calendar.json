@@ -2001,7 +2001,10 @@
       "reviewer": "Jill Boone",
       "reviewer_email": "jill@thewayagency.com",
       "reviewer_slug": "jill-boone",
-      "review_sent_date": "2026-11-15"
+      "review_sent_date": "2026-11-15",
+      "final_reminder_dates": [
+        "2026-11-16"
+      ]
     },
     {
       "week": 36,
