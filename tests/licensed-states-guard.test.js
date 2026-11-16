@@ -161,9 +161,9 @@ describe('a built tree', () => {
     assert.match(src, /licensedStateProblemsInTree\(BUILD, licensedStates\(\), undefined, \{ health: healthLicensedStates\(\) \}\)/);
     assert.match(src, /throw new Error\(`Licensed-states guard failed/);
   });
-  test('when a build is present: no problem, every exception rule is used, and without OH the hand-made pages fail', (t) => {
+  test('the built site (Y-97: never skipped): no problem, every exception rule is used, and without OH the hand-made pages fail', () => {
     const build = path.join(ROOT, 'build');
-    if (!fs.existsSync(path.join(build, 'index.html'))) { t.skip('no build/ (run node scripts/build.js)'); return; }
+    assert.ok(fs.existsSync(path.join(build, 'index.html')), 'npm test builds build/ first (tests/helpers/build-for-tests.js); run it, or node scripts/build.js');
     const r = guard.licensedStateProblemsInTree(build, licensedStates(), undefined, { health: healthLicensedStates() });
     assert.deepEqual(r.problems, []);
     // Every Accident and Health page carries an areaServed, and it is the health states (no OH).

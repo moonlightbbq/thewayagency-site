@@ -90,9 +90,9 @@ describe('the build runs the guard over its output', () => {
     assert.match(src, /agencyEmailProblemsInTree\(BUILD\)/);
     assert.match(src, /throw new Error\(`Agency email guard failed/);
   });
-  test('when a build is present, its output names only agency mailboxes', (t) => {
+  test('the built site names only agency mailboxes', () => {
     const build = path.join(ROOT, 'build');
-    if (!fs.existsSync(path.join(build, 'about', 'claims.html'))) { t.skip('no build/ (run node scripts/build.js)'); return; }
+    assert.ok(fs.existsSync(path.join(build, 'about', 'claims.html')), 'npm test builds build/ first (tests/helpers/build-for-tests.js); run it, or node scripts/build.js'); // Y-97: never skipped
     const { problems } = agencyEmailProblemsInTree(build);
     assert.deepEqual(problems, []);
     const claims = fs.readFileSync(path.join(build, 'about', 'claims.html'), 'utf8');
