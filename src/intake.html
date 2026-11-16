@@ -2601,6 +2601,16 @@ function buildRiskFormData() {
   const fields = [...SCHEMA_FIELD_IDS, 'i_fl_foundation', 'i_fl_claims', 'i_fl_zone'];
   fields.forEach(id => { const val = el(id); if (val) formData[id] = val; });
 
+  // Y-95: the landlord (dwelling fire) property under the keys SAGE's own
+  // dwelling-fire form and ACORD builder read. Typed without a Places pick, the
+  // whole line is the street and the parts stay empty: never the mailing ones.
+  if (el('i_df_address_street') || el('i_df_address')) {
+    formData.df_addr = el('i_df_address_street') || el('i_df_address');
+    if (el('i_df_city')) formData.df_city = el('i_df_city');
+    if (el('i_df_state')) formData.df_state = el('i_df_state');
+    if (el('i_df_zip')) formData.df_zip = el('i_df_zip');
+  }
+
   // Add industry context if passed from an industry page
   if (window._intakeIndustry) formData.industry = window._intakeIndustry;
   // County context from the county landing pages
@@ -3252,6 +3262,12 @@ function renderField(f) {
     inner = `<select id="${f.id}">` + f.options.map(o => `<option value="${o[0]}">${o[1]}</option>`).join('') + `</select>`;
   } else if (f.type === 'textarea') {
     inner = `<textarea id="${f.id}" rows="${f.rows || 3}" placeholder="${f.placeholder || ''}"></textarea>`;
+  } else if (f.type === 'address') {
+    // Y-95: a typed address with Google prefill, like the homeowners property
+    // address: hidden street/city/state/zip parts that a Places pick fills and
+    // any edit resets (the plain-text fallback keeps the typed line as the street).
+    inner = `<input type="text" id="${f.id}" autocomplete="off" data-addr-parts="${f.parts.join(' ')}" placeholder="${f.placeholder || ''}">`
+      + f.parts.map(id => `<input type="hidden" id="${id}">`).join('');
   } else {
     inner = `<input type="${f.type === 'number' ? 'number' : 'text'}" id="${f.id}"`
       + (f.maxlength != null ? ` maxlength="${f.maxlength}"` : '')
@@ -3384,7 +3400,8 @@ const PRODUCT_QUESTION_SCHEMA = {
   dwelling_fire: [
     [ { id:'i_df_use', label:'Property Use', type:'select', options:[['','Select'],['rental','Rental property'],['vacant','Vacant'],['renovation','Under renovation'],['seasonal','Seasonal / Secondary home']] },
       { id:'i_df_value', label:'Estimated Dwelling Value', type:'select', options:[['','Select'],['under100k','Under $100K'],['100k-200k','$100K - $200K'],['200k-300k','$200K - $300K'],['300k-500k','$300K - $500K'],['over500k','$500K+']] } ],
-    { id:'i_df_address', label:'Property Address (if different from mailing)', type:'text', placeholder:'Leave blank if same as mailing address' },
+    { id:'i_df_address', label:'Property Address (if different from mailing)', type:'address', placeholder:'Leave blank if same as mailing address',
+      parts:['i_df_address_street', 'i_df_city', 'i_df_state', 'i_df_zip'] },
   ],
   cgl: [
     { id:'i_cgl_limit', label:'Desired Liability Limit', review:'Liability Limit', type:'select', options:[['','Select'],['300k/600k','$300K / $600K'],['500k/1m','$500K / $1M'],['1m/2m','$1M / $2M'],['2m/4m','$2M / $4M']] },
@@ -4308,6 +4325,16 @@ function _onHoAddrInput(el) {
   if (s) s.value = el.value;
   ['i_ho_city','i_ho_state','i_ho_zip'].forEach(function(id) { var e = document.getElementById(id); if (e) e.value = ''; });
 }
+// Y-95: the same reset for a schema address field (data-addr-parts = street,
+// city, state, zip ids): typing puts the line in the street part and clears the rest.
+document.addEventListener('input', (e) => {
+  const el = e.target;
+  if (!el || !el.dataset || !el.dataset.addrParts) return;
+  const [streetId, ...rest] = el.dataset.addrParts.split(' ');
+  const s = document.getElementById(streetId);
+  if (s) s.value = el.value;
+  rest.forEach((id) => { const p = document.getElementById(id); if (p) p.value = ''; });
+});
 function _parsePlaceAddress(place) {
   let streetNum = '', route = '', city = '', state = '', zip = '';
   for (const c of place.address_components) {
@@ -4411,6 +4438,7 @@ function _bindAutocompleteOnce(inputId, streetId, cityId, stateId, zipId) {
 function bindIntakeAutocompletes() {
   _bindAutocompleteOnce('i_address', 'i_address_street', 'i_city', 'i_state', 'i_zip');
   _bindAutocompleteOnce('i_ho_address', 'i_ho_address_street', 'i_ho_city', 'i_ho_state', 'i_ho_zip');
+  _bindAutocompleteOnce('i_df_address', 'i_df_address_street', 'i_df_city', 'i_df_state', 'i_df_zip');
 }
 
 // ── Event delegation (replaces all inline onclick handlers) ──
@@ -4464,7 +4492,7 @@ const DRAFT_FIELD_IDS = [
   'i_mc_year', 'i_mc_make', 'i_mc_model',
   'i_boat_year', 'i_boat_make', 'i_boat_length', 'i_boat_type',
   'i_rv_year', 'i_rv_make', 'i_rv_model', 'i_rv_type',
-  'i_bop_ownlease', 'i_df_use', 'i_df_value', 'i_df_address',
+  'i_bop_ownlease', 'i_df_use', 'i_df_value', 'i_df_address', 'i_df_address_street', 'i_df_city', 'i_df_state', 'i_df_zip',
   'i_cgl_limit', 'i_ca_numveh', 'i_ca_vehtype', 'i_wc_payroll',
   'i_eo_profession', 'i_fr_type', 'i_fr_acres',
   'i_bond_type', 'i_bond_amount', 'i_br_projtype', 'i_br_value',
