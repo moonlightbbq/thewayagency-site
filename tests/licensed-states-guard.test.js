@@ -163,7 +163,7 @@ describe('a built tree', () => {
   });
   test('the built site (Y-97: never skipped): no problem, every exception rule is used, and without OH the hand-made pages fail', () => {
     const build = path.join(ROOT, 'build');
-    assert.ok(fs.existsSync(path.join(build, 'index.html')), 'npm test builds build/ first (tests/helpers/prebuild.js); run it, or node scripts/build.js');
+    assert.ok(fs.existsSync(path.join(build, 'index.html')), 'npm test builds build/ first (tests/helpers/build-for-tests.js); run it, or node scripts/build.js');
     const r = guard.licensedStateProblemsInTree(build, licensedStates(), undefined, { health: healthLicensedStates() });
     assert.deepEqual(r.problems, []);
     // Every Accident and Health page carries an areaServed, and it is the health states (no OH).

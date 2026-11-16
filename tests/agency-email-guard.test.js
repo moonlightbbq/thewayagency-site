@@ -92,7 +92,7 @@ describe('the build runs the guard over its output', () => {
   });
   test('the built site names only agency mailboxes', () => {
     const build = path.join(ROOT, 'build');
-    assert.ok(fs.existsSync(path.join(build, 'about', 'claims.html')), 'npm test builds build/ first (tests/helpers/prebuild.js); run it, or node scripts/build.js'); // Y-97: never skipped
+    assert.ok(fs.existsSync(path.join(build, 'about', 'claims.html')), 'npm test builds build/ first (tests/helpers/build-for-tests.js); run it, or node scripts/build.js'); // Y-97: never skipped
     const { problems } = agencyEmailProblemsInTree(build);
     assert.deepEqual(problems, []);
     const claims = fs.readFileSync(path.join(build, 'about', 'claims.html'), 'utf8');

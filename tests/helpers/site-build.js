@@ -9,7 +9,7 @@
  * scheduling.
  *
  * Now:
- *   - `npm test` builds build/ once, first (tests/helpers/prebuild.js), against a
+ *   - `npm test` builds build/ once, first (tests/helpers/build-for-tests.js), against a
  *     stub SAGE. Every "the built site" test reads that build and never skips.
  *   - a test that needs builds of its own (build-gate-wiring) builds in a
  *     throwaway copy of the repo (copySite), never in the repo.
@@ -65,7 +65,7 @@ function startStubSage(rules) {
 
 /**
  * Run `node scripts/build.js` in `root` against `sageApi`. Resolves { code, out }.
- * Refuses the repo itself unless { repo: true } (only prebuild.js passes it):
+ * Refuses the repo itself unless { repo: true } (only build-for-tests.js passes it):
  * a test that builds builds in copySite().
  */
 function runBuild(root, sageApi, { repo = false } = {}) {

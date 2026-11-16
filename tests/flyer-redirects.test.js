@@ -81,7 +81,7 @@ describe('where the script is', () => {
   });
   test('the built site: the script is on exactly personal/index.html and personal/home.html, first in <head>', () => {
     const build = path.join(ROOT, 'build');
-    assert.ok(fs.existsSync(path.join(build, 'personal', 'index.html')), 'npm test builds build/ first (tests/helpers/prebuild.js); run it, or node scripts/build.js'); // Y-97: never skipped
+    assert.ok(fs.existsSync(path.join(build, 'personal', 'index.html')), 'npm test builds build/ first (tests/helpers/build-for-tests.js); run it, or node scripts/build.js'); // Y-97: never skipped
     const found = [];
     const walk = (d) => {
       for (const e of fs.readdirSync(d, { withFileTypes: true })) {
@@ -143,7 +143,7 @@ describe('inferred landing pages (Y0 inference, not the owner\'s list)', () => {
   });
   test('the built site: every inferred landing page is built, and a landing that redirects lands on a built page', () => {
     const build = path.join(ROOT, 'build');
-    assert.ok(fs.existsSync(path.join(build, 'personal', 'index.html')), 'npm test builds build/ first (tests/helpers/prebuild.js); run it, or node scripts/build.js'); // Y-97: never skipped
+    assert.ok(fs.existsSync(path.join(build, 'personal', 'index.html')), 'npm test builds build/ first (tests/helpers/build-for-tests.js); run it, or node scripts/build.js'); // Y-97: never skipped
     for (const [code, page] of Object.entries(INFERRED_LANDING)) {
       if (page === null) continue;
       assert.ok(fs.existsSync(path.join(build, fr.builtFileFor(page))), `${code}: ${page}`);

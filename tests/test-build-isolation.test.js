@@ -5,7 +5,7 @@
  * real build in the repo while licensed-states-guard, agency-email-guard and
  * flyer-redirects read build/. In CI (no build before `npm test`) one of them
  * skipped and another ran in the same run, by scheduling alone. Now `npm test`
- * builds once first (tests/helpers/prebuild.js), and a test that builds does so
+ * builds once first (tests/helpers/build-for-tests.js), and a test that builds does so
  * in a throwaway copy (tests/helpers/site-build.js copySite).
  *
  *   npm test
@@ -20,9 +20,9 @@ const guard = require('../scripts/lib/licensed-states-guard');
 const { licensedStates } = require('../scripts/lib/licensed-states');
 
 describe('the test command builds once, first', () => {
-  test('npm test runs the prebuild before any test file', () => {
+  test('npm test builds the site (tests/helpers/build-for-tests.js) before any test file', () => {
     const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
-    assert.equal(pkg.scripts.test, 'node tests/helpers/prebuild.js && node --test tests/*.test.js');
+    assert.equal(pkg.scripts.test, 'node tests/helpers/build-for-tests.js && node --test tests/*.test.js');
   });
 
   test('no test file reaches for a "no build/" skip any more', () => {
