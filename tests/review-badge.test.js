@@ -174,8 +174,8 @@ describe('source: no hand-typed badge left', () => {
   });
   test('every handcrafted footer that had the badge marks it (at most once, inside the footer), outside <main> on compliance pages', () => {
     const marked = files.filter((f) => read(f).includes('<!--render:review-badge:footer-->'));
-    // 20 handcrafted pages (the homepage and the six compliance pages among them) and the 13 frozen legacy blog pages (claims spec PR-4 item 6).
-    assert.equal(marked.length, 33, `found ${marked.length} footer badge markers`);
+    // 21 handcrafted pages (the homepage and the six compliance pages among them) and the 13 frozen legacy blog pages (claims spec PR-4 item 6).
+    assert.equal(marked.length, 34, `found ${marked.length} footer badge markers`);
     for (const f of marked) {
       const s = read(f);
       assert.equal((s.match(/<!--render:review-badge:footer--><!--\/render:review-badge:footer-->/g) || []).length, 1, `${f}: one footer badge marker`);
