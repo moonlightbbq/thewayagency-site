@@ -70,5 +70,11 @@ test('ODT logo and the share card exist and are wired in', () => {
 
 test('the countdown starts hidden (no-JS visitors never see zeros) and stops at the close', () => {
   assert.match(html, /<div class="sb-count__wrap" id="sb-count" hidden>/);
-  assert.match(html, /if \(left <= 0\) \{ showEnded\(\); return; \}/);
+  assert.match(html, /if \(left <= 0\) \{ showEnded\(\); return false; \}/);
+  assert.match(html, /if \(tick\(\)\) \{\n\s*countEl\.hidden = false;/);
+});
+
+test('a confirmed entry keeps its confirmation past the close', () => {
+  assert.match(html, /function showEnded\(\) \{\n\s*stopCountdown\(\);\n\s*if \(entered\) return;/);
+  assert.match(html, /entered = true;\n\s*stopCountdown\(\);/);
 });

@@ -156,7 +156,7 @@
     .sb-stub__k{ margin:0; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:var(--sb-blush); font-weight:700; }
     .sb-stub__v{ margin:4px 0 0; font-family:var(--sb-serif); font-weight:600; font-size:22px; color:#fff; line-height:1.2; }
     .sb-stub__v small{ display:block; font-family:'Montserrat',system-ui,sans-serif; font-weight:500; font-size:12.5px; color:var(--sb-mut); margin-top:3px; }
-    .sb-stub__side{ display:flex; flex-direction:column; justify-content:center; align-items:center; padding:12px 20px;
+    .sb-stub__side{ width:var(--stub-w, 104px); box-sizing:border-box; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:12px 20px;
       border-left:2px dashed rgba(233,201,142,.45); text-align:center; }
     .sb-stub__side b{ font-family:var(--sb-serif); font-size:26px; font-weight:600; background:var(--sb-foil); -webkit-background-clip:text; background-clip:text; color:transparent; line-height:1; }
     .sb-stub__side span{ font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--sb-mut); margin-top:4px; }
@@ -501,13 +501,19 @@
     var titleEl = document.getElementById('sb-form-title');
     var countEl = document.getElementById('sb-count');
     var countTimer = null;
+    var entered = false; // a confirmed entry keeps its "You're entered" panel past the close
+
+    function stopCountdown() {
+      countEl.hidden = true;
+      if (countTimer) { clearInterval(countTimer); countTimer = null; }
+    }
 
     function showEnded() {
+      stopCountdown();
+      if (entered) return;
       form.style.display = 'none';
       successEl.style.display = 'none';
       titleEl.style.display = 'none';
-      countEl.hidden = true;
-      if (countTimer) clearInterval(countTimer);
       endedEl.style.display = 'block';
     }
     if (Date.now() >= CLOSES_AT) { showEnded(); return; }
@@ -519,16 +525,18 @@
       function pad(n) { return n < 10 ? '0' + n : String(n); }
       function tick() {
         var left = CLOSES_AT - Date.now();
-        if (left <= 0) { showEnded(); return; }
+        if (left <= 0) { showEnded(); return false; }
         var t = Math.floor(left / 1000);
         cells.d.textContent = String(Math.floor(t / 86400));
         cells.h.textContent = pad(Math.floor(t % 86400 / 3600));
         cells.m.textContent = pad(Math.floor(t % 3600 / 60));
         cells.s.textContent = pad(t % 60);
+        return true;
       }
-      tick();
-      countEl.hidden = false;
-      countTimer = setInterval(tick, 1000);
+      if (tick()) {
+        countEl.hidden = false;
+        countTimer = setInterval(tick, 1000);
+      }
     })();
 
     // Reveal the free-text question box only when "Do you have questions" = Yes.
@@ -650,6 +658,8 @@
             window.dataLayer.push({ event: 'giveaway_entered', category: 'conversion', free_review: freeReview });
             window.dataLayer.push({ event: 'conversion', conversion_type: 'giveaway_entry', conversion_reference: data.reference || '', conversion_source: 'snowball-2026' });
           } catch(e) {}
+          entered = true;
+          stopCountdown();
           form.style.display = 'none';
           titleEl.style.display = 'none';
           successEl.style.display = 'block';
