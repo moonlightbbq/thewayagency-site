@@ -50,6 +50,8 @@ test('the dates and the prize agree with the event', () => {
   assert.match(html, /<p class="sb-soldout">.*Sold out<span class="sb-soldout__sep" aria-hidden="true">&middot;<\/span>1 ticket left to win</);
   // ...and says a ticket is still winnable, so sold out never reads as "too late".
   assert.match(html, /Tickets are <strong>sold out<\/strong>, but we're giving one away\. Enter free for your chance to still go\./);
+  assert.match(html, /<p class="sb-tickets">Tickets aren't for sale anymore, but you can enter to win one\. Entering is free\.<\/p>/);
+  assert.match(html, /<span class="sb-stub__tag">Still up for grabs<\/span>/);
 });
 
 test('every call link has a text link to the same number', () => {
