@@ -45,7 +45,10 @@ test('the page closes at the same instant as SAGE (11:59 PM ET Sun 2026-11-29)',
 test('the dates and the prize agree with the event', () => {
   assert.match(html, /Friday, December 4, 2026, from 6:00 PM to 8:00 PM/);
   assert.match(html, /One \(1\) couple ticket/);
-  assert.match(html, /https:\/\/owensborodancetheatre\.org\/registersbddd\//);
+  // Sold out (owner, 11/25): no ticket-buying link, and the page says so.
+  assert.doesNotMatch(html, /registersbddd|Get tickets from/);
+  assert.match(html, /<p class="sb-soldout">/);
+  assert.match(html, /The Snowball is <strong>sold out<\/strong>\. This giveaway is your chance to still get in\./);
 });
 
 test('every call link has a text link to the same number', () => {
@@ -58,14 +61,14 @@ test('every call link has a text link to the same number', () => {
 
 test('ODT logo and the share card exist and are wired in', () => {
   const img = (f) => path.join(__dirname, '..', 'src', 'assets', 'images', f);
-  for (const f of ['partners/odt-logo-gold-white.webp', 'partners/odt-logo-gold-white.png', 'og-snowball-2026.jpg']) {
+  for (const f of ['partners/odt-logo-gold-white.webp', 'partners/odt-logo-gold-white.png', 'og-snowball-2026-soldout.jpg']) {
     assert.ok(fs.statSync(img(f)).size > 1000, f);
   }
   assert.match(html, /<source srcset="\/src\/assets\/images\/partners\/odt-logo-gold-white\.webp" type="image\/webp">/);
   assert.match(html, /<img class="sb-odt" src="\/src\/assets\/images\/partners\/odt-logo-gold-white\.png" alt="Owensboro Dance Theatre"/);
-  assert.match(html, /<meta property="og:image" content="https:\/\/www\.thewayagency\.com\/src\/assets\/images\/og-snowball-2026\.jpg">/);
+  assert.match(html, /<meta property="og:image" content="https:\/\/www\.thewayagency\.com\/src\/assets\/images\/og-snowball-2026-soldout\.jpg">/);
   assert.match(html, /<meta property="og:image:width" content="1200">/);
-  assert.match(html, /<meta name="twitter:image" content="https:\/\/www\.thewayagency\.com\/src\/assets\/images\/og-snowball-2026\.jpg">/);
+  assert.match(html, /<meta name="twitter:image" content="https:\/\/www\.thewayagency\.com\/src\/assets\/images\/og-snowball-2026-soldout\.jpg">/);
 });
 
 test('the countdown starts hidden (no-JS visitors never see zeros) and stops at the close', () => {
