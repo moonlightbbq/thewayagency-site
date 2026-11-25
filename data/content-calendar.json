@@ -2041,14 +2041,20 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "in-review",
+      "status": "approved",
       "source": "markdown",
       "notes": "",
       "reviewer": "Audrey Lillpop",
       "reviewer_email": "audrey@thewayagency.com",
       "reviewer_slug": "audrey-lillpop",
       "review_sent_date": "2026-11-18",
-      "reminder_sent": true
+      "reminder_sent": true,
+      "approved_by": "Audrey Lillpop",
+      "approved_by_email": "audrey@thewayagency.com",
+      "approved_sha256": "6a3ade0ff1d905cc1845ac5e6dd58eaf96464e8dcc89a4f0735e308a67ef65b2",
+      "approved_date": "2026-11-25",
+      "approved_publish_date": "2026-12-02",
+      "approval_mac": "eQAixd9Ypcli-N3F4H1oA0PPKB8Yxsev4meBWB5YTDU"
     },
     {
       "week": 38,
