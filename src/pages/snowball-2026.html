@@ -5,7 +5,7 @@
   <meta name="robots" content="noindex, nofollow">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Snowball Daddy Daughter Dance Giveaway | The Way Agency</title>
-  <meta name="description" content="Enter to win a couple ticket to Owensboro Dance Theatre's Snowball Daddy Daughter Dance, Friday, December 4, 2026 at the RiverPark Center. Entries close November 29.">
+  <meta name="description" content="The Snowball Daddy Daughter Dance is sold out. Enter to win a couple ticket to Owensboro Dance Theatre's Snowball, Friday, December 4, 2026 at the RiverPark Center. Entries close November 29.">
   <link rel="canonical" href="https://www.thewayagency.com/snowball-2026">
   <meta name="theme-color" content="#24141B">
   <link rel="icon" href="/src/assets/images/favicon.png">
@@ -23,20 +23,20 @@
   <link rel="stylesheet" href="/src/css/leadgen.css">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Win a Night at the Snowball | The Way Agency">
-  <meta property="og:description" content="Enter to win a couple ticket to Owensboro Dance Theatre's Snowball Daddy Daughter Dance, Friday, December 4 at the RiverPark Center. Winner announced Monday, November 30.">
+  <meta property="og:title" content="Sold Out: Win a Ticket to the Snowball | The Way Agency">
+  <meta property="og:description" content="The Snowball is sold out, but you can still get in. Enter to win a couple ticket to Owensboro Dance Theatre's Snowball Daddy Daughter Dance, Friday, December 4 at the RiverPark Center. Winner announced Monday, November 30.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.thewayagency.com/snowball-2026">
   <meta property="og:site_name" content="The Way Agency">
-  <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/og-snowball-2026.jpg">
+  <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/og-snowball-2026-soldout.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Owensboro Dance Theatre presents the Snowball Daddy Daughter Dance. Win a couple ticket.">
   <meta property="og:image:type" content="image/jpeg">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Win a Night at the Snowball | The Way Agency">
-  <meta name="twitter:description" content="Enter to win a couple ticket to the Snowball Daddy Daughter Dance, Friday, December 4 at the RiverPark Center.">
-  <meta name="twitter:image" content="https://www.thewayagency.com/src/assets/images/og-snowball-2026.jpg">
+  <meta name="twitter:title" content="Sold Out: Win a Ticket to the Snowball | The Way Agency">
+  <meta name="twitter:description" content="The Snowball is sold out, but you can still get in. Enter to win a couple ticket, Friday, December 4 at the RiverPark Center.">
+  <meta name="twitter:image" content="https://www.thewayagency.com/src/assets/images/og-snowball-2026-soldout.jpg">
 
   <style>
     /* ── Snowball Daddy Daughter Dance giveaway ──────────────────────────────
@@ -102,7 +102,7 @@
     .sb-stage{ position:relative; width:min(660px,100%); margin:0 auto; }
 
     /* The invitation card */
-    .sb-invite{ position:relative; text-align:center; padding:34px 28px 30px; margin-bottom:34px;
+    .sb-invite{ position:relative; text-align:center; padding:44px 28px 30px; margin-bottom:34px;
       border-radius:26px; background:linear-gradient(180deg, rgba(58,32,48,.72), rgba(30,17,23,.78));
       box-shadow:0 40px 90px -40px rgba(0,0,0,.9), 0 0 80px -30px rgba(233,201,142,.45); }
     .sb-invite::before{ content:''; position:absolute; inset:0; border-radius:inherit; padding:1.5px;
@@ -111,10 +111,18 @@
       -webkit-mask-composite:xor; mask-composite:exclude; }
     .sb-invite::after{ content:''; position:absolute; inset:9px; border-radius:20px; pointer-events:none;
       border:1px solid rgba(233,201,142,.25); }
+    .sb-soldout{ position:absolute; top:-15px; left:50%; transform:translateX(-50%); z-index:2; margin:0; white-space:nowrap;
+      display:inline-flex; align-items:center; gap:8px; padding:7px 18px; border-radius:999px;
+      font-size:11.5px; font-weight:800; letter-spacing:.22em; text-transform:uppercase; color:#3A2030;
+      background:linear-gradient(100deg,#F5CCD4,#FBE7B5 50%,#F5CCD4); box-shadow:0 6px 24px -6px rgba(245,204,212,.7); }
+    .sb-soldout svg{ color:#B05A72; }
     .sb-odt{ display:block; width:min(210px,58%); height:auto; margin:0 auto 6px; }
-    .sb-presents{ font-family:var(--sb-serif); font-style:italic; font-size:17px; color:var(--sb-blush); margin:4px 0 -6px; letter-spacing:.04em; }
-    .sb-name{ font-family:var(--sb-script); font-weight:400; line-height:1.05; margin:0;
-      font-size:clamp(76px,17vw,128px); padding:0 .12em;
+    .sb-presents{ position:relative; z-index:1; font-family:var(--sb-serif); font-style:italic; font-size:17px; color:var(--sb-blush); margin:6px 0 0; letter-spacing:.04em; }
+    /* Script glyphs (the S swash, the l ascenders) rise above the line box, and
+       background-clip:text paints only inside the box: the padding gives them
+       room, the negative margins keep the spacing. */
+    .sb-name{ display:inline-block; font-family:var(--sb-script); font-weight:400; line-height:1.05; margin:-.3em 0 -.14em;
+      font-size:clamp(56px,18.5vw,128px); padding:.34em .22em .14em;
       background:var(--sb-foil); background-size:200% 100%; -webkit-background-clip:text; background-clip:text; color:transparent;
       filter:drop-shadow(0 2px 14px rgba(233,201,142,.35)); }
     @media (prefers-reduced-motion:no-preference){ .sb-name{ animation:sbFoil 7s ease-in-out infinite alternate; } }
@@ -133,11 +141,13 @@
 
     .sb-head{ text-align:center; margin-bottom:20px; }
     .sb-head h1{ font-family:'Montserrat',system-ui,sans-serif; font-weight:600; color:#fff;
-      font-size:clamp(26px,5vw,38px); line-height:1.15; margin:0 0 12px; text-wrap:balance; }
+      font-size:clamp(26px,5vw,38px); line-height:1.3; margin:0 0 12px; text-wrap:balance; }
     .sb-head h1 span{ font-family:var(--sb-script); font-weight:400; font-size:1.45em; line-height:.8;
       color:var(--sb-blush); padding:0 .05em; }
     .sb-head p{ margin:0 auto; max-width:46ch; color:var(--sb-mut); font-size:15.5px; line-height:1.6; }
     .sb-head p strong{ color:var(--sb-cream); }
+    .sb-head .sb-lead{ font-size:16.5px; color:var(--sb-cream); margin-bottom:8px; text-wrap:balance; }
+    .sb-head .sb-lead strong{ color:var(--sb-blush); }
 
     /* Countdown to the close of entries */
     .sb-count__wrap{ margin:0 0 26px; }
@@ -153,6 +163,8 @@
     .sb-stub{ position:relative; display:grid; grid-template-columns:1fr auto; align-items:stretch; margin:0 0 22px;
       border-radius:16px; overflow:hidden; background:linear-gradient(100deg, rgba(245,204,212,.16), rgba(233,201,142,.14)); border:1px solid var(--sb-line); }
     .sb-stub__main{ padding:16px 20px; }
+    .sb-stub__tag{ display:block; width:fit-content; margin:6px 0 2px; padding:2px 8px; border-radius:999px; font-size:9.5px; letter-spacing:.16em;
+      color:#3A2030; background:var(--sb-blush); vertical-align:1px; }
     .sb-stub__k{ margin:0; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:var(--sb-blush); font-weight:700; }
     .sb-stub__v{ margin:4px 0 0; font-family:var(--sb-serif); font-weight:600; font-size:22px; color:#fff; line-height:1.2; }
     .sb-stub__v small{ display:block; font-family:'Montserrat',system-ui,sans-serif; font-weight:500; font-size:12.5px; color:var(--sb-mut); margin-top:3px; }
@@ -203,7 +215,7 @@
     @keyframes sbShine{ 0%, 70%{ left:-40% } 100%{ left:130% } }
 
     .sb-success{ text-align:center; padding:var(--space-xl) var(--space-md); }
-    .sb-success__mark{ font-family:var(--sb-script); font-size:64px; line-height:1; margin:0 0 6px;
+    .sb-success__mark{ display:inline-block; font-family:var(--sb-script); font-size:64px; line-height:1; margin:-.25em 0 -.05em; padding:.3em .2em .1em;
       background:var(--sb-foil); -webkit-background-clip:text; background-clip:text; color:transparent; }
     .sb-success h2{ margin:0 0 8px; font-family:var(--sb-serif); font-weight:600; font-size:30px; color:#fff; }
     .sb-success p{ margin:0 auto; max-width:40ch; font-size:15px; line-height:1.6; color:var(--sb-mut); }
@@ -225,11 +237,15 @@
     details.sb-rules .sb-rules-body strong{ color:var(--sb-cream); }
 
     @media (max-width:520px){
-      .sb-invite{ padding:28px 18px 24px; }
+      .sb-invite{ padding:40px 18px 24px; }
       .sb-card{ padding:24px 18px 26px; }
       .sb-count__cell{ min-width:60px; }
       .sb-count__cell b{ font-size:28px; }
       .sb-stub__v{ font-size:19px; }
+    }
+    @media (max-width:360px){
+      .sb-facts li{ font-size:12px; letter-spacing:0; gap:6px; }
+      .sb-sub{ letter-spacing:.22em; }
     }
   </style>
 </head>
@@ -320,6 +336,7 @@
         <!-- The invitation. Logo: Owensboro Dance Theatre's own (gold and
              white, transparent), used with their OK for this event. -->
         <div class="sb-invite">
+          <p class="sb-soldout"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7"/></svg>Sold out<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7"/></svg></p>
           <picture>
             <source srcset="/src/assets/images/partners/odt-logo-gold-white.webp" type="image/webp">
             <img class="sb-odt" src="/src/assets/images/partners/odt-logo-gold-white.png" alt="Owensboro Dance Theatre" width="560" height="281" fetchpriority="high">
@@ -338,6 +355,7 @@
 
         <div class="sb-head">
           <h1>Win a night at the <span>Snowball</span></h1>
+          <p class="sb-lead">The Snowball is <strong>sold out</strong>. This giveaway is your chance to still get in.</p>
           <p>Enter to win <strong>a couple ticket</strong> (one adult and one child) for you and your girl. Entries close Sunday, November 29, and we'll announce the winner <strong>Monday, November 30</strong>.</p>
         </div>
 
@@ -357,7 +375,7 @@
         <div class="sb-card">
             <div class="sb-stub" style="--stub-w:104px">
               <div class="sb-stub__main">
-                <p class="sb-stub__k">The prize</p>
+                <p class="sb-stub__k">The prize <span class="sb-stub__tag">Sold-out event</span></p>
                 <p class="sb-stub__v">One couple ticket<small>Admits one adult and one child to the Snowball</small></p>
               </div>
               <div class="sb-stub__side"><b>$50</b><span>value</span></div>
@@ -466,7 +484,7 @@
               </div>
             </noscript>
 
-            <p class="sb-tickets">Can't wait for the drawing? Tickets are $50 per couple (one adult and one child) and $20 for each additional child, sold by Owensboro Dance Theatre. <a href="https://owensborodancetheatre.org/registersbddd/" target="_blank" rel="noopener">Get tickets from Owensboro Dance Theatre</a></p>
+            <p class="sb-tickets">The Snowball is sold out, and entering is free.</p>
 
             <details class="sb-rules">
               <summary>Official Rules &amp; Eligibility</summary>
@@ -476,7 +494,7 @@
                 <p><strong>Eligibility.</strong> Open to legal residents of Kentucky, Indiana, and Tennessee who are 18 years of age or older at the time of entry. Employees of The Way Agency and their immediate family members are not eligible to win. Void where prohibited.</p>
                 <p><strong>How to enter.</strong> Complete and submit the entry form on this page with your name, email, and phone number. Limit one entry per person.</p>
                 <p><strong>Entry period.</strong> Entries must be received by 11:59 PM Eastern Time on Sunday, November 29, 2026.</p>
-                <p><strong>Prize.</strong> One (1) couple ticket to the Owensboro Dance Theatre Snowball Daddy Daughter Dance at the RiverPark Center in Owensboro, Kentucky on Friday, December 4, 2026, from 6:00 PM to 8:00 PM. A couple ticket admits one adult and one child (approximate retail value $50). Additional children may be added at the winner's own expense through Owensboro Dance Theatre. The prize has no cash value. The prize is awarded as-is, and no substitution or cash equivalent will be provided, except at the Sponsor's sole discretion. The winner and the child they bring must follow the event's own rules.</p>
+                <p><strong>Prize.</strong> One (1) couple ticket to the Owensboro Dance Theatre Snowball Daddy Daughter Dance at the RiverPark Center in Owensboro, Kentucky on Friday, December 4, 2026, from 6:00 PM to 8:00 PM. A couple ticket admits one adult and one child (approximate retail value $50). Additional children may be added at the winner's own expense only if Owensboro Dance Theatre can accommodate them. The prize has no cash value. The prize is awarded as-is, and no substitution or cash equivalent will be provided, except at the Sponsor's sole discretion. The winner and the child they bring must follow the event's own rules.</p>
                 <p><strong>Winner selection &amp; notification.</strong> One (1) winner will be selected at random from all eligible entries. The winner will be announced on Monday, November 30, 2026 and contacted using the email address or phone number provided. If the winner cannot be reached or does not respond within two (2) days, an alternate winner may be selected at random.</p>
                 <p><strong>The event.</strong> The dance is hosted by Owensboro Dance Theatre. The Way Agency is a sponsor of the dance and runs this giveaway. The Sponsor is not responsible if the event is changed, rescheduled, or cancelled.</p>
                 <p>By entering, you agree to these rules and to be contacted by The Way Agency about your entry and, where you have indicated interest, about insurance services.</p>
