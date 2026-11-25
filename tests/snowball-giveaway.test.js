@@ -44,7 +44,12 @@ test('the page closes at the same instant as SAGE (11:59 PM ET Sun 2026-11-29)',
 
 test('the dates and the prize agree with the event', () => {
   assert.match(html, /Friday, December 4, 2026, from 6:00 PM to 8:00 PM/);
-  assert.match(html, /One \(1\) couple ticket/);
+  // The ticket admits one adult and two children (owner, 11/25), and the page
+  // shows no price: no "$50 value" tag, no retail value in the rules.
+  assert.match(html, /One \(1\) ticket for one adult and two children to/);
+  assert.match(html, /Admits one adult and two children to the Snowball/);
+  assert.doesNotMatch(html, /couple ticket|one adult and one child|sb-stub__side|retail value/i);
+  assert.doesNotMatch(html.replace(/<style>[\s\S]*?<\/style>|<script[\s\S]*?<\/script>/g, ''), /\$\s?\d/);
   // Sold out (owner, 11/25): no ticket-buying link, and the page says so.
   assert.doesNotMatch(html, /registersbddd|Get tickets from/);
   assert.match(html, /<p class="sb-soldout">.*Sold out<span class="sb-soldout__sep" aria-hidden="true">&middot;<\/span>1 ticket left to win</);
