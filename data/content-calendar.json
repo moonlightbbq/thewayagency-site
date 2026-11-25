@@ -2047,7 +2047,8 @@
       "reviewer": "Audrey Lillpop",
       "reviewer_email": "audrey@thewayagency.com",
       "reviewer_slug": "audrey-lillpop",
-      "review_sent_date": "2026-11-18"
+      "review_sent_date": "2026-11-18",
+      "reminder_sent": true
     },
     {
       "week": 38,
