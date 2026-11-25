@@ -3251,32 +3251,46 @@
       "reserved_at": "2026-09-23"
     },
     {
-      "date": "2026-10-24",
+      "date": "2026-11-28",
       "state": "reserved",
       "locked_slug": null,
       "locked_at": null,
-      "reserved_at": "2026-09-26"
+      "reserved_at": "2026-11-25"
     },
     {
-      "date": "2026-10-28",
+      "date": "2026-12-05",
       "state": "reserved",
       "locked_slug": null,
       "locked_at": null,
-      "reserved_at": "2026-09-30"
+      "reserved_at": "2026-11-25"
     },
     {
-      "date": "2026-10-31",
+      "date": "2026-12-09",
       "state": "reserved",
       "locked_slug": null,
       "locked_at": null,
-      "reserved_at": "2026-10-03"
+      "reserved_at": "2026-11-25"
     },
     {
-      "date": "2026-11-04",
+      "date": "2026-12-12",
       "state": "reserved",
       "locked_slug": null,
       "locked_at": null,
-      "reserved_at": "2026-10-09"
+      "reserved_at": "2026-11-25"
+    },
+    {
+      "date": "2026-12-19",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-11-25"
+    },
+    {
+      "date": "2026-12-23",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-11-25"
     }
   ],
   "coverage_targets": {
