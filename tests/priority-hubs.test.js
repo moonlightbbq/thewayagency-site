@@ -95,8 +95,8 @@ describe('the "Service Areas" footer group (LOCAL-01)', () => {
     for (const h of ['/insurance/owensboro-ky', '/insurance/mt-washington-ky', '/about/locations']) assert.ok(footer.includes(`href="${h}"`), h);
     assert.ok(footer.indexOf('data-footer-group="service-areas"') < footer.indexOf('footer__heading">Company'));
   });
-  test('all 34 hand-made footers carry the same block once, before Company', () => {
-    assert.equal(HANDMADE.length, 34);
+  test('all 35 hand-made footers carry the same block once, before Company', () => {
+    assert.equal(HANDMADE.length, 35);
     const norm = (s) => s.split('\n').map((l) => l.trim()).join('\n');
     for (const rel of HANDMADE) {
       const html = read(rel);

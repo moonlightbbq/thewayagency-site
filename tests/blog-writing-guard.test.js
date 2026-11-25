@@ -222,9 +222,17 @@ describe('the repo', () => {
   });
   test('12/02 goes back to planned for a fresh request over the clean bytes; its reviewer stays, and it carries no approval (Y0 11/15)', () => {
     const e = c.calendarEntries(c.readJson(c.DEFAULTS.calendarFile, {})).get('winter-driving-auto-insurance-kentucky');
-    assert.equal(e.status, 'planned');
     assert.equal(e.reviewer_slug, 'audrey-lillpop');
-    for (const k of ['review_sent_date', 'approved_sha256', 'approval_mac', 'credited_sha256', 'credit_mac']) assert.equal(e[k], undefined, k);
+    // The fresh request then goes out through the normal reminder run (it did on
+    // 2026-11-18: status in-review, review_sent_date set). Until the reviewer
+    // approves the clean bytes, no approval or credit may ride along.
+    if (e.status === 'planned' || e.status === 'in-review') {
+      const keys = ['approved_sha256', 'approval_mac', 'credited_sha256', 'credit_mac'];
+      if (e.status === 'planned') keys.push('review_sent_date');
+      for (const k of keys) assert.equal(e[k], undefined, k);
+    } else {
+      assert.ok(['approved', 'published'].includes(e.status), `unexpected status ${e.status}`);
+    }
   });
   test('never in the production build; the PR check and the publish workflow run it', () => {
     assert.doesNotMatch(fs.readFileSync(path.join(ROOT, 'scripts', 'build.js'), 'utf8'), /blog-writing/);

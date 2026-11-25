@@ -82,6 +82,7 @@ const ALLOW = Object.freeze([
   { file: 'about/team.html', codes: 'IN,KY,TN', reason: 'Y0 ruling option (a): the two Ohio-licensed people\'s JSON-LD descriptions are unchanged (visible text only); flagged for the owner on the preview' },
   { file: 'about/careers/employee-benefits-leader.html', codes: 'IN,KY,TN', reason: 'the Employee Benefits role is health business (group health): the states with an Accident and Health line (data/entity.json health_licensed_states), and its licence requirement; Y-74 rework, flagged for the owner on the preview' },
   { file: 'forrest-frank-2026.html', codes: 'IN,KY,TN', reason: 'the ended sweepstakes page: unchanged by Y0 ruling (its official rules named the eligible states)' },
+  { file: 'snowball-2026.html', codes: 'IN,KY,TN', reason: 'sweepstakes eligibility in the official rules (owner choice 11/24: same states as the Forrest Frank giveaway), not a licensing claim' },
   ...['blog/community-involvement-2026.html', 'blog/community-spotlight-local-businesses.html', 'blog/how-independent-agents-save-money.html',
     'blog/how-to-read-declarations-page.html', 'blog/independent-vs-kentucky-farm-bureau-bullitt-county.html', 'blog/small-business-insurance-evansville-in.html',
     'blog/understanding-auto-insurance-coverage-options.html', 'blog/feed.xml']
