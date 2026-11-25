@@ -7,7 +7,7 @@
   <title>Snowball Daddy Daughter Dance Giveaway | The Way Agency</title>
   <meta name="description" content="Enter to win a couple ticket to Owensboro Dance Theatre's Snowball Daddy Daughter Dance, Friday, December 4, 2026 at the RiverPark Center. Entries close November 29.">
   <link rel="canonical" href="https://www.thewayagency.com/snowball-2026">
-  <meta name="theme-color" content="#173358">
+  <meta name="theme-color" content="#24141B">
   <link rel="icon" href="/src/assets/images/favicon.png">
   <link rel="apple-touch-icon" href="/src/assets/images/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,8 @@
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
   <link rel="dns-prefetch" href="https://sage.thewayagency.com">
   <link rel="preconnect" href="https://challenges.cloudflare.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="image" href="/src/assets/images/partners/odt-logo-gold-white.webp" type="image/webp">
 
   <link rel="stylesheet" href="/src/css/base.css">
   <link rel="stylesheet" href="/src/css/components.css">
@@ -27,120 +28,209 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://www.thewayagency.com/snowball-2026">
   <meta property="og:site_name" content="The Way Agency">
-  <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
-  <meta property="og:image:width" content="631">
-  <meta property="og:image:height" content="631">
+  <meta property="og:image" content="https://www.thewayagency.com/src/assets/images/og-snowball-2026.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Owensboro Dance Theatre presents the Snowball Daddy Daughter Dance. Win a couple ticket.">
   <meta property="og:image:type" content="image/jpeg">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Win a Night at the Snowball | The Way Agency">
   <meta name="twitter:description" content="Enter to win a couple ticket to the Snowball Daddy Daughter Dance, Friday, December 4 at the RiverPark Center.">
-  <meta name="twitter:image" content="https://www.thewayagency.com/src/assets/images/logo-social.jpg">
+  <meta name="twitter:image" content="https://www.thewayagency.com/src/assets/images/og-snowball-2026.jpg">
 
   <style>
-    /* ── Snowball Daddy Daughter Dance giveaway · winter night · The Way Agency brand ── */
+    /* ── Snowball Daddy Daughter Dance giveaway ──────────────────────────────
+       Palette from Owensboro Dance Theatre's own Snowball art: rose gold,
+       champagne and blush on a warm cocoa night, with ODT's gold logo. */
     :root{
-      --sb-ice:#BFE6FA; --sb-ice-strong:#5FD0F3; --sb-blue:#3097D3;
-      --sb-blush:#F6C7D6; --sb-blush-strong:#EE9DB8;
-      --sb-mut:#A9BBD4; --sb-ink:#EEF4FB; --sb-line:rgba(255,255,255,.14);
+      --sb-night:#1E1117; --sb-night-2:#2A1720; --sb-plum:#3A2030;
+      --sb-gold:#E9C98E; --sb-gold-deep:#B8893E; --sb-gold-hi:#FBE7B5;
+      --sb-rose:#E7A9A0; --sb-blush:#F5CCD4; --sb-blush-deep:#D98799;
+      --sb-cream:#FBF1E6; --sb-mut:#CDB5B4; --sb-line:rgba(233,201,142,.22);
+      --sb-foil:linear-gradient(100deg,#B8893E 0%,#E9C98E 22%,#FBE7B5 38%,#D9AE63 55%,#F3D9A2 74%,#B8893E 100%);
+      --sb-script:'Great Vibes', 'Brush Script MT', cursive;
+      --sb-serif:'Cormorant Garamond', Georgia, serif;
     }
-    body{ background:#0A1830; }
+    body{ background:var(--sb-night); }
 
-    .sb-hero{ position:relative; overflow:hidden;
-      padding:calc(var(--nav-height, 72px) + 56px) 20px 84px;
+    .sb-hero{ position:relative; overflow:hidden; isolation:isolate;
+      padding:calc(var(--nav-height, 72px) + 48px) 20px 96px;
       background:
-        radial-gradient(50% 38% at 18% 14%, rgba(191,230,250,.22), transparent 62%),
-        radial-gradient(44% 38% at 86% 20%, rgba(238,157,184,.20), transparent 60%),
-        radial-gradient(80% 60% at 50% 120%, rgba(48,151,211,.28), transparent 62%),
-        linear-gradient(180deg,#132A4C 0%, #0E2140 48%, #0A1830 100%); }
+        radial-gradient(38% 30% at 14% 10%, rgba(245,204,212,.20), transparent 70%),
+        radial-gradient(34% 30% at 88% 14%, rgba(233,201,142,.22), transparent 70%),
+        radial-gradient(70% 50% at 50% 108%, rgba(217,135,153,.20), transparent 70%),
+        linear-gradient(180deg,#341C28 0%, var(--sb-night-2) 42%, var(--sb-night) 100%); }
 
-    /* Snow: two layers of dots drifting down. Decorative only. */
-    .sb-snow, .sb-snow::after{ position:absolute; inset:-100% 0 0 0; pointer-events:none;
-      background-image:
-        radial-gradient(2.4px 2.4px at 8% 12%, rgba(255,255,255,.9), transparent),
-        radial-gradient(1.8px 1.8px at 22% 40%, rgba(255,255,255,.75), transparent),
-        radial-gradient(2.8px 2.8px at 37% 22%, rgba(255,255,255,.85), transparent),
-        radial-gradient(1.6px 1.6px at 51% 66%, rgba(255,255,255,.7), transparent),
-        radial-gradient(2.2px 2.2px at 64% 8%, rgba(255,255,255,.85), transparent),
-        radial-gradient(1.8px 1.8px at 77% 48%, rgba(255,255,255,.75), transparent),
-        radial-gradient(2.6px 2.6px at 90% 28%, rgba(255,255,255,.85), transparent),
-        radial-gradient(1.5px 1.5px at 96% 80%, rgba(255,255,255,.6), transparent);
-      background-size:340px 340px; opacity:.55; }
-    .sb-snow::after{ content:''; inset:0; background-size:220px 220px; opacity:.6; }
+    /* Bokeh: soft out-of-focus lights, like the event art's fairy lights. */
+    .sb-bokeh{ position:absolute; inset:0; z-index:-1; pointer-events:none; }
+    .sb-bokeh i{ position:absolute; border-radius:50%; filter:blur(2px); opacity:.55;
+      background:radial-gradient(circle, rgba(251,231,181,.9) 0%, rgba(233,201,142,.35) 45%, transparent 70%); }
+    .sb-bokeh i:nth-child(1){ width:90px; height:90px; left:6%;  top:16%; }
+    .sb-bokeh i:nth-child(2){ width:46px; height:46px; left:22%; top:56%; opacity:.4; }
+    .sb-bokeh i:nth-child(3){ width:120px;height:120px;right:5%; top:30%; opacity:.35; }
+    .sb-bokeh i:nth-child(4){ width:36px; height:36px; right:20%;top:8%; }
+    .sb-bokeh i:nth-child(5){ width:70px; height:70px; left:12%; top:84%; opacity:.3;
+      background:radial-gradient(circle, rgba(245,204,212,.9) 0%, rgba(217,135,153,.35) 45%, transparent 70%); }
+    .sb-bokeh i:nth-child(6){ width:58px; height:58px; right:11%;top:70%;
+      background:radial-gradient(circle, rgba(245,204,212,.9) 0%, rgba(217,135,153,.35) 45%, transparent 70%); }
     @media (prefers-reduced-motion:no-preference){
-      .sb-snow{ animation:sbFall 26s linear infinite; }
-      .sb-snow::after{ animation:sbFall 18s linear infinite; }
+      .sb-bokeh i{ animation:sbGlow 6s ease-in-out infinite alternate; }
+      .sb-bokeh i:nth-child(2n){ animation-duration:8s; animation-delay:-3s; }
+      .sb-bokeh i:nth-child(3n){ animation-duration:10s; animation-delay:-5s; }
+    }
+    @keyframes sbGlow{ from{ transform:scale(.85); opacity:.25 } to{ transform:scale(1.1); opacity:.6 } }
+
+    /* Snow: champagne flecks drifting down. Decorative only. */
+    .sb-snow, .sb-snow::after{ position:absolute; inset:-100% 0 0 0; pointer-events:none; z-index:-1;
+      background-image:
+        radial-gradient(2.4px 2.4px at 8% 12%, rgba(255,246,232,.95), transparent),
+        radial-gradient(1.8px 1.8px at 22% 40%, rgba(251,231,181,.8), transparent),
+        radial-gradient(2.8px 2.8px at 37% 22%, rgba(255,246,232,.9), transparent),
+        radial-gradient(1.6px 1.6px at 51% 66%, rgba(245,204,212,.8), transparent),
+        radial-gradient(2.2px 2.2px at 64% 8%, rgba(255,246,232,.9), transparent),
+        radial-gradient(1.8px 1.8px at 77% 48%, rgba(251,231,181,.8), transparent),
+        radial-gradient(2.6px 2.6px at 90% 28%, rgba(255,246,232,.9), transparent),
+        radial-gradient(1.5px 1.5px at 96% 80%, rgba(245,204,212,.7), transparent);
+      background-size:340px 340px; opacity:.6; }
+    .sb-snow::after{ content:''; inset:0; background-size:220px 220px; opacity:.55; }
+    @media (prefers-reduced-motion:no-preference){
+      .sb-snow{ animation:sbFall 28s linear infinite; }
+      .sb-snow::after{ animation:sbFall 19s linear infinite; }
     }
     @keyframes sbFall{ from{ transform:translateY(0) } to{ transform:translateY(50%) } }
 
-    .sb-stage{ position:relative; z-index:3; width:min(640px,100%); margin:0 auto; }
+    .sb-stage{ position:relative; width:min(660px,100%); margin:0 auto; }
 
-    .sb-ticket{ text-align:center; border:1.5px solid rgba(191,230,250,.55); border-radius:22px;
-      padding:26px 26px 24px; margin-bottom:30px; position:relative; background:rgba(10,24,48,.45);
-      box-shadow:0 0 70px -22px rgba(191,230,250,.55), inset 0 0 46px -26px rgba(238,157,184,.45); }
-    .sb-ticket::before, .sb-ticket::after{ content:''; position:absolute; top:50%; width:22px; height:22px;
-      margin-top:-11px; border-radius:50%; background:#0E2140; border:1.5px solid rgba(191,230,250,.55); }
-    .sb-ticket::before{ left:-12px; clip-path:inset(0 0 0 50%); }
-    .sb-ticket::after{ right:-12px; clip-path:inset(0 50% 0 0); }
-    .sb-presented{ font-size:11px; letter-spacing:.28em; text-transform:uppercase; color:var(--sb-blush); font-weight:700; margin:0; }
-    .sb-flake{ display:block; margin:10px auto 0; color:var(--sb-ice); }
-    .sb-name{ font-family:'Montserrat',system-ui,sans-serif; font-weight:700; font-size:clamp(44px,9vw,72px);
-      letter-spacing:.06em; text-transform:uppercase; margin:2px 0 0; line-height:1; color:#fff;
-      text-shadow:0 0 30px rgba(191,230,250,.6); }
-    .sb-sub{ font-family:'Montserrat',system-ui,sans-serif; font-size:clamp(14px,2.6vw,18px); font-weight:600;
-      letter-spacing:.22em; text-transform:uppercase; color:var(--sb-ice); margin:8px 0 14px; }
-    .sb-when{ font-size:12.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--sb-mut); margin:0; line-height:1.7; }
-    .sb-when strong{ color:#fff; font-weight:700; }
+    /* The invitation card */
+    .sb-invite{ position:relative; text-align:center; padding:34px 28px 30px; margin-bottom:34px;
+      border-radius:26px; background:linear-gradient(180deg, rgba(58,32,48,.72), rgba(30,17,23,.78));
+      box-shadow:0 40px 90px -40px rgba(0,0,0,.9), 0 0 80px -30px rgba(233,201,142,.45); }
+    .sb-invite::before{ content:''; position:absolute; inset:0; border-radius:inherit; padding:1.5px;
+      background:var(--sb-foil); pointer-events:none;
+      -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor; mask-composite:exclude; }
+    .sb-invite::after{ content:''; position:absolute; inset:9px; border-radius:20px; pointer-events:none;
+      border:1px solid rgba(233,201,142,.25); }
+    .sb-odt{ display:block; width:min(210px,58%); height:auto; margin:0 auto 6px; }
+    .sb-presents{ font-family:var(--sb-serif); font-style:italic; font-size:17px; color:var(--sb-blush); margin:4px 0 -6px; letter-spacing:.04em; }
+    .sb-name{ font-family:var(--sb-script); font-weight:400; line-height:1.05; margin:0;
+      font-size:clamp(76px,17vw,128px); padding:0 .12em;
+      background:var(--sb-foil); background-size:200% 100%; -webkit-background-clip:text; background-clip:text; color:transparent;
+      filter:drop-shadow(0 2px 14px rgba(233,201,142,.35)); }
+    @media (prefers-reduced-motion:no-preference){ .sb-name{ animation:sbFoil 7s ease-in-out infinite alternate; } }
+    @keyframes sbFoil{ from{ background-position:0% 50% } to{ background-position:100% 50% } }
+    .sb-sub{ font-family:var(--sb-serif); font-weight:600; text-transform:uppercase; letter-spacing:.3em;
+      font-size:clamp(14px,2.8vw,19px); color:var(--sb-cream); margin:2px 0 0; }
+    .sb-ornament{ display:flex; align-items:center; justify-content:center; gap:12px; margin:16px auto 18px; color:var(--sb-gold); }
+    .sb-ornament::before, .sb-ornament::after{ content:''; height:1px; width:min(90px,22vw);
+      background:linear-gradient(90deg, transparent, var(--sb-gold)); }
+    .sb-ornament::after{ transform:scaleX(-1); }
+    .sb-facts{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px 22px; margin:0; padding:0; list-style:none; }
+    .sb-facts li{ display:inline-flex; align-items:center; gap:8px; font-size:13.5px; font-weight:600; color:var(--sb-cream); letter-spacing:.02em; }
+    .sb-facts svg{ color:var(--sb-gold); flex:none; }
+    .sb-sponsor{ margin:18px 0 0; font-size:11px; letter-spacing:.22em; text-transform:uppercase; color:var(--sb-mut); }
+    .sb-sponsor strong{ color:var(--sb-gold); font-weight:700; white-space:nowrap; }
 
-    .sb-head{ text-align:center; margin-bottom:22px; }
+    .sb-head{ text-align:center; margin-bottom:20px; }
     .sb-head h1{ font-family:'Montserrat',system-ui,sans-serif; font-weight:600; color:#fff;
-      font-size:clamp(25px,4.8vw,36px); line-height:1.15; margin:0 0 10px; text-wrap:balance; }
-    .sb-head h1 span{ color:var(--sb-blush); }
-    .sb-head p{ margin:0 auto; max-width:46ch; color:var(--sb-mut); font-size:15px; line-height:1.6; }
-    .sb-head p strong{ color:var(--sb-ink); }
+      font-size:clamp(26px,5vw,38px); line-height:1.15; margin:0 0 12px; text-wrap:balance; }
+    .sb-head h1 span{ font-family:var(--sb-script); font-weight:400; font-size:1.45em; line-height:.8;
+      color:var(--sb-blush); padding:0 .05em; }
+    .sb-head p{ margin:0 auto; max-width:46ch; color:var(--sb-mut); font-size:15.5px; line-height:1.6; }
+    .sb-head p strong{ color:var(--sb-cream); }
 
-    .sb-includes{ list-style:none; display:flex; flex-wrap:wrap; justify-content:center; gap:8px; padding:0; margin:0 0 26px; }
-    .sb-includes li{ font-size:12.5px; font-weight:600; color:var(--sb-ink); padding:7px 13px; border-radius:999px;
-      border:1px solid var(--sb-line); background:rgba(255,255,255,.05); }
+    /* Countdown to the close of entries */
+    .sb-count__wrap{ margin:0 0 26px; }
+    .sb-count__wrap[hidden]{ display:none; }
+    .sb-count{ display:flex; justify-content:center; gap:10px; }
+    .sb-count__label{ width:100%; text-align:center; font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--sb-gold); margin:0 0 8px; font-weight:700; }
+    .sb-count__cell{ min-width:70px; padding:10px 8px 8px; border-radius:14px; text-align:center;
+      background:rgba(255,255,255,.05); border:1px solid var(--sb-line); }
+    .sb-count__cell b{ display:block; font-family:var(--sb-serif); font-weight:600; font-size:34px; line-height:1; color:#fff; font-variant-numeric:tabular-nums; }
+    .sb-count__cell span{ display:block; margin-top:4px; font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--sb-mut); }
 
-    .sb-card{ background:rgba(23,44,80,.62); border:1px solid var(--sb-line); border-radius:20px;
-      padding:28px 28px 30px; backdrop-filter:blur(10px); box-shadow:0 34px 80px -34px rgba(0,0,0,.85); }
+    /* The prize, as a ticket stub */
+    .sb-stub{ position:relative; display:grid; grid-template-columns:1fr auto; align-items:stretch; margin:0 0 22px;
+      border-radius:16px; overflow:hidden; background:linear-gradient(100deg, rgba(245,204,212,.16), rgba(233,201,142,.14)); border:1px solid var(--sb-line); }
+    .sb-stub__main{ padding:16px 20px; }
+    .sb-stub__k{ margin:0; font-size:10.5px; letter-spacing:.24em; text-transform:uppercase; color:var(--sb-blush); font-weight:700; }
+    .sb-stub__v{ margin:4px 0 0; font-family:var(--sb-serif); font-weight:600; font-size:22px; color:#fff; line-height:1.2; }
+    .sb-stub__v small{ display:block; font-family:'Montserrat',system-ui,sans-serif; font-weight:500; font-size:12.5px; color:var(--sb-mut); margin-top:3px; }
+    .sb-stub__side{ width:var(--stub-w, 104px); box-sizing:border-box; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:12px 20px;
+      border-left:2px dashed rgba(233,201,142,.45); text-align:center; }
+    .sb-stub__side b{ font-family:var(--sb-serif); font-size:26px; font-weight:600; background:var(--sb-foil); -webkit-background-clip:text; background-clip:text; color:transparent; line-height:1; }
+    .sb-stub__side span{ font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--sb-mut); margin-top:4px; }
+    .sb-stub::before, .sb-stub::after{ content:''; position:absolute; right:calc(var(--stub-w, 104px) - 10px); width:18px; height:18px; border-radius:50%; background:var(--sb-night-2); }
+    .sb-stub::before{ top:-9px; } .sb-stub::after{ bottom:-9px; }
+
+    .sb-includes{ list-style:none; display:flex; flex-wrap:wrap; justify-content:center; gap:8px; padding:0; margin:0 0 28px; }
+    .sb-includes li{ display:inline-flex; align-items:center; gap:7px; font-size:12.5px; font-weight:600; color:var(--sb-cream);
+      padding:7px 14px; border-radius:999px; border:1px solid var(--sb-line); background:rgba(255,255,255,.045); }
+    .sb-includes li::before{ content:''; width:6px; height:6px; border-radius:50%; background:var(--sb-foil); box-shadow:0 0 8px rgba(233,201,142,.8); }
+
+    .sb-card{ position:relative; background:linear-gradient(180deg, rgba(58,32,48,.7), rgba(36,20,27,.82)); border-radius:22px;
+      padding:30px 28px 30px; backdrop-filter:blur(10px); box-shadow:0 34px 80px -34px rgba(0,0,0,.9);
+      border:1px solid var(--sb-line); }
+    .sb-card__title{ text-align:center; margin:0 0 20px; }
+    .sb-card__title h2{ margin:0; font-family:var(--sb-serif); font-weight:600; font-size:26px; color:#fff; }
+    .sb-card__title p{ margin:4px 0 0; font-size:13px; color:var(--sb-mut); }
     .sb-card .form-group label{ color:var(--sb-mut); font-size:12px; letter-spacing:.05em; }
     .sb-card input[type=text], .sb-card input[type=email], .sb-card input[type=tel], .sb-card textarea{
-      background:rgba(8,16,32,.6); border:1px solid rgba(255,255,255,.15); border-radius:11px; color:#fff; }
-    .sb-card input::placeholder, .sb-card textarea::placeholder{ color:#6f83a3; }
-    .sb-card input:focus, .sb-card textarea:focus{ outline:none; border-color:var(--sb-ice-strong); box-shadow:0 0 0 3px rgba(95,208,243,.2); }
-    .sb-card .form-privacy{ color:var(--sb-mut); }
-    .sb-card .form-privacy a{ color:var(--sb-ice); }
+      background:rgba(20,10,15,.55); border:1px solid rgba(233,201,142,.22); border-radius:12px; color:#fff; }
+    .sb-card input::placeholder, .sb-card textarea::placeholder{ color:#8f7680; }
+    .sb-card input:focus, .sb-card textarea:focus{ outline:none; border-color:var(--sb-gold); box-shadow:0 0 0 3px rgba(233,201,142,.22); }
+    .sb-card .form-privacy{ color:var(--sb-mut); text-align:center; }
+    .sb-card .form-privacy a{ color:var(--sb-gold); }
 
     fieldset.sb-q{ border:0; padding:0; margin:0 0 var(--space-lg); }
-    fieldset.sb-q legend{ font-weight:600; font-size:14px; color:var(--sb-ink); margin-bottom:10px; padding:0; line-height:1.4; }
+    fieldset.sb-q legend{ font-weight:600; font-size:14px; color:var(--sb-cream); margin-bottom:10px; padding:0; line-height:1.4; }
     .sb-yn{ display:flex; gap:10px; flex-wrap:wrap; }
     .sb-yn label{ display:inline-flex; align-items:center; gap:8px; cursor:pointer;
-      border:1px solid rgba(255,255,255,.2); border-radius:11px; padding:10px 18px; font-size:14px;
+      border:1px solid rgba(233,201,142,.25); border-radius:12px; padding:10px 18px; font-size:14px;
       font-weight:600; color:var(--sb-mut); transition:all .12s; user-select:none; flex:1; min-width:110px; justify-content:center; }
-    .sb-yn label:hover{ border-color:var(--sb-ice-strong); color:#fff; }
-    .sb-yn input{ accent-color:var(--sb-ice-strong); width:16px; height:16px; }
-    .sb-yn label:has(input:checked){ border-color:var(--sb-ice-strong); background:rgba(95,208,243,.15); color:#fff; }
+    .sb-yn label:hover{ border-color:var(--sb-gold); color:#fff; }
+    .sb-yn input{ accent-color:var(--sb-blush-deep); width:16px; height:16px; }
+    .sb-yn label:has(input:checked){ border-color:var(--sb-gold); background:rgba(233,201,142,.14); color:#fff; }
 
-    .sb-card .btn--primary{ background:linear-gradient(180deg,#fff,var(--sb-ice)); color:#0E2140;
-      font-weight:800; border:0; box-shadow:0 0 38px -8px rgba(191,230,250,.75); transition:transform .12s, filter .12s; }
-    .sb-card .btn--primary:hover{ filter:brightness(1.04); transform:translateY(-2px); }
+    .sb-card .btn--primary{ position:relative; overflow:hidden; background:var(--sb-foil); background-size:160% 100%; color:#3A2030;
+      font-weight:800; letter-spacing:.08em; border:0; box-shadow:0 10px 40px -10px rgba(233,201,142,.75);
+      transition:transform .15s, background-position .6s, filter .15s; }
+    .sb-card .btn--primary:hover{ transform:translateY(-2px); background-position:100% 50%; filter:brightness(1.04); }
+    .sb-card .btn--primary:disabled{ filter:saturate(.6) brightness(.9); transform:none; }
+    .sb-card .btn--primary::after{ content:''; position:absolute; top:0; bottom:0; left:-40%; width:30%; transform:skewX(-20deg);
+      background:linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); }
+    @media (prefers-reduced-motion:no-preference){ .sb-card .btn--primary::after{ animation:sbShine 4.5s ease-in-out infinite; } }
+    @keyframes sbShine{ 0%, 70%{ left:-40% } 100%{ left:130% } }
 
-    .sb-ended{ text-align:center; color:var(--sb-ink); }
+    .sb-success{ text-align:center; padding:var(--space-xl) var(--space-md); }
+    .sb-success__mark{ font-family:var(--sb-script); font-size:64px; line-height:1; margin:0 0 6px;
+      background:var(--sb-foil); -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .sb-success h2{ margin:0 0 8px; font-family:var(--sb-serif); font-weight:600; font-size:30px; color:#fff; }
+    .sb-success p{ margin:0 auto; max-width:40ch; font-size:15px; line-height:1.6; color:var(--sb-mut); }
+
+    .sb-ended{ text-align:center; color:var(--sb-cream); }
     .sb-ended p{ margin:0 0 14px; color:var(--sb-mut); font-size:15px; line-height:1.55; }
-    .sb-ended .sb-ended__title{ color:#fff; font-weight:700; font-size:17px; }
-    .sb-ended a{ color:var(--sb-ice); }
-    .sb-ended .sb-ended__actions a.btn{ color:#0E2140; }
+    .sb-ended .sb-ended__title{ font-family:var(--sb-serif); color:#fff; font-weight:600; font-size:24px; }
+    .sb-ended a{ color:var(--sb-gold); }
+    .sb-ended .sb-ended__actions a.btn{ color:#3A2030; }
     .sb-fine{ text-align:center; margin:14px 0 0; font-size:11.5px; color:var(--sb-mut); }
 
     .sb-tickets{ text-align:center; margin:var(--space-lg) 0 0; font-size:13px; color:var(--sb-mut); line-height:1.6; }
-    .sb-tickets a{ color:var(--sb-ice); font-weight:600; }
+    .sb-tickets a{ color:var(--sb-gold); font-weight:600; }
 
     details.sb-rules{ margin-top:var(--space-lg); border-top:1px solid var(--sb-line); padding-top:var(--space-lg); }
-    details.sb-rules summary{ cursor:pointer; font-weight:600; color:var(--sb-ice); font-size:14px; }
+    details.sb-rules summary{ cursor:pointer; font-weight:600; color:var(--sb-gold); font-size:14px; }
     details.sb-rules .sb-rules-body{ margin-top:var(--space-md); font-size:12.5px; color:var(--sb-mut); line-height:1.7; }
     details.sb-rules .sb-rules-body p{ margin-bottom:var(--space-sm); }
-    details.sb-rules .sb-rules-body strong{ color:var(--sb-ink); }
+    details.sb-rules .sb-rules-body strong{ color:var(--sb-cream); }
+
+    @media (max-width:520px){
+      .sb-invite{ padding:28px 18px 24px; }
+      .sb-card{ padding:24px 18px 26px; }
+      .sb-count__cell{ min-width:60px; }
+      .sb-count__cell b{ font-size:28px; }
+      .sb-stub__v{ font-size:19px; }
+    }
   </style>
 </head>
 <body>
@@ -224,33 +314,68 @@
 
   <main id="main">
     <section class="sb-hero">
+      <div class="sb-bokeh" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="sb-snow" aria-hidden="true"></div>
       <div class="sb-stage">
-        <!-- Event ticket -->
-        <div class="sb-ticket">
-          <p class="sb-presented">Owensboro Dance Theatre</p>
-          <svg class="sb-flake" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M12 5.5l-2-2M12 5.5l2-2M12 18.5l-2 2M12 18.5l2 2"/></svg>
+        <!-- The invitation. Logo: Owensboro Dance Theatre's own (gold and
+             white, transparent), used with their OK for this event. -->
+        <div class="sb-invite">
+          <picture>
+            <source srcset="/src/assets/images/partners/odt-logo-gold-white.webp" type="image/webp">
+            <img class="sb-odt" src="/src/assets/images/partners/odt-logo-gold-white.png" alt="Owensboro Dance Theatre" width="560" height="281" fetchpriority="high">
+          </picture>
+          <p class="sb-presents">presents the</p>
           <div class="sb-name">Snowball</div>
           <p class="sb-sub">Daddy Daughter Dance</p>
-          <p class="sb-when"><strong>Friday, December 4</strong> &middot; <span style="white-space:nowrap">6:00 to 8:00 PM</span><br><span style="white-space:nowrap">RiverPark Center</span> &middot; <span style="white-space:nowrap">Owensboro, KY</span></p>
+          <div class="sb-ornament"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 2v20M3.3 7l17.4 10M3.3 17L20.7 7M12 5.5l-2-2M12 5.5l2-2M12 18.5l-2 2M12 18.5l2 2"/></svg></div>
+          <ul class="sb-facts">
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Friday, December 4</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>6:00 to 8:00 PM</li>
+            <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>RiverPark Center, Owensboro</li>
+          </ul>
+          <p class="sb-sponsor">Proudly sponsored by <strong>The Way Agency</strong></p>
         </div>
 
         <div class="sb-head">
-          <h1>Win a night at the <span>Snowball</span>.</h1>
-          <p>The Way Agency is proud to sponsor the Snowball. Enter to win <strong>a couple ticket</strong> (one adult and one child) for you and your girl. Entries close Sunday, November 29, and we'll announce the winner <strong>Monday, November 30</strong>.</p>
+          <h1>Win a night at the <span>Snowball</span></h1>
+          <p>Enter to win <strong>a couple ticket</strong> (one adult and one child) for you and your girl. Entries close Sunday, November 29, and we'll announce the winner <strong>Monday, November 30</strong>.</p>
         </div>
 
-        <ul class="sb-includes" aria-label="Included with admission">
-          <li>Dancing</li>
-          <li>Food &amp; refreshments</li>
-          <li>Festive games</li>
-          <li>Holiday photo stations</li>
-          <li>A visit with Santa</li>
-        </ul>
+        <!-- Countdown to the close of entries (shown only with JS, before the close). -->
+        <div class="sb-count__wrap" id="sb-count" hidden>
+          <p class="sb-count__label">Entries close in</p>
+          <div class="sb-count">
+            <div class="sb-count__cell"><b data-u="d">0</b><span>days</span></div>
+            <div class="sb-count__cell"><b data-u="h">00</b><span>hours</span></div>
+            <div class="sb-count__cell"><b data-u="m">00</b><span>min</span></div>
+            <div class="sb-count__cell"><b data-u="s">00</b><span>sec</span></div>
+          </div>
+        </div>
 
         <!-- Entry form. Posts to SAGE /api/intake/giveaway with campaign
              'snowball-2026'; SAGE answers 410 after 11:59 PM ET 2026-11-29. -->
         <div class="sb-card">
+            <div class="sb-stub" style="--stub-w:104px">
+              <div class="sb-stub__main">
+                <p class="sb-stub__k">The prize</p>
+                <p class="sb-stub__v">One couple ticket<small>Admits one adult and one child to the Snowball</small></p>
+              </div>
+              <div class="sb-stub__side"><b>$50</b><span>value</span></div>
+            </div>
+
+            <ul class="sb-includes" aria-label="Included with admission">
+              <li>Dancing</li>
+              <li>Food &amp; refreshments</li>
+              <li>Festive games</li>
+              <li>Holiday photo stations</li>
+              <li>A visit with Santa</li>
+            </ul>
+
+            <div class="sb-card__title" id="sb-form-title">
+              <h2>Enter the giveaway</h2>
+              <p>It takes less than a minute.</p>
+            </div>
+
             <form id="giveawayForm" novalidate>
               <!-- Honeypot: display:none, never off-screen. Chrome autofill skips
                    display:none fields but fills off-screen ones, which used to trip
@@ -309,7 +434,7 @@
 
               <div id="turnstile-container" style="margin:var(--space-md) 0;display:flex;justify-content:center;"></div>
 
-              <div id="giveaway-error" style="display:none;color:#fca5a5;font-size:13px;margin-bottom:12px" role="alert" aria-live="polite"></div>
+              <div id="giveaway-error" style="display:none;color:#FFC2CC;font-size:13px;margin-bottom:12px" role="alert" aria-live="polite"></div>
 
               <button type="submit" id="giveaway-submit-btn" class="btn btn--primary btn--lg" style="width:100%;">Enter the Giveaway</button>
               <p class="sb-fine">One couple ticket (one adult and one child). No purchase necessary.</p>
@@ -318,10 +443,10 @@
               </p>
             </form>
 
-            <div id="giveaway-success" style="display:none;text-align:center;padding:var(--space-xl);background:#f0fdf4;border-radius:var(--border-radius);" role="status">
-              <div style="font-size:32px;margin-bottom:8px" aria-hidden="true">&#10052;&#65039;</div>
-              <h2 style="color:#166534;margin-bottom:8px;font-size:22px;">You're entered!</h2>
-              <p style="font-size:var(--text-base);color:#166534;margin:0">Thanks, and good luck. We'll announce the winner of the Snowball couple ticket on Monday, November 30, and we'll reach the winner by email or phone.</p>
+            <div id="giveaway-success" class="sb-success" style="display:none;" role="status">
+              <div class="sb-success__mark" aria-hidden="true">Good luck!</div>
+              <h2>You're entered</h2>
+              <p>Thanks for entering. We'll announce the winner of the Snowball couple ticket on Monday, November 30, and we'll reach the winner by email or phone.</p>
             </div>
 
             <!-- Shown instead of the form once the entry period is over
@@ -373,12 +498,46 @@
     var questionGroup = document.getElementById('giveaway-question-group');
     var questionInput = document.getElementById('g_question');
 
+    var titleEl = document.getElementById('sb-form-title');
+    var countEl = document.getElementById('sb-count');
+    var countTimer = null;
+    var entered = false; // a confirmed entry keeps its "You're entered" panel past the close
+
+    function stopCountdown() {
+      countEl.hidden = true;
+      if (countTimer) { clearInterval(countTimer); countTimer = null; }
+    }
+
     function showEnded() {
+      stopCountdown();
+      if (entered) return;
       form.style.display = 'none';
       successEl.style.display = 'none';
+      titleEl.style.display = 'none';
       endedEl.style.display = 'block';
     }
     if (Date.now() >= CLOSES_AT) { showEnded(); return; }
+
+    // Countdown to the close of entries; at zero the page shows its ended notice.
+    (function() {
+      var cells = {};
+      Array.prototype.forEach.call(countEl.querySelectorAll('[data-u]'), function(el) { cells[el.getAttribute('data-u')] = el; });
+      function pad(n) { return n < 10 ? '0' + n : String(n); }
+      function tick() {
+        var left = CLOSES_AT - Date.now();
+        if (left <= 0) { showEnded(); return false; }
+        var t = Math.floor(left / 1000);
+        cells.d.textContent = String(Math.floor(t / 86400));
+        cells.h.textContent = pad(Math.floor(t % 86400 / 3600));
+        cells.m.textContent = pad(Math.floor(t % 3600 / 60));
+        cells.s.textContent = pad(t % 60);
+        return true;
+      }
+      if (tick()) {
+        countEl.hidden = false;
+        countTimer = setInterval(tick, 1000);
+      }
+    })();
 
     // Reveal the free-text question box only when "Do you have questions" = Yes.
     Array.prototype.forEach.call(document.querySelectorAll('input[name="hasQuestions"]'), function(r) {
@@ -499,7 +658,10 @@
             window.dataLayer.push({ event: 'giveaway_entered', category: 'conversion', free_review: freeReview });
             window.dataLayer.push({ event: 'conversion', conversion_type: 'giveaway_entry', conversion_reference: data.reference || '', conversion_source: 'snowball-2026' });
           } catch(e) {}
+          entered = true;
+          stopCountdown();
           form.style.display = 'none';
+          titleEl.style.display = 'none';
           successEl.style.display = 'block';
           successEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
         } else if (resp.status === 410) {

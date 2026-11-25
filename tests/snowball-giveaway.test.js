@@ -55,3 +55,26 @@ test('every call link has a text link to the same number', () => {
   assert.strictEqual(sms, tel);
   assert.deepStrictEqual(html.match(/href="(?:tel|sms):(?!\+15024135335")[^"]*"/g), null);
 });
+
+test('ODT logo and the share card exist and are wired in', () => {
+  const img = (f) => path.join(__dirname, '..', 'src', 'assets', 'images', f);
+  for (const f of ['partners/odt-logo-gold-white.webp', 'partners/odt-logo-gold-white.png', 'og-snowball-2026.jpg']) {
+    assert.ok(fs.statSync(img(f)).size > 1000, f);
+  }
+  assert.match(html, /<source srcset="\/src\/assets\/images\/partners\/odt-logo-gold-white\.webp" type="image\/webp">/);
+  assert.match(html, /<img class="sb-odt" src="\/src\/assets\/images\/partners\/odt-logo-gold-white\.png" alt="Owensboro Dance Theatre"/);
+  assert.match(html, /<meta property="og:image" content="https:\/\/www\.thewayagency\.com\/src\/assets\/images\/og-snowball-2026\.jpg">/);
+  assert.match(html, /<meta property="og:image:width" content="1200">/);
+  assert.match(html, /<meta name="twitter:image" content="https:\/\/www\.thewayagency\.com\/src\/assets\/images\/og-snowball-2026\.jpg">/);
+});
+
+test('the countdown starts hidden (no-JS visitors never see zeros) and stops at the close', () => {
+  assert.match(html, /<div class="sb-count__wrap" id="sb-count" hidden>/);
+  assert.match(html, /if \(left <= 0\) \{ showEnded\(\); return false; \}/);
+  assert.match(html, /if \(tick\(\)\) \{\n\s*countEl\.hidden = false;/);
+});
+
+test('a confirmed entry keeps its confirmation past the close', () => {
+  assert.match(html, /function showEnded\(\) \{\n\s*stopCountdown\(\);\n\s*if \(entered\) return;/);
+  assert.match(html, /entered = true;\n\s*stopCountdown\(\);/);
+});
