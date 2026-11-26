@@ -113,14 +113,31 @@ describe('D-3, D-2, D-1: a reminder on each day while the post is not approved',
     assert.equal(r.sent.length, 0);
   });
 
-  test('the SAGE-channel final reminder: the approval link, "will NOT publish until you approve it", no article text', async () => {
+  test('the SAGE-channel final reminder for a version first sent too late: the approval link, "will NOT publish until you approve it", no marker, no article text', async () => {
     const r = await run([entry('test-final-sage', 2, 'in-review', assignedTo(SAGE_REV))]);
     const [m] = r.sent;
     assert.ok(m.html.includes(`href="${sre.reviewApprovalUrl(SAGE, 'test-final-sage')}"`));
-    assert.match(m.html, /It will NOT publish until you approve it in SAGE\./);
+    assert.match(m.html, /This version reached you less than 3 days before .*, so it will NOT publish until you approve it in SAGE\./);
     assert.match(m.html, /Not approved yet &middot; 2 days until publish/);
     assert.match(m.subject, /^Not approved yet: "SYNTHETIC test-final-sage" will not publish on 2026-11-17 until you approve it$/);
+    assert.doesNotMatch(m.html, /consent-notice\/v1|no reply counts as your approval/);
     assert.doesNotMatch(m.html, /The full article, exactly as it will publish/);
+    assert.equal(r.calendar.year1[0].consent_notice, undefined);
+  });
+
+  test('the SAGE-channel final reminder for a version already sent with the consent wording keeps saying it, with the marker', async () => {
+    const slug = 'test-final-consent';
+    const bytes = Buffer.from(md(slug), 'utf8');
+    const post = entry(slug, 2, 'in-review', assignedTo(SAGE_REV));
+    post.consent_notice = sre.consentKey(post, bytes);
+    const r = await run([post]);
+    const [m] = r.sent;
+    const token = sre.issueReviewToken({ slug, reviewerEmail: SAGE_REV.email, publishDate: post.publish_date, content: bytes }, SECRET);
+    assert.match(m.html, /If you do not reply, it publishes on .* with you credited as its licensed reviewer: no reply counts as your approval\./);
+    assert.match(m.html, /No reply yet &middot; 2 days until publish/);
+    assert.match(m.subject, /^No reply yet: "SYNTHETIC test-final-consent" publishes 2026-11-17 with you as reviewer unless you request changes$/);
+    assert.ok(m.html.includes(sre.consentNoticeMarker(token)), 'the marker SAGE binds the consent to');
+    assert.doesNotMatch(m.html, /will NOT publish/);
   });
 });
 
@@ -147,7 +164,8 @@ describe('the request (~D-14) and the D-7 reminder stay; the request now reaches
     const r = await run([entry('test-wk', 7, 'in-review', assignedTo(SAGE_REV))]);
     assert.equal(r.sent.length, 1);
     assert.equal(r.calendar.year1[0].reminder_sent, true);
-    assert.match(r.sent[0].html, /It will NOT publish until you approve it in SAGE/);
+    assert.match(r.sent[0].html, /If you do not reply, this article publishes on .* with you credited as its licensed reviewer: no reply counts as your approval\. To stop it, use Request Changes\./);
+    assert.match(r.sent[0].subject, /with you as reviewer unless you request changes$/);
     assert.equal((await run(r.calendar.year1)).sent.length, 0);
   });
 
@@ -203,7 +221,15 @@ describe('the email channel (review_via "email") vs the SAGE channel', () => {
       assert.match(m.html, /To approve this exact version: reply to this email with APPROVED as the first line\./);
       assert.match(m.html, /To ask for changes: reply with the changes you want\./);
       assert.match(m.html, /keep the subject line as it is/);
-      assert.match(m.html, /It will NOT publish until you approve it/);
+      if (days >= 3) {
+        assert.match(m.html, /If you do not reply, (this article|it) publishes on .* with you credited as its licensed reviewer: no reply counts as your approval\./);
+        assert.match(m.html, /reply with the changes you want/);
+        assert.ok(m.html.includes(sre.consentNoticeMarker(token)), 'the consent marker, bound to these bytes');
+        assert.equal(post.consent_notice, sre.consentKey(post, Buffer.from(md(slug), 'utf8')), 'the version the consent email was sent for');
+      } else {
+        assert.match(m.html, /so it will NOT publish until you approve it/);
+        assert.doesNotMatch(m.html, /consent-notice\/v1|no reply counts as your approval/);
+      }
       assert.ok(!m.html.includes(SAGE), 'no SAGE link');
       assert.doesNotMatch(m.html, /#\/content\/review|Email replies cannot approve|approve it in SAGE|Review and approve in SAGE/);
       assert.doesNotMatch(m.html, /<h2|## A heading <with>/, 'the markdown is text, never markup');

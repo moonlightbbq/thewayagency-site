@@ -16,7 +16,11 @@
  * approved_via 'email' (not signed, and not needed by any check here: the
  * signed fields are the same for both). Since the owner's decision of
  * 2026-10-02 the approval is also REQUIRED to publish at all
- * (scripts/lib/calendar-status.js). SAGE records it on the calendar entry:
+ * (scripts/lib/calendar-status.js). Since 2026-11-25 ("no answer is consent
+ * to publish with credit to producer") SAGE also writes it, approved_via
+ * 'silence', for a reviewer who was told in every review email that no reply
+ * publishes the post under their name and did not reply; it is the same
+ * signed record and is checked the same way. SAGE records it on the calendar entry:
  * status 'approved', approved_by, approved_by_email, approved_date,
  * approved_sha256, approved_publish_date (the publish_date it was approved
  * for), approved_edit_id (when it approved a proposed edit) and approval_mac,
@@ -110,8 +114,10 @@ const APPROVAL_RECORD_FIELDS = Object.freeze([
   'approved_by', 'approved_by_email', 'approved_date', 'approved_sha256', 'approved_publish_date', 'approved_edit_id',
   'approval_mac', 'credited_sha256', 'credit_mac',
   // How the approval arrived: 'email' for an emailed APPROVED reply SAGE
-  // verified. Not signed and never checked here; listed so a withdrawn
-  // approval clears it and the queue's lost-update guard keeps it.
+  // verified, 'silence' when SAGE approved it on the reviewer's silence after
+  // consent-worded review emails (owner decision 2026-11-25). Not signed and
+  // never checked here; listed so a withdrawn approval clears it and the
+  // queue's lost-update guard keeps it.
   'approved_via',
 ]);
 

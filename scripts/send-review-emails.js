@@ -15,7 +15,20 @@
  *   D-7       status 'in-review', 5-9 days out, once (reminder_sent)
  *   D-3/2/1   status 'in-review', 1-3 days out, once on EACH of those days
  *             (final_reminder_dates records the days sent; a rerun the same
- *             day sends nothing): "it will NOT publish until you approve it"
+ *             day sends nothing)
+ *
+ * SILENCE IS CONSENT (owner decision 2026-11-25, "no answer is consent to
+ * publish with credit to producer"; it supersedes the 2026-10-02 hold on
+ * silence). Every email says, in words, that no reply by the publish date
+ * publishes the post with the reviewer credited, and how to stop it (Request
+ * Changes / reply with the changes), and carries the consent marker
+ * (consent-notice/v1:<token>). SAGE then approves it on its publish date, for
+ * the reviewer, from its own record of those emails (sage-server
+ * src/services/blog-review-silence.js). A version that first reaches the
+ * reviewer less than CONSENT_LEAD_DAYS before its date is the exception: its
+ * emails say it will NOT publish until they approve it, and SAGE agrees.
+ * consent_notice on the entry ("<publish date>:<sha256>") records the version
+ * a consent-worded email was sent for, so later emails keep saying the same.
  *
  * Nothing is sent for 'approved' or 'published' posts, nor for one on a
  * 'changes-requested' hold (its reviewer is not silent: SAGE emails them the
@@ -392,13 +405,65 @@ const pillarLabels = {
 // ─── Copy shared by the review and reminder emails ───────
 //
 // What happens on silence and on a change request, said the same way in every
-// email. Silence HOLDS the post (owner decision 2026-10-02). The cut-off is
-// SAGE's: from the publish date (which begins at midnight UTC) a post may
-// already be live, so a reply can no longer hold it.
-function notPublishedSentence(publishDate, channel = 'sage') {
+// email. The cut-off is SAGE's: from the publish date (which begins at
+// midnight UTC) a post may already be live, so a reply can no longer hold it.
+//
+// SILENCE IS CONSENT (owner decision 2026-11-25: "no answer is consent to
+// publish with credit to producer"). An email that says so carries the
+// consent marker (consentNoticeMarker); SAGE approves the post on its publish
+// date, crediting the reviewer, only when its own log shows it sent them such
+// an email for these exact bytes and this date at least CONSENT_LEAD_DAYS
+// ahead, no later email for the same version said otherwise, and they did not
+// reply (sage-server src/services/blog-review-silence.js). A version that
+// first reaches the reviewer later than that says, truthfully, that it will
+// NOT publish until they approve it (consentApplies decides which).
+const CONSENT_NOTICE_TAG = 'consent-notice/v1';
+const CONSENT_LEAD_DAYS = 3;
+
+/** The marker SAGE looks for; pinned in both repositories' tests. */
+function consentNoticeMarker(token) {
+  return `${CONSENT_NOTICE_TAG}:${token}`;
+}
+
+/** "<publish date>:<sha256 of the bytes>": the version a consent notice was sent for. */
+function consentKey(post, bytes) {
+  return `${post.publish_date}:${crypto.createHash('sha256').update(bytes).digest('hex')}`;
+}
+
+/**
+ * Whether this email may say that no reply publishes the post: these bytes and
+ * this date were already sent with that wording (consent_notice, recorded only
+ * for an email that was sent, and only ever first written at least
+ * CONSENT_LEAD_DAYS ahead), or today is at least CONSENT_LEAD_DAYS before the
+ * publish date. Never without the bytes (no token, nothing SAGE can bind).
+ */
+function consentApplies(post, bytes, today) {
+  if (!bytes || !post || !/^\d{4}-\d{2}-\d{2}$/.test(String(post.publish_date || ''))) return false;
+  if (post.consent_notice === consentKey(post, bytes)) return true;
+  return daysBetweenUtc(today, post.publish_date) >= CONSENT_LEAD_DAYS;
+}
+
+function consentSentence(publishDate, channel = 'sage') {
   return channel === 'email'
-    ? `It will NOT publish until you approve it. Until you do, you get this email again on each of the 3 days before ${publishDate}; if it is still not approved on ${publishDate}, it does not publish that day and the content owner is told.`
-    : `It will NOT publish until you approve it in SAGE. Until you do, you get a reminder on each of the 3 days before ${publishDate}; if it is still not approved on ${publishDate}, it does not publish that day and the content owner is told.`;
+    ? `If you do not reply, this article publishes on ${publishDate} with you credited as its licensed reviewer: no reply counts as your approval. To stop it, reply with the changes you want. Until then you get this email again on each of the 3 days before ${publishDate}.`
+    : `If you do not reply, this article publishes on ${publishDate} with you credited as its licensed reviewer: no reply counts as your approval. To stop it, use Request Changes. Until then you get a reminder on each of the 3 days before ${publishDate}.`;
+}
+
+/** The marker line, in small print at the foot of a consent-worded email. */
+function consentMarkerHtml(token) {
+  return `<p style="margin:8px 0 0;font-size:10px;color:#94a3b8;">Reference: ${escHtml(consentNoticeMarker(token))}</p>`;
+}
+
+function notPublishedSentence(publishDate, channel = 'sage') {
+  const why = `This version reached you less than ${CONSENT_LEAD_DAYS} days before ${publishDate}, so no reply does not publish it.`;
+  return channel === 'email'
+    ? `${why} It will NOT publish until you approve it. Until you do, you get this email again on each of the 3 days before ${publishDate}; if it is still not approved on ${publishDate}, it does not publish that day and the content owner is told.`
+    : `${why} It will NOT publish until you approve it in SAGE. Until you do, you get a reminder on each of the 3 days before ${publishDate}; if it is still not approved on ${publishDate}, it does not publish that day and the content owner is told.`;
+}
+
+/** The silence sentence for this email: consent, or the late version's hold. */
+function silenceSentence(publishDate, channel, consent) {
+  return consent ? consentSentence(publishDate, channel) : notPublishedSentence(publishDate, channel);
 }
 
 function changeRequestSentence(token) {
@@ -420,7 +485,8 @@ function replyToAddress() {
 }
 
 // ─── Format post as HTML email ─────────────
-function formatReviewEmail(post, content, reviewer, token = null, { sageUrl } = {}) {
+function formatReviewEmail(post, content, reviewer, token = null, { sageUrl, consent = false } = {}) {
+  if (consent && !token) throw new Error('formatReviewEmail: a consent-worded email needs the review-request token (SAGE binds the consent to it)');
   if (!sageUrl) throw new Error('formatReviewEmail: sageUrl is required (the approval link opens SAGE)');
   const approveUrl = reviewApprovalUrl(sageUrl, post.slug);
   const articleHtml = markdownToEmailHtml(content);
@@ -486,7 +552,7 @@ function formatReviewEmail(post, content, reviewer, token = null, { sageUrl } = 
       ${changeRequestSentence(token)}
       ${CUTOFF_SENTENCE}${token ? `
       When you request changes, please keep the subject line as it is: it carries the code that ties your reply to this request.` : ''}
-      <strong style="color:#0f172a;">${notPublishedSentence(publishDate)}</strong>
+      <strong style="color:#0f172a;">${silenceSentence(publishDate, 'sage', consent)}</strong>
     </p>
   </div>
 
@@ -499,15 +565,19 @@ function formatReviewEmail(post, content, reviewer, token = null, { sageUrl } = 
   <!-- Footer -->
   <div style="background:#0f172a;padding:20px 36px;border-radius:0 0 12px 12px;text-align:center;">
     <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>
-    <p style="margin:6px 0 0;font-size:11px;color:#475569;">This article publishes on ${publishDate} only once you approve it in SAGE, and then names you as its reviewer.</p>
+    <p style="margin:6px 0 0;font-size:11px;color:#475569;">${consent
+    ? `Unless you request changes, this article publishes on ${publishDate} naming you as its reviewer, whether you approve it in SAGE or do not reply.`
+    : `This article publishes on ${publishDate} only once you approve it in SAGE, and then names you as its reviewer.`}</p>${consent ? `
+    ${consentMarkerHtml(token)}` : ''}
   </div>
 
 </div>`;
 }
 
 // ─── Reminder email (7 days before publish) ─
-function formatReminderEmail(post, reviewer, { sageUrl, token = null } = {}) {
+function formatReminderEmail(post, reviewer, { sageUrl, token = null, consent = false } = {}) {
   if (!sageUrl) throw new Error('formatReminderEmail: sageUrl is required (the approval link opens SAGE)');
+  if (consent && !token) throw new Error('formatReminderEmail: a consent-worded email needs the review-request token');
   const approveUrl = reviewApprovalUrl(sageUrl, post.slug);
   const publishDate = longDate(post.publish_date);
   const title = escHtml(post.title);
@@ -529,15 +599,16 @@ function formatReminderEmail(post, reviewer, { sageUrl, token = null } = {}) {
       This article is scheduled to publish in <strong style="color:#0f172a;">one week</strong> on <strong style="color:#0f172a;">${publishDate}</strong>.
       To approve it, review it in SAGE. If you have changes, use ${changes}. ${changeRequestSentence(token)}
       ${CUTOFF_SENTENCE}
-      <strong style="color:#0f172a;">${notPublishedSentence(publishDate)}</strong>
+      <strong style="color:#0f172a;">${silenceSentence(publishDate, 'sage', consent)}</strong>
     </p>
     <p style="margin:0 0 18px;text-align:center;"><a href="${approveUrl}" style="display:inline-block;background:#166534;color:#ffffff;font-weight:700;padding:12px 20px;border-radius:8px;text-decoration:none;">Review and approve in SAGE</a></p>
     <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 18px;">
-      <p style="margin:0;color:#92400e;font-size:13px;"><strong>Email replies cannot approve.</strong> Approving is a click in SAGE, where you see the exact text that will publish.</p>
+      <p style="margin:0;color:#92400e;font-size:13px;"><strong>Email replies cannot approve.</strong> Approving is a click in SAGE, where you see the exact text that will publish.${consent ? ' Not replying at all counts as your approval, as above.' : ''}</p>
     </div>
   </div>
   <div style="background:#0f172a;padding:16px 36px;border-radius:0 0 12px 12px;text-align:center;">
-    <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>
+    <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>${consent ? `
+    ${consentMarkerHtml(token)}` : ''}
   </div>
 </div>`;
 }
@@ -545,8 +616,9 @@ function formatReminderEmail(post, reviewer, { sageUrl, token = null } = {}) {
 const dayWord = (n) => (n === 1 ? '1 day' : `${n} days`);
 
 // ─── Final reminders (D-3, D-2, D-1), SAGE reviewers ─
-function formatFinalReminderEmail(post, reviewer, { sageUrl, token = null, daysLeft } = {}) {
+function formatFinalReminderEmail(post, reviewer, { sageUrl, token = null, daysLeft, consent = false } = {}) {
   if (!sageUrl) throw new Error('formatFinalReminderEmail: sageUrl is required (the approval link opens SAGE)');
+  if (consent && !token) throw new Error('formatFinalReminderEmail: a consent-worded email needs the review-request token');
   const approveUrl = reviewApprovalUrl(sageUrl, post.slug);
   const publishDate = longDate(post.publish_date);
   const title = escHtml(post.title);
@@ -557,7 +629,7 @@ function formatFinalReminderEmail(post, reviewer, { sageUrl, token = null, daysL
   return `
 <div style="max-width:680px;margin:0 auto;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;">
   <div style="background:linear-gradient(135deg,#7f1d1d 0%,#1e3a5f 100%);color:white;padding:32px 36px;border-radius:12px 12px 0 0;">
-    <p style="margin:0 0 4px;font-size:11px;color:#fca5a5;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;">Not approved yet &middot; ${dayWord(daysLeft)} until publish</p>
+    <p style="margin:0 0 4px;font-size:11px;color:#fca5a5;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;">${consent ? 'No reply yet' : 'Not approved yet'} &middot; ${dayWord(daysLeft)} until publish</p>
     <h1 style="margin:0;font-size:22px;font-weight:700;line-height:1.3;">${title}</h1>
     <p style="margin:10px 0 0;font-size:13px;color:#cbd5e1;">Scheduled for ${publishDate}</p>
   </div>
@@ -565,18 +637,22 @@ function formatFinalReminderEmail(post, reviewer, { sageUrl, token = null, daysL
     <p style="margin:0 0 14px;color:#1e293b;font-size:15px;">Hi ${firstName},</p>
     <p style="margin:0 0 18px;color:#475569;font-size:14px;line-height:1.6;">
       This article is scheduled for <strong style="color:#0f172a;">${publishDate}</strong>, in ${dayWord(daysLeft)}, and you have not approved it yet.
-      <strong style="color:#0f172a;">It will NOT publish until you approve it in SAGE.</strong>
+      ${consent
+    ? `<strong style="color:#0f172a;">If you do not reply, it publishes on ${publishDate} with you credited as its licensed reviewer: no reply counts as your approval.</strong>
+      To stop it, use ${changes}.`
+    : `<strong style="color:#0f172a;">This version reached you less than ${CONSENT_LEAD_DAYS} days before ${publishDate}, so it will NOT publish until you approve it in SAGE.</strong>
       If it is still not approved on ${publishDate}, it does not publish that day and the content owner is told.
-      If you have changes, use ${changes}. ${changeRequestSentence(token)}
+      If you have changes, use ${changes}.`} ${changeRequestSentence(token)}
       ${CUTOFF_SENTENCE}
     </p>
     <p style="margin:0 0 18px;text-align:center;"><a href="${approveUrl}" style="display:inline-block;background:#166534;color:#ffffff;font-weight:700;padding:12px 20px;border-radius:8px;text-decoration:none;">Review and approve in SAGE</a></p>
     <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 18px;">
-      <p style="margin:0;color:#92400e;font-size:13px;"><strong>Email replies cannot approve.</strong> Approving is a click in SAGE, where you see the exact text that will publish.</p>
+      <p style="margin:0;color:#92400e;font-size:13px;"><strong>Email replies cannot approve.</strong> Approving is a click in SAGE, where you see the exact text that will publish.${consent ? ' Not replying at all counts as your approval, as above.' : ''}</p>
     </div>
   </div>
   <div style="background:#0f172a;padding:16px 36px;border-radius:0 0 12px 12px;text-align:center;">
-    <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>
+    <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>${consent ? `
+    ${consentMarkerHtml(token)}` : ''}
   </div>
 </div>`;
 }
@@ -599,7 +675,7 @@ function articleBodyText(md) {
 const EMAIL_CHANNEL_KICKER = {
   request: () => 'Review Request',
   reminder: () => 'Reminder &middot; 1 Week Until Publish',
-  final: (n) => `Not approved yet &middot; ${dayWord(n)} until publish`,
+  final: (n, consent) => `${consent ? 'No reply yet' : 'Not approved yet'} &middot; ${dayWord(n)} until publish`,
 };
 
 /**
@@ -609,7 +685,7 @@ const EMAIL_CHANNEL_KICKER = {
  * @param {string} token     the review-request token over these bytes (required)
  * @param {{kind: 'request'|'reminder'|'final', daysLeft?: number}} opts
  */
-function formatEmailChannelEmail(post, content, reviewer, token, { kind = 'request', daysLeft } = {}) {
+function formatEmailChannelEmail(post, content, reviewer, token, { kind = 'request', daysLeft, consent = false } = {}) {
   if (!token) throw new Error('formatEmailChannelEmail: the review-request token is required (it is what binds an emailed APPROVED to these exact bytes)');
   if (!EMAIL_CHANNEL_KICKER[kind]) throw new Error(`formatEmailChannelEmail: unknown kind ${JSON.stringify(kind)}`);
   const publishDate = longDate(post.publish_date);
@@ -619,14 +695,16 @@ function formatEmailChannelEmail(post, content, reviewer, token, { kind = 'reque
   const approveHref = `mailto:${replyToAddress()}?subject=${reply}&body=${encodeURIComponent('APPROVED\n')}`;
   const changesHref = `mailto:${replyToAddress()}?subject=${reply}&body=${encodeURIComponent('Changes requested:\n\n')}`;
   const intro = kind === 'final'
-    ? `This article is scheduled for <strong style="color:#0f172a;">${publishDate}</strong>, in ${dayWord(daysLeft)}, and you have not approved it yet. <strong style="color:#0f172a;">It will NOT publish until you approve it.</strong> If it is still not approved on ${publishDate}, it does not publish that day and the content owner is told.`
-    : `This article is ready for your review. It is scheduled for <strong style="color:#0f172a;">${publishDate}</strong>${kind === 'reminder' ? ', one week from now' : ''}. Please check it for accuracy. <strong style="color:#0f172a;">${notPublishedSentence(publishDate, 'email')}</strong>`;
+    ? `This article is scheduled for <strong style="color:#0f172a;">${publishDate}</strong>, in ${dayWord(daysLeft)}, and you have not approved it yet. ${consent
+      ? `<strong style="color:#0f172a;">If you do not reply, it publishes on ${publishDate} with you credited as its licensed reviewer: no reply counts as your approval.</strong> To stop it, reply with the changes you want.`
+      : `<strong style="color:#0f172a;">This version reached you less than ${CONSENT_LEAD_DAYS} days before ${publishDate}, so it will NOT publish until you approve it.</strong> If it is still not approved on ${publishDate}, it does not publish that day and the content owner is told.`}`
+    : `This article is ready for your review. It is scheduled for <strong style="color:#0f172a;">${publishDate}</strong>${kind === 'reminder' ? ', one week from now' : ''}. Please check it for accuracy. <strong style="color:#0f172a;">${silenceSentence(publishDate, 'email', consent)}</strong>`;
   return `
 <div style="max-width:680px;margin:0 auto;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f8fafc;">
   <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);color:white;padding:32px 36px;border-radius:12px 12px 0 0;">
-    <p style="margin:0 0 4px;font-size:11px;color:#38bdf8;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;">${EMAIL_CHANNEL_KICKER[kind](daysLeft)}</p>
+    <p style="margin:0 0 4px;font-size:11px;color:#38bdf8;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;">${EMAIL_CHANNEL_KICKER[kind](daysLeft, consent)}</p>
     <h1 style="margin:0;font-size:24px;font-weight:700;line-height:1.3;color:white;">${title}</h1>
-    <p style="margin:10px 0 0;font-size:13px;color:#94a3b8;">Publishes ${publishDate} (${escHtml(post.publish_date)}), once you approve it</p>
+    <p style="margin:10px 0 0;font-size:13px;color:#94a3b8;">Publishes ${publishDate} (${escHtml(post.publish_date)}), ${consent ? 'unless you ask for changes' : 'once you approve it'}</p>
   </div>
   <div style="background:#ffffff;padding:24px 36px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
     <p style="margin:0 0 14px;color:#1e293b;font-size:15px;">Hi ${firstName},</p>
@@ -651,7 +729,10 @@ function formatEmailChannelEmail(post, content, reviewer, token, { kind = 'reque
   </div>
   <div style="background:#0f172a;padding:20px 36px;border-radius:0 0 12px 12px;text-align:center;">
     <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>
-    <p style="margin:6px 0 0;font-size:11px;color:#475569;">This article publishes on ${publishDate} only once you approve it, and then names you as its reviewer.</p>
+    <p style="margin:6px 0 0;font-size:11px;color:#475569;">${consent
+    ? `Unless you ask for changes, this article publishes on ${publishDate} naming you as its reviewer, whether you reply APPROVED or do not reply.`
+    : `This article publishes on ${publishDate} only once you approve it, and then names you as its reviewer.`}</p>${consent ? `
+    ${consentMarkerHtml(token)}` : ''}
   </div>
 </div>`;
 }
@@ -864,6 +945,21 @@ async function runReviewEmails({
     }
   }
 
+  /**
+   * After a consent-worded email was SENT (not merely queued: SAGE only counts
+   * a delivered one), remember the version it was for, so every later email
+   * for the same bytes and date says the same thing (SAGE holds the post if a
+   * later one does not).
+   */
+  function recordConsent(post, bytes, consent, outcome) {
+    if (!consent || outcome !== 'sent') return;
+    const key = consentKey(post, bytes);
+    if (post.consent_notice !== key) {
+      post.consent_notice = key;
+      calendarChanged = true;
+    }
+  }
+
   /** The token over the current bytes (null without them). */
   const tokenFor = (post, member, bytes) => (bytes
     ? issueReviewToken({ slug: post.slug, reviewerEmail: member.email, publishDate: post.publish_date, content: bytes }, tokenSecret)
@@ -927,9 +1023,10 @@ async function runReviewEmails({
       const token = tokenFor(post, member, bytes);
       const content = bytes.toString('utf8');
       const subject = buildReviewSubjects(post, token).email;
+      const consent = consentApplies(post, bytes, today);
       const html = channel === 'email'
-        ? formatEmailChannelEmail(post, content, member, token, { kind: 'request' })
-        : formatReviewEmail(post, content, member, token, { sageUrl });
+        ? formatEmailChannelEmail(post, content, member, token, { kind: 'request', consent })
+        : formatReviewEmail(post, content, member, token, { sageUrl, consent });
 
       post.reviewer = member.name;
       post.reviewer_email = member.email;
@@ -949,6 +1046,7 @@ async function runReviewEmails({
         post.review_sent_date = today;
         delete post.review_send_error;
         if (outcome === 'sent') counts.requests++;
+        recordConsent(post, bytes, consent, outcome);
       }
       continue;
     }
@@ -981,18 +1079,24 @@ async function runReviewEmails({
     const token = tokenFor(post, member, bytes);
     let subject;
     let html;
+    const consent = consentApplies(post, bytes, today);
     if (named.channel === 'email') {
       subject = buildReviewSubjects(post, token).email;
-      html = formatEmailChannelEmail(post, bytes.toString('utf8'), member, token, isFinal ? { kind: 'final', daysLeft: days } : { kind: 'reminder' });
+      html = formatEmailChannelEmail(post, bytes.toString('utf8'), member, token, isFinal ? { kind: 'final', daysLeft: days, consent } : { kind: 'reminder', consent });
     } else if (isFinal) {
-      subject = `Not approved yet: "${post.title}" will not publish on ${post.publish_date} until you approve it`;
-      html = formatFinalReminderEmail(post, member, { sageUrl, token, daysLeft: days });
+      subject = consent
+        ? `No reply yet: "${post.title}" publishes ${post.publish_date} with you as reviewer unless you request changes`
+        : `Not approved yet: "${post.title}" will not publish on ${post.publish_date} until you approve it`;
+      html = formatFinalReminderEmail(post, member, { sageUrl, token, daysLeft: days, consent });
     } else {
-      subject = `Reminder: "${post.title}" publishes ${post.publish_date} once you approve it`;
-      html = formatReminderEmail(post, member, { sageUrl, token });
+      subject = consent
+        ? `Reminder: "${post.title}" publishes ${post.publish_date} with you as reviewer unless you request changes`
+        : `Reminder: "${post.title}" publishes ${post.publish_date} once you approve it`;
+      html = formatReminderEmail(post, member, { sageUrl, token, consent });
     }
     const outcome = await deliver(post, member, subject, html, isFinal ? `Final reminder (D-${days})` : 'Reminder (D-7)');
     if (outcome instanceof Error) continue;
+    recordConsent(post, bytes, consent, outcome);
     if (isFinal) {
       post.final_reminder_dates = [...sentDates, today];
       if (outcome === 'sent') counts.finals++;
@@ -1079,6 +1183,7 @@ module.exports = {
   formatEmailChannelEmail, formatAlertEmail, ALERT_FIX, isSiteUnreadable, isNotInternal, sendError, articleBodyText, reviewTokenSecret,
   sageReviewBase, reviewApprovalUrl, MIN_SECRET_LENGTH, escHtml, markdownToEmailHtml,
   reviewChannel, rotationReviewers, assignedReviewer, getNextReviewer, daysBetweenUtc, runReviewEmails, sendEmail,
+  CONSENT_NOTICE_TAG, CONSENT_LEAD_DAYS, consentNoticeMarker, consentApplies, consentKey,
 };
 
 if (require.main === module) {
