@@ -84,6 +84,7 @@ describe('which emails say that silence publishes', () => {
     assert.equal(sre.consentApplies(post, bytes('a'), TODAY), true);
     assert.equal(sre.consentApplies(post, Buffer.from(md('a', ' Edited.'), 'utf8'), TODAY), false, 'edited since');
     assert.equal(sre.consentApplies({ ...post, publish_date: addDays(TODAY, 2) }, bytes('a'), TODAY), false, 're-dated since');
+    assert.equal(sre.consentApplies({ ...post, reviewer_email: EREV.email }, bytes('a'), TODAY), false, 'reassigned since: the new reviewer was never told');
   });
 });
 
@@ -96,7 +97,7 @@ describe('the emails', () => {
     assert.match(m.html, /Unless you request changes, this article publishes on .* naming you as its reviewer, whether you approve it in SAGE or do not reply\./);
     assert.ok(m.html.includes(sre.consentNoticeMarker(tokenFor(post, REV, md('test-req')))));
     assert.doesNotMatch(m.html, /will NOT publish|only once you approve it/);
-    assert.equal(post.consent_notice, `${post.publish_date}:${require('crypto').createHash('sha256').update(md('test-req')).digest('hex')}`);
+    assert.equal(post.consent_notice, `${post.publish_date}:${REV.email}:${require('crypto').createHash('sha256').update(md('test-req')).digest('hex')}`);
   });
 
   test('the request (email lane): reply with the changes to stop it; the marker; the header says so', async () => {
@@ -124,6 +125,43 @@ describe('the emails', () => {
     const r = await run([entry('test-queued', 14, 'planned', assigned(REV))], { fail: () => paused });
     assert.equal(r.calendar.year1[0].status, 'in-review', 'recorded as sent, as before');
     assert.equal(r.calendar.year1[0].consent_notice, undefined);
+  });
+
+  test('a send whose delivery SAGE could not confirm (outcome unknown) records no consent_notice', async () => {
+    const sent = [];
+    const calendar = { year1: [entry('test-unknown', 14, 'planned', assigned(REV))] };
+    await sre.runReviewEmails({
+      calendar, team: TEAM, today: TODAY, sageUrl: SAGE, tokenSecret: SECRET, alertTo: 'test-owner@example.com',
+      readPostBytes: (slug) => Buffer.from(md(slug), 'utf8'), log: () => {},
+      send: async (to, subject, html) => { sent.push(subject); return { ok: true, outcome: 'unknown' }; },
+    });
+    assert.equal(sent.length, 1);
+    assert.equal(calendar.year1[0].status, 'in-review', 'not sent again');
+    assert.equal(calendar.year1[0].consent_notice, undefined);
+  });
+
+  for (const [kind, days] of [['D-7 reminder', 7], ['D-3 final reminder', 3]]) {
+    test(`${kind} (SAGE lane) with the consent wording shows the article text it is consent to`, async () => {
+      const slug = 'test-text';
+      const r = await run([entry(slug, days, 'in-review', { ...assigned(REV), review_sent_date: addDays(TODAY, -10), ...(days === 3 ? { reminder_sent: true } : {}) })]);
+      const [m] = r.sent;
+      assert.match(m.html, /no reply counts as your approval/);
+      assert.match(m.html, /The article, as it will publish/);
+      assert.ok(m.html.includes(`First paragraph for ${slug}.`), 'the text itself');
+      assert.doesNotMatch(m.html, /The article changed since an earlier review email/);
+    });
+  }
+
+  test('a version changed since the consent email (still 3+ days out) says so, in the text it shows', async () => {
+    const slug = 'test-changed';
+    const post = entry(slug, 7, 'in-review', { ...assigned(REV), review_sent_date: addDays(TODAY, -7) });
+    post.consent_notice = sre.consentKey(post, Buffer.from(md(slug), 'utf8'));
+    const edited = md(slug, ' Edited synthetic sentence.');
+    const r = await run([post], { files: { [slug]: edited } });
+    const [m] = r.sent;
+    assert.match(m.html, /The article changed since an earlier review email: the text in this email is the version that will publish\./);
+    assert.ok(m.html.includes('Edited synthetic sentence.'));
+    assert.equal(r.calendar.year1[0].consent_notice, sre.consentKey(post, Buffer.from(edited, 'utf8')), 'the new version is now the one noticed');
   });
 
   test('a failed send records nothing', async () => {

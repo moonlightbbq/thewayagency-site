@@ -425,10 +425,22 @@ function consentNoticeMarker(token) {
   return `${CONSENT_NOTICE_TAG}:${token}`;
 }
 
-/** "<publish date>:<sha256 of the bytes>": the version a consent notice was sent for. */
+/**
+ * "<publish date>:<reviewer email>:<sha256 of the bytes>": the version, and the
+ * reviewer, a consent notice was sent for (SAGE's token binds the same three).
+ */
 function consentKey(post, bytes) {
-  return `${post.publish_date}:${crypto.createHash('sha256').update(bytes).digest('hex')}`;
+  return `${post.publish_date}:${String(post.reviewer_email || '').trim().toLowerCase()}:${crypto.createHash('sha256').update(bytes).digest('hex')}`;
 }
+
+/** The article changed since a consent email went to this reviewer for this date. */
+function changedSinceConsent(post, bytes) {
+  if (!post || !post.consent_notice || !bytes) return false;
+  const [date, who] = String(post.consent_notice).split(':');
+  return date === String(post.publish_date) && who === String(post.reviewer_email || '').trim().toLowerCase() && post.consent_notice !== consentKey(post, bytes);
+}
+
+const CHANGED_NOTE = 'The article changed since an earlier review email: the text in this email is the version that will publish.';
 
 /**
  * Whether this email may say that no reply publishes the post: these bytes and
@@ -452,6 +464,19 @@ function consentSentence(publishDate, channel = 'sage') {
 /** The marker line, in small print at the foot of a consent-worded email. */
 function consentMarkerHtml(token) {
   return `<p style="margin:8px 0 0;font-size:10px;color:#94a3b8;">Reference: ${escHtml(consentNoticeMarker(token))}</p>`;
+}
+
+/**
+ * The article as it will publish, in a consent-worded reminder: the reviewer
+ * is consenting to THIS text, so the email shows it (and says when it changed).
+ */
+function consentArticleHtml(content, changed) {
+  return `
+  <div style="background:#ffffff;padding:28px 36px;border:1px solid #e2e8f0;border-top:none;">
+    ${changed ? `<p style="margin:0 0 16px;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;color:#991b1b;font-size:13px;"><strong>${CHANGED_NOTE}</strong></p>` : ''}
+    <p style="margin:0 0 24px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#94a3b8;padding-bottom:12px;border-bottom:1px solid #e2e8f0;">The article, as it will publish</p>
+    ${markdownToEmailHtml(content)}
+  </div>`;
 }
 
 function notPublishedSentence(publishDate, channel = 'sage') {
@@ -575,9 +600,9 @@ function formatReviewEmail(post, content, reviewer, token = null, { sageUrl, con
 }
 
 // ─── Reminder email (7 days before publish) ─
-function formatReminderEmail(post, reviewer, { sageUrl, token = null, consent = false } = {}) {
+function formatReminderEmail(post, reviewer, { sageUrl, token = null, consent = false, content = null, changed = false } = {}) {
   if (!sageUrl) throw new Error('formatReminderEmail: sageUrl is required (the approval link opens SAGE)');
-  if (consent && !token) throw new Error('formatReminderEmail: a consent-worded email needs the review-request token');
+  if (consent && (!token || !content)) throw new Error('formatReminderEmail: a consent-worded email needs the review-request token and the article text it is consent to');
   const approveUrl = reviewApprovalUrl(sageUrl, post.slug);
   const publishDate = longDate(post.publish_date);
   const title = escHtml(post.title);
@@ -605,7 +630,7 @@ function formatReminderEmail(post, reviewer, { sageUrl, token = null, consent = 
     <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 18px;">
       <p style="margin:0;color:#92400e;font-size:13px;"><strong>Email replies cannot approve.</strong> Approving is a click in SAGE, where you see the exact text that will publish.${consent ? ' Not replying at all counts as your approval, as above.' : ''}</p>
     </div>
-  </div>
+  </div>${consent ? consentArticleHtml(content, changed) : ''}
   <div style="background:#0f172a;padding:16px 36px;border-radius:0 0 12px 12px;text-align:center;">
     <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>${consent ? `
     ${consentMarkerHtml(token)}` : ''}
@@ -616,9 +641,9 @@ function formatReminderEmail(post, reviewer, { sageUrl, token = null, consent = 
 const dayWord = (n) => (n === 1 ? '1 day' : `${n} days`);
 
 // ─── Final reminders (D-3, D-2, D-1), SAGE reviewers ─
-function formatFinalReminderEmail(post, reviewer, { sageUrl, token = null, daysLeft, consent = false } = {}) {
+function formatFinalReminderEmail(post, reviewer, { sageUrl, token = null, daysLeft, consent = false, content = null, changed = false } = {}) {
   if (!sageUrl) throw new Error('formatFinalReminderEmail: sageUrl is required (the approval link opens SAGE)');
-  if (consent && !token) throw new Error('formatFinalReminderEmail: a consent-worded email needs the review-request token');
+  if (consent && (!token || !content)) throw new Error('formatFinalReminderEmail: a consent-worded email needs the review-request token and the article text it is consent to');
   const approveUrl = reviewApprovalUrl(sageUrl, post.slug);
   const publishDate = longDate(post.publish_date);
   const title = escHtml(post.title);
@@ -649,7 +674,7 @@ function formatFinalReminderEmail(post, reviewer, { sageUrl, token = null, daysL
     <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 18px;">
       <p style="margin:0;color:#92400e;font-size:13px;"><strong>Email replies cannot approve.</strong> Approving is a click in SAGE, where you see the exact text that will publish.${consent ? ' Not replying at all counts as your approval, as above.' : ''}</p>
     </div>
-  </div>
+  </div>${consent ? consentArticleHtml(content, changed) : ''}
   <div style="background:#0f172a;padding:16px 36px;border-radius:0 0 12px 12px;text-align:center;">
     <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>${consent ? `
     ${consentMarkerHtml(token)}` : ''}
@@ -685,7 +710,7 @@ const EMAIL_CHANNEL_KICKER = {
  * @param {string} token     the review-request token over these bytes (required)
  * @param {{kind: 'request'|'reminder'|'final', daysLeft?: number}} opts
  */
-function formatEmailChannelEmail(post, content, reviewer, token, { kind = 'request', daysLeft, consent = false } = {}) {
+function formatEmailChannelEmail(post, content, reviewer, token, { kind = 'request', daysLeft, consent = false, changed = false } = {}) {
   if (!token) throw new Error('formatEmailChannelEmail: the review-request token is required (it is what binds an emailed APPROVED to these exact bytes)');
   if (!EMAIL_CHANNEL_KICKER[kind]) throw new Error(`formatEmailChannelEmail: unknown kind ${JSON.stringify(kind)}`);
   const publishDate = longDate(post.publish_date);
@@ -722,6 +747,7 @@ function formatEmailChannelEmail(post, content, reviewer, token, { kind = 'reque
     </p>
   </div>
   <div style="background:#ffffff;padding:36px;border:1px solid #e2e8f0;">
+    ${changed ? `<p style="margin:0 0 16px;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;color:#991b1b;font-size:13px;"><strong>${CHANGED_NOTE}</strong></p>` : ''}
     <p style="margin:0 0 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#94a3b8;">The full article, exactly as it will publish</p>
     <p style="margin:0 0 4px;font-size:15px;color:#0f172a;"><strong>Title:</strong> ${title}</p>
     <p style="margin:0 0 18px;font-size:13px;color:#475569;padding-bottom:12px;border-bottom:1px solid #e2e8f0;"><strong>Publish date:</strong> ${escHtml(post.publish_date)}</p>
@@ -920,7 +946,13 @@ async function runReviewEmails({
    */
   async function deliver(post, member, subject, html, what) {
     try {
-      await send(member.email, subject, html, { cc: alertTo });
+      const answer = await send(member.email, subject, html, { cc: alertTo });
+      if (answer && answer.outcome === 'unknown') {
+        // SAGE handed it to Microsoft without an answer: treated as sent (no second
+        // copy), but not as a delivered consent notice (SAGE does not count it).
+        log(`  ? ${what} to ${member.email} for "${post.title}": delivery unknown (not retried)`);
+        return 'unknown';
+      }
       log(`  ✓ ${what} sent to ${member.name} (${member.email}): "${post.title}"`);
       return 'sent';
     } catch (err) {
@@ -1023,7 +1055,8 @@ async function runReviewEmails({
       const token = tokenFor(post, member, bytes);
       const content = bytes.toString('utf8');
       const subject = buildReviewSubjects(post, token).email;
-      const consent = consentApplies(post, bytes, today);
+      // As the entry will read once it names this reviewer (consent is per reviewer).
+      const consent = consentApplies({ ...post, reviewer_email: member.email }, bytes, today);
       const html = channel === 'email'
         ? formatEmailChannelEmail(post, content, member, token, { kind: 'request', consent })
         : formatReviewEmail(post, content, member, token, { sageUrl, consent });
@@ -1080,19 +1113,23 @@ async function runReviewEmails({
     let subject;
     let html;
     const consent = consentApplies(post, bytes, today);
+    // A consent email always shows the text it is consent to (SAGE binds the
+    // consent to these bytes); a changed text says so.
+    const content = bytes ? bytes.toString('utf8') : null;
+    const changed = changedSinceConsent(post, bytes);
     if (named.channel === 'email') {
       subject = buildReviewSubjects(post, token).email;
-      html = formatEmailChannelEmail(post, bytes.toString('utf8'), member, token, isFinal ? { kind: 'final', daysLeft: days, consent } : { kind: 'reminder', consent });
+      html = formatEmailChannelEmail(post, content, member, token, isFinal ? { kind: 'final', daysLeft: days, consent, changed } : { kind: 'reminder', consent, changed });
     } else if (isFinal) {
       subject = consent
         ? `No reply yet: "${post.title}" publishes ${post.publish_date} with you as reviewer unless you request changes`
         : `Not approved yet: "${post.title}" will not publish on ${post.publish_date} until you approve it`;
-      html = formatFinalReminderEmail(post, member, { sageUrl, token, daysLeft: days, consent });
+      html = formatFinalReminderEmail(post, member, { sageUrl, token, daysLeft: days, consent, content, changed });
     } else {
       subject = consent
         ? `Reminder: "${post.title}" publishes ${post.publish_date} with you as reviewer unless you request changes`
         : `Reminder: "${post.title}" publishes ${post.publish_date} once you approve it`;
-      html = formatReminderEmail(post, member, { sageUrl, token, consent });
+      html = formatReminderEmail(post, member, { sageUrl, token, consent, content, changed });
     }
     const outcome = await deliver(post, member, subject, html, isFinal ? `Final reminder (D-${days})` : 'Reminder (D-7)');
     if (outcome instanceof Error) continue;
