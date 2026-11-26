@@ -466,6 +466,30 @@ function consentMarkerHtml(token) {
   return `<p style="margin:8px 0 0;font-size:10px;color:#94a3b8;">Reference: ${escHtml(consentNoticeMarker(token))}</p>`;
 }
 
+/** The reference every review email carries for its post (SAGE ties old titles to the post by it). */
+function postRefMarker(slug) {
+  return `[post-ref:${slug}]`;
+}
+
+/** The small-print references at the foot of every review email: the post, and the consent marker when it applies. */
+function refFooterHtml(post, token, consent) {
+  return `<p style="margin:8px 0 0;font-size:10px;color:#94a3b8;">Reference: ${escHtml(postRefMarker(post.slug))}${consent ? ` ${escHtml(consentNoticeMarker(token))}` : ''}</p>`;
+}
+
+/**
+ * The front matter that publishes with the article (its title, description and
+ * the rest), minus the reviewer lines the publisher writes: a consent email
+ * shows every public byte it is consent to, not only the body.
+ */
+function frontMatterHtml(content) {
+  const m = /^---\r?\n([\s\S]*?)\r?\n---/.exec(String(content || ''));
+  if (!m) return '';
+  const lines = m[1].split(/\r?\n/).filter((l) => !/^(reviewer|reviewer_slug|reviewer_title|reviewed_date|reviewed_by)\s*:/.test(l));
+  if (!lines.length) return '';
+  return `<p style="margin:0 0 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#94a3b8;">Page details (published with the article)</p>
+    <pre style="white-space:pre-wrap;word-wrap:break-word;margin:0 0 20px;padding:10px 12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;font-size:12px;line-height:1.5;color:#334155;">${escHtml(lines.join('\n'))}</pre>`;
+}
+
 /**
  * The article as it will publish, in a consent-worded reminder: the reviewer
  * is consenting to THIS text, so the email shows it (and says when it changed).
@@ -474,6 +498,7 @@ function consentArticleHtml(content, changed) {
   return `
   <div style="background:#ffffff;padding:28px 36px;border:1px solid #e2e8f0;border-top:none;">
     ${changed ? `<p style="margin:0 0 16px;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;color:#991b1b;font-size:13px;"><strong>${CHANGED_NOTE}</strong></p>` : ''}
+    ${frontMatterHtml(content)}
     <p style="margin:0 0 24px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#94a3b8;padding-bottom:12px;border-bottom:1px solid #e2e8f0;">The article, as it will publish</p>
     ${markdownToEmailHtml(content)}
   </div>`;
@@ -584,6 +609,7 @@ function formatReviewEmail(post, content, reviewer, token = null, { sageUrl, con
   <!-- Article Content -->
   <div style="background:#ffffff;padding:36px;border:1px solid #e2e8f0;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
     <p style="margin:0 0 24px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#94a3b8;padding-bottom:12px;border-bottom:1px solid #e2e8f0;">Article Preview</p>
+    ${consent ? frontMatterHtml(content) : ''}
     ${articleHtml}
   </div>
 
@@ -592,8 +618,8 @@ function formatReviewEmail(post, content, reviewer, token = null, { sageUrl, con
     <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>
     <p style="margin:6px 0 0;font-size:11px;color:#475569;">${consent
     ? `Unless you request changes, this article publishes on ${publishDate} naming you as its reviewer, whether you approve it in SAGE or do not reply.`
-    : `This article publishes on ${publishDate} only once you approve it in SAGE, and then names you as its reviewer.`}</p>${consent ? `
-    ${consentMarkerHtml(token)}` : ''}
+    : `This article publishes on ${publishDate} only once you approve it in SAGE, and then names you as its reviewer.`}</p>
+    ${refFooterHtml(post, token, consent)}
   </div>
 
 </div>`;
@@ -632,8 +658,8 @@ function formatReminderEmail(post, reviewer, { sageUrl, token = null, consent = 
     </div>
   </div>${consent ? consentArticleHtml(content, changed) : ''}
   <div style="background:#0f172a;padding:16px 36px;border-radius:0 0 12px 12px;text-align:center;">
-    <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>${consent ? `
-    ${consentMarkerHtml(token)}` : ''}
+    <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>
+    ${refFooterHtml(post, token, consent)}
   </div>
 </div>`;
 }
@@ -676,8 +702,8 @@ function formatFinalReminderEmail(post, reviewer, { sageUrl, token = null, daysL
     </div>
   </div>${consent ? consentArticleHtml(content, changed) : ''}
   <div style="background:#0f172a;padding:16px 36px;border-radius:0 0 12px 12px;text-align:center;">
-    <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>${consent ? `
-    ${consentMarkerHtml(token)}` : ''}
+    <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>
+    ${refFooterHtml(post, token, consent)}
   </div>
 </div>`;
 }
@@ -749,6 +775,7 @@ function formatEmailChannelEmail(post, content, reviewer, token, { kind = 'reque
   <div style="background:#ffffff;padding:36px;border:1px solid #e2e8f0;">
     ${changed ? `<p style="margin:0 0 16px;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;color:#991b1b;font-size:13px;"><strong>${CHANGED_NOTE}</strong></p>` : ''}
     <p style="margin:0 0 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#94a3b8;">The full article, exactly as it will publish</p>
+    ${frontMatterHtml(content)}
     <p style="margin:0 0 4px;font-size:15px;color:#0f172a;"><strong>Title:</strong> ${title}</p>
     <p style="margin:0 0 18px;font-size:13px;color:#475569;padding-bottom:12px;border-bottom:1px solid #e2e8f0;"><strong>Publish date:</strong> ${escHtml(post.publish_date)}</p>
     <pre style="white-space:pre-wrap;word-wrap:break-word;margin:0;font-family:Georgia,'Times New Roman',serif;font-size:15px;line-height:1.7;color:#1e293b;">${escHtml(articleBodyText(content))}</pre>
@@ -757,8 +784,8 @@ function formatEmailChannelEmail(post, content, reviewer, token, { kind = 'reque
     <p style="margin:0;font-size:12px;color:#64748b;">The Way Agency &middot; Content Review System</p>
     <p style="margin:6px 0 0;font-size:11px;color:#475569;">${consent
     ? `Unless you ask for changes, this article publishes on ${publishDate} naming you as its reviewer, whether you reply APPROVED or do not reply.`
-    : `This article publishes on ${publishDate} only once you approve it, and then names you as its reviewer.`}</p>${consent ? `
-    ${consentMarkerHtml(token)}` : ''}
+    : `This article publishes on ${publishDate} only once you approve it, and then names you as its reviewer.`}</p>
+    ${refFooterHtml(post, token, consent)}
   </div>
 </div>`;
 }
@@ -1220,7 +1247,7 @@ module.exports = {
   formatEmailChannelEmail, formatAlertEmail, ALERT_FIX, isSiteUnreadable, isNotInternal, sendError, articleBodyText, reviewTokenSecret,
   sageReviewBase, reviewApprovalUrl, MIN_SECRET_LENGTH, escHtml, markdownToEmailHtml,
   reviewChannel, rotationReviewers, assignedReviewer, getNextReviewer, daysBetweenUtc, runReviewEmails, sendEmail,
-  CONSENT_NOTICE_TAG, CONSENT_LEAD_DAYS, consentNoticeMarker, consentApplies, consentKey,
+  CONSENT_NOTICE_TAG, CONSENT_LEAD_DAYS, consentNoticeMarker, consentApplies, consentKey, postRefMarker, frontMatterHtml,
 };
 
 if (require.main === module) {

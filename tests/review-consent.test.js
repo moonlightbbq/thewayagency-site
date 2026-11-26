@@ -67,6 +67,8 @@ describe('the marker is the contract with SAGE', () => {
     const src = fs.readFileSync(p, 'utf8');
     assert.match(src, /const CONSENT_NOTICE_TAG = 'consent-notice\/v1';/);
     assert.match(src, /const NOTICE_LEAD_DAYS = 3;/);
+    assert.match(src, /const POST_REF = \(slug\) => `\[post-ref:\$\{slug\}\]`;/);
+    assert.equal(sre.postRefMarker('a-slug'), '[post-ref:a-slug]');
   });
 });
 
@@ -167,6 +169,32 @@ describe('the emails', () => {
   test('a failed send records nothing', async () => {
     const r = await run([entry('test-failed', 14, 'planned', assigned(REV))], { fail: () => Object.assign(new Error('Email send failed (400): bad'), { status: 400 }) });
     assert.equal(r.calendar.year1[0].consent_notice, undefined);
+  });
+});
+
+describe('every review email names its post; consent emails show the front matter too', () => {
+  test('request, D-7 and final reminders in both lanes carry [post-ref:<slug>], consent-worded or not', async () => {
+    const r = await run([
+      entry('test-ref-req', 14, 'planned', assigned(REV)),
+      entry('test-ref-wk', 7, 'in-review', assigned(REV)),
+      entry('test-ref-late', 2, 'in-review', assigned(REV)),
+      entry('test-ref-email', 1, 'in-review', assigned(EREV)),
+    ]);
+    assert.equal(r.sent.length, 4);
+    for (const m of r.sent) {
+      const slug = /\[post-ref:([a-z-]+)\]/.exec(m.html);
+      assert.ok(slug, m.subject);
+      assert.ok(r.calendar.year1.some((e) => e.slug === slug[1] && m.subject.includes(e.title)), m.subject);
+    }
+  });
+  test('the page details (description and the rest) are shown, without the reviewer lines the publisher writes', async () => {
+    const slug = 'test-fm';
+    const withReviewer = md(slug).replace('description: SYNTHETIC description\n', 'description: SYNTHETIC description\nreviewer: Somebody Else\n');
+    const r = await run([entry(slug, 7, 'in-review', assigned(REV))], { files: { [slug]: withReviewer } });
+    const [m] = r.sent;
+    assert.match(m.html, /Page details \(published with the article\)/);
+    assert.ok(m.html.includes('description: SYNTHETIC description'));
+    assert.ok(!m.html.includes('reviewer: Somebody Else'));
   });
 });
 
