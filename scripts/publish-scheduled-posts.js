@@ -257,7 +257,7 @@ for (const post of calendar.year1) {
   post.status = 'published';
   published++;
   calendarChanged = true;
-  console.log(`  Published: "${post.title}" (${post.publish_date}) — ${approval.credit ? `reviewed by ${post.reviewer} (${post.approved_via === 'email' ? 'approved by email reply' : 'approved in SAGE'})` : 'no reviewer credited (advisory exception)'}`);
+  console.log(`  Published: "${post.title}" (${post.publish_date}) — ${approval.credit ? `reviewed by ${post.reviewer} (${post.approved_via === 'email' ? 'approved by email reply' : post.approved_via === 'silence' ? 'approved on silence: no reply to the review emails' : 'approved in SAGE'})` : 'no reviewer credited (advisory exception)'}`);
   // Wording that reads as a review credit is flagged, never refused: only the
   // signed approval above credits a reviewer (sage-server BL-07).
   for (const w of reviewWordingWarnings(md, TEAM)) console.log(describeWordingWarning(post.slug, w));

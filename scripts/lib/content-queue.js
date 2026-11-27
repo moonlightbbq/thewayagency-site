@@ -103,6 +103,9 @@ const REVIEW_OWNED_FIELDS = Object.freeze([
   // The dates send-review-emails.js sent the D-3/D-2/D-1 final reminders
   // (owner decision 2026-10-02): once per day, never resent on a rerun.
   'final_reminder_dates',
+  // The version ("<publish date>:<sha256>") a consent-worded review email was
+  // sent for (owner decision 2026-11-25: silence is consent).
+  'consent_notice',
   ...APPROVAL_RECORD_FIELDS,
   'reviewed_date',
 ]);

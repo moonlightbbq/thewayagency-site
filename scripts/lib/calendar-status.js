@@ -26,6 +26,17 @@
  * licensed reviewer publishes it, and a "Reviewed by" credit comes with it
  * (scripts/lib/review-credit.js).
  *
+ * 2026-11-25, owner: "no answer is consent to publish with credit to
+ * producer". The rule here does not change (only 'approved' publishes); what
+ * changed is who writes the approval on silence. Every review email now says
+ * that no reply publishes the post under the reviewer's name and how to stop
+ * it, and on the publish date SAGE records the reviewer's signed approval,
+ * approved_via 'silence', when its own log shows it sent them such an email
+ * for these exact bytes and date at least 3 days ahead and they did not reply
+ * (sage-server src/services/blog-review-silence.js). When it does not (a
+ * version that changed late, a reply, a hold, a reviewer SAGE cannot hold to
+ * the byline), "no action" below still applies.
+ *
  *   no action          -> HELD: it does not publish or render on its date. Not
  *                         'error' and not silent: the entry keeps its status
  *                         and its date, the publisher logs it as HELD, and the
