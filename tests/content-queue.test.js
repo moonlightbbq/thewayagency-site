@@ -126,6 +126,21 @@ describe('I1/I2 - capacity and commitment', () => {
 });
 
 describe('I3 - a locked slot points at a real post', () => {
+  test('a back-posted post answers for the old slot it shows (display_date), and only that one', () => {
+    const moved = post('2026-08-19', { slug: 'moved-post', display_date: '2026-08-08' });
+    const ok = calendar({ posts: [moved], slots: [{ date: '2026-08-08', state: 'locked', locked_slug: 'moved-post' }] });
+    assert.ok(!ids(q.evaluateInvariants(ok, {}, TODAY, { hasMarkdown: allMarkdown })).includes('I3'));
+    // Another date, another slug, or no display_date: still I3.
+    for (const [slot, over] of [
+      [{ date: '2026-08-12', state: 'locked', locked_slug: 'moved-post' }, {}],
+      [{ date: '2026-08-08', state: 'locked', locked_slug: 'someone-else' }, {}],
+      [{ date: '2026-08-08', state: 'locked', locked_slug: 'moved-post' }, { display_date: undefined }],
+    ]) {
+      const cal = calendar({ posts: [{ ...moved, ...over }], slots: [slot] });
+      assert.ok(ids(q.evaluateInvariants(cal, {}, TODAY, { hasMarkdown: allMarkdown })).includes('I3'), JSON.stringify(slot) + JSON.stringify(over));
+    }
+  });
+
   test('fires when the locked slot has no post', () => {
     const slots = [{ date: '2026-08-08', state: 'locked', locked_slug: 'ghost' }];
     const r = q.evaluateInvariants(calendar({ slots }), {}, TODAY, { hasMarkdown: allMarkdown });
