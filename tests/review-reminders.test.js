@@ -398,6 +398,7 @@ describe('the CLI, end to end, with fetch stubbed (no network, no email)', () =>
     for (const d of ['scripts/lib', 'data', 'src/blog']) fs.mkdirSync(path.join(tmp, d), { recursive: true });
     fs.copyFileSync(SCRIPT, path.join(tmp, 'scripts', 'send-review-emails.js'));
     fs.copyFileSync(path.join(ROOT, 'scripts', 'lib', 'blog-writing-guard.js'), path.join(tmp, 'scripts', 'lib', 'blog-writing-guard.js'));
+    fs.copyFileSync(path.join(ROOT, 'scripts', 'lib', 'display-date.js'), path.join(tmp, 'scripts', 'lib', 'display-date.js'));
     fs.writeFileSync(path.join(tmp, 'data', 'team.json'), JSON.stringify({ team: TEAM }));
     fs.writeFileSync(path.join(tmp, 'data', 'content-calendar.json'), JSON.stringify({ year1 }, null, 2));
     for (const e of year1) fs.writeFileSync(path.join(tmp, 'src', 'blog', `${e.slug}.md`), md(e.slug));
