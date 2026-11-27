@@ -1965,7 +1965,7 @@
     },
     {
       "week": 34,
-      "publish_date": "2026-11-18",
+      "publish_date": "2026-12-05",
       "title": "Holiday Season: Protecting Your Home and Packages",
       "slug": "holiday-season-home-packages-insurance",
       "description": "Package theft, holiday decorations, and houseguests all create insurance risks during the holidays. Here's what your policy covers and what it doesn't.",
@@ -1995,17 +1995,12 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "in-review",
+      "status": "planned",
       "source": "markdown",
-      "notes": "",
+      "notes": "Re-dated 2026-11-27 from 2026-11-18 (owner): its 11/15-11/17 review emails predated the silence-consent wording and got no reply, so it goes out again for 12/05 with the consent wording; reviewer unchanged.",
       "reviewer": "Jill Boone",
       "reviewer_email": "jill@thewayagency.com",
-      "reviewer_slug": "jill-boone",
-      "review_sent_date": "2026-11-15",
-      "final_reminder_dates": [
-        "2026-11-16",
-        "2026-11-17"
-      ]
+      "reviewer_slug": "jill-boone"
     },
     {
       "week": 36,
@@ -3259,9 +3254,9 @@
     },
     {
       "date": "2026-12-05",
-      "state": "reserved",
-      "locked_slug": null,
-      "locked_at": null,
+      "state": "locked",
+      "locked_slug": "holiday-season-home-packages-insurance",
+      "locked_at": "2026-11-27",
       "reserved_at": "2026-11-25"
     },
     {

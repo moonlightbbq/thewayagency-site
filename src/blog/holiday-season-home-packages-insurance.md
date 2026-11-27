@@ -4,8 +4,8 @@ slug: holiday-season-home-packages-insurance
 description: Package theft, holiday decorations, and houseguests all create insurance risks during the holidays. Here's what your policy covers and what it doesn't.
 author: The Way Agency
 author_title: Independent Insurance Agency
-date: 2026-11-18
-modified: 2026-11-18
+date: 2026-12-05
+modified: 2026-12-05
 reading_time: 5 min read
 related_page: /personal/home.html
 tags: home insurance, holiday season, package theft, personal property, winter
