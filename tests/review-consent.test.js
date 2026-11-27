@@ -204,3 +204,27 @@ test('consent_notice is a review-owned field: the queue\'s lost-update guard kee
   assert.ok(block, 'REVIEW_OWNED_FIELDS found');
   assert.match(block[1], /'consent_notice'/);
 });
+
+describe('a display-dated post (back-posting, owner 2026-11-27): every email says the date it will show', () => {
+  const SHOWN = /On the blog it will be dated <strong[^>]*>Wednesday, October 14, 2026<\/strong>, the date it was first scheduled for\./;
+  test('request, D-7 and final reminders, in both lanes', async () => {
+    const dd = { display_date: '2026-10-14' };
+    const r = await run([
+      entry('test-dd-req', 14, 'planned', { ...assigned(REV), ...dd }),
+      entry('test-dd-ereq', 14, 'planned', { ...assigned(EREV), ...dd }),
+      entry('test-dd-week', 7, 'in-review', { ...assigned(REV), ...dd, review_sent_date: addDays(TODAY, -7) }),
+      entry('test-dd-final', 2, 'in-review', { ...assigned(REV), ...dd, review_sent_date: addDays(TODAY, -12) }),
+      entry('test-dd-efinal', 2, 'in-review', { ...assigned(EREV), ...dd, review_sent_date: addDays(TODAY, -12) }),
+    ]);
+    assert.equal(r.sent.length, 5, r.sent.map((m) => m.subject).join('\n'));
+    for (const m of r.sent) assert.match(m.html, SHOWN, m.subject);
+  });
+  test('no display_date, or an invalid one: no such sentence', async () => {
+    const r = await run([
+      entry('test-dd-none', 14, 'planned', assigned(REV)),
+      entry('test-dd-bad', 14, 'planned', { ...assigned(REV), display_date: addDays(TODAY, 20) }),
+    ]);
+    assert.equal(r.sent.length, 2);
+    for (const m of r.sent) assert.doesNotMatch(m.html, /On the blog it will be dated/);
+  });
+});

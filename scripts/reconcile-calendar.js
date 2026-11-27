@@ -49,6 +49,7 @@ const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 // that one had already drifted apart from what sage writes, which is how
 // 'approved' became a status that silently blocked publication.
 const { isPublishable: publishable, isAwaitingApproval } = require('./lib/calendar-status');
+const { hasDisplayDate, shownDate, publishFrontMatterDates } = require('./lib/display-date');
 // Who a post credits as its reviewer, and whether an 'approved' post may
 // publish at all: the same rule as publish-scheduled-posts.js (sage-server BL-07),
 // including the credit record the renderer checks before it prints "Reviewed by".
@@ -156,12 +157,14 @@ for (const post of calendar.year1) {
   // .md date that merely differs from the calendar) still renders, so leave it
   // alone — we never silently move a live post's published date backward.
   const dateIsFuture = curDate !== undefined && normalize(curDate) > today;
-  const dateNeedsFix = dateIsFuture && normalize(curDate) !== post.publish_date;
+  // A display-dated post (scripts/lib/display-date.js) shows its display_date.
+  const shown = shownDate(post);
+  const dateNeedsFix = dateIsFuture && normalize(curDate) !== shown;
   const modifiedNeedsFix = dateIsFuture && curModified !== undefined && normalize(curModified) !== post.publish_date;
 
   if (dateNeedsFix || modifiedNeedsFix) {
     console.log(`  ~ FRONTMATTER: "${post.title}" (${post.slug})`);
-    if (dateNeedsFix) console.log(`      date:     ${normalize(curDate)}  ->  ${post.publish_date}`);
+    if (dateNeedsFix) console.log(`      date:     ${normalize(curDate)}  ->  ${shown}`);
     if (modifiedNeedsFix) console.log(`      modified: ${normalize(curModified)}  ->  ${post.publish_date}`);
     // A published post credited for its old bytes keeps its credit: the date
     // rewrite is this script's own, so the credit record moves to the new
@@ -172,7 +175,7 @@ for (const post of calendar.year1) {
     }
     if (APPLY) {
       let next = md;
-      if (dateNeedsFix) next = next.replace(/^date:\s*.*$/m, `date: ${post.publish_date}`);
+      if (dateNeedsFix) next = next.replace(/^date:\s*.*$/m, `date: ${shown}`);
       if (modifiedNeedsFix) next = next.replace(/^modified:\s*.*$/m, `modified: ${post.publish_date}`);
       fs.writeFileSync(mdFile, next);
       md = next;
@@ -207,11 +210,14 @@ for (const post of calendar.year1) {
     continue;
   }
 
-  console.log(`  + PUBLISH: "${post.title}" (${post.slug})  -  status ${post.status} -> published (date ${post.publish_date}), ${approval.credit ? `reviewed by ${post.reviewer}` : 'no reviewer credited'}`);
+  console.log(`  + PUBLISH: "${post.title}" (${post.slug})  -  status ${post.status} -> published (date ${post.publish_date}${hasDisplayDate(post) ? `, shown dated ${shownDate(post)}` : ''}), ${approval.credit ? `reviewed by ${post.reviewer}` : 'no reviewer credited'}`);
   if (APPLY) {
     // An advisory exception names no reviewer; an approval whose bytes still match does.
     const current = fs.readFileSync(mdFile, 'utf8');
-    const next = applyReviewCredit(current, post, TEAM, { credit: approval.credit });
+    // A display-dated post goes up showing its display_date, modified = the
+    // real publish_date, as publish-scheduled-posts.js does.
+    const dated = hasDisplayDate(post) ? publishFrontMatterDates(current, post) : current;
+    const next = applyReviewCredit(dated, post, TEAM, { credit: approval.credit });
     if (next !== current) fs.writeFileSync(mdFile, next);
     // Bound to the bytes just written: the renderer credits only these.
     if (approval.credit) recordCredit(post, Buffer.from(next, 'utf8'), SECRET);
