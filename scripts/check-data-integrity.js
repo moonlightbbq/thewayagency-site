@@ -12,6 +12,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { canonicalHref } = require('./lib/site-urls');
 const { scriptTextProblem } = require('./lib/blog-content-guard');
+const { displayDateProblem } = require('./lib/display-date');
 
 const ROOT = path.resolve(__dirname, '..');
 const MONTH_NAMES = ['january', 'february', 'march', 'april', 'may', 'june',
@@ -213,6 +214,9 @@ if (calendar) {
     // Printed on the blog index and in Related Articles (sage-server BL-54).
     const scriptText = scriptTextProblem(p);
     if (scriptText) { error(`content-calendar.json: "${p.slug || 'unknown'}": ${scriptText}`); calErrors++; }
+    // A post shown on an earlier date than it publishes (scripts/lib/display-date.js).
+    const shownProblem = displayDateProblem(p);
+    if (shownProblem) { error(`content-calendar.json: "${p.slug || 'unknown'}": ${shownProblem}`); calErrors++; }
   }
   if (calErrors === 0) pass(`content-calendar.json: ${allCalPosts.length} entries, all valid`);
 

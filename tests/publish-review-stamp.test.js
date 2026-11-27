@@ -82,7 +82,7 @@ function runSite(script, { entries, files, team = TEAM, args = [], env = { BLOG_
   fs.mkdirSync(path.join(tmp, 'data'), { recursive: true });
   fs.mkdirSync(path.join(tmp, 'src', 'blog'), { recursive: true });
   fs.copyFileSync(path.join(REPO, 'scripts', script), path.join(tmp, 'scripts', script));
-  for (const lib of ['calendar-status.js', 'review-credit.js', 'blog-content-guard.js', 'blog-writing-guard.js']) {
+  for (const lib of ['calendar-status.js', 'review-credit.js', 'blog-content-guard.js', 'blog-writing-guard.js', 'display-date.js']) {
     fs.copyFileSync(path.join(REPO, 'scripts', 'lib', lib), path.join(tmp, 'scripts', 'lib', lib));
   }
   fs.writeFileSync(path.join(tmp, 'data', 'team.json'), JSON.stringify({ team }));
@@ -694,6 +694,83 @@ describe('approval REQUIRED (owner decision 2026-10-02): unapproved due posts HO
       assert.equal(site.entry(g2.slug).status, 'in-review');
       assert.equal(site.entry('test-backdated').status, 'planned');
       assert.match(site.run.stdout, /2 due post\(s\) HELD/);
+    } finally {
+      fs.rmSync(site.tmp, { recursive: true, force: true });
+    }
+  });
+});
+
+describe('a display_date shows an earlier date than the post goes live on (owner 2026-11-27, back-posting)', () => {
+  const { displayDateProblem, shownDate, publishFrontMatterDates } = require('../scripts/lib/display-date');
+
+  test('shownDate: a valid earlier display_date, else publish_date; displayDateProblem names a bad one', () => {
+    assert.equal(shownDate({ publish_date: '2026-01-07', display_date: '2025-10-14' }), '2025-10-14');
+    assert.equal(shownDate({ publish_date: '2026-01-07' }), '2026-01-07');
+    for (const bad of ['2026-01-07', '2026-02-01', '2025-02-31', '14/10/2025', '']) {
+      const e = { publish_date: '2026-01-07', display_date: bad };
+      assert.ok(displayDateProblem(e), `${bad} is refused`);
+      assert.equal(shownDate(e), '2026-01-07', `${bad}: shows publish_date`);
+    }
+    assert.equal(displayDateProblem({ publish_date: '2026-01-07' }), null);
+  });
+
+  test('publishFrontMatterDates: date = display_date, modified = publish_date (added when missing); body untouched', () => {
+    const md = post('test-dd-helper', 'date: 2026-01-07\n').replace('date: 2026-01-07\n', '');
+    const out = publishFrontMatterDates(md, { publish_date: '2026-01-07', display_date: '2025-10-14' });
+    assert.equal(frontmatter(out).date, '2025-10-14');
+    assert.equal(frontmatter(out).modified, '2026-01-07');
+    assert.equal(out.split('\n---\n')[1], md.split('\n---\n')[1]);
+    const withModified = post('test-dd-helper', 'modified: 2025-12-01\n');
+    assert.equal(frontmatter(publishFrontMatterDates(withModified, { publish_date: '2026-01-07', display_date: '2025-10-14' })).modified, '2026-01-07');
+    // Without a display_date: the old rule (date and an existing modified = publish_date), nothing added.
+    const plain = publishFrontMatterDates(post('test-dd-helper').replace('date: 2026-01-07', 'date: 2026-02-01'), { publish_date: '2026-01-07' });
+    assert.equal(frontmatter(plain).date, '2026-01-07');
+    assert.equal(frontmatter(plain).modified, undefined);
+  });
+
+  test('publish-scheduled-posts: the approval is checked on the bytes as written, then the post publishes showing display_date, credited', () => {
+    const md = post('test-dd-pub');
+    const entry = approved('test-dd-pub', md, { display_date: '2025-10-14' });
+    const site = runSite('publish-scheduled-posts.js', { entries: [entry], files: { 'test-dd-pub': md } });
+    try {
+      assert.equal(site.run.status, 0, site.run.stdout + site.run.stderr);
+      assert.equal(site.entry('test-dd-pub').status, 'published');
+      const fm = frontmatter(site.read('test-dd-pub'));
+      assert.equal(fm.date, '2025-10-14');
+      assert.equal(fm.modified, '2026-01-07');
+      assert.equal(fm.reviewer, REVIEWER.name);
+      assert.equal(site.entry('test-dd-pub').credited_sha256, sha256Hex(fs.readFileSync(path.join(site.tmp, 'src', 'blog', 'test-dd-pub.md'))));
+      assert.match(site.run.stdout, /frontmatter date set to 2025-10-14 \(its display_date\), modified to 2026-01-07/);
+      assert.match(site.run.stdout, /Published: .*\(2026-01-07, shown dated 2025-10-14\)/);
+    } finally {
+      fs.rmSync(site.tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('publish-scheduled-posts: a display-dated post the reviewer has not approved is HELD like any other, file untouched', () => {
+    const md = post('test-dd-held');
+    const site = runSite('publish-scheduled-posts.js', {
+      entries: [{ slug: 'test-dd-held', title: 'SYNTHETIC held', publish_date: '2026-01-07', display_date: '2025-10-14', status: 'in-review', reviewer: REVIEWER.name, reviewer_slug: REVIEWER.slug, reviewer_email: REVIEWER.email }],
+      files: { 'test-dd-held': md },
+    });
+    try {
+      assert.equal(site.entry('test-dd-held').status, 'in-review');
+      assert.equal(site.read('test-dd-held'), md);
+    } finally {
+      fs.rmSync(site.tmp, { recursive: true, force: true });
+    }
+  });
+
+  test('reconcile-calendar --apply publishes a display-dated approved post the same way', () => {
+    const md = post('test-dd-rc');
+    const site = runSite('reconcile-calendar.js', { args: ['--apply'], entries: [approved('test-dd-rc', md, { display_date: '2025-10-14' })], files: { 'test-dd-rc': md } });
+    try {
+      assert.equal(site.run.status, 0, site.run.stdout + site.run.stderr);
+      assert.equal(site.entry('test-dd-rc').status, 'published');
+      const fm = frontmatter(site.read('test-dd-rc'));
+      assert.equal(fm.date, '2025-10-14');
+      assert.equal(fm.modified, '2026-01-07');
+      assert.equal(site.entry('test-dd-rc').credited_sha256, sha256Hex(fs.readFileSync(path.join(site.tmp, 'src', 'blog', 'test-dd-rc.md'))));
     } finally {
       fs.rmSync(site.tmp, { recursive: true, force: true });
     }

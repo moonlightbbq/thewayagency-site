@@ -44,6 +44,7 @@ const path = require('path');
 const { isPublishable, isKnownStatus, isAwaitingApproval, heldNextStep } = require('./lib/calendar-status');
 // Y-84 (A): a due post that breaks the blog writing rules never publishes.
 const { postProblems, loadExceptions } = require('./lib/blog-writing-guard');
+const { hasDisplayDate, shownDate, publishFrontMatterDates } = require('./lib/display-date');
 const {
   approvalCheck, applyReviewCredit, readinessError, frontMatterProblem, reviewWordingWarnings, describeWordingWarning,
   reviewSecret, recordCredit, clearApprovalRecord,
@@ -229,21 +230,16 @@ for (const post of calendar.year1) {
   // the calendar publish_date, rewrite them. A future-dated `date:` would
   // otherwise make generate-blog.js skip the post even though it just got
   // marked published.
+  // A post with a display_date (scripts/lib/display-date.js) shows that
+  // earlier date; its `modified:` is the real publish_date.
   {
-    const fm = (md.match(/^---\n([\s\S]*?)\n---/) || [])[1] || '';
-    const norm = (v) => (v || '').trim().replace(/^["']|["']$/g, '');
-    const curDate = (fm.match(/^date:\s*(.+)$/m) || [])[1];
-    const curModified = (fm.match(/^modified:\s*(.+)$/m) || [])[1];
-    let dateChanged = false;
-    if (curDate !== undefined && norm(curDate) !== post.publish_date) {
-      md = md.replace(/^date:\s*.*$/m, `date: ${post.publish_date}`);
-      dateChanged = true;
+    const next = publishFrontMatterDates(md, post);
+    if (next !== md) {
+      md = next;
+      console.log(hasDisplayDate(post)
+        ? `    ↳ frontmatter date set to ${shownDate(post)} (its display_date), modified to ${post.publish_date}`
+        : `    ↳ frontmatter date/modified set to ${post.publish_date}`);
     }
-    if (curModified !== undefined && norm(curModified) !== post.publish_date) {
-      md = md.replace(/^modified:\s*.*$/m, `modified: ${post.publish_date}`);
-      dateChanged = true;
-    }
-    if (dateChanged) console.log(`    ↳ frontmatter date/modified set to ${post.publish_date}`);
   }
   if (md !== mdContent) pendingWrites.set(mdFile, md);
 
@@ -257,7 +253,7 @@ for (const post of calendar.year1) {
   post.status = 'published';
   published++;
   calendarChanged = true;
-  console.log(`  Published: "${post.title}" (${post.publish_date}) — ${approval.credit ? `reviewed by ${post.reviewer} (${post.approved_via === 'email' ? 'approved by email reply' : post.approved_via === 'silence' ? 'approved on silence: no reply to the review emails' : 'approved in SAGE'})` : 'no reviewer credited (advisory exception)'}`);
+  console.log(`  Published: "${post.title}" (${post.publish_date}${hasDisplayDate(post) ? `, shown dated ${shownDate(post)}` : ''}) — ${approval.credit ? `reviewed by ${post.reviewer} (${post.approved_via === 'email' ? 'approved by email reply' : post.approved_via === 'silence' ? 'approved on silence: no reply to the review emails' : 'approved in SAGE'})` : 'no reviewer credited (advisory exception)'}`);
   // Wording that reads as a review credit is flagged, never refused: only the
   // signed approval above credits a reviewer (sage-server BL-07).
   for (const w of reviewWordingWarnings(md, TEAM)) console.log(describeWordingWarning(post.slug, w));

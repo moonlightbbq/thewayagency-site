@@ -102,6 +102,7 @@ const path = require('path');
 const crypto = require('crypto');
 // Y-84 (A): no review request for a post that breaks the blog writing rules.
 const { postProblems, loadExceptions } = require('./lib/blog-writing-guard');
+const { hasDisplayDate, shownDate } = require('./lib/display-date');
 
 const ROOT = path.resolve(__dirname, '..');
 const CALENDAR_PATH = path.join(ROOT, 'data', 'content-calendar.json');
@@ -524,6 +525,15 @@ function changeRequestSentence(token) {
 
 const CUTOFF_SENTENCE = 'A change request has to reach SAGE before the publish date begins (midnight UTC, which is the evening before in US time): from then on the post may already be live, and SAGE can no longer hold it.';
 
+/**
+ * A post that goes live on publish_date but shows an earlier display_date
+ * (scripts/lib/display-date.js): the reviewer is told the date it will show.
+ */
+function shownDateNote(post) {
+  if (!hasDisplayDate(post)) return '';
+  return ` On the blog it will be dated <strong style="color:#0f172a;">${longDate(shownDate(post))}</strong>, the date it was first scheduled for.`;
+}
+
 function longDate(ymd) {
   return new Date(ymd + 'T12:00:00').toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -582,7 +592,7 @@ function formatReviewEmail(post, content, reviewer, token = null, { sageUrl, con
   <div style="background:#ffffff;padding:24px 36px;border-left:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">
     <p style="margin:0 0 14px;color:#1e293b;font-size:15px;">Hi ${firstName},</p>
     <p style="margin:0 0 18px;color:#475569;font-size:14px;line-height:1.6;">
-      This article is ready for your review before it goes live on <strong style="color:#0f172a;">${publishDate}</strong>.
+      This article is ready for your review before it goes live on <strong style="color:#0f172a;">${publishDate}</strong>.${shownDateNote(post)}
       Please check it for accuracy and let us know if anything needs to be updated.
     </p>
     <table style="width:100%;border-collapse:separate;border-spacing:8px 0;"><tr>
@@ -647,7 +657,7 @@ function formatReminderEmail(post, reviewer, { sageUrl, token = null, consent = 
   <div style="background:#ffffff;padding:28px 36px;border:1px solid #e2e8f0;">
     <p style="margin:0 0 14px;color:#1e293b;font-size:15px;">Hi ${firstName},</p>
     <p style="margin:0 0 18px;color:#475569;font-size:14px;line-height:1.6;">
-      This article is scheduled to publish in <strong style="color:#0f172a;">one week</strong> on <strong style="color:#0f172a;">${publishDate}</strong>.
+      This article is scheduled to publish in <strong style="color:#0f172a;">one week</strong> on <strong style="color:#0f172a;">${publishDate}</strong>.${shownDateNote(post)}
       To approve it, review it in SAGE. If you have changes, use ${changes}. ${changeRequestSentence(token)}
       ${CUTOFF_SENTENCE}
       <strong style="color:#0f172a;">${silenceSentence(publishDate, 'sage', consent)}</strong>
@@ -687,7 +697,7 @@ function formatFinalReminderEmail(post, reviewer, { sageUrl, token = null, daysL
   <div style="background:#ffffff;padding:28px 36px;border:1px solid #e2e8f0;">
     <p style="margin:0 0 14px;color:#1e293b;font-size:15px;">Hi ${firstName},</p>
     <p style="margin:0 0 18px;color:#475569;font-size:14px;line-height:1.6;">
-      This article is scheduled for <strong style="color:#0f172a;">${publishDate}</strong>, in ${dayWord(daysLeft)}, and you have not approved it yet.
+      This article is scheduled for <strong style="color:#0f172a;">${publishDate}</strong>, in ${dayWord(daysLeft)}, and you have not approved it yet.${shownDateNote(post)}
       ${consent
     ? `<strong style="color:#0f172a;">If you do not reply, it publishes on ${publishDate} with you credited as its licensed reviewer: no reply counts as your approval.</strong>
       To stop it, use ${changes}.`
@@ -746,10 +756,10 @@ function formatEmailChannelEmail(post, content, reviewer, token, { kind = 'reque
   const approveHref = `mailto:${replyToAddress()}?subject=${reply}&body=${encodeURIComponent('APPROVED\n')}`;
   const changesHref = `mailto:${replyToAddress()}?subject=${reply}&body=${encodeURIComponent('Changes requested:\n\n')}`;
   const intro = kind === 'final'
-    ? `This article is scheduled for <strong style="color:#0f172a;">${publishDate}</strong>, in ${dayWord(daysLeft)}, and you have not approved it yet. ${consent
+    ? `This article is scheduled for <strong style="color:#0f172a;">${publishDate}</strong>, in ${dayWord(daysLeft)}, and you have not approved it yet.${shownDateNote(post)} ${consent
       ? `<strong style="color:#0f172a;">If you do not reply, it publishes on ${publishDate} with you credited as its licensed reviewer: no reply counts as your approval.</strong> To stop it, reply with the changes you want.`
       : `<strong style="color:#0f172a;">This version reached you less than ${CONSENT_LEAD_DAYS} days before ${publishDate}, so it will NOT publish until you approve it.</strong> If it is still not approved on ${publishDate}, it does not publish that day and the content owner is told.`}`
-    : `This article is ready for your review. It is scheduled for <strong style="color:#0f172a;">${publishDate}</strong>${kind === 'reminder' ? ', one week from now' : ''}. Please check it for accuracy. <strong style="color:#0f172a;">${silenceSentence(publishDate, 'email', consent)}</strong>`;
+    : `This article is ready for your review. It is scheduled for <strong style="color:#0f172a;">${publishDate}</strong>${kind === 'reminder' ? ', one week from now' : ''}.${shownDateNote(post)} Please check it for accuracy. <strong style="color:#0f172a;">${silenceSentence(publishDate, 'email', consent)}</strong>`;
   return `
 <div style="max-width:680px;margin:0 auto;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f8fafc;">
   <div style="background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 100%);color:white;padding:32px 36px;border-radius:12px 12px 0 0;">
@@ -1246,7 +1256,7 @@ module.exports = {
   issueReviewToken, buildReviewSubjects, formatReviewEmail, formatReminderEmail, formatFinalReminderEmail,
   formatEmailChannelEmail, formatAlertEmail, ALERT_FIX, isSiteUnreadable, isNotInternal, sendError, articleBodyText, reviewTokenSecret,
   sageReviewBase, reviewApprovalUrl, MIN_SECRET_LENGTH, escHtml, markdownToEmailHtml,
-  reviewChannel, rotationReviewers, assignedReviewer, getNextReviewer, daysBetweenUtc, runReviewEmails, sendEmail,
+  reviewChannel, rotationReviewers, assignedReviewer, getNextReviewer, daysBetweenUtc, runReviewEmails, sendEmail, shownDateNote,
   CONSENT_NOTICE_TAG, CONSENT_LEAD_DAYS, consentNoticeMarker, consentApplies, consentKey, postRefMarker, frontMatterHtml,
 };
 

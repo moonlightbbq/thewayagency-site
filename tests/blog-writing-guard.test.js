@@ -281,7 +281,7 @@ describe('the gates', () => {
     try {
       for (const d of ['scripts/lib', 'data', 'src/blog']) fs.mkdirSync(path.join(tmp, d), { recursive: true });
       fs.copyFileSync(path.join(ROOT, 'scripts', 'publish-scheduled-posts.js'), path.join(tmp, 'scripts', 'publish-scheduled-posts.js'));
-      for (const lib of ['calendar-status.js', 'review-credit.js', 'blog-content-guard.js', 'blog-writing-guard.js']) fs.copyFileSync(path.join(ROOT, 'scripts', 'lib', lib), path.join(tmp, 'scripts', 'lib', lib));
+      for (const lib of ['calendar-status.js', 'review-credit.js', 'blog-content-guard.js', 'blog-writing-guard.js', 'display-date.js']) fs.copyFileSync(path.join(ROOT, 'scripts', 'lib', lib), path.join(tmp, 'scripts', 'lib', lib));
       fs.writeFileSync(path.join(tmp, 'data', 'team.json'), JSON.stringify({ team: [REV] }));
       fs.writeFileSync(path.join(tmp, 'data', 'content-calendar.json'), JSON.stringify({ year1: [{ slug: 'test-due', title: 'SYNTHETIC test-due', publish_date: '2026-01-01', status: 'approved' }] }));
       fs.writeFileSync(path.join(tmp, 'src', 'blog', 'test-due.md'), post(`Coverage — explained.\n\n${words}`));

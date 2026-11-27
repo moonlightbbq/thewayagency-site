@@ -881,6 +881,7 @@ if (!fs.existsSync(BLOG_BUILD)) {
 const {
   isKnownStatus, isPublishable, isHeld,
 } = require('./lib/calendar-status');
+const { shownDate } = require('./lib/display-date');
 const {
   renderDecision, reviewSecret, isReviewerKey, reviewWordingWarnings, describeWordingWarning,
 } = require('./lib/review-credit');
@@ -1081,7 +1082,9 @@ const calendar = calendarEntries.calendar;
       const found = contentGuard.reviewClaimIn(String(value === undefined || value === null ? '' : value), REVIEW_TEAM, { strict: true });
       if (found) console.log(describeWordingWarning(String(post.slug), { field: `calendar ${key}`, text: String(value).slice(0, 500), wording: found }));
     }
-    return { slug: post.slug, title: post.title, description: post.description, publish_date: post.publish_date };
+    // The date the card shows and sorts by: a display_date when the entry has
+    // one (scripts/lib/display-date.js), else publish_date.
+    return { slug: post.slug, title: post.title, description: post.description, publish_date: shownDate(post) };
   };
 
   // Collect all published posts: existing_posts + year1 entries with status "published"

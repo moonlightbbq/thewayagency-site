@@ -22,6 +22,7 @@ const path = require('path');
 const { isHeld, isKnownStatus, heldForApproval, heldNextStep } = require('./calendar-status');
 const { APPROVAL_RECORD_FIELDS } = require('./review-credit');
 const { scriptTextProblem } = require('./blog-content-guard');
+const { hasDisplayDate } = require('./display-date');
 
 const ROOT = path.resolve(__dirname, '..', '..');
 // Overridable for the same reason loadBacklog takes a path: the lost-update
@@ -1209,9 +1210,15 @@ function evaluateInvariants(cal, backlog, today, opts = {}) {
     add('I2b', `${tooLate.length} slot(s) will publish nothing - too close to fill and still leave the licensed reviewer time to approve it: ${tooLate.map(s => s.date).join(', ')}`);
   }
 
-  // I3 - a locked slot must point at a real dated post.
+  // I3 - a locked slot must point at a real dated post. A post back-posted to
+  // a later slot (display_date, scripts/lib/display-date.js) still answers for
+  // the slot it shows: its old locked slot names it and its display_date is
+  // that slot's date.
   for (const s of slots.filter(x => x.state === 'locked')) {
     const post = postByDate.get(s.date);
+    const moved = !post && s.locked_slug
+      && posts.some(p => p.slug === s.locked_slug && hasDisplayDate(p) && String(p.display_date) === s.date);
+    if (moved) continue;
     if (!post) add('I3', `slot ${s.date} is locked to "${s.locked_slug}" but no dated post exists`);
     else if (s.locked_slug && post.slug !== s.locked_slug) {
       add('I3', `slot ${s.date} locked to "${s.locked_slug}" but the post there is "${post.slug}"`);
