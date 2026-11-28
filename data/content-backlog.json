@@ -506,6 +506,411 @@
       "approved_by": null,
       "status": "proposed",
       "notes": "Proposed by the smart calendar: the winter-prep window is open on 2026-10-14, the first Wednesday the queue can use. Needs approval before the queue can schedule it."
+    },
+    {
+      "slug": "uninsured-underinsured-motorist-coverage-kentucky",
+      "title": "Uninsured and Underinsured Motorist Coverage in Kentucky: What Drivers Need to Know",
+      "description": "A plain-language guide to Kentucky UM and UIM coverage, stacking rights, KRS statutes, and why the state's 14-18% uninsured driver rate makes this coverage essential for every policy.",
+      "primary_keyword": "uninsured motorist coverage Kentucky",
+      "secondary_keywords": [
+        "underinsured motorist Kentucky",
+        "UM UIM coverage Kentucky",
+        "Kentucky uninsured driver rate",
+        "stacking UM UIM Kentucky",
+        "KRS 304.20-020"
+      ],
+      "pillar": "education",
+      "topic_type": "guide",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "conversion_goal": "coverage-review",
+      "related_cluster": "personal-auto",
+      "seasonality_window": null,
+      "target_month": null,
+      "target_product_page": "/personal/auto.html",
+      "target_location_pages": [
+        "/insurance/mt-washington-ky.html",
+        "/insurance/owensboro-ky.html"
+      ],
+      "secondary_internal_links": [
+        "/personal/auto.html",
+        "/blog/kentucky-auto-insurance-guide",
+        "/blog/liability-limits-how-much-enough",
+        "/blog/understanding-auto-insurance-coverage-options"
+      ],
+      "page_role": "supporting",
+      "refresh_cycle": "annual",
+      "source": "topic-research",
+      "research_task_id": "3e4fb747-e2b9-4b35-8d90-e7031165f531",
+      "priority_score": 88,
+      "score_breakdown": {
+        "demand": 23,
+        "winnability": 22,
+        "business_value": 17,
+        "aeo": 14,
+        "timing": 12
+      },
+      "research_brief": {
+        "demand_evidence": "Live SERP confirms sustained query volume across 'uninsured motorist coverage Kentucky', 'UM UIM coverage Kentucky', and related variants. Kentucky's 14-18% uninsured driver rate (confirmed by multiple authoritative sources) creates evergreen, high-urgency demand. No matching post exists in the content inventory.",
+        "serp_landscape": "Page 1 is dominated by Kentucky personal injury law firms (Aguiar Injury Lawyers, Colyer Law, Forman & Associates, Crooks Bell & Dodds) and legal reference sites (catalog.lawyer, press.farm). One aggregator (autoinsuranceplans.com) holds a spot. No independent insurance agency appears on page 1. Law firm content focuses on claim recovery after accidents, not on purchasing decisions or policy setup. The insurance-buyer angle is completely unserved.",
+        "differentiation_angle": "Law firm posts answer 'what do I do after an accident.' This post answers 'what should I buy, how much, and why.' Agency-specific angles law firms cannot replicate: how carriers structure UM and UIM on a declarations page, how stacking interacts with multi-vehicle households in Bullitt County (I-65 commuter risk), what agents actually see in claim shortfalls, and how to verify coverage on an existing policy today. The KRS 304.20-020 (UM) and KRS 304.39-320 (UIM upon request) anchors give this post statutory specificity no law firm has used in a purchasing-guidance context.",
+        "direct_answer_target": "Kentucky requires insurers to include UM coverage in every auto policy under KRS 304.20-020 unless you reject it in writing. UIM coverage is available on request under KRS 304.39-320 but is not automatic. With roughly one in six Kentucky drivers uninsured, both coverages are essential and relatively inexpensive to add.",
+        "questions_to_answer": [
+          "What is uninsured motorist coverage and do I have it in Kentucky?",
+          "What is the difference between UM and UIM coverage in Kentucky?",
+          "Is uninsured motorist coverage required in Kentucky?",
+          "Can I reject UM or UIM coverage in Kentucky?",
+          "What is UM/UIM stacking and does Kentucky allow it?",
+          "How many drivers in Kentucky are uninsured?",
+          "How much does UM/UIM coverage add to my premium?",
+          "What does UM coverage actually pay for in Kentucky?",
+          "Does UIM cover hit-and-run accidents in Kentucky?",
+          "How do I check if I already have UIM on my current policy?"
+        ],
+        "entities_to_cover": [
+          "UM coverage",
+          "UIM coverage",
+          "KRS 304.20-020",
+          "KRS 304.39-320",
+          "stacking",
+          "PIP (Personal Injury Protection)",
+          "Kentucky choice no-fault",
+          "bodily injury liability",
+          "Kentucky Transportation Cabinet",
+          "25/50/25 minimum limits",
+          "declarations page",
+          "Kentucky uninsured driver rate",
+          "HB 390 real-time verification 2026"
+        ],
+        "local_angle": "Bullitt County I-65 corridor is a high-traffic commuter corridor with concentrated accident risk. Owensboro's US-60 and US-431 corridors also carry significant commercial and through traffic. Kentucky's 14-18% uninsured driver rate means Bullitt and Daviess County drivers share roads with roughly one uninsured driver per six vehicles. The agency can share what it sees in coverage gaps at renewal for local clients, lending genuine E-E-A-T weight the law firm pages cannot supply.",
+        "recommended_schema": [
+          "FAQPage",
+          "Article"
+        ],
+        "internal_links": [
+          "/personal/auto.html",
+          "/blog/kentucky-auto-insurance-guide",
+          "/blog/liability-limits-how-much-enough",
+          "/blog/understanding-auto-insurance-coverage-options"
+        ],
+        "sources": [
+          "https://aguiarinjurylawyers.com/rejecting-um-coverage-kentucky/ (KRS 304.20-020 UM statute)",
+          "https://aguiarinjurylawyers.com/how-do-uninsured-and-underinsured-motorist-coverages-work/ (stacking, KRS 304.39-320)",
+          "https://autoinsuranceplans.com/services/uninsured-motorist-coverages/states/ky/ (HB 390 real-time verification, 14% uninsured rate)",
+          "https://joebuckles.com/uninsured-and-underinsured-motorist-coverage-in-kentucky/ (plain-language UM/UIM Kentucky)",
+          "https://www.lawville.com/what-happens-if-the-other-driver-has-no-insurance/ (UIM upon request KRS 304.20-020)",
+          "https://aguiarinjurylawyers.com/practice-areas/uninsured-motorist/ (14.1% uninsured 2023)"
+        ]
+      },
+      "proposed_at": "2026-11-28",
+      "approved_at": null,
+      "approved_by": null,
+      "status": "proposed",
+      "notes": "Proposed by topic research (task 3e4fb747-e2b9-4b35-8d90-e7031165f531); needs approval before it can be scheduled."
+    },
+    {
+      "slug": "classic-antique-car-insurance-kentucky",
+      "title": "Classic and Antique Car Insurance in Kentucky: An Owner's Guide",
+      "description": "How agreed-value collector car policies work in Kentucky, what qualifies as antique or classic under state registration rules, and how specialty coverage differs from standard auto.",
+      "primary_keyword": "antique car insurance Kentucky",
+      "secondary_keywords": [
+        "classic car insurance Kentucky",
+        "collector car insurance Kentucky",
+        "agreed value car insurance Kentucky",
+        "Kentucky antique vehicle registration",
+        "classic car insurance cost Kentucky"
+      ],
+      "pillar": "product",
+      "topic_type": "guide",
+      "search_intent": "informational",
+      "funnel_stage": "middle",
+      "conversion_goal": "quote-request",
+      "related_cluster": "personal-specialty",
+      "seasonality_window": null,
+      "target_month": "2027-03",
+      "target_product_page": "/personal/auto.html",
+      "target_location_pages": [
+        "/insurance/mt-washington-ky.html",
+        "/insurance/owensboro-ky.html"
+      ],
+      "secondary_internal_links": [
+        "/personal/auto.html",
+        "/blog/understanding-auto-insurance-coverage-options",
+        "/blog/replacement-cost-vs-actual-cash-value"
+      ],
+      "page_role": "supporting",
+      "refresh_cycle": "annual",
+      "source": "topic-research",
+      "research_task_id": "3e4fb747-e2b9-4b35-8d90-e7031165f531",
+      "priority_score": 80,
+      "score_breakdown": {
+        "demand": 18,
+        "winnability": 21,
+        "business_value": 16,
+        "aeo": 13,
+        "timing": 12
+      },
+      "research_brief": {
+        "demand_evidence": "GSC shows 'antique car insurance' at position 79.5 with 43 impressions and zero clicks in the past 28 days, confirming the site has zero foothold. The query cluster includes 'classic car insurance Kentucky', 'collector car insurance Kentucky', and 'agreed value car insurance Kentucky', all showing interest from enthusiast communities. At pos 79, even modest content could land on page 2-3 within weeks and page 1 within a few months.",
+        "serp_landscape": "Page 1 is fragmented across small local agencies with thin product pages (Old Kentucky Insurance Louisville, Greg Gibson Insurance Ashland, Winchester Insurance Agency, Western Kentucky Insurance Mayfield), Insurox location-specific landing pages (Jeffersontown, Pikeville, Covington), and Kentucky United Insurance with an older article. Nova Insurance Group holds a modern page but it focuses on Central Kentucky. No comprehensive buyer's guide covering both Kentucky Transportation Cabinet registration rules (Antique vs Collector classification) and the agreed-value vs stated-value distinction appears in the top results. All local agency pages are product-only with no educational depth. This is a winnable SERP for a well-structured guide.",
+        "differentiation_angle": "No page on page 1 combines: (1) Kentucky Transportation Cabinet's Antique registration requirement (25+ years, limited use, special plates), (2) the separate Collector Vehicle Program for limited-production vehicles under 25 years old with 3,000-mile-per-year cap, (3) the agreed value vs stated value vs ACV distinction with examples, and (4) a clear cost range (most Kentucky owners pay $250-$700 per year per vehicle). A Bullitt County or Daviess County hook adds locality no Ashland or Winchester agency can supply. The agency can share what specialty carriers it actually places classic car business with, a first-hand signal aggregators cannot replicate.",
+        "direct_answer_target": "Classic and antique car insurance in Kentucky uses agreed-value coverage, meaning you and the carrier set the insured value at policy binding and that amount is paid at total loss with no depreciation. Kentucky Transportation Cabinet defines 'antique' as 25 or more years old with limited use; most Kentucky owners pay $250-$700 per year for specialty coverage.",
+        "questions_to_answer": [
+          "What qualifies as an antique car in Kentucky for insurance purposes?",
+          "What is agreed value coverage and why does it matter for a classic car?",
+          "How is classic car insurance different from standard auto in Kentucky?",
+          "How much does classic car insurance cost in Kentucky?",
+          "What are the storage requirements for classic car insurance?",
+          "Can I drive my classic car to work or use it daily in Kentucky?",
+          "What is the Kentucky Transportation Cabinet antique plate requirement?",
+          "Does my classic car policy cover car shows and parades?",
+          "What is the difference between agreed value, stated value, and actual cash value?",
+          "Do I need a primary vehicle to qualify for collector car insurance in Kentucky?"
+        ],
+        "entities_to_cover": [
+          "agreed value coverage",
+          "stated value",
+          "actual cash value (ACV)",
+          "Kentucky Transportation Cabinet antique registration",
+          "Collector Vehicle Program",
+          "specialty auto carriers (Hagerty, Grundy, American Collectors)",
+          "mileage restrictions",
+          "storage requirements",
+          "enclosed garage",
+          "Kentucky antique plates",
+          "restoration coverage",
+          "spare parts coverage",
+          "car show coverage",
+          "25-year rule"
+        ],
+        "local_angle": "Bullitt County has an active car culture and show circuit; the Kentucky Expo Center and local fairgrounds host seasonal events. Owensboro's BBQ festival and riverfront events include car shows. Connecting the guide to cars that attend local Bullitt County and Daviess County shows gives the agency authentic community relevance no national aggregator can produce. The agency should reference which specialty carriers it places (Hagerty, American Collectors, etc.) as a trust signal.",
+        "recommended_schema": [
+          "FAQPage",
+          "Article"
+        ],
+        "internal_links": [
+          "/personal/auto.html",
+          "/blog/understanding-auto-insurance-coverage-options",
+          "/blog/replacement-cost-vs-actual-cash-value"
+        ],
+        "sources": [
+          "https://www.theboswellagency.com/kentucky-classic-car-insurance/ (eligibility, agreed value, 2026 cost guide)",
+          "https://novainsurancegroup.com/personal-insurance/classic-car-insurance/ (KY rates $250-$700/year, agreed value, mileage)",
+          "https://www.insurox.com/classic-car-insurance/kentucky/jeffersontown/ (KYTC antique registration 25+ years, Collector program 3,000 mi/yr)",
+          "https://www.insurox.com/classic-car-insurance/kentucky/pikeville/ (KYTC Antique vs Collector classification)",
+          "https://www.kentuckyunitedins.com/article/applying-for-collector-car-insurance-make-sure-you-take-these-steps-beforehand/ (eligibility 25+ years, 7,500 mile restriction)"
+        ]
+      },
+      "proposed_at": "2026-11-28",
+      "approved_at": null,
+      "approved_by": null,
+      "status": "proposed",
+      "notes": "Proposed by topic research (task 3e4fb747-e2b9-4b35-8d90-e7031165f531); needs approval before it can be scheduled."
+    },
+    {
+      "slug": "home-based-business-insurance-kentucky",
+      "title": "Home-Based Business Insurance in Kentucky: What Your Homeowners Policy Won't Cover",
+      "description": "Why Kentucky homeowners insurance excludes business liability and most business property, and what endorsement or policy options home-based business owners need to stay protected.",
+      "primary_keyword": "home based business insurance Kentucky",
+      "secondary_keywords": [
+        "does homeowners insurance cover home business Kentucky",
+        "home business endorsement Kentucky",
+        "BOP for home business Kentucky",
+        "Kentucky home office insurance",
+        "in-home business policy Kentucky"
+      ],
+      "pillar": "education",
+      "topic_type": "explainer",
+      "search_intent": "informational",
+      "funnel_stage": "top",
+      "conversion_goal": "consultation",
+      "related_cluster": "commercial-core",
+      "seasonality_window": null,
+      "target_month": "2027-01",
+      "target_product_page": "/commercial/general-liability.html",
+      "target_location_pages": [
+        "/insurance/mt-washington-ky.html",
+        "/insurance/owensboro-ky.html"
+      ],
+      "secondary_internal_links": [
+        "/commercial/general-liability.html",
+        "/personal/home.html",
+        "/blog/commercial-insurance-checklist-new-business",
+        "/blog/understanding-insurance-endorsements",
+        "/insurance/mt-washington-ky.html",
+        "/insurance/owensboro-ky.html"
+      ],
+      "page_role": "supporting",
+      "refresh_cycle": "annual",
+      "source": "topic-research",
+      "research_task_id": "3e4fb747-e2b9-4b35-8d90-e7031165f531",
+      "priority_score": 76,
+      "score_breakdown": {
+        "demand": 17,
+        "winnability": 20,
+        "business_value": 16,
+        "aeo": 13,
+        "timing": 10
+      },
+      "research_brief": {
+        "demand_evidence": "No GSC signal directly targets this query, but the 'affordable commercial auto insurance' cluster and the 'small business insurance' query family in the dossier indicate growing commercial intent from home-based entrepreneurs. National publication of this topic is recent (KTVZ/Stacker, Nov 10 2026), signaling rising editorial attention. The Way Agency's own published commercial checklist references this gap in one sentence, confirming the agency sees this question from clients. Nova Insurance Group's BOP page (published Nov 2026) explicitly answers 'do I need a BOP if I work from home?' with a brief FAQ, confirming the question reaches page 1 on adjacent queries.",
+        "serp_landscape": "Page 1 for 'does homeowners insurance cover home business' shows The Zebra, Insureon, Advora, Homewellinsurance, and Morrow Insurance. No Kentucky-specific page ranks. For 'home based business insurance Kentucky', the Insurance Agents of Kentucky site and RiverFront Insurance Partners hold spots with thin content. No major agency in Bullitt County or Daviess County has published on this topic. The SERP is accessible for a Kentucky-specific, well-structured guide.",
+        "differentiation_angle": "National pages explain the gap generically. This post gives Kentucky-specific cost ranges (home business endorsement $150-$300/year on homeowners; in-home business policy $300-$600/year; small BOP $400-$1,500/year as reported by multiple sources) and frames the decision around the three business profiles common in Mt. Washington and Owensboro: tradespeople working from home, online sellers using a garage for inventory, and professional services consultants with client visits. The 'business pursuits exclusion' in Kentucky homeowners policies is the core danger; this post names it plainly and gives readers a three-step test to know if they are exposed.",
+        "direct_answer_target": "Standard Kentucky homeowners insurance typically limits business property coverage to $2,500 and excludes all business liability through the 'business pursuits exclusion.' If you run any business from home, even part-time, your homeowners policy likely leaves you unprotected for client injuries, business equipment, and lost business income.",
+        "questions_to_answer": [
+          "Does homeowners insurance cover a home-based business in Kentucky?",
+          "What is the business pursuits exclusion in a homeowners policy?",
+          "How much business equipment does a standard homeowners policy cover?",
+          "What is a home business endorsement and what does it cover?",
+          "When do I need a Business Owner's Policy instead of an endorsement?",
+          "What happens if a client is injured at my home office in Kentucky?",
+          "Does my homeowners insurance cover business inventory in my garage?",
+          "How much does home-based business insurance cost in Kentucky?",
+          "What coverage do I need if I sell products online from my home in Kentucky?",
+          "Can I add business coverage to my current Kentucky homeowners policy?"
+        ],
+        "entities_to_cover": [
+          "business pursuits exclusion",
+          "home business endorsement (HO 07 01)",
+          "Business Owner's Policy (BOP)",
+          "general liability",
+          "business personal property sublimit ($2,500 standard)",
+          "business income coverage",
+          "professional liability (E&O)",
+          "product liability",
+          "cyber liability",
+          "Kentucky homeowners policy",
+          "ISO HO 00 03",
+          "Permitted Incidental Occupancies endorsement"
+        ],
+        "local_angle": "Mt. Washington and Bullitt County have seen rapid growth in home-based trades and service businesses, including online sellers, landscapers operating from home, and professional consultants. Owensboro's small-business community includes many sole proprietors and micro-businesses running out of residential addresses near downtown and in Daviess County suburbs. The agency regularly encounters clients who assume coverage exists and find gaps only at claim time, a first-hand E-E-A-T signal no aggregator page can supply.",
+        "recommended_schema": [
+          "FAQPage",
+          "Article"
+        ],
+        "internal_links": [
+          "/commercial/general-liability.html",
+          "/personal/home.html",
+          "/blog/commercial-insurance-checklist-new-business",
+          "/blog/understanding-insurance-endorsements",
+          "/insurance/mt-washington-ky.html",
+          "/insurance/owensboro-ky.html"
+        ],
+        "sources": [
+          "https://insuranceproagencies.com/learn/home-business-insurance-gaps (business pursuits exclusion, $2,500 property sublimit, no business liability)",
+          "https://www.afcommerce.com/business-insurance/home-business-insurance.php (endorsement $150-$300/yr, in-home policy $300-$600/yr, BOP $400-$1,500/yr)",
+          "https://advorahq.com/homeowners-insurance-home-business/ (HO 07 01 endorsement, NAIC warning, IRMI source)",
+          "https://www.insuranceagentsofkentucky.com/r/l/home-business-insurance/ (Kentucky-specific gaps, inventory exclusion, equipment breakdown)",
+          "https://novainsurancegroup.com/business-insurance/business-owners-insurance/ (BOP for home-based businesses, KY context)"
+        ]
+      },
+      "proposed_at": "2026-11-28",
+      "approved_at": null,
+      "approved_by": null,
+      "status": "proposed",
+      "notes": "Proposed by topic research (task 3e4fb747-e2b9-4b35-8d90-e7031165f531); needs approval before it can be scheduled."
+    },
+    {
+      "slug": "digital-vs-traditional-insurance-cheaper-kentucky",
+      "title": "Are Digital Insurance Companies Cheaper? A Real Comparison for Kentucky Shoppers",
+      "description": "Whether digital-first insurers like Lemonade, Root, and Hippo actually cost less than traditional carriers in Kentucky, where digital wins and where it falls short, and what independent agents offer that apps cannot.",
+      "primary_keyword": "are digital insurance companies cheaper than traditional",
+      "secondary_keywords": [
+        "digital insurance vs traditional insurance Kentucky",
+        "are digital insurers reliable",
+        "Lemonade insurance Kentucky review",
+        "insurtech vs traditional insurance",
+        "digital insurance pros and cons"
+      ],
+      "pillar": "education",
+      "topic_type": "comparison",
+      "search_intent": "comparison",
+      "funnel_stage": "top",
+      "conversion_goal": "trust",
+      "related_cluster": "insurance-basics",
+      "seasonality_window": null,
+      "target_month": null,
+      "target_product_page": "/personal/home.html",
+      "target_location_pages": [],
+      "secondary_internal_links": [
+        "/personal/home.html",
+        "/personal/auto.html",
+        "/blog/how-independent-agents-save-money",
+        "/blog/digital-insurance-agency-vs-traditional",
+        "/blog/how-to-compare-insurance-quotes"
+      ],
+      "page_role": "supporting",
+      "refresh_cycle": "annual",
+      "source": "topic-research",
+      "research_task_id": "3e4fb747-e2b9-4b35-8d90-e7031165f531",
+      "priority_score": 75,
+      "score_breakdown": {
+        "demand": 22,
+        "winnability": 17,
+        "business_value": 13,
+        "aeo": 14,
+        "timing": 9
+      },
+      "research_brief": {
+        "demand_evidence": "The GSC query cluster dominates the dossier's striking-distance list: 'are digital insurers as reliable as traditional ones?' at pos 6.6 with 66 impressions, 'are digital-first insurance companies cheaper than traditional ones?' at pos 7.0 with 49 impressions, plus five additional variant queries ('free', 'review', 'recommendations', 'comparison') totaling an additional 21 impressions. Combined, the cluster represents 141+ impressions with near-zero CTR (1 click). The existing Way Agency post 'digital-insurance-agency-vs-traditional' is the ranking URL but clearly fails to satisfy the specific cost-and-reliability intent.",
+        "serp_landscape": "Page 1 mixes fintech and insurance content sites: FintechEssential (241 days old, strong), TechInsures.com, SmartFinancial, Xemplar Insights, myinsure.shop, and timeday.net. No major aggregator (NerdWallet, Bankrate, Forbes) owns this SERP. The existing Way Agency post ranks 7-10 across variants but its title ('How Modern Agents Serve You Better') does not match the query intent, which is specifically about price and reliability comparison. A retitled post or a sibling post directly answering 'are they cheaper? yes and no, here is when' would satisfy the query and likely displace the fintech blogs.",
+        "differentiation_angle": "Competing pages give generic cost comparisons with no Kentucky-specific rate data, no state regulation context, and no post-claim reliability data. This post can cite Kentucky-specific rate differences, explain that digital carriers like Lemonade and Hippo do write in Kentucky but have specific carrier appetites (Lemonade strong on renters and simple home; Root on telematics auto for low-mileage drivers), and contrast the claims experience in complex events (Kentucky hail storm, Ohio River flooding) where local agent advocacy and multi-carrier access from an independent agent produces better outcomes. The Way Agency's 'digital-agency-vs-traditional' post exists as the ranking URL but its angle (how modern agents use technology) does not match the buyer question (should I use Lemonade instead of a local agent). A new sibling post on the specific cost-and-reliability comparison avoids cannibalization while capturing the unserved query intent.",
+        "direct_answer_target": "Digital insurance companies can charge 10-30% less for straightforward coverage like renters insurance and simple auto policies because they carry lower overhead. However, they price out of competitive range or exclude coverage entirely for complex risks, homes with prior claims, and businesses. For most Kentucky homeowners and commercial risks, an independent agent shopping multiple carriers typically matches or beats digital pricing.",
+        "questions_to_answer": [
+          "Are digital insurance companies cheaper than traditional ones?",
+          "Are digital insurers as reliable as traditional insurance companies?",
+          "Which types of coverage are cheaper with digital insurers?",
+          "What are the risks of buying insurance through an app?",
+          "Do digital insurance companies pay claims as well as traditional ones?",
+          "Does Lemonade, Root, or Hippo write insurance in Kentucky?",
+          "What do you give up when you go with a digital-only insurer?",
+          "When is a digital insurer the right choice and when is it not?",
+          "How does an independent agent compare to a digital insurer on price?",
+          "What happens when you have a complex claim with a digital insurer?"
+        ],
+        "entities_to_cover": [
+          "Lemonade",
+          "Root Insurance",
+          "Hippo",
+          "NEXT Insurance",
+          "insurtech",
+          "agreed value",
+          "overhead costs",
+          "telematics/usage-based insurance",
+          "Kentucky DOI (Department of Insurance)",
+          "independent agent vs captive vs digital",
+          "carrier appetite",
+          "claims advocacy",
+          "renters insurance",
+          "home insurance",
+          "auto insurance",
+          "BOP"
+        ],
+        "local_angle": "Kentucky experiences hail storms, Ohio River flooding, and tornado events that generate complex, multi-line claims. These are exactly the situations where local agent advocacy, carrier knowledge, and claims support matter most. The Way Agency can reference specific Kentucky weather claim patterns (Bullitt County hail, Daviess County flooding) where digital-only carriers' app-based claims processes have led to disputes or slow resolution. This is the E-E-A-T content no fintech blog can replicate.",
+        "recommended_schema": [
+          "FAQPage",
+          "Article"
+        ],
+        "internal_links": [
+          "/personal/home.html",
+          "/personal/auto.html",
+          "/blog/how-independent-agents-save-money",
+          "/blog/digital-insurance-agency-vs-traditional",
+          "/blog/how-to-compare-insurance-quotes"
+        ],
+        "sources": [
+          "https://www.fintechessential.com/insurance/reviews/insurtech-vs-traditional-insurance (digital is cheaper until something goes wrong, strongest competitor page)",
+          "https://smartfinancial.com/digital-insurance (automation reduces claims costs up to 30%)",
+          "https://techinsures.com/digital-insurance-platforms/ (coverage exclusions in digital policies, overhead savings)",
+          "https://www.topmobilebanks.com/blog/insurtech-vs-traditional-insurance/ (cost and reliability comparison)",
+          "https://www.fintechwarrior.com/financial-planning/the-8-best-digital-insurance-providers/ (top 8 digital providers including Hippo, Lemonade)"
+        ]
+      },
+      "proposed_at": "2026-11-28",
+      "approved_at": null,
+      "approved_by": null,
+      "status": "proposed",
+      "notes": "Proposed by topic research (task 3e4fb747-e2b9-4b35-8d90-e7031165f531); needs approval before it can be scheduled."
     }
   ]
 }
