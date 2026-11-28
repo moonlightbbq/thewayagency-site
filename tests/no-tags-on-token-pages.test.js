@@ -91,9 +91,64 @@ describe('strict-origin referrer on the token pages', () => {
       assert.doesNotMatch(html, /<meta name="referrer" content="no-referrer"/, 'no-referrer breaks origin checks (Maps keys, Turnstile)');
     });
   }
-  test('no token scrub on the portals (that is D1 option B, not chosen)', () => {
-    for (const src of ['src/portal.html', 'src/partner.html']) {
-      assert.doesNotMatch(fs.readFileSync(path.join(ROOT, src), 'utf8'), /twa-token-scrub/);
-    }
-  });
+});
+
+// twa-url-scrub on the token pages (owner decision D1-A, 2026-11-28): the
+// bearer token leaves the address bar before any other script runs, and the
+// page still finds it in this tab's sessionStorage.
+describe('token URL scrub on the portal and partner pages', () => {
+  const vm = require('node:vm');
+  const PAGES = [
+    { src: 'src/portal.html', param: 't', key: 'twa_portal_url_t', read: /const TOKEN = params\.get\('t'\) \|\| /, },
+    { src: 'src/partner.html', param: 'token', key: 'twa_partner_url_token', read: /TOKEN = params\.get\('token'\) \|\| /, },
+  ];
+  function scrubSource(html) {
+    const m = html.match(/<script>\/\* twa-url-scrub[\s\S]*?<\/script>/);
+    assert.ok(m, 'twa-url-scrub script present');
+    return m[0].replace(/^<script>/, '').replace(/<\/script>$/, '');
+  }
+  function run(code, href, { blocked = false, lying = false } = {}) {
+    const store = new Map();
+    const calls = [];
+    const sessionStorage = {
+      setItem(k, v) { if (blocked) throw new Error('SecurityError'); if (!lying) store.set(k, String(v)); },
+      getItem(k) { return store.has(k) ? store.get(k) : null; },
+    };
+    const history = { state: { s: 1 }, replaceState(st, t, url) { calls.push({ st, url }); } };
+    vm.runInNewContext(code, { URL, location: { href }, sessionStorage, history });
+    return { store, calls };
+  }
+  for (const pg of PAGES) {
+    const html = fs.readFileSync(path.join(ROOT, pg.src), 'utf8');
+    const code = scrubSource(html);
+    test(`${pg.src}: moves ?${pg.param}= into sessionStorage and out of the URL, keeping other params and the hash`, () => {
+      const { store, calls } = run(code, `https://www.thewayagency.com/x/?a=1&${pg.param}=tok-123&b=2#frag`);
+      assert.equal(store.get(pg.key), 'tok-123');
+      assert.equal(calls.length, 1);
+      assert.equal(calls[0].url, '/x/?a=1&b=2#frag');
+      assert.deepEqual(calls[0].st, { s: 1 }, 'history state preserved');
+    });
+    test(`${pg.src}: drops the query string entirely when the token was the only param`, () => {
+      const { calls } = run(code, `https://www.thewayagency.com/x/?${pg.param}=tok-123`);
+      assert.equal(calls[0].url, '/x/');
+    });
+    test(`${pg.src}: leaves the URL alone when storage is blocked or does not read back`, () => {
+      assert.equal(run(code, `https://h/x/?${pg.param}=tok`, { blocked: true }).calls.length, 0);
+      assert.equal(run(code, `https://h/x/?${pg.param}=tok`, { lying: true }).calls.length, 0);
+    });
+    test(`${pg.src}: does nothing without a token`, () => {
+      assert.equal(run(code, 'https://h/x/?a=1').calls.length, 0);
+    });
+    test(`${pg.src}: is the first script, right after the strict-origin referrer meta`, () => {
+      const metaAt = html.indexOf('<meta name="referrer" content="strict-origin">');
+      const scrubAt = html.indexOf('<script>/* twa-url-scrub');
+      assert.ok(metaAt > 0 && scrubAt > metaAt, 'after the referrer meta');
+      assert.equal(html.search(/<script\b/i), scrubAt, 'first <script>');
+      assert.ok(scrubAt < html.search(/<(link|img|iframe)\b/i), 'before every link, img and iframe');
+    });
+    test(`${pg.src}: the page reads the URL first, then the stash`, () => {
+      assert.match(html, pg.read);
+      assert.ok(html.includes(`sessionStorage.getItem('${pg.key}')`));
+    });
+  }
 });

@@ -607,6 +607,10 @@ if (fs.existsSync(redirectsPath)) {
     const firstFetch = h.search(/<(link|script|img|iframe)\b/i);
     if (metaAt < 0) perr(`Privacy: ${rel} lacks <meta name="referrer" content="strict-origin">`);
     else if (firstFetch >= 0 && firstFetch < metaAt) perr(`Privacy: the strict-origin referrer meta in ${rel} must precede every link, script, img and iframe`);
+    // twa-url-scrub (D1-A, 2026-11-28): the token leaves the address bar before any other script runs.
+    const scrubAt = h.indexOf('<script>/* twa-url-scrub');
+    if (scrubAt < 0) perr(`Privacy: ${rel} has no twa-url-scrub`);
+    else if (h.search(/<script\b/i) !== scrubAt) perr(`Privacy: twa-url-scrub is not the first <script> in ${rel}`);
   }
   if (privacyErrors === 0) pass(`Privacy guards: hand-off, intake URL scrub, Meta payload, Clarity masks, ${inlineForms} inline forms, and no tags on portal/partner/login checked`);
 }
