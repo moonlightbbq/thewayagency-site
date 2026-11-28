@@ -3306,6 +3306,13 @@
       "locked_slug": null,
       "locked_at": null,
       "reserved_at": "2026-11-25"
+    },
+    {
+      "date": "2026-12-26",
+      "state": "reserved",
+      "locked_slug": null,
+      "locked_at": null,
+      "reserved_at": "2026-11-28"
     }
   ],
   "coverage_targets": {
