@@ -591,7 +591,33 @@ if (fs.existsSync(redirectsPath)) {
   // 65 are expected (product, hub and industry pages): finding none means the
   // guard has stopped seeing them, which must fail, not pass quietly.
   if (inlineForms === 0) perr('Privacy: no inline quote forms found (expected on product, hub and industry pages)');
-  if (privacyErrors === 0) pass(`Privacy guards: hand-off, intake URL scrub, Meta payload, Clarity masks and ${inlineForms} inline forms checked`);
+
+  // 10d. Token-bearing and staff-auth pages (pii-and-privacy D1 option A, D4):
+  // /portal/?t= and /partner/?token= carry bearer tokens in the URL, so neither
+  // they nor /login load GTM (GA4, Meta Pixel) or Clarity, and the two token
+  // pages send only their origin as the referrer, set before any subresource.
+  for (const rel of ['portal/index.html', 'partner/index.html', 'login.html']) {
+    const h = readBuild(rel);
+    if (h === null) { perr(`Privacy: ${rel} missing from the build`); continue; }
+    if (/googletagmanager\.com\/(gtm\.js|gtag\/js|ns\.html)|clarity\.ms\/tag|connect\.facebook\.net|\bG-[A-Z0-9]{8,12}\b|\bGTM-[A-Z0-9]{6,8}\b/.test(h)) perr(`Privacy: third-party tag on token/auth page ${rel}`);
+  }
+  for (const rel of ['portal/index.html', 'partner/index.html']) {
+    const h = readBuild(rel) || '';
+    const metaAt = h.indexOf('<meta name="referrer" content="strict-origin">');
+    const firstFetch = h.search(/<(link|script|img|iframe)\b/i);
+    if (metaAt < 0) perr(`Privacy: ${rel} lacks <meta name="referrer" content="strict-origin">`);
+    else if (firstFetch >= 0 && firstFetch < metaAt) perr(`Privacy: the strict-origin referrer meta in ${rel} must precede every link, script, img and iframe`);
+  }
+  // twa-url-scrub on the portal (D1-A, 2026-11-28): the token leaves the address bar before any other
+  // script runs. The partner page keeps its token in the URL on purpose (a dashboard partners bookmark
+  // and add to the home screen); it loads no tags and sends only the origin as referrer.
+  {
+    const h = readBuild('portal/index.html') || '';
+    const scrubAt = h.indexOf('<script>/* twa-url-scrub');
+    if (scrubAt < 0) perr('Privacy: portal/index.html has no twa-url-scrub');
+    else if (h.search(/<script\b/i) !== scrubAt) perr('Privacy: twa-url-scrub is not the first <script> in portal/index.html');
+  }
+  if (privacyErrors === 0) pass(`Privacy guards: hand-off, intake URL scrub, Meta payload, Clarity masks, ${inlineForms} inline forms, and no tags on portal/partner/login checked`);
 }
 
 // 11. Blog feed (TECH-05): the 20 newest rendered posts, newest first, at

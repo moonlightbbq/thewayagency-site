@@ -2,6 +2,37 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- TRUST-08 (pii-and-privacy decision D1, option A). This URL carries a bearer token.
+     strict-origin sends only the origin as the referrer, also on same-origin
+     clicks such as the logo link, so the next page and its tags never see the
+     token. It still sends the origin cross-origin (Maps key restrictions and
+     Turnstile keep working): do not use no-referrer. The meta tag, not
+     _headers, because Pages joins repeated header values in no documented
+     order. scripts/validate-build.js checks it. -->
+<meta name="referrer" content="strict-origin">
+<script>/* twa-url-scrub (TRUST-08, owner decision D1-A, 2026-11-28). Must stay the
+   FIRST script in <head>, right after the strict-origin referrer meta
+   (scripts/validate-build.js checks this). The link carries a bearer token in
+   ?t=. Move it into this tab entry's own history.state and out of the address
+   bar before anything else runs, so later scripts (Maps, the CF bot check),
+   copy/paste and shoulder-surfing never see it. history.state belongs to this
+   one entry: it survives reload and Back, needs no Web Storage, and another
+   link opened later in the same tab cannot overwrite it. The browser's own
+   history list still records the original URL. A bookmark of the scrubbed URL
+   has no token; the customer uses the emailed link (or Resend). */
+(function () {
+  try {
+    var u = new URL(location.href), p = u.searchParams;
+    if (!p.has('t')) return;
+    var v = p.get('t'), st = history.state, next = {};
+    if (st && typeof st === 'object') { for (var k in st) { if (Object.prototype.hasOwnProperty.call(st, k)) next[k] = st[k]; } }
+    next.twa_t = v;
+    p.delete('t');
+    var q = p.toString();
+    history.replaceState(next, '', u.pathname + (q ? '?' + q : '') + u.hash);
+  } catch (e) {}
+})();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#1a6fb5">
@@ -422,7 +453,7 @@ function showBanner(color, msg) {
 fetch(SAGE_API + '/api/health').then(r=>r.json()).then(d=>{ const el=document.getElementById('portal-version'); if(el&&d.version) el.textContent='v'+d.version; }).catch(()=>{});
 
 const params = new URLSearchParams(location.search);
-const TOKEN = params.get('t');
+const TOKEN = params.has('t') ? params.get('t') : (function () { try { return (history.state && history.state.twa_t) || null; } catch (e) { return null; } })();
 let CONFIG = null;
 let STEP = 0;
 let FIELDS = [];
