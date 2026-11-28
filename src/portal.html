@@ -13,19 +13,23 @@
 <script>/* twa-url-scrub (TRUST-08, owner decision D1-A, 2026-11-28). Must stay the
    FIRST script in <head>, right after the strict-origin referrer meta
    (scripts/validate-build.js checks this). The link carries a bearer token in
-   ?t=. Keep it in this tab's sessionStorage and take it out of the address
-   bar, history and any later copy/paste before anything else runs. The URL
-   only loses the token once the stash reads back, so a browser with storage
-   blocked keeps a working page. The page reads the URL first, then the stash. */
+   ?t=. Move it into this tab entry's own history.state and out of the address
+   bar before anything else runs, so later scripts (Maps, the CF bot check),
+   copy/paste and shoulder-surfing never see it. history.state belongs to this
+   one entry: it survives reload and Back, needs no Web Storage, and another
+   link opened later in the same tab cannot overwrite it. The browser's own
+   history list still records the original URL. A bookmark of the scrubbed URL
+   has no token; the customer uses the emailed link (or Resend). */
 (function () {
   try {
-    var u = new URL(location.href), p = u.searchParams, v = p.get('t');
-    if (!v) return;
-    sessionStorage.setItem('twa_portal_url_t', v);
-    if (sessionStorage.getItem('twa_portal_url_t') !== v) return;
+    var u = new URL(location.href), p = u.searchParams;
+    if (!p.has('t')) return;
+    var v = p.get('t'), st = history.state, next = {};
+    if (st && typeof st === 'object') { for (var k in st) { if (Object.prototype.hasOwnProperty.call(st, k)) next[k] = st[k]; } }
+    next.twa_t = v;
     p.delete('t');
     var q = p.toString();
-    history.replaceState(history.state, '', u.pathname + (q ? '?' + q : '') + u.hash);
+    history.replaceState(next, '', u.pathname + (q ? '?' + q : '') + u.hash);
   } catch (e) {}
 })();
 </script>
@@ -449,7 +453,7 @@ function showBanner(color, msg) {
 fetch(SAGE_API + '/api/health').then(r=>r.json()).then(d=>{ const el=document.getElementById('portal-version'); if(el&&d.version) el.textContent='v'+d.version; }).catch(()=>{});
 
 const params = new URLSearchParams(location.search);
-const TOKEN = params.get('t') || (function () { try { return sessionStorage.getItem('twa_portal_url_t'); } catch (e) { return null; } })();
+const TOKEN = params.has('t') ? params.get('t') : (function () { try { return (history.state && history.state.twa_t) || null; } catch (e) { return null; } })();
 let CONFIG = null;
 let STEP = 0;
 let FIELDS = [];

@@ -10,25 +10,6 @@
      _headers, because Pages joins repeated header values in no documented
      order. scripts/validate-build.js checks it. -->
 <meta name="referrer" content="strict-origin">
-<script>/* twa-url-scrub (TRUST-08, owner decision D1-A, 2026-11-28). Must stay the
-   FIRST script in <head>, right after the strict-origin referrer meta
-   (scripts/validate-build.js checks this). The link carries a bearer token in
-   ?token=. Keep it in this tab's sessionStorage and take it out of the address
-   bar, history and any later copy/paste before anything else runs. The URL
-   only loses the token once the stash reads back, so a browser with storage
-   blocked keeps a working page. The page reads the URL first, then the stash. */
-(function () {
-  try {
-    var u = new URL(location.href), p = u.searchParams, v = p.get('token');
-    if (!v) return;
-    sessionStorage.setItem('twa_partner_url_token', v);
-    if (sessionStorage.getItem('twa_partner_url_token') !== v) return;
-    p.delete('token');
-    var q = p.toString();
-    history.replaceState(history.state, '', u.pathname + (q ? '?' + q : '') + u.hash);
-  } catch (e) {}
-})();
-</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -907,7 +888,7 @@ var PRODUCTS = [
 /* ── Init: read token from URL, authenticate silently ── */
 (function init() {
   var params = new URLSearchParams(window.location.search);
-  TOKEN = params.get('token') || (function () { try { return sessionStorage.getItem('twa_partner_url_token'); } catch (e) { return null; } })();
+  TOKEN = params.get('token');
 
   if (!TOKEN) {
     // No token — show the access-required message, hide nav

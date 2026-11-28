@@ -599,7 +599,7 @@ if (fs.existsSync(redirectsPath)) {
   for (const rel of ['portal/index.html', 'partner/index.html', 'login.html']) {
     const h = readBuild(rel);
     if (h === null) { perr(`Privacy: ${rel} missing from the build`); continue; }
-    if (/googletagmanager\.com\/(gtm\.js|ns\.html)|clarity\.ms\/tag|connect\.facebook\.net/.test(h)) perr(`Privacy: third-party tag on token/auth page ${rel}`);
+    if (/googletagmanager\.com\/(gtm\.js|gtag\/js|ns\.html)|clarity\.ms\/tag|connect\.facebook\.net|\bG-[A-Z0-9]{8,12}\b|\bGTM-[A-Z0-9]{6,8}\b/.test(h)) perr(`Privacy: third-party tag on token/auth page ${rel}`);
   }
   for (const rel of ['portal/index.html', 'partner/index.html']) {
     const h = readBuild(rel) || '';
@@ -607,10 +607,15 @@ if (fs.existsSync(redirectsPath)) {
     const firstFetch = h.search(/<(link|script|img|iframe)\b/i);
     if (metaAt < 0) perr(`Privacy: ${rel} lacks <meta name="referrer" content="strict-origin">`);
     else if (firstFetch >= 0 && firstFetch < metaAt) perr(`Privacy: the strict-origin referrer meta in ${rel} must precede every link, script, img and iframe`);
-    // twa-url-scrub (D1-A, 2026-11-28): the token leaves the address bar before any other script runs.
+  }
+  // twa-url-scrub on the portal (D1-A, 2026-11-28): the token leaves the address bar before any other
+  // script runs. The partner page keeps its token in the URL on purpose (a dashboard partners bookmark
+  // and add to the home screen); it loads no tags and sends only the origin as referrer.
+  {
+    const h = readBuild('portal/index.html') || '';
     const scrubAt = h.indexOf('<script>/* twa-url-scrub');
-    if (scrubAt < 0) perr(`Privacy: ${rel} has no twa-url-scrub`);
-    else if (h.search(/<script\b/i) !== scrubAt) perr(`Privacy: twa-url-scrub is not the first <script> in ${rel}`);
+    if (scrubAt < 0) perr('Privacy: portal/index.html has no twa-url-scrub');
+    else if (h.search(/<script\b/i) !== scrubAt) perr('Privacy: twa-url-scrub is not the first <script> in portal/index.html');
   }
   if (privacyErrors === 0) pass(`Privacy guards: hand-off, intake URL scrub, Meta payload, Clarity masks, ${inlineForms} inline forms, and no tags on portal/partner/login checked`);
 }
