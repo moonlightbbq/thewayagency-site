@@ -1995,12 +1995,14 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": false,
-      "status": "planned",
+      "status": "in-review",
       "source": "markdown",
       "notes": "Re-dated 2026-11-27 from 2026-11-18 (owner): its 11/15-11/17 review emails predated the silence-consent wording and got no reply, so it goes out again for 12/05 with the consent wording; reviewer unchanged.",
       "reviewer": "Jill Boone",
       "reviewer_email": "jill@thewayagency.com",
-      "reviewer_slug": "jill-boone"
+      "reviewer_slug": "jill-boone",
+      "review_sent_date": "2026-11-28",
+      "consent_notice": "2026-12-05:jill@thewayagency.com:d9d11377a685026ca01412a84553ec7b2d6676952315dfc1527070c25f001f85"
     },
     {
       "week": 36,
@@ -2084,9 +2086,14 @@
       "canonical_priority": "tertiary",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "in-review",
       "source": "markdown",
-      "notes": ""
+      "notes": "",
+      "reviewer": "Kelly McCallister",
+      "reviewer_email": "kelly@thewayagency.com",
+      "reviewer_slug": "kelly-mccallister",
+      "review_sent_date": "2026-11-28",
+      "consent_notice": "2026-12-16:kelly@thewayagency.com:af8b0b3030af07744c8c3914adfde0ae4844750c5fd85983d70ed2a867eb99f9"
     },
     {
       "week": 40,
@@ -2885,7 +2892,7 @@
       "page_role": "supporting",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "in-review",
       "source": "queue-lock",
       "locked_at": "2026-10-03",
       "notes": "From topic research task 604dcd9f-1acf-4e11-b37d-e2661ee4a50c (2026-10-02). Its automated quality check failed on a judge input cap, so the topics never reached the backlog; the owner reviewed the six proposals and approved this one directly on 2026-10-03. Seasonality set to year-round (research tagged it medicare-enrollment, which does not fit a small-group health topic). Overlaps the live group-health-insurance-small-business-kentucky post in subject; keep this one focused on groups under 10 employees. Back-posted 2026-11-27 (owner: \"back post those articles\"): its 2026-10-14 slot passed with no draft (planner window bug, Y-85a), so it goes live 2026-12-09 after the normal licensed review and shows 2026-10-14 (display_date).",
@@ -2934,7 +2941,12 @@
           "https://www.ehealthinsurance.com/kentucky-employer-health-insurance",
           "https://www.forhealthinsurance.com/small-business-health-insurance/"
         ]
-      }
+      },
+      "reviewer": "Jill Boone",
+      "reviewer_email": "jill@thewayagency.com",
+      "reviewer_slug": "jill-boone",
+      "review_sent_date": "2026-11-28",
+      "consent_notice": "2026-12-09:jill@thewayagency.com:e274b68cff2d73d84f75e3de994f496a0a24fb72e0f19cfb0bef2f1607222933"
     },
     {
       "publish_date": "2026-12-12",
@@ -2974,7 +2986,7 @@
       "page_role": "seasonal",
       "is_link_target": false,
       "receives_future_links": true,
-      "status": "planned",
+      "status": "in-review",
       "source": "queue-lock",
       "locked_at": "2026-10-03",
       "notes": "From topic research task 604dcd9f-1acf-4e11-b37d-e2661ee4a50c (2026-10-02). Its automated quality check failed on a judge input cap, so the topics never reached the backlog; the owner reviewed the six proposals and approved this one directly on 2026-10-03. Overlaps kentucky-home-insurance-rates-rising-2026 in subject; its local rate figures in the research are dated, so use 2026 statewide figures. Back-posted 2026-11-27 (owner: \"back post those articles\"): its 2026-10-17 slot passed with no draft (planner window bug, Y-85a), so it goes live 2026-12-12 after the normal licensed review and shows 2026-10-17 (display_date).",
@@ -3024,7 +3036,12 @@
           "https://www.eliteriskagent.com/blog/average-cost-homeowners-insurance-kentucky",
           "https://www.lendingtree.com/home-insurance/homeowners-insurance-kentucky/"
         ]
-      }
+      },
+      "reviewer": "Sheilia Royal",
+      "reviewer_email": "sheilia@thewayagency.com",
+      "reviewer_slug": "sheilia-royal",
+      "review_sent_date": "2026-11-28",
+      "consent_notice": "2026-12-12:sheilia@thewayagency.com:11e1678dc42b8d1c54ef682c56175258fa542a7c1ffd172fbd97baa42447f4a9"
     },
     {
       "publish_date": "2026-12-19",
